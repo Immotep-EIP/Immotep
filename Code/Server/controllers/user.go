@@ -19,7 +19,7 @@ func GetAllUsers(c *gin.Context) {
 		fmt.Println("Cannot fetch users")
 		return
 	}
-	c.JSON(http.StatusOK, allUsers) //! TODO: Convert to response
+	c.JSON(http.StatusOK, utils.Map(allUsers, models.UserToResponse))
 }
 
 func GetUserByID(c *gin.Context) {
