@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"immotep/backend/database"
+	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/utils"
 	"net/http"
@@ -36,11 +37,27 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = utils.WriteJSON(w, http.StatusOK, user)
-	if err != nil {
-		fmt.Println("Cannot form response")
+	utils.WriteJSON(w, http.StatusOK, user)
+}
+
+func GetProfile(w http.ResponseWriter, r *http.Request) {
+	claims := utils.GetClaims(r)
+	if claims == nil {
+		utils.WriteError(w, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
+
+	pdb := database.DBclient
+	user, err := pdb.Client.User.FindUnique(db.User.ID.Equals(claims["id"])).Exec(pdb.Context)
+	if err != nil {
+		if strings.Contains(err.Error(), "ErrNotFound") {
+			utils.WriteError(w, http.StatusNotFound, "Cannot find user", err)
+		} else {
+			utils.WriteError(w, http.StatusInternalServerError, "Cannot fetch user", err)
+		}
+		return
+	}
+	utils.WriteJSON(w, http.StatusOK, models.UserToResponse(*user))
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {

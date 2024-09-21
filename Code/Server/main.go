@@ -36,17 +36,14 @@ func LoadEnv() {
 	}
 }
 
-func InitDB() {
+func main() {
+	LoadEnv()
+
 	db, err := database.ConnectDB()
 	if err != nil {
 		log.Fatal("Cannot connect to database")
 	}
 	defer db.Client.Disconnect()
-}
-
-func main() {
-	LoadEnv()
-	InitDB()
 
 	config := Config{
 		Port: os.Getenv("PORT"),
@@ -55,7 +52,7 @@ func main() {
 		Config: config,
 	}
 
-	err := app.Serve()
+	err = app.Serve()
 	if err != nil {
 		log.Fatal(err)
 	}

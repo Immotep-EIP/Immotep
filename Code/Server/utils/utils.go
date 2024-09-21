@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/go-chi/oauth"
 )
 
 func WriteJSON(w http.ResponseWriter, status int, data interface{}) error {
@@ -30,4 +32,12 @@ func WriteError(w http.ResponseWriter, status int, text string, err error) {
 		fmt.Println(text)
 	}
 	WriteJSON(w, status, map[string]string{"error": text})
+}
+
+func GetClaims(r *http.Request) map[string]string {
+	claims, ok := r.Context().Value(oauth.ClaimsContext).(map[string]string)
+	if !ok {
+		return nil
+	}
+	return claims
 }
