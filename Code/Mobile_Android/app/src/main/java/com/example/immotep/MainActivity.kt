@@ -44,7 +44,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun TestFn(name: String, number: Int) {
     Column {
         Text(name)
-        Text("$number minutes ago")
+        Text("$number minutes ago from the test")
     }
 }
 
@@ -55,4 +55,5 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
 
