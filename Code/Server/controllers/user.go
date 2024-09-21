@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"immotep/backend/database"
 	"immotep/backend/models"
@@ -10,40 +9,38 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/gin-gonic/gin"
 )
 
-func GetAllUsers(w http.ResponseWriter, r *http.Request) {
+func GetAllUsers(c *gin.Context) {
 	pdb := database.DBclient
 	allUsers, err := pdb.Client.User.FindMany().Exec(pdb.Context)
 	if err != nil {
 		fmt.Println("Cannot fetch users")
 		return
 	}
-	usersMap := make(map[string]interface{})
-	usersMap["users"] = allUsers
-	utils.WriteJSON(w, http.StatusOK, usersMap)
+	c.JSON(http.StatusOK, allUsers) //! TODO: Convert to response
 }
 
-func GetUserByID(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+func GetUserByID(c *gin.Context) {
+	id := c.Params.ByName("id")
 	pdb := database.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.ID.Equals(id)).Exec(pdb.Context)
 	if err != nil {
 		if strings.Contains(err.Error(), "ErrNotFound") {
-			utils.WriteError(w, http.StatusNotFound, "Cannot find user", err)
+			c.JSON(http.StatusNotFound, gin.H{"error": "Cannot find user"})
 		} else {
-			utils.WriteError(w, http.StatusInternalServerError, "Cannot fetch user", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot fetch user"})
 		}
 		return
 	}
-	utils.WriteJSON(w, http.StatusOK, user)
+	c.JSON(http.StatusOK, models.UserToResponse(*user))
 }
 
-func GetProfile(w http.ResponseWriter, r *http.Request) {
-	claims := utils.GetClaims(r)
+func GetProfile(c *gin.Context) {
+	claims := utils.GetClaims(c)
 	if claims == nil {
-		utils.WriteError(w, http.StatusUnauthorized, "Unauthorized", nil)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
@@ -51,26 +48,26 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 	user, err := pdb.Client.User.FindUnique(db.User.ID.Equals(claims["id"])).Exec(pdb.Context)
 	if err != nil {
 		if strings.Contains(err.Error(), "ErrNotFound") {
-			utils.WriteError(w, http.StatusNotFound, "Cannot find user", err)
+			c.JSON(http.StatusNotFound, gin.H{"error": "Cannot find user"})
 		} else {
-			utils.WriteError(w, http.StatusInternalServerError, "Cannot fetch user", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot fetch user"})
 		}
 		return
 	}
-	utils.WriteJSON(w, http.StatusOK, models.UserToResponse(*user))
+	c.JSON(http.StatusOK, models.UserToResponse(*user))
 }
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func CreateUser(c *gin.Context) {
 	var userResp db.UserModel
-
-	err := json.NewDecoder(r.Body).Decode(&userResp)
+	// err := json.NewDecoder(c.Request.Body).Decode(&userResp) // old with chi
+	err := c.ShouldBindBodyWithJSON(&userResp)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, "Cannot decode user", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot decode user"})
 		return
 	}
 
 	if userResp.Email == "" || userResp.Firstname == "" || userResp.Lastname == "" || userResp.Password == "" {
-		utils.WriteError(w, http.StatusBadRequest, "Bad request, missing fields", nil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, missing fields"})
 		return
 	}
 
@@ -84,11 +81,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		if strings.Contains(err.Error(), "Unique constraint failed") && strings.Contains(err.Error(), "email") {
-			utils.WriteError(w, http.StatusConflict, "Email already exists", err)
+			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
 		} else {
-			utils.WriteError(w, http.StatusInternalServerError, "Cannot create user", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot create user"})
 		}
 		return
 	}
-	utils.WriteJSON(w, http.StatusOK, user)
+	c.JSON(http.StatusOK, models.UserToResponse(*user))
 }

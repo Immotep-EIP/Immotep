@@ -7,51 +7,40 @@ import (
 
 	"immotep/backend/controllers"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
-	"github.com/go-chi/oauth"
+	"github.com/gin-gonic/gin"
+	"github.com/maxzerbini/oauth"
 )
 
-func Routes() http.Handler {
+func Routes() *gin.Engine {
 	secretKey := os.Getenv("SECRET_KEY")
 
-	router := chi.NewRouter()
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 
-	bServer := oauth.NewBearerServer(
+	bServer := oauth.NewOAuthBearerServer(
 		secretKey,
 		time.Hour*24,
 		&TestUserVerifier{},
 		nil)
 
-	router.Use(cors.Handler(cors.Options{
-		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		AllowedOrigins: []string{"https://*", "http://*"},
-		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: true,
-		MaxAge:           300,
-	}))
-
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to Immotep API"))
+	r.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Welcome to Immotep API")
 	})
 
-	router.Route("/auth", func(r chi.Router) {
-		r.Post("/register", controllers.CreateUser)
-		r.Post("/token", bServer.UserCredentials)
-	})
+	auth := r.Group("/auth")
+	{
+		auth.POST("/register", controllers.CreateUser)
+		auth.POST("/token", bServer.UserCredentials)
+	}
 
-	router.Route("/api", func(r chi.Router) {
-		r.Use(oauth.Authorize(secretKey, nil))
-		r.Get("/users", controllers.GetAllUsers)
-		r.Get("/user/{id}", controllers.GetUserByID)
-		r.Get("/profile", controllers.GetProfile)
-	})
+	api := r.Group("/api")
+	{
+		api.Use(oauth.Authorize(secretKey, nil))
+		api.GET("/users", controllers.GetAllUsers)
+		api.GET("/user/:id", controllers.GetUserByID)
+		api.GET("/profile", controllers.GetProfile)
+	}
 
-	return router
+	return r
 }

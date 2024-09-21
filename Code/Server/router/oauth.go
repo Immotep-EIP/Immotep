@@ -5,8 +5,6 @@ import (
 	"immotep/backend/database"
 	"immotep/backend/prisma/db"
 	"net/http"
-
-	"github.com/go-chi/oauth"
 )
 
 type TestUserVerifier struct {
@@ -27,7 +25,7 @@ func (*TestUserVerifier) ValidateUser(email, password, scope string, r *http.Req
 }
 
 // Adds claims to the token
-func (*TestUserVerifier) AddClaims(tokenType oauth.TokenType, email, tokenID, scope string, r *http.Request) (map[string]string, error) {
+func (*TestUserVerifier) AddClaims(email, tokenID, tokenType, scope string) (map[string]string, error) {
 	pdb := database.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
 	if err != nil {
@@ -43,7 +41,7 @@ func (*TestUserVerifier) AddClaims(tokenType oauth.TokenType, email, tokenID, sc
 }
 
 // Adds properties to the token
-func (*TestUserVerifier) AddProperties(tokenType oauth.TokenType, credential, tokenID, scope string, r *http.Request) (map[string]string, error) {
+func (*TestUserVerifier) AddProperties(email, tokenId, tokenType string, scope string) (map[string]string, error) {
 	props := make(map[string]string)
 	// props["customer_name"] = "Gopher"
 	return props, nil
@@ -56,10 +54,10 @@ func (*TestUserVerifier) ValidateClient(clientID, clientSecret, scope string, r 
 	return errors.New("wrong client")
 }
 
-func (*TestUserVerifier) ValidateTokenID(tokenType oauth.TokenType, credential, tokenID, refreshTokenID string) error {
+func (*TestUserVerifier) ValidateTokenId(email, tokenId, refreshTokenID, tokenType string) error {
 	return nil
 }
 
-func (*TestUserVerifier) StoreTokenID(tokenType oauth.TokenType, credential, tokenID, refreshTokenID string) error {
+func (*TestUserVerifier) StoreTokenId(email, tokenId, refreshTokenID, tokenType string) error {
 	return nil
 }
