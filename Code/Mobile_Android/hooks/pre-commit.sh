@@ -19,4 +19,4 @@ echo "Running ktlint..."
 echo "Running project build..."
 ./gradlew build || exit 1
 
-echo "All checks passed!, ready to push !"
+echo "$(tput setaf 2) $(tput bold) ------ All checks passed!, ready to push !$(tput sgr0)"
