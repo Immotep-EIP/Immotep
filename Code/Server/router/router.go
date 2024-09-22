@@ -34,7 +34,7 @@ func Routes() *gin.Engine {
 		auth.POST("/token", bServer.UserCredentials)
 	}
 
-	api := r.Group("/api")
+	api := r.Group("/")
 	{
 		api.Use(oauth.Authorize(secretKey, nil))
 		api.GET("/users", controllers.GetAllUsers)

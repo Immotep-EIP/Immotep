@@ -4,6 +4,7 @@ import (
 	"errors"
 	"immotep/backend/database"
 	"immotep/backend/prisma/db"
+	"immotep/backend/utils"
 	"net/http"
 )
 
@@ -17,7 +18,7 @@ func (*TestUserVerifier) ValidateUser(email, password, scope string, r *http.Req
 	if err != nil {
 		return errors.New("wrong user")
 	}
-	if user.Password == password {
+	if utils.CheckPasswordHash(password, user.Password) {
 		return nil
 	}
 

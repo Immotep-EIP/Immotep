@@ -71,10 +71,16 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	hashedPassword, err := utils.HashPassword(userResp.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot hash password"})
+		return
+	}
+
 	pdb := database.DBclient
 	user, err := pdb.Client.User.CreateOne(
 		db.User.Email.Set(userResp.Email),
-		db.User.Password.Set(userResp.Password), //! TODO: Hash password
+		db.User.Password.Set(hashedPassword),
 		db.User.Firstname.Set(userResp.Firstname),
 		db.User.Lastname.Set(userResp.Lastname),
 	).Exec(pdb.Context)
