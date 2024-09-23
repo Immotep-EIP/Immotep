@@ -1,37 +1,24 @@
 package controllers
 
 import (
-	"fmt"
-	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
+	userservice "immotep/backend/services"
 	"immotep/backend/utils"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func GetAllUsers(c *gin.Context) {
-	pdb := database.DBclient
-	allUsers, err := pdb.Client.User.FindMany().Exec(pdb.Context)
-	if err != nil {
-		fmt.Println("Cannot fetch users")
-		return
-	}
+	allUsers := userservice.GetAll()
 	c.JSON(http.StatusOK, utils.Map(allUsers, models.UserToResponse))
 }
 
 func GetUserByID(c *gin.Context) {
-	id := c.Params.ByName("id")
-	pdb := database.DBclient
-	user, err := pdb.Client.User.FindUnique(db.User.ID.Equals(id)).Exec(pdb.Context)
-	if err != nil {
-		if strings.Contains(err.Error(), "ErrNotFound") {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Cannot find user"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot fetch user"})
-		}
+	user := userservice.GetByID(c.Params.ByName("id"))
+	if user == nil {
+		utils.SendError(c, http.StatusNotFound, utils.CannotFindUser, nil)
 		return
 	}
 	c.JSON(http.StatusOK, models.UserToResponse(*user))
@@ -40,18 +27,13 @@ func GetUserByID(c *gin.Context) {
 func GetProfile(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	if claims == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, utils.NoClaims, nil)
 		return
 	}
 
-	pdb := database.DBclient
-	user, err := pdb.Client.User.FindUnique(db.User.ID.Equals(claims["id"])).Exec(pdb.Context)
-	if err != nil {
-		if strings.Contains(err.Error(), "ErrNotFound") {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Cannot find user"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot fetch user"})
-		}
+	user := userservice.GetByID(claims["id"])
+	if user == nil {
+		utils.SendError(c, http.StatusNotFound, utils.CannotFindUser, nil)
 		return
 	}
 	c.JSON(http.StatusOK, models.UserToResponse(*user))
@@ -59,39 +41,27 @@ func GetProfile(c *gin.Context) {
 
 func CreateUser(c *gin.Context) {
 	var userResp db.UserModel
-	// err := json.NewDecoder(c.Request.Body).Decode(&userResp) // old with chi
 	err := c.ShouldBindBodyWithJSON(&userResp)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot decode user"})
+		utils.SendError(c, http.StatusBadRequest, utils.CannotDecodeUser, err)
 		return
 	}
 
 	if userResp.Email == "" || userResp.Firstname == "" || userResp.Lastname == "" || userResp.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, missing fields"})
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, nil)
 		return
 	}
 
-	hashedPassword, err := utils.HashPassword(userResp.Password)
+	userResp.Password, err = utils.HashPassword(userResp.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot hash password"})
+		utils.SendError(c, http.StatusInternalServerError, utils.CannotHashPassword, err)
 		return
 	}
 
-	pdb := database.DBclient
-	user, err := pdb.Client.User.CreateOne(
-		db.User.Email.Set(userResp.Email),
-		db.User.Password.Set(hashedPassword),
-		db.User.Firstname.Set(userResp.Firstname),
-		db.User.Lastname.Set(userResp.Lastname),
-	).Exec(pdb.Context)
-
-	if err != nil {
-		if strings.Contains(err.Error(), "Unique constraint failed") && strings.Contains(err.Error(), "email") {
-			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot create user"})
-		}
+	user := userservice.Create(userResp)
+	if user == nil {
+		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, err)
 		return
 	}
-	c.JSON(http.StatusOK, models.UserToResponse(*user))
+	c.JSON(http.StatusCreated, models.UserToResponse(*user))
 }
