@@ -8,6 +8,7 @@ require (
 	github.com/maxzerbini/oauth v0.0.0-20190809074857-12de74d43292
 	github.com/shopspring/decimal v1.4.0
 	github.com/steebchen/prisma-client-go v0.41.0
+	golang.org/x/crypto v0.27.0
 )
 
 require (
@@ -32,7 +33,6 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.10.0 // indirect
-	golang.org/x/crypto v0.27.0 // indirect
 	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
