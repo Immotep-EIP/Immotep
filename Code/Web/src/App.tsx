@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '@/vite.svg';
-import './App.css';
+// eslint-disable-next-line import/no-absolute-path
+import viteLogo from '/vite.svg';
+import reactLogo from '@/assets/icons/react.svg';
+import '@/App.css';
 
 const App = () => {
   const [count, setCount] = useState(0);
@@ -20,11 +21,14 @@ const App = () => {
       <div className="card">
         <button type="button" onClick={() => setCount((count) => count + 1)}>
           count is
+          <span className="space"> </span>
           {count}
         </button>
         <p>
           Edit
+          <span className="space"> </span>
           <code>src/App.tsx</code>
+          <span className="space"> </span>
           and save to test HMR
         </p>
       </div>
