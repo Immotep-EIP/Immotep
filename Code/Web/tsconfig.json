@@ -3,5 +3,9 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "baseUrl": "./src",
+  "paths": {
+    "~/*": ["./*"]
+  }
 }
