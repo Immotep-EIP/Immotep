@@ -1,11 +1,19 @@
 {
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["dom", "esnext"],
+    "jsx": "react-jsx",
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "baseUrl": "./src",
-  "paths": {
-    "~/*": ["./*"]
-  }
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }
