@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"immotep/backend/prisma/db"
+	"log"
 )
 
 type PrismaDB struct {
@@ -12,13 +13,13 @@ type PrismaDB struct {
 
 var DBclient = &PrismaDB{}
 
-func ConnectDB() (*PrismaDB, error) {
+func ConnectDB() *PrismaDB {
 	client := db.NewClient()
 	if err := client.Prisma.Connect(); err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
 	DBclient.Client = client
 	DBclient.Context = context.Background()
-	return DBclient, nil
+	return DBclient
 }
