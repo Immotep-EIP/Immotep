@@ -12,9 +12,26 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+data class LoginState(
+    val email: String = "",
+    val password: String = "",
+)
+
 class LoginViewModel : ViewModel() {
     private val _postState = MutableStateFlow<Post?>(null)
+    private val _emailAndPassword = MutableStateFlow(LoginState())
     val post: StateFlow<Post?> = _postState.asStateFlow()
+    val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
+
+    fun updateEmailAndPassword(
+        email: String?,
+        password: String?,
+    ) {
+        _emailAndPassword.value = _emailAndPassword.value.copy(
+            email = if (email != null) { email } else { _emailAndPassword.value.email },
+            password = if (password != null) { password } else { _emailAndPassword.value.password }
+        )
+    }
 
     init {
         _postState.value = null
