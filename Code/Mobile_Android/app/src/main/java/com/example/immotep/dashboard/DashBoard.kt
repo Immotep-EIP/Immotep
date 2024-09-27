@@ -7,7 +7,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
 @Composable
-fun DashBoardScreen(navController: NavController, viewModel: DashBoardViewModel = viewModel()) {
+fun DashBoardScreen(
+    navController: NavController,
+    viewModel: DashBoardViewModel = viewModel(),
+) {
     Button(onClick = {
         navController.navigate("login")
     }) {

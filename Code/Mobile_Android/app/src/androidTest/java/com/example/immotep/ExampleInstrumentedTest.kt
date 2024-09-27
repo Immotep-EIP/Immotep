@@ -10,6 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
 /**
  * Instrumented test, which will execute on an Android device.
  *
@@ -19,17 +20,21 @@ import org.junit.runner.RunWith
 class ExampleInstrumentedTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
+
     @Test
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.example.immotep", appContext.packageName)
     }
+
     @Test
     fun loginTextDisplayed() {
-        composeTestRule.onNodeWithText("Login")
+        composeTestRule
+            .onNodeWithText("Login")
             .assertIsDisplayed()
     }
+
     @Test
     fun canChangeView() {
         composeTestRule.onNodeWithText("Login").assertIsDisplayed().performClick()
