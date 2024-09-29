@@ -1,5 +1,6 @@
 package com.example.immotep
 
+import android.content.res.Resources
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -11,6 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+
 /**
  * Instrumented test, which will execute on an Android device.
  *
@@ -20,7 +22,7 @@ import org.junit.runner.RunWith
 class ExampleInstrumentedTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
-
+    private val res: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Test
     fun useAppContext() {
         // Context of the app under test.
@@ -31,13 +33,13 @@ class ExampleInstrumentedTest {
     @Test
     fun loginTextDisplayed() {
         composeTestRule
-            .onNodeWithText("Login")
+            .onNodeWithText(res.getString(R.string.login_hello))
             .assertIsDisplayed()
     }
 
     @Test
     fun canChangeView() {
-        composeTestRule.onNodeWithText("Login").assertIsDisplayed().performClick()
+        composeTestRule.onNodeWithText(res.getString(R.string.login_button)).assertIsDisplayed().performClick()
         composeTestRule.onNodeWithText("Dashboard").assertIsDisplayed()
     }
 }
