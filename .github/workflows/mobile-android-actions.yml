@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
@@ -43,12 +43,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          profile: 'default'
+        uses: android-actions/setup-android@v3
 
       - name: Change directory to Mobile_Android
         working-directory: Code/Mobile_Android
