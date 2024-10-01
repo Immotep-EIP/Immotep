@@ -3,7 +3,6 @@ package userservice
 import (
 	"immotep/backend/database"
 	"immotep/backend/prisma/db"
-	"strings"
 )
 
 func GetAll() []db.UserModel {
@@ -19,7 +18,7 @@ func GetByID(id string) *db.UserModel {
 	pdb := database.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.ID.Equals(id)).Exec(pdb.Context)
 	if err != nil {
-		if strings.Contains(err.Error(), "ErrNotFound") {
+		if db.IsErrNotFound(err) {
 			return nil
 		} else {
 			panic(err)
@@ -37,7 +36,7 @@ func Create(user db.UserModel) *db.UserModel {
 		db.User.Lastname.Set(user.Lastname),
 	).Exec(pdb.Context)
 	if err != nil {
-		if strings.Contains(err.Error(), "Unique constraint failed") && strings.Contains(err.Error(), "email") {
+		if info, is := db.IsErrUniqueConstraint(err); is && info.Fields[0] == db.User.Email.Field() {
 			return nil
 		} else {
 			panic(err)
