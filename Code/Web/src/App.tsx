@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import reactLogo from '@/assets/icons/react.svg';
 // eslint-disable-next-line import/no-absolute-path
 import viteLogo from '/vite.svg';
-import reactLogo from '@/assets/icons/react.svg';
 import '@/App.css';
 
 const App = () => {

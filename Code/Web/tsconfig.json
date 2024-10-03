@@ -4,6 +4,10 @@
     "module": "esnext",
     "lib": ["dom", "esnext"],
     "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "types": ["jest", "node"],
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"]
