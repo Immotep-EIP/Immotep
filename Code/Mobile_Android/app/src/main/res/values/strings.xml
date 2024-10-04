@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">Immotep</string>
-    <string name="login_hello">Bonjour et bienvenue sur Immotep</string>
-    <string name="your_email">Votre email</string>
-    <string name="your_password">Votre mot de passe</string>
-    <string name="login_button">Se connecter</string>
+    <string name="login_hello">Welcome back</string>
+    <string name="your_email">Please enter your email</string>
+    <string name="your_password">Please enter your password</string>
+    <string name="login_button">Sign up</string>
+    <string name="no_account">Don\'t have an account ? </string>
+    <string name="sign_up">Sign up</string>
+    <string name="immotep_logo_desc">Logo Immotep</string>
+    <string name="keep_signed">Keep me signed in</string>
+    <string name="forgot_password">Forgot password ?</string>
+    <string name="login_details">Please enter your details to sign in.</string>
 </resources>

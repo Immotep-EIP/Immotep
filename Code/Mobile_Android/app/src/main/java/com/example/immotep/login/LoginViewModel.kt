@@ -15,6 +15,7 @@ import retrofit2.Response
 data class LoginState(
     val email: String = "",
     val password: String = "",
+    val keepSigned : Boolean = false
 )
 
 class LoginViewModel : ViewModel() {
@@ -26,10 +27,12 @@ class LoginViewModel : ViewModel() {
     fun updateEmailAndPassword(
         email: String?,
         password: String?,
+        keepSigned: Boolean?
     ) {
         _emailAndPassword.value = _emailAndPassword.value.copy(
-            email = if (email != null) { email } else { _emailAndPassword.value.email },
-            password = if (password != null) { password } else { _emailAndPassword.value.password }
+            email = email ?: _emailAndPassword.value.email,
+            password = password ?: _emailAndPassword.value.password,
+            keepSigned = keepSigned ?: _emailAndPassword.value.keepSigned
         )
     }
 
