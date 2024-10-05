@@ -34,12 +34,12 @@ func TestValidateUser(t *testing.T) {
 
 	t.Run("Valid user", func(t *testing.T) {
 		err := testOauth.ValidateUser("test1@example.com", "Password123", "", nil)
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("Invalid password", func(t *testing.T) {
 		err := testOauth.ValidateUser("test1@example.com", "azerty", "", nil)
-		assert.NotNil(t, err)
+		assert.Error(t, err)
 	})
 
 	mock.User.Expect(
@@ -48,9 +48,10 @@ func TestValidateUser(t *testing.T) {
 
 	t.Run("Not found user", func(t *testing.T) {
 		err := testOauth.ValidateUser("test2@example.com", "Password123", "", nil)
-		assert.NotNil(t, err)
+		assert.Error(t, err)
 	})
 }
+
 func TestAddClaims(t *testing.T) {
 	client, mock, ensure := database.ConnectDBTest()
 	defer ensure(t)
@@ -63,7 +64,7 @@ func TestAddClaims(t *testing.T) {
 
 	t.Run("Valid user", func(t *testing.T) {
 		claims, err := testOauth.AddClaims("test1@example.com", "", "", "")
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.NotNil(t, claims)
 		assert.Equal(t, "1", claims["id"])
 		assert.Equal(t, "member", claims["role"])
@@ -75,7 +76,47 @@ func TestAddClaims(t *testing.T) {
 
 	t.Run("Not found user", func(t *testing.T) {
 		claims, err := testOauth.AddClaims("test2@example.com", "", "", "")
-		assert.NotNil(t, err)
+		assert.Error(t, err)
 		assert.Nil(t, claims)
+	})
+}
+
+func TestAddProperties(t *testing.T) {
+	testOauth := router.TestUserVerifier{}
+
+	t.Run("Add properties", func(t *testing.T) {
+		props, err := testOauth.AddProperties("test1@example.com", "", "", "")
+		assert.NoError(t, err)
+		assert.NotNil(t, props)
+	})
+}
+
+
+
+// Unused methods ----------------------------------------------------------------------------------------
+func TestValidateClient(t *testing.T) {
+	testOauth := router.TestUserVerifier{}
+
+	t.Run("Validate client", func(t *testing.T) {
+		err := testOauth.ValidateClient("", "", "", nil)
+		assert.Error(t, err)
+	})
+}
+
+func TestValidateTokenId(t *testing.T) {
+	testOauth := router.TestUserVerifier{}
+
+	t.Run("Validate token id", func(t *testing.T) {
+		err := testOauth.ValidateTokenId("", "", "", "")
+		assert.NoError(t, err)
+	})
+}
+
+func TestStoreTokenId(t *testing.T) {
+	testOauth := router.TestUserVerifier{}
+
+	t.Run("Validate token id", func(t *testing.T) {
+		err := testOauth.StoreTokenId("", "", "", "")
+		assert.NoError(t, err)
 	})
 }
