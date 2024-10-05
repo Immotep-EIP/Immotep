@@ -34,20 +34,42 @@
 		CAE21F952CA9984E00C21C36 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CAF000002CB1AE33008D953F /* Exceptions for "Immotep" folder in "Immotep" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Tests/ImmotepTests/ImmotepTests.swift,
+				Tests/ImmotepUITests/ImmotepUITests.swift,
+				Tests/ImmotepUITests/ImmotepUITestsLaunchTests.swift,
+			);
+			target = CA85272D2CA06B1E009FE366 /* Immotep */;
+		};
+		CAF000012CB1AE33008D953F /* Exceptions for "Immotep" folder in "ImmotepTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Tests/ImmotepTests/ImmotepTests.swift,
+			);
+			target = CA85273D2CA06B1F009FE366 /* ImmotepTests */;
+		};
+		CAF000072CB1AE36008D953F /* Exceptions for "Immotep" folder in "ImmotepUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Tests/ImmotepUITests/ImmotepUITests.swift,
+				Tests/ImmotepUITests/ImmotepUITestsLaunchTests.swift,
+			);
+			target = CA8527472CA06B1F009FE366 /* ImmotepUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CA8527302CA06B1E009FE366 /* Immotep */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CAF000002CB1AE33008D953F /* Exceptions for "Immotep" folder in "Immotep" target */,
+				CAF000012CB1AE33008D953F /* Exceptions for "Immotep" folder in "ImmotepTests" target */,
+				CAF000072CB1AE36008D953F /* Exceptions for "Immotep" folder in "ImmotepUITests" target */,
+			);
 			path = Immotep;
-			sourceTree = "<group>";
-		};
-		CA8527412CA06B1F009FE366 /* ImmotepTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ImmotepTests;
-			sourceTree = "<group>";
-		};
-		CA85274B2CA06B1F009FE366 /* ImmotepUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ImmotepUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -82,8 +104,6 @@
 			children = (
 				CAE21F952CA9984E00C21C36 /* .swiftlint.yml */,
 				CA8527302CA06B1E009FE366 /* Immotep */,
-				CA8527412CA06B1F009FE366 /* ImmotepTests */,
-				CA85274B2CA06B1F009FE366 /* ImmotepUITests */,
 				CA85272F2CA06B1E009FE366 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -137,9 +157,6 @@
 			dependencies = (
 				CA8527402CA06B1F009FE366 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				CA8527412CA06B1F009FE366 /* ImmotepTests */,
-			);
 			name = ImmotepTests;
 			packageProductDependencies = (
 			);
@@ -159,9 +176,6 @@
 			);
 			dependencies = (
 				CA85274A2CA06B1F009FE366 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				CA85274B2CA06B1F009FE366 /* ImmotepUITests */,
 			);
 			name = ImmotepUITests;
 			packageProductDependencies = (
@@ -428,7 +442,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Immotep/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Immotep/Sources/Resources/Assets\"";
 				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -445,7 +459,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dd.Immotep;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -457,7 +471,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Immotep/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Immotep/Sources/Resources/Assets\"";
 				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -474,7 +488,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dd.Immotep;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
