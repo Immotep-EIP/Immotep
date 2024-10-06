@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.immotep.dashboard.DashBoardScreen
 import com.example.immotep.login.LoginScreen
+import com.example.immotep.register.RegisterScreen
 
 @Composable
 fun Navigation() {
@@ -13,5 +14,6 @@ fun Navigation() {
     NavHost(navController = navController, startDestination = "login") {
         composable("login") { LoginScreen(navController) }
         composable("dashboard") { DashBoardScreen(navController) }
+        composable("register") { RegisterScreen(navController) }
     }
 }

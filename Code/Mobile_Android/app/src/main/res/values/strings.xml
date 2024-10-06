@@ -6,8 +6,22 @@
     <string name="login_button">Sign up</string>
     <string name="no_account">Don\'t have an account ? </string>
     <string name="sign_up">Sign up</string>
+    <string name="sign_in">Sign in</string>
     <string name="immotep_logo_desc">Logo Immotep</string>
     <string name="keep_signed">Keep me signed in</string>
     <string name="forgot_password">Forgot password ?</string>
     <string name="login_details">Please enter your details to sign in.</string>
+    <string name="create_account">Create your account</string>
+    <string name="create_account_subtitle">Join immotep for your peace of mind !</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="password_confirm">Password confirmation</string>
+    <string name="agree_terms">I agree to all Term, Privacy and Fees</string>
+    <string name="already_account">Already have an account ?</string>
+    <string name="first_name_error">Incorrect first name</string>
+    <string name="last_name_error">Incorrect last name</string>
+    <string name="email_error">Incorrect email</string>
+    <string name="password_error">Incorrect password</string>
+    <string name="password_confirm_error">Incorrect password confirmation</string>
+    <string name="agree_terms_error">You must agree to all Term, Privacy and Fees</string>
 </resources>

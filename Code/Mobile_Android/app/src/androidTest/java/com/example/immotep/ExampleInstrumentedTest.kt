@@ -23,6 +23,7 @@ class ExampleInstrumentedTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
     private val res: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
     @Test
     fun useAppContext() {
         // Context of the app under test.
