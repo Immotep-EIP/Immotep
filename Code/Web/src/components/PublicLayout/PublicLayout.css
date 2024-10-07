@@ -1,0 +1,23 @@
+.layout {
+  background-color: white;
+  min-height: 100vh;
+}
+
+.header {
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 15px;
+  padding: 0 20px;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 20px;
+}
+
+.immotepLogo {
+  width: 30px !important;
+}
