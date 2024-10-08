@@ -1,9 +1,8 @@
-.layout {
-  background-color: white;
+.pubLayout {
   min-height: 100vh;
 }
 
-.header {
+.pubHeader {
   background-color: white;
   display: flex;
   flex-direction: row;
@@ -11,11 +10,16 @@
   justify-content: flex-start;
   gap: 15px;
   padding: 0 20px;
+  z-index: 100 !important;
+  position: sticky;
+  top: 0;
+  width: 100%;
 }
 
-.mainContent {
+.pubMainContent {
   flex: 1;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .immotepLogo {
