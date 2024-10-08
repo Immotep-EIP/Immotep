@@ -6,6 +6,7 @@
   background-color: white;
   display: flex;
   flex-direction: row;
+  align-items: center !important;
   align-items: flex-end;
   justify-content: flex-start;
   gap: 15px;
@@ -17,11 +18,7 @@
 }
 
 .pubMainContent {
-  flex: 1;
-  padding: 20px;
+  flex: 1 !important;
+  padding: 20px !important;
   overflow-y: auto;
-}
-
-.immotepLogo {
-  width: 30px !important;
 }
