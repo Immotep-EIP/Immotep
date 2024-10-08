@@ -39,9 +39,9 @@ fun OutlinedTextField(
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    println("value : $errorMessage")
     Column {
         OutlinedTextField(
+            modifier = modifier,
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,

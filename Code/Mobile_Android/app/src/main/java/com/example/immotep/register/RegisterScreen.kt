@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -100,10 +101,14 @@ fun RegisterScreen(
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.already_account), color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
                 Text(
-                    AnnotatedString(stringResource(R.string.sign_up)),
+                    AnnotatedString(stringResource(R.string.sign_in)),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.padding(start = 3.dp).clickable { navController.navigate("login") },
+                    modifier =
+                        Modifier
+                            .padding(start = 3.dp)
+                            .clickable { navController.navigate("login") }
+                            .testTag("registerScreenToLoginButton"),
                 )
             }
         }

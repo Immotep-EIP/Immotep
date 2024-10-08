@@ -21,8 +21,14 @@ data class LoginState(
 class LoginViewModel : ViewModel() {
     private val _postState = MutableStateFlow<Post?>(null)
     private val _emailAndPassword = MutableStateFlow(LoginState())
+    private val _showPassword = MutableStateFlow(false)
     val post: StateFlow<Post?> = _postState.asStateFlow()
     val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
+    val showPassword: StateFlow<Boolean> = _showPassword.asStateFlow()
+
+    fun changePasswordVisibility() {
+        _showPassword.value = !_showPassword.value
+    }
 
     fun updateEmailAndPassword(
         email: String?,
