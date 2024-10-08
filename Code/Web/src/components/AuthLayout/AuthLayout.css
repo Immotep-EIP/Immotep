@@ -1,23 +1,55 @@
-.layout {
-  background-color: white;
+.authLayout {
   min-height: 100vh;
 }
 
-.header {
+.authHeader {
   background-color: white;
   display: flex;
   flex-direction: row;
+  align-items: center !important;
   align-items: flex-end;
   justify-content: flex-start;
   gap: 15px;
   padding: 0 20px;
+  z-index: 100 !important;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.mainContent {
-  flex: 1;
-  padding: 20px;
+.authMainContent {
+  flex: 1 !important;
+  padding: 20px !important;
+  overflow-y: auto;
 }
 
 .immotepLogo {
-  width: 30px !important;
+  width: 35px !important;
+}
+
+.settingsIcon {
+  margin-left: auto;
+  font-size: 25px;
+}
+
+.ant-layout-sider {
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+}
+
+.ant-layout-sider-trigger {
+  background-color: white !important;
+  color: black !important;
+  border-top: 1px solid #e0e0e0;
+}
+
+.ant-layout-sider-trigger:hover {
+  background-color: #f0f0f0 !important;
+  color: black !important;
+}
+
+.menuIcon {
+  font-size: 20px;
 }

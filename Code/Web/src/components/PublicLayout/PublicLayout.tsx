@@ -20,7 +20,7 @@ const PublicLayout = ({ children }: LayoutProps) => (
         alt="Immotep logo"
         className="immotepLogo"
       />
-      <Title level={3}>Immotep Public</Title>
+      <Title level={3}>Immotep</Title>
     </Header>
     <Content className="pubMainContent">{children}</Content>
   </Layout>
