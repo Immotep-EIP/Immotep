@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-// import { Link } from 'react-router-dom';
 
 import { Layout, Image, Typography } from 'antd'
 import immotepLogo from '@/assets/icons/ImmotepLogo.svg'
@@ -13,8 +12,8 @@ interface LayoutProps {
 }
 
 const PublicLayout = ({ children }: LayoutProps) => (
-  <Layout className="layout">
-    <Header className="header">
+  <Layout className="pubLayout">
+    <Header className="pubHeader">
       <Image
         preview={false}
         src={immotepLogo}
@@ -23,7 +22,7 @@ const PublicLayout = ({ children }: LayoutProps) => (
       />
       <Title level={3}>Immotep Public</Title>
     </Header>
-    <Content className="mainContent">{children}</Content>
+    <Content className="pubMainContent">{children}</Content>
   </Layout>
 )
 

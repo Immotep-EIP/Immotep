@@ -6,7 +6,7 @@ import EmailInput from '@/components/Inputs/EmailInput'
 import PasswordInput from '@/components/Inputs/PasswordInput'
 import LoginTitle from '@/components/Login/LoginTitle'
 import LoginOptions from '@/components/Login/LoginOptions'
-import SignUpFooter from '@/components/Login/SignUpFooter'
+import AuthFooter from '@/components/Footers/AuthFooter'
 
 const { Item } = Form
 
@@ -24,7 +24,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="container">
+    <div className="loginContainer">
       <LoginTitle />
       <Form
         name="login"
@@ -40,7 +40,11 @@ const LoginPage = () => {
             Sign in
           </Button>
         </Item>
-        <SignUpFooter goToSignup={goToSignup} />
+        <AuthFooter
+          goTo={goToSignup}
+          text="Don't have an account ?"
+          buttonText="Sign up"
+        />
       </Form>
     </div>
   )
