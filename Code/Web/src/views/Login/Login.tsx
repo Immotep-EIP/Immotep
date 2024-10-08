@@ -11,7 +11,7 @@ import SignUpFooter from '@/components/Login/SignUpFooter'
 const { Item } = Form
 
 type FieldType = {
-  username: string
+  email: string
   password: string
   remember: boolean
 }
