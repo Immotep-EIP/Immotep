@@ -1,0 +1,38 @@
+datasource db {
+    provider = "postgres"
+    url      = env("DATABASE_URL")
+}
+
+generator db {
+    provider = "go run github.com/steebchen/prisma-client-go"
+}
+
+enum Role {
+    admin
+    member
+}
+
+model User {
+    id         String   @id @default(cuid())
+    email      String   @unique @db.VarChar(255)
+    password   String   @db.VarChar(255)
+    firstname  String
+    lastname   String
+    role       Role     @default(member)
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    posts      Post[]
+}
+
+model Post {
+    id         String   @id @default(cuid())
+    title      String   @unique
+    content    String
+    likes      Int
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    author       User     @relation(fields: [authorId], references: [id])
+    authorId     String
+}
