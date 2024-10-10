@@ -442,7 +442,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Immotep/Sources/Resources/Assets\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Immotep/Sources/\" \"Immotep/Sources/Resources/Assets\"";
 				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -471,7 +471,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Immotep/Sources/Resources/Assets\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Immotep/Sources/\" \"Immotep/Sources/Resources/Assets\"";
 				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
