@@ -1,0 +1,61 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.optionsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.forgotPassword {
+  color: #00F;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.forgotPassword:hover {
+  color: rgb(0, 0, 156);
+}
+
+.forgotPassword:active {
+  color: #00B;
+}
+
+.dontHaveAccountContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.footerText {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.footerLink {
+  margin-left: 5px;
+  color: #00F;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.footerLink:hover {
+  color: rgb(0, 0, 156);
+}
+
+.footerLink:active {
+  color: #00B;
+}
