@@ -13,7 +13,7 @@ type FieldType = {
 };
 
 const Login: React.FC = () => {
-  const { goToSignup, goToOverview } = useNavigation();
+  const { goToSignup, goToOverview, goToForgotPassword } = useNavigation();
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     if (!values) {
@@ -57,7 +57,16 @@ const Login: React.FC = () => {
 
         <div className={style.optionsContainer}>
           <Radio>Remember me</Radio>
-          <span className={style.forgotPassword}>Forgot password ?</span>
+          {/* <span className={style.forgotPassword}>Forgot password ?</span> */}
+          <span
+            className={style.footerLink}
+            onClick={goToForgotPassword}
+            role="link"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') goToForgotPassword(); }}
+          >
+            Forgot password ?
+          </span>
         </div>
 
 
