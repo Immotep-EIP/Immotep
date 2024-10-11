@@ -12,6 +12,10 @@ const useNavigation = () => {
     navigate(NavigationEnum.REGISTER)
   }
 
+  const goToForgotPassword = () => {
+    navigate(NavigationEnum.FORGOT_PASSWORD)
+  }
+
   const goToOverview = () => {
     navigate(NavigationEnum.OVERVIEW)
   }
@@ -35,6 +39,7 @@ const useNavigation = () => {
   return {
     goToLogin,
     goToSignup,
+    goToForgotPassword,
     goToOverview,
     goToRealProperty,
     goToMessages,

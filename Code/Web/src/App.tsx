@@ -1,20 +1,30 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import NavigationEnum from '@/enums/NavigationEnum';
 import MainLayout from '@/components/MainLayout/MainLayout.tsx';
+
+// ! AUTHENTIFICATION
 import Login from '@/views/Authentification/Login/Login.tsx';
 import Register from '@/views/Authentification/Register/Register.tsx';
+import ForgotPassword from '@/views/Authentification/ForgotPassword/ForgotPassword.tsx';
+
+// ! MAIN LAYOUT - SIDEBAR
 import OverviewContent from '@/views/Overview/Overview';
 import RealPropertyContent from '@/views/RealProperty/RealProperty';
 import MessagesContent from '@/views/Messages/Messages';
+
+// ! MAIN LAYOUT - HEADER
 import Settings from '@/views/Settings/Settings';
 import MyProfile from '@/views/MyProfile/MyProfile';
-import NavigationEnum from '@/enums/NavigationEnum';
+
 
 const App: React.FC = () => (
   <Router>
     <Routes>
       <Route path={NavigationEnum.LOGIN} element={<Login />} />
       <Route path={NavigationEnum.REGISTER} element={<Register />} />
+      <Route path={NavigationEnum.FORGOT_PASSWORD} element={<ForgotPassword />} />
 
       <Route element={<MainLayout />}>
         <Route path={NavigationEnum.OVERVIEW} element={<OverviewContent />} />
