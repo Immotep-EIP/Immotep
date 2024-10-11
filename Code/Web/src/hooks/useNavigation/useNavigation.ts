@@ -1,29 +1,35 @@
 import { useNavigate } from 'react-router-dom'
+import NavigationEnum from '@/enums/NavigationEnum'
 
 const useNavigation = () => {
   const navigate = useNavigate()
 
   const goToLogin = () => {
-    navigate('/login')
+    navigate(NavigationEnum.LOGIN)
   }
 
   const goToSignup = () => {
-    navigate('/register')
+    navigate(NavigationEnum.REGISTER)
   }
 
-  const goToHome = () => {
-    navigate('/')
+  const goToOverview = () => {
+    navigate(NavigationEnum.OVERVIEW)
   }
 
-  const goToDashboard = () => {
-    navigate('/dashboard')
+  const goToRealProperty = () => {
+    navigate(NavigationEnum.REAL_PROPERTY)
+  }
+
+  const goToMessages = () => {
+    navigate(NavigationEnum.MESSAGES)
   }
 
   return {
     goToLogin,
     goToSignup,
-    goToHome,
-    goToDashboard
+    goToOverview,
+    goToRealProperty,
+    goToMessages
   }
 }
 
