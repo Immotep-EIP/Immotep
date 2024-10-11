@@ -24,12 +24,22 @@ const useNavigation = () => {
     navigate(NavigationEnum.MESSAGES)
   }
 
+  const goToSettings = () => {
+    navigate(NavigationEnum.SETTINGS)
+  }
+
+  const goToMyProfile = () => {
+    navigate(NavigationEnum.MY_PROFILE)
+  }
+
   return {
     goToLogin,
     goToSignup,
     goToOverview,
     goToRealProperty,
-    goToMessages
+    goToMessages,
+    goToSettings,
+    goToMyProfile
   }
 }
 

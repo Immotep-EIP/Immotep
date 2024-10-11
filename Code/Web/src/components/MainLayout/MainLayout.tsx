@@ -8,6 +8,7 @@ import Immotep from '@/assets/icons/ImmotepLogo.svg';
 import Settings from '@/assets/icons/settings.png';
 import Me from '@/assets/icons/me.png';
 import NavigationEnum from '@/enums/NavigationEnum';
+import useNavigation from '@/hooks/useNavigation/useNavigation';
 import style from './MainLayout.module.css';
 
 const { Content, Sider } = Layout;
@@ -32,6 +33,7 @@ const MainLayout: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
+  const { goToSettings, goToMyProfile } = useNavigation();
 
   useEffect(() => {
     setSelectedTab(location.pathname);
@@ -45,11 +47,25 @@ const MainLayout: React.FC = () => {
           <span className={style.headerTitle}>Immotep</span>
         </div>
         <div className={style.rightPartHeader}>
-          <Button shape='circle' style={{ marginRight: 10 }} color="default" variant="solid">
-            <img src={Settings} alt="Settings" style={{ width: 18, height: 18 }} />
+          <Button
+            shape='circle'
+            style={{ marginRight: 10 }}
+            color="default"
+            variant="solid"
+            size='large'
+            onClick={() => goToSettings()}
+          >
+            <img src={Settings} alt="Settings" style={{ width: 20, height: 20 }} />
           </Button>
-          <Button shape='circle' style={{ marginRight: 10 }} color="default" variant="solid">
-            <img src={Me} alt="Me" style={{ width: 18, height: 18 }} />
+          <Button
+            shape='circle'
+            style={{ marginRight: 10 }}
+            color="default"
+            variant="solid"
+            size='large'
+            onClick={() => goToMyProfile()}
+          >
+            <img src={Me} alt="Me" style={{ width: 20, height: 20 }} />
           </Button>
         </div>
       </div>
