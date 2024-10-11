@@ -6,6 +6,8 @@ import Register from '@/views/Authentification/Register/Register.tsx';
 import OverviewContent from '@/views/Overview/Overview';
 import RealPropertyContent from '@/views/RealProperty/RealProperty';
 import MessagesContent from '@/views/Messages/Messages';
+import Settings from '@/views/Settings/Settings';
+import MyProfile from '@/views/MyProfile/MyProfile';
 import NavigationEnum from '@/enums/NavigationEnum';
 
 const App: React.FC = () => (
@@ -18,6 +20,8 @@ const App: React.FC = () => (
         <Route path={NavigationEnum.OVERVIEW} element={<OverviewContent />} />
         <Route path={NavigationEnum.REAL_PROPERTY} element={<RealPropertyContent />} />
         <Route path={NavigationEnum.MESSAGES} element={<MessagesContent />} />
+        <Route path={NavigationEnum.SETTINGS} element={<Settings />} />
+        <Route path={NavigationEnum.MY_PROFILE} element={<MyProfile />} />
       </Route>
     </Routes>
   </Router>
