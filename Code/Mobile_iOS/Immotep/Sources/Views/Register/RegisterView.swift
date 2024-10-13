@@ -23,48 +23,16 @@ struct RegisterView: View {
                         .padding(.bottom, 50)
 
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("Name*")
-                            .font(.system(size: 14))
-                            .frame(alignment: .leading)
-                        TextField("Enter your name", text: $viewModel.model.email)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .font(.system(size: 14))
-                            .padding(.bottom, 15)
-                            .keyboardType(.emailAddress)
 
-                        Text("First name*")
-                            .font(.system(size: 14))
-                            .frame(alignment: .leading)
-                        TextField("Enter your first name", text: $viewModel.model.email)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .font(.system(size: 14))
-                            .padding(.bottom, 15)
-                            .keyboardType(.emailAddress)
+                        CustomTextInput(title: "Name*", placeholder: "Enter your name", text: $viewModel.model.name, isSecure: false)
 
-                        Text("Email*")
-                            .font(.system(size: 14))
-                            .frame(alignment: .leading)
-                        TextField("Enter your email", text: $viewModel.model.email)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .font(.system(size: 14))
-                            .padding(.bottom, 15)
-                            .keyboardType(.emailAddress)
+                        CustomTextInput(title: "First name*", placeholder: "Enter your first name", text: $viewModel.model.firstName, isSecure: false)
 
-                        Text("Password*")
-                            .font(.system(size: 14))
-                            .frame(alignment: .leading)
-                        SecureField("Enter your password", text: $viewModel.model.password)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .font(.system(size: 14))
-                            .padding(.bottom, 15)
+                        CustomTextInput(title: "Email*", placeholder: "Enter your email", text: $viewModel.model.email, isSecure: false)
 
-                        Text("Password confirmation*")
-                            .font(.system(size: 14))
-                            .frame(alignment: .leading)
-                        SecureField("Enter your password confirmation", text: $viewModel.model.password)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .font(.system(size: 14))
-                            .padding(.bottom, 15)
+                        CustomTextInput(title: "Password*", placeholder: "Enter your password", text: $viewModel.model.password, isSecure: true)
+
+                        CustomTextInput(title: "Password confirmation*", placeholder: "Enter your password confirmation", text: $viewModel.model.passwordConfirmation, isSecure: true)
 
                         HStack {
                             Button(action: {
