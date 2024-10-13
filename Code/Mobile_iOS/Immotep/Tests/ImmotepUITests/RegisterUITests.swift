@@ -8,34 +8,33 @@
 import XCTest
 
 final class RegisterUITests: XCTestCase {
+    let app = XCUIApplication()
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
+        app.launch()
 
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        let buttonSignUp = app.buttons["Sign Up"]
+        if buttonSignUp.exists {
+            buttonSignUp.tap()
+        }
     }
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testRegisterViewFunctionality() throws {
-
-        let app = XCUIApplication()
-        app.launch()
-
-        let buttonSignUp = app.buttons["Sign Up"]
-        buttonSignUp.tap()
-
+    func testWelcomeTextExists() throws {
         let welcomeText = app.staticTexts["Create your account"]
         XCTAssertTrue(welcomeText.exists)
+    }
 
+    func testSecondaryWelcomeTextExists() throws {
         let secWelcomeText = app.staticTexts["Join Immotep for your peace of mind!"]
         XCTAssertTrue(secWelcomeText.exists)
+    }
 
+    func testRequiredFieldsExist() throws {
         let nameText = app.staticTexts["Name*"]
         let firstNameText = app.staticTexts["First name*"]
         let emailText = app.staticTexts["Email*"]
@@ -47,7 +46,9 @@ final class RegisterUITests: XCTestCase {
         XCTAssertTrue(emailText.exists)
         XCTAssertTrue(passwordSecure.exists)
         XCTAssertTrue(confirmPasswordSecure.exists)
+    }
 
+    func testTextFieldsExist() throws {
         let nameTextField = app.textFields["Enter your name"]
         let firstNameTextField = app.textFields["Enter your first name"]
         let emailTextField = app.textFields["Enter your email"]
@@ -59,6 +60,14 @@ final class RegisterUITests: XCTestCase {
         XCTAssertTrue(emailTextField.exists)
         XCTAssertTrue(passwordSecureField.exists)
         XCTAssertTrue(confirmPasswordSecureField.exists)
+    }
+
+    func testFillingInFields() throws {
+        let nameTextField = app.textFields["Enter your name"]
+        let firstNameTextField = app.textFields["Enter your first name"]
+        let emailTextField = app.textFields["Enter your email"]
+        let passwordSecureField = app.secureTextFields["Enter your password"]
+        let confirmPasswordSecureField = app.secureTextFields["Enter your password confirmation"]
 
         nameTextField.tap()
         nameTextField.typeText("testName")
@@ -67,7 +76,7 @@ final class RegisterUITests: XCTestCase {
         firstNameTextField.typeText("testFirstName")
 
         emailTextField.tap()
-        emailTextField.typeText("testEmail")
+        emailTextField.typeText("test@example.com")
 
         passwordSecureField.tap()
         passwordSecureField.typeText("testpassword")
@@ -75,13 +84,58 @@ final class RegisterUITests: XCTestCase {
         confirmPasswordSecureField.tap()
         confirmPasswordSecureField.typeText("testpassword")
 
-        // check if the two passwords are equals
+        // Check if the two passwords are equal
+    }
 
+    func testAgreementToggle() throws {
+        let agreementButton = app.buttons["I agree to all Term, Privacy Policy and Fees"]
+
+        XCTAssertTrue(agreementButton.exists)
+
+        agreementButton.tap()
+
+        let imageAgreementButtonChecked = app.images["checkmark.circle.fill"]
+        XCTAssertTrue(imageAgreementButtonChecked.exists)
+
+        agreementButton.tap()
+
+        let imageAgreementButtonUnchecked = app.images["circle"]
+        XCTAssertTrue(imageAgreementButtonUnchecked.exists)
+    }
+
+    func testSuccessfulRegistration() throws {
+        let nameTextField = app.textFields["Enter your name"]
+        let firstNameTextField = app.textFields["Enter your first name"]
+        let emailTextField = app.textFields["Enter your email"]
+        let passwordSecureField = app.secureTextFields["Enter your password"]
+        let confirmPasswordSecureField = app.secureTextFields["Enter your password confirmation"]
+        let signInButton = app.buttons["Sign In"]
+
+        nameTextField.tap()
+        nameTextField.typeText("testName")
+
+        firstNameTextField.tap()
+        firstNameTextField.typeText("testFirstName")
+
+        emailTextField.tap()
+        emailTextField.typeText("Test@example.com")
+
+        passwordSecureField.tap()
+        passwordSecureField.typeText("Password")
+
+        confirmPasswordSecureField.tap()
+        confirmPasswordSecureField.typeText("Password")
+
+        app.buttons["I agree to all Term, Privacy Policy and Fees"].tap()
+
+        signInButton.tap()
+
+        let successMessage = app.staticTexts["Registration successful!"]
+        XCTAssertTrue(successMessage.waitForExistence(timeout: 5))
     }
 
     func testLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
             measure(metrics: [XCTApplicationLaunchMetric()]) {
                 XCUIApplication().launch()
             }
