@@ -41,6 +41,8 @@
 				Tests/ImmotepTests/ImmotepTests.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITestsLaunchTests.swift,
+				Tests/ImmotepUITests/LoginUITests.swift,
+				Tests/ImmotepUITests/RegisterUITests.swift,
 			);
 			target = CA85272D2CA06B1E009FE366 /* Immotep */;
 		};
@@ -48,6 +50,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Tests/ImmotepTests/ImmotepTests.swift,
+				Tests/ImmotepUITests/LoginUITests.swift,
+				Tests/ImmotepUITests/RegisterUITests.swift,
 			);
 			target = CA85273D2CA06B1F009FE366 /* ImmotepTests */;
 		};
@@ -56,6 +60,8 @@
 			membershipExceptions = (
 				Tests/ImmotepUITests/ImmotepUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITestsLaunchTests.swift,
+				Tests/ImmotepUITests/LoginUITests.swift,
+				Tests/ImmotepUITests/RegisterUITests.swift,
 			);
 			target = CA8527472CA06B1F009FE366 /* ImmotepUITests */;
 		};
