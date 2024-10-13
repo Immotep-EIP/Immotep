@@ -1,5 +1,5 @@
 //
-//  LoginView.swift
+//  RegisterView.swift
 //  Immotep
 //
 //  Created by Liebenguth Alessio on 05/10/2024.
@@ -45,8 +45,14 @@ struct RegisterView: View {
                                 }
                                 .foregroundStyle(.black)
                             })
+                            .accessibilityIdentifier("AgreementButton")
                             Spacer()
                         }
+
+                        Text(viewModel.registerStatus)
+                            .font(.subheadline)
+                            .foregroundColor(viewModel.registerStatus.isEmpty ? .clear : .red) // Change la couleur selon le statut
+                            .padding(.top, 10)
 
                         Button(action: {
                             viewModel.signIn() // Not doing the job for now

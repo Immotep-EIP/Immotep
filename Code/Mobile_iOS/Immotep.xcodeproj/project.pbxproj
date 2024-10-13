@@ -39,6 +39,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Tests/ImmotepTests/ImmotepTests.swift,
+				Tests/ImmotepTests/LoginUnitTest.swift,
+				Tests/ImmotepTests/RegisterUnitTest.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITestsLaunchTests.swift,
 				Tests/ImmotepUITests/LoginUITests.swift,
@@ -50,8 +52,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Tests/ImmotepTests/ImmotepTests.swift,
-				Tests/ImmotepUITests/LoginUITests.swift,
-				Tests/ImmotepUITests/RegisterUITests.swift,
+				Tests/ImmotepTests/LoginUnitTest.swift,
+				Tests/ImmotepTests/RegisterUnitTest.swift,
 			);
 			target = CA85273D2CA06B1F009FE366 /* ImmotepTests */;
 		};
