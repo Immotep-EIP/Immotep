@@ -4,6 +4,24 @@ import (
 	"immotep/backend/prisma/db"
 )
 
+type UserRequest struct {
+	Email     string `json:"email" binding:"required,email"`
+	Firstname string `json:"firstname" binding:"required"`
+	Lastname  string `json:"lastname" binding:"required"`
+	Password  string `json:"password" binding:"required,min=8"`
+}
+
+func (u *UserRequest) ToUser() db.UserModel {
+	return db.UserModel{
+		InnerUser: db.InnerUser{
+			Email:     u.Email,
+			Firstname: u.Firstname,
+			Lastname:  u.Lastname,
+			Password:  u.Password,
+		},
+	}
+}
+
 type UserResponse struct {
 	ID        string   	  `json:"id"`
 	Email     string   	  `json:"email"`
