@@ -7,12 +7,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/maxzerbini/oauth"
 )
 
 // GetAllUsers godoc
 //
 //	@Summary		Get all users
 //	@Description	Get all users information
+//	@Tags			users
 //	@Produce		json
 //	@Success		200	{array}	models.UserResponse	"List of users"
 //	@Failure		500
@@ -27,6 +29,7 @@ func GetAllUsers(c *gin.Context) {
 //
 //	@Summary		Get user by ID
 //	@Description	Get user information by its ID
+//	@Tags			users
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		string				true	"User ID"
@@ -49,6 +52,7 @@ func GetUserByID(c *gin.Context) {
 //
 //	@Summary		Get user profile
 //	@Description	Get user profile information
+//	@Tags			users
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	models.UserResponse	"User data"
@@ -76,6 +80,7 @@ func GetProfile(c *gin.Context) {
 //
 //	@Summary		Create a new user
 //	@Description	Create a new user
+//	@Tags			auth
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		models.UserRequest	true	"User data"
@@ -105,4 +110,24 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, models.UserToResponse(*user))
+}
+
+// TokenAuth godoc
+//
+//	@Summary		Authenticate user
+//	@Description	Authenticate user with email and password
+//	@Tags			auth
+//	@Accept			x-www-form-urlencoded
+//	@Produce		json
+//	@Param			grant_type		formData	string		true	"password / refresh_token"
+//	@Param			username		formData	string		false	"User email"
+//	@Param			password		formData	string		false	"User password"
+//	@Param			refresh_token	formData	string		false	"Refresh token"
+//	@Success		200				{object}	oauth.Any	"Token data"
+//	@Failure		400				{object}	oauth.Any	"Invalid grant_type"
+//	@Failure		401				{object}	oauth.Any	"Unauthorized"
+//	@Failure		500
+//	@Router			/auth/token [post]
+func TokenAuth(s *oauth.OAuthBearerServer) func(c *gin.Context) {
+	return s.UserCredentials
 }

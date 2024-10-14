@@ -161,7 +161,7 @@ func TestCreateUserInvalidBody(t *testing.T) {
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	assert.NoError(t, err)
-	assert.Equal(t, utils.CannotDecodeUser, errorResponse.Code)
+	assert.Equal(t, utils.MissingFields, errorResponse.Code)
 }
 
 func TestCreateUserMissingFields(t *testing.T) {

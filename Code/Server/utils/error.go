@@ -17,6 +17,7 @@ const (
 	CannotHashPassword	ErrorCode = "cannot-hash-password"
 	EmailAlreadyExists	ErrorCode = "email-already-exists"
 	TestError			ErrorCode = "test-error"
+	TooManyRequests		ErrorCode = "too-many-requests"
 )
 
 type Error struct {

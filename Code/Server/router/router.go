@@ -35,23 +35,7 @@ func Routes() *gin.Engine {
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/register", controllers.CreateUser)
-
-			// TokenAuth godoc
-			//
-			//	@Summary		Authenticate user
-			//	@Description	Authenticate user with email and password
-			//	@Accept			json
-			//	@Produce		json
-			//	@Param			grant_type		formData	string			true	"password / refresh_token"
-			//	@Param			username		formData	string			false	"User email"
-			//	@Param			password		formData	string			false	"User password"
-			//	@Param			refresh_token	formData	string			false	"Refresh token"
-			//	@Success		200				{object}	TokenResponse	"Token data"
-			//	@Failure		400				{object}	Error			"Invalid grant_type"
-			//	@Failure		401				{object}	Error			"Unauthorized"
-			//	@Failure		500
-			//	@Router			/auth/token [post]
-			auth.POST("/token", bServer.UserCredentials)
+			auth.POST("/token", controllers.TokenAuth(bServer))
 		}
 
 		root := v1.Group("/")

@@ -68,6 +68,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/token": {
+            "post": {
+                "description": "Authenticate user with email and password",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Authenticate user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "password / refresh_token",
+                        "name": "grant_type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User email",
+                        "name": "username",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "User password",
+                        "name": "password",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Refresh token",
+                        "name": "refresh_token",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Token data",
+                        "schema": {}
+                    },
+                    "400": {
+                        "description": "Invalid grant_type",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/profile": {
             "get": {
                 "security": [
@@ -280,7 +339,8 @@ const docTemplate = `{
                 "missing-fields",
                 "cannot-hash-password",
                 "email-already-exists",
-                "test-error"
+                "test-error",
+                "too-many-requests"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -292,7 +352,8 @@ const docTemplate = `{
                 "MissingFields",
                 "CannotHashPassword",
                 "EmailAlreadyExists",
-                "TestError"
+                "TestError",
+                "TooManyRequests"
             ]
         }
     },
