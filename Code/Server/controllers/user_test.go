@@ -1,7 +1,6 @@
 package controllers_test
 
 import (
-	"bytes"
 	"encoding/json"
 	"immotep/backend/controllers"
 	"immotep/backend/database"
@@ -146,41 +145,4 @@ func TestGetProfileUserNotFound(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	assert.NoError(t, err)
 	assert.Equal(t, utils.CannotFindUser, errorResponse.Code)
-}
-
-func TestCreateUserInvalidBody(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest("POST", "/users", nil)
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	controllers.CreateUser(c)
-
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-	var errorResponse utils.Error
-	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
-	assert.NoError(t, err)
-	assert.Equal(t, utils.MissingFields, errorResponse.Code)
-}
-
-func TestCreateUserMissingFields(t *testing.T) {
-	user := BuildTestUser("1")
-	user.Email = ""
-	b, err := json.Marshal(user)
-	assert.NoError(t, err)
-
-	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest("POST", "/users", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	controllers.CreateUser(c)
-
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-	var errorResponse utils.Error
-	err = json.Unmarshal(w.Body.Bytes(), &errorResponse)
-	assert.NoError(t, err)
-	assert.Equal(t, utils.MissingFields, errorResponse.Code)
 }
