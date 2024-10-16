@@ -5,10 +5,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.immotep.ApiClient.ApiClient
+import com.example.immotep.components.decodeRetroFitMessagesToHttpCodes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import retrofit2.awaitResponse
 
 class AuthService(
     private val dataStore: DataStore<Preferences>,
@@ -22,19 +22,13 @@ class AuthService(
         username: String,
         password: String,
     ) {
-        println("before calling the api")
         val response =
             try {
                 ApiClient.apiService.login(username = username, password = password)
             } catch (e: Exception) {
-                println(e.message)
-                var code = -1
-                if (e.message != null) {
-                    code = this.decodeRetroFitMessagesToHttpCodes(e.message.toString())
-                }
-                throw Exception("Failed to login," + code.toString())
+                val code = decodeRetroFitMessagesToHttpCodes(e)
+                throw Exception("Failed to login,$code")
             }
-        println("access tok" + response.access_token)
         this.store(response.access_token, response.refresh_token)
     }
 
@@ -43,13 +37,14 @@ class AuthService(
         if (refreshToken == null) {
             throw IllegalArgumentException("no refresh token stored")
         }
-        val response = ApiClient.apiService.refreshToken(refreshToken = refreshToken).awaitResponse()
-        if (!response.isSuccessful) {
-            throw Exception("Failed to refresh token")
+        try {
+            val res = ApiClient.apiService.refreshToken(refreshToken = refreshToken)
+            this.store(res.access_token, res.refresh_token)
+            return res.access_token
+        } catch (e: Exception) {
+            val code = decodeRetroFitMessagesToHttpCodes(e)
+            throw Exception("Failed to refresh,$code")
         }
-        val body = response.body() ?: throw Exception("No body in response")
-        this.store(body.access_token, body.refresh_token)
-        return body.access_token
     }
 
     private suspend fun store(
@@ -63,25 +58,6 @@ class AuthService(
             dataStore.edit {
                 it[REFRESH_TOKEN] = refreshToken
             }
-        }
-    }
-
-    private fun decodeRetroFitMessagesToHttpCodes(msg: String): Int {
-        if (msg.startsWith("Failed to connect")) {
-            return 500
-        }
-        if (!msg.startsWith("HTTP ")) {
-            return -1
-        }
-        val splitedMessage = msg.split(' ')
-        if (splitedMessage.size < 3) {
-            return -1
-        }
-        try {
-            val code = splitedMessage[1].toInt()
-            return code
-        } catch (e: Exception) {
-            return -1
         }
     }
 

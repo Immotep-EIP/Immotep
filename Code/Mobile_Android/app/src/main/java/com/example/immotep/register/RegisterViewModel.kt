@@ -1,9 +1,15 @@
 package com.example.immotep.register
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.immotep.ApiClient.ApiClient
+import com.example.immotep.ApiClient.RegistrationInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import androidx.navigation.NavController
+import com.example.immotep.components.decodeRetroFitMessagesToHttpCodes
 
 data class RegisterForm(
     val lastName: String = "",
@@ -24,6 +30,7 @@ data class RegisterFormError(
     var password: Boolean = false,
     var confirmPassword: Boolean = false,
     var agreeToTerms: Boolean = false,
+    var apiError: Int? = null,
 )
 
 class RegisterViewModel : ViewModel() {
@@ -59,9 +66,9 @@ class RegisterViewModel : ViewModel() {
     }
 
     private fun confirmedRegister(): Boolean =
-        _registerForm.value.password == _registerConfirm.value.password && _registerConfirm.value.agreeToTerms
+        _registerForm.value.password == _registerConfirm.value.password
 
-    fun onSubmit(): Boolean {
+    fun onSubmit(navController: NavController) {
         val error = RegisterFormError()
         var noError = true
         if (_registerForm.value.lastName.length <= 2 || _registerForm.value.lastName.length >= 30) {
@@ -87,11 +94,31 @@ class RegisterViewModel : ViewModel() {
             error.confirmPassword = true
             noError = false
         }
-        if (!error.agreeToTerms) {
+        if (!_registerConfirm.value.agreeToTerms) {
             error.agreeToTerms = true
             noError = false
         }
         _registerFormError.value = error
-        return noError
+        if (!noError) {
+            return
+        }
+        this.registerToApi(navController)
+    }
+
+    private fun registerToApi(navController: NavController) {
+        viewModelScope.launch {
+            try {
+                ApiClient.apiService.register(RegistrationInput(
+                    email = _registerForm.value.email,
+                    password = _registerForm.value.password,
+                    firstName = _registerForm.value.firstName,
+                    lastName = _registerForm.value.lastName)
+                )
+                navController.navigate("login")
+                return@launch
+            } catch (err: Exception) {
+                _registerFormError.value = _registerFormError.value.copy(apiError = decodeRetroFitMessagesToHttpCodes(err))
+            }
+        }
     }
 }

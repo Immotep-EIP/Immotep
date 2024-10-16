@@ -17,9 +17,10 @@ fun TopText(
     title: String,
     subtitle: String,
     limitMarginTop: Boolean = false,
+    noMarginTop: Boolean = false,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(top = if (limitMarginTop) 25.dp else 90.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = if (noMarginTop) 0.dp else if (limitMarginTop) 15.dp else 90.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(title, fontSize = 30.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)

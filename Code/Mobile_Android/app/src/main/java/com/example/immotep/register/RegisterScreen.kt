@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -26,9 +28,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.immotep.R
 import com.example.immotep.components.CheckBoxWithLabel
+import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.Header
 import com.example.immotep.components.TopText
 import com.example.immotep.ui.components.OutlinedTextField
+import com.example.immotep.ui.components.PasswordInput
 
 @Composable
 fun RegisterScreen(
@@ -40,9 +44,17 @@ fun RegisterScreen(
     val errors = viewModel.regFormError.collectAsState()
     Column(modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize().padding(10.dp)) {
         Header()
-        TopText(stringResource(R.string.create_account), stringResource(R.string.create_account_subtitle), limitMarginTop = true)
+        TopText(stringResource(R.string.create_account), stringResource(R.string.create_account_subtitle),
+            limitMarginTop = true,
+            noMarginTop = errors.value.apiError != null
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        ErrorAlert(errors.value.apiError, true)
+        Spacer(modifier = Modifier.height(
+            if (errors.value.apiError != null) 15.dp else 30.dp
+        ))
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = 50.dp, start = 20.dp, end = 20.dp),
+            modifier = Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             OutlinedTextField(
@@ -67,23 +79,21 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 errorMessage = if (errors.value.lastName) stringResource(R.string.last_name_error) else null,
             )
-            OutlinedTextField(
+            PasswordInput(
                 label = { Text(stringResource(R.string.your_password)) },
                 value = registerForm.value.password,
                 onValueChange = { value -> viewModel.setPassword(value) },
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = PasswordVisualTransformation(),
-                errorMessage = if (errors.value.password) stringResource(R.string.password_error) else null,
+                errorMessage = if (errors.value.password) stringResource(R.string.register_password_error) else null,
+                iconButtonTestId = "registerTogglePasswordVisibility",
             )
-            OutlinedTextField(
+            PasswordInput(
                 label = { Text(stringResource(R.string.password_confirm)) },
                 value = registerConfirm.value.password,
                 onValueChange = { value -> viewModel.setConfirmPassword(value) },
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = PasswordVisualTransformation(),
                 errorMessage = if (errors.value.confirmPassword) stringResource(R.string.password_confirm_error) else null,
+                iconButtonTestId = "registerToggleConfirmPasswordVisibility",
             )
             CheckBoxWithLabel(
                 label = stringResource(R.string.agree_terms),
@@ -92,9 +102,7 @@ fun RegisterScreen(
                 errorMessage = if (errors.value.agreeToTerms) stringResource(R.string.agree_terms_error) else null,
             )
             Button(onClick = {
-                if (viewModel.onSubmit()) {
-                    navController.navigate("login")
-                }
+                viewModel.onSubmit(navController)
             }) {
                 Text(stringResource(R.string.sign_up))
             }

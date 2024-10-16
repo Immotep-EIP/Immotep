@@ -50,16 +50,39 @@ fun ErrorAlert(
 
     Row(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(
-                    MaterialTheme.colorScheme.errorContainer,
-                    shape = RoundedCornerShape(10.dp),
-                ).padding(10.dp),
+        Modifier
+            .fillMaxWidth()
+            .background(
+                MaterialTheme.colorScheme.errorContainer,
+                shape = RoundedCornerShape(10.dp),
+            ).padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(Release_alert, contentDescription = "Error alert")
         Spacer(modifier = Modifier.width(10.dp))
         Text(errorText, color = Color.White)
+    }
+}
+
+fun decodeRetroFitMessagesToHttpCodes(e: Exception): Int {
+    if (e.message == null) {
+        return -1
+    }
+    val msg = e.message.toString()
+    if (msg.startsWith("Failed to connect")) {
+        return 500
+    }
+    if (!msg.startsWith("HTTP ")) {
+        return -1
+    }
+    val splitedMessage = msg.split(' ')
+    if (splitedMessage.size < 3) {
+        return -1
+    }
+    try {
+        val code = splitedMessage[1].toInt()
+        return code
+    } catch (e: Exception) {
+        return -1
     }
 }
