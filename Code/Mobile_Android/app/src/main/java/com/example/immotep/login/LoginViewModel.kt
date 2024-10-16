@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.immotep.AuthService.AuthService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,12 +46,12 @@ class LoginViewModel : ViewModel() {
             )
     }
 
-    fun login(context: Context) {
+    fun login(navController: NavController) {
         var noError = true
         _errors.value = _errors.value.copy(email = false, password = false, apiError = null)
         if (!android.util.Patterns.EMAIL_ADDRESS
-                .matcher(_emailAndPassword.value.email)
-                .matches()
+            .matcher(_emailAndPassword.value.email)
+            .matches()
         ) {
             _errors.value = _errors.value.copy(email = true)
             noError = false
@@ -64,7 +65,8 @@ class LoginViewModel : ViewModel() {
         }
         viewModelScope.launch {
             try {
-                AuthService(context.dataStore).onLogin(_emailAndPassword.value.email, _emailAndPassword.value.password)
+                AuthService(navController.context.dataStore).onLogin(_emailAndPassword.value.email, _emailAndPassword.value.password)
+                navController.navigate("dashboard")
                 return@launch
             } catch (e: Exception) {
                 val messageAndCode = e.message?.split(",")

@@ -69,18 +69,45 @@ class LoginInstrumentedTest {
 
     @Test
     fun canSetValueToLoginScreenInputs() {
-        composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("test@gmail.com")
-        composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test123")
+        composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
+        composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test99")
         composeTestRule.onNodeWithTag("togglePasswordVisibility").performClick()
-        composeTestRule.onNodeWithTag("loginEmailInput").assert(hasText("test@gmail.com", ignoreCase = true))
-        composeTestRule.onNodeWithTag("loginPasswordInput").assert(hasText("test123", ignoreCase = true))
+        composeTestRule.onNodeWithTag("loginEmailInput").assert(hasText("robin.denni@epitech.eu", ignoreCase = true))
+        composeTestRule.onNodeWithTag("loginPasswordInput").assert(hasText("test99", ignoreCase = true))
     }
 
     @Test
-    fun canGoToDashboard() {
-        composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("test@gmail.com")
-        composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test123")
+    fun handlesErrorOnInvalidEmail() {
+        composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni")
+        composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test99")
         composeTestRule.onNodeWithTag("loginButton").performClick()
+        composeTestRule.onNodeWithText(res.getString(R.string.email_error)).assertIsDisplayed()
+    }
+
+    @Test
+    fun handlesErrorOnInvalidPassword() {
+        composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("test@gmail.com")
+        composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("te")
+        composeTestRule.onNodeWithTag("loginButton").performClick()
+        composeTestRule.onNodeWithText(res.getString(R.string.password_error)).assertIsDisplayed()
+    }
+
+    /* for this test you need to be connected to the internet, to have a server running and to register a user with the right email and password */
+    @Test
+    fun canGoToDashboard() {
+        composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
+        composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test99")
+        composeTestRule.onNodeWithTag("loginButton").performClick()
+        Thread.sleep(5000)
         composeTestRule.onNodeWithTag("dashboardScreen").assertIsDisplayed()
+    }
+
+    @Test
+    fun triggersErrorOnUnknownUser() {
+        composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("error@gmail.com")
+        composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("testError")
+        composeTestRule.onNodeWithTag("loginButton").performClick()
+        Thread.sleep(2000)
+        composeTestRule.onNodeWithTag("errorAlert").assertIsDisplayed()
     }
 }

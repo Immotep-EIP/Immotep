@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.immotep.R
@@ -55,7 +56,9 @@ fun ErrorAlert(
             .background(
                 MaterialTheme.colorScheme.errorContainer,
                 shape = RoundedCornerShape(10.dp),
-            ).padding(10.dp),
+            )
+            .padding(10.dp)
+            .testTag("errorAlert"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(Release_alert, contentDescription = "Error alert")

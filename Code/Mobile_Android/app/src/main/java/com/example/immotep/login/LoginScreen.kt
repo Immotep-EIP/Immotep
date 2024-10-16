@@ -74,7 +74,7 @@ fun LoginScreen(
                     viewModel.updateEmailAndPassword(null, value, null)
                 },
                 modifier = Modifier.padding(top = 10.dp).fillMaxWidth().testTag("loginPasswordInput"),
-                errorMessage = if (errors.value.email) stringResource(R.string.password_error) else null,
+                errorMessage = if (errors.value.password) stringResource(R.string.password_error) else null,
                 iconButtonTestId = "togglePasswordVisibility",
             )
             Row(
@@ -102,7 +102,7 @@ fun LoginScreen(
                 )
             }
             Button(
-                onClick = { viewModel.login(context = navController.context) },
+                onClick = { viewModel.login(navController) },
                 modifier = Modifier.testTag("loginButton"),
             ) { Text(stringResource(R.string.login_button)) }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
