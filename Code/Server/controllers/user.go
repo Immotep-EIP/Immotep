@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"immotep/backend/models"
-	"immotep/backend/prisma/db"
 	userservice "immotep/backend/services"
 	"immotep/backend/utils"
 	"net/http"
@@ -10,13 +9,37 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetAllUsers godoc
+//
+//	@Summary		Get all users
+//	@Description	Get all users information
+//	@Tags			users
+//	@Produce		json
+//	@Success		200	{array}	models.UserResponse	"List of users"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/users [get]
 func GetAllUsers(c *gin.Context) {
 	allUsers := userservice.GetAll()
 	c.JSON(http.StatusOK, utils.Map(allUsers, models.UserToResponse))
 }
 
+// GetUserByID godoc
+//
+//	@Summary		Get user by ID
+//	@Description	Get user information by its ID
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		string				true	"User ID"
+//	@Success		200	{object}	models.UserResponse	"User data"
+//	@Failure		401	{object}	utils.Error			"Unauthorized"
+//	@Failure		404	{object}	utils.Error			"Cannot find user"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/users/{id} [get]
 func GetUserByID(c *gin.Context) {
-	user := userservice.GetByID(c.Params.ByName("id"))
+	user := userservice.GetByID(c.Param("id"))
 	if user == nil {
 		utils.SendError(c, http.StatusNotFound, utils.CannotFindUser, nil)
 		return
@@ -24,6 +47,19 @@ func GetUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, models.UserToResponse(*user))
 }
 
+// GetProfile godoc
+//
+//	@Summary		Get user profile
+//	@Description	Get user profile information
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.UserResponse	"User data"
+//	@Failure		401	{object}	utils.Error			"Unauthorized"
+//	@Failure		404	{object}	utils.Error			"Cannot find user"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/profile [get]
 func GetProfile(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	if claims == nil {
@@ -37,31 +73,4 @@ func GetProfile(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, models.UserToResponse(*user))
-}
-
-func CreateUser(c *gin.Context) {
-	var userResp db.UserModel
-	err := c.ShouldBindBodyWithJSON(&userResp)
-	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.CannotDecodeUser, err)
-		return
-	}
-
-	if userResp.Email == "" || userResp.Firstname == "" || userResp.Lastname == "" || userResp.Password == "" {
-		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, nil)
-		return
-	}
-
-	userResp.Password, err = utils.HashPassword(userResp.Password)
-	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, utils.CannotHashPassword, err)
-		return
-	}
-
-	user := userservice.Create(userResp)
-	if user == nil {
-		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, err)
-		return
-	}
-	c.JSON(http.StatusCreated, models.UserToResponse(*user))
 }

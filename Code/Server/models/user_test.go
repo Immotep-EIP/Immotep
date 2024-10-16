@@ -8,6 +8,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestUserRequest(t *testing.T) {
+	userRequest := models.UserRequest{
+		Email:     "test1@example.com",
+		Firstname: "Test",
+		Lastname:  "User",
+		Password:  "Password123",
+	}
+
+	t.Run("ToUser", func(t *testing.T) {
+		user := userRequest.ToUser()
+
+		assert.Equal(t, userRequest.Email, user.Email)
+		assert.Equal(t, userRequest.Firstname, user.Firstname)
+		assert.Equal(t, userRequest.Lastname, user.Lastname)
+		assert.Equal(t, userRequest.Password, user.Password)
+	})
+}
+
 func TestUserResponse(t *testing.T) {
 	user := db.UserModel{
 		InnerUser: db.InnerUser{
@@ -33,7 +51,7 @@ func TestUserResponse(t *testing.T) {
 	})
 
 	t.Run("UserToResponse", func(t *testing.T) {
-		userResponse := models.UserToResponse(user)	
+		userResponse := models.UserToResponse(user)
 
 		assert.Equal(t, user.ID, userResponse.ID)
 		assert.Equal(t, user.Email, userResponse.Email)
