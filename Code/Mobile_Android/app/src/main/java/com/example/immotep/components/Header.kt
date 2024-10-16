@@ -18,7 +18,7 @@ import com.example.immotep.R
 
 @Composable
 fun Header() {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag("header")) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag("header").padding(top = 10.dp)) {
         Image(
             painter = painterResource(id = R.drawable.immotep_png_logo),
             contentDescription = stringResource(id = R.string.immotep_logo_desc),

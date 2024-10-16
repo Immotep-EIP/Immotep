@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -15,14 +17,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-/* ktlint-disable no-wildcard-imports */
-import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -37,8 +38,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.immotep.R
 import com.example.immotep.components.CheckBoxWithLabel
+import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.Header
 import com.example.immotep.components.TopText
+import com.example.immotep.ui.components.OutlinedTextField
 
 @Composable
 fun LoginScreen(
@@ -46,15 +49,24 @@ fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
 ) {
     val emailAndPassword = viewModel.emailAndPassword.collectAsState()
+    val errors = viewModel.errors.collectAsState()
     var showPassword by rememberSaveable { mutableStateOf(false) }
+    val columnPaddingApiError = if (errors.value.apiError == null) 40.dp else 20.dp
 
     Column(modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize().padding(10.dp)) {
         Header()
         TopText(stringResource(R.string.login_hello), stringResource(R.string.login_details))
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = 50.dp, start = 20.dp, end = 20.dp),
+            modifier =
+            Modifier.fillMaxSize().padding(
+                top = columnPaddingApiError,
+                start = 20.dp,
+                end = 20.dp,
+            ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            ErrorAlert(errors.value.apiError, true)
+            Spacer(modifier = Modifier.height(10.dp))
             OutlinedTextField(
                 label = { Text(stringResource(R.string.your_email)) },
                 value = emailAndPassword.value.email,
@@ -63,6 +75,7 @@ fun LoginScreen(
                     viewModel.updateEmailAndPassword(value, null, null)
                 },
                 modifier = Modifier.fillMaxWidth().testTag("loginEmailInput"),
+                errorMessage = if (errors.value.email) stringResource(R.string.email_error) else null,
             )
             OutlinedTextField(
                 label = { Text(stringResource(R.string.your_password)) },
@@ -79,11 +92,12 @@ fun LoginScreen(
                             showPassword = !showPassword
                         },
                         modifier =
-                        Modifier.testTag("togglePasswordVisibility")
+                        Modifier.testTag("togglePasswordVisibility"),
                     ) {
                         Icon(Icons.Outlined.Lock, contentDescription = "Toggle password visibility")
                     }
                 },
+                errorMessage = if (errors.value.email) stringResource(R.string.password_error) else null,
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -110,7 +124,7 @@ fun LoginScreen(
                 )
             }
             Button(
-                onClick = { navController.navigate("dashboard") },
+                onClick = { viewModel.login(context = navController.context) },
                 modifier = Modifier.testTag("loginButton"),
             ) { Text(stringResource(R.string.login_button)) }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {

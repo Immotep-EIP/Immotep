@@ -1,16 +1,16 @@
 package com.example.immotep.login
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.immotep.ApiClient.ApiClient
-import com.example.immotep.ApiClient.Post
+import com.example.immotep.AuthService.AuthService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 data class LoginState(
     val email: String = "",
@@ -18,17 +18,19 @@ data class LoginState(
     val keepSigned: Boolean = false,
 )
 
-class LoginViewModel : ViewModel() {
-    private val _postState = MutableStateFlow<Post?>(null)
-    private val _emailAndPassword = MutableStateFlow(LoginState())
-    private val _showPassword = MutableStateFlow(false)
-    val post: StateFlow<Post?> = _postState.asStateFlow()
-    val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
-    val showPassword: StateFlow<Boolean> = _showPassword.asStateFlow()
+data class LoginErrorState(
+    val email: Boolean = false,
+    val password: Boolean = false,
+    val apiError: Int? = null,
+)
 
-    fun changePasswordVisibility() {
-        _showPassword.value = !_showPassword.value
-    }
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tokens")
+
+class LoginViewModel : ViewModel() {
+    private val _emailAndPassword = MutableStateFlow(LoginState())
+    private val _errors = MutableStateFlow(LoginErrorState())
+    val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
+    val errors: StateFlow<LoginErrorState> = _errors.asStateFlow()
 
     fun updateEmailAndPassword(
         email: String?,
@@ -43,34 +45,35 @@ class LoginViewModel : ViewModel() {
             )
     }
 
-    init {
-        _postState.value = null
-        viewModelScope.launch {
-            fetchPost()
+    fun login(context: Context) {
+        var noError = true
+        _errors.value = _errors.value.copy(email = false, password = false, apiError = null)
+        if (!android.util.Patterns.EMAIL_ADDRESS
+                .matcher(_emailAndPassword.value.email)
+                .matches()
+        ) {
+            _errors.value = _errors.value.copy(email = true)
+            noError = false
         }
-    }
-
-    private fun fetchPost() {
-        ApiClient.apiService.getPostById(1).enqueue(
-            object : Callback<Post> {
-                override fun onResponse(
-                    call: Call<Post>,
-                    response: Response<Post>,
-                ) {
-                    if (response.isSuccessful) {
-                        _postState.value = response.body()
-                    } else {
-                        // Handle error
-                    }
+        if (_emailAndPassword.value.password.length < 3) {
+            _errors.value = _errors.value.copy(password = true)
+            noError = false
+        }
+        if (!noError) {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                AuthService(context.dataStore).onLogin(_emailAndPassword.value.email, _emailAndPassword.value.password)
+                return@launch
+            } catch (e: Exception) {
+                val messageAndCode = e.message?.split(",")
+                if (messageAndCode != null && messageAndCode.size == 2) {
+                    val code = messageAndCode[1].toInt()
+                    _errors.value = _errors.value.copy(apiError = code)
                 }
-
-                override fun onFailure(
-                    call: Call<Post>,
-                    t: Throwable,
-                ) {
-                    // Handle error
-                }
-            },
-        )
+                return@launch
+            }
+        }
     }
 }

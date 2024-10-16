@@ -24,4 +24,23 @@
     <string name="password_error">Incorrect password</string>
     <string name="password_confirm_error">Incorrect password confirmation</string>
     <string name="agree_terms_error">You must agree to all Term, Privacy and Fees</string>
+    <string name="create_account_error">Error while creating account</string>
+    <string name="bad_request">Error, you are not allowed to do that</string>
+    <string name="unauthorized">Error, you are not authorized to do that</string>
+    <string name="forbidden">Error, you are not allowed to do that</string>
+    <string name="not_found">Error, content not found, please retry later</string>
+    <string name="method_not_allowed">Error, method not allowed</string>
+    <string name="not_acceptable">Error, response not acceptable</string>
+    <string name="conflict">Error, conflict with server, please retry later</string>
+    <string name="gone">Error, content not found, please retry later</string>
+    <string name="request_entity_too_large">Error, request entity too large, try to put smaller content</string>
+    <string name="unsupported_media_type">Error, unsupported media type, try another one</string>
+    <string name="too_many_requests">Error, too many requests, please retry later</string>
+    <string name="internal_server_error">Error, server is not responding, please retry later</string>
+    <string name="not_implemented">Error, not implemented, please retry later or contact an admin</string>
+    <string name="bad_gateway">Error, bad gateway, please retry later</string>
+    <string name="service_unavailable">Error, unable to contact the server, please retry later or from another place</string>
+    <string name="gateway_timeout">Error, unable to contact the server, please retry later or from another place</string>
+    <string name="unknown_error">Error, unknown error, please retry later or ask an admin</string>
+    <string name="login_error">Email or password incorrect</string>
 </resources>
