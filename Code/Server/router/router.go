@@ -8,6 +8,7 @@ import (
 	"immotep/backend/controllers"
 	_ "immotep/backend/docs"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/maxzerbini/oauth"
 	swaggerFiles "github.com/swaggo/files"
@@ -31,6 +32,15 @@ func Routes() *gin.Engine {
 	}
 
 	r := gin.New()
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(origin string) bool { return origin == "https://github.com" },
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Accept", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length", "Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), rate)))

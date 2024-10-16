@@ -35,5 +35,8 @@ func main() {
 	db := database.ConnectDB()
 	defer db.Client.Disconnect()
 
-	router.Routes().Run(":" + os.Getenv("PORT"))
+	err = router.Routes().Run(":" + os.Getenv("PORT"))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
