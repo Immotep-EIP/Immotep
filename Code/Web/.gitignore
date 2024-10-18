@@ -9,3 +9,4 @@ tmp/
 .lintFiles/
 build/
 coverage/
+.env
