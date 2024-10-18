@@ -33,7 +33,7 @@ func Routes() *gin.Engine {
 
 	r := gin.New()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://*", "http://*"},
+		AllowOrigins:     []string{"https://*", "http://*", "http://localhost:4242"},
 		// AllowOriginFunc:  func(origin string) bool { return origin == "https://github.com" },
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Accept", "Authorization", "Content-Type"},
