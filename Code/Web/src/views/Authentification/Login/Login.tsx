@@ -1,29 +1,37 @@
-import React from "react";
-import { Button, Input, Form, Radio, message } from "antd";
-import type { FormProps } from 'antd';
-import AuthentificationPage from "@/components/AuthentificationPage/AuthentificationPage";
-import useNavigation from '@/hooks/useNavigation/useNavigation'
-import '@/App.css';
-import style from './Login.module.css';
+import React from 'react'
+import { Button, Input, Form, message, Checkbox } from 'antd'
+import type { FormProps } from 'antd'
 
-type FieldType = {
-  email?: string;
-  password?: string;
-  remember?: string;
-};
+import AuthentificationPage from '@/components/AuthentificationPage/AuthentificationPage'
+import useNavigation from '@/hooks/useNavigation/useNavigation'
+import '@/App.css'
+import { useAuth } from '@/context/authContext'
+import { UserToken } from '@/interfaces/User/User'
+import style from './Login.module.css'
 
 const Login: React.FC = () => {
-  const { goToSignup, goToOverview, goToForgotPassword } = useNavigation();
+  const { goToSignup, goToOverview, goToForgotPassword } = useNavigation()
+  const { login } = useAuth()
 
-  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    if (!values) {
-      goToOverview();
+  const onFinish: FormProps<UserToken>['onFinish'] = async values => {
+    try {
+      const loginValues = {
+        ...values,
+        grant_type: 'password'
+      }
+      loginValues.grant_type = 'password'
+      await login(loginValues)
+      message.success('Login successful')
+      goToOverview()
+    } catch (error: any) {
+      if (error.response.status === 401)
+        message.error('Login failed, please try again !')
     }
-  };
+  }
 
-  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = () => {
-    message.error('An error occured, please try again');
-  };
+  const onFinishFailed: FormProps<UserToken>['onFinishFailed'] = () => {
+    message.error('An error occured, please try again')
+  }
 
   return (
     <AuthentificationPage
@@ -32,7 +40,7 @@ const Login: React.FC = () => {
     >
       <Form
         name="basic"
-        initialValues={{ remember: true }}
+        initialValues={{ rememberMe: false }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
@@ -41,10 +49,14 @@ const Login: React.FC = () => {
       >
         <Form.Item
           label="Email"
-          name="email"
+          name="username"
           rules={[{ required: true, message: 'Please input your email!' }]}
         >
-          <Input className='input' size="large" placeholder="Enter your email" />
+          <Input
+            className="input"
+            size="large"
+            placeholder="Enter your email"
+          />
         </Form.Item>
 
         <Form.Item
@@ -52,29 +64,34 @@ const Login: React.FC = () => {
           name="password"
           rules={[{ required: true, message: 'Please input your password!' }]}
         >
-          <Input.Password className='input' size="large" placeholder="Enter your password" />
+          <Input.Password
+            className="input"
+            size="large"
+            placeholder="Enter your password"
+          />
         </Form.Item>
 
         <div className={style.optionsContainer}>
-          <Radio>Remember me</Radio>
-          {/* <span className={style.forgotPassword}>Forgot password ?</span> */}
+          <Form.Item name="rememberMe" valuePropName="checked">
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
           <span
             className={style.footerLink}
             onClick={goToForgotPassword}
             role="link"
             tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter') goToForgotPassword(); }}
+            onKeyDown={e => {
+              if (e.key === 'Enter') goToForgotPassword()
+            }}
           >
             Forgot password ?
           </span>
         </div>
 
-
         <Form.Item>
           <Button
             className="submitButton"
-            // htmlType="submit"
-            onClick={goToOverview}
+            htmlType="submit"
             size="large"
             color="default"
             variant="solid"
@@ -83,22 +100,23 @@ const Login: React.FC = () => {
           </Button>
         </Form.Item>
 
-      <div className={style.dontHaveAccountContainer}>
-        <span className={style.footerText}>Don&apos;t have an account?</span>
-        <span
-          className={style.footerLink}
-          onClick={goToSignup}
-          role="link"
-          tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter') goToSignup(); }}
-        >
-          Sign up
-        </span>
-      </div>
-
+        <div className={style.dontHaveAccountContainer}>
+          <span className={style.footerText}>Don&apos;t have an account?</span>
+          <span
+            className={style.footerLink}
+            onClick={goToSignup}
+            role="link"
+            tabIndex={0}
+            onKeyDown={e => {
+              if (e.key === 'Enter') goToSignup()
+            }}
+          >
+            Sign up
+          </span>
+        </div>
       </Form>
     </AuthentificationPage>
   )
-};
+}
 
-export default Login;
+export default Login

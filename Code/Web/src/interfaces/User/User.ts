@@ -11,6 +11,7 @@ export interface UserToken {
   password?: string
   grant_type: string
   refresh_token?: string
+  rememberMe?: boolean
 }
 
 export interface TokenResponse {
