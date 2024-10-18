@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { UserToken, TokenResponse } from '@/interfaces/User/User'
 import { loginApi } from '@/services/api/Authentification/AuthApi'
 import { saveData, deleteData } from '@/utils/localStorage'
+import NavigationEnum from '@/enums/NavigationEnum'
 
 interface AuthContextType {
   isAuthenticated: boolean
@@ -30,11 +31,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('access_token')
-    const refreshToken = localStorage.getItem('refresh_token')
+    const accessToken =
+      sessionStorage.getItem('access_token') ||
+      localStorage.getItem('access_token')
+
+    const refreshToken =
+      sessionStorage.getItem('refresh_token') ||
+      localStorage.getItem('refresh_token')
 
     if (accessToken && refreshToken) setIsAuthenticated(true)
-    else setIsAuthenticated(false)
+    else {
+      setIsAuthenticated(false)
+      deleteData()
+    }
     setLoading(false)
   }, [])
 
@@ -45,7 +54,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       saveData(
         response.access_token,
         response.refresh_token,
-        response.expires_in
+        response.expires_in,
+        userInfo.rememberMe
       )
       return response
     } catch (error) {
@@ -59,7 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setIsAuthenticated(false)
     deleteData()
-    navigate('/')
+    navigate(NavigationEnum.LOGIN)
   }
 
   const value = useMemo(

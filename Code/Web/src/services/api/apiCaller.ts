@@ -3,6 +3,7 @@ import axios from 'axios'
 import { loginApi } from '@/services/api/Authentification/AuthApi'
 import { saveData, deleteData } from '@/utils/localStorage'
 import AuthEnum from '@/enums/AuthEnum'
+import NavigationEnum from '@/enums/NavigationEnum'
 import { ApiCallerParams } from '@/interfaces/Api/callApi'
 
 const API_BASE_URL =
@@ -16,7 +17,9 @@ api.interceptors.request.use(
   config => {
     const modifiedConfig = { ...config }
 
-    const accessToken = localStorage.getItem('access_token')
+    const accessToken =
+      localStorage.getItem('access_token') ||
+      sessionStorage.getItem('access_token')
     if (accessToken) {
       modifiedConfig.headers = {
         ...modifiedConfig.headers,
@@ -41,8 +44,12 @@ api.interceptors.response.use(
     ) {
       // eslint-disable-next-line no-underscore-dangle
       originalRequest._retry = true
-      const refreshToken = localStorage.getItem('refresh_token')
-      const tokenExpiry = localStorage.getItem('expires_in')
+      const refreshToken =
+        localStorage.getItem('refresh_token') ||
+        sessionStorage.getItem('refresh_token')
+      const tokenExpiry =
+        localStorage.getItem('expires_in') ||
+        sessionStorage.getItem('expires_in')
 
       const now = Date.now()
       if (refreshToken && tokenExpiry) {
@@ -58,6 +65,7 @@ api.interceptors.response.use(
             const newRefreshToken = response.refresh_token
             const newExpiresIn = response.expires_in
 
+            deleteData()
             saveData(newAccessToken, newRefreshToken, newExpiresIn)
 
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
@@ -66,12 +74,12 @@ api.interceptors.response.use(
           } catch (refreshError) {
             console.error('Refresh token error:', refreshError)
             deleteData()
-            window.location.href = '/'
+            window.location.href = NavigationEnum.LOGIN
             return Promise.reject(refreshError)
           }
         }
         deleteData()
-        window.location.href = '/'
+        window.location.href = NavigationEnum.LOGIN
         return Promise.reject(error)
       }
       deleteData()
