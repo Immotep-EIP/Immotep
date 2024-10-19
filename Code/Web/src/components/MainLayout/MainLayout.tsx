@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { Button, Layout, Menu } from 'antd';
+import { Button, Layout, Menu, Tooltip } from 'antd';
 import RealProprtyIcon from '@/assets/icons/realProperty.png';
 import Overview from '@/assets/icons/overview.png';
 import Messages from '@/assets/icons/messages.png';
@@ -15,15 +16,15 @@ const { Content, Sider } = Layout;
 
 const items = [
   {
-    label: 'Overview',
+    label: 'components.button.overview',
     key: NavigationEnum.OVERVIEW,
     icon: <img src={Overview} alt="Overview" className={style.menuIcon} /> },
   {
-    label: 'Real property',
+    label: 'components.button.realProperty',
     key: NavigationEnum.REAL_PROPERTY,
     icon: <img src={RealProprtyIcon} alt="Real Property" className={style.menuIcon} /> },
   {
-    label: 'Messages',
+    label: 'components.button.messages',
     key: NavigationEnum.MESSAGES,
     icon: <img src={Messages} alt="Messages" className={style.menuIcon} /> }
 ];
@@ -35,9 +36,16 @@ const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const { goToSettings, goToMyProfile } = useNavigation();
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     setSelectedTab(location.pathname);
   }, [location.pathname]);
+
+  const translatedItems = items.map(item => ({
+    ...item,
+    label: t(item.label)
+  }));
 
   return (
     <div className={style.pageContainer}>
@@ -47,26 +55,36 @@ const MainLayout: React.FC = () => {
           <span className={style.headerTitle}>Immotep</span>
         </div>
         <div className={style.rightPartHeader}>
-          <Button
-            shape='circle'
-            style={{ marginRight: 10 }}
-            color="default"
-            variant="solid"
-            size='large'
-            onClick={() => goToSettings()}
+          <Tooltip
+            title={t('components.button.settings')}
+            placement='bottom'
           >
-            <img src={Settings} alt="Settings" style={{ width: 20, height: 20 }} />
-          </Button>
-          <Button
-            shape='circle'
-            style={{ marginRight: 10 }}
-            color="default"
-            variant="solid"
-            size='large'
-            onClick={() => goToMyProfile()}
+            <Button
+              shape='circle'
+              style={{ marginRight: 10 }}
+              color="default"
+              variant="solid"
+              size='large'
+              onClick={() => goToSettings()}
+            >
+              <img src={Settings} alt="Settings" style={{ width: 20, height: 20 }} />
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={t('components.button.myProfile')}
+            placement='bottom'
           >
-            <img src={Me} alt="Me" style={{ width: 20, height: 20 }} />
-          </Button>
+            <Button
+              shape='circle'
+              style={{ marginRight: 10 }}
+              color="default"
+              variant="solid"
+              size='large'
+              onClick={() => goToMyProfile()}
+            >
+              <img src={Me} alt="Me" style={{ width: 20, height: 20 }} />
+            </Button>
+          </Tooltip>
         </div>
       </div>
       <Layout>
@@ -75,7 +93,7 @@ const MainLayout: React.FC = () => {
             theme="light"
             selectedKeys={[selectedTab]}
             mode="inline"
-            items={items}
+            items={translatedItems}
             onClick={(e) => {
               setSelectedTab(e.key);
               navigate(e.key);

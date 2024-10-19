@@ -1,0 +1,77 @@
+{
+  "components": {
+    "input": {
+      "email": {
+        "label": "E-mail",
+        "placeholder": "Entrez votre e-mail",
+        "error": "Veuillez remplir votre e-mail."
+      },
+      "emailConfirmation": {
+        "label": "Confirmation de l'e-mail",
+        "placeholder": "Confirmez votre e-mail",
+        "error": "Veuillez remplir la confirmation de l'e-mail."
+      },
+      "password": {
+        "label": "Mot de passe",
+        "placeholder": "Entrez votre mot de passe",
+        "error": "Veuillez remplir votre mot de passe."
+      },
+      "confirmPassword": {
+        "label": "Confirmer le mot de passe",
+        "placeholder": "Confirmez votre mot de passe",
+        "error": "Veuillez remplir la confirmation du mot de passe."
+      },
+      "firstName": {
+        "label": "Prénom",
+        "placeholder": "Entrez votre prénom",
+        "error": "Veuillez remplir votre prénom."
+      },
+      "lastName": {
+        "label": "Nom",
+        "placeholder": "Entrez votre nom",
+        "error": "Veuillez remplir votre nom."
+      }
+    },
+    "button": {
+      "signIn": "Se connecter",
+      "signUp": "S'inscrire",
+      "rememberMe": "Se souvenir de moi",
+      "askForgotPassword": "Mot de passe oublié ?",
+      "sendEmail": "Envoyer un e-mail",
+      "overview": "Aperçu",
+      "realProperty": "Bien immobilier",
+      "messages": "Messages",
+      "settings": "Paramètres",
+      "myProfile": "Mon profil"
+    }
+  },
+  "pages": {
+    "login": {
+      "title": "Bienvenue à nouveau !",
+      "description": "Veuillez entrer vos informations pour vous connecter.",
+      "dontHaveAccount": "Vous n'avez pas de compte ?",
+      "connectionSuccess": "Vous êtes maintenant connecté.",
+      "connectionError": "Une erreur est survenue lors de la connexion, veuillez réessayer.",
+      "fillFields": "Veuillez remplir tous les champs."
+    },
+    "register": {
+      "title": "Créer un compte",
+      "description": "Rejoignez immotep pour votre tranquillité d'esprit !",
+      "agreeTerms": "J'accepte les Conditions Générales, la Politique de Confidentialité et les Frais",
+      "alreadyHaveAccount": "Vous avez déjà un compte ?",
+      "registerSuccess": "Vous êtes maintenant inscrit.",
+      "registerError": "Une erreur est survenue lors de l'inscription, veuillez réessayer.",
+      "emailAlreadyUsed": "Cet e-mail est déjà utilisé.",
+      "confirmPasswordError": "Les mots de passe ne correspondent pas.",
+      "fillFields": "Veuillez remplir tous les champs."
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "description": "Veuillez entrer votre e-mail pour réinitialiser votre mot de passe.",
+      "sendEmailSuccess": "Un e-mail a été envoyé pour réinitialiser votre mot de passe.",
+      "sendEmailError": "Une erreur est survenue lors de l'envoi de l'e-mail, veuillez réessayer.",
+      "emailsDontMatch": "Les e-mails ne correspondent pas.",
+      "fillFields": "Veuillez remplir tous les champs."
+    }
+  }
+}
