@@ -10,7 +10,7 @@ const PageTitle: React.FC<PageTitleProps> = ({ title, size }) => (
   <span
       className={style.pageTitle}
       style={{
-        fontSize: size === 'subtitle' ? '1.2rem' : '2rem',
+        fontSize: size === 'subtitle' ? '1rem' : '1.4rem',
         fontWeight: size === 'subtitle' ? 400 : 500,
         marginBottom: '.5rem',
       }}

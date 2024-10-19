@@ -21,10 +21,10 @@ const AuthentificationPage: React.FC<AuthentificationPageProps> = (
       <div className={style.contentContainer}>
         <PageTitle title={title} size="title" />
         <PageTitle title={subtitle} size="subtitle" />
+      </div>
 
-        <div className={style.childrenContainer}>
-          {children}
-        </div>
+      <div className={style.childrenContainer}>
+        {children}
       </div>
 
     </div>

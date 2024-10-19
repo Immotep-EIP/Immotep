@@ -1,6 +1,8 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
+import './translation/i18n.tsx'
+
 import NavigationEnum from '@/enums/NavigationEnum'
 import MainLayout from '@/components/MainLayout/MainLayout.tsx'
 

@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
 
@@ -13,6 +15,27 @@ const Login: React.FC = () => {
   const { goToSignup, goToOverview, goToForgotPassword } = useNavigation()
   const { login } = useAuth()
 
+  const { t } = useTranslation()
+
+  useEffect(() => {
+    if (sessionStorage.getItem('access_token') &&
+      sessionStorage.getItem('refresh_token') &&
+      sessionStorage.getItem('expires_in')
+    ) {
+      sessionStorage.removeItem('access_token')
+      sessionStorage.removeItem('refresh_token')
+      sessionStorage.removeItem('expires_in')
+    }
+
+    if (
+      localStorage.getItem('access_token') &&
+      localStorage.getItem('refresh_token') &&
+      localStorage.getItem('expires_in')
+    ) {
+      goToOverview()
+    }
+  }, [])
+
   const onFinish: FormProps<UserToken>['onFinish'] = async values => {
     try {
       const loginValues = {
@@ -21,22 +44,22 @@ const Login: React.FC = () => {
       }
       loginValues.grant_type = 'password'
       await login(loginValues)
-      message.success('Login successful')
+      message.success(t('pages.login.connectionSuccess'))
       goToOverview()
     } catch (error: any) {
       if (error.response.status === 401)
-        message.error('Login failed, please try again !')
+        message.error(t('pages.login.connectionError'))
     }
   }
 
   const onFinishFailed: FormProps<UserToken>['onFinishFailed'] = () => {
-    message.error('An error occured, please try again')
+    message.error(t('pages.login.fillFields'))
   }
 
   return (
     <AuthentificationPage
-      title="Welcome back !"
-      subtitle="Please enter your details to sign in."
+      title={t('pages.login.title')}
+      subtitle={t('pages.login.description')}
     >
       <Form
         name="basic"
@@ -48,32 +71,32 @@ const Login: React.FC = () => {
         style={{ width: '90%', maxWidth: '400px' }}
       >
         <Form.Item
-          label="Email"
+          label={t('components.input.email.label')}
           name="username"
-          rules={[{ required: true, message: 'Please input your email!' }]}
+          rules={[{ required: true, message: t('components.input.email.error') }]}
         >
           <Input
             className="input"
-            size="large"
-            placeholder="Enter your email"
+            size="middle"
+            placeholder={t('components.input.email.placeholder')}
           />
         </Form.Item>
 
         <Form.Item
-          label="Password"
+          label={t('components.input.password.label')}
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[{ required: true, message: t('components.input.password.error') }]}
         >
           <Input.Password
             className="input"
-            size="large"
-            placeholder="Enter your password"
+            size="middle"
+            placeholder={t('components.input.password.placeholder')}
           />
         </Form.Item>
 
         <div className={style.optionsContainer}>
           <Form.Item name="rememberMe" valuePropName="checked">
-            <Checkbox>Remember me</Checkbox>
+            <Checkbox>{t('components.button.rememberMe')}</Checkbox>
           </Form.Item>
           <span
             className={style.footerLink}
@@ -84,7 +107,7 @@ const Login: React.FC = () => {
               if (e.key === 'Enter') goToForgotPassword()
             }}
           >
-            Forgot password ?
+            {t('components.button.askForgotPassword')}
           </span>
         </div>
 
@@ -96,12 +119,14 @@ const Login: React.FC = () => {
             color="default"
             variant="solid"
           >
-            Sign in
+            {t('components.button.signIn')}
           </Button>
         </Form.Item>
 
         <div className={style.dontHaveAccountContainer}>
-          <span className={style.footerText}>Don&apos;t have an account?</span>
+          <span className={style.footerText}>
+            {t('pages.login.dontHaveAccount')}
+          </span>
           <span
             className={style.footerLink}
             onClick={goToSignup}
@@ -111,7 +136,7 @@ const Login: React.FC = () => {
               if (e.key === 'Enter') goToSignup()
             }}
           >
-            Sign up
+            {t('components.button.signUp')}
           </span>
         </div>
       </Form>

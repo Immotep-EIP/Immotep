@@ -1,4 +1,6 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
 import AuthentificationPage from '@/components/AuthentificationPage/AuthentificationPage'
@@ -12,32 +14,34 @@ const Register: React.FC = () => {
   const { goToLogin } = useNavigation()
   const [form] = Form.useForm()
 
+  const { t } = useTranslation()
+
   const onFinish: FormProps<UserRegister>['onFinish'] = async values => {
     try {
       const { password, confirmPassword } = values
       if (password === confirmPassword) {
         await register(values)
-        message.success('Registration success', 5)
+        message.success(t('pages.register.registrationSuccess'))
         form.resetFields()
         setTimeout(() => {
           goToLogin()
         }, 1000)
-      } else message.error('Please confirm your password', 5)
+      } else message.error(t('pages.register.passwordsNotMatch'))
     } catch (err: any) {
       if (err.response.status === 409)
-        message.error('Email already exist. Please try again.')
-      console.error('Registration error:', err)
+        message.error(t('pages.register.emailAlreadyUsed'))
+      console.error(t('pages.register.registrationError'), err)
     }
   }
 
   const onFinishFailed: FormProps<UserRegister>['onFinishFailed'] = () => {
-    message.error('An error occured, please try again')
+    message.error(t('pages.register.fillFields'))
   }
 
   return (
     <AuthentificationPage
-      title="Create your account"
-      subtitle="Join immotep for your peace of mind !"
+      title={t('pages.register.title')}
+      subtitle={t('pages.register.description')}
     >
       <Form
         form={form}
@@ -50,81 +54,87 @@ const Register: React.FC = () => {
         style={{ width: '90%', maxWidth: '400px' }}
       >
         <Form.Item
-          label="First name"
+          label={t('components.input.firstName.label')}
           name="firstname"
           rules={[
             {
               required: true,
-              message: 'Please input your first name!',
+              message: t('components.input.firstName.error'),
               pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
             }
           ]}
         >
           <Input
             className="input"
-            size="large"
-            placeholder="Enter your first name"
+            size="middle"
+            placeholder={t('components.input.firstName.placeholder')}
           />
         </Form.Item>
 
         <Form.Item
-          label="Last name"
+          label={t('components.input.lastName.label')}
           name="lastname"
           rules={[
             {
               required: true,
-              message: 'Please input your name!',
+              message: t('components.input.lastName.error'),
               pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
             }
           ]}
         >
-          <Input className="input" size="large" placeholder="Enter your name" />
+          <Input
+            className="input"
+            size="middle"
+            placeholder={t('components.input.lastName.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item
-          label="Email"
+          label={t('components.input.email.label')}
           name="email"
           rules={[
             {
               required: true,
-              message: 'Please input your email!',
+              message: t('components.input.email.error'),
               type: 'email'
             }
           ]}
         >
           <Input
             className="input"
-            size="large"
-            placeholder="Enter your email"
+            size="middle"
+            placeholder={t('components.input.email.placeholder')}
           />
         </Form.Item>
 
         <Form.Item
-          label="Password"
+          label={t('components.input.password.label')}
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[{ required: true, message: t('components.input.password.error') }]}
         >
           <Input.Password
             className="input"
-            size="large"
-            placeholder="Enter your password"
+            size="middle"
+            placeholder={t('components.input.password.placeholder')}
           />
         </Form.Item>
 
         <Form.Item
-          label="Confirm password"
+          label={t('components.input.confirmPassword.label')}
           name="confirmPassword"
-          rules={[{ required: true, message: 'Please confirm your password!' }]}
+          rules={[{ required: true, message: t('components.input.confirmPassword.error') }]}
         >
           <Input.Password
             className="input"
-            size="large"
-            placeholder="Confirm your password"
+            size="middle"
+            placeholder={t('components.input.confirmPassword.placeholder')}
           />
         </Form.Item>
         <Form.Item name="termAgree" valuePropName="checked">
           <div className={style.optionsContainer}>
-            <Checkbox>I agree to all Term, Privacy Policy and Fees</Checkbox>
+            <Checkbox>
+              {t('pages.register.agreeTerms')}
+            </Checkbox>
           </div>
         </Form.Item>
         <Form.Item>
@@ -135,12 +145,14 @@ const Register: React.FC = () => {
             color="default"
             variant="solid"
           >
-            Sign up
+            {t('components.button.signUp')}
           </Button>
         </Form.Item>
 
         <div className={style.dontHaveAccountContainer}>
-          <span className={style.footerText}>Already have an account?</span>
+          <span className={style.footerText}>
+            {t('pages.register.alreadyHaveAccount')}
+          </span>
           <span
             className={style.footerLink}
             onClick={goToLogin}
@@ -150,7 +162,7 @@ const Register: React.FC = () => {
               if (e.key === 'Enter') goToLogin()
             }}
           >
-            Sign in
+            {t('components.button.signIn')}
           </span>
         </div>
       </Form>

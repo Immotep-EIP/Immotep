@@ -13,8 +13,6 @@
   align-items: flex-start;
   justify-content: space-between;
   width: 100%;
-  margin-top: 20px;
-  margin-bottom: 30px;
 }
 
 .forgotPassword {
@@ -36,7 +34,8 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  margin-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 20px;
   width: 100%;
 }
 
