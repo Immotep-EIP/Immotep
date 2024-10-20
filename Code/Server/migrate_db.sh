@@ -1,7 +1,7 @@
 #!/bin/bash
 
+# -e Exit immediately when a command returns a non-zero status.
+# -x Print commands before they are executed
+set -ex
+
 go run github.com/steebchen/prisma-client-go migrate dev
-if [ $? -ne 0 ]; then
-    echo "Prisma migration failed"
-    exit 1
-fi

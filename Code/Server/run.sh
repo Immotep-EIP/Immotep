@@ -1,12 +1,13 @@
 #!/bin/bash
 
-golangci-lint run
+# -e Exit immediately when a command returns a non-zero status.
+# -x Print commands before they are executed
+set -ex
 
-if [ $? -ne 0 ]; then
-    echo "Linter failed"
-    exit 1
-fi
+golangci-lint run
 
 swag fmt
 swag init --parseDependency true
-go build && echo "Build successful" && ./backend
+
+go build
+./backend
