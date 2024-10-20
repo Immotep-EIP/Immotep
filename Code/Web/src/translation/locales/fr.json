@@ -2,34 +2,34 @@
   "components": {
     "input": {
       "email": {
-        "label": "E-mail",
-        "placeholder": "Entrez votre e-mail",
-        "error": "Veuillez remplir votre e-mail."
+        "label": "Email",
+        "placeholder": "Entrez votre email",
+        "error": "Veuillez renseigner votre email."
       },
       "emailConfirmation": {
-        "label": "Confirmation de l'e-mail",
-        "placeholder": "Confirmez votre e-mail",
-        "error": "Veuillez remplir la confirmation de l'e-mail."
+        "label": "Confirmation de l'email",
+        "placeholder": "Confirmez votre email",
+        "error": "Veuillez renseigner la confirmation de votre email."
       },
       "password": {
         "label": "Mot de passe",
         "placeholder": "Entrez votre mot de passe",
-        "error": "Veuillez remplir votre mot de passe."
+        "error": "Veuillez renseigner votre mot de passe."
       },
       "confirmPassword": {
-        "label": "Confirmer le mot de passe",
+        "label": "Confirmation du mot de passe",
         "placeholder": "Confirmez votre mot de passe",
-        "error": "Veuillez remplir la confirmation du mot de passe."
+        "error": "Veuillez renseigner la confirmation de votre mot de passe."
       },
       "firstName": {
         "label": "Prénom",
         "placeholder": "Entrez votre prénom",
-        "error": "Veuillez remplir votre prénom."
+        "error": "Veuillez renseigner votre prénom."
       },
       "lastName": {
         "label": "Nom",
         "placeholder": "Entrez votre nom",
-        "error": "Veuillez remplir votre nom."
+        "error": "Veuillez renseigner votre nom."
       }
     },
     "button": {
@@ -37,9 +37,9 @@
       "signUp": "S'inscrire",
       "rememberMe": "Se souvenir de moi",
       "askForgotPassword": "Mot de passe oublié ?",
-      "sendEmail": "Envoyer un e-mail",
+      "sendEmail": "Envoyer l'email",
       "overview": "Aperçu",
-      "realProperty": "Bien immobilier",
+      "realProperty": "Vos biens",
       "messages": "Messages",
       "settings": "Paramètres",
       "myProfile": "Mon profil"
@@ -48,7 +48,7 @@
   "pages": {
     "login": {
       "title": "Bienvenue à nouveau !",
-      "description": "Veuillez entrer vos informations pour vous connecter.",
+      "description": "Veuillez entrer vos identifiants pour vous connecter.",
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "connectionSuccess": "Vous êtes maintenant connecté.",
       "connectionError": "Une erreur est survenue lors de la connexion, veuillez réessayer.",
@@ -56,22 +56,29 @@
     },
     "register": {
       "title": "Créer un compte",
-      "description": "Rejoignez immotep pour votre tranquillité d'esprit !",
-      "agreeTerms": "J'accepte les Conditions Générales, la Politique de Confidentialité et les Frais",
+      "description": "Rejoignez Immotep pour une tranquillité d'esprit !",
+      "agreeTerms": "J'accepte les Termes, la Politique de confidentialité et les Frais.",
       "alreadyHaveAccount": "Vous avez déjà un compte ?",
       "registerSuccess": "Vous êtes maintenant inscrit.",
       "registerError": "Une erreur est survenue lors de l'inscription, veuillez réessayer.",
-      "emailAlreadyUsed": "Cet e-mail est déjà utilisé.",
+      "emailAlreadyUsed": "Cet email est déjà utilisé.",
       "confirmPasswordError": "Les mots de passe ne correspondent pas.",
       "fillFields": "Veuillez remplir tous les champs."
     },
     "forgotPassword": {
       "title": "Mot de passe oublié",
-      "description": "Veuillez entrer votre e-mail pour réinitialiser votre mot de passe.",
-      "sendEmailSuccess": "Un e-mail a été envoyé pour réinitialiser votre mot de passe.",
-      "sendEmailError": "Une erreur est survenue lors de l'envoi de l'e-mail, veuillez réessayer.",
-      "emailsDontMatch": "Les e-mails ne correspondent pas.",
+      "description": "Veuillez entrer votre email pour réinitialiser votre mot de passe.",
+      "sendEmailSuccess": "Un email a été envoyé pour réinitialiser votre mot de passe.",
+      "sendEmailError": "Une erreur est survenue lors de l'envoi de l'email, veuillez réessayer.",
+      "emailsDontMatch": "Les emails ne correspondent pas.",
       "fillFields": "Veuillez remplir tous les champs."
+    },
+    "settings": {
+      "title": "Paramètres",
+      "description": "Gérez les paramètres de votre compte.",
+      "language": "Langue",
+      "en": "Anglais",
+      "fr": "Français"
     }
   }
 }

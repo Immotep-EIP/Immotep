@@ -6,16 +6,14 @@ import style from './Settings.module.css'
 
 const Settings: React.FC = () => {
   const { t } = useTranslation()
-  const [activeLanguage] = useState(i18n.language)
-
   const switchLanguage = (language: string) => {
     let lang = ''
 
     switch (language) {
-      case t('pages.settings.fr') as string:
+      case 'fr' as string:
         lang = 'fr'
         break
-      case t('pages.settings.en') as string:
+      case 'en' as string:
         lang = 'en'
         break
       default:
@@ -32,11 +30,12 @@ const Settings: React.FC = () => {
         <div className={style.settingsItem}>
           {t('pages.settings.language')}
           <Segmented
-            options={[t('pages.settings.fr'), t('pages.settings.en')]}
-            defaultValue={t(`pages.settings.${activeLanguage}`)}
-            onChange={value => {
-              switchLanguage(value)
-            }}
+            options={[
+              { label: t('pages.settings.fr'), value: 'fr' },
+              { label: t('pages.settings.en'), value: 'en' }
+            ]}
+            value={i18n.language}
+            onChange={(value) => switchLanguage(value as string)}
           />
         </div>
 
