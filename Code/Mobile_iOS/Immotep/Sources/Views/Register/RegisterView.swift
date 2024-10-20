@@ -4,6 +4,7 @@
 //
 //  Created by Liebenguth Alessio on 05/10/2024.
 //
+
 import SwiftUI
 
 struct RegisterView: View {
@@ -51,11 +52,11 @@ struct RegisterView: View {
 
                         Text(viewModel.registerStatus)
                             .font(.subheadline)
-                            .foregroundColor(viewModel.registerStatus.isEmpty ? .clear : .red) // Change la couleur selon le statut
+                            .foregroundColor(viewModel.registerStatus == "Registration successful!" ? .green : .red)
                             .padding(.top, 10)
 
                         Button(action: {
-                            viewModel.signIn() // Not doing the job for now
+                            viewModel.signIn()
                         }, label: {
                             Text("Sign In")
                                 .frame(maxWidth: .infinity)

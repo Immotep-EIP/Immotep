@@ -4,52 +4,61 @@
 //
 //  Created by Liebenguth Alessio on 05/10/2024.
 //
+
 import Foundation
 import Combine
 
+@MainActor
 class RegisterViewModel: ObservableObject {
     @Published var model = RegisterModel()
     @Published var registerStatus: String = ""
 
     private var cancellables = Set<AnyCancellable>()
 
-    // Simulating register for now (replace with real register logic)
     func signIn() {
+        registerStatus = ""
+
+        if let errorMessage = validateFields() {
+            registerStatus = errorMessage
+            return
+        }
+
+        Task {
+            do {
+                let (accessToken, refreshToken) = try await ApiService.shared.registerUser(with: model)
+                TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken)
+                registerStatus = "Registration successful!"
+            } catch {
+                registerStatus = "Error: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    private func validateFields() -> String? {
         guard !model.name.isEmpty,
               !model.firstName.isEmpty,
               !model.email.isEmpty,
               !model.password.isEmpty,
               !model.passwordConfirmation.isEmpty else {
-            registerStatus = "Please fill in all fields."
-            return
+            return "Please fill in all fields."
         }
 
         guard model.password == model.passwordConfirmation else {
-            registerStatus = "Passwords do not match."
-            return
+            return "Passwords do not match."
         }
 
         guard model.agreement else {
-            registerStatus = "You must agree to the terms and conditions."
-            return
+            return "You must agree to the terms and conditions."
         }
 
         guard isValidEmail(model.email) else {
-            registerStatus = "Please enter a valid email address."
-            return
+            return "Please enter a valid email address."
         }
 
-        if model.email == "Test@example.com" && model.password == "Password" {
-            registerStatus = "Registration successful!"
-            return
-        } else {
-            registerStatus = "Invalid email or password."
-            return
-        }
+        return nil
     }
 
     private func isValidEmail(_ email: String) -> Bool {
-        // Ask for the email validation protocol (Regex ?)
-        return (email == "invalidEmail" ? false : true)
+        return email.contains("@")
     }
 }
