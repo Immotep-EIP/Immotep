@@ -4,6 +4,7 @@
 //
 //  Created by Liebenguth Alessio on 05/10/2024.
 //
+
 import SwiftUI
 
 struct LoginView: View {
@@ -49,7 +50,7 @@ struct LoginView: View {
                             })
                         }
                         Button(action: {
-                            viewModel.signIn() // Not doing the job for now
+                            viewModel.signIn()
                         }, label: {
                             Text("Sign In")
                                 .frame(maxWidth: .infinity)
@@ -91,16 +92,15 @@ struct LoginView: View {
                 }
                 .padding(.leading, 20)
             }
-            /*VStack {
+            VStack {
                 Spacer()
-                // Fix this, not working now
                 Text(viewModel.loginStatus)
                     .foregroundColor(viewModel.loginStatus == "Login successful!" ? .green : .red)
                     .padding(.top, 10)
                 .padding(.top, 20)
                 Spacer()
             }
-            .padding()*/
+            .padding()
         }
         .navigationBarBackButtonHidden(true)
     }
