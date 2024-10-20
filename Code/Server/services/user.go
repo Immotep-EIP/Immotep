@@ -20,9 +20,8 @@ func GetByID(id string) *db.UserModel {
 	if err != nil {
 		if db.IsErrNotFound(err) {
 			return nil
-		} else {
-			panic(err)
 		}
+		panic(err)
 	}
 	return user
 }
@@ -38,9 +37,8 @@ func Create(user db.UserModel) *db.UserModel {
 	if err != nil {
 		if info, is := db.IsErrUniqueConstraint(err); is && info.Fields[0] == db.User.Email.Field() {
 			return nil
-		} else {
-			panic(err)
 		}
+		panic(err)
 	}
 	return newUser
 }

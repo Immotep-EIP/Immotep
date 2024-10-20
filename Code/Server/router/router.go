@@ -5,9 +5,6 @@ import (
 	"os"
 	"time"
 
-	"immotep/backend/controllers"
-	_ "immotep/backend/docs"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/maxzerbini/oauth"
@@ -16,6 +13,8 @@ import (
 	"github.com/ulule/limiter/v3"
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	"github.com/ulule/limiter/v3/drivers/store/memory"
+	"immotep/backend/controllers"
+	_ "immotep/backend/docs" // mandatory import for swagger doc
 )
 
 func Routes() *gin.Engine {
@@ -33,9 +32,15 @@ func Routes() *gin.Engine {
 
 	r := gin.New()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://*", "http://*"},
+		AllowOrigins: []string{"https://*", "http://*"},
 		// AllowOriginFunc:  func(origin string) bool { return origin == "https://github.com" },
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodDelete,
+			http.MethodOptions,
+		},
 		AllowHeaders:     []string{"Accept", "Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length", "Link"},
 		AllowCredentials: true,

@@ -1,14 +1,14 @@
 package router_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"immotep/backend/router"
-
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"immotep/backend/router"
 )
 
 func TestRoutes_Welcome(t *testing.T) {
@@ -16,7 +16,7 @@ func TestRoutes_Welcome(t *testing.T) {
 	r := router.Routes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
