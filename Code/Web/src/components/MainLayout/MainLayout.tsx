@@ -81,7 +81,7 @@ const MainLayout: React.FC = () => {
               />
             </Button>
           </Tooltip>
-          <Tooltip title={t('components.button.myProfile')} placement="bottom">
+          {/* <Tooltip title={t('components.button.myProfile')} placement="bottom">
             <Button
               shape="circle"
               style={{ marginRight: 10 }}
@@ -92,7 +92,7 @@ const MainLayout: React.FC = () => {
             >
               <img src={Me} alt="Me" style={{ width: 17, height: 17 }} />
             </Button>
-          </Tooltip>
+          </Tooltip> */}
         </div>
       </div>
       <Layout style={{ height: '100%', width: '100%' }}>

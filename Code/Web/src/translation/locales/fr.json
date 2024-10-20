@@ -40,9 +40,12 @@
       "sendEmail": "Envoyer l'email",
       "overview": "Aperçu",
       "realProperty": "Vos biens",
-      "messages": "Messages",
+      "messages": "Messagerie",
       "settings": "Paramètres",
-      "myProfile": "Mon profil"
+      "myProfile": "Mon profil",
+      "edit": "Modifier",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
     }
   },
   "pages": {

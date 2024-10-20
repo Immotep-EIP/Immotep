@@ -42,7 +42,11 @@
       "realProperty": "Real property",
       "messages": "Messages",
       "settings": "Settings",
-      "myProfile": "My profile"
+      "myProfile": "My profile",
+
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel"
     }
   },
   "pages": {
