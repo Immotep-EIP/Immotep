@@ -10,8 +10,8 @@
 import SwiftUI
 
 struct CustomTextInput: View {
-    var title: String
-    var placeholder: String
+    var title: LocalizedStringKey
+    var placeholder: LocalizedStringKey
     @Binding var text: String
     var isSecure: Bool = false
 
