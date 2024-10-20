@@ -25,10 +25,12 @@ struct CustomTextInput: View {
                 SecureField(placeholder, text: $text)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .font(.system(size: 14))
+                    .autocapitalization(.none)
             } else {
                 TextField(placeholder, text: $text)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .font(.system(size: 14))
+                    .autocapitalization(.none)
             }
         }
     }
