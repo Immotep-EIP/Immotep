@@ -82,7 +82,10 @@
       "description": "Manage your account settings.",
       "language": "Language",
       "en": "English",
-      "fr": "French"
+      "fr": "French",
+      "userInfos": "User informations",
+      "logout": "Logout",
+      "logoutSuccess": "You are now disconnected."
     }
   }
 }

@@ -50,7 +50,7 @@
   },
   "pages": {
     "login": {
-      "title": "Bienvenue à nouveau !",
+      "title": "Bienvenue !",
       "description": "Veuillez entrer vos identifiants pour vous connecter.",
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "connectionSuccess": "Vous êtes maintenant connecté.",
@@ -81,7 +81,10 @@
       "description": "Gérez les paramètres de votre compte.",
       "language": "Langue",
       "en": "Anglais",
-      "fr": "Français"
+      "fr": "Français",
+      "userInfos": "Informations utilisateur",
+      "logout": "Déconnexion",
+      "logoutSuccess": "Vous êtes maintenant déconnecté."
     }
   }
 }

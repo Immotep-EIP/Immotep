@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
-import { Image, Input, Segmented, Upload } from 'antd'
+import { Button, Image, message, Segmented, Upload } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import type { GetProp, UploadFile, UploadProps } from 'antd'
 import getUserProfile from '@/services/api/User/GetUserProfile'
 import { User } from '@/interfaces/User/User'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
+import LogoutOutlined from '@ant-design/icons/LogoutOutlined'
+import useNavigation from '@/hooks/useNavigation/useNavigation'
 import style from './Settings.module.css'
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
@@ -73,60 +75,41 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
     </button>
   )
 
-  const userInformationComponent = (
-    title: string,
-    value: string,
-    edit: boolean
-  ) => (
-    <SubtitledElement subtitleKey={title}>
-      {edit ? <Input defaultValue={value} /> : <span>{value}</span>}
-    </SubtitledElement>
-  )
-
   return (
     <div className={style.settingsContainer}>
       <div className={style.userItem}>
-        <div className={style.leftContainer}>
-          <Upload
-            action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-            listType="picture-circle"
-            fileList={fileList}
-            onPreview={handlePreview}
-            onChange={handleChange}
-          >
-            {fileList.length >= 1 ? null : uploadButton}
-          </Upload>
-          {previewImage && (
-            <Image
-              wrapperStyle={{ display: 'none' }}
-              preview={{
-                visible: previewOpen,
-                onVisibleChange: visible => setPreviewOpen(visible),
-                afterOpenChange: visible => !visible && setPreviewImage('')
-              }}
-              src={previewImage}
-            />
-          )}
-          <div className={style.informationsContainer}>
-            <div className={style.nameContainer}>
-              {userInformationComponent(
-                t('components.input.firstName.label'),
-                user?.firstname || '',
-                false
-              )}
-              {userInformationComponent(
-                t('components.input.lastName.label'),
-                user?.lastname || '',
-                false
-              )}
-            </div>
-            {userInformationComponent(
-              t('components.input.email.label'),
-              user?.email || '',
-              false
-            )}
-          </div>
-        </div>
+        <Upload
+          action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+          listType="picture-circle"
+          fileList={fileList}
+          onPreview={handlePreview}
+          onChange={handleChange}
+        >
+          {fileList.length >= 1 ? null : uploadButton}
+        </Upload>
+        {previewImage && (
+          <Image
+            wrapperStyle={{ display: 'none' }}
+            preview={{
+              visible: previewOpen,
+              onVisibleChange: visible => setPreviewOpen(visible),
+              afterOpenChange: visible => !visible && setPreviewImage('')
+            }}
+            src={previewImage}
+          />
+        )}
+      </div>
+      <div className={style.userInformations}>
+        <b>{t('pages.settings.userInfos')}</b>
+        <SubtitledElement subtitleKey={t('components.input.firstName.label')}>
+          {user?.firstname}
+        </SubtitledElement>
+        <SubtitledElement subtitleKey={t('components.input.lastName.label')}>
+          {user?.lastname}
+        </SubtitledElement>
+        <SubtitledElement subtitleKey={t('components.input.email.label')}>
+          {user?.email}
+        </SubtitledElement>
       </div>
     </div>
   )
@@ -134,6 +117,8 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
 
 const Settings: React.FC = () => {
   const { t } = useTranslation()
+  const { goToLogin } = useNavigation()
+
   const switchLanguage = (language: string) => {
     let lang = ''
     switch (language) {
@@ -150,9 +135,34 @@ const Settings: React.FC = () => {
     i18n.changeLanguage(lang)
   }
 
+  const logout = () => {
+    if (
+      localStorage.access_token ||
+      localStorage.expires_in ||
+      localStorage.refresh_token
+    ) {
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('expires_in')
+      localStorage.removeItem('refresh_token')
+      message.success(t('pages.settings.logoutSuccess'))
+      goToLogin()
+    } else if (
+      sessionStorage.access_token ||
+      sessionStorage.expires_in ||
+      sessionStorage.refresh_token
+    ) {
+      sessionStorage.removeItem('access_token')
+      sessionStorage.removeItem('expires_in')
+      sessionStorage.removeItem('refresh_token')
+      message.success(t('pages.settings.logoutSuccess'))
+      goToLogin()
+    }
+  }
+
   return (
     <div className={style.layoutContainer}>
       <UserSettings t={t} />
+
       <div className={style.settingsContainer}>
         <div className={style.settingsItem}>
           {t('pages.settings.language')}
@@ -163,6 +173,17 @@ const Settings: React.FC = () => {
             ]}
             value={i18n.language}
             onChange={value => switchLanguage(value as string)}
+          />
+        </div>
+
+        <div className={style.settingsItem}>
+          {t('pages.settings.logout')}
+          <Button
+            type="primary"
+            danger
+            shape="circle"
+            icon={<LogoutOutlined />}
+            onClick={() => logout()}
           />
         </div>
       </div>

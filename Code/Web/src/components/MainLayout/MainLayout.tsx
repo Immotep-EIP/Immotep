@@ -118,7 +118,7 @@ const MainLayout: React.FC = () => {
           />
         </Sider>
         <Layout>
-          <Content style={{ height: '100%', width: '100%', padding: '20px' }}>
+          <Content style={{ height: '100%', width: '100%' }}>
             <Outlet />
           </Content>
         </Layout>
