@@ -3,7 +3,7 @@ name: Mirroring
 on: [push, delete]
 
 jobs:
-  to_gitlab:
+  mirror:
     runs-on: ubuntu-latest
     if: github.repositoryUrl == 'git://github.com/Immotep-EIP/Immotep.git'
     steps:
