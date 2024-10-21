@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repositoryUrl == 'git://github.com/Immotep-EIP/Immotep.git'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: pixta-dev/repository-mirroring-action@v1
