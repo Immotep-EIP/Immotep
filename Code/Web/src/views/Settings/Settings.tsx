@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
-import { Button, Image, message, Segmented, Upload } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
-import type { GetProp, UploadFile, UploadProps } from 'antd'
+import {
+  Button,
+  Image,
+  Segmented,
+  Upload,
+  GetProp,
+  UploadFile,
+  UploadProps
+} from 'antd'
+import { PlusOutlined, LogoutOutlined } from '@ant-design/icons'
+
 import getUserProfile from '@/services/api/User/GetUserProfile'
 import { User } from '@/interfaces/User/User'
+import { useAuth } from '@/context/authContext'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
-import LogoutOutlined from '@ant-design/icons/LogoutOutlined'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
 import style from './Settings.module.css'
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
@@ -117,7 +124,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
 
 const Settings: React.FC = () => {
   const { t } = useTranslation()
-  const { goToLogin } = useNavigation()
+  const { logout } = useAuth()
 
   const switchLanguage = (language: string) => {
     let lang = ''
@@ -133,30 +140,6 @@ const Settings: React.FC = () => {
         break
     }
     i18n.changeLanguage(lang)
-  }
-
-  const logout = () => {
-    if (
-      localStorage.access_token ||
-      localStorage.expires_in ||
-      localStorage.refresh_token
-    ) {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('expires_in')
-      localStorage.removeItem('refresh_token')
-      message.success(t('pages.settings.logoutSuccess'))
-      goToLogin()
-    } else if (
-      sessionStorage.access_token ||
-      sessionStorage.expires_in ||
-      sessionStorage.refresh_token
-    ) {
-      sessionStorage.removeItem('access_token')
-      sessionStorage.removeItem('expires_in')
-      sessionStorage.removeItem('refresh_token')
-      message.success(t('pages.settings.logoutSuccess'))
-      goToLogin()
-    }
   }
 
   return (
