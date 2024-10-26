@@ -12,8 +12,11 @@ import Combine
 class LoginViewModel: ObservableObject {
     @Published var model = LoginModel()
     @Published var loginStatus: String = ""
+    @Published var isLoggedIn: Bool = false
+    @Published var user: User?
 
     private var cancellables = Set<AnyCancellable>()
+    private let userService = UserService()
 
     func signIn() {
         loginStatus = ""
@@ -27,7 +30,11 @@ class LoginViewModel: ObservableObject {
             do {
                 let (accessToken, refreshToken) = try await AuthService.shared.loginUser(email: model.email, password: model.password)
                 TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken)
+                                user = try await userService.fetchUserProfile(with: accessToken)
                 loginStatus = "Login successful!"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self.isLoggedIn = true
+                }
             } catch {
                 loginStatus = "Error: \(error.localizedDescription)"
             }

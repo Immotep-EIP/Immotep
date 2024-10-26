@@ -34,9 +34,7 @@ actor ApiService: Sendable {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server."])
         }
 
-        print("Response Status Code: \(httpResponse.statusCode)")
         let responseBody = String(data: data, encoding: .utf8)
-        print("Response Body: \(responseBody ?? "No response body")")
 
         guard httpResponse.statusCode == 201 else {
             if httpResponse.statusCode == 409 {
@@ -44,7 +42,8 @@ actor ApiService: Sendable {
             } else if httpResponse.statusCode == 400 {
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Empty fields."])
             } else {
-                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
             }
         }
 
