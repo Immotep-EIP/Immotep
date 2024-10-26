@@ -15,11 +15,11 @@ struct RegisterView: View {
             VStack {
                 Spacer()
                 VStack {
-                    Text("Create your account")
+                    Text("Create your account".localized())
                         .font(.system(size: 25))
                         .bold()
                         .padding(.bottom, 5)
-                    Text("Join Immotep for your peace of mind!")
+                    Text("Join Immotep for your peace of mind!".localized())
                         .font(.system(size: 14))
                         .padding(.bottom, 50)
 
@@ -33,7 +33,8 @@ struct RegisterView: View {
 
                         CustomTextInput(title: "Password*", placeholder: "Enter your password", text: $viewModel.model.password, isSecure: true)
 
-                        CustomTextInput(title: "Password confirmation*", placeholder: "Enter your password confirmation", text: $viewModel.model.passwordConfirmation, isSecure: true)
+                        CustomTextInput(title: "Password confirmation*", placeholder: "Enter your password confirmation",
+                                        text: $viewModel.model.passwordConfirmation, isSecure: true)
 
                         HStack {
                             Button(action: {
@@ -41,7 +42,7 @@ struct RegisterView: View {
                             }, label: {
                                 HStack {
                                     Image(systemName: viewModel.model.agreement ? "checkmark.circle.fill" : "circle")
-                                    Text("I agree to all Term, Privacy Policy and Fees")
+                                    Text("I agree to all Term, Privacy Policy and Fees".localized())
                                         .font(.system(size: 14))
                                 }
                                 .foregroundStyle(.black)
@@ -50,7 +51,7 @@ struct RegisterView: View {
                             Spacer()
                         }
 
-                        Text(viewModel.registerStatus)
+                        Text(viewModel.registerStatus.localized())
                             .font(.subheadline)
                             .foregroundColor(viewModel.registerStatus == "Registration successful!" ? .green : .red)
                             .padding(.top, 10)
@@ -58,7 +59,7 @@ struct RegisterView: View {
                         Button(action: {
                             viewModel.signIn()
                         }, label: {
-                            Text("Sign In")
+                            Text("Sign In".localized())
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color.black)
@@ -70,10 +71,10 @@ struct RegisterView: View {
                         })
 
                         HStack {
-                            Text("Already have an account ?")
+                            Text("Already have an account ?".localized())
                                 .font(.subheadline)
                             NavigationLink(destination: LoginView()) {
-                                Text("Log In")
+                                Text("Log In".localized())
                                     .font(.subheadline)
                                     .foregroundColor(.blue)
                             }
@@ -89,7 +90,7 @@ struct RegisterView: View {
                         .resizable()
                         .frame(width: 50, height: 50)
                         .padding(.bottom, 40)
-                    Text("Immotep")
+                    Text("Immotep".localized())
                         .font(.title)
                         .bold()
                         .padding(.bottom, 40)

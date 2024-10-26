@@ -9,22 +9,22 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
-
     var body: some View {
         NavigationStack {
             VStack {
                 Spacer()
+
                 VStack {
-                    Text("Welcome back")
+                    Text("Welcome back".localized())
                         .font(.system(size: 25))
                         .bold()
                         .padding(.bottom, 5)
-                    Text("Please enter your details to sign in.")
+
+                    Text("Please enter your details to sign in.".localized())
                         .font(.system(size: 14))
                         .padding(.bottom, 50)
 
-                    VStack(alignment: .leading, spacing: 5) {
-
+                    VStack(alignment: .leading, spacing: 15) {
                         CustomTextInput(title: "Email*", placeholder: "Enter your email", text: $viewModel.model.email, isSecure: false)
 
                         CustomTextInput(title: "Password*", placeholder: "Enter your password", text: $viewModel.model.password, isSecure: true)
@@ -35,7 +35,7 @@ struct LoginView: View {
                             }, label: {
                                 HStack {
                                     Image(systemName: viewModel.model.keepMeSignedIn ? "checkmark.circle.fill" : "circle")
-                                    Text("Keep me signed in")
+                                    Text("Keep me signed in".localized())
                                         .font(.system(size: 14))
                                 }
                                 .foregroundStyle(.black)
@@ -43,16 +43,16 @@ struct LoginView: View {
                             Spacer()
 
                             Button(action: {
-                                // create the forgot password action when possible
                             }, label: {
-                                Text("Forgot password?")
+                                Text("Forgot password?".localized())
                                     .font(.system(size: 14))
                             })
                         }
+
                         Button(action: {
                             viewModel.signIn()
                         }, label: {
-                            Text("Sign In")
+                            Text("Sign In".localized())
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color.black)
@@ -64,10 +64,10 @@ struct LoginView: View {
                         })
 
                         HStack {
-                            Text("Don't have an account ?")
+                            Text("Don't have an account ?".localized())
                                 .font(.subheadline)
                             NavigationLink(destination: RegisterView()) {
-                                Text("Sign Up")
+                                Text("Sign Up".localized())
                                     .font(.subheadline)
                                     .foregroundColor(.blue)
                                     .accessibilityIdentifier("signUpLink")
@@ -76,15 +76,18 @@ struct LoginView: View {
                     }
                     .padding(.horizontal, 40)
                 }
+
                 Spacer()
             }
+            .frame(maxHeight: .infinity)
+
             .safeAreaInset(edge: .top) {
                 HStack(spacing: 20) {
                     Image("immotepLogo")
                         .resizable()
                         .frame(width: 50, height: 50)
                         .padding(.bottom, 40)
-                    Text("Immotep")
+                    Text("Immotep".localized())
                         .font(.title)
                         .bold()
                         .padding(.bottom, 40)
@@ -92,15 +95,19 @@ struct LoginView: View {
                 }
                 .padding(.leading, 20)
             }
+
             VStack {
                 Spacer()
-                Text(viewModel.loginStatus)
+                Text(viewModel.loginStatus.localized())
                     .foregroundColor(viewModel.loginStatus == "Login successful!" ? .green : .red)
                     .padding(.top, 10)
-                .padding(.top, 20)
                 Spacer()
             }
             .padding()
+
+            .navigationDestination(isPresented: $viewModel.isLoggedIn) {
+                OverviewView()
+            }
         }
         .navigationBarBackButtonHidden(true)
     }
