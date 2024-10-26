@@ -6,13 +6,20 @@
 //
 
 import SwiftUI
-/*
-struct ContentView: View {
-}
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+struct ContentView: View {
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
+
+    var body: some View {
+        if isLoggedIn {
+            OverviewView()
+        } else {
+            LoginView()
+                .onAppear {
+                    if TokenStorage.getAccessToken() != nil {
+                        isLoggedIn = true
+                    }
+                }
+        }
     }
 }
-*/

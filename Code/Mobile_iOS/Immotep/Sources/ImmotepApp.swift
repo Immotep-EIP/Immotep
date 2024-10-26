@@ -11,7 +11,7 @@ import SwiftUI
 struct ImmotepApp: App {
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            ContentView()
         }
     }
 }
