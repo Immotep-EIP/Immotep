@@ -9,9 +9,16 @@ import SwiftUI
 
 struct MessagesView: View {
     var body: some View {
-            TaskBar()
+        NavigationStack {
+            VStack {
+                TopBar()
+                Spacer()
+
+                TaskBar()
+            }
+            .navigationBarBackButtonHidden(true)
         }
-        // .navigationBarBackButtonHidden(true)
+    }
 }
 
 struct MessagesView_Previews: PreviewProvider {

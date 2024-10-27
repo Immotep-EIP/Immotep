@@ -10,10 +10,13 @@ import SwiftUI
 @MainActor
 class ProfileViewModel: ObservableObject {
     @Published var user: User?
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     private let userService = UserService()
 
     init() {
-        loadUser()
+        if isLoggedIn {
+            loadUser()
+        }
     }
 
     func loadUser() {
