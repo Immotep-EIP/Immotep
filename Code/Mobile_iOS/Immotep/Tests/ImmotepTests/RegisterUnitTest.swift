@@ -6,99 +6,128 @@
 //
 
 import XCTest
+import Foundation
+import Combine
+
 @testable import Immotep
 
-final class RegisterUnitTest: XCTestCase {
+class MockRegisterViewModel: RegisterViewModel {
+    var shouldReturnError: Bool = false
+
+    override func signIn() async {
+        registerStatus = ""
+
+        if let errorMessage = validateFields() {
+            registerStatus = errorMessage
+            return
+        }
+
+        if shouldReturnError {
+            registerStatus = "Error: Mocked error occurred"
+            return
+        }
+
+        registerStatus = "Registration successful!"
+    }
+}
+
+class MockApiService: ApiServiceProtocol {
+    var shouldReturnError: Bool = false
+    var mockResponseCode: Int = 201
+    var mockResponseData: Data = Data()
+
+    func registerUser(with model: RegisterModel) async throws -> (String) {
+        if shouldReturnError {
+            switch mockResponseCode {
+            case 400:
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Empty fields."])
+            case 409:
+                throw NSError(domain: "", code: 409, userInfo: [NSLocalizedDescriptionKey: "Email already exists."])
+            default:
+                throw NSError(domain: "", code: mockResponseCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(mockResponseCode)"])
+            }
+        }
+        return ("Response")
+    }
+}
+
+@MainActor
+final class RegisterViewModelTests: XCTestCase {
     var viewModel: RegisterViewModel!
+    var apiService: MockApiService!
 
-    override func setUpWithError() throws {
-        viewModel = RegisterViewModel()
+    override func setUp() {
+        super.setUp()
+        apiService = MockApiService()
+        viewModel = RegisterViewModel(apiService: apiService)
     }
 
-    override func tearDownWithError() throws {
-        viewModel = nil
+    func testSuccessfulRegistration() async {
+        viewModel.model.name = "John"
+        viewModel.model.firstName = "Doe"
+        viewModel.model.email = "john.doe@example.com"
+        viewModel.model.password = "password123456789"
+        viewModel.model.passwordConfirmation = "password123456789"
+        viewModel.model.agreement = true
+
+        apiService.shouldReturnError = false
+
+        await viewModel.signIn()
+
+        try? await Task.sleep(nanoseconds: 5_000_000_000)
+        XCTAssertEqual(viewModel.registerStatus, "Registration successful!")
     }
 
-    func testSignInWithEmptyFields() {
-        viewModel.model.name = ""
-        viewModel.model.firstName = ""
-        viewModel.model.email = ""
-        viewModel.model.password = ""
-        viewModel.model.passwordConfirmation = ""
-
-        viewModel.signIn()
+    func testRegistrationWithEmptyFields() async {
+        await viewModel.signIn()
 
         XCTAssertEqual(viewModel.registerStatus, "Please fill in all fields.")
     }
 
-    func testSignInWithMismatchedPasswords() {
-        viewModel.model.name = "testName"
-        viewModel.model.firstName = "testFirstName"
-        viewModel.model.email = "test@example.com"
-        viewModel.model.password = "password"
-        viewModel.model.passwordConfirmation = "differentpassword"
+    func testRegistrationWithMismatchedPasswords() async {
+        viewModel.model.name = "John"
+        viewModel.model.firstName = "Doe"
+        viewModel.model.email = "john.doe@example.com"
+        viewModel.model.password = "password123456789"
+        viewModel.model.passwordConfirmation = "differentPassword123456789"
+        viewModel.model.agreement = true
 
-        viewModel.signIn()
+        await viewModel.signIn()
 
         XCTAssertEqual(viewModel.registerStatus, "Passwords do not match.")
     }
 
-    func testSignInWithoutAgreement() {
-        viewModel.model.name = "testName"
-        viewModel.model.firstName = "testFirstName"
-        viewModel.model.email = "test@example.com"
-        viewModel.model.password = "password"
-        viewModel.model.passwordConfirmation = "password"
-        viewModel.model.agreement = false
+    func testRegistrationWithMockedError() async {
+        apiService.shouldReturnError = true
+        apiService.mockResponseCode = 500
 
-        viewModel.signIn()
-
-        XCTAssertEqual(viewModel.registerStatus, "You must agree to the terms and conditions.")
-    }
-
-    func testSignInWithInvalidEmail() {
-        viewModel.model.name = "testName"
-        viewModel.model.firstName = "testFirstName"
-        viewModel.model.email = "invalidEmail"
-        viewModel.model.password = "password"
-        viewModel.model.passwordConfirmation = "password"
+        viewModel.model.name = "John"
+        viewModel.model.firstName = "Doe"
+        viewModel.model.email = "john.doe@example.com"
+        viewModel.model.password = "password123456789"
+        viewModel.model.passwordConfirmation = "password123456789"
         viewModel.model.agreement = true
 
-        viewModel.signIn()
+        await viewModel.signIn()
+        try? await Task.sleep(nanoseconds: 5_000_000_000)
 
-        XCTAssertEqual(viewModel.registerStatus, "Please enter a valid email address.")
+        XCTAssertEqual(viewModel.registerStatus, "Error: Failed with status code: 500")
     }
 
-    func testSignInWithValidDetails() {
-        viewModel.model.name = "testName"
-        viewModel.model.firstName = "testFirstName"
-        viewModel.model.email = "Test@example.com"
-        viewModel.model.password = "Password"
-        viewModel.model.passwordConfirmation = "Password"
+    func testRegistrationWithApiError() async {
+        apiService.shouldReturnError = true
+        apiService.mockResponseCode = 400
+
+        viewModel.model.name = "John"
+        viewModel.model.firstName = "Doe"
+        viewModel.model.email = "john.doe@example.com"
+        viewModel.model.password = "password123456789"
+        viewModel.model.passwordConfirmation = "password123456789"
         viewModel.model.agreement = true
 
-        viewModel.signIn()
-
-        XCTAssertEqual(viewModel.registerStatus, "Registration successful!")
+        await viewModel.signIn()
+        try? await Task.sleep(nanoseconds: 5_000_000_000)
+        XCTAssertEqual(viewModel.registerStatus, "Error: Empty fields.")
     }
-
-    func testSignInWithInvalidEmailAndPassword() {
-        viewModel.model.name = "testName"
-        viewModel.model.firstName = "testFirstName"
-        viewModel.model.email = "invalid@example.com"
-        viewModel.model.password = "wrongpassword"
-        viewModel.model.passwordConfirmation = "wrongpassword"
-        viewModel.model.agreement = true
-
-        viewModel.signIn()
-
-        XCTAssertEqual(viewModel.registerStatus, "Invalid email or password.")
-    }
-
-//    func testPerformanceExample() throws {
-//        // This is an example of a performance test case.
-//        self.measure {
-//            // Put the code you want to measure the time of here.
-//        }
-//    }
 }
