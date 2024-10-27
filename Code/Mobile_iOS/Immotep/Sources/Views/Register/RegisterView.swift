@@ -57,7 +57,9 @@ struct RegisterView: View {
                             .padding(.top, 10)
 
                         Button(action: {
-                            viewModel.signIn()
+                            Task {
+                                await viewModel.signIn()
+                            }
                         }, label: {
                             Text("Sign In".localized())
                                 .frame(maxWidth: .infinity)

@@ -14,19 +14,24 @@ class RegisterViewModel: ObservableObject {
     @Published var registerStatus: String = ""
 
     private var cancellables = Set<AnyCancellable>()
+    private var apiService: ApiServiceProtocol
 
-    func signIn() {
+    init(apiService: ApiServiceProtocol = ApiService.shared) {
+        self.apiService = apiService
+    }
+
+    func signIn() async {
         registerStatus = ""
 
         if let errorMessage = validateFields() {
             registerStatus = errorMessage
             return
         }
+        let apiServiceCopy = apiService
 
         Task {
             do {
-                let (accessToken, refreshToken) = try await ApiService.shared.registerUser(with: model)
-                TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken)
+                let response = try await apiServiceCopy.registerUser(with: model)
                 registerStatus = "Registration successful!"
             } catch {
                 registerStatus = "Error: \(error.localizedDescription)"
@@ -34,7 +39,7 @@ class RegisterViewModel: ObservableObject {
         }
     }
 
-    private func validateFields() -> String? {
+    func validateFields() -> String? {
         guard !model.name.isEmpty,
               !model.firstName.isEmpty,
               !model.email.isEmpty,

@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
+    @StateObject private var profileViewModel = ProfileViewModel()
 
     var body: some View {
         if isLoggedIn {
             OverviewView()
+                .environmentObject(profileViewModel)
         } else {
             LoginView()
                 .onAppear {

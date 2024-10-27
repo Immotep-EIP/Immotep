@@ -5,8 +5,6 @@
 //  Created by Liebenguth Alessio on 13/10/2024.
 //
 
-// Custom text input for now used in login and register views, see if works well with UI tests
-
 import SwiftUI
 
 struct CustomTextInput: View {

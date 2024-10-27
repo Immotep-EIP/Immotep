@@ -7,12 +7,11 @@
 
 import Foundation
 
-actor ApiService: Sendable {
+actor ApiService: Sendable, ApiServiceProtocol {
     static let shared = ApiService()
-
     let apiUrl = "http://localhost:3001/api/v1"
 
-    func registerUser(with model: RegisterModel) async throws -> (String, String) {
+    func registerUser(with model: RegisterModel) async throws -> String {
         let url = URL(string: "\(apiUrl)/auth/register")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -28,14 +27,11 @@ actor ApiService: Sendable {
         let jsonData = try JSONSerialization.data(withJSONObject: body)
         request.httpBody = jsonData
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server."])
         }
-
-        let responseBody = String(data: data, encoding: .utf8)
-
         guard httpResponse.statusCode == 201 else {
             if httpResponse.statusCode == 409 {
                 throw NSError(domain: "", code: 409, userInfo: [NSLocalizedDescriptionKey: "Email already exists."])
@@ -46,7 +42,10 @@ actor ApiService: Sendable {
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
             }
         }
-
-        return try TokenStorage.extractTokens(from: data)
+        return "Registration successful!"
     }
+}
+
+protocol ApiServiceProtocol {
+    func registerUser(with model: RegisterModel) async throws -> (String)
 }

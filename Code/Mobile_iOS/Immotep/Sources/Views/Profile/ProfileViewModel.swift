@@ -13,13 +13,17 @@ class ProfileViewModel: ObservableObject {
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     private let userService = UserService()
 
+    var isUserLoggedIn: Bool {
+        return isLoggedIn
+    }
     init() {
-        if isLoggedIn {
+        if isUserLoggedIn {
             loadUser()
         }
     }
 
     func loadUser() {
+        guard isUserLoggedIn else { return }
         Task {
             do {
                 let currentUser = try await userService.getCurrentUser()

@@ -35,10 +35,10 @@ struct ProfileView: View {
                     signOut()
                 }
                 .padding()
+
                 .navigationDestination(isPresented: $navigateToLogin) {
                     LoginView()
                 }
-
                 Spacer()
                 TaskBar()
             }
@@ -49,6 +49,7 @@ struct ProfileView: View {
     private func signOut() {
         TokenStorage.clearTokens()
         isLoggedIn = false
+        viewModel.user = nil
         navigateToLogin = true
     }
 }
