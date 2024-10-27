@@ -11,13 +11,17 @@ struct TokenStorage {
     private static let accessTokenKey = "access_token"
     private static let refreshTokenKey = "refresh_token"
     private static let tokenDateKey = "token_date"
-    private static let tokenValidityDuration: TimeInterval = 24 * 60 * 60
+    private static let tokenExpiryKey = "token_expiry"
 
-    static func storeTokens(accessToken: String, refreshToken: String) {
+    static func storeTokens(accessToken: String, refreshToken: String, expiresIn: TimeInterval? = nil) {
         let currentDate = Date()
         UserDefaults.standard.set(accessToken, forKey: accessTokenKey)
         UserDefaults.standard.set(refreshToken, forKey: refreshTokenKey)
         UserDefaults.standard.set(currentDate, forKey: tokenDateKey)
+
+        if let expiresIn = expiresIn {
+            UserDefaults.standard.set(expiresIn, forKey: tokenExpiryKey)
+        }
     }
 
     static func storeAccessToken(_ accessToken: String) {
@@ -34,16 +38,18 @@ struct TokenStorage {
     }
 
     static func isTokenExpired() -> Bool {
-        guard let tokenDate = UserDefaults.standard.object(forKey: tokenDateKey) as? Date else {
+        guard let tokenDate = UserDefaults.standard.object(forKey: tokenDateKey) as? Date,
+              let expiresIn = UserDefaults.standard.object(forKey: tokenExpiryKey) as? TimeInterval else {
             return true
         }
-        return Date().timeIntervalSince(tokenDate) >= tokenValidityDuration
+        return Date().timeIntervalSince(tokenDate) >= expiresIn
     }
 
     static func clearTokens() {
         UserDefaults.standard.removeObject(forKey: accessTokenKey)
         UserDefaults.standard.removeObject(forKey: refreshTokenKey)
         UserDefaults.standard.removeObject(forKey: tokenDateKey)
+        UserDefaults.standard.removeObject(forKey: tokenExpiryKey)
     }
 
     static func extractTokens(from data: Data) throws -> (String, String) {
@@ -55,6 +61,15 @@ struct TokenStorage {
             return (accessToken, refreshToken)
         } else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse response for tokens."])
+        }
+    }
+
+    static func extractExpiryDate(from data: Data) throws -> TimeInterval {
+        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let expiresIn = json["expires_in"] as? TimeInterval {
+            return expiresIn
+        } else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse expiry date from response."])
         }
     }
 }

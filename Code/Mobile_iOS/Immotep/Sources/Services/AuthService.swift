@@ -54,7 +54,8 @@ actor AuthService: Sendable {
         }
 
         let (accessToken, refreshToken) = try TokenStorage.extractTokens(from: data)
-        TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken)
+        let expiresIn = try TokenStorage.extractExpiryDate(from: data)
+        TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: expiresIn)
 
         return (accessToken, refreshToken)
     }
