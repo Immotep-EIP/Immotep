@@ -25,13 +25,16 @@ All the views are located in the **`Sources/`** folder. Each view is organized i
 The project's codebase is organized into a clear and modular structure, facilitating maintainability and scalability. Here's an overview of the key directories:
 
 - **Immotep/**: The root directory for the entire project.
-  - **Tests/**: Global tests directory
+  - **Tests/**: Global tests directory.
     - **ImmotepTests/**: Contains unit tests for the application.
     - **ImmotepUITests/**: Contains UI tests for the application.
-  - **Sources/**: Contains ressources and views directories
-    - **Resources/**: 
-      - **Assets/**: Contains various asset files.
+  - **Sources/**: Contains ressources and views directories.
+    - **Resources/**: Contains assets and localizable language files.
+      - **Assets/**: Contains images and other media resources.
     - **Views/**: Contains different views of the application, organized by features.
+    - **Services**: Contains all API-related and token-related files.
+    - **Utils**: Contains some useful fonctions and extensions.
+    - **Components**: Contains custom components, used in several views, to avoid code repetition.
 
 This structure promotes a distinct separation between UI and application logic, enhancing the clarity and modularity of the codebase.
 
