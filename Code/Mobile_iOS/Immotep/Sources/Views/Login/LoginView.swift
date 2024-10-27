@@ -15,7 +15,7 @@ struct LoginView: View {
                 Spacer()
 
                 VStack {
-                    Text("Welcome back".localized())
+                    Text("Welcome back!".localized())
                         .font(.system(size: 25))
                         .bold()
                         .padding(.bottom, 5)

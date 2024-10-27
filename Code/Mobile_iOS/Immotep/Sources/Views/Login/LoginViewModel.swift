@@ -7,12 +7,13 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 @MainActor
 class LoginViewModel: ObservableObject {
     @Published var model = LoginModel()
     @Published var loginStatus: String = ""
-    @Published var isLoggedIn: Bool = false
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @Published var user: User?
 
     private var cancellables = Set<AnyCancellable>()
@@ -41,7 +42,7 @@ class LoginViewModel: ObservableObject {
         }
     }
 
-    private func validateFields() -> String? {
+    func validateFields() -> String? {
         guard !model.email.isEmpty, !model.password.isEmpty else {
             return "Please enter both email and password."
         }
