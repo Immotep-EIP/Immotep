@@ -29,6 +29,7 @@
 "Settings" = "Settings";
 "Sign In" = "Sign In";
 "Sign Up" = "Sign Up";
-"Welcome back" = "Welcome back";
+"Welcome back!" = "Welcome back";
 "Login successful!" = "Login successful!";
 "Registration successful!" = "Registration successful!";
+"Logout" = "Logout";
