@@ -16,10 +16,16 @@ class LoginViewModel: ObservableObject {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @Published var user: User?
 
-    private var cancellables = Set<AnyCancellable>()
-    private let userService = UserService()
+    public var cancellables = Set<AnyCancellable>()
+    public let userService: UserServiceProtocol
+    public let authService: AuthServiceProtocol
 
-    func signIn() {
+    init(userService: UserServiceProtocol = UserService(), authService: AuthServiceProtocol = AuthService.shared) {
+        self.userService = userService
+        self.authService = authService
+    }
+
+    func signIn() async {
         loginStatus = ""
 
         if let errorMessage = validateFields() {
@@ -27,12 +33,16 @@ class LoginViewModel: ObservableObject {
             return
         }
 
+        let userServiceCopy = userService
+        let authServiceCopy = authService
+
         Task {
             do {
-                let (accessToken, refreshToken) = try await AuthService.shared.loginUser(email: model.email, password: model.password)
+                let (accessToken, refreshToken) = try await authServiceCopy.loginUser(email: model.email, password: model.password)
                 TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken)
-                                user = try await userService.fetchUserProfile(with: accessToken)
+                user = try await userServiceCopy.fetchUserProfile(with: accessToken)
                 loginStatus = "Login successful!"
+                print(loginStatus)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.isLoggedIn = true
                 }

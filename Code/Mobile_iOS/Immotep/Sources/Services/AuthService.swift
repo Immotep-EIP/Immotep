@@ -7,7 +7,7 @@
 
 import Foundation
 
-actor AuthService: Sendable {
+actor AuthService: Sendable, AuthServiceProtocol {
     static let shared = AuthService()
     let apiUrl = "http://localhost:3001/api/v1"
 
@@ -97,4 +97,10 @@ actor AuthService: Sendable {
         return encodedToken
     }
 
+}
+
+protocol AuthServiceProtocol {
+    func loginUser(email: String, password: String) async throws -> (String, String)
+    func requestToken(grantType: String, email: String?, password: String?, refreshToken: String?) async throws -> (String, String)
+    func authorizedRequest(for endpoint: String) async throws -> Data
 }

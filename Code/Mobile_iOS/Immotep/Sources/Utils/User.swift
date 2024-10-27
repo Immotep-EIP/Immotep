@@ -27,7 +27,7 @@ struct User: Decodable {
     }
 }
 
-actor UserService: Sendable {
+actor UserService: Sendable, UserServiceProtocol {
     static let shared = UserService()
 
     private var currentUser: User?
@@ -99,4 +99,10 @@ actor UserService: Sendable {
     func logout() {
         currentUser = nil
     }
+}
+
+protocol UserServiceProtocol {
+    func getCurrentUser() async throws -> User
+    func fetchUserProfile(with token: String) async throws -> User
+    func logout() async
 }

@@ -50,7 +50,9 @@ struct LoginView: View {
                         }
 
                         Button(action: {
-                            viewModel.signIn()
+                            Task {
+                                await viewModel.signIn()
+                            }
                         }, label: {
                             Text("Sign In".localized())
                                 .frame(maxWidth: .infinity)
