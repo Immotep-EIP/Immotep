@@ -2,15 +2,18 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
 }
 
 android {
     namespace = "com.example.immotep"
     compileSdk = 35
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.immotep"
         minSdk = 27
+        targetSdk = 35
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -26,6 +29,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
                 "proguard-rules.pro",
             )
         }
@@ -81,3 +85,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
