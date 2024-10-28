@@ -27,9 +27,6 @@ jobs:
     #           run: ./gradlew build --stacktrace
 
     android:
-        defaults:
-            run:
-              working-directory: ./Code/Mobile_Android
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
@@ -75,6 +72,6 @@ jobs:
                   arch: ${{ steps.avd-info.outputs.arch }}
                   target: ${{ steps.avd-info.outputs.target }}
                   profile: 'pixel_6'
-                  script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
+                  script: mv .github/debug.keystore ~/.android; ./Code/Mobile_Android/gradlew connectedDebugAndroidTest
 
                 
