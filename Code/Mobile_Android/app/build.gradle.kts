@@ -1,16 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
 }
 
 android {
     namespace = "com.example.immotep"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.immotep"
         minSdk = 27
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -25,7 +26,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -59,6 +60,18 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.compose.ui:ui:1.5.4")
+    implementation("androidx.compose.ui:ui-graphics:1.5.4")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
+    implementation("androidx.compose.material3:material3:1.2.0-alpha10")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("androidx.navigation:navigation-compose:2.8.1")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
+    implementation("androidx.compose.material:material:1.8.0-alpha01")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("io.github.osipxd:security-crypto-datastore-preferences:1.0.0-alpha04")
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha05")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
