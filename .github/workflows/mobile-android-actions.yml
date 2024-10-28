@@ -72,7 +72,6 @@ jobs:
                   arch: ${{ steps.avd-info.outputs.arch }}
                   target: ${{ steps.avd-info.outputs.target }}
                   profile: 'pixel_6'
-                  script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
-              working-directory: ./Code/Mobile_Android
+                  script: mv .github/debug.keystore ~/.android; cd Code/Mobile_Android ; ./gradlew connectedDebugAndroidTest
 
                 
