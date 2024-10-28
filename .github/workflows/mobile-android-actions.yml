@@ -1,73 +1,77 @@
 name: Android CI 🤖
 
 on:
-  push:
-    branches:
-      - main
-      - android-dev
-      - dev
-  pull_request:
-    branches:
-      - main
-      - dev
+    push:
+        branches:
+            - main
+            - android-dev
+            - dev
+    pull_request:
+        branches:
+            - main
+            - dev
 
 jobs:
-  build:
+    # test-build:
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #         - uses: actions/checkout@v4
+    #         - uses: actions/setup-java@v4
+    #           with:
+    #               distribution: "zulu"
+    #               java-version: 21
 
-    runs-on: ubuntu-latest
+    #         - uses: gradle/actions/setup-gradle@v4
 
-    strategy:
-      matrix:
-        api-level: [30]
-        target: [default]
-        arch: [x86_64]
+    #         - name: Test
+    #           run: ./gradlew build --stacktrace
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    android:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                api-level:
+                    - 30
+                    - 32
+                    - 34
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+        steps:
+            - uses: actions/checkout@v4
+            - name: Get AVD info
+              uses: ./.github/actions/get-avd-info
+              id: avd-info
+              with:
+                api-level: ${{ matrix.api-level }}
+            - name: Enable KVM group perms
+              run: |
+                  echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+                  sudo udevadm control --reload-rules
+                  sudo udevadm trigger --name-match=kvm
 
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+            - uses: actions/setup-java@v4
+              with:
+                  distribution: "zulu"
+                  java-version: 21
 
-      - name: Change directory to Mobile_Android
-        working-directory: Code/Mobile_Android
-        run: echo "Changed working directory to Code/Mobile_Android"
+            
 
-      - name: Run unit tests
-        working-directory: Code/Mobile_Android
-        run: ./gradlew test
+            - uses: gradle/actions/setup-gradle@v4
+            - name: Cache gradle
+              uses: actions/cache@v1
+              with:
+                path: ~/.gradle/caches
+                key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+                restore-keys: |
+                   ${{ runner.os }}-gradle-   
+            - name: Instrumentation tests
+              uses: reactivecircus/android-emulator-runner@v2
+              with:
+                  api-level: ${{ matrix.api-level }}
+                  arch: ${{ steps.avd-info.outputs.arch }}
+                  target: ${{ steps.avd-info.outputs.target }}
+                  profile: 'pixel_6'
+                  script: mv .github/debug.keystore ~/.android; cd Code/Mobile_Android ; ./gradlew connectedDebugAndroidTest
 
-      - name: Start emulator
-        run: |
-          adb devices
-          $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -no-snapshot -no-boot-anim &
-          adb wait-for-device
-          adb shell input keyevent 82
-
-      - name: Wait for emulator to boot
-        run: |
-          adb wait-for-device
-          adb shell getprop sys.boot_completed | grep -m 1 '1'
-
-      - name: Run instrumented tests
-        working-directory: Code/Mobile_Android
-        run: ./gradlew connectedAndroidTest
-
-      - name: Kill emulator
-        run: adb emu kill
+                

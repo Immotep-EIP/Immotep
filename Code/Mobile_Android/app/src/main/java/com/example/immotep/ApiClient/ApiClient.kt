@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:3001/"
+    private val BASE_URL = "https://test1.icytree-5b429d30.eastus.azurecontainerapps.io"
 
     val retrofit: Retrofit by lazy {
         Retrofit

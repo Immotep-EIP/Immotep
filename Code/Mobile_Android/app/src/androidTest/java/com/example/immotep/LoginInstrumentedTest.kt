@@ -98,7 +98,7 @@ class LoginInstrumentedTest {
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test99")
         composeTestRule.onNodeWithTag("loginButton").performClick()
-        Thread.sleep(5000)
+        Thread.sleep(10000)
         composeTestRule.onNodeWithTag("dashboardScreen").assertIsDisplayed()
     }
 
@@ -107,7 +107,7 @@ class LoginInstrumentedTest {
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("error@gmail.com")
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("testError")
         composeTestRule.onNodeWithTag("loginButton").performClick()
-        Thread.sleep(2000)
+        Thread.sleep(4000)
         composeTestRule.onNodeWithTag("errorAlert").assertIsDisplayed()
     }
 }

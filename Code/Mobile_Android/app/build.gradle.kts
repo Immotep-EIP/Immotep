@@ -7,10 +7,12 @@ plugins {
 android {
     namespace = "com.example.immotep"
     compileSdk = 35
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.immotep"
         minSdk = 27
+        targetSdk = 35
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -26,6 +28,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
                 "proguard-rules.pro",
             )
         }
@@ -72,6 +75,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("io.github.osipxd:security-crypto-datastore-preferences:1.0.0-alpha04")
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha05")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

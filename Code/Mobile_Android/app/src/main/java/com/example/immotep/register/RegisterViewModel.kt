@@ -66,7 +66,8 @@ class RegisterViewModel : ViewModel() {
     }
 
     private fun confirmedRegister(): Boolean =
-        _registerForm.value.password == _registerConfirm.value.password
+        _registerConfirm.value.password.length > 3 && _registerForm.value.password == _registerConfirm.value.password
+
 
     fun onSubmit(navController: NavController) {
         val error = RegisterFormError()

@@ -61,14 +61,14 @@ fun RegisterScreen(
                 label = { Text(stringResource(R.string.last_name)) },
                 value = registerForm.value.lastName,
                 onValueChange = { value -> viewModel.setLastName(value) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("registerLastName"),
                 errorMessage = if (errors.value.lastName) stringResource(R.string.last_name_error) else null,
             )
             OutlinedTextField(
                 label = { Text(stringResource(R.string.first_name)) },
                 value = registerForm.value.firstName,
                 onValueChange = { value -> viewModel.setFirstName(value) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("registerFirstName"),
                 errorMessage = if (errors.value.firstName) stringResource(R.string.first_name_error) else null,
             )
             OutlinedTextField(
@@ -76,14 +76,14 @@ fun RegisterScreen(
                 value = registerForm.value.email,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 onValueChange = { value -> viewModel.setEmail(value) },
-                modifier = Modifier.fillMaxWidth(),
-                errorMessage = if (errors.value.lastName) stringResource(R.string.last_name_error) else null,
+                modifier = Modifier.fillMaxWidth().testTag("registerEmail"),
+                errorMessage = if (errors.value.lastName) stringResource(R.string.email_error) else null,
             )
             PasswordInput(
                 label = { Text(stringResource(R.string.your_password)) },
                 value = registerForm.value.password,
                 onValueChange = { value -> viewModel.setPassword(value) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("registerPassword"),
                 errorMessage = if (errors.value.password) stringResource(R.string.register_password_error) else null,
                 iconButtonTestId = "registerTogglePasswordVisibility",
             )
@@ -91,7 +91,7 @@ fun RegisterScreen(
                 label = { Text(stringResource(R.string.password_confirm)) },
                 value = registerConfirm.value.password,
                 onValueChange = { value -> viewModel.setConfirmPassword(value) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("registerPasswordConfirm"),
                 errorMessage = if (errors.value.confirmPassword) stringResource(R.string.password_confirm_error) else null,
                 iconButtonTestId = "registerToggleConfirmPasswordVisibility",
             )
@@ -100,10 +100,13 @@ fun RegisterScreen(
                 isChecked = registerConfirm.value.agreeToTerms,
                 onCheckedChange = { value -> viewModel.setAgreeToTerms(value) },
                 errorMessage = if (errors.value.agreeToTerms) stringResource(R.string.agree_terms_error) else null,
+                modifier = Modifier.testTag("registerAgreeToTerm")
             )
             Button(onClick = {
                 viewModel.onSubmit(navController)
-            }) {
+            },
+                modifier = Modifier.testTag("registerButton"),
+            ) {
                 Text(stringResource(R.string.sign_up))
             }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
