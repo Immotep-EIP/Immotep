@@ -1,0 +1,12 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* margin-bottom: 5px; */
+}
+
+.subtitle {
+  font-size: 11px;
+  color: #b6adad;
+  margin-bottom: 4px;
+}

@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-function App() {
-  const [count, setCount] = useState(0)
+import './translation/i18n.tsx'
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+import NavigationEnum from '@/enums/NavigationEnum'
+import MainLayout from '@/components/MainLayout/MainLayout.tsx'
+
+// ! AUTHENTIFICATION
+import { AuthProvider } from '@/context/authContext'
+import Login from '@/views/Authentification/Login/Login.tsx'
+import Register from '@/views/Authentification/Register/Register.tsx'
+import ForgotPassword from '@/views/Authentification/ForgotPassword/ForgotPassword.tsx'
+
+// ! MAIN LAYOUT - SIDEBAR
+import OverviewContent from '@/views/Overview/Overview'
+import RealPropertyContent from '@/views/RealProperty/RealProperty'
+import MessagesContent from '@/views/Messages/Messages'
+
+// ! MAIN LAYOUT - HEADER
+import Settings from '@/views/Settings/Settings'
+import MyProfile from '@/views/MyProfile/MyProfile'
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
+
+const App: React.FC = () => (
+  <Router>
+    <AuthProvider>
+      <Routes>
+        <Route path={NavigationEnum.LOGIN} element={<Login />} />
+        <Route path={NavigationEnum.REGISTER} element={<Register />} />
+        <Route
+          path={NavigationEnum.FORGOT_PASSWORD}
+          element={<ForgotPassword />}
+        />
+
+        <Route element={<MainLayout />}>
+          <Route element={<ProtectedRoute />}>
+            <Route
+              path={NavigationEnum.OVERVIEW}
+              element={<OverviewContent />}
+            />
+            <Route
+              path={NavigationEnum.REAL_PROPERTY}
+              element={<RealPropertyContent />}
+            />
+            <Route
+              path={NavigationEnum.MESSAGES}
+              element={<MessagesContent />}
+            />
+            <Route path={NavigationEnum.SETTINGS} element={<Settings />} />
+            <Route path={NavigationEnum.MY_PROFILE} element={<MyProfile />} />
+          </Route>
+        </Route>
+      </Routes>
+    </AuthProvider>
+  </Router>
+)
 
 export default App

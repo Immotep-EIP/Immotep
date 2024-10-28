@@ -8,3 +8,5 @@ logs/
 tmp/
 .lintFiles/
 build/
+coverage/
+.env

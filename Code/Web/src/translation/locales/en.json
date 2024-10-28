@@ -1,0 +1,91 @@
+{
+  "components": {
+    "input": {
+      "email": {
+        "label": "Email",
+        "placeholder": "Enter your email",
+        "error": "Please fill your email."
+      },
+      "emailConfirmation": {
+        "label": "Email confirmation",
+        "placeholder": "Confirm your email",
+        "error": "Please fill your email confirmation."
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter your password",
+        "error": "Please fill your password."
+      },
+      "confirmPassword": {
+        "label": "Confirm password",
+        "placeholder": "Confirm your password",
+        "error": "Please fill your password confirmation."
+      },
+      "firstName": {
+        "label": "First name",
+        "placeholder": "Enter your first name",
+        "error": "Please fill your first name."
+      },
+      "lastName": {
+        "label": "Last name",
+        "placeholder": "Enter your last name",
+        "error": "Please fill your last name."
+      }
+    },
+    "button": {
+      "signIn": "Sign in",
+      "signUp": "Sign up",
+      "rememberMe": "Remember me",
+      "askForgotPassword": "Forgot password ?",
+      "sendEmail": "Send email",
+      "overview": "Overview",
+      "realProperty": "Real property",
+      "messages": "Messages",
+      "settings": "Settings",
+      "myProfile": "My profile",
+
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "pages": {
+    "login": {
+      "title": "Welcome back!",
+      "description": "Please enter your details to sign in.",
+      "dontHaveAccount": "Don't have an account ?",
+      "connectionSuccess": "You are now connected.",
+      "connectionError": "An error occurred while trying to connect, please try again.",
+      "fillFields": "Please fill all fields."
+    },
+    "register": {
+      "title": "Create an account",
+      "description": "Join immotep for your peace of mind !",
+      "agreeTerms": "I agree to all Term, Privacy Policy and Fees",
+      "alreadyHaveAccount": "Already have an account?",
+      "registerSuccess": "You are now registered.",
+      "registerError": "An error occurred while trying to register, please try again.",
+      "emailAlreadyUsed": "This email is already used.",
+      "confirmPasswordError": "Passwords do not match.",
+      "fillFields": "Please fill all fields."
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "description": "Please enter your email to reset your password.",
+      "sendEmailSuccess": "An email has been sent to reset your password.",
+      "sendEmailError": "An error occurred while trying to send the email, please try again.",
+      "emailsDontMatch": "Emails do not match.",
+      "fillFields": "Please fill all fields."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Manage your account settings.",
+      "language": "Language",
+      "en": "English",
+      "fr": "French",
+      "userInfos": "User informations",
+      "logout": "Logout",
+      "logoutSuccess": "You are now disconnected."
+    }
+  }
+}

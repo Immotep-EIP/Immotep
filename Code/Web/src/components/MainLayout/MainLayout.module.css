@@ -1,0 +1,48 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-height: 100vh;
+  min-width: 100vw;
+  background-color: white;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 7vh;
+  width: 100%;
+  border-bottom: 0.2px solid #e0e0e0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leftPartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.headerLogo {
+  height: calc(7vh - 30px);
+  margin: 10px 20px;
+}
+
+.headerTitle {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #252525;
+}
+
+.rightPartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right: 20px;
+}
+
+.menuIcon {
+  width: 20px;
+  height: 20px;
+}
