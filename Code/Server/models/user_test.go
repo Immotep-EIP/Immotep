@@ -1,11 +1,11 @@
 package models_test
 
 import (
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"immotep/backend/models"
+	"immotep/backend/prisma/db"
 )
 
 func TestUserRequest(t *testing.T) {

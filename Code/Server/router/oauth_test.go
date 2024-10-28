@@ -1,12 +1,13 @@
 package router_test
 
 import (
-	"immotep/backend/database"
-	"immotep/backend/prisma/db"
-	"immotep/backend/router"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"immotep/backend/database"
+	"immotep/backend/prisma/db"
+	"immotep/backend/router"
 )
 
 func BuildTestUser(id string) db.UserModel {
@@ -34,12 +35,12 @@ func TestValidateUser(t *testing.T) {
 
 	t.Run("Valid user", func(t *testing.T) {
 		err := testOauth.ValidateUser("test1@example.com", "Password123", "", nil)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("Invalid password", func(t *testing.T) {
 		err := testOauth.ValidateUser("test1@example.com", "azerty", "", nil)
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 
 	mock.User.Expect(
@@ -48,7 +49,7 @@ func TestValidateUser(t *testing.T) {
 
 	t.Run("Not found user", func(t *testing.T) {
 		err := testOauth.ValidateUser("test2@example.com", "Password123", "", nil)
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 }
 
@@ -64,7 +65,7 @@ func TestAddClaims(t *testing.T) {
 
 	t.Run("Valid user", func(t *testing.T) {
 		claims, err := testOauth.AddClaims("test1@example.com", "", "", "")
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, claims)
 		assert.Equal(t, "1", claims["id"])
 		assert.Equal(t, "member", claims["role"])
@@ -76,7 +77,7 @@ func TestAddClaims(t *testing.T) {
 
 	t.Run("Not found user", func(t *testing.T) {
 		claims, err := testOauth.AddClaims("test2@example.com", "", "", "")
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, claims)
 	})
 }
@@ -86,12 +87,10 @@ func TestAddProperties(t *testing.T) {
 
 	t.Run("Add properties", func(t *testing.T) {
 		props, err := testOauth.AddProperties("test1@example.com", "", "", "")
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, props)
 	})
 }
-
-
 
 // Unused methods ----------------------------------------------------------------------------------------
 func TestValidateClient(t *testing.T) {
@@ -99,7 +98,7 @@ func TestValidateClient(t *testing.T) {
 
 	t.Run("Validate client", func(t *testing.T) {
 		err := testOauth.ValidateClient("", "", "", nil)
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 }
 
@@ -108,7 +107,7 @@ func TestValidateTokenId(t *testing.T) {
 
 	t.Run("Validate token id", func(t *testing.T) {
 		err := testOauth.ValidateTokenId("", "", "", "")
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 }
 
@@ -117,6 +116,6 @@ func TestStoreTokenId(t *testing.T) {
 
 	t.Run("Validate token id", func(t *testing.T) {
 		err := testOauth.StoreTokenId("", "", "", "")
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 }

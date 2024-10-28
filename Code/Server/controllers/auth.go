@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"immotep/backend/models"
-	userservice "immotep/backend/services"
-	"immotep/backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/maxzerbini/oauth"
+	"immotep/backend/models"
+	userservice "immotep/backend/services"
+	"immotep/backend/utils"
 )
 
 // TokenAuth godoc

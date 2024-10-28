@@ -1,13 +1,13 @@
 package main
 
 import (
-	"immotep/backend/database"
-	_ "immotep/backend/docs"
-	"immotep/backend/router"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
+	"immotep/backend/database"
+	_ "immotep/backend/docs"
+	"immotep/backend/router"
 )
 
 //	@title			Immotep API
@@ -26,17 +26,28 @@ import (
 //	@name						Authorization
 //	@description				Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".
 
-func main() {
+func mainFunc() int {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Error loading .env file")
+		return 1
 	}
 
-	db := database.ConnectDB()
-	defer db.Client.Disconnect()
+	db, err := database.ConnectDB()
+	if err != nil {
+		log.Println(err)
+		return 1
+	}
+	defer func() { _ = db.Client.Disconnect() }()
 
 	err = router.Routes().Run(":" + os.Getenv("PORT"))
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return 1
 	}
+	return 0
+}
+
+func main() {
+	os.Exit(mainFunc())
 }

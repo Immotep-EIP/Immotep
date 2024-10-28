@@ -2,17 +2,17 @@ package router
 
 import (
 	"errors"
+	"net/http"
+
 	"immotep/backend/database"
 	"immotep/backend/prisma/db"
 	"immotep/backend/utils"
-	"net/http"
 )
 
-type TestUserVerifier struct {
-}
+type TestUserVerifier struct{}
 
 // Validates the username and password
-func (*TestUserVerifier) ValidateUser(email, password, scope string, r *http.Request) error {
+func (*TestUserVerifier) ValidateUser(email, password, _scope string, _r *http.Request) error {
 	pdb := database.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
 	if err != nil {
@@ -26,7 +26,7 @@ func (*TestUserVerifier) ValidateUser(email, password, scope string, r *http.Req
 }
 
 // Adds claims to the token
-func (*TestUserVerifier) AddClaims(email, tokenID, tokenType, scope string) (map[string]string, error) {
+func (*TestUserVerifier) AddClaims(email, _tokenId, _tokenType, _scope string) (map[string]string, error) {
 	pdb := database.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
 	if err != nil {
@@ -42,23 +42,21 @@ func (*TestUserVerifier) AddClaims(email, tokenID, tokenType, scope string) (map
 }
 
 // Adds properties to the token
-func (*TestUserVerifier) AddProperties(email, tokenId, tokenType string, scope string) (map[string]string, error) {
+func (*TestUserVerifier) AddProperties(_email, _tokenId, _tokenType string, _scope string) (map[string]string, error) {
 	props := make(map[string]string)
 	// props["customer_name"] = "Gopher"
 	return props, nil
 }
 
-
-
 // Unused methods ----------------------------------------------------------------------------------------
-func (*TestUserVerifier) ValidateClient(clientID, clientSecret, scope string, r *http.Request) error {
+func (*TestUserVerifier) ValidateClient(_clientId, _clientSecret, _scope string, _r *http.Request) error {
 	return errors.New("wrong client")
 }
 
-func (*TestUserVerifier) ValidateTokenId(email, tokenId, refreshTokenID, tokenType string) error {
+func (*TestUserVerifier) ValidateTokenId(_email, _tokenId, _refreshTokenId, _tokenType string) error {
 	return nil
 }
 
-func (*TestUserVerifier) StoreTokenId(email, tokenId, refreshTokenID, tokenType string) error {
+func (*TestUserVerifier) StoreTokenId(_email, _tokenId, _refreshTokenId, _tokenType string) error {
 	return nil
 }
