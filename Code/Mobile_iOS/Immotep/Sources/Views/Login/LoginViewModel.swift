@@ -39,13 +39,12 @@ class LoginViewModel: ObservableObject {
         Task {
             do {
                 let (accessToken, refreshToken) = try await authServiceCopy.loginUser(email: model.email, password: model.password)
-                TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken)
+                TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: nil, keepMeSignedIn: model.keepMeSignedIn)
                 user = try await userServiceCopy.fetchUserProfile(with: accessToken)
                 loginStatus = "Login successful!"
-                print(loginStatus)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.isLoggedIn = true
-                }
+//                }
             } catch {
                 loginStatus = "Error: \(error.localizedDescription)"
             }

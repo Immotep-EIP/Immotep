@@ -10,6 +10,7 @@ import Foundation
 actor ApiService: Sendable, ApiServiceProtocol {
     static let shared = ApiService()
     let apiUrl = "http://localhost:3001/api/v1"
+//    let apiUrl = "https://test1.icytree-5b429d30.eastus.azurecontainerapps.io/"
 
     func registerUser(with model: RegisterModel) async throws -> String {
         let url = URL(string: "\(apiUrl)/auth/register")!

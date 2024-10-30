@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct ImmotepApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appdelegate
     var body: some Scene {
         WindowGroup {
             ContentView()

@@ -24,6 +24,7 @@ class ProfileViewModel: ObservableObject {
 
     func loadUser() {
         guard isUserLoggedIn else { return }
+        // add a guard to avoid useless api call if profile already loaded
         Task {
             do {
                 let currentUser = try await userService.getCurrentUser()

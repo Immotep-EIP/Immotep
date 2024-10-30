@@ -35,6 +35,7 @@ struct ProfileView: View {
                     signOut()
                 }
                 .padding()
+                .accessibilityIdentifier("logoutButton")
 
                 .navigationDestination(isPresented: $navigateToLogin) {
                     LoginView()

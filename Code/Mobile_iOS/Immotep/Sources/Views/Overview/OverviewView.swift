@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct OverviewView: View {
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
+
     var body: some View {
         NavigationStack {
             VStack {
                 TopBar()
                 Spacer()
-
                 TaskBar()
             }
             .navigationBarBackButtonHidden(true)

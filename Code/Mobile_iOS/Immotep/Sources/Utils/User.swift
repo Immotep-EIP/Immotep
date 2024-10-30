@@ -46,7 +46,7 @@ actor UserService: Sendable, UserServiceProtocol {
             }
         }
 
-        guard let accessToken = TokenStorage.getAccessToken() else {
+        guard let accessToken = await TokenStorage.getAccessToken() else {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No access token found."])
         }
 
@@ -56,7 +56,7 @@ actor UserService: Sendable, UserServiceProtocol {
     }
 
     private func refreshAccessTokenIfNeeded() async throws -> String {
-        guard let refreshToken = TokenStorage.getRefreshToken() else {
+        guard let refreshToken = await TokenStorage.getRefreshToken() else {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No refresh token found. Please log in again."])
         }
         do {
@@ -72,6 +72,7 @@ actor UserService: Sendable, UserServiceProtocol {
 
     func fetchUserProfile(with token: String) async throws -> User {
         let url = URL(string: "http://localhost:3001/api/v1/profile")!
+//        let url = URL(string: "https://test1.icytree-5b429d30.eastus.azurecontainerapps.io/profile")!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")

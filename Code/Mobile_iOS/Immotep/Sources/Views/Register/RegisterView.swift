@@ -61,7 +61,7 @@ struct RegisterView: View {
                                 await viewModel.signIn()
                             }
                         }, label: {
-                            Text("Sign In".localized())
+                            Text("Sign Up".localized())
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color.black)

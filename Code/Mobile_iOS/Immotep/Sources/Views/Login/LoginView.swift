@@ -9,11 +9,13 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
+    @AppStorage("keepMeSignedIn") var keepMeSignedIn: Bool = false
+
     var body: some View {
         NavigationStack {
             VStack {
                 Spacer()
-
                 VStack {
                     Text("Welcome back!".localized())
                         .font(.system(size: 25))
@@ -26,7 +28,6 @@ struct LoginView: View {
 
                     VStack(alignment: .leading, spacing: 15) {
                         CustomTextInput(title: "Email*", placeholder: "Enter your email", text: $viewModel.model.email, isSecure: false)
-
                         CustomTextInput(title: "Password*", placeholder: "Enter your password", text: $viewModel.model.password, isSecure: true)
 
                         HStack {
@@ -41,9 +42,7 @@ struct LoginView: View {
                                 .foregroundStyle(.black)
                             })
                             Spacer()
-
-                            Button(action: {
-                            }, label: {
+                            Button(action: {}, label: {
                                 Text("Forgot password?".localized())
                                     .font(.system(size: 14))
                             })
@@ -78,11 +77,9 @@ struct LoginView: View {
                     }
                     .padding(.horizontal, 40)
                 }
-
                 Spacer()
             }
             .frame(maxHeight: .infinity)
-
             .safeAreaInset(edge: .top) {
                 HStack(spacing: 20) {
                     Image("immotepLogo")
@@ -106,7 +103,6 @@ struct LoginView: View {
                 Spacer()
             }
             .padding()
-
             .navigationDestination(isPresented: $viewModel.isLoggedIn) {
                 OverviewView()
             }
