@@ -46,7 +46,7 @@ class MockAuthService: AuthServiceProtocol {
         return ("mockAccessToken", "mockRefreshToken")
     }
 
-    func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil) async throws -> (String, String) {
+    func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil, keepMeSignedIn: Bool) async throws -> (String, String) {
         throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Mock requestToken not implemented."])
     }
 
