@@ -2,17 +2,18 @@ package controllers_test
 
 import (
 	"encoding/json"
-	"immotep/backend/controllers"
-	"immotep/backend/database"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/utils"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"immotep/backend/controllers"
+	"immotep/backend/database"
+	"immotep/backend/models"
+	"immotep/backend/prisma/db"
+	"immotep/backend/utils"
 )
 
 func BuildTestUser(id string) db.UserModel {
@@ -44,7 +45,7 @@ func TestGetAllUsers(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	var users []models.UserResponse
 	err := json.Unmarshal(w.Body.Bytes(), &users)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.JSONEq(t, users[0].ID, user.ID)
 }
 
@@ -66,7 +67,7 @@ func TestGetUserByID(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	var userResponse models.UserResponse
 	err := json.Unmarshal(w.Body.Bytes(), &userResponse)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, user.ID, userResponse.ID)
 }
 
@@ -87,7 +88,7 @@ func TestGetUserByIDNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, utils.CannotFindUser, errorResponse.Code)
 }
 
@@ -109,7 +110,7 @@ func TestGetProfile(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	var userResponse models.UserResponse
 	err := json.Unmarshal(w.Body.Bytes(), &userResponse)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, user.ID, userResponse.ID)
 }
 
@@ -122,7 +123,7 @@ func TestGetProfileNoClaims(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, utils.NoClaims, errorResponse.Code)
 }
 
@@ -143,6 +144,6 @@ func TestGetProfileUserNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, utils.CannotFindUser, errorResponse.Code)
 }

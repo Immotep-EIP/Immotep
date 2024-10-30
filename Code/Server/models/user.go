@@ -5,10 +5,10 @@ import (
 )
 
 type UserRequest struct {
-	Email     string `json:"email" binding:"required,email"`
-	Firstname string `json:"firstname" binding:"required"`
-	Lastname  string `json:"lastname" binding:"required"`
-	Password  string `json:"password" binding:"required,min=8"`
+	Email     string `binding:"required,email" json:"email"`
+	Firstname string `binding:"required"       json:"firstname"`
+	Lastname  string `binding:"required"       json:"lastname"`
+	Password  string `binding:"required,min=8" json:"password"`
 }
 
 func (u *UserRequest) ToUser() db.UserModel {
@@ -23,11 +23,11 @@ func (u *UserRequest) ToUser() db.UserModel {
 }
 
 type UserResponse struct {
-	ID        string   	  `json:"id"`
-	Email     string   	  `json:"email"`
-	Firstname string   	  `json:"firstname"`
-	Lastname  string   	  `json:"lastname"`
-	Role      db.Role  	  `json:"role"`
+	ID        string      `json:"id"`
+	Email     string      `json:"email"`
+	Firstname string      `json:"firstname"`
+	Lastname  string      `json:"lastname"`
+	Role      db.Role     `json:"role"`
 	CreatedAt db.DateTime `json:"created_at"`
 	UpdatedAt db.DateTime `json:"updated_at"`
 }
