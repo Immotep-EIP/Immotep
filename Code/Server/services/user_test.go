@@ -2,13 +2,13 @@ package userservice_test
 
 import (
 	"errors"
-	"immotep/backend/database"
-	"immotep/backend/prisma/db"
-	userservice "immotep/backend/services"
 	"testing"
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
+	"immotep/backend/database"
+	"immotep/backend/prisma/db"
+	userservice "immotep/backend/services"
 )
 
 func BuildTestUser(id string) db.UserModel {
@@ -64,7 +64,7 @@ func TestGetAllUsers_NoUsers(t *testing.T) {
 	).ReturnsMany([]db.UserModel{})
 
 	allUsers := userservice.GetAll()
-	assert.Len(t, allUsers, 0)
+	assert.Empty(t, allUsers)
 }
 
 func TestGetAllUsers_NoConnection(t *testing.T) {
@@ -161,10 +161,10 @@ func TestCreateUser_DuplicateEmail(t *testing.T) {
 			db.User.Lastname.Set(user.Lastname),
 		),
 	).Errors(&protocol.UserFacingError{
-		IsPanic: false,
+		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference
 		Meta: protocol.Meta{
-			Target: []interface{}{"email"},
+			Target: []any{"email"},
 		},
 		Message: "Unique constraint failed",
 	})

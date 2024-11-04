@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"immotep/backend/models"
-	userservice "immotep/backend/services"
-	"immotep/backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"immotep/backend/models"
+	userservice "immotep/backend/services"
+	"immotep/backend/utils"
 )
 
 // GetAllUsers godoc

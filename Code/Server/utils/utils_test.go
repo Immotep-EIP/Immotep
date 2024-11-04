@@ -1,13 +1,14 @@
 package utils_test
 
 import (
-	"immotep/backend/utils"
 	"strconv"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"
+	"immotep/backend/utils"
 )
 
 func TestGetClaims(t *testing.T) {
@@ -23,25 +24,23 @@ func TestGetClaims(t *testing.T) {
 func TestMap(t *testing.T) {
 	input := []int{1, 2, 3, 4}
 	expected := []string{"1", "2", "3", "4"}
-	result := utils.Map(input, func(i int) string {
-		return strconv.Itoa(i)
-	})
+	result := utils.Map(input, strconv.Itoa)
 	assert.Equal(t, expected, result)
 }
 
 func TestHashPassword(t *testing.T) {
 	password := "mysecretpassword"
 	hash, err := utils.HashPassword(password)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestCheckPasswordHash(t *testing.T) {
 	password := "mysecretpassword"
 	hash, err := utils.HashPassword(password)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	match := utils.CheckPasswordHash(password, hash)
 	assert.True(t, match)

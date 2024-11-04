@@ -2,9 +2,9 @@ package database
 
 import (
 	"context"
-	"immotep/backend/prisma/db"
-	"log"
 	"testing"
+
+	"immotep/backend/prisma/db"
 )
 
 type PrismaDB struct {
@@ -14,15 +14,15 @@ type PrismaDB struct {
 
 var DBclient = &PrismaDB{}
 
-func ConnectDB() *PrismaDB {
+func ConnectDB() (*PrismaDB, error) {
 	client := db.NewClient()
 	if err := client.Prisma.Connect(); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	DBclient.Client = client
 	DBclient.Context = context.Background()
-	return DBclient
+	return DBclient, nil
 }
 
 func ConnectDBTest() (*PrismaDB, *db.Mock, func(t *testing.T)) {

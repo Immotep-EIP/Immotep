@@ -1,14 +1,15 @@
 package utils_test
 
 import (
+	"context"
 	"errors"
-	"immotep/backend/utils"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"immotep/backend/utils"
 )
 
 func TestSendError_NoError(t *testing.T) {
@@ -19,7 +20,7 @@ func TestSendError_NoError(t *testing.T) {
 	})
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -34,7 +35,7 @@ func TestSendError_WithError(t *testing.T) {
 	})
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
