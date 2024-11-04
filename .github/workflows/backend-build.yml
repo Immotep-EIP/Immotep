@@ -25,11 +25,14 @@ jobs:
         with:
           go-version: '1.22'
 
-      - name: Install linter
-        run: sudo snap install golangci-lint --classic
+      - name: Install swag
+        run: go install github.com/swaggo/swag/cmd/swag@latest
 
       - name: Build
         run: ./build.sh
+
+      - name: Install linter
+        run: sudo snap install golangci-lint --classic
 
       - name: Run linter
         run: ./run_linter.sh
