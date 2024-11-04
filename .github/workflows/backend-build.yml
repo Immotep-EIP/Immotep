@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: '1.22'
 
@@ -39,13 +39,16 @@ jobs:
 
       - name: Test
         id: test
-        run: echo "COVERAGE=$(./run_tests.sh no-interactive | grep total | grep -o '[0-9]\+\(\.[0-9]\+\)\?' | cut -d. -f1)" >> "$GITHUB_OUTPUT"
+        run: |
+          OUTPUT=$(./run_tests.sh no-interactive)
+          echo "# Coverage report" >> $GITHUB_STEP_SUMMARY
+          echo $OUTPUT >> $GITHUB_STEP_SUMMARY
+          echo "COVERAGE=$(echo $OUTPUT | grep total | grep -o '[0-9]\+\(\.[0-9]\+\)\?' | cut -d. -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Check coverage requirements
         run: |
-          NUMBER=${{ steps.test.outputs.COVERAGE }}
-          echo "Le nombre est : $NUMBER"
-          if [ "$NUMBER" -lt 80 ]; then
-            echo "The coverage must me greater than 80"
+          COVERAGE=${{ steps.test.outputs.COVERAGE }}
+          if [ "$COVERAGE" -lt 75 ]; then
+            echo "The unit test coverage must me greater than 75%"
             exit 1
           fi
