@@ -4,7 +4,6 @@
 # -x Print commands before they are executed
 set -ex
 
-golangci-lint run
-
 ./build.sh
+golangci-lint run
 ./backend
