@@ -1,0 +1,45 @@
+name: Build Backend
+
+on:
+  push:
+    branches:
+      - backend
+      - backendActions
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Code/Server/
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: Run linter
+        run: golangci-lint run
+
+      - name: Build
+        run: ./build.sh
+
+      - name: Test
+        id: test
+        run: echo "COVERAGE=$(./run_tests.sh no-interactive | grep total | grep -oE '[0-9]+\.[0-9]+')" >> "$GITHUB_OUTPUT"
+
+      - name: Check coverage requirements
+        run: |
+          NUMBER=${{ steps.test.outputs.COVERAGE }}
+          echo "Le nombre est : $NUMBER"
+          if [ "$NUMBER" -lt 80 ]; then
+            echo "The coverage must me greater than 80"
+            exit 1
+          fi
