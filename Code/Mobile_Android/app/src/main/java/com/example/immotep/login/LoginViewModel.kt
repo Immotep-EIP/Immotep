@@ -34,16 +34,6 @@ class LoginViewModel(private val navController: NavController) : ViewModel() {
     val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
     val errors: StateFlow<LoginErrorState> = _errors.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            try {
-                AuthService(navController.context.dataStore).getToken()
-                navController.navigate("dashboard")
-            } catch (e: Exception) {
-                return@launch
-            }
-        }
-    }
     fun updateEmailAndPassword(
         email: String?,
         password: String?,
