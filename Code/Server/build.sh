@@ -4,7 +4,6 @@
 # -x Print commands before they are executed
 set -ex
 
-golangci-lint run
-
-./build.sh
-./backend
+swag fmt
+swag init --parseDependency true
+go build
