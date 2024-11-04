@@ -37,8 +37,8 @@ import com.example.immotep.ui.components.PasswordInput
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel = viewModel(),
 ) {
+    val viewModel: LoginViewModel = viewModel(factory = LoginViewModelFactory(navController))
     val emailAndPassword = viewModel.emailAndPassword.collectAsState()
     val errors = viewModel.errors.collectAsState()
     val columnPaddingApiError = if (errors.value.apiError == null) 40.dp else 20.dp
@@ -102,7 +102,7 @@ fun LoginScreen(
                 )
             }
             Button(
-                onClick = { viewModel.login(navController) },
+                onClick = { viewModel.login() },
                 modifier = Modifier.testTag("loginButton"),
             ) { Text(stringResource(R.string.login_button)) }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {

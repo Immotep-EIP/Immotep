@@ -43,5 +43,9 @@
     <string name="gateway_timeout">Error, unable to contact the server, please retry later or from another place</string>
     <string name="unknown_error">Error, unknown error, please retry later or ask an admin</string>
     <string name="login_error">Email or password incorrect</string>
+    <string name="overview">Overview</string>
+    <string name="RealProperty">Real Property</string>
+    <string name="messages">Messages</string>
+    <string name="settings">Settings</string>
     <string name="register_password_error">The password must be at least 8 characters long</string>
 </resources>

@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.navigation.NavController
 import com.example.immotep.ApiClient.ApiClient
 import com.example.immotep.components.decodeRetroFitMessagesToHttpCodes
 import kotlinx.coroutines.flow.Flow
@@ -67,11 +68,12 @@ class AuthService(
             .firstOrNull()
             ?: throw IllegalArgumentException("no token stored")
 
-    suspend fun onLogout() {
+    suspend fun onLogout(navController: NavController) {
         dataStore.edit {
             it.remove(ACCESS_TOKEN)
             it.remove(REFRESH_TOKEN)
         }
+        navController.navigate("login")
     }
 
     companion object {

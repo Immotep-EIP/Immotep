@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.AuthService.AuthService
@@ -27,12 +28,22 @@ data class LoginErrorState(
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tokens")
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(private val navController: NavController) : ViewModel() {
     private val _emailAndPassword = MutableStateFlow(LoginState())
     private val _errors = MutableStateFlow(LoginErrorState())
     val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
     val errors: StateFlow<LoginErrorState> = _errors.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            try {
+                AuthService(navController.context.dataStore).getToken()
+                navController.navigate("dashboard")
+            } catch (e: Exception) {
+                return@launch
+            }
+        }
+    }
     fun updateEmailAndPassword(
         email: String?,
         password: String?,
@@ -46,7 +57,7 @@ class LoginViewModel : ViewModel() {
             )
     }
 
-    fun login(navController: NavController) {
+    fun login() {
         var noError = true
         _errors.value = _errors.value.copy(email = false, password = false, apiError = null)
         if (!android.util.Patterns.EMAIL_ADDRESS
@@ -77,5 +88,16 @@ class LoginViewModel : ViewModel() {
                 return@launch
             }
         }
+    }
+}
+
+class LoginViewModelFactory(private val navController: NavController) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return LoginViewModel(navController) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
