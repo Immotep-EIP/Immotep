@@ -9,7 +9,7 @@ on:
       - backend
 
 env:
-  DOCKER_REPO: "${{ vars.DOCKER_HUB_USERNAME }}/immotep-server:"
+  DOCKER_REPO: "${{ vars.DOCKER_HUB_USERNAME }}/immotep-server"
 
 jobs:
   build:
