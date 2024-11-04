@@ -28,11 +28,11 @@ jobs:
       - name: Install linter
         run: sudo snap install golangci-lint --classic
 
-      - name: Run linter
-        run: golangci-lint run
-
       - name: Build
         run: ./build.sh
+
+      - name: Run linter
+        run: ./run_linter.sh
 
       - name: Test
         id: test
