@@ -7,7 +7,7 @@ import Overview from '@/assets/icons/overview.png'
 import Messages from '@/assets/icons/messages.png'
 import Immotep from '@/assets/icons/ImmotepLogo.svg'
 import Settings from '@/assets/icons/settings.png'
-import Me from '@/assets/icons/me.png'
+// import Me from '@/assets/icons/me.png'
 import NavigationEnum from '@/enums/NavigationEnum'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 import style from './MainLayout.module.css'
@@ -44,7 +44,7 @@ const MainLayout: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('')
   const location = useLocation()
   const navigate = useNavigate()
-  const { goToSettings, goToMyProfile } = useNavigation()
+  const { goToSettings/* , goToMyProfile */ } = useNavigation()
 
   const { t } = useTranslation()
 
