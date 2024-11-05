@@ -31,4 +31,4 @@ EXPOSE 3001
 
 USER nonroot:nonroot
 
-CMD go run github.com/steebchen/prisma-client-go migrate deploy ; ./immotep_backend
+CMD go run github.com/steebchen/prisma-client-go migrate deploy && ./immotep_backend
