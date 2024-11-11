@@ -76,6 +76,7 @@ dependencies {
     implementation("io.github.osipxd:security-crypto-datastore-preferences:1.0.0-alpha04")
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha05")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.2")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

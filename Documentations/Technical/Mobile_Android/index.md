@@ -6,8 +6,10 @@
 
 2. Plugins used
 
-3. Pages per pages
+3. Folders hierarchy
 
-4. The AI
+4. Pages per pages
 
-5. The specific CI/CD
+5. The AI
+
+6. The specific CI/CD

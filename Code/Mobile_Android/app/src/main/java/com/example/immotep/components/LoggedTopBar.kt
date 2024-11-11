@@ -2,6 +2,7 @@ package com.example.immotep.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -63,13 +65,19 @@ fun LoggedTopBar(navController: NavController) {
         Image(
             painter = painterResource(id = R.drawable.immotep_png_logo),
             contentDescription = stringResource(id = R.string.immotep_logo_desc),
-            modifier = Modifier.size(35.dp).padding(end = 10.dp),
+            modifier = Modifier.size(35.dp).padding(end = 10.dp).clickable { viewModel.viewModelScope.launch {
+                AuthService(navController.context.dataStore).onLogout(navController)
+            } },
         )
         Text(stringResource(R.string.app_name), fontSize = 20.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight(500))
         Spacer(Modifier.weight(1f).fillMaxHeight())
         IconButton (
             onClick = {
-                viewModel.logout(navController)
+                if (navController.currentDestination?.route != "profile") {
+                    navController.navigate("profile")
+                } else {
+                    navController.popBackStack()
+                }
             },
         ) {
             Icon(Icons.Outlined.AccountCircle, contentDescription = "Account circle, go back to the login page")
