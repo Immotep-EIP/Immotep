@@ -29,17 +29,17 @@ type InviteResponse struct {
 	CreatedAt   db.DateTime  `json:"created_at"`
 }
 
-func (u *InviteResponse) FromDbPendingContract(pc db.PendingContractModel) {
-	u.ID = pc.ID
-	u.TenantEmail = pc.TenantEmail
-	u.StartDate = pc.StartDate
-	u.EndDate = pc.InnerPendingContract.EndDate
-	u.PropertyID = pc.PropertyID
-	u.CreatedAt = pc.CreatedAt
+func (i *InviteResponse) FromDbPendingContract(model db.PendingContractModel) {
+	i.ID = model.ID
+	i.TenantEmail = model.TenantEmail
+	i.StartDate = model.StartDate
+	i.EndDate = model.InnerPendingContract.EndDate
+	i.PropertyID = model.PropertyID
+	i.CreatedAt = model.CreatedAt
 }
 
 func DbPendingContractToResponse(pc db.PendingContractModel) InviteResponse {
-	var userResp InviteResponse
-	userResp.FromDbPendingContract(pc)
-	return userResp
+	var resp InviteResponse
+	resp.FromDbPendingContract(pc)
+	return resp
 }

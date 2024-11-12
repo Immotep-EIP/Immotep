@@ -46,6 +46,8 @@ func registerAPIRoutes(r *gin.Engine) {
 			owner := root.Group("/owner")
 			{
 				owner.Use(middlewares.AuthorizeOwner())
+				owner.GET("/properties", controllers.GetAllProperties)
+				owner.GET("/properties/:id", controllers.GetPropertyById)
 				owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
 			}
 		}

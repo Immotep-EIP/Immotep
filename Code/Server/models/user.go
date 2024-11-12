@@ -32,18 +32,18 @@ type UserResponse struct {
 	UpdatedAt db.DateTime `json:"updated_at"`
 }
 
-func (u *UserResponse) FromDbUser(user db.UserModel) {
-	u.ID = user.ID
-	u.Email = user.Email
-	u.Firstname = user.Firstname
-	u.Lastname = user.Lastname
-	u.Role = user.Role
-	u.CreatedAt = user.CreatedAt
-	u.UpdatedAt = user.UpdatedAt
+func (u *UserResponse) FromDbUser(model db.UserModel) {
+	u.ID = model.ID
+	u.Email = model.Email
+	u.Firstname = model.Firstname
+	u.Lastname = model.Lastname
+	u.Role = model.Role
+	u.CreatedAt = model.CreatedAt
+	u.UpdatedAt = model.UpdatedAt
 }
 
 func DbUserToResponse(user db.UserModel) UserResponse {
-	var userResp UserResponse
-	userResp.FromDbUser(user)
-	return userResp
+	var resp UserResponse
+	resp.FromDbUser(user)
+	return resp
 }

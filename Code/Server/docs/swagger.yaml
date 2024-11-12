@@ -35,6 +35,25 @@ definitions:
       tenant_email:
         type: string
     type: object
+  models.PropertyResponse:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      owner_id:
+        type: string
+      postal_code:
+        type: string
+    type: object
   models.UserRequest:
     properties:
       email:
@@ -241,6 +260,68 @@ paths:
       summary: Authenticate user
       tags:
       - auth
+  /owner/properties:
+    get:
+      consumes:
+      - application/json
+      description: Get all properties information of an owner
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of properties
+          schema:
+            items:
+              $ref: '#/definitions/models.PropertyResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get all properties of an owner
+      tags:
+      - property
+  /owner/properties/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user information by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Cannot find user
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get user by ID
+      tags:
+      - users
   /owner/send-invite/{propertyId}:
     post:
       consumes:
@@ -314,7 +395,7 @@ paths:
       - Bearer: []
       summary: Get user profile
       tags:
-      - users
+      - user
   /users:
     get:
       description: Get all users information
@@ -333,7 +414,7 @@ paths:
       - Bearer: []
       summary: Get all users
       tags:
-      - users
+      - user
   /users/{id}:
     get:
       consumes:
@@ -366,7 +447,7 @@ paths:
       - Bearer: []
       summary: Get user by ID
       tags:
-      - users
+      - user
 securityDefinitions:
   Bearer:
     description: 'Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".'

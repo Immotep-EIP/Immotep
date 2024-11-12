@@ -13,7 +13,7 @@ import (
 //
 //	@Summary		Get all users
 //	@Description	Get all users information
-//	@Tags			users
+//	@Tags			user
 //	@Produce		json
 //	@Success		200	{array}	models.UserResponse	"List of users"
 //	@Failure		500
@@ -28,13 +28,13 @@ func GetAllUsers(c *gin.Context) {
 //
 //	@Summary		Get user by ID
 //	@Description	Get user information by its ID
-//	@Tags			users
+//	@Tags			user
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		string				true	"User ID"
 //	@Success		200	{object}	models.UserResponse	"User data"
 //	@Failure		401	{object}	utils.Error			"Unauthorized"
-//	@Failure		404	{object}	utils.Error			"Cannot find user"
+//	@Failure		404	{object}	utils.Error			"User not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/users/{id} [get]
@@ -51,12 +51,12 @@ func GetUserByID(c *gin.Context) {
 //
 //	@Summary		Get user profile
 //	@Description	Get user profile information
-//	@Tags			users
+//	@Tags			user
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	models.UserResponse	"User data"
 //	@Failure		401	{object}	utils.Error			"Unauthorized"
-//	@Failure		404	{object}	utils.Error			"Cannot find user"
+//	@Failure		404	{object}	utils.Error			"User not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/profile [get]
