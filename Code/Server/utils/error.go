@@ -7,17 +7,22 @@ import (
 type ErrorCode string
 
 const (
-	InvalidPassword    ErrorCode = "invalid-password"
-	CannotFetchUser    ErrorCode = "cannot-fetch-user"
-	CannotFindUser     ErrorCode = "cannot-find-user"
-	CannotCreateUser   ErrorCode = "cannot-create-user"
-	NoClaims           ErrorCode = "no-claims"
-	CannotDecodeUser   ErrorCode = "cannot-decode-user"
-	MissingFields      ErrorCode = "missing-fields"
-	CannotHashPassword ErrorCode = "cannot-hash-password"
-	EmailAlreadyExists ErrorCode = "email-already-exists"
-	TestError          ErrorCode = "test-error"
-	TooManyRequests    ErrorCode = "too-many-requests"
+	InvalidPassword         ErrorCode = "invalid-password"
+	CannotFetchUser         ErrorCode = "cannot-fetch-user"
+	CannotFindUser          ErrorCode = "cannot-find-user"
+	CannotCreateUser        ErrorCode = "cannot-create-user"
+	NoClaims                ErrorCode = "no-claims"
+	CannotDecodeUser        ErrorCode = "cannot-decode-user"
+	MissingFields           ErrorCode = "missing-fields"
+	CannotHashPassword      ErrorCode = "cannot-hash-password"
+	EmailAlreadyExists      ErrorCode = "email-already-exists"
+	TestError               ErrorCode = "test-error"
+	TooManyRequests         ErrorCode = "too-many-requests"
+	PendingContractNotFound ErrorCode = "pending-contract-not-found"
+	// User must have the same email as the pending contract
+	UserSameEmailAsPendingContract ErrorCode = "user-same-email-as-pending-contract"
+	// A contract alread exists for that user and property
+	ContractAlreadyExist ErrorCode = "contract-already-exists"
 )
 
 type Error struct {

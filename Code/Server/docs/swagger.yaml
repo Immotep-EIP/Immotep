@@ -2,12 +2,12 @@ basePath: /api/v1
 definitions:
   db.Role:
     enum:
-    - admin
-    - member
+    - owner
+    - tenant
     type: string
     x-enum-varnames:
-    - RoleAdmin
-    - RoleMember
+    - RoleOwner
+    - RoleTenant
   models.UserRequest:
     properties:
       email:
@@ -62,6 +62,9 @@ definitions:
     - email-already-exists
     - test-error
     - too-many-requests
+    - pending-contract-not-found
+    - user-same-email-as-pending-contract
+    - contract-already-exists
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -75,6 +78,9 @@ definitions:
     - EmailAlreadyExists
     - TestError
     - TooManyRequests
+    - PendingContractNotFound
+    - UserSameEmailAsPendingContract
+    - ContractAlreadyExist
 host: localhost:3001
 info:
   contact:
@@ -85,13 +91,54 @@ info:
   title: Immotep API
   version: "1.0"
 paths:
+  /auth/invite/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Answer an invite from an owner with an invite link
+      parameters:
+      - description: Pending contract ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Tenant user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created user data
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Pending contract not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Email already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Create a new tenant
+      tags:
+      - auth
   /auth/register:
     post:
       consumes:
       - application/json
-      description: Create a new user
+      description: Create a new user with owner role
       parameters:
-      - description: User data
+      - description: Owner user data
         in: body
         name: user
         required: true
@@ -114,7 +161,7 @@ paths:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
-      summary: Create a new user
+      summary: Create a new owner
       tags:
       - auth
   /auth/token:

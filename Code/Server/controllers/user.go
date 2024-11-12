@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
-	userservice "immotep/backend/services"
+	userservice "immotep/backend/services/user"
 	"immotep/backend/utils"
 )
 
@@ -21,7 +21,7 @@ import (
 //	@Router			/users [get]
 func GetAllUsers(c *gin.Context) {
 	allUsers := userservice.GetAll()
-	c.JSON(http.StatusOK, utils.Map(allUsers, models.UserToResponse))
+	c.JSON(http.StatusOK, utils.Map(allUsers, models.DbUserToResponse))
 }
 
 // GetUserByID godoc
@@ -44,7 +44,7 @@ func GetUserByID(c *gin.Context) {
 		utils.SendError(c, http.StatusNotFound, utils.CannotFindUser, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.UserToResponse(*user))
+	c.JSON(http.StatusOK, models.DbUserToResponse(*user))
 }
 
 // GetProfile godoc
@@ -72,5 +72,5 @@ func GetProfile(c *gin.Context) {
 		utils.SendError(c, http.StatusNotFound, utils.CannotFindUser, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.UserToResponse(*user))
+	c.JSON(http.StatusOK, models.DbUserToResponse(*user))
 }

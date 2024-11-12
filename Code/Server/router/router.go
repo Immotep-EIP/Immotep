@@ -57,7 +57,8 @@ func Routes() *gin.Engine {
 	{
 		auth := v1.Group("/auth")
 		{
-			auth.POST("/register", controllers.CreateUser)
+			auth.POST("/register", controllers.RegisterOwner)
+			auth.POST("/invite/:id", controllers.RegisterTenant)
 			auth.POST("/token", controllers.TokenAuth(bServer))
 		}
 

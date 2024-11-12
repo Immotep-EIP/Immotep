@@ -37,7 +37,7 @@ func TestCreateUserInvalidBody(t *testing.T) {
 	c.Request = httptest.NewRequest(http.MethodPost, "/users", nil)
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	controllers.CreateUser(c)
+	controllers.RegisterOwner(c)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
@@ -58,7 +58,7 @@ func TestCreateUserMissingFields(t *testing.T) {
 	c.Request = httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(b))
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	controllers.CreateUser(c)
+	controllers.RegisterOwner(c)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
@@ -79,7 +79,7 @@ func TestCreateUserWrongPassword(t *testing.T) {
 	c.Request = httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(b))
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	controllers.CreateUser(c)
+	controllers.RegisterOwner(c)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error

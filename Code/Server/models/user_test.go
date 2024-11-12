@@ -17,7 +17,7 @@ func TestUserRequest(t *testing.T) {
 	}
 
 	t.Run("ToUser", func(t *testing.T) {
-		user := userRequest.ToUser()
+		user := userRequest.ToDbUser()
 
 		assert.Equal(t, userRequest.Email, user.Email)
 		assert.Equal(t, userRequest.Firstname, user.Firstname)
@@ -39,7 +39,7 @@ func TestUserResponse(t *testing.T) {
 
 	t.Run("FromUser", func(t *testing.T) {
 		userResponse := models.UserResponse{}
-		userResponse.FromUser(user)
+		userResponse.FromDbUser(user)
 
 		assert.Equal(t, user.ID, userResponse.ID)
 		assert.Equal(t, user.Email, userResponse.Email)
@@ -51,7 +51,7 @@ func TestUserResponse(t *testing.T) {
 	})
 
 	t.Run("UserToResponse", func(t *testing.T) {
-		userResponse := models.UserToResponse(user)
+		userResponse := models.DbUserToResponse(user)
 
 		assert.Equal(t, user.ID, userResponse.ID)
 		assert.Equal(t, user.Email, userResponse.Email)

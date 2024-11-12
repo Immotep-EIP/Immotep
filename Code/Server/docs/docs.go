@@ -19,9 +19,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/register": {
+        "/auth/invite/{id}": {
             "post": {
-                "description": "Create a new user",
+                "description": "Answer an invite from an owner with an invite link",
                 "consumes": [
                     "application/json"
                 ],
@@ -31,10 +31,72 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Create a new user",
+                "summary": "Create a new tenant",
                 "parameters": [
                     {
-                        "description": "User data",
+                        "type": "string",
+                        "description": "Pending contract ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Tenant user data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created user data",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Pending contract not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Email already exists",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Create a new user with owner role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Create a new owner",
+                "parameters": [
+                    {
+                        "description": "Owner user data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -258,12 +320,12 @@ const docTemplate = `{
         "db.Role": {
             "type": "string",
             "enum": [
-                "admin",
-                "member"
+                "owner",
+                "tenant"
             ],
             "x-enum-varnames": [
-                "RoleAdmin",
-                "RoleMember"
+                "RoleOwner",
+                "RoleTenant"
             ]
         },
         "models.UserRequest": {
@@ -340,7 +402,10 @@ const docTemplate = `{
                 "cannot-hash-password",
                 "email-already-exists",
                 "test-error",
-                "too-many-requests"
+                "too-many-requests",
+                "pending-contract-not-found",
+                "user-same-email-as-pending-contract",
+                "contract-already-exists"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -353,7 +418,10 @@ const docTemplate = `{
                 "CannotHashPassword",
                 "EmailAlreadyExists",
                 "TestError",
-                "TooManyRequests"
+                "TooManyRequests",
+                "PendingContractNotFound",
+                "UserSameEmailAsPendingContract",
+                "ContractAlreadyExist"
             ]
         }
     },

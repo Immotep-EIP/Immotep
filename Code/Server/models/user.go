@@ -11,7 +11,7 @@ type UserRequest struct {
 	Password  string `binding:"required,min=8" json:"password"`
 }
 
-func (u *UserRequest) ToUser() db.UserModel {
+func (u *UserRequest) ToDbUser() db.UserModel {
 	return db.UserModel{
 		InnerUser: db.InnerUser{
 			Email:     u.Email,
@@ -32,7 +32,7 @@ type UserResponse struct {
 	UpdatedAt db.DateTime `json:"updated_at"`
 }
 
-func (u *UserResponse) FromUser(user db.UserModel) {
+func (u *UserResponse) FromDbUser(user db.UserModel) {
 	u.ID = user.ID
 	u.Email = user.Email
 	u.Firstname = user.Firstname
@@ -42,8 +42,8 @@ func (u *UserResponse) FromUser(user db.UserModel) {
 	u.UpdatedAt = user.UpdatedAt
 }
 
-func UserToResponse(user db.UserModel) UserResponse {
+func DbUserToResponse(user db.UserModel) UserResponse {
 	var userResp UserResponse
-	userResp.FromUser(user)
+	userResp.FromDbUser(user)
 	return userResp
 }
