@@ -189,6 +189,79 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/send-invite/{propertyId}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Invite tenant to owner's property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Invite tenant to owner's property",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "propertyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Invite params",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.InviteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Created invite",
+                        "schema": {
+                            "$ref": "#/definitions/models.InviteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property is not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Invite already exists for this email",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/profile": {
             "get": {
                 "security": [
@@ -328,6 +401,47 @@ const docTemplate = `{
                 "RoleTenant"
             ]
         },
+        "models.InviteRequest": {
+            "type": "object",
+            "required": [
+                "start_date",
+                "tenant_email"
+            ],
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.InviteResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UserRequest": {
             "type": "object",
             "required": [
@@ -394,7 +508,7 @@ const docTemplate = `{
             "enum": [
                 "invalid-password",
                 "cannot-fetch-user",
-                "cannot-find-user",
+                "user-not-found",
                 "cannot-create-user",
                 "no-claims",
                 "cannot-decode-user",
@@ -405,12 +519,15 @@ const docTemplate = `{
                 "too-many-requests",
                 "pending-contract-not-found",
                 "user-same-email-as-pending-contract",
-                "contract-already-exists"
+                "contract-already-exists",
+                "property-not-found",
+                "property-is-not-yours",
+                "invite-already-exists-for-email"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
                 "CannotFetchUser",
-                "CannotFindUser",
+                "UserNotFound",
                 "CannotCreateUser",
                 "NoClaims",
                 "CannotDecodeUser",
@@ -421,7 +538,10 @@ const docTemplate = `{
                 "TooManyRequests",
                 "PendingContractNotFound",
                 "UserSameEmailAsPendingContract",
-                "ContractAlreadyExist"
+                "ContractAlreadyExist",
+                "PropertyNotFound",
+                "PropertyNotYours",
+                "InviteAlreadyExists"
             ]
         }
     },

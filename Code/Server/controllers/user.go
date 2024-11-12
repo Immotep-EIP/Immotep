@@ -41,7 +41,7 @@ func GetAllUsers(c *gin.Context) {
 func GetUserByID(c *gin.Context) {
 	user := userservice.GetByID(c.Param("id"))
 	if user == nil {
-		utils.SendError(c, http.StatusNotFound, utils.CannotFindUser, nil)
+		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
 	}
 	c.JSON(http.StatusOK, models.DbUserToResponse(*user))
@@ -69,7 +69,7 @@ func GetProfile(c *gin.Context) {
 
 	user := userservice.GetByID(claims["id"])
 	if user == nil {
-		utils.SendError(c, http.StatusNotFound, utils.CannotFindUser, nil)
+		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
 	}
 	c.JSON(http.StatusOK, models.DbUserToResponse(*user))

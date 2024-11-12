@@ -8,6 +8,33 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  models.InviteRequest:
+    properties:
+      end_date:
+        type: string
+      start_date:
+        type: string
+      tenant_email:
+        type: string
+    required:
+    - start_date
+    - tenant_email
+    type: object
+  models.InviteResponse:
+    properties:
+      created_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      property_id:
+        type: string
+      start_date:
+        type: string
+      tenant_email:
+        type: string
+    type: object
   models.UserRequest:
     properties:
       email:
@@ -53,7 +80,7 @@ definitions:
     enum:
     - invalid-password
     - cannot-fetch-user
-    - cannot-find-user
+    - user-not-found
     - cannot-create-user
     - no-claims
     - cannot-decode-user
@@ -65,11 +92,14 @@ definitions:
     - pending-contract-not-found
     - user-same-email-as-pending-contract
     - contract-already-exists
+    - property-not-found
+    - property-is-not-yours
+    - invite-already-exists-for-email
     type: string
     x-enum-varnames:
     - InvalidPassword
     - CannotFetchUser
-    - CannotFindUser
+    - UserNotFound
     - CannotCreateUser
     - NoClaims
     - CannotDecodeUser
@@ -81,6 +111,9 @@ definitions:
     - PendingContractNotFound
     - UserSameEmailAsPendingContract
     - ContractAlreadyExist
+    - PropertyNotFound
+    - PropertyNotYours
+    - InviteAlreadyExists
 host: localhost:3001
 info:
   contact:
@@ -204,6 +237,53 @@ paths:
       summary: Authenticate user
       tags:
       - auth
+  /owner/send-invite/{propertyId}:
+    post:
+      consumes:
+      - application/json
+      description: Invite tenant to owner's property
+      parameters:
+      - description: Property ID
+        in: path
+        name: propertyId
+        required: true
+        type: string
+      - description: Invite params
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.InviteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created invite
+          schema:
+            $ref: '#/definitions/models.InviteResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property is not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Invite already exists for this email
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Invite tenant to owner's property
+      tags:
+      - owner
   /profile:
     get:
       consumes:

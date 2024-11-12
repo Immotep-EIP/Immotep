@@ -9,7 +9,7 @@ type ErrorCode string
 const (
 	InvalidPassword         ErrorCode = "invalid-password"
 	CannotFetchUser         ErrorCode = "cannot-fetch-user"
-	CannotFindUser          ErrorCode = "cannot-find-user"
+	UserNotFound            ErrorCode = "user-not-found"
 	CannotCreateUser        ErrorCode = "cannot-create-user"
 	NoClaims                ErrorCode = "no-claims"
 	CannotDecodeUser        ErrorCode = "cannot-decode-user"
@@ -23,6 +23,9 @@ const (
 	UserSameEmailAsPendingContract ErrorCode = "user-same-email-as-pending-contract"
 	// A contract alread exists for that user and property
 	ContractAlreadyExist ErrorCode = "contract-already-exists"
+	PropertyNotFound     ErrorCode = "property-not-found"
+	PropertyNotYours     ErrorCode = "property-is-not-yours"
+	InviteAlreadyExists  ErrorCode = "invite-already-exists-for-email"
 )
 
 type Error struct {

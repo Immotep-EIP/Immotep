@@ -22,23 +22,22 @@ model user {
     created_at  DateTime @default(now())
     updated_at  DateTime @updatedAt
 
-    ownedProperties   property[]
-    rentedProperties  contract[]
+    owned_properties   property[]
+    rented_properties  contract[]
 }
 
 model contract {
-    tenant      user      @relation(fields: [tenantId], references: [id])
-    tenantId    String
-    property    property  @relation(fields: [propertyId], references: [id])
-    propertyId  String
+    tenant      user      @relation(fields: [tenant_id], references: [id])
+    tenant_id   String
+    property    property  @relation(fields: [property_id], references: [id])
+    property_id String
 
     active      Boolean   @default(true)
-    unlimited   Boolean
-    startDate   DateTime
-    endDate     DateTime?
+    start_date  DateTime
+    end_date    DateTime?
     created_at  DateTime  @default(now())
 
-    @@id([tenantId, propertyId])
+    @@id([tenant_id, property_id])
 }
 
 model property {
@@ -46,26 +45,25 @@ model property {
     name        String
     address     String
     city        String
-    postalCode  String
+    postal_code String
     country     String
     created_at  DateTime @default(now())
 
-    owner       user     @relation(fields: [ownerId], references: [id])
-    ownerId     String
+    owner       user     @relation(fields: [owner_id], references: [id])
+    owner_id    String
 
-    contracts   contract[]
-    pendingContracts  pendingContract[]
+    contracts  contract[]
+    pending_contracts  pendingContract[]
 }
 
 model pendingContract {
     id           String   @id @default(cuid())
-    tenantEmail  String   @unique @db.VarChar(255)
+    tenant_email String   @unique @db.VarChar(255)
 
-    unlimited   Boolean
-    startDate   DateTime
-    endDate     DateTime?
-    created_at  DateTime  @default(now())
+    start_date   DateTime
+    end_date     DateTime?
+    created_at   DateTime  @default(now())
 
-    property     property @relation(fields: [propertyId], references: [id])
-    propertyId   String
+    property     property @relation(fields: [property_id], references: [id])
+    property_id  String
 }

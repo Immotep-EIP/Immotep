@@ -89,7 +89,7 @@ func TestGetUserByIDNotFound(t *testing.T) {
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
-	assert.Equal(t, utils.CannotFindUser, errorResponse.Code)
+	assert.Equal(t, utils.UserNotFound, errorResponse.Code)
 }
 
 func TestGetProfile(t *testing.T) {
@@ -145,5 +145,5 @@ func TestGetProfileUserNotFound(t *testing.T) {
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
-	assert.Equal(t, utils.CannotFindUser, errorResponse.Code)
+	assert.Equal(t, utils.UserNotFound, errorResponse.Code)
 }

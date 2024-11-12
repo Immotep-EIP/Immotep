@@ -68,6 +68,11 @@ func Routes() *gin.Engine {
 			root.GET("/users", controllers.GetAllUsers)
 			root.GET("/user/:id", controllers.GetUserByID)
 			root.GET("/profile", controllers.GetProfile)
+
+			owner := root.Group("/owner")
+			{
+				owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
+			}
 		}
 	}
 
