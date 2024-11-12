@@ -522,7 +522,9 @@ const docTemplate = `{
                 "contract-already-exists",
                 "property-not-found",
                 "property-is-not-yours",
-                "invite-already-exists-for-email"
+                "invite-already-exists-for-email",
+                "not-an-owner",
+                "not-a-tenant"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -541,7 +543,9 @@ const docTemplate = `{
                 "ContractAlreadyExist",
                 "PropertyNotFound",
                 "PropertyNotYours",
-                "InviteAlreadyExists"
+                "InviteAlreadyExists",
+                "NotAnOwner",
+                "NotATenant"
             ]
         }
     },

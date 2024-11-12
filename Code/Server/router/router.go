@@ -15,9 +15,10 @@ import (
 	"github.com/ulule/limiter/v3/drivers/store/memory"
 	"immotep/backend/controllers"
 	_ "immotep/backend/docs" // mandatory import for swagger doc
+	"immotep/backend/router/middlewares"
 )
 
-func Routes() *gin.Engine {
+func registerAPIRoutes(r *gin.Engine) {
 	secretKey := os.Getenv("SECRET_KEY")
 	bServer := oauth.NewOAuthBearerServer(
 		secretKey,
@@ -25,6 +26,33 @@ func Routes() *gin.Engine {
 		&TestUserVerifier{},
 		nil)
 
+	v1 := r.Group("/api/v1")
+	{
+		auth := v1.Group("/auth")
+		{
+			auth.POST("/register", controllers.RegisterOwner)
+			auth.POST("/invite/:id", controllers.RegisterTenant)
+			auth.POST("/token", controllers.TokenAuth(bServer))
+		}
+
+		root := v1.Group("/")
+		{
+			root.Use(oauth.Authorize(secretKey, nil))
+			root.Use(middlewares.CheckClaims())
+			root.GET("/users", controllers.GetAllUsers)
+			root.GET("/user/:id", controllers.GetUserByID)
+			root.GET("/profile", controllers.GetProfile)
+
+			owner := root.Group("/owner")
+			{
+				owner.Use(middlewares.AuthorizeOwner())
+				owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
+			}
+		}
+	}
+}
+
+func Routes() *gin.Engine {
 	rate := limiter.Rate{
 		Period: 1 * time.Hour,
 		Limit:  3000,
@@ -53,28 +81,6 @@ func Routes() *gin.Engine {
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	v1 := r.Group("/api/v1")
-	{
-		auth := v1.Group("/auth")
-		{
-			auth.POST("/register", controllers.RegisterOwner)
-			auth.POST("/invite/:id", controllers.RegisterTenant)
-			auth.POST("/token", controllers.TokenAuth(bServer))
-		}
-
-		root := v1.Group("/")
-		{
-			root.Use(oauth.Authorize(secretKey, nil))
-			root.GET("/users", controllers.GetAllUsers)
-			root.GET("/user/:id", controllers.GetUserByID)
-			root.GET("/profile", controllers.GetProfile)
-
-			owner := root.Group("/owner")
-			{
-				owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
-			}
-		}
-	}
-
+	registerAPIRoutes(r)
 	return r
 }

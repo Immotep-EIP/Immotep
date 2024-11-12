@@ -95,6 +95,8 @@ definitions:
     - property-not-found
     - property-is-not-yours
     - invite-already-exists-for-email
+    - not-an-owner
+    - not-a-tenant
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -114,6 +116,8 @@ definitions:
     - PropertyNotFound
     - PropertyNotYours
     - InviteAlreadyExists
+    - NotAnOwner
+    - NotATenant
 host: localhost:3001
 info:
   contact:

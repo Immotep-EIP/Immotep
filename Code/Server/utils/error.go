@@ -26,6 +26,8 @@ const (
 	PropertyNotFound     ErrorCode = "property-not-found"
 	PropertyNotYours     ErrorCode = "property-is-not-yours"
 	InviteAlreadyExists  ErrorCode = "invite-already-exists-for-email"
+	NotAnOwner           ErrorCode = "not-an-owner"
+	NotATenant           ErrorCode = "not-a-tenant"
 )
 
 type Error struct {
@@ -39,5 +41,14 @@ func SendError(c *gin.Context, httpStatus int, code ErrorCode, err error) {
 	} else {
 		_ = c.Error(err)
 		c.JSON(httpStatus, Error{code, err.Error()})
+	}
+}
+
+func AbortSendError(c *gin.Context, httpStatus int, code ErrorCode, err error) {
+	if err == nil {
+		c.AbortWithStatusJSON(httpStatus, Error{code, ""})
+	} else {
+		_ = c.Error(err)
+		c.AbortWithStatusJSON(httpStatus, Error{code, err.Error()})
 	}
 }

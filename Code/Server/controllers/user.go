@@ -62,10 +62,6 @@ func GetUserByID(c *gin.Context) {
 //	@Router			/profile [get]
 func GetProfile(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	if claims == nil {
-		utils.SendError(c, http.StatusUnauthorized, utils.NoClaims, nil)
-		return
-	}
 
 	user := userservice.GetByID(claims["id"])
 	if user == nil {
