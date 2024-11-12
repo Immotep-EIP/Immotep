@@ -7,27 +7,25 @@ import (
 type ErrorCode string
 
 const (
-	InvalidPassword         ErrorCode = "invalid-password"
-	CannotFetchUser         ErrorCode = "cannot-fetch-user"
-	UserNotFound            ErrorCode = "user-not-found"
-	CannotCreateUser        ErrorCode = "cannot-create-user"
-	NoClaims                ErrorCode = "no-claims"
-	CannotDecodeUser        ErrorCode = "cannot-decode-user"
-	MissingFields           ErrorCode = "missing-fields"
-	CannotHashPassword      ErrorCode = "cannot-hash-password"
-	EmailAlreadyExists      ErrorCode = "email-already-exists"
-	TestError               ErrorCode = "test-error"
-	TooManyRequests         ErrorCode = "too-many-requests"
-	PendingContractNotFound ErrorCode = "pending-contract-not-found"
-	// User must have the same email as the pending contract
-	UserSameEmailAsPendingContract ErrorCode = "user-same-email-as-pending-contract"
-	// A contract alread exists for that user and property
-	ContractAlreadyExist ErrorCode = "contract-already-exists"
-	PropertyNotFound     ErrorCode = "property-not-found"
-	PropertyNotYours     ErrorCode = "property-is-not-yours"
-	InviteAlreadyExists  ErrorCode = "invite-already-exists-for-email"
-	NotAnOwner           ErrorCode = "not-an-owner"
-	NotATenant           ErrorCode = "not-a-tenant"
+	InvalidPassword       ErrorCode = "invalid-password"
+	CannotFetchUser       ErrorCode = "cannot-fetch-user"
+	UserNotFound          ErrorCode = "user-not-found"
+	CannotCreateUser      ErrorCode = "cannot-create-user"
+	NoClaims              ErrorCode = "no-claims"
+	CannotDecodeUser      ErrorCode = "cannot-decode-user"
+	MissingFields         ErrorCode = "missing-fields"
+	CannotHashPassword    ErrorCode = "cannot-hash-password"
+	EmailAlreadyExists    ErrorCode = "email-already-exists"
+	TestError             ErrorCode = "test-error"
+	TooManyRequests       ErrorCode = "too-many-requests"
+	InviteNotFound        ErrorCode = "invite-not-found"
+	UserSameEmailAsInvite ErrorCode = "user-must-have-same-email-as-invite"
+	InviteAlreadyExists   ErrorCode = "invite-already-exists-for-email-or-property"
+	ContractAlreadyExist  ErrorCode = "contract-already-exists-for-tenant-and-property"
+	PropertyNotFound      ErrorCode = "property-not-found"
+	PropertyNotYours      ErrorCode = "property-is-not-yours"
+	NotAnOwner            ErrorCode = "not-an-owner"
+	NotATenant            ErrorCode = "not-a-tenant"
 )
 
 type Error struct {

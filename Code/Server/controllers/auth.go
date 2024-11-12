@@ -92,11 +92,11 @@ func RegisterTenant(c *gin.Context) {
 
 	pendingContract := contractservice.GetPendingById(c.Param("id"))
 	if pendingContract == nil {
-		utils.SendError(c, http.StatusNotFound, utils.PendingContractNotFound, nil)
+		utils.SendError(c, http.StatusNotFound, utils.InviteNotFound, nil)
 		return
 	}
 	if pendingContract.TenantEmail != userReq.Email {
-		utils.SendError(c, http.StatusBadRequest, utils.UserSameEmailAsPendingContract, nil)
+		utils.SendError(c, http.StatusBadRequest, utils.UserSameEmailAsInvite, nil)
 		return
 	}
 

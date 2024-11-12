@@ -52,18 +52,18 @@ model property {
     owner       user     @relation(fields: [owner_id], references: [id])
     owner_id    String
 
-    contracts  contract[]
-    pending_contracts  pendingContract[]
+    contracts          contract[]
+    pending_contracts  pendingContract?
 }
 
 model pendingContract {
-    id           String   @id @default(cuid())
-    tenant_email String   @unique @db.VarChar(255)
+    id           String    @id @default(cuid())
+    tenant_email String    @unique @db.VarChar(255)
 
     start_date   DateTime
     end_date     DateTime?
     created_at   DateTime  @default(now())
 
-    property     property @relation(fields: [property_id], references: [id])
-    property_id  String
+    property     property  @relation(fields: [property_id], references: [id])
+    property_id  String    @unique
 }
