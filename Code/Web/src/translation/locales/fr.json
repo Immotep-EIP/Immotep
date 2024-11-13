@@ -86,5 +86,14 @@
       "logout": "Déconnexion",
       "logoutSuccess": "Vous êtes maintenant déconnecté."
     }
+  },
+  "property": {
+    "status": {
+      "available": "Disponible",
+      "occupied": "Occupé"
+    },
+    "damage": {
+      "unread": "Dommage non lu"
+    }
   }
 }
