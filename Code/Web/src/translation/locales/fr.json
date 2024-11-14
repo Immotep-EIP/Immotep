@@ -30,6 +30,51 @@
         "label": "Nom",
         "placeholder": "Entrez votre nom",
         "error": "Veuillez renseigner votre nom."
+      },
+      "address" : {
+        "label": "Adresse",
+        "placeholder": "Entrez votre adresse",
+        "error": "Veuillez renseigner votre adresse."
+      },
+      "zip_code" : {
+        "label": "Code postal",
+        "placeholder": "Entrez votre code postal",
+        "error": "Veuillez renseigner votre code postal."
+      },
+      "city" : {
+        "label": "Ville",
+        "placeholder": "Entrez votre ville",
+        "error": "Veuillez renseigner votre ville."
+      },
+      "country" : {
+        "label": "Pays",
+        "placeholder": "Entrez votre pays",
+        "error": "Veuillez renseigner votre pays."
+      },
+      "area" : {
+        "label": "Surface",
+        "placeholder": "Entrez la surface",
+        "error": "Veuillez renseigner la surface."
+      },
+      "rental" : {
+        "label": "Loyer",
+        "placeholder": "Entrez le loyer",
+        "error": "Veuillez renseigner le loyer."
+      },
+      "deposit" : {
+        "label": "Dépôt de garantie",
+        "placeholder": "Entrez le dépôt de garantie",
+        "error": "Veuillez renseigner le dépôt de garantie."
+      },
+      "charges" : {
+        "label": "Charges",
+        "placeholder": "Entrez les charges",
+        "error": "Veuillez renseigner les charges."
+      },
+      "picture" : {
+        "label": "Photo",
+        "placeholder": "Choisissez une photo",
+        "error": "Veuillez renseigner une photo."
       }
     },
     "button": {
@@ -45,7 +90,10 @@
       "myProfile": "Mon profil",
       "edit": "Modifier",
       "save": "Enregistrer",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "return": "Retour",
+      "add_real_property": "Ajouter un bien",
+      "add": "Ajouter"
     }
   },
   "pages": {
@@ -85,15 +133,21 @@
       "userInfos": "Informations utilisateur",
       "logout": "Déconnexion",
       "logoutSuccess": "Vous êtes maintenant déconnecté."
-    }
-  },
-  "property": {
-    "status": {
-      "available": "Disponible",
-      "occupied": "Occupé"
     },
-    "damage": {
-      "unread": "Dommage non lu"
+    "real_property": {
+      "title": "Vos biens"
+    },
+    "property": {
+      "add_real_property": {
+        "title": "Ajouter un bien"
+      },
+      "status": {
+        "available": "Disponible",
+        "occupied": "Occupé"
+      },
+      "damage": {
+        "unread": "Dommage non lu"
+      }
     }
   }
 }

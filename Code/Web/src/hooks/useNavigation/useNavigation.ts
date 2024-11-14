@@ -24,8 +24,14 @@ const useNavigation = () => {
     navigate(NavigationEnum.REAL_PROPERTY)
   }
 
+  const goToRealPropertyCreate = () => {
+    navigate(NavigationEnum.REAL_PROPERTY_CREATE)
+  }
+
   const goToRealPropertyDetails = (id: number) => {
-    navigate(`${NavigationEnum.REAL_PROPERTY_DETAILS.replace(':id', String(id))}`)
+    navigate(NavigationEnum.REAL_PROPERTY_DETAILS, {
+      state: { id }
+    })
   }
 
   const goToMessages = () => {
@@ -46,6 +52,7 @@ const useNavigation = () => {
     goToForgotPassword,
     goToOverview,
     goToRealProperty,
+    goToRealPropertyCreate,
     goToRealPropertyDetails,
     goToMessages,
     goToSettings,

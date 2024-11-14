@@ -1,5 +1,5 @@
 import React from 'react'
-import { Tag } from 'antd'
+import { Button, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { RealProperty } from '@/interfaces/Property/Property.tsx'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
@@ -27,7 +27,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
       role="button"
       tabIndex={0}
       onClick={() => goToRealPropertyDetails(realProperty.id)}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           goToRealPropertyDetails(realProperty.id)
         }
@@ -37,7 +37,9 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
       <div className={style.statusContainer}>
         <Tag
           color={
-            realProperty.status === 'property.status.available' ? 'green' : 'red'
+            realProperty.status === 'pages.property.status.available'
+              ? 'green'
+              : 'red'
           }
         >
           {t(realProperty.status)}
@@ -45,14 +47,18 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         {realProperty.damages.some(damage => !damage.read) && (
           <Tag color="red">
             ({realProperty.damages.filter(damage => !damage.read).length}){' '}
-            {t('property.damage.unread')}
+            {t('pages.property.damage.unread')}
           </Tag>
         )}
       </div>
 
       {/* SECOND PART */}
       <div className={style.pictureContainer}>
-        <img src={realProperty.image} alt="property" className={style.picture} />
+        <img
+          src={realProperty.image}
+          alt="property"
+          className={style.picture}
+        />
       </div>
 
       {/* THIRD PART */}
@@ -88,14 +94,23 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
+  const { goToRealPropertyCreate } = useNavigation()
 
   return (
     <div className={style.pageContainer}>
+      <div className={style.pageHeader}>
+        <span className={style.pageTitle}>
+          {t('pages.real_property.title')}
+        </span>
+        <Button type="primary" onClick={goToRealPropertyCreate}>
+          {t('components.button.add_real_property')}
+        </Button>
+      </div>
       <div className={style.cardsContainer}>
         {fakeData.map(realProperty => (
           <CardComponent

@@ -4,8 +4,8 @@ const realProperties = [
     adress: "1234, rue de la paix",
     city: "Paris",
     zipCode: "75000",
-    image: "https://via.placeholder.com/150",
-    status: "property.status.available",
+    image: "https://picsum.photos/200",
+    status: "pages.property.status.available",
     tenants: [
       {
         id: 1,
@@ -31,11 +31,11 @@ const realProperties = [
         comment: "Commentaire",
         interventionDate: "2021-01-01",
         room: "Chambre",
-        priority: "property.damage.priority.high",
+        priority: "pages.property.damage.priority.high",
         photos: [
           {
             id: 1,
-            url: "https://via.placeholder.com/150"
+            url: "https://picsum.photos/200"
           }
         ]
       }
@@ -44,12 +44,12 @@ const realProperties = [
       {
         id: 1,
         name: "Bail",
-        url: "https://via.placeholder.com/150"
+        url: "https://picsum.photos/200"
       },
       {
         id: 2,
         name: "Etat des lieux",
-        url: "https://via.placeholder.com/150"
+        url: "https://picsum.photos/200"
       }
     ],
     inventory: [
@@ -95,8 +95,8 @@ const realProperties = [
     adress: "5678, avenue des Champs-Élysées",
     city: "Paris",
     zipCode: "75008",
-    image: "https://via.placeholder.com/150",
-    status: "property.status.occupied",
+    image: "https://picsum.photos/200",
+    status: "pages.property.status.occupied",
     tenants: [
       {
         id: 1,
@@ -114,7 +114,7 @@ const realProperties = [
       {
         id: 1,
         name: "Contrat de location",
-        url: "https://via.placeholder.com/150"
+        url: "https://picsum.photos/200"
       }
     ],
     inventory: [
@@ -140,8 +140,8 @@ const realProperties = [
     adress: "4321, rue du Commerce",
     city: "Lyon",
     zipCode: "69000",
-    image: "https://via.placeholder.com/150",
-    status: "property.status.available",
+    image: "https://picsum.photos/200",
+    status: "pages.property.status.available",
     tenants: [],
     startDate: "2023-03-01",
     endDate: "2024-02-29",
@@ -156,11 +156,11 @@ const realProperties = [
         comment: "Dégât des eaux",
         interventionDate: "2023-05-12",
         room: "Salle de bain",
-        priority: "property.damage.priority.medium",
+        priority: "pages.property.damage.priority.medium",
         photos: [
           {
             id: 1,
-            url: "https://via.placeholder.com/150"
+            url: "https://picsum.photos/200"
           }
         ]
       }
@@ -169,7 +169,7 @@ const realProperties = [
       {
         id: 1,
         name: "Bail",
-        url: "https://via.placeholder.com/150"
+        url: "https://picsum.photos/200"
       }
     ],
     inventory: [
@@ -195,8 +195,8 @@ const realProperties = [
     adress: "9876, rue de la Liberté",
     city: "Marseille",
     zipCode: "13001",
-    image: "https://via.placeholder.com/150",
-    status: "property.status.available",
+    image: "https://picsum.photos/200",
+    status: "pages.property.status.available",
     tenants: [],
     startDate: "2023-06-01",
     endDate: "2024-05-31",
@@ -211,11 +211,11 @@ const realProperties = [
         comment: "Fenêtre cassée",
         interventionDate: "2023-07-20",
         room: "Salon",
-        priority: "property.damage.priority.low",
+        priority: "pages.property.damage.priority.low",
         photos: [
           {
             id: 1,
-            url: "https://via.placeholder.com/150"
+            url: "https://picsum.photos/200"
           }
         ]
       }
@@ -224,7 +224,7 @@ const realProperties = [
       {
         id: 1,
         name: "Bail",
-        url: "https://via.placeholder.com/150"
+        url: "https://picsum.photos/200"
       }
     ],
     inventory: [
