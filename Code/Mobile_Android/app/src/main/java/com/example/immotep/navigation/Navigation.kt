@@ -11,6 +11,7 @@ import com.example.immotep.dashboard.DashBoardScreen
 import com.example.immotep.login.LoginScreen
 import com.example.immotep.login.dataStore
 import com.example.immotep.profile.ProfileScreen
+import com.example.immotep.realProperty.RealPropertyScreen
 import com.example.immotep.register.RegisterScreen
 import kotlinx.coroutines.runBlocking
 
@@ -39,5 +40,6 @@ fun Navigation() {
         composable("dashboard") { DashBoardScreen(navController) }
         composable("register") { RegisterScreen(navController) }
         composable("profile") { ProfileScreen(navController) }
+        composable("realProperty") { RealPropertyScreen(navController) }
     }
 }

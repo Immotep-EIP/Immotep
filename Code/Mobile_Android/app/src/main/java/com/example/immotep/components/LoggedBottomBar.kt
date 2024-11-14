@@ -1,5 +1,6 @@
 package com.example.immotep.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,11 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.Place
@@ -28,23 +27,28 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.immotep.R
 
-
 @Composable
-fun LoggedBottomBarElement(navController: NavController, name : String, icon: ImageVector, iconDescription : String, pageName : String) {
+fun LoggedBottomBarElement(navController: NavController, name: String, icon: ImageVector, iconDescription: String, pageName: String) {
     val selected = navController.currentBackStackEntry?.destination?.route == pageName
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.drawBehind {
-        if (!selected) {
-            return@drawBehind
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.drawBehind {
+            if (!selected) {
+                return@drawBehind
+            }
+            val y = size.height + 2.dp.toPx()
+            drawLine(
+                Color.Magenta,
+                Offset(size.width / 2 + size.width / 6, y),
+                Offset(size.width / 3, y),
+                2.dp.toPx()
+            )
+        }.clickable {
+            if (!selected) {
+                println(pageName); navController.navigate(pageName)
+            }
         }
-        val y = size.height + 2.dp.toPx()
-
-        drawLine(
-            Color.Magenta,
-            Offset(size.width / 2 + size.width / 6, y),
-            Offset(size.width / 3, y),
-            2.dp.toPx()
-        )
-    }) {
+    ) {
         Icon(
             imageVector = icon,
             contentDescription = iconDescription
@@ -57,20 +61,23 @@ fun LoggedBottomBarElement(navController: NavController, name : String, icon: Im
 
 @Composable
 fun LoggedBottomBar(navController: NavController) {
-    Spacer(modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp).height(1.dp).drawBehind {
-        val y = size.height - 2.dp.toPx() / 2
-
-        drawLine(
-            Color.LightGray,
-            Offset(0f, y),
-            Offset(size.width, y),
-            2.dp.toPx()
-        )
-    })
+    Spacer(
+        modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp).height(1.dp).drawBehind {
+            val y = size.height - 2.dp.toPx() / 2
+            drawLine(
+                Color.LightGray,
+                Offset(0f, y),
+                Offset(size.width, y),
+                2.dp.toPx()
+            )
+        }
+    )
     Spacer(modifier = Modifier.height(5.dp))
-    Row(verticalAlignment = Alignment.CenterVertically,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween) {
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
 
         LoggedBottomBarElement(navController, stringResource(R.string.overview), Icons.Outlined.Home, "Home icon, go to the dashboard", "dashboard")
         LoggedBottomBarElement(navController, stringResource(R.string.RealProperty), Icons.Outlined.Place, "Place icon, go to the real property page", "realProperty")
