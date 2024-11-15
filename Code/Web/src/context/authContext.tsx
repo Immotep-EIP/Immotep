@@ -8,8 +8,9 @@ import React, {
 } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { UserToken, TokenResponse } from '@/interfaces/User/User'
+import { UserToken, TokenResponse, User } from '@/interfaces/User/User'
 import { loginApi } from '@/services/api/Authentification/AuthApi'
+import getUserProfile from '@/services/api/User/GetUserProfile'
 import { saveData, deleteData } from '@/utils/localStorage'
 import NavigationEnum from '@/enums/NavigationEnum'
 
@@ -17,6 +18,7 @@ interface AuthContextType {
   isAuthenticated: boolean
   login: (user: UserToken) => Promise<TokenResponse>
   logout: () => void
+  user: User | null
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -28,6 +30,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -39,8 +42,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       sessionStorage.getItem('refresh_token') ||
       localStorage.getItem('refresh_token')
 
-    if (accessToken && refreshToken) setIsAuthenticated(true)
-    else {
+    const userInfo = async () => {
+      const profile = await getUserProfile()
+      setUser(profile)
+    }
+
+    if (accessToken && refreshToken) {
+      setIsAuthenticated(true)
+      userInfo()
+    } else {
       setIsAuthenticated(false)
       deleteData()
     }
@@ -76,9 +86,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     () => ({
       isAuthenticated,
       login,
-      logout
+      logout,
+      user
     }),
-    [isAuthenticated]
+    [isAuthenticated, user]
   )
 
   return (

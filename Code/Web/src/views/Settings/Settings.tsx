@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
 import {
@@ -12,8 +12,6 @@ import {
 } from 'antd'
 import { PlusOutlined, LogoutOutlined } from '@ant-design/icons'
 
-import getUserProfile from '@/services/api/User/GetUserProfile'
-import { User } from '@/interfaces/User/User'
 import { useAuth } from '@/context/authContext'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
 import style from './Settings.module.css'
@@ -33,18 +31,7 @@ interface UserSettingsProps {
 }
 
 const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
-  const [user, setUser] = useState<User>()
-  useEffect(() => {
-    const getInfo = async () => {
-      try {
-        const user = await getUserProfile()
-        setUser(user)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    }
-    getInfo()
-  }, [])
+  const { user } = useAuth()
 
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState('')
