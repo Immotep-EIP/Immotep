@@ -31,47 +31,47 @@
         "placeholder": "Entrez votre nom",
         "error": "Veuillez renseigner votre nom."
       },
-      "address" : {
+      "address": {
         "label": "Adresse",
         "placeholder": "Entrez votre adresse",
         "error": "Veuillez renseigner votre adresse."
       },
-      "zip_code" : {
+      "zip_code": {
         "label": "Code postal",
         "placeholder": "Entrez votre code postal",
         "error": "Veuillez renseigner votre code postal."
       },
-      "city" : {
+      "city": {
         "label": "Ville",
         "placeholder": "Entrez votre ville",
         "error": "Veuillez renseigner votre ville."
       },
-      "country" : {
+      "country": {
         "label": "Pays",
         "placeholder": "Entrez votre pays",
         "error": "Veuillez renseigner votre pays."
       },
-      "area" : {
+      "area": {
         "label": "Surface",
         "placeholder": "Entrez la surface",
         "error": "Veuillez renseigner la surface."
       },
-      "rental" : {
+      "rental": {
         "label": "Loyer",
         "placeholder": "Entrez le loyer",
         "error": "Veuillez renseigner le loyer."
       },
-      "deposit" : {
+      "deposit": {
         "label": "Dépôt de garantie",
         "placeholder": "Entrez le dépôt de garantie",
         "error": "Veuillez renseigner le dépôt de garantie."
       },
-      "charges" : {
+      "charges": {
         "label": "Charges",
         "placeholder": "Entrez les charges",
         "error": "Veuillez renseigner les charges."
       },
-      "picture" : {
+      "picture": {
         "label": "Photo",
         "placeholder": "Choisissez une photo",
         "error": "Veuillez renseigner une photo."
@@ -133,6 +133,10 @@
       "userInfos": "Informations utilisateur",
       "logout": "Déconnexion",
       "logoutSuccess": "Vous êtes maintenant déconnecté."
+    },
+    "lost": {
+      "pageNotFound": "Page non trouvée",
+      "backHome": "Retour à l'accueil"
     },
     "real_property": {
       "title": "Vos biens"

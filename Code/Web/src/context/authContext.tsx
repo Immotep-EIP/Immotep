@@ -67,6 +67,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         response.expires_in,
         userInfo.rememberMe
       )
+      const profile = await getUserProfile()
+      setUser(profile)
       return response
     } catch (error) {
       console.error('login error:', error)

@@ -24,6 +24,8 @@ import Settings from '@/views/Settings/Settings'
 import MyProfile from '@/views/MyProfile/MyProfile'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
+import Lost from './views/Lost/Lost.tsx'
+
 const App: React.FC = () => (
   <Router>
     <AuthProvider>
@@ -34,8 +36,12 @@ const App: React.FC = () => (
           path={NavigationEnum.FORGOT_PASSWORD}
           element={<ForgotPassword />}
         />
+        <Route path="*" element={<Lost />} />
 
-        <Route path={NavigationEnum.REAL_PROPERTY_CREATE} element={<RealPropertyCreate />} />
+        <Route
+          path={NavigationEnum.REAL_PROPERTY_CREATE}
+          element={<RealPropertyCreate />}
+        />
 
         <Route element={<MainLayout />}>
           <Route element={<ProtectedRoute />}>
