@@ -12,7 +12,7 @@ type PropertyRequest struct {
 	Country    string `binding:"required" json:"country"`
 }
 
-func (p *PropertyRequest) ToDbPendingContract() db.PropertyModel {
+func (p *PropertyRequest) ToDbProperty() db.PropertyModel {
 	return db.PropertyModel{
 		InnerProperty: db.InnerProperty{
 			Name:       p.Name,

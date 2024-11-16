@@ -35,6 +35,25 @@ definitions:
       tenant_email:
         type: string
     type: object
+  models.PropertyRequest:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      name:
+        type: string
+      postal_code:
+        type: string
+    required:
+    - address
+    - city
+    - country
+    - name
+    - postal_code
+    type: object
   models.PropertyResponse:
     properties:
       address:
@@ -116,6 +135,7 @@ definitions:
     - property-is-not-yours
     - not-an-owner
     - not-a-tenant
+    - property-already-exists
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -137,6 +157,7 @@ definitions:
     - PropertyNotYours
     - NotAnOwner
     - NotATenant
+    - PropertyAlreadyExists
 host: localhost:3001
 info:
   contact:
@@ -285,11 +306,42 @@ paths:
       summary: Get all properties of an owner
       tags:
       - property
+    post:
+      consumes:
+      - application/json
+      description: Create a new property for an owner
+      parameters:
+      - description: Property data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.PropertyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Property already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Create a new property
+      tags:
+      - property
   /owner/properties/{id}:
     get:
       consumes:
       - application/json
-      description: Get user information by its ID
+      description: Get property information by its ID
       parameters:
       - description: Property ID
         in: path
@@ -312,16 +364,16 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: Cannot find user
+          description: Property not found
           schema:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Get user by ID
+      summary: Get property by ID
       tags:
-      - users
+      - property
   /owner/send-invite/{propertyId}:
     post:
       consumes:
@@ -386,7 +438,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: Cannot find user
+          description: User not found
           schema:
             $ref: '#/definitions/utils.Error'
         "500":
@@ -438,7 +490,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: Cannot find user
+          description: User not found
           schema:
             $ref: '#/definitions/utils.Error'
         "500":

@@ -54,6 +54,8 @@ model property {
 
     contracts          contract[]
     pending_contracts  pendingContract?
+
+    @@unique([name, owner_id])
 }
 
 model pendingContract {

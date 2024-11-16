@@ -55,3 +55,34 @@ func GetPropertyById(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
 }
+
+// CreateProperty godoc
+//
+//	@Summary		Create a new property
+//	@Description	Create a new property for an owner
+//	@Tags			property
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.PropertyRequest	true	"Property data"
+//	@Success		201		{object}	models.PropertyResponse	"Created property data"
+//	@Failure		400		{object}	utils.Error				"Missing fields"
+//	@Failure		409		{object}	utils.Error				"Property already exists"
+//	@Failure		500
+//	@Router			/owner/properties [post]
+func CreateProperty(c *gin.Context) {
+	claims := utils.GetClaims(c)
+
+	var req models.PropertyRequest
+	err := c.ShouldBindBodyWithJSON(&req)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	property := propertyservice.Create(req.ToDbProperty(), claims["id"])
+	if property == nil {
+		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
+		return
+	}
+	c.JSON(http.StatusCreated, models.DbPropertyToResponse(*property))
+}

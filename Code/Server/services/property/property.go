@@ -27,3 +27,22 @@ func GetByID(id string) *db.PropertyModel {
 	}
 	return property
 }
+
+func Create(property db.PropertyModel, ownerId string) *db.PropertyModel {
+	pdb := database.DBclient
+	newProperty, err := pdb.Client.Property.CreateOne(
+		db.Property.Name.Set(property.Name),
+		db.Property.Address.Set(property.Address),
+		db.Property.City.Set(property.City),
+		db.Property.PostalCode.Set(property.PostalCode),
+		db.Property.Country.Set(property.Country),
+		db.Property.Owner.Link(db.User.ID.Equals(ownerId)),
+	).Exec(pdb.Context)
+	if err != nil {
+		if _, is := db.IsErrUniqueConstraint(err); is {
+			return nil
+		}
+		panic(err)
+	}
+	return newProperty
+}

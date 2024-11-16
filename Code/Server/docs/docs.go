@@ -227,6 +227,53 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
+            },
+            "post": {
+                "description": "Create a new property for an owner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Create a new property",
+                "parameters": [
+                    {
+                        "description": "Property data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created property data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Property already exists",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
             }
         },
         "/owner/properties/{id}": {
@@ -236,7 +283,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get user information by its ID",
+                "description": "Get property information by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -244,9 +291,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "property"
                 ],
-                "summary": "Get user by ID",
+                "summary": "Get property by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -276,7 +323,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Cannot find user",
+                        "description": "Property not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -392,7 +439,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Cannot find user",
+                        "description": "User not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -475,7 +522,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Cannot find user",
+                        "description": "User not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -536,6 +583,33 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tenant_email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PropertyRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "city",
+                "country",
+                "name",
+                "postal_code"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "postal_code": {
                     "type": "string"
                 }
             }
@@ -651,7 +725,8 @@ const docTemplate = `{
                 "property-not-found",
                 "property-is-not-yours",
                 "not-an-owner",
-                "not-a-tenant"
+                "not-a-tenant",
+                "property-already-exists"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -672,7 +747,8 @@ const docTemplate = `{
                 "PropertyNotFound",
                 "PropertyNotYours",
                 "NotAnOwner",
-                "NotATenant"
+                "NotATenant",
+                "PropertyAlreadyExists"
             ]
         }
     },
