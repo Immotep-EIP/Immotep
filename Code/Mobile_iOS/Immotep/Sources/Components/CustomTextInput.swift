@@ -16,20 +16,22 @@ struct CustomTextInput: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(title.localized())
-                .font(.system(size: 14))
-                .frame(alignment: .leading)
 
             if isSecure {
                 SecureField(placeholder.localized(), text: $text)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .font(.system(size: 14))
-                    .autocapitalization(.none)
+                    .padding(8)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
+                    .foregroundStyle(Color("placeholderColor"))
+
             } else {
                 TextField(placeholder.localized(), text: $text)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .font(.system(size: 14))
-                    .autocapitalization(.none)
+                    .padding(8)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
+                    .foregroundStyle(Color("placeholderColor"))
+
             }
         }
+        .font(.system(size: 14))
+        .autocapitalization(.none)
     }
 }

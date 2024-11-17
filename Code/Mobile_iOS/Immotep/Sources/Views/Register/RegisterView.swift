@@ -45,9 +45,11 @@ struct RegisterView: View {
                                     Text("I agree to all Term, Privacy Policy and Fees".localized())
                                         .font(.system(size: 14))
                                 }
-                                .foregroundStyle(.black)
+                                .foregroundStyle((Color("textColor")))
                             })
                             .accessibilityIdentifier("AgreementButton")
+                            .padding(.top, 10)
+
                             Spacer()
                         }
 
@@ -64,7 +66,7 @@ struct RegisterView: View {
                             Text("Sign Up".localized())
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.black)
+                                .background(Color("btnColor"))
                                 .foregroundColor(.white)
                                 .font(.headline)
                                 .cornerRadius(20)

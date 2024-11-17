@@ -39,7 +39,7 @@ struct LoginView: View {
                                     Text("Keep me signed in".localized())
                                         .font(.system(size: 14))
                                 }
-                                .foregroundStyle(.black)
+                                .foregroundStyle((Color("btnColor")))
                             })
                             Spacer()
                             Button(action: {}, label: {
@@ -56,7 +56,7 @@ struct LoginView: View {
                             Text("Sign In".localized())
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.black)
+                                .background(Color("btnColor"))
                                 .foregroundColor(.white)
                                 .font(.headline)
                                 .cornerRadius(20)
@@ -98,8 +98,8 @@ struct LoginView: View {
             VStack {
                 Spacer()
                 Text(viewModel.loginStatus.localized())
-                    .foregroundColor(viewModel.loginStatus == "Login successful!" ? .green : .red)
-                    .padding(.top, 10)
+                .foregroundColor(viewModel.loginStatus == "Login successful!" ? .green : .red)
+                .padding(.top, 10)
                 Spacer()
             }
             .padding()

@@ -13,7 +13,7 @@ struct TaskBar: View {
     var body: some View {
         VStack {
             Divider()
-                .background(Color.black)
+                .background(Color("textColor"))
             HStack {
                 Spacer()
 
@@ -65,7 +65,7 @@ struct TaskBar: View {
                 }
                 Spacer()
             }
-            .foregroundStyle(Color.black)
+            .foregroundStyle(Color("textColor"))
             .frame(maxWidth: .infinity, alignment: .center)
         }
     }
