@@ -305,7 +305,7 @@ paths:
       - Bearer: []
       summary: Get all properties of an owner
       tags:
-      - property
+      - owner
     post:
       consumes:
       - application/json
@@ -336,7 +336,7 @@ paths:
           description: Internal Server Error
       summary: Create a new property
       tags:
-      - property
+      - owner
   /owner/properties/{id}:
     get:
       consumes:
@@ -373,7 +373,7 @@ paths:
       - Bearer: []
       summary: Get property by ID
       tags:
-      - property
+      - owner
   /owner/send-invite/{propertyId}:
     post:
       consumes:

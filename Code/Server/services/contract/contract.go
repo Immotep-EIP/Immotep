@@ -49,7 +49,7 @@ func CreatePending(pendingContract db.PendingContractModel, property db.Property
 		db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 	).Exec(pdb.Context)
 	if err != nil {
-		if info, is := db.IsErrUniqueConstraint(err); is && info.Fields[0] == db.PendingContract.TenantEmail.Field() {
+		if _, is := db.IsErrUniqueConstraint(err); is {
 			return nil
 		}
 		panic(err)

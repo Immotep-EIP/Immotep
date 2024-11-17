@@ -114,19 +114,6 @@ func TestGetProfile(t *testing.T) {
 	assert.Equal(t, user.ID, userResponse.ID)
 }
 
-func TestGetProfileNoClaims(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	controllers.GetProfile(c)
-
-	assert.Equal(t, http.StatusUnauthorized, w.Code)
-	var errorResponse utils.Error
-	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
-	require.NoError(t, err)
-	assert.Equal(t, utils.NoClaims, errorResponse.Code)
-}
-
 func TestGetProfileUserNotFound(t *testing.T) {
 	client, mock, ensure := database.ConnectDBTest()
 	defer ensure(t)

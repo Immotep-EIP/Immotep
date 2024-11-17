@@ -13,7 +13,7 @@ import (
 //
 //	@Summary		Get all properties of an owner
 //	@Description	Get all properties information of an owner
-//	@Tags			property
+//	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{array}		models.PropertyResponse	"List of properties"
@@ -31,7 +31,7 @@ func GetAllProperties(c *gin.Context) {
 //
 //	@Summary		Get property by ID
 //	@Description	Get property information by its ID
-//	@Tags			property
+//	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		string					true	"Property ID"
@@ -60,7 +60,7 @@ func GetPropertyById(c *gin.Context) {
 //
 //	@Summary		Create a new property
 //	@Description	Create a new property for an owner
-//	@Tags			property
+//	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		models.PropertyRequest	true	"Property data"

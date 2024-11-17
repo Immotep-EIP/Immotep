@@ -204,7 +204,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "property"
+                    "owner"
                 ],
                 "summary": "Get all properties of an owner",
                 "responses": {
@@ -237,7 +237,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "property"
+                    "owner"
                 ],
                 "summary": "Create a new property",
                 "parameters": [
@@ -291,7 +291,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "property"
+                    "owner"
                 ],
                 "summary": "Get property by ID",
                 "parameters": [

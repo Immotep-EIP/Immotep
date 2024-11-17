@@ -198,7 +198,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "property"
+                    "owner"
                 ],
                 "summary": "Get all properties of an owner",
                 "responses": {
@@ -231,7 +231,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "property"
+                    "owner"
                 ],
                 "summary": "Create a new property",
                 "parameters": [
@@ -285,7 +285,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "property"
+                    "owner"
                 ],
                 "summary": "Get property by ID",
                 "parameters": [
