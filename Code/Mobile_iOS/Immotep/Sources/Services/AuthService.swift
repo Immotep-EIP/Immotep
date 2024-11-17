@@ -9,15 +9,13 @@ import Foundation
 
 actor AuthService: Sendable, AuthServiceProtocol {
     static let shared = AuthService()
-        let apiUrl = "http://localhost:3001/api/v1"
-//        let apiUrl = "https://test1.icytree-5b429d30.eastus.azurecontainerapps.io/"
 
     func loginUser(email: String, password: String) async throws -> (String, String) {
         return try await requestToken(grantType: "password", email: email, password: password)
     }
 
     func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil, keepMeSignedIn: Bool = false) async throws -> (String, String) {
-        let url = URL(string: "\(apiUrl)/auth/token")!
+        let url = URL(string: "\(baseURL)/auth/token")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -68,7 +66,7 @@ actor AuthService: Sendable, AuthServiceProtocol {
             accessToken = try await refreshAccessTokenIfNeeded()
         }
 
-        let url = URL(string: "\(apiUrl)/\(endpoint)")!
+        let url = URL(string: "\(baseURL)/\(endpoint)")!
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken!)", forHTTPHeaderField: "Authorization")
 

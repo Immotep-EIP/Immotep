@@ -71,8 +71,7 @@ actor UserService: Sendable, UserServiceProtocol {
     }
 
     func fetchUserProfile(with token: String) async throws -> User {
-        let url = URL(string: "http://localhost:3001/api/v1/profile")!
-//        let url = URL(string: "https://test1.icytree-5b429d30.eastus.azurecontainerapps.io/profile")!
+        let url = URL(string: "\(baseURL)/profile")!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
