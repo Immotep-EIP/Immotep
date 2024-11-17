@@ -9,42 +9,89 @@ import SwiftUI
 
 struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
+    @StateObject private var keyboardObserver = KeyboardObserver()
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     @State private var navigateToLogin = false
 
+    @State private var editableEmail: String = ""
+    @State private var editableFirstname: String = ""
+    @State private var editableLastname: String = ""
+    @State private var editablePhone: String = "+33 123456789"
+    @State private var editablePassword: String = "Password123"
+
+    @State private var isEditing: Bool = false
+
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading) {
-                TopBar()
-                Text("Profile".localized())
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(20)
+            VStack(spacing: 0) {
+                TopBar(title: "Profile".localized())
 
-                VStack(alignment: .leading, spacing: 20) {
-                    if let user = viewModel.user {
-                        Text("Name: \(user.firstname) \(user.lastname)".localized())
-                        Text("Email: \(user.email)".localized())
-                    } else {
-                        Text("Loading user information...".localized())
+                ScrollView {
+                    VStack(spacing: 20) {
+                        Image(systemName: "person.crop.circle.fill")
+                            .font(.system(size: 50))
+                            .foregroundStyle(Color("textColor"))
+                            .padding(.top, 20)
+
+                        VStack(spacing: 20) {
+                            CustomTextInput(title: "Email", placeholder: "", text: $editableEmail, isSecure: false)
+                                .disabled(!isEditing)
+                            CustomTextInput(title: "Password", placeholder: "", text: $editablePassword, isSecure: true)
+                                .disabled(!isEditing)
+                            CustomTextInput(title: "First name", placeholder: "", text: $editableFirstname, isSecure: false)
+                                .disabled(!isEditing)
+                            CustomTextInput(title: "Name", placeholder: "", text: $editableLastname, isSecure: false)
+                                .disabled(!isEditing)
+                            CustomTextInput(title: "Phone number", placeholder: "", text: $editablePhone, isSecure: false)
+                                .disabled(!isEditing)
+                        }
+                        .padding([.bottom, .leading, .trailing], 20)
+
+                        HStack {
+                            Button(isEditing ? "Cancel".localized() : "Edit".localized()) {
+                                isEditing.toggle()
+                                if !isEditing {
+                                    resetFields()
+                                }
+                            }
+                            .padding()
+
+                            if isEditing {
+                                Button("Confirm".localized()) {
+                                    saveChanges()
+                                    isEditing = false
+                                }
+                                .padding()
+                            }
+                        }
                     }
-                }
-                .padding(.leading, 20)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.gray, lineWidth: 0.5)
+                    )
+                    .padding(10)
 
-                Button("Logout".localized()) {
-                    signOut()
+                    Button("Logout".localized()) {
+                        signOut()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color("btnColor"))
+                    .foregroundColor(.white)
+                    .font(.headline)
+                    .cornerRadius(10)
+                    .padding([.bottom, .leading, .trailing], 20)
                 }
-                .padding()
-                .accessibilityIdentifier("logoutButton")
 
-                .navigationDestination(isPresented: $navigateToLogin) {
-                    LoginView()
+                if !keyboardObserver.isKeyboardVisible {
+                    TaskBar()
                 }
-                Spacer()
-                TaskBar()
             }
         }
         .navigationBarBackButtonHidden(true)
+        .onChange(of: viewModel.user?.email) {
+            loadUserData()
+        }
     }
 
     private func signOut() {
@@ -52,6 +99,20 @@ struct ProfileView: View {
         isLoggedIn = false
         viewModel.user = nil
         navigateToLogin = true
+    }
+
+    private func resetFields() {
+        loadUserData()
+    }
+
+    private func saveChanges() {
+        print("Saving changes: \(editableEmail), \(editableFirstname), \(editableLastname), \(editablePhone)") // Update when API route done
+    }
+
+    private func loadUserData() {
+        editableEmail = viewModel.user?.email ?? ""
+        editableFirstname = viewModel.user?.firstname ?? ""
+        editableLastname = viewModel.user?.lastname ?? ""
     }
 }
 
