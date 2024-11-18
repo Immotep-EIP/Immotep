@@ -7,32 +7,65 @@ generator db {
     provider = "go run github.com/steebchen/prisma-client-go"
 }
 
-enum Role {
-    admin
-    member
+enum role {
+    owner
+    tenant
 }
 
-model User {
-    id         String   @id @default(cuid())
-    email      String   @unique @db.VarChar(255)
-    password   String   @db.VarChar(255)
-    firstname  String
-    lastname   String
-    role       Role     @default(member)
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+model user {
+    id          String   @id @default(cuid())
+    email       String   @unique @db.VarChar(255)
+    password    String
+    firstname   String
+    lastname    String
+    role        role
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
 
-    posts      Post[]
+    owned_properties   property[]
+    rented_properties  contract[]
 }
 
-model Post {
-    id         String   @id @default(cuid())
-    title      String   @unique
-    content    String
-    likes      Int
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+model contract {
+    tenant      user      @relation(fields: [tenant_id], references: [id])
+    tenant_id   String
+    property    property  @relation(fields: [property_id], references: [id])
+    property_id String
 
-    author       User     @relation(fields: [authorId], references: [id])
-    authorId     String
+    active      Boolean   @default(true)
+    start_date  DateTime
+    end_date    DateTime?
+    created_at  DateTime  @default(now())
+
+    @@id([tenant_id, property_id])
+}
+
+model property {
+    id          String   @id @default(cuid())
+    name        String
+    address     String
+    city        String
+    postal_code String
+    country     String
+    created_at  DateTime @default(now())
+
+    owner       user     @relation(fields: [owner_id], references: [id])
+    owner_id    String
+
+    contracts          contract[]
+    pending_contracts  pendingContract?
+
+    @@unique([name, owner_id])
+}
+
+model pendingContract {
+    id           String    @id @default(cuid())
+    tenant_email String    @unique @db.VarChar(255)
+
+    start_date   DateTime
+    end_date     DateTime?
+    created_at   DateTime  @default(now())
+
+    property     property  @relation(fields: [property_id], references: [id])
+    property_id  String    @unique
 }

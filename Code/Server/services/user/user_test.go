@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"immotep/backend/database"
 	"immotep/backend/prisma/db"
-	userservice "immotep/backend/services"
+	userservice "immotep/backend/services/user"
 )
 
 func BuildTestUser(id string) db.UserModel {
@@ -132,10 +132,11 @@ func TestCreateUser(t *testing.T) {
 			db.User.Password.Set(user.Password),
 			db.User.Firstname.Set(user.Firstname),
 			db.User.Lastname.Set(user.Lastname),
+			db.User.Role.Set(db.RoleOwner),
 		),
 	).Returns(user)
 
-	newUser := userservice.Create(user)
+	newUser := userservice.Create(user, db.RoleOwner)
 	assert.NotNil(t, newUser)
 	assert.Equal(t, user.ID, newUser.ID)
 }
@@ -159,6 +160,7 @@ func TestCreateUser_DuplicateEmail(t *testing.T) {
 			db.User.Password.Set(user.Password),
 			db.User.Firstname.Set(user.Firstname),
 			db.User.Lastname.Set(user.Lastname),
+			db.User.Role.Set(db.RoleOwner),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -169,7 +171,7 @@ func TestCreateUser_DuplicateEmail(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newUser := userservice.Create(user)
+	newUser := userservice.Create(user, db.RoleOwner)
 	assert.Nil(t, newUser)
 }
 
@@ -185,10 +187,11 @@ func TestCreateUser_NoConnection(t *testing.T) {
 			db.User.Password.Set(user.Password),
 			db.User.Firstname.Set(user.Firstname),
 			db.User.Lastname.Set(user.Lastname),
+			db.User.Role.Set(db.RoleOwner),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		userservice.Create(user)
+		userservice.Create(user, db.RoleOwner)
 	})
 }

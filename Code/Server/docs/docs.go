@@ -19,9 +19,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/register": {
+        "/auth/invite/{id}": {
             "post": {
-                "description": "Create a new user",
+                "description": "Answer an invite from an owner with an invite link",
                 "consumes": [
                     "application/json"
                 ],
@@ -31,10 +31,72 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Create a new user",
+                "summary": "Create a new tenant",
                 "parameters": [
                     {
-                        "description": "User data",
+                        "type": "string",
+                        "description": "Pending contract ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Tenant user data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created user data",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Pending contract not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Email already exists",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Create a new user with owner role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Create a new owner",
+                "parameters": [
+                    {
+                        "description": "Owner user data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -127,6 +189,224 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all properties information of an owner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get all properties of an owner",
+                "responses": {
+                    "200": {
+                        "description": "List of properties",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.PropertyResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new property for an owner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Create a new property",
+                "parameters": [
+                    {
+                        "description": "Property data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created property data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Property already exists",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get property information by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get property by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/send-invite/{propertyId}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Invite tenant to owner's property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Invite tenant to owner's property",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "propertyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Invite params",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.InviteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Created invite",
+                        "schema": {
+                            "$ref": "#/definitions/models.InviteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property is not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Invite already exists for this email",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/profile": {
             "get": {
                 "security": [
@@ -142,7 +422,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "user"
                 ],
                 "summary": "Get user profile",
                 "responses": {
@@ -159,7 +439,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Cannot find user",
+                        "description": "User not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -182,7 +462,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "user"
                 ],
                 "summary": "Get all users",
                 "responses": {
@@ -216,7 +496,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "user"
                 ],
                 "summary": "Get user by ID",
                 "parameters": [
@@ -242,7 +522,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Cannot find user",
+                        "description": "User not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -258,13 +538,110 @@ const docTemplate = `{
         "db.Role": {
             "type": "string",
             "enum": [
-                "admin",
-                "member"
+                "owner",
+                "tenant"
             ],
             "x-enum-varnames": [
-                "RoleAdmin",
-                "RoleMember"
+                "RoleOwner",
+                "RoleTenant"
             ]
+        },
+        "models.InviteRequest": {
+            "type": "object",
+            "required": [
+                "start_date",
+                "tenant_email"
+            ],
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.InviteResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PropertyRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "city",
+                "country",
+                "name",
+                "postal_code"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PropertyResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                }
+            }
         },
         "models.UserRequest": {
             "type": "object",
@@ -332,7 +709,7 @@ const docTemplate = `{
             "enum": [
                 "invalid-password",
                 "cannot-fetch-user",
-                "cannot-find-user",
+                "user-not-found",
                 "cannot-create-user",
                 "no-claims",
                 "cannot-decode-user",
@@ -340,12 +717,21 @@ const docTemplate = `{
                 "cannot-hash-password",
                 "email-already-exists",
                 "test-error",
-                "too-many-requests"
+                "too-many-requests",
+                "invite-not-found",
+                "user-must-have-same-email-as-invite",
+                "invite-already-exists-for-email-or-property",
+                "contract-already-exists-for-tenant-and-property",
+                "property-not-found",
+                "property-is-not-yours",
+                "not-an-owner",
+                "not-a-tenant",
+                "property-already-exists"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
                 "CannotFetchUser",
-                "CannotFindUser",
+                "UserNotFound",
                 "CannotCreateUser",
                 "NoClaims",
                 "CannotDecodeUser",
@@ -353,7 +739,16 @@ const docTemplate = `{
                 "CannotHashPassword",
                 "EmailAlreadyExists",
                 "TestError",
-                "TooManyRequests"
+                "TooManyRequests",
+                "InviteNotFound",
+                "UserSameEmailAsInvite",
+                "InviteAlreadyExists",
+                "ContractAlreadyExist",
+                "PropertyNotFound",
+                "PropertyNotYours",
+                "NotAnOwner",
+                "NotATenant",
+                "PropertyAlreadyExists"
             ]
         }
     },
