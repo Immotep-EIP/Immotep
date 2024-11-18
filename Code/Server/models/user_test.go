@@ -9,7 +9,7 @@ import (
 )
 
 func TestUserRequest(t *testing.T) {
-	userRequest := models.UserRequest{
+	req := models.UserRequest{
 		Email:     "test1@example.com",
 		Firstname: "Test",
 		Lastname:  "User",
@@ -17,12 +17,12 @@ func TestUserRequest(t *testing.T) {
 	}
 
 	t.Run("ToUser", func(t *testing.T) {
-		user := userRequest.ToDbUser()
+		user := req.ToDbUser()
 
-		assert.Equal(t, userRequest.Email, user.Email)
-		assert.Equal(t, userRequest.Firstname, user.Firstname)
-		assert.Equal(t, userRequest.Lastname, user.Lastname)
-		assert.Equal(t, userRequest.Password, user.Password)
+		assert.Equal(t, req.Email, user.Email)
+		assert.Equal(t, req.Firstname, user.Firstname)
+		assert.Equal(t, req.Lastname, user.Lastname)
+		assert.Equal(t, req.Password, user.Password)
 	})
 }
 
@@ -38,27 +38,27 @@ func TestUserResponse(t *testing.T) {
 	}
 
 	t.Run("FromUser", func(t *testing.T) {
-		userResponse := models.UserResponse{}
-		userResponse.FromDbUser(user)
+		resp := models.UserResponse{}
+		resp.FromDbUser(user)
 
-		assert.Equal(t, user.ID, userResponse.ID)
-		assert.Equal(t, user.Email, userResponse.Email)
-		assert.Equal(t, user.Firstname, userResponse.Firstname)
-		assert.Equal(t, user.Lastname, userResponse.Lastname)
-		assert.Equal(t, user.Role, userResponse.Role)
-		assert.Equal(t, user.CreatedAt, userResponse.CreatedAt)
-		assert.Equal(t, user.UpdatedAt, userResponse.UpdatedAt)
+		assert.Equal(t, user.ID, resp.ID)
+		assert.Equal(t, user.Email, resp.Email)
+		assert.Equal(t, user.Firstname, resp.Firstname)
+		assert.Equal(t, user.Lastname, resp.Lastname)
+		assert.Equal(t, user.Role, resp.Role)
+		assert.Equal(t, user.CreatedAt, resp.CreatedAt)
+		assert.Equal(t, user.UpdatedAt, resp.UpdatedAt)
 	})
 
 	t.Run("UserToResponse", func(t *testing.T) {
-		userResponse := models.DbUserToResponse(user)
+		resp := models.DbUserToResponse(user)
 
-		assert.Equal(t, user.ID, userResponse.ID)
-		assert.Equal(t, user.Email, userResponse.Email)
-		assert.Equal(t, user.Firstname, userResponse.Firstname)
-		assert.Equal(t, user.Lastname, userResponse.Lastname)
-		assert.Equal(t, user.Role, userResponse.Role)
-		assert.Equal(t, user.CreatedAt, userResponse.CreatedAt)
-		assert.Equal(t, user.UpdatedAt, userResponse.UpdatedAt)
+		assert.Equal(t, user.ID, resp.ID)
+		assert.Equal(t, user.Email, resp.Email)
+		assert.Equal(t, user.Firstname, resp.Firstname)
+		assert.Equal(t, user.Lastname, resp.Lastname)
+		assert.Equal(t, user.Role, resp.Role)
+		assert.Equal(t, user.CreatedAt, resp.CreatedAt)
+		assert.Equal(t, user.UpdatedAt, resp.UpdatedAt)
 	})
 }
