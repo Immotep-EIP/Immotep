@@ -50,4 +50,6 @@
     <string name="register_password_error">The password must be at least 8 characters long</string>
     <string name="busy">Busy</string>
     <string name="available">Available</string>
+    <string name="add_prop">Add a property</string>
+    <string name="back">Back</string>
 </resources>
