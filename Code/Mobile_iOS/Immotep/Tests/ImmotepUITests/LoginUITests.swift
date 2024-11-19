@@ -14,6 +14,10 @@ final class LoginUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         XCUIDevice.shared.orientation = .portrait
+        app.launchArguments.append("-UIPreferredContentSizeCategoryName")
+        app.launchArguments.append("-AppleLanguages")
+        app.launchArguments.append("en")
+        app.launchArguments += ["-UIViewAnimationDuration", "0"]
         app.launch()
     }
 
