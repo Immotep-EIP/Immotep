@@ -41,3 +41,33 @@ func TestSendError_WithError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.JSONEq(t, `{"code":"cannot-fetch-user","error":"database error"}`, w.Body.String())
 }
+
+func TestAbortSendError_NoError(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	router.GET("/test", func(c *gin.Context) {
+		utils.AbortSendError(c, http.StatusBadRequest, utils.InvalidPassword, nil)
+	})
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.JSONEq(t, `{"code":"invalid-password","error":""}`, w.Body.String())
+}
+
+func TestAbortSendError_WithError(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	router.GET("/test", func(c *gin.Context) {
+		utils.AbortSendError(c, http.StatusInternalServerError, utils.CannotFetchUser, errors.New("database error"))
+	})
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.JSONEq(t, `{"code":"cannot-fetch-user","error":"database error"}`, w.Body.String())
+}
