@@ -29,7 +29,12 @@ import (
 func mainFunc() int {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("Error loading .env file")
+		log.Println("WARNING: failed loading .env file")
+	}
+
+	port, check := os.LookupEnv("PORT")
+	if !check {
+		log.Println("No PORT found in env")
 		return 1
 	}
 
@@ -40,7 +45,9 @@ func mainFunc() int {
 	}
 	defer func() { _ = db.Client.Disconnect() }()
 
-	err = router.Routes().Run(":" + os.Getenv("PORT"))
+	log.Println("Connected to database, starting server...")
+
+	err = router.Routes().Run(":" + port)
 	if err != nil {
 		log.Println(err)
 		return 1

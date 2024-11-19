@@ -4,6 +4,4 @@
 # -x Print commands before they are executed
 set -ex
 
-./build.sh
-./run_linter.sh
-./backend
+golangci-lint run

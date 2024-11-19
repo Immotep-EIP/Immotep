@@ -4,6 +4,7 @@
 # -x Print commands before they are executed
 set -ex
 
-./build.sh
-./run_linter.sh
-./backend
+go run github.com/steebchen/prisma-client-go generate
+swag fmt
+swag init --parseDependency true
+go build

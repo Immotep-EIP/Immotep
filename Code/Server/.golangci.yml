@@ -14,7 +14,7 @@ linters:
     - decorder
     # - depguard
     - dogsled
-    - dupl
+    # - dupl
     - dupword
     - durationcheck
     # - err113
@@ -39,7 +39,7 @@ linters:
     - gocritic
     - gocyclo
     # - godot
-    - godox
+    # - godox
     - gofmt
     # - gofumpt
     - goheader
@@ -58,7 +58,7 @@ linters:
     - interfacebloat
     - intrange
     - ireturn
-    - lll
+    # - lll
     - loggercheck
     - maintidx
     - makezero
@@ -132,6 +132,9 @@ linters-settings:
       - name: line-length-limit
         exclude: [""]
         arguments: [120]
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
+      - name: max-public-structs
+        disabled: true
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unused-parameter
       - name: unused-parameter
         exclude: [""]
