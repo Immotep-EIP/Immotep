@@ -52,4 +52,11 @@
     <string name="available">Available</string>
     <string name="add_prop">Add a property</string>
     <string name="back">Back</string>
+    <string name="open_in_messages">Open in messages</string>
+    <string name="about_the_property">About the property</string>
+    <string name="documents">Documents</string>
+    <string name="start_inventory">Start an inventory</string>
+    <string name="area">Area</string>
+    <string name="rentMonth">Rent</string>
+    <string name="deposit">Deposit</string>
 </resources>
