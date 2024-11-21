@@ -4,24 +4,15 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavController
 import com.example.immotep.ApiClient.ApiClient
 import com.example.immotep.components.decodeRetroFitMessagesToHttpCodes
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 class AuthService(
     private val dataStore: DataStore<Preferences>,
 ) {
-
-
     suspend fun onLogin(
         username: String,
         password: String,
@@ -36,6 +27,7 @@ class AuthService(
         this.store(response.access_token, response.refresh_token)
     }
 
+    /*
     suspend fun refreshToken(): String {
         val refreshToken = dataStore.data.map { it[REFRESH_TOKEN] }.firstOrNull()
         if (refreshToken == null) {
@@ -50,6 +42,7 @@ class AuthService(
             throw Exception("Failed to refresh,$code")
         }
     }
+    */
 
     private suspend fun store(
         accessToken: String,
@@ -71,13 +64,17 @@ class AuthService(
             .firstOrNull()
             ?: throw IllegalArgumentException("no token stored")
 
-    suspend fun getBearerToken() : String = "Bearer ${this.getToken()}"
+    suspend fun getBearerToken(): String = "Bearer ${this.getToken()}"
 
-    suspend fun onLogout(navController: NavController) {
+    suspend fun deleteToken() {
         dataStore.edit {
             it.remove(ACCESS_TOKEN)
             it.remove(REFRESH_TOKEN)
         }
+    }
+
+    suspend fun onLogout(navController: NavController) {
+        this.deleteToken()
         navController.navigate("login")
     }
 

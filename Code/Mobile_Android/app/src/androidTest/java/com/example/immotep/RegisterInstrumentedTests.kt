@@ -9,6 +9,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.immotep.AuthService.AuthService
+import com.example.immotep.login.dataStore
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -21,6 +24,14 @@ class RegisterInstrumentedTests {
     val mainAct = createAndroidComposeRule<MainActivity>()
     private val res: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
+    private fun removeToken() {
+        val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
+        val authServ = AuthService(dataStore)
+        runBlocking {
+            authServ.deleteToken()
+        }
+    }
+
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
@@ -29,6 +40,7 @@ class RegisterInstrumentedTests {
 
     @Test
     fun hasTheHeader() {
+        this.removeToken()
         mainAct.onNodeWithTag("header").assertIsDisplayed()
     }
 

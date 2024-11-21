@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,21 +57,21 @@ fun RegisterScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             OutlinedTextField(
-                label = { Text(stringResource(R.string.last_name)) },
+                label = stringResource(R.string.last_name),
                 value = registerForm.value.lastName,
                 onValueChange = { value -> viewModel.setLastName(value) },
                 modifier = Modifier.fillMaxWidth().testTag("registerLastName"),
                 errorMessage = if (errors.value.lastName) stringResource(R.string.last_name_error) else null,
             )
             OutlinedTextField(
-                label = { Text(stringResource(R.string.first_name)) },
+                label = stringResource(R.string.first_name),
                 value = registerForm.value.firstName,
                 onValueChange = { value -> viewModel.setFirstName(value) },
                 modifier = Modifier.fillMaxWidth().testTag("registerFirstName"),
                 errorMessage = if (errors.value.firstName) stringResource(R.string.first_name_error) else null,
             )
             OutlinedTextField(
-                label = { Text(stringResource(R.string.your_email)) },
+                label = stringResource(R.string.your_email),
                 value = registerForm.value.email,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 onValueChange = { value -> viewModel.setEmail(value) },
@@ -80,7 +79,7 @@ fun RegisterScreen(
                 errorMessage = if (errors.value.lastName) stringResource(R.string.email_error) else null,
             )
             PasswordInput(
-                label = { Text(stringResource(R.string.your_password)) },
+                label = stringResource(R.string.your_password),
                 value = registerForm.value.password,
                 onValueChange = { value -> viewModel.setPassword(value) },
                 modifier = Modifier.fillMaxWidth().testTag("registerPassword"),
@@ -88,7 +87,7 @@ fun RegisterScreen(
                 iconButtonTestId = "registerTogglePasswordVisibility",
             )
             PasswordInput(
-                label = { Text(stringResource(R.string.password_confirm)) },
+                label = stringResource(R.string.password_confirm),
                 value = registerConfirm.value.password,
                 onValueChange = { value -> viewModel.setConfirmPassword(value) },
                 modifier = Modifier.fillMaxWidth().testTag("registerPasswordConfirm"),

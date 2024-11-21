@@ -26,7 +26,7 @@ fun OutlinedTextField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    label: @Composable (() -> Unit)? = null,
+    label: String,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
@@ -46,7 +46,12 @@ fun OutlinedTextField(
             onValueChange = onValueChange,
             enabled = enabled,
             readOnly = readOnly,
-            label = label,
+            label = {
+                Text(
+                    text = label,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                    },
             placeholder = placeholder,
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,

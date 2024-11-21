@@ -58,7 +58,7 @@ fun LoginScreen(
             ErrorAlert(errors.value.apiError, true)
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedTextField(
-                label = { Text(stringResource(R.string.your_email)) },
+                label = stringResource(R.string.your_email),
                 value = emailAndPassword.value.email,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 onValueChange = { value ->
@@ -68,7 +68,7 @@ fun LoginScreen(
                 errorMessage = if (errors.value.email) stringResource(R.string.email_error) else null,
             )
             PasswordInput(
-                label = { Text(stringResource(R.string.your_password)) },
+                label = stringResource(R.string.your_password),
                 value = emailAndPassword.value.password,
                 onValueChange = { value ->
                     viewModel.updateEmailAndPassword(null, value, null)

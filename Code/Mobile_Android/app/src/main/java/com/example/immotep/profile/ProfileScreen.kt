@@ -40,21 +40,21 @@ fun ProfileScreen(
             Column (horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.width(300.dp).height(450.dp).border(1.dp, color = MaterialTheme.colors.onBackground, shape = RoundedCornerShape(10.dp)).padding(10.dp)) {
                 OutlinedTextField(
-                    label = { Text(stringResource(R.string.last_name)) },
+                    label = stringResource(R.string.last_name),
                     value = infos.value.lastname,
                     onValueChange = { value ->  },
                     modifier = Modifier.fillMaxWidth().testTag("profileLastName"),
                     errorMessage = if (false) stringResource(R.string.last_name_error) else null,
                 )
                 OutlinedTextField(
-                    label = { Text(stringResource(R.string.first_name)) },
+                    label = stringResource(R.string.first_name),
                     value = infos.value.firstname,
                     onValueChange = { value ->  },
                     modifier = Modifier.fillMaxWidth().testTag("registerFirstName"),
                     errorMessage = if (false) stringResource(R.string.first_name_error) else null,
                 )
                 OutlinedTextField(
-                    label = { Text(stringResource(R.string.your_email)) },
+                    label = stringResource(R.string.your_email),
                     value = infos.value.email,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     onValueChange = { value -> },
