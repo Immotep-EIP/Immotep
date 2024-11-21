@@ -41,17 +41,24 @@ fun RegisterScreen(
     val registerForm = viewModel.regForm.collectAsState()
     val registerConfirm = viewModel.regConfirm.collectAsState()
     val errors = viewModel.regFormError.collectAsState()
-    Column(modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize().padding(10.dp)) {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+            .padding(10.dp)
+            .testTag("registerScreen")
+    ) {
         Header()
-        TopText(stringResource(R.string.create_account), stringResource(R.string.create_account_subtitle),
+        TopText(
+            stringResource(R.string.create_account), stringResource(R.string.create_account_subtitle),
             limitMarginTop = true,
             noMarginTop = errors.value.apiError != null
         )
         Spacer(modifier = Modifier.height(10.dp))
         ErrorAlert(errors.value.apiError, true)
-        Spacer(modifier = Modifier.height(
-            if (errors.value.apiError != null) 15.dp else 30.dp
-        ))
+        Spacer(
+            modifier = Modifier.height(if (errors.value.apiError != null) 15.dp else 30.dp)
+        )
         Column(
             modifier = Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -101,9 +108,8 @@ fun RegisterScreen(
                 errorMessage = if (errors.value.agreeToTerms) stringResource(R.string.agree_terms_error) else null,
                 modifier = Modifier.testTag("registerAgreeToTerm")
             )
-            Button(onClick = {
-                viewModel.onSubmit(navController)
-            },
+            Button(
+                onClick = { viewModel.onSubmit(navController) },
                 modifier = Modifier.testTag("registerButton"),
             ) {
                 Text(stringResource(R.string.sign_up))
@@ -114,11 +120,10 @@ fun RegisterScreen(
                     AnnotatedString(stringResource(R.string.sign_in)),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.tertiary,
-                    modifier =
-                        Modifier
-                            .padding(start = 3.dp)
-                            .clickable { navController.navigate("login") }
-                            .testTag("registerScreenToLoginButton"),
+                    modifier = Modifier
+                        .padding(start = 3.dp)
+                        .clickable { navController.navigate("login") }
+                        .testTag("registerScreenToLoginButton"),
                 )
             }
         }

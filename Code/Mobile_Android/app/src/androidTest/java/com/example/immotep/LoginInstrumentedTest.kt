@@ -37,17 +37,16 @@ class LoginInstrumentedTest {
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.example.immotep", appContext.packageName)
+        this.removeToken()
     }
 
     @Test
     fun hasTheHeader() {
-        this.removeToken()
         composeTestRule.onNodeWithTag("header").assertIsDisplayed()
     }
 
     @Test
     fun loginTextDisplayed() {
-        this.removeToken()
         composeTestRule
             .onNodeWithText(res.getString(R.string.login_hello))
             .assertIsDisplayed()
@@ -56,28 +55,24 @@ class LoginInstrumentedTest {
 
     @Test
     fun canChangeViewToRegister() {
-        this.removeToken()
         composeTestRule.onNodeWithTag("loginScreenToRegisterButton").assertIsDisplayed().performClick()
-        composeTestRule.onNodeWithText(res.getString(R.string.create_account)).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("registerScreen").assertIsDisplayed()
     }
 
     @Test
     fun passwordAndToggleExists() {
-        this.removeToken()
         composeTestRule.onNodeWithTag("loginPasswordInput").assertIsDisplayed()
         composeTestRule.onNodeWithTag("togglePasswordVisibility").assertIsDisplayed()
     }
 
     @Test
     fun emailAndKeepSignedExists() {
-        this.removeToken()
         composeTestRule.onNodeWithTag("loginEmailInput").assertIsDisplayed()
         composeTestRule.onNodeWithTag("keepSignedCheckbox").assertIsDisplayed()
     }
 
     @Test
     fun canTogglePasswordVisibility() {
-        this.removeToken()
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test123")
         composeTestRule.onNodeWithText("test123").assertDoesNotExist()
         composeTestRule.onNodeWithTag("togglePasswordVisibility").performClick()
@@ -86,7 +81,6 @@ class LoginInstrumentedTest {
 
     @Test
     fun canSetValueToLoginScreenInputs() {
-        this.removeToken()
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test99")
         composeTestRule.onNodeWithTag("togglePasswordVisibility").performClick()
@@ -96,7 +90,6 @@ class LoginInstrumentedTest {
 
     @Test
     fun handlesErrorOnInvalidEmail() {
-        this.removeToken()
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni")
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test99")
         composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -105,7 +98,6 @@ class LoginInstrumentedTest {
 
     @Test
     fun handlesErrorOnInvalidPassword() {
-        this.removeToken()
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("test@gmail.com")
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("te")
         composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -121,11 +113,11 @@ class LoginInstrumentedTest {
         composeTestRule.onNodeWithTag("loginButton").performClick()
         Thread.sleep(10000)
         composeTestRule.onNodeWithTag("dashboardScreen").assertIsDisplayed()
+        this.removeToken()
     }
 
     @Test
     fun triggersErrorOnUnknownUser() {
-        this.removeToken()
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("error@gmail.com")
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("testError")
         composeTestRule.onNodeWithTag("loginButton").performClick()

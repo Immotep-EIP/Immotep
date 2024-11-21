@@ -11,7 +11,7 @@ fun DashBoardScreen(
     navController: NavController,
     viewModel: DashBoardViewModel = viewModel()
 ) {
-    DashBoardLayout(navController, "dashboard") {
+    DashBoardLayout(navController, "dashboardScreen") {
         Button(onClick = {
             navController.navigate("login")
         }) {
