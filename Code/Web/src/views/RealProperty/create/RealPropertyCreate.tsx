@@ -9,6 +9,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import style from './RealPropertyCreate.module.css'
 
 type FieldType = {
+  name?: string
   address?: string
   zipCode?: string
   city?: string
@@ -77,6 +78,16 @@ const RealPropertyCreate: React.FC = () => {
         layout="vertical"
         style={{ width: '90%', maxWidth: '500px', margin: '20px' }}
       >
+        <Form.Item<FieldType>
+          label={t('components.input.property_name.label')}
+          name="address"
+          rules={[
+            { required: true, message: t('components.input.property_name.error') }
+          ]}
+        >
+          <Input placeholder={t('components.input.property_name.placeholder')} />
+        </Form.Item>
+
         <Form.Item<FieldType>
           label={t('components.input.address.label')}
           name="address"

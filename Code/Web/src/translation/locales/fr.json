@@ -1,6 +1,11 @@
 {
   "components": {
     "input": {
+      "property_name": {
+        "label": "Nom de votre bien",
+        "placeholder": "Entrez le nom de votre bien",
+        "error": "Veuillez renseigner le nom de votre bien."
+      },
       "email": {
         "label": "Email",
         "placeholder": "Entrez votre email",
