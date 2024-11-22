@@ -47,6 +47,10 @@ model property {
     city        String
     postal_code String
     country     String
+    area_sqm               Float
+    rental_price_per_month Int
+    deposit_price          Int
+    picture     String?
     created_at  DateTime @default(now())
 
     owner       user     @relation(fields: [owner_id], references: [id])

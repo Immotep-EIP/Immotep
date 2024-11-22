@@ -121,7 +121,11 @@ func TestCreateProperty(t *testing.T) {
 			db.Property.City.Set(property.City),
 			db.Property.PostalCode.Set(property.PostalCode),
 			db.Property.Country.Set(property.Country),
+			db.Property.AreaSqm.Set(property.AreaSqm),
+			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
+			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Returns(property)
 
@@ -178,7 +182,11 @@ func TestCreatePropertyAlreadyExists(t *testing.T) {
 			db.Property.City.Set(property.City),
 			db.Property.PostalCode.Set(property.PostalCode),
 			db.Property.Country.Set(property.Country),
+			db.Property.AreaSqm.Set(property.AreaSqm),
+			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
+			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
