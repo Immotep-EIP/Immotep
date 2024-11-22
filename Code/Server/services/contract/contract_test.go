@@ -41,16 +41,21 @@ func BuildTestPendingContract() db.PendingContractModel {
 }
 
 func BuildTestProperty(id string) db.PropertyModel {
+	picture := "test.png"
 	return db.PropertyModel{
 		InnerProperty: db.InnerProperty{
-			ID:         id,
-			Name:       "Test",
-			Address:    "Test",
-			City:       "Test",
-			PostalCode: "Test",
-			Country:    "Test",
-			CreatedAt:  time.Now(),
-			OwnerID:    "1",
+			ID:                  id,
+			Name:                "Test",
+			Address:             "Test",
+			City:                "Test",
+			PostalCode:          "Test",
+			Country:             "Test",
+			AreaSqm:             20.0,
+			RentalPricePerMonth: 500,
+			DepositPrice:        1000,
+			Picture:             &picture,
+			CreatedAt:           time.Now(),
+			OwnerID:             "1",
 		},
 	}
 }

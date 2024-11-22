@@ -13,16 +13,21 @@ import (
 )
 
 func BuildTestProperty(id string) db.PropertyModel {
+	picture := "test.png"
 	return db.PropertyModel{
 		InnerProperty: db.InnerProperty{
-			ID:         id,
-			Name:       "Test",
-			Address:    "Test",
-			City:       "Test",
-			PostalCode: "Test",
-			Country:    "Test",
-			CreatedAt:  time.Now(),
-			OwnerID:    "1",
+			ID:                  id,
+			Name:                "Test",
+			Address:             "Test",
+			City:                "Test",
+			PostalCode:          "Test",
+			Country:             "Test",
+			AreaSqm:             20.0,
+			RentalPricePerMonth: 500,
+			DepositPrice:        1000,
+			Picture:             &picture,
+			CreatedAt:           time.Now(),
+			OwnerID:             "1",
 		},
 	}
 }
@@ -145,7 +150,11 @@ func TestCreateProperty(t *testing.T) {
 			db.Property.City.Set(property.City),
 			db.Property.PostalCode.Set(property.PostalCode),
 			db.Property.Country.Set(property.Country),
+			db.Property.AreaSqm.Set(property.AreaSqm),
+			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
+			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Returns(property)
 
@@ -167,7 +176,11 @@ func TestCreatePropertyAlreadyExists(t *testing.T) {
 			db.Property.City.Set(property.City),
 			db.Property.PostalCode.Set(property.PostalCode),
 			db.Property.Country.Set(property.Country),
+			db.Property.AreaSqm.Set(property.AreaSqm),
+			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
+			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -195,7 +208,11 @@ func TestCreatePropertyNoConnection(t *testing.T) {
 			db.Property.City.Set(property.City),
 			db.Property.PostalCode.Set(property.PostalCode),
 			db.Property.Country.Set(property.Country),
+			db.Property.AreaSqm.Set(property.AreaSqm),
+			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
+			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Errors(errors.New("connection failed"))
 

@@ -24,7 +24,7 @@ type InviteResponse struct {
 	ID          string       `json:"id"`
 	TenantEmail string       `json:"tenant_email"`
 	StartDate   db.DateTime  `json:"start_date"`
-	EndDate     *db.DateTime `json:"end_date,omitempty"`
+	EndDate     *db.DateTime `json:"end_date"`
 	PropertyID  string       `json:"property_id"`
 	CreatedAt   db.DateTime  `json:"created_at"`
 }
