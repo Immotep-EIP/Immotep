@@ -89,6 +89,7 @@ const MainLayout: React.FC = () => {
               tabIndex={0}
               aria-label="button"
               role="button"
+              key={item.key}
             >
               {t(item.label)}
             </span>
