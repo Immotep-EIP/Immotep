@@ -17,7 +17,6 @@ type FieldType = {
   area?: string
   rental?: string
   deposit?: string
-  charges?: string
   picture?: string
 }
 
@@ -156,16 +155,6 @@ const RealPropertyCreate: React.FC = () => {
           ]}
         >
           <Input placeholder={t('components.input.deposit.placeholder')} />
-        </Form.Item>
-
-        <Form.Item<FieldType>
-          label={t('components.input.charges.label')}
-          name="charges"
-          rules={[
-            { required: true, message: t('components.input.charges.error') }
-          ]}
-        >
-          <Input placeholder={t('components.input.charges.placeholder')} />
         </Form.Item>
 
         <Form.Item<FieldType>
