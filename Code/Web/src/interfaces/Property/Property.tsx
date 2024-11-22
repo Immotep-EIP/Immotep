@@ -39,6 +39,7 @@ export interface Inventory {
 
 export interface RealProperty {
   id: number;
+  name: string;
   adress: string;
   city: string;
   zipCode: string;

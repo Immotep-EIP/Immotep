@@ -1,6 +1,7 @@
 const realProperties = [
   {
     id: 1,
+    name: "Appartement T2",
     adress: "1234, rue de la paix",
     city: "Paris",
     zipCode: "75000",
@@ -92,6 +93,7 @@ const realProperties = [
   },
   {
     id: 2,
+    name: "Appartement T2",
     adress: "5678, avenue des Champs-Élysées",
     city: "Paris",
     zipCode: "75008",
@@ -137,6 +139,7 @@ const realProperties = [
   },
   {
     id: 3,
+    name: "Appartement T2",
     adress: "4321, rue du Commerce",
     city: "Lyon",
     zipCode: "69000",
@@ -192,6 +195,7 @@ const realProperties = [
   },
   {
     id: 4,
+    name: "Appartement T2",
     adress: "9876, rue de la Liberté",
     city: "Marseille",
     zipCode: "13001",

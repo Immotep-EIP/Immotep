@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { RealProperty } from '@/interfaces/Property/Property.tsx'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 
+import appartmentIcon from '@/assets/icons/appartement.png'
+import locationIcon from '@/assets/icons/location.png'
+import tenantIcon from '@/assets/icons/tenant.png'
+import dateIcon from '@/assets/icons/date.png'
+
+import fakeData from '@/fakeDatas/RealProperties.tsx'
 import style from './RealProperty.module.css'
-
-import locationIcon from '../../assets/icons/location.png'
-import tenantIcon from '../../assets/icons/tenant.png'
-import dateIcon from '../../assets/icons/date.png'
-
-import fakeData from '../../fakeDatas/RealProperties.tsx'
 
 interface CardComponentProps {
   realProperty: RealProperty
@@ -64,8 +64,26 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
       {/* THIRD PART */}
       <div className={style.informationsContainer}>
         <div className={style.informations}>
-          <img src={locationIcon} alt="location" className={style.icon} />
+          <img src={appartmentIcon} alt="location" className={style.icon} />
           <span>
+            {(() => {
+              if (realProperty.name) {
+                return realProperty.name.length > 40
+                  ? `${realProperty.name.substring(0, 40)}...`
+                  : realProperty.name
+              }
+              return '-----------'
+            })()}
+          </span>
+        </div>
+        <div className={style.informations}>
+          <img src={locationIcon} alt="location" className={style.icon} />
+          <span className={style.text}>
+            {realProperty.adress && realProperty.zipCode && realProperty.city
+              ? `${realProperty.adress}, ${realProperty.zipCode} ${realProperty.city}`
+              : '-----------'}
+          </span>
+          {/* <span>
             {realProperty.adress && realProperty.zipCode && realProperty.city
               ? (() => {
                   const fullAddress = `${realProperty.adress}, ${realProperty.zipCode} ${realProperty.city}`
@@ -74,7 +92,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
                     : fullAddress
                 })()
               : '-----------'}
-          </span>
+          </span> */}
         </div>
         <div className={style.informations}>
           <img src={tenantIcon} alt="location" className={style.icon} />
