@@ -28,7 +28,6 @@ struct SettingsView: View {
                         }
                     }
                 }
-
                 Section(header: Text("Theme")) {
                     Picker("Theme", selection: $selectedTheme) {
                         ForEach(ThemeOption.allCases, id: \.self) { theme in
@@ -38,32 +37,19 @@ struct SettingsView: View {
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     .onChange(of: selectedTheme) {
-                        applyTheme(theme: selectedTheme)
+                        Task { @MainActor in
+                            ThemeManager.applyTheme(theme: selectedTheme)
+                        }
                     }
                 }
             }
-            .onAppear {
-                applyTheme(theme: selectedTheme)
-            }
-
+//            .onAppear {
+//                applyTheme(theme: selectedTheme)
+//            }
             Spacer()
             TaskBar()
         }
         .navigationBarBackButtonHidden(true)
-    }
-
-    private func applyTheme(theme: String) {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
-        let rootViewController = windowScene.windows.first?.rootViewController
-
-        switch theme {
-        case ThemeOption.light.rawValue:
-            rootViewController?.overrideUserInterfaceStyle = .light
-        case ThemeOption.dark.rawValue:
-            rootViewController?.overrideUserInterfaceStyle = .dark
-        default:
-            rootViewController?.overrideUserInterfaceStyle = .unspecified
-        }
     }
 }
 
