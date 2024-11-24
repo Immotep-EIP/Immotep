@@ -591,14 +591,20 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "address",
+                "area_sqm",
                 "city",
                 "country",
+                "deposit_price",
                 "name",
-                "postal_code"
+                "postal_code",
+                "rental_price_per_month"
             ],
             "properties": {
                 "address": {
                     "type": "string"
+                },
+                "area_sqm": {
+                    "type": "number"
                 },
                 "city": {
                     "type": "string"
@@ -606,11 +612,20 @@ const docTemplate = `{
                 "country": {
                     "type": "string"
                 },
+                "deposit_price": {
+                    "type": "integer"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "picture": {
                     "type": "string"
                 },
                 "postal_code": {
                     "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "integer"
                 }
             }
         },
@@ -619,6 +634,9 @@ const docTemplate = `{
             "properties": {
                 "address": {
                     "type": "string"
+                },
+                "area_sqm": {
+                    "type": "number"
                 },
                 "city": {
                     "type": "string"
@@ -629,6 +647,9 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "deposit_price": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -638,8 +659,14 @@ const docTemplate = `{
                 "owner_id": {
                     "type": "string"
                 },
+                "picture": {
+                    "type": "string"
+                },
                 "postal_code": {
                     "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "integer"
                 }
             }
         },

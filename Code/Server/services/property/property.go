@@ -36,7 +36,11 @@ func Create(property db.PropertyModel, ownerId string) *db.PropertyModel {
 		db.Property.City.Set(property.City),
 		db.Property.PostalCode.Set(property.PostalCode),
 		db.Property.Country.Set(property.Country),
+		db.Property.AreaSqm.Set(property.AreaSqm),
+		db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
+		db.Property.DepositPrice.Set(property.DepositPrice),
 		db.Property.Owner.Link(db.User.ID.Equals(ownerId)),
+		db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {

@@ -39,39 +39,58 @@ definitions:
     properties:
       address:
         type: string
+      area_sqm:
+        type: number
       city:
         type: string
       country:
         type: string
+      deposit_price:
+        type: integer
       name:
+        type: string
+      picture:
         type: string
       postal_code:
         type: string
+      rental_price_per_month:
+        type: integer
     required:
     - address
+    - area_sqm
     - city
     - country
+    - deposit_price
     - name
     - postal_code
+    - rental_price_per_month
     type: object
   models.PropertyResponse:
     properties:
       address:
         type: string
+      area_sqm:
+        type: number
       city:
         type: string
       country:
         type: string
       created_at:
         type: string
+      deposit_price:
+        type: integer
       id:
         type: string
       name:
         type: string
       owner_id:
         type: string
+      picture:
+        type: string
       postal_code:
         type: string
+      rental_price_per_month:
+        type: integer
     type: object
   models.UserRequest:
     properties:

@@ -585,14 +585,20 @@
             "type": "object",
             "required": [
                 "address",
+                "area_sqm",
                 "city",
                 "country",
+                "deposit_price",
                 "name",
-                "postal_code"
+                "postal_code",
+                "rental_price_per_month"
             ],
             "properties": {
                 "address": {
                     "type": "string"
+                },
+                "area_sqm": {
+                    "type": "number"
                 },
                 "city": {
                     "type": "string"
@@ -600,11 +606,20 @@
                 "country": {
                     "type": "string"
                 },
+                "deposit_price": {
+                    "type": "integer"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "picture": {
                     "type": "string"
                 },
                 "postal_code": {
                     "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "integer"
                 }
             }
         },
@@ -613,6 +628,9 @@
             "properties": {
                 "address": {
                     "type": "string"
+                },
+                "area_sqm": {
+                    "type": "number"
                 },
                 "city": {
                     "type": "string"
@@ -623,6 +641,9 @@
                 "created_at": {
                     "type": "string"
                 },
+                "deposit_price": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -632,8 +653,14 @@
                 "owner_id": {
                     "type": "string"
                 },
+                "picture": {
+                    "type": "string"
+                },
                 "postal_code": {
                     "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "integer"
                 }
             }
         },
