@@ -10,11 +10,11 @@ import Foundation
 actor AuthService: Sendable, AuthServiceProtocol {
     static let shared = AuthService()
 
-    func loginUser(email: String, password: String) async throws -> (String, String) {
-        return try await requestToken(grantType: "password", email: email, password: password)
+    func loginUser(email: String, password: String, keepMeSignedIn: Bool) async throws -> (String, String) {
+        return try await requestToken(grantType: "password", email: email, password: password, keepMeSignedIn: keepMeSignedIn)
     }
 
-    func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil, keepMeSignedIn: Bool = false) async throws -> (String, String) {
+    func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil, keepMeSignedIn: Bool) async throws -> (String, String) {
         let url = URL(string: "\(baseURL)/auth/token")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -84,7 +84,7 @@ actor AuthService: Sendable, AuthServiceProtocol {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No refresh token found. Please log in again."])
         }
 
-        let (newAccessToken, _) = try await requestToken(grantType: "refresh_token", refreshToken: refreshToken)
+        let (newAccessToken, _) = try await requestToken(grantType: "refresh_token", refreshToken: refreshToken, keepMeSignedIn: true)
         return newAccessToken
     }
 
@@ -99,7 +99,7 @@ actor AuthService: Sendable, AuthServiceProtocol {
 }
 
 protocol AuthServiceProtocol {
-    func loginUser(email: String, password: String) async throws -> (String, String)
+    func loginUser(email: String, password: String, keepMeSignedIn: Bool) async throws -> (String, String)
     func requestToken(grantType: String, email: String?, password: String?, refreshToken: String?, keepMeSignedIn: Bool) async throws -> (String, String)
     func authorizedRequest(for endpoint: String) async throws -> Data
 }

@@ -43,9 +43,6 @@ struct SettingsView: View {
                     }
                 }
             }
-//            .onAppear {
-//                applyTheme(theme: selectedTheme)
-//            }
             Spacer()
             TaskBar()
         }

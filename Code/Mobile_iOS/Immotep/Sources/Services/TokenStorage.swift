@@ -16,20 +16,20 @@ struct TokenStorage {
 
     static func storeTokens(accessToken: String, refreshToken: String, expiresIn: TimeInterval? = nil, keepMeSignedIn: Bool) {
         let currentDate = Date()
+
         if keepMeSignedIn {
             UserDefaults.standard.set(accessToken, forKey: accessTokenKey)
             UserDefaults.standard.set(refreshToken, forKey: refreshTokenKey)
             UserDefaults.standard.set(currentDate, forKey: tokenDateKey)
             UserDefaults.standard.set(keepMeSignedIn, forKey: keepMeSignedInKey)
-            print("Keep me signed in: \(UserDefaults.standard.bool(forKey: keepMeSignedInKey))")
+
             if let expiresIn = expiresIn {
-                UserDefaults.standard.set(expiresIn, forKey: tokenExpiryKey)
+                let expirationDate = currentDate.addingTimeInterval(expiresIn)
+                UserDefaults.standard.set(expirationDate, forKey: tokenExpiryKey)
             }
         } else {
-            Task {
                 SessionStorage.setAccessToken(accessToken)
                 SessionStorage.setRefreshToken(refreshToken)
-            }
         }
     }
 
@@ -63,11 +63,10 @@ struct TokenStorage {
     }
 
     static func isTokenExpired() -> Bool {
-        guard let tokenDate = UserDefaults.standard.object(forKey: tokenDateKey) as? Date,
-              let expiresIn = UserDefaults.standard.object(forKey: tokenExpiryKey) as? TimeInterval else {
+        guard let expirationDate = UserDefaults.standard.object(forKey: tokenExpiryKey) as? Date else {
             return true
         }
-        return Date().timeIntervalSince(tokenDate) >= expiresIn
+        return Date() > expirationDate
     }
 
     static func clearTokens() {
@@ -76,8 +75,6 @@ struct TokenStorage {
         UserDefaults.standard.removeObject(forKey: tokenDateKey)
         UserDefaults.standard.removeObject(forKey: tokenExpiryKey)
         UserDefaults.standard.set(false, forKey: keepMeSignedInKey)
-        print("Access token after clean: \(UserDefaults.standard.string(forKey: accessTokenKey) ?? "none")")
-        print("Keep me signed in after clean: \(UserDefaults.standard.bool(forKey: keepMeSignedInKey))")
 
         Task {
             SessionStorage.setAccessToken(nil)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct User: Decodable {
+struct User: Decodable, Encodable {
     var id: String
     var email: String
     var firstname: String
@@ -33,11 +33,7 @@ actor UserService: Sendable, UserServiceProtocol {
     private var currentUser: User?
 
     func getCurrentUser() async throws -> User {
-        if let user = currentUser {
-            return user
-        }
-
-        if TokenStorage.isTokenExpired() {
+        if TokenStorage.keepMeSignedIn() && TokenStorage.isTokenExpired() {
             do {
                 let newAccessToken = try await refreshAccessTokenIfNeeded()
                 return try await fetchUserProfile(with: newAccessToken)
@@ -49,7 +45,6 @@ actor UserService: Sendable, UserServiceProtocol {
         guard let accessToken = await TokenStorage.getAccessToken() else {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No access token found."])
         }
-
         let user = try await fetchUserProfile(with: accessToken)
         currentUser = user
         return user
@@ -60,7 +55,7 @@ actor UserService: Sendable, UserServiceProtocol {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No refresh token found. Please log in again."])
         }
         do {
-            let (newAccessToken, _) = try await AuthService.shared.requestToken(grantType: "refresh_token", refreshToken: refreshToken)
+            let (newAccessToken, _) = try await AuthService.shared.requestToken(grantType: "refresh_token", refreshToken: refreshToken, keepMeSignedIn: true)
             TokenStorage.storeAccessToken(newAccessToken)
             return newAccessToken
         } catch {

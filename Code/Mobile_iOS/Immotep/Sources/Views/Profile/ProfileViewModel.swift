@@ -10,28 +10,20 @@ import SwiftUI
 @MainActor
 class ProfileViewModel: ObservableObject {
     @Published var user: User?
-    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
-    private let userService = UserService()
+    @AppStorage("user") private var storedUserData: String = ""
 
-    var isUserLoggedIn: Bool {
-        return isLoggedIn
-    }
     init() {
-        if isUserLoggedIn {
-            loadUser()
+        if let loadedUser = loadUser() {
+            self.user = loadedUser
         }
     }
 
-    func loadUser() {
-        guard isUserLoggedIn else { return }
-        // add a guard to avoid useless api call if profile already loaded
-        Task {
-            do {
-                let currentUser = try await userService.getCurrentUser()
-                self.user = currentUser
-            } catch {
-                print("Failed to load user: \(error)")
-            }
+    private func loadUser() -> User? {
+        let decoder = JSONDecoder()
+        if let data = storedUserData.data(using: .utf8),
+           let decodedUser = try? decoder.decode(User.self, from: data) {
+            return decodedUser
         }
+        return nil
     }
 }

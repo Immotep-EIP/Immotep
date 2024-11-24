@@ -10,6 +10,7 @@ import Foundation
 actor SessionStorage {
     private static var accessToken: String?
     private static var refreshToken: String?
+//    private static var userInfo: Data?
     private static let queue = DispatchQueue(label: "com.yourapp.sessionStorageQueue")
 
     static func setAccessToken(_ token: String?) {
