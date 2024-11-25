@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,7 @@ import coil.compose.AsyncImage
 import com.example.immotep.R
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
+import java.text.SimpleDateFormat
 
 @Composable
 fun PropertyBoxTextLine(text: String, icon: ImageVector) {
@@ -62,7 +64,7 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
     } else {
         Modifier
     }
-    Box {
+    Box(modifier = Modifier.testTag("propertyBoxRow")) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifierRow
@@ -74,6 +76,7 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
                 )
                 .fillMaxWidth()
                 .padding(start = 10.dp, end = 10.dp, top = 30.dp, bottom = 30.dp)
+                .testTag("propertyBox ${property.id}")
         ) {
             AsyncImage(
                 model = property.image,
@@ -98,7 +101,7 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
             ) {
                 PropertyBoxTextLine(property.address, Icons.Outlined.Place)
                 PropertyBoxTextLine(property.tenant, Icons.Outlined.AccountCircle)
-                PropertyBoxTextLine(property.startDate.toLocaleString(), Icons.Outlined.DateRange)
+                PropertyBoxTextLine(SimpleDateFormat("dd/MM/yyyy").format(property.startDate), Icons.Outlined.DateRange)
             }
         }
         Box(
@@ -110,6 +113,7 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
                 .clip(RoundedCornerShape(30.dp))
                 .background(if (property.available) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.error)
                 .padding(3.dp)
+                .testTag("topRightPropertyBoxInfo")
         ) {
             Text(
                 color = MaterialTheme.colorScheme.onError,
@@ -138,6 +142,7 @@ fun RealPropertyScreen(navController: NavController) {
                     modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
                         .padding(5.dp)
+                        .testTag("addAPropertyBtn")
                 ) {
                     Text(
                         stringResource(R.string.add_prop),

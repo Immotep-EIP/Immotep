@@ -34,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ fun OneDocument(name: String) {
             .padding(5.dp)
             .clickable { }
             .wrapContentSize(Alignment.Center)
+            .testTag("OneDocument")
     ) {
         Box(
             modifier = Modifier
@@ -72,7 +74,7 @@ fun OneDocument(name: String) {
 fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, getBack: () -> Unit) {
     val viewModel: RealPropertyDetailsViewModel = viewModel(factory = RealPropertyDetailsViewModelFactory(propertyId))
     val property = viewModel.property.collectAsState()
-    Column(modifier = Modifier.padding(5.dp)) {
+    Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
@@ -143,6 +145,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
                 .clip(RoundedCornerShape(5.dp))
                 .padding(5.dp)
                 .fillMaxWidth()
+                .testTag("startInventory")
         ) {
             Text(
                 stringResource(R.string.start_inventory),
