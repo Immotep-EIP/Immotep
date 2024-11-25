@@ -1,6 +1,8 @@
 package com.example.immotep
 
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -17,7 +19,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class DashBoardInstrumentedTest {
+class ProfileInstrumentedTest {
     @get:Rule
     val mainAct = createAndroidComposeRule<MainActivity>()
 
@@ -28,6 +30,7 @@ class DashBoardInstrumentedTest {
         try {
             runBlocking {
                 authServ.getToken()
+                mainAct.onNodeWithTag("loggedTopBarClickableIcon").assertIsDisplayed().performClick()
             }
         } catch (e: Exception) {
             runBlocking {
@@ -35,6 +38,7 @@ class DashBoardInstrumentedTest {
                 mainAct.onNodeWithTag("loginPasswordInput").performClick().performTextInput("Ttest99&")
                 mainAct.onNodeWithTag("loginButton").performClick()
                 Thread.sleep(10000)
+                mainAct.onNodeWithTag("loggedTopBarClickableIcon").assertIsDisplayed().performClick()
             }
         }
     }
@@ -46,8 +50,8 @@ class DashBoardInstrumentedTest {
     }
 
     @Test
-    fun canGoToDashboard() {
-        mainAct.onNodeWithTag("dashboardScreen").assertIsDisplayed()
+    fun canGoToProfile() {
+        mainAct.onNodeWithTag("profile").assertIsDisplayed()
     }
 
     @Test
@@ -61,55 +65,37 @@ class DashBoardInstrumentedTest {
     }
 
     @Test
-    fun headerContainsImage() {
-        mainAct.onNodeWithTag("loggedTopBarImage").assertIsDisplayed()
-    }
-
-    @Test
-    fun headerContainsText() {
-        mainAct.onNodeWithTag("loggedTopBarText").assertIsDisplayed()
-    }
-
-    @Test
-    fun headerContainsClickableIcons() {
-        mainAct.onNodeWithTag("loggedTopBarClickableIcon").assertIsDisplayed()
-    }
-
-    @Test
-    fun canDisconnect() {
-        mainAct.onNodeWithTag("loggedTopBarImage").performClick()
-        mainAct.onNodeWithTag("loginScreen").assertIsDisplayed()
-    }
-
-    @Test
     fun bottomBarIsPresent() {
         mainAct.onNodeWithTag("loggedBottomBar").assertIsDisplayed()
     }
 
     @Test
-    fun bottomBarContainsAllElements() {
-        mainAct.onNodeWithTag("loggedBottomBarElement dashboard").assertIsDisplayed()
-        mainAct.onNodeWithTag("loggedBottomBarElement realProperty").assertIsDisplayed()
-        mainAct.onNodeWithTag("loggedBottomBarElement messages").assertIsDisplayed()
-        mainAct.onNodeWithTag("loggedBottomBarElement settings").assertIsDisplayed()
+    fun lastNameTestFieldIsPresentAndClickable() {
+        mainAct.onNodeWithTag("profileLastName").assertIsDisplayed().performClick()
     }
 
     @Test
-    fun canGoToRealProperty() {
-        mainAct.onNodeWithTag("loggedBottomBarElement realProperty").assertIsDisplayed().performClick()
-        mainAct.onNodeWithTag("realPropertyScreen").assertIsDisplayed()
+    fun firstNameTestFieldIsPresentAndClickable() {
+        mainAct.onNodeWithTag("profileFirstName").assertIsDisplayed().performClick()
     }
 
     @Test
-    fun canGoToRealPropertyAndGoBackToDashboard() {
-        mainAct.onNodeWithTag("loggedBottomBarElement realProperty").assertIsDisplayed().performClick()
-        mainAct.onNodeWithTag("loggedBottomBarElement dashboard").performClick()
-        mainAct.onNodeWithTag("dashboardScreen").assertIsDisplayed()
+    fun emailTestFieldIsPresentAndClickable() {
+        mainAct.onNodeWithTag("profileEmail").assertIsDisplayed().performClick()
     }
 
     @Test
-    fun stayOnDashBoardIfDashboardIsClicked() {
-        mainAct.onNodeWithTag("loggedBottomBarElement dashboard").performClick()
-        mainAct.onNodeWithTag("dashboardScreen").assertIsDisplayed()
+    fun lastNameTestFieldContainsGoodValue() {
+        mainAct.onNodeWithTag("profileLastName").assert(hasText("User"))
+    }
+
+    @Test
+    fun firstNameTestFieldContainsGoodValue() {
+        mainAct.onNodeWithTag("profileFirstName").assert(hasText("Test"))
+    }
+
+    @Test
+    fun emailTestFieldContainsGoodValue() {
+        mainAct.onNodeWithTag("profileEmail").assert(hasText("robin.denni@epitech.eu"))
     }
 }

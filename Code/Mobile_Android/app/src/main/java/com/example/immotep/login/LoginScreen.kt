@@ -43,7 +43,13 @@ fun LoginScreen(
     val errors = viewModel.errors.collectAsState()
     val columnPaddingApiError = if (errors.value.apiError == null) 40.dp else 20.dp
 
-    Column(modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize().padding(10.dp)) {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+            .padding(10.dp)
+            .testTag("loginScreen")
+    ) {
         Header()
         TopText(stringResource(R.string.login_hello), stringResource(R.string.login_details))
         Column(

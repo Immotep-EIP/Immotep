@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -32,22 +33,25 @@ fun LoggedBottomBarElement(navController: NavController, name: String, icon: Ima
     val selected = navController.currentBackStackEntry?.destination?.route == pageName
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.drawBehind {
-            if (!selected) {
-                return@drawBehind
+        modifier = Modifier
+            .drawBehind {
+                if (!selected) {
+                    return@drawBehind
+                }
+                val y = size.height + 2.dp.toPx()
+                drawLine(
+                    Color.Magenta,
+                    Offset(size.width / 2 + size.width / 6, y),
+                    Offset(size.width / 3, y),
+                    2.dp.toPx()
+                )
             }
-            val y = size.height + 2.dp.toPx()
-            drawLine(
-                Color.Magenta,
-                Offset(size.width / 2 + size.width / 6, y),
-                Offset(size.width / 3, y),
-                2.dp.toPx()
-            )
-        }.clickable {
-            if (!selected) {
-                println(pageName); navController.navigate(pageName)
+            .clickable {
+                if (!selected) {
+                    navController.navigate(pageName)
+                }
             }
-        }
+            .testTag("loggedBottomBarElement $pageName")
     ) {
         Icon(
             imageVector = icon,
@@ -75,7 +79,7 @@ fun LoggedBottomBar(navController: NavController) {
     Spacer(modifier = Modifier.height(5.dp))
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp),
+        modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp).testTag("loggedBottomBar"),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 

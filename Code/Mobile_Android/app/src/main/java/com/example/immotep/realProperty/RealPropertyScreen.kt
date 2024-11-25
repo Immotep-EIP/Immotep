@@ -129,7 +129,7 @@ fun RealPropertyScreen(navController: NavController) {
     val properties = viewModel.properties.collectAsState()
     var addOpen by rememberSaveable { mutableStateOf(false) }
     var detailsOpen by rememberSaveable { mutableStateOf<String?>(null) }
-    DashBoardLayout(navController, "RealPropertyScreen") {
+    DashBoardLayout(navController, "realPropertyScreen") {
         if (detailsOpen == null) {
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Button(
