@@ -87,6 +87,11 @@
       "logout": "Logout",
       "logoutSuccess": "You are now disconnected."
     },
+    "realPropertyDetails": {
+      "inviteTenant": "Invitation sent successfully",
+      "409Error": "Invitation already sent",
+      "fillFields": "Please fill in the required fields"
+    },
     "lost": {
       "pageNotFound": "Page not found",
       "backHome": "Back to home"
