@@ -25,7 +25,7 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({ isOpen, onClose }
         }
     }
 
-    const onFinishFailed: FormProps<InviteTenant>['onFinishFailed'] = (errorInfo) => {
+    const onFinishFailed: FormProps<InviteTenant>['onFinishFailed'] = () => {
         message.error(t('pages.realPropertyDetails.fillFields'));
     }
 
