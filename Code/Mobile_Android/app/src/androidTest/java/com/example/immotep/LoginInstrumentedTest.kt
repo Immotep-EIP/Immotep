@@ -15,6 +15,7 @@ import com.example.immotep.AuthService.AuthService
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,6 +31,21 @@ class LoginInstrumentedTest {
         val authServ = AuthService(dataStore)
         runBlocking {
             authServ.deleteToken()
+        }
+    }
+
+    @Before
+    fun setup() {
+        val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
+        val authServ = AuthService(dataStore)
+        try {
+            runBlocking {
+                authServ.getToken()
+                composeTestRule.onNodeWithTag("loggedTopBarImage").assertIsDisplayed().performClick()
+                Thread.sleep(5000)
+            }
+        } catch (e: Exception) {
+            return
         }
     }
 

@@ -13,6 +13,7 @@ import com.example.immotep.AuthService.AuthService
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,6 +30,21 @@ class RegisterInstrumentedTests {
         val authServ = AuthService(dataStore)
         runBlocking {
             authServ.deleteToken()
+        }
+    }
+
+    @Before
+    fun setup() {
+        val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
+        val authServ = AuthService(dataStore)
+        try {
+            runBlocking {
+                authServ.getToken()
+                mainAct.onNodeWithTag("loggedTopBarImage").assertIsDisplayed().performClick()
+                Thread.sleep(5000)
+            }
+        } catch (e: Exception) {
+            return
         }
     }
 
@@ -69,6 +85,36 @@ class RegisterInstrumentedTests {
     }
 
     @Test
+    fun lastNameIsClickable() {
+        this.canGoToRegisterScreen()
+        mainAct.onNodeWithTag("registerLastName").assertIsDisplayed().performClick()
+    }
+
+    @Test
+    fun firstNameIsClickable() {
+        this.canGoToRegisterScreen()
+        mainAct.onNodeWithTag("registerFirstName").assertIsDisplayed().performClick()
+    }
+
+    @Test
+    fun emailIsClickable() {
+        this.canGoToRegisterScreen()
+        mainAct.onNodeWithTag("registerEmail").assertIsDisplayed().performClick()
+    }
+
+    @Test
+    fun passwordIsClickable() {
+        this.canGoToRegisterScreen()
+        mainAct.onNodeWithTag("registerPassword").assertIsDisplayed().performClick()
+    }
+
+    @Test
+    fun passwordConfirmIsClickable() {
+        this.canGoToRegisterScreen()
+        mainAct.onNodeWithTag("registerPasswordConfirm").assertIsDisplayed().performClick()
+    }
+
+    @Test
     fun hasAllTheRequiredButtons() {
         this.canGoToRegisterScreen()
         mainAct.onNodeWithTag("registerButton").assertIsDisplayed()
@@ -91,9 +137,11 @@ class RegisterInstrumentedTests {
     @Test
     fun canRegisterUser() {
         this.canGoToRegisterScreen()
+        val email = "test${Random.nextInt(0, 10000)}@gmail.com"
+        println(email)
         mainAct.onNodeWithTag("registerLastName").performClick().performTextInput("test")
         mainAct.onNodeWithTag("registerFirstName").performClick().performTextInput("android")
-        mainAct.onNodeWithTag("registerEmail").performClick().performTextInput("test${Random.nextInt(0, 10000)}@gmail.com")
+        mainAct.onNodeWithTag("registerEmail").performClick().performTextInput(email)
         mainAct.onNodeWithTag("registerPassword").performClick().performTextInput("test123&")
         mainAct.onNodeWithTag("registerPasswordConfirm").performClick().performTextInput("test123&")
         mainAct.onNodeWithTag("registerAgreeToTerm").performClick()

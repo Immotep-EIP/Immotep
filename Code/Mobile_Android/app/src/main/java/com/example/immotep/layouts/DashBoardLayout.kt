@@ -21,7 +21,7 @@ fun DashBoardLayout(
 ) {
     Column(modifier = Modifier.testTag(testTag)) {
         LoggedTopBar(navController)
-        Column(modifier = Modifier.weight(1f).padding(2.dp)) {
+        Column(modifier = Modifier.weight(1f).padding(2.dp).testTag("dashboardLayout")) {
             content()
         }
         LoggedBottomBar(navController)

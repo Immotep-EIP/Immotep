@@ -1,7 +1,6 @@
 package com.example.immotep.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,39 +35,49 @@ import com.example.immotep.R
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.launch
 
-
-class LoggedTopBarViewModel : ViewModel() {
-    fun logout(navController: NavController) {
-        viewModelScope.launch {
-            AuthService(navController.context.dataStore).onLogout(navController)
-        }
-    }
-}
-
+class LoggedTopBarViewModel : ViewModel()
 
 @Composable
 fun LoggedTopBar(navController: NavController) {
-    val viewModel : LoggedTopBarViewModel = viewModel()
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag("header").height(35.dp).padding(start = 10.dp, end = 10.dp).drawBehind {
-        val y = size.height - 2.dp.toPx() / 2
-
-        drawLine(
-            Color.LightGray,
-            Offset(0f, y),
-            Offset(size.width, y),
-            2.dp.toPx()
-        )
-    }) {
+    val viewModel: LoggedTopBarViewModel = viewModel()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .testTag("loggedTopBar")
+            .height(35.dp)
+            .padding(start = 10.dp, end = 10.dp)
+            .drawBehind {
+                val y = size.height - 2.dp.toPx() / 2
+                drawLine(
+                    Color.LightGray,
+                    Offset(0f, y),
+                    Offset(size.width, y),
+                    2.dp.toPx()
+                )
+            }
+    ) {
         Image(
             painter = painterResource(id = R.drawable.immotep_png_logo),
             contentDescription = stringResource(id = R.string.immotep_logo_desc),
-            modifier = Modifier.size(35.dp).padding(end = 10.dp).clickable { viewModel.viewModelScope.launch {
-                AuthService(navController.context.dataStore).onLogout(navController)
-            } },
+            modifier = Modifier
+                .size(35.dp)
+                .padding(end = 10.dp)
+                .testTag("loggedTopBarImage")
+                .clickable {
+                    viewModel.viewModelScope.launch {
+                        AuthService(navController.context.dataStore).onLogout(navController)
+                    }
+                },
         )
-        Text(stringResource(R.string.app_name), fontSize = 20.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight(500))
+        Text(
+            stringResource(R.string.app_name),
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight(500),
+            modifier = Modifier.testTag("loggedTopBarText")
+        )
         Spacer(Modifier.weight(1f).fillMaxHeight())
-        IconButton (
+        IconButton(
             onClick = {
                 if (navController.currentDestination?.route != "profile") {
                     navController.navigate("profile")
@@ -79,6 +85,7 @@ fun LoggedTopBar(navController: NavController) {
                     navController.popBackStack()
                 }
             },
+            modifier = Modifier.testTag("loggedTopBarClickableIcon")
         ) {
             Icon(Icons.Outlined.AccountCircle, contentDescription = "Account circle, go back to the login page")
         }
