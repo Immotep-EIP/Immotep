@@ -32,6 +32,7 @@ const App: React.FC = () => (
       <Routes>
         <Route path={NavigationEnum.LOGIN} element={<Login />} />
         <Route path={NavigationEnum.REGISTER} element={<Register />} />
+        <Route path={NavigationEnum.REGISTER_TENANT} element={<Register />} />
         <Route
           path={NavigationEnum.FORGOT_PASSWORD}
           element={<ForgotPassword />}

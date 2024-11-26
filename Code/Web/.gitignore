@@ -10,3 +10,4 @@ tmp/
 build/
 coverage/
 .env
+.idea/

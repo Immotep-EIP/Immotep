@@ -2,6 +2,7 @@ const NavigationEnum = {
     // ! AUTHENTIFICATION
     LOGIN: '/',
     REGISTER: '/register',
+    REGISTER_TENANT: '/register/invite/:contractId',
     FORGOT_PASSWORD: '/forgot-password',
 
     // ! MAIN LAYOUT - SIDEBAR

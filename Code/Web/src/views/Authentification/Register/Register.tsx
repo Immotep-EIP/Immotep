@@ -1,4 +1,5 @@
 import React from 'react'
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'
 
 import { Button, Input, Form, message, Checkbox } from 'antd'
@@ -13,6 +14,7 @@ import style from './Register.module.css'
 const Register: React.FC = () => {
   const { goToLogin } = useNavigation()
   const [form] = Form.useForm()
+  const { contractId } = useParams();
 
   const { t } = useTranslation()
 
@@ -20,7 +22,11 @@ const Register: React.FC = () => {
     try {
       const { password, confirmPassword } = values
       if (password === confirmPassword) {
-        await register(values)
+        const userInfo = {
+          ...values,
+          contractId,
+        }
+        await register(userInfo)
         message.success(t('pages.register.registrationSuccess'))
         form.resetFields()
         setTimeout(() => {
