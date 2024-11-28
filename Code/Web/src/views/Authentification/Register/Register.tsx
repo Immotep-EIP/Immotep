@@ -29,9 +29,7 @@ const Register: React.FC = () => {
         await register(userInfo)
         message.success(t('pages.register.registrationSuccess'))
         form.resetFields()
-        setTimeout(() => {
-          goToLogin()
-        }, 1000)
+        goToLogin()
       } else message.error(t('pages.register.passwordsNotMatch'))
     } catch (err: any) {
       if (err.response.status === 409)

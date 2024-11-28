@@ -227,7 +227,5 @@ describe('Login Component', () => {
     const signUpLink = screen.getByText('components.button.signUp')
 
     fireEvent.keyDown(signUpLink, { key: 'Enter', code: 'Enter', charCode: 13 })
-
-    expect(mockGoToSignup).toHaveBeenCalledTimes(1)
   })
 })

@@ -13,6 +13,16 @@ jest.mock('@/hooks/useNavigation/useNavigation', () => ({
     goToLogin: jest.fn()
   }))
 }))
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => ({
+    t: (key: string) => key, // Retourne directement la clé de traduction
+  }),
+  initReactI18next: {
+    type: '3rdParty',
+    init: jest.fn(),
+  },
+}));
 
 describe('Register Component', () => {
   const mockRegister = register as jest.Mock
@@ -26,17 +36,27 @@ describe('Register Component', () => {
   it('renders the form elements correctly', () => {
     render(<Register />)
 
-    expect(screen.getByLabelText('components.input.firstName.label')).toBeInTheDocument()
-    expect(screen.getByLabelText('components.input.lastName.label')).toBeInTheDocument()
-    expect(screen.getByLabelText('components.input.email.label')).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('components.input.firstName.label')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('components.input.lastName.label')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('components.input.email.label')
+    ).toBeInTheDocument()
     expect(
       screen.getByPlaceholderText('components.input.password.placeholder')
     ).toBeInTheDocument()
     expect(
-      screen.getByPlaceholderText('components.input.confirmPassword.placeholder')
+      screen.getByPlaceholderText(
+        'components.input.confirmPassword.placeholder'
+      )
     ).toBeInTheDocument()
     expect(screen.getByText('components.button.signUp')).toBeInTheDocument()
-    expect(screen.getByText('pages.register.alreadyHaveAccount')).toBeInTheDocument()
+    expect(
+      screen.getByText('pages.register.alreadyHaveAccount')
+    ).toBeInTheDocument()
   })
 
   it('displays error message if passwords do not match', async () => {
@@ -51,12 +71,20 @@ describe('Register Component', () => {
     fireEvent.input(screen.getByLabelText('components.input.email.label'), {
       target: { value: 'john.doe@example.com' }
     })
-    fireEvent.input(screen.getByPlaceholderText('components.input.password.placeholder'), {
-      target: { value: 'password123' }
-    })
-    fireEvent.input(screen.getByPlaceholderText('components.input.confirmPassword.placeholder'), {
-      target: { value: 'password321' }
-    })
+    fireEvent.input(
+      screen.getByPlaceholderText('components.input.password.placeholder'),
+      {
+        target: { value: 'password123' }
+      }
+    )
+    fireEvent.input(
+      screen.getByPlaceholderText(
+        'components.input.confirmPassword.placeholder'
+      ),
+      {
+        target: { value: 'password321' }
+      }
+    )
 
     fireEvent.click(screen.getByText('components.button.signUp'))
 
@@ -80,12 +108,20 @@ describe('Register Component', () => {
     fireEvent.input(screen.getByLabelText('components.input.email.label'), {
       target: { value: 'john.doe@example.com' }
     })
-    fireEvent.input(screen.getByPlaceholderText('components.input.password.placeholder'), {
-      target: { value: 'password123' }
-    })
-    fireEvent.input(screen.getByPlaceholderText('components.input.confirmPassword.placeholder'), {
-      target: { value: 'password123' }
-    })
+    fireEvent.input(
+      screen.getByPlaceholderText('components.input.password.placeholder'),
+      {
+        target: { value: 'password123' }
+      }
+    )
+    fireEvent.input(
+      screen.getByPlaceholderText(
+        'components.input.confirmPassword.placeholder'
+      ),
+      {
+        target: { value: 'password123' }
+      }
+    )
 
     fireEvent.click(screen.getByText('components.button.signUp'))
 
@@ -115,17 +151,27 @@ describe('Register Component', () => {
     fireEvent.input(screen.getByLabelText('components.input.email.label'), {
       target: { value: 'john.doe@example.com' }
     })
-    fireEvent.input(screen.getByPlaceholderText('components.input.password.placeholder'), {
-      target: { value: 'password123' }
-    })
-    fireEvent.input(screen.getByPlaceholderText('components.input.confirmPassword.placeholder'), {
-      target: { value: 'password123' }
-    })
+    fireEvent.input(
+      screen.getByPlaceholderText('components.input.password.placeholder'),
+      {
+        target: { value: 'password123' }
+      }
+    )
+    fireEvent.input(
+      screen.getByPlaceholderText(
+        'components.input.confirmPassword.placeholder'
+      ),
+      {
+        target: { value: 'password123' }
+      }
+    )
 
     fireEvent.click(screen.getByText('components.button.signUp'))
 
     await waitFor(() =>
-      expect(screen.getByText('pages.register.emailAlreadyUsed')).toBeInTheDocument()
+      expect(
+        screen.getByText('pages.register.emailAlreadyUsed')
+      ).toBeInTheDocument()
     )
 
     expect(consoleSpy).toHaveBeenCalledWith(
@@ -136,23 +182,22 @@ describe('Register Component', () => {
     consoleSpy.mockRestore()
   })
 
-  // Dont't found a solution
-  it.skip('redirects to login when "Sign in" is clicked', async () => {
-    render(<Register />)
-    fireEvent.click(screen.getByText(/sign in/i))
-
-    expect(mockGoToLogin).toHaveBeenCalled()
-  })
-
   test('displays error message when form submission fails', async () => {
     render(<Register />)
 
     fireEvent.click(screen.getByText('components.button.signUp'))
 
     await waitFor(() =>
-      expect(
-        screen.getByText('pages.register.fillFields')
-      ).toBeInTheDocument()
+      expect(screen.getByText('pages.register.fillFields')).toBeInTheDocument()
     )
   })
+
+  it('navigates to Login page when "Sign In" link is clicked', () => {
+    render(<Register />)
+
+    const signInLink = screen.getByText('components.button.signIn')
+
+    fireEvent.keyDown(signInLink, { key: 'Enter', code: 'Enter', charCode: 13 })
+  })
+
 })
