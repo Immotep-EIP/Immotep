@@ -34,36 +34,36 @@ describe('Login Page', () => {
     render(<Login />)
 
     // Vérifier les éléments du formulaire
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Password/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Sign in/i })).toBeInTheDocument()
-    expect(screen.getByText(/Don't have an account\?/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('components.input.email.label')).toBeInTheDocument()
+    expect(screen.getByLabelText('components.input.password.label')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'components.button.signIn' })).toBeInTheDocument()
+    expect(screen.getByText('pages.login.dontHaveAccount')).toBeInTheDocument()
   })
 
   it('shows error message if fields are empty', async () => {
     render(<Login />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Sign in/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'components.button.signIn' }))
 
     expect(
-      await screen.findByText(/Please input your email!/i)
+      await screen.findByText('components.input.email.error')
     ).toBeInTheDocument()
     expect(
-      await screen.findByText(/Please input your password!/i)
+      await screen.findByText('components.input.password.error')
     ).toBeInTheDocument()
   })
 
   it('submits form with correct values', async () => {
     render(<Login />)
 
-    fireEvent.input(screen.getByLabelText(/Email/i), {
+    fireEvent.input(screen.getByLabelText('components.input.email.label'), {
       target: { value: 'test@example.com' }
     })
-    fireEvent.input(screen.getByLabelText(/Password/i), {
+    fireEvent.input(screen.getByLabelText('components.input.password.label'), {
       target: { value: 'password' }
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /Sign in/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'components.button.signIn' }))
 
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledWith(
@@ -83,17 +83,17 @@ describe('Login Page', () => {
 
     render(<Login />)
 
-    fireEvent.input(screen.getByLabelText(/Email/i), {
+    fireEvent.input(screen.getByLabelText('components.input.email.label'), {
       target: { value: 'test@example.com' }
     })
-    fireEvent.input(screen.getByLabelText(/Password/i), {
+    fireEvent.input(screen.getByLabelText('components.input.password.label'), {
       target: { value: 'password' }
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /Sign in/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'components.button.signIn' }))
 
     expect(
-      await screen.findByText(/Login failed, please try again !/i)
+      await screen.findByText('pages.login.connectionError')
     ).toBeInTheDocument()
   })
 
@@ -103,7 +103,7 @@ describe('Login Page', () => {
 
     render(<Login />)
 
-    fireEvent.click(screen.getByText(/Sign up/i))
+    fireEvent.click(screen.getByText('components.button.signUp'))
 
     expect(goToSignup).toHaveBeenCalled()
   })
@@ -114,7 +114,7 @@ describe('Login Page', () => {
 
     render(<Login />)
 
-    fireEvent.click(screen.getByText(/Forgot password/i))
+    fireEvent.click(screen.getByText('components.button.askForgotPassword'))
 
     expect(goToForgotPassword).toHaveBeenCalled()
   })
