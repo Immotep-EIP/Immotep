@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { FormProps, Form, Input, Button, Upload, UploadProps, message } from 'antd'
 import { useTranslation } from 'react-i18next'
@@ -6,23 +6,25 @@ import { useTranslation } from 'react-i18next'
 import closeIcon from '@/assets/icons/close.png'
 
 import { UploadOutlined } from '@ant-design/icons'
+import CreatePropertyFunction from '@/services/api/Property/CreateProperty'
 import style from './RealPropertyCreate.module.css'
 
 type FieldType = {
-  name?: string
-  address?: string
-  zipCode?: string
-  city?: string
-  country?: string
-  area?: string
-  rental?: string
-  deposit?: string
-  picture?: string
+  name: string
+  address: string
+  zipCode: string
+  city: string
+  country: string
+  area: string
+  rental: string
+  deposit: string
+  picture: string
 }
 
 const props: UploadProps = {
   name: 'file',
   action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
+  maxCount: 1,
   headers: {
     authorization: 'authorization-text',
   },
@@ -40,15 +42,43 @@ const props: UploadProps = {
 
 const RealPropertyCreate: React.FC = () => {
   const { t } = useTranslation()
+  const [loading, setLoading] = useState(false)
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values: FieldType) => {
-    console.log('Success:', values)
+    const out = {
+      name: values.name,
+      address: values.address,
+      city: values.city,
+      postal_code: values.zipCode,
+      country: values.country,
+      area_sqm: parseFloat(values.area || '0'),
+      rental_price_per_month: parseFloat(values.rental || '0'),
+      deposit_price: parseFloat(values.deposit || '0'),
+      picture: ''
+    }
+    const sendData = async () => {
+      try {
+        setLoading(true)
+        const req = await CreatePropertyFunction(out)
+        if (req) {
+          setLoading(false)
+          message.success(t('pages.property.add_real_property.property_created'))
+        } else {
+          setLoading(false)
+          message.error(t('pages.property.add_real_property.error_property_created'))
+        }
+        window.history.back()
+      } catch (error) {
+        console.error('Error sending data:', error)
+      }
+    }
+    sendData()
   }
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo: any
   ) => {
-    console.log('Failed:', errorInfo)
+    message.error(t('pages.property.add_real_property.fill_all_fields'), errorInfo)
   }
 
   return (
@@ -79,7 +109,7 @@ const RealPropertyCreate: React.FC = () => {
       >
         <Form.Item<FieldType>
           label={t('components.input.property_name.label')}
-          name="address"
+          name="name"
           rules={[
             { required: true, message: t('components.input.property_name.error') }
           ]}
@@ -176,6 +206,7 @@ const RealPropertyCreate: React.FC = () => {
             type="primary"
             htmlType="submit"
             style={{ marginRight: '20px' }}
+            loading={loading}
           >
             {t('components.button.add')}
           </Button>

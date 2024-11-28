@@ -160,7 +160,10 @@
       },
       "property": {
         "add_real_property": {
-          "title": "Ajouter un bien"
+          "title": "Ajouter un bien",
+          "property_created": "Bien créé avec succès",
+          "error_property_created": "Erreur lors de la création du bien",
+          "fill_all_fields": "Veuillez remplir tous les champs"
         },
         "status": {
           "available": "Disponible",

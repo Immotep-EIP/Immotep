@@ -28,7 +28,7 @@ const useNavigation = () => {
     navigate(NavigationEnum.REAL_PROPERTY_CREATE)
   }
 
-  const goToRealPropertyDetails = (id: number) => {
+  const goToRealPropertyDetails = (id: string) => {
     navigate(NavigationEnum.REAL_PROPERTY_DETAILS, {
       state: { id }
     })

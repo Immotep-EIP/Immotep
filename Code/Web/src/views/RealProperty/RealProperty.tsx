@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
@@ -8,12 +8,13 @@ import locationIcon from '@/assets/icons/location.png'
 import tenantIcon from '@/assets/icons/tenant.png'
 import dateIcon from '@/assets/icons/date.png'
 
-import fakeData from '@/fakeDatas/RealProperties.tsx'
-import { RealProperty } from '@/interfaces/Property/Property.tsx'
+import defaultHouse from '@/assets/images/DefaultHouse.jpg'
+import { GetProperty } from '@/interfaces/Property/Property'
+import GetProperties from '@/services/api/Property/GetProperties'
 import style from './RealProperty.module.css'
 
 interface CardComponentProps {
-  realProperty: RealProperty
+  realProperty: any
   t: (key: string) => string
 }
 
@@ -35,7 +36,8 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
     >
       {/* FIRST PART */}
       <div className={style.statusContainer}>
-        <Tag
+        soon available
+        {/* <Tag
           color={
             realProperty.status === 'pages.property.status.available'
               ? 'green'
@@ -49,13 +51,13 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
             ({realProperty.damages.filter(damage => !damage.read).length}){' '}
             {t('pages.property.damage.unread')}
           </Tag>
-        )}
+        )} */}
       </div>
 
       {/* SECOND PART */}
       <div className={style.pictureContainer}>
         <img
-          src={realProperty.image}
+          src={realProperty.image || defaultHouse}
           alt="property"
           className={style.picture}
         />
@@ -78,36 +80,38 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         </div>
         <div className={style.informations}>
           <img src={locationIcon} alt="location" className={style.icon} />
-          <span className={style.text}>
-            {realProperty.adress && realProperty.zipCode && realProperty.city
-              ? `${realProperty.adress}, ${realProperty.zipCode} ${realProperty.city}`
+          {/* <span className={style.text}>
+            {realProperty.address && realProperty.postal_code && realProperty.city
+              ? `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
               : '-----------'}
-          </span>
-          {/* <span>
-            {realProperty.adress && realProperty.zipCode && realProperty.city
+          </span> */}
+          <span>
+            {realProperty.address && realProperty.postal_code && realProperty.city
               ? (() => {
-                  const fullAddress = `${realProperty.adress}, ${realProperty.zipCode} ${realProperty.city}`
+                  const fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
                   return fullAddress.length > 40
                     ? `${fullAddress.substring(0, 40)}...`
                     : fullAddress
                 })()
               : '-----------'}
-          </span> */}
+          </span>
         </div>
         <div className={style.informations}>
           <img src={tenantIcon} alt="location" className={style.icon} />
           <span>
-            {realProperty.tenants.length > 0
+            soon available
+            {/* {realProperty.tenants.length > 0
               ? realProperty.tenants.map(tenant => tenant.name).join(' & ')
-              : '-----------'}
+              : '-----------'} */}
           </span>
         </div>
         <div className={style.informations}>
           <img src={dateIcon} alt="location" className={style.icon} />
           <span>
-            {realProperty.startDate && realProperty.endDate
+            soon available
+            {/* {realProperty.startDate && realProperty.endDate
               ? `${new Date(realProperty.startDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} - ${new Date(realProperty.endDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
-              : '-----------'}
+              : '-----------'} */}
           </span>
         </div>
       </div>
@@ -118,6 +122,20 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
   const { goToRealPropertyCreate } = useNavigation()
+  const [properties, setProperties] = useState<GetProperty[]>([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await GetProperties()
+      if (res) {
+        setProperties(res)
+        console.log('Data fetched:', res)
+      } else {
+        console.error('Error fetching data')
+      }
+    }
+    fetchData()
+  }, [])
 
   return (
     <div className={style.pageContainer}>
@@ -130,7 +148,7 @@ const RealPropertyPage: React.FC = () => {
         </Button>
       </div>
       <div className={style.cardsContainer}>
-        {fakeData.map(realProperty => (
+        {properties.map(realProperty => (
           <CardComponent
             key={realProperty.id}
             realProperty={realProperty}
