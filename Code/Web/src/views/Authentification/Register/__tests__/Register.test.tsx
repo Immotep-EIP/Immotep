@@ -26,43 +26,43 @@ describe('Register Component', () => {
   it('renders the form elements correctly', () => {
     render(<Register />)
 
-    expect(screen.getByLabelText(/first name/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/last name/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('components.input.firstName.label')).toBeInTheDocument()
+    expect(screen.getByLabelText('components.input.lastName.label')).toBeInTheDocument()
+    expect(screen.getByLabelText('components.input.email.label')).toBeInTheDocument()
     expect(
-      screen.getByPlaceholderText('Enter your password')
+      screen.getByPlaceholderText('components.input.password.placeholder')
     ).toBeInTheDocument()
     expect(
-      screen.getByPlaceholderText('Confirm your password')
+      screen.getByPlaceholderText('components.input.confirmPassword.placeholder')
     ).toBeInTheDocument()
-    expect(screen.getByText(/sign up/i)).toBeInTheDocument()
-    expect(screen.getByText(/already have an account/i)).toBeInTheDocument()
+    expect(screen.getByText('components.button.signUp')).toBeInTheDocument()
+    expect(screen.getByText('pages.register.alreadyHaveAccount')).toBeInTheDocument()
   })
 
   it('displays error message if passwords do not match', async () => {
     render(<Register />)
 
-    fireEvent.input(screen.getByLabelText(/first name/i), {
+    fireEvent.input(screen.getByLabelText('components.input.firstName.label'), {
       target: { value: 'John' }
     })
-    fireEvent.input(screen.getByLabelText(/last name/i), {
+    fireEvent.input(screen.getByLabelText('components.input.lastName.label'), {
       target: { value: 'Doe' }
     })
-    fireEvent.input(screen.getByLabelText(/email/i), {
+    fireEvent.input(screen.getByLabelText('components.input.email.label'), {
       target: { value: 'john.doe@example.com' }
     })
-    fireEvent.input(screen.getByPlaceholderText('Enter your password'), {
+    fireEvent.input(screen.getByPlaceholderText('components.input.password.placeholder'), {
       target: { value: 'password123' }
     })
-    fireEvent.input(screen.getByPlaceholderText('Confirm your password'), {
+    fireEvent.input(screen.getByPlaceholderText('components.input.confirmPassword.placeholder'), {
       target: { value: 'password321' }
     })
 
-    fireEvent.click(screen.getByText(/sign up/i))
+    fireEvent.click(screen.getByText('components.button.signUp'))
 
     await waitFor(() =>
       expect(
-        screen.getByText(/please confirm your password/i)
+        screen.getByText('pages.register.passwordsNotMatch')
       ).toBeInTheDocument()
     )
   })
@@ -71,23 +71,23 @@ describe('Register Component', () => {
     mockRegister.mockResolvedValueOnce({})
     render(<Register />)
 
-    fireEvent.input(screen.getByLabelText(/first name/i), {
+    fireEvent.input(screen.getByLabelText('components.input.firstName.label'), {
       target: { value: 'John' }
     })
-    fireEvent.input(screen.getByLabelText(/last name/i), {
+    fireEvent.input(screen.getByLabelText('components.input.lastName.label'), {
       target: { value: 'Doe' }
     })
-    fireEvent.input(screen.getByLabelText(/email/i), {
+    fireEvent.input(screen.getByLabelText('components.input.email.label'), {
       target: { value: 'john.doe@example.com' }
     })
-    fireEvent.input(screen.getByPlaceholderText('Enter your password'), {
+    fireEvent.input(screen.getByPlaceholderText('components.input.password.placeholder'), {
       target: { value: 'password123' }
     })
-    fireEvent.input(screen.getByPlaceholderText('Confirm your password'), {
+    fireEvent.input(screen.getByPlaceholderText('components.input.confirmPassword.placeholder'), {
       target: { value: 'password123' }
     })
 
-    fireEvent.click(screen.getByText(/sign up/i))
+    fireEvent.click(screen.getByText('components.button.signUp'))
 
     await waitFor(() => {
       expect(mockRegister).toHaveBeenCalledWith({
@@ -106,30 +106,30 @@ describe('Register Component', () => {
     mockRegister.mockRejectedValueOnce({ response: { status: 409 } })
     render(<Register />)
 
-    fireEvent.input(screen.getByLabelText(/first name/i), {
+    fireEvent.input(screen.getByLabelText('components.input.firstName.label'), {
       target: { value: 'John' }
     })
-    fireEvent.input(screen.getByLabelText(/last name/i), {
+    fireEvent.input(screen.getByLabelText('components.input.lastName.label'), {
       target: { value: 'Doe' }
     })
-    fireEvent.input(screen.getByLabelText(/email/i), {
+    fireEvent.input(screen.getByLabelText('components.input.email.label'), {
       target: { value: 'john.doe@example.com' }
     })
-    fireEvent.input(screen.getByPlaceholderText('Enter your password'), {
+    fireEvent.input(screen.getByPlaceholderText('components.input.password.placeholder'), {
       target: { value: 'password123' }
     })
-    fireEvent.input(screen.getByPlaceholderText('Confirm your password'), {
+    fireEvent.input(screen.getByPlaceholderText('components.input.confirmPassword.placeholder'), {
       target: { value: 'password123' }
     })
 
-    fireEvent.click(screen.getByText(/sign up/i))
+    fireEvent.click(screen.getByText('components.button.signUp'))
 
     await waitFor(() =>
-      expect(screen.getByText(/email already exist/i)).toBeInTheDocument()
+      expect(screen.getByText('pages.register.emailAlreadyUsed')).toBeInTheDocument()
     )
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      'Registration error:',
+      'pages.register.registrationError',
       expect.anything()
     )
 
@@ -147,11 +147,11 @@ describe('Register Component', () => {
   test('displays error message when form submission fails', async () => {
     render(<Register />)
 
-    fireEvent.click(screen.getByText(/sign up/i))
+    fireEvent.click(screen.getByText('components.button.signUp'))
 
     await waitFor(() =>
       expect(
-        screen.getByText(/an error occured, please try again/i)
+        screen.getByText('pages.register.fillFields')
       ).toBeInTheDocument()
     )
   })
