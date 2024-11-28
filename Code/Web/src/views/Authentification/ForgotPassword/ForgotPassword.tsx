@@ -18,10 +18,6 @@ const ForgotPassword: React.FC = () => {
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     if (values.email !== values.emailConfirmation) {
       message.error(t('pages.forgotPassword.emailsDontMatch'));
-      return;
-    }
-    if (!values) {
-      message.error(t('pages.forgotPassword.sendEmailError'));
     } else {
       message.success(t('pages.forgotPassword.sendEmailSuccess'));
       goToLogin();

@@ -16,7 +16,7 @@ jest.mock('@/hooks/useNavigation/useNavigation', () => ({
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => ({
-    t: (key: string) => key, // Retourne directement la clé de traduction
+    t: (key: string) => key,
   }),
   initReactI18next: {
     type: '3rdParty',
