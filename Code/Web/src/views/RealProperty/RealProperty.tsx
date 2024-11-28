@@ -1,7 +1,6 @@
 import React from 'react'
 import { Button, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { RealProperty } from '@/interfaces/Property/Property.tsx'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 
 import appartmentIcon from '@/assets/icons/appartement.png'
@@ -10,6 +9,7 @@ import tenantIcon from '@/assets/icons/tenant.png'
 import dateIcon from '@/assets/icons/date.png'
 
 import fakeData from '@/fakeDatas/RealProperties.tsx'
+import { RealProperty } from '@/interfaces/Property/Property.tsx'
 import style from './RealProperty.module.css'
 
 interface CardComponentProps {

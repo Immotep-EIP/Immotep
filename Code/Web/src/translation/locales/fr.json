@@ -1,174 +1,174 @@
-{
-  "components": {
-    "input": {
-      "property_name": {
-        "label": "Nom de votre bien",
-        "placeholder": "Entrez le nom de votre bien",
-        "error": "Veuillez renseigner le nom de votre bien."
+  {
+    "components": {
+      "input": {
+        "property_name": {
+          "label": "Nom de votre bien",
+          "placeholder": "Entrez le nom de votre bien",
+          "error": "Veuillez renseigner le nom de votre bien."
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Entrez votre email",
+          "error": "Veuillez renseigner votre email."
+        },
+        "emailConfirmation": {
+          "label": "Confirmation de l'email",
+          "placeholder": "Confirmez votre email",
+          "error": "Veuillez renseigner la confirmation de votre email."
+        },
+        "password": {
+          "label": "Mot de passe",
+          "placeholder": "Entrez votre mot de passe",
+          "error": "Veuillez renseigner votre mot de passe."
+        },
+        "confirmPassword": {
+          "label": "Confirmation du mot de passe",
+          "placeholder": "Confirmez votre mot de passe",
+          "error": "Veuillez renseigner la confirmation de votre mot de passe."
+        },
+        "firstName": {
+          "label": "Prénom",
+          "placeholder": "Entrez votre prénom",
+          "error": "Veuillez renseigner votre prénom."
+        },
+        "lastName": {
+          "label": "Nom",
+          "placeholder": "Entrez votre nom",
+          "error": "Veuillez renseigner votre nom."
+        },
+        "address": {
+          "label": "Adresse",
+          "placeholder": "Entrez votre adresse",
+          "error": "Veuillez renseigner votre adresse."
+        },
+        "zip_code": {
+          "label": "Code postal",
+          "placeholder": "Entrez votre code postal",
+          "error": "Veuillez renseigner votre code postal."
+        },
+        "city": {
+          "label": "Ville",
+          "placeholder": "Entrez votre ville",
+          "error": "Veuillez renseigner votre ville."
+        },
+        "country": {
+          "label": "Pays",
+          "placeholder": "Entrez votre pays",
+          "error": "Veuillez renseigner votre pays."
+        },
+        "area": {
+          "label": "Surface",
+          "placeholder": "Entrez la surface",
+          "error": "Veuillez renseigner la surface."
+        },
+        "rental": {
+          "label": "Loyer",
+          "placeholder": "Entrez le loyer",
+          "error": "Veuillez renseigner le loyer."
+        },
+        "deposit": {
+          "label": "Dépôt de garantie",
+          "placeholder": "Entrez le dépôt de garantie",
+          "error": "Veuillez renseigner le dépôt de garantie."
+        },
+        "charges": {
+          "label": "Charges",
+          "placeholder": "Entrez les charges",
+          "error": "Veuillez renseigner les charges."
+        },
+        "picture": {
+          "label": "Photo",
+          "placeholder": "Choisissez une photo",
+          "error": "Veuillez renseigner une photo."
+        },
+        "startDate": {
+          "label": "Date de début"
+        },
+        "endDate": {
+          "label": "Date de fin"
+        }
       },
-      "email": {
-        "label": "Email",
-        "placeholder": "Entrez votre email",
-        "error": "Veuillez renseigner votre email."
-      },
-      "emailConfirmation": {
-        "label": "Confirmation de l'email",
-        "placeholder": "Confirmez votre email",
-        "error": "Veuillez renseigner la confirmation de votre email."
-      },
-      "password": {
-        "label": "Mot de passe",
-        "placeholder": "Entrez votre mot de passe",
-        "error": "Veuillez renseigner votre mot de passe."
-      },
-      "confirmPassword": {
-        "label": "Confirmation du mot de passe",
-        "placeholder": "Confirmez votre mot de passe",
-        "error": "Veuillez renseigner la confirmation de votre mot de passe."
-      },
-      "firstName": {
-        "label": "Prénom",
-        "placeholder": "Entrez votre prénom",
-        "error": "Veuillez renseigner votre prénom."
-      },
-      "lastName": {
-        "label": "Nom",
-        "placeholder": "Entrez votre nom",
-        "error": "Veuillez renseigner votre nom."
-      },
-      "address": {
-        "label": "Adresse",
-        "placeholder": "Entrez votre adresse",
-        "error": "Veuillez renseigner votre adresse."
-      },
-      "zip_code": {
-        "label": "Code postal",
-        "placeholder": "Entrez votre code postal",
-        "error": "Veuillez renseigner votre code postal."
-      },
-      "city": {
-        "label": "Ville",
-        "placeholder": "Entrez votre ville",
-        "error": "Veuillez renseigner votre ville."
-      },
-      "country": {
-        "label": "Pays",
-        "placeholder": "Entrez votre pays",
-        "error": "Veuillez renseigner votre pays."
-      },
-      "area": {
-        "label": "Surface",
-        "placeholder": "Entrez la surface",
-        "error": "Veuillez renseigner la surface."
-      },
-      "rental": {
-        "label": "Loyer",
-        "placeholder": "Entrez le loyer",
-        "error": "Veuillez renseigner le loyer."
-      },
-      "deposit": {
-        "label": "Dépôt de garantie",
-        "placeholder": "Entrez le dépôt de garantie",
-        "error": "Veuillez renseigner le dépôt de garantie."
-      },
-      "charges": {
-        "label": "Charges",
-        "placeholder": "Entrez les charges",
-        "error": "Veuillez renseigner les charges."
-      },
-      "picture": {
-        "label": "Photo",
-        "placeholder": "Choisissez une photo",
-        "error": "Veuillez renseigner une photo."
-      },
-      "startDate": {
-        "label": "Date de début"
-      },
-      "endDate": {
-        "label": "Date de fin"
+      "button": {
+        "signIn": "Se connecter",
+        "signUp": "S'inscrire",
+        "rememberMe": "Se souvenir de moi",
+        "askForgotPassword": "Mot de passe oublié ?",
+        "sendEmail": "Envoyer l'email",
+        "overview": "Aperçu",
+        "realProperty": "Vos biens",
+        "messages": "Messagerie",
+        "settings": "Paramètres",
+        "myProfile": "Mon profil",
+        "edit": "Modifier",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "return": "Retour",
+        "add_real_property": "Ajouter un bien",
+        "add": "Ajouter",
+        "addTenant": "Ajouter un locataire"
       }
     },
-    "button": {
-      "signIn": "Se connecter",
-      "signUp": "S'inscrire",
-      "rememberMe": "Se souvenir de moi",
-      "askForgotPassword": "Mot de passe oublié ?",
-      "sendEmail": "Envoyer l'email",
-      "overview": "Aperçu",
-      "realProperty": "Vos biens",
-      "messages": "Messagerie",
-      "settings": "Paramètres",
-      "myProfile": "Mon profil",
-      "edit": "Modifier",
-      "save": "Enregistrer",
-      "cancel": "Annuler",
-      "return": "Retour",
-      "add_real_property": "Ajouter un bien",
-      "add": "Ajouter",
-      "addTenant": "Ajouter un locataire"
-    }
-  },
-  "pages": {
-    "login": {
-      "title": "Bienvenue !",
-      "description": "Veuillez entrer vos identifiants pour vous connecter.",
-      "dontHaveAccount": "Vous n'avez pas de compte ?",
-      "connectionSuccess": "Vous êtes maintenant connecté.",
-      "connectionError": "Une erreur est survenue lors de la connexion, veuillez réessayer.",
-      "fillFields": "Veuillez remplir tous les champs."
-    },
-    "register": {
-      "title": "Créer un compte",
-      "description": "Rejoignez Immotep pour une tranquillité d'esprit !",
-      "agreeTerms": "J'accepte les Termes, la Politique de confidentialité et les Frais.",
-      "alreadyHaveAccount": "Vous avez déjà un compte ?",
-      "registerSuccess": "Vous êtes maintenant inscrit.",
-      "registerError": "Une erreur est survenue lors de l'inscription, veuillez réessayer.",
-      "emailAlreadyUsed": "Cet email est déjà utilisé.",
-      "confirmPasswordError": "Les mots de passe ne correspondent pas.",
-      "fillFields": "Veuillez remplir tous les champs."
-    },
-    "forgotPassword": {
-      "title": "Mot de passe oublié",
-      "description": "Veuillez entrer votre email pour réinitialiser votre mot de passe.",
-      "sendEmailSuccess": "Un email a été envoyé pour réinitialiser votre mot de passe.",
-      "sendEmailError": "Une erreur est survenue lors de l'envoi de l'email, veuillez réessayer.",
-      "emailsDontMatch": "Les emails ne correspondent pas.",
-      "fillFields": "Veuillez remplir tous les champs."
-    },
-    "settings": {
-      "title": "Paramètres",
-      "description": "Gérez les paramètres de votre compte.",
-      "language": "Langue",
-      "en": "Anglais",
-      "fr": "Français",
-      "userInfos": "Informations utilisateur",
-      "logout": "Déconnexion",
-      "logoutSuccess": "Vous êtes maintenant déconnecté."
-    },
-    "lost": {
-      "pageNotFound": "Page non trouvée",
-      "backHome": "Retour à l'accueil"
-    },
-    "real_property": {
-      "title": "Vos biens"
-    },
-    "realPropertyDetails": {
-      "inviteTenant": "Invitation envoyée avec succès",
-      "409Error": "Invitation déjà envoyée",
-      "fillFields": "Veuillez remplir les champs obligatoires"
-    },
-    "property": {
-      "add_real_property": {
-        "title": "Ajouter un bien"
+    "pages": {
+      "login": {
+        "title": "Bienvenue !",
+        "description": "Veuillez entrer vos identifiants pour vous connecter.",
+        "dontHaveAccount": "Vous n'avez pas de compte ?",
+        "connectionSuccess": "Vous êtes maintenant connecté.",
+        "connectionError": "Une erreur est survenue lors de la connexion, veuillez réessayer.",
+        "fillFields": "Veuillez remplir tous les champs."
       },
-      "status": {
-        "available": "Disponible",
-        "occupied": "Occupé"
+      "register": {
+        "title": "Créer un compte",
+        "description": "Rejoignez Immotep pour une tranquillité d'esprit !",
+        "agreeTerms": "J'accepte les Termes, la Politique de confidentialité et les Frais.",
+        "alreadyHaveAccount": "Vous avez déjà un compte ?",
+        "registerSuccess": "Vous êtes maintenant inscrit.",
+        "registerError": "Une erreur est survenue lors de l'inscription, veuillez réessayer.",
+        "emailAlreadyUsed": "Cet email est déjà utilisé.",
+        "confirmPasswordError": "Les mots de passe ne correspondent pas.",
+        "fillFields": "Veuillez remplir tous les champs."
       },
-      "damage": {
-        "unread": "Dommage non lu"
+      "forgotPassword": {
+        "title": "Mot de passe oublié",
+        "description": "Veuillez entrer votre email pour réinitialiser votre mot de passe.",
+        "sendEmailSuccess": "Un email a été envoyé pour réinitialiser votre mot de passe.",
+        "sendEmailError": "Une erreur est survenue lors de l'envoi de l'email, veuillez réessayer.",
+        "emailsDontMatch": "Les emails ne correspondent pas.",
+        "fillFields": "Veuillez remplir tous les champs."
+      },
+      "settings": {
+        "title": "Paramètres",
+        "description": "Gérez les paramètres de votre compte.",
+        "language": "Langue",
+        "en": "Anglais",
+        "fr": "Français",
+        "userInfos": "Informations utilisateur",
+        "logout": "Déconnexion",
+        "logoutSuccess": "Vous êtes maintenant déconnecté."
+      },
+      "lost": {
+        "pageNotFound": "Page non trouvée",
+        "backHome": "Retour à l'accueil"
+      },
+      "real_property": {
+        "title": "Vos biens"
+      },
+      "realPropertyDetails": {
+        "inviteTenant": "Invitation envoyée avec succès",
+        "409Error": "Invitation déjà envoyée",
+        "fillFields": "Veuillez remplir les champs obligatoires"
+      },
+      "property": {
+        "add_real_property": {
+          "title": "Ajouter un bien"
+        },
+        "status": {
+          "available": "Disponible",
+          "occupied": "Occupé"
+        },
+        "damage": {
+          "unread": "Dommage non lu"
+        }
       }
     }
   }
-}
