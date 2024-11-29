@@ -43,7 +43,6 @@ const MainLayout: React.FC = () => {
 
   const location = useLocation();
   const currentLocation = location.pathname;
-  console.log(currentLocation);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen)
