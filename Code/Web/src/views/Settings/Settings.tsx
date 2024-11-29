@@ -118,12 +118,15 @@ const Settings: React.FC = () => {
     switch (language) {
       case 'fr' as string:
         lang = 'fr'
+        localStorage.setItem('lang', 'fr')
         break
       case 'en' as string:
         lang = 'en'
+        localStorage.setItem('lang', 'en')
         break
       default:
         lang = 'fr'
+        localStorage.setItem('lang', 'fr')
         break
     }
     i18n.changeLanguage(lang)
