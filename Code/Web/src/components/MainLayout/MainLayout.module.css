@@ -58,12 +58,25 @@
   transition: all 0.3s;
 }
 
+.active {
+  color: blue;
+  border-bottom: .2px solid blue;
+  transition: all 0.3s;
+}
+
+.buttonText:hover:active {
+  color: blue;
+  text-decoration-color: blue;
+  text-underline-offset: 10px;
+  transition: all 0.3s;
+}
+
 .buttonText:hover {
   border: none;
   border-radius: 0;
-  color: #515151;
+  color: blue;
   text-decoration: underline;
-  text-decoration-color: #515151;
+  text-decoration-color: blue;
   text-underline-offset: 5px;
   transition: all 0.3s;
 }

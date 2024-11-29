@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, Outlet } from 'react-router-dom'
+import { useNavigate, Outlet, useLocation } from 'react-router-dom'
 import { Layout } from 'antd'
 
 import Property from '@/assets/icons/realProperty.png'
@@ -39,7 +39,11 @@ const items = [
 
 const MainLayout: React.FC = () => {
   const navigate = useNavigate()
-  const [menuOpen, setMenuOpen] = React.useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const location = useLocation();
+  const currentLocation = location.pathname;
+  console.log(currentLocation);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen)
@@ -79,7 +83,7 @@ const MainLayout: React.FC = () => {
 
           {translatedItems.map(item => (
             <span
-              className={style.buttonText}
+              className={`${style.buttonText} ${currentLocation === item.key ? style.active : ''}`}
               onClick={() => navigate(item.key)}
               onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
