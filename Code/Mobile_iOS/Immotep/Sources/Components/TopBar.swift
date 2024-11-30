@@ -11,7 +11,7 @@ struct TopBar: View {
     var title: String
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 20) {
+            HStack {
                 Image("immotepLogo")
                     .resizable()
                     .frame(width: 50, height: 50)
@@ -19,8 +19,8 @@ struct TopBar: View {
                 Text(title)
                     .font(.title)
                     .bold()
-
-                Spacer()
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 NavigationLink(destination: ProfileView()) {
                     Image(systemName: "person.crop.circle.fill")
