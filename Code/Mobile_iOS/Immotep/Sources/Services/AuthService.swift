@@ -80,11 +80,13 @@ actor AuthService: Sendable, AuthServiceProtocol {
     }
 
     private func refreshAccessTokenIfNeeded() async throws -> String {
+        print("refresh access token")
         guard let refreshToken = await TokenStorage.getRefreshToken() else {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No refresh token found. Please log in again."])
         }
-
+        print("refresh pending...")
         let (newAccessToken, _) = try await requestToken(grantType: "refresh_token", refreshToken: refreshToken, keepMeSignedIn: true)
+        print("refresh complete.")
         return newAccessToken
     }
 

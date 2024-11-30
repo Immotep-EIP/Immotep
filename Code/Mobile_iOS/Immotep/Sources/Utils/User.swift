@@ -55,7 +55,8 @@ actor UserService: Sendable, UserServiceProtocol {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No refresh token found. Please log in again."])
         }
         do {
-            let (newAccessToken, _) = try await AuthService.shared.requestToken(grantType: "refresh_token", refreshToken: refreshToken, keepMeSignedIn: true)
+            let (newAccessToken, _) =
+            try await AuthService.shared.requestToken(grantType: "refresh_token", refreshToken: refreshToken, keepMeSignedIn: true)
             TokenStorage.storeAccessToken(newAccessToken)
             return newAccessToken
         } catch {

@@ -12,7 +12,7 @@ struct SettingsView: View {
     @AppStorage("theme") private var selectedTheme: String = ThemeOption.system.rawValue
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(spacing: 0) {
             TopBar(title: "Settings".localized())
 
             Form {

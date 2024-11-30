@@ -41,7 +41,8 @@ class LoginViewModel: ObservableObject {
 
         Task {
             do {
-                let (accessToken, refreshToken) = try await authServiceCopy.loginUser(email: model.email, password: model.password, keepMeSignedIn: model.keepMeSignedIn)
+                let (accessToken, refreshToken) =
+                    try await authServiceCopy.loginUser(email: model.email, password: model.password, keepMeSignedIn: model.keepMeSignedIn)
                 TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: nil, keepMeSignedIn: model.keepMeSignedIn )
                 user = try await userServiceCopy.fetchUserProfile(with: accessToken)
                 loginStatus = "Login successful!"
