@@ -40,6 +40,7 @@
 		CAF000002CB1AE33008D953F /* Exceptions for "Immotep" folder in "Immotep" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Info.plist,
 				Tests/ImmotepTests/ImmotepTests.swift,
 				Tests/ImmotepTests/LoginUnitTest.swift,
 				Tests/ImmotepTests/RegisterUnitTest.swift,
@@ -467,6 +468,8 @@
 				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Immotep/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -495,6 +498,8 @@
 				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Immotep/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
