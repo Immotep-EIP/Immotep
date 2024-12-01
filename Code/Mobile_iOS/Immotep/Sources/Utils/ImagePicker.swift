@@ -20,8 +20,6 @@ struct ImagePicker: UIViewControllerRepresentable {
 
         imagePicker.modalPresentationStyle = .fullScreen
 
-        print("sourceType: \(self.sourceType == .camera ? ".camera" : self.sourceType == .photoLibrary ? ".photoLibrary" : "Unknown")")
-
         return imagePicker
     }
 

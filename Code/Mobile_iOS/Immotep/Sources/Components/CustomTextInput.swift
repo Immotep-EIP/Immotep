@@ -49,10 +49,17 @@ struct CustomTextInputNB: View {
             if isSecure {
                 SecureField(placeholder.localized(), text: Binding(
                     get: {
-                        return value.map { String(format: "%.2f", $0.doubleValue) } ?? ""
+                        guard let value = value else { return "" }
+                        if value.doubleValue == floor(value.doubleValue) {
+                            return "\(value.intValue)"
+                        } else {
+                            return String(format: "%.2f", value.doubleValue)
+                        }
                     },
                     set: { newValue in
-                        if let doubleValue = Double(newValue) {
+                        if let intValue = Int(newValue) {
+                            value = NSNumber(value: intValue)
+                        } else if let doubleValue = Double(newValue) {
                             value = NSNumber(value: doubleValue)
                         } else {
                             value = nil
@@ -65,10 +72,17 @@ struct CustomTextInputNB: View {
             } else {
                 TextField(placeholder.localized(), text: Binding(
                     get: {
-                        return value.map { String(format: "%.2f", $0.doubleValue) } ?? ""
+                        guard let value = value else { return "" }
+                        if value.doubleValue == floor(value.doubleValue) {
+                            return "\(value.intValue)"
+                        } else {
+                            return String(format: "%.2f", value.doubleValue)
+                        }
                     },
                     set: { newValue in
-                        if let doubleValue = Double(newValue) {
+                        if let intValue = Int(newValue) {
+                            value = NSNumber(value: intValue)
+                        } else if let doubleValue = Double(newValue) {
                             value = NSNumber(value: doubleValue)
                         } else {
                             value = nil
