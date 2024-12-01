@@ -17,5 +17,6 @@ export interface InviteTenantResponse {
 export interface InviteTenantModalProps {
     isOpen: boolean
     onClose: () => void
+    propertyId: string
 }
 

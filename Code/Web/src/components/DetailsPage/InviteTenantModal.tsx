@@ -1,20 +1,25 @@
 import React from 'react'
 import { Modal, Form, Input, DatePicker, Button, FormProps, message } from 'antd'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
 
 import { InviteTenant, InviteTenantModalProps } from '@/interfaces/Tenant/InviteTenant.ts'
 import InviteTenants from '@/services/api/Tenant/InviteTenant.ts'
 
-const InviteTenantModal: React.FC<InviteTenantModalProps> = ({ isOpen, onClose }) => {
+const InviteTenantModal: React.FC<InviteTenantModalProps> = ({ isOpen, onClose, propertyId }) => {
     const { t } = useTranslation()
 
     const onFinish: FormProps<InviteTenant>['onFinish'] = async (tenantInfo) => {
         try {
+            // eslint-disable-next-line camelcase
+            const { start_date, end_date } = tenantInfo
             const formattedTenantInfo = {
                 ...tenantInfo,
-
-                // waiting real ID's from the detailPage
-                propertyId: "cm3xcwfrs000512r6oh1dt0nm",
+                propertyId,
+            }
+            if (dayjs(start_date).isAfter(dayjs(end_date))) {
+                message.error(t('pages.realPropertyDetails.dateError'))
+                return
             }
             await InviteTenants(formattedTenantInfo)
             message.success(t('pages.realPropertyDetails.inviteTenant'))
