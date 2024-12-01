@@ -12,7 +12,9 @@ struct CreatePropertyView: View {
     @ObservedObject var viewModel: PropertyViewModel
     @StateObject private var keyboardObserver = KeyboardObserver()
 
+    @State private var name = ""
     @State private var address = ""
+    @State private var city = ""
     @State private var postalCode = ""
     @State private var country = ""
     @State private var photo = UIImage(named: "DefaultImageProperty") ?? UIImage()
@@ -48,7 +50,9 @@ struct CreatePropertyView: View {
                             .padding(.top, 8)
                     }
                     .frame(maxWidth: .infinity)
+                    CustomTextInput(title: "Name", placeholder: "Enter property name", text: $name, isSecure: false)
                     CustomTextInput(title: "Address", placeholder: "Enter address", text: $address, isSecure: false)
+                    CustomTextInput(title: "City", placeholder: "Enter city", text: $city, isSecure: false)
                     CustomTextInput(title: "Postal Code", placeholder: "Enter postal code", text: $postalCode, isSecure: false)
                     CustomTextInput(title: "Country", placeholder: "Enter country", text: $country, isSecure: false)
                     CustomTextInputNB(title: "Monthly Rent", placeholder: "Enter monthly rent", value: $monthlyRent, isSecure: false)
@@ -70,23 +74,9 @@ struct CreatePropertyView: View {
                 .cornerRadius(8)
                 Spacer()
                 Button("Add Property") {
-                    let newProperty = Property(
-                        id: UUID(),
-                        address: address,
-                        postalCode: postalCode,
-                        country: country,
-                        photo: photo,
-                        monthlyRent: monthlyRent?.doubleValue ?? 0.0,
-                        deposit: deposit?.doubleValue ?? 0.0,
-                        surface: surface?.doubleValue ?? 0.0,
-                        isAvailable: true,
-                        tenantName: nil,
-                        leaseStartDate: nil,
-                        leaseEndDate: nil,
-                        documents: []
-                    )
-                    viewModel.addProperty(newProperty)
-                    dismiss()
+                    Task {
+                        await addProperty()
+                    }
                 }
                 .padding(.horizontal, 25)
                 .padding(.vertical, 8)
@@ -125,6 +115,39 @@ struct CreatePropertyView: View {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
             rootViewController.present(actionSheet, animated: true, completion: nil)
+        }
+    }
+
+    private func addProperty() async {
+        let newProperty = Property(
+            id: "",
+            ownerID: "",
+            name: name,
+            address: address,
+            city: city,
+            postalCode: postalCode,
+            country: country,
+            photo: photo,
+            monthlyRent: monthlyRent?.intValue ?? 0,
+            deposit: deposit?.intValue ?? 0,
+            surface: surface?.doubleValue ?? 0.0,
+            isAvailable: true,
+            tenantName: nil,
+            leaseStartDate: nil,
+            leaseEndDate: nil,
+            documents: []
+        )
+
+        guard let token = await TokenStorage.getAccessToken() else {
+            print("Token is nil")
+            return
+        }
+
+        do {
+            try await viewModel.createProperty(request: newProperty, token: token)
+            dismiss()
+        } catch {
+            print("Error: \(error)")
         }
     }
 }

@@ -61,14 +61,14 @@ struct AboutCardView: View {
                 icon: "calendar",
                 leftText: "Start: \(property.leaseStartDate?.formatted(.dateTime.day().month().year()) ?? "No start date assigned")",
                 rightIcon: "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90",
-                rightText: "Rent / Months: \(formattedValue(property.monthlyRent))€"
+                rightText: "Rent / Months: \(property.monthlyRent)€"
             )
 
             buildRow(
                 icon: "calendar",
                 leftText: "End: \(property.leaseEndDate?.formatted(.dateTime.day().month().year()) ?? "No end date assigned")",
                 rightIcon: "eurosign.bank.building",
-                rightText: "Deposit: \(formattedValue(property.deposit))€"
+                rightText: "Deposit: \(property.deposit)€"
             )
         }
         .padding(.vertical, 10)
@@ -131,13 +131,16 @@ struct DocumentsGrid: View {
 struct PropertyDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let property = Property(
-            id: UUID(),
-            address: "4391 Hedge Street, New Jersey",
+            id: "",
+            ownerID: "",
+            name: "Condo",
+            address: "4391 Hedge Street",
+            city: "New Jersey",
             postalCode: "07102",
             country: "USA",
             photo: nil,
-            monthlyRent: 1200.0,
-            deposit: 2400.0,
+            monthlyRent: 1200,
+            deposit: 2400,
             surface: 80.0,
             isAvailable: false,
             tenantName: "John & Mary Doe",
