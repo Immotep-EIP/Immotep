@@ -96,5 +96,19 @@
       "pageNotFound": "Page not found",
       "backHome": "Back to home"
     }
+  },
+  "widgets": {
+    "userInfo": {
+      "title": "Welcome",
+      "propertiesNumber": "Here's an overview of your",
+      "realProperties": "properties",
+      "errorFetching": "Data recovery error"
+    },
+    "maintenance": {
+      "title": "Maintenance",
+      "noMaintenance": "No maintenance in progress",
+      "noMaintenanceDescription": "You have no maintenance in progress at the moment",
+      "completeButton": "Confirm"
+    }
   }
 }

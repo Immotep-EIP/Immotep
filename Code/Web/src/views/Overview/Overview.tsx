@@ -1,40 +1,83 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react';
+import { Responsive, WidthProvider } from 'react-grid-layout';
+import { UserOutlined } from '@ant-design/icons';
 
-import getUsers from '@/services/api/User/GetUsers'
-import style from './Overview.module.css'
+import UserInfoWidget from "@/components/Widgets/UserInfoWidget.tsx";
+import MaintenanceWidget from "@/components/Widgets/MaintenanceWidget.tsx";
+import {Widget} from "@/interfaces/Widgets/Widgets.ts";
+import style from './Overview.module.css';
+import "@/../node_modules/react-grid-layout/css/styles.css"
+import "@/../node_modules/react-resizable/css/styles.css"
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+const WidgetTemplate: React.FC<{ name: string; logo?: React.ReactElement; children: React.ReactNode }> =
+    ({ name, logo, children }) => (
+        <div className={style.widgetContainer}>
+            <div className={style.widgetHeader}>
+                {logo}
+            </div>
+            <div className={style.widgetContent}>
+                {children}
+            </div>
+        </div>
+    );
 
 const Overview: React.FC = () => {
-  const [data, setData] = useState<any>(null)
+    const layouts: { lg: Widget[] } = {
+        lg: [
+            {
+                i: "widget1",
+                name: "Widget 1",
+                logo: <UserOutlined />,
+                x: 0,
+                y: 0,
+                w: 2,
+                h: 2,
+                children: <UserInfoWidget />,
+                minW: 2,
+                maxW: 3,
+                minH: 2,
+                maxH: 3
+            },
+            {
+                i: "widget2",
+                name: "Widget 2",
+                logo: <UserOutlined />,
+                x: 2,
+                y: 0,
+                w: 3,
+                h: 4,
+                children: <MaintenanceWidget />,
+                minW: 3,
+                maxW: 6,
+                minH: 4,
+                maxH: 6
+            }
+        ],
+    };
 
-  // API EXAMPLE
-  useEffect(() => {
-    const getInfo = async () => {
-      try {
-        const users = await getUsers()
-        setData(users)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    }
-    getInfo()
-  }, [])
+    const draggableHandleClass = `.${style.widgetHeader}`;
 
-  return (
-    <div className={style.layoutContainer}>
-      {data && Array.isArray(data) ? (
-        data.map((user: any) => (
-          <div key={user.id}>
-            <p>First Name: {user.firstname}</p>
-            <p>Last Name: {user.lastname}</p>
-            <p>Email: {user.email}</p>
-            <hr />
-          </div>
-        ))
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
-  )
-}
+    return (
+        <ResponsiveGridLayout
+            className={style.gridLayout}
+            layouts={layouts}
+            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+            rowHeight={80}
+            isResizable
+            draggableHandle={draggableHandleClass}
+        >
+            {layouts.lg.map((widget) => (
+                <div key={widget.i} data-grid={widget}>
+                    <WidgetTemplate name={widget.name} logo={widget.logo}>
+                        {widget.children}
+                    </WidgetTemplate>
+                </div>
+            ))}
+        </ResponsiveGridLayout>
+    );
+};
 
-export default Overview
+export default Overview;
