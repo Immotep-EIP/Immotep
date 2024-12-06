@@ -109,7 +109,8 @@
         "about": "À propos",
         "damage": "Dommages",
         "inventory": "État des lieux",
-        "documents": "Documents"
+        "documents": "Documents",
+        "add_document": "Ajouter un document"
       }
     },
     "pages": {
