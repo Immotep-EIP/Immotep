@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'
 
@@ -15,11 +15,13 @@ const Register: React.FC = () => {
   const { goToLogin } = useNavigation()
   const [form] = Form.useForm()
   const { contractId } = useParams();
+  const [loading, setLoading] = useState(false)
 
   const { t } = useTranslation()
 
   const onFinish: FormProps<UserRegister>['onFinish'] = async values => {
     try {
+      setLoading(true)
       const { password, confirmPassword } = values
       if (password === confirmPassword) {
         const userInfo = {
@@ -29,12 +31,14 @@ const Register: React.FC = () => {
         await register(userInfo)
         message.success(t('pages.register.registrationSuccess'))
         form.resetFields()
+        setLoading(false)
         goToLogin()
       } else message.error(t('pages.register.passwordsNotMatch'))
     } catch (err: any) {
       if (err.response.status === 409)
         message.error(t('pages.register.emailAlreadyUsed'))
       console.error(t('pages.register.registrationError'), err)
+      setLoading(false)
     }
   }
 
@@ -148,6 +152,7 @@ const Register: React.FC = () => {
             size="large"
             color="default"
             variant="solid"
+            loading={loading}
           >
             {t('components.button.signUp')}
           </Button>

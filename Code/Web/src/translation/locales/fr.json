@@ -105,7 +105,12 @@
         "return": "Retour",
         "add_real_property": "Ajouter un bien",
         "add": "Ajouter",
-        "addTenant": "Ajouter un locataire"
+        "addTenant": "Ajouter un locataire",
+        "about": "À propos",
+        "damage": "Dommages",
+        "inventory": "État des lieux",
+        "documents": "Documents",
+        "add_document": "Ajouter un document"
       }
     },
     "pages": {
@@ -156,7 +161,8 @@
       "realPropertyDetails": {
         "inviteTenant": "Invitation envoyée avec succès",
         "409Error": "Invitation déjà envoyée",
-        "fillFields": "Veuillez remplir les champs obligatoires"
+        "fillFields": "Veuillez remplir les champs obligatoires",
+        "error_fetching_data": "Erreur lors de la récupération des données"
       },
       "property": {
         "add_real_property": {
