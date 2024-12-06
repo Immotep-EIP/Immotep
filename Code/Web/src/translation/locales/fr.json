@@ -86,6 +86,16 @@
         },
         "endDate": {
           "label": "Date de fin"
+        },
+        "document": {
+          "label": "Document",
+          "placeholder": "Choisissez un document",
+          "error": "Veuillez renseigner un document."
+        },
+        "document_name": {
+          "label": "Nom du document",
+          "placeholder": "Entrez le nom du document",
+          "error": "Veuillez renseigner le nom du document."
         }
       },
       "button": {
@@ -162,7 +172,12 @@
         "inviteTenant": "Invitation envoyée avec succès",
         "409Error": "Invitation déjà envoyée",
         "fillFields": "Veuillez remplir les champs obligatoires",
-        "error_fetching_data": "Erreur lors de la récupération des données"
+        "error_fetching_data": "Erreur lors de la récupération des données",
+        "tabs": {
+          "documents": {
+            "modal_title": "Ajouter un document"
+          }
+        }
       },
       "property": {
         "add_real_property": {

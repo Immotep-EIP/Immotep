@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Modal } from "antd";
+import { Button, Modal, Form, Input, Upload, message } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import style from "./4DocumentsTab.module.css";
 
 const documents = [
@@ -141,17 +142,30 @@ const documents = [
 const DocumentsTab: React.FC = () => {
   const { t } = useTranslation();
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [form] = Form.useForm();
 
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleOk = () => {
-    setIsModalOpen(false);
+    form
+      .validateFields()
+      .then((values) => {
+        console.log("Form values:", values);
+        message.success(t("components.documents.success_add"));
+        form.resetFields();
+        setIsModalOpen(false);
+      })
+      .catch((errorInfo) => {
+        console.error("Validation Failed:", errorInfo);
+      });
   };
 
   const handleCancel = () => {
+    form.resetFields();
     setIsModalOpen(false);
   };
 
@@ -159,13 +173,45 @@ const DocumentsTab: React.FC = () => {
     <div className={style.tabContent}>
       <div className={style.buttonAddContainer}>
         <Button type="primary" onClick={showModal}>
-          {t('components.button.add_document')}
+          {t("components.button.add_document")}
         </Button>
       </div>
-      <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+      <Modal
+        title={t("pages.realPropertyDetails.tabs.documents.modal_title")}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          name="add_document_form"
+          initialValues={{ remember: true }}
+        >
+          <Form.Item
+            label={t("components.input.document_name.label")}
+            name="documentName"
+            rules={[
+              { required: true, message: t("components.input.document_name.error") },
+            ]}
+          >
+            <Input placeholder={t("components.input.document_name.placeholder")} />
+          </Form.Item>
+
+          <Form.Item
+            label={t("components.input.document.label")}
+            name="documentFile"
+            valuePropName="fileList"
+            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+            rules={[
+              { required: true, message: t("components.input.document.error") },
+            ]}
+          >
+            <Upload name="file" listType="text" beforeUpload={() => false}>
+              <Button icon={<UploadOutlined />}>{t("components.input.document.placeholder")}</Button>
+            </Upload>
+          </Form.Item>
+        </Form>
       </Modal>
       <div className={style.documentsContainer}>
         {documents.map((document) => (
@@ -174,7 +220,11 @@ const DocumentsTab: React.FC = () => {
               <span>{document.date}</span>
             </div>
             <div className={style.documentPreviewContainer}>
-              <img src={document.preview} alt={document.name} className={style.documentPreview} />
+              <img
+                src={document.preview}
+                alt={document.name}
+                className={style.documentPreview}
+              />
             </div>
             <div className={style.documentName}>
               <span>{document.name}</span>
@@ -184,6 +234,6 @@ const DocumentsTab: React.FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default DocumentsTab;

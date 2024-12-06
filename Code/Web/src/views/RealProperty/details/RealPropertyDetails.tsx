@@ -172,7 +172,7 @@ const RealPropertyDetails: React.FC = () => {
           {t('components.button.addTenant')}
         </Button>
       </div>
-      <InviteTenantModal isOpen={isModalOpen} onClose={handleCancel} />
+      <InviteTenantModal isOpen={isModalOpen} onClose={handleCancel} propertyId={id} />
 
       <HeaderPart propertyData={propertyData} />
 
