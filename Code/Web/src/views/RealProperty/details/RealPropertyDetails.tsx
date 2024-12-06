@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Button, message, Tabs, TabsProps, Tag } from 'antd'
+import { Button, message, Tabs, TabsProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
