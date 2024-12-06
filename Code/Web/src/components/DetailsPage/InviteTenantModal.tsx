@@ -8,7 +8,6 @@ import InviteTenants from '@/services/api/Tenant/InviteTenant.ts'
 
 const InviteTenantModal: React.FC<InviteTenantModalProps> = ({ isOpen, onClose, propertyId }) => {
     const { t } = useTranslation()
-
     const onFinish: FormProps<InviteTenant>['onFinish'] = async (tenantInfo) => {
         try {
             // eslint-disable-next-line camelcase
@@ -70,7 +69,7 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({ isOpen, onClose, 
                 <Form.Item
                     label={t('components.input.endDate.label')}
                     name="end_date"
-                    rules={[{ required: true, message: t('form.error.end_date') }]}
+                    rules={[{ required: false, message: t('form.error.end_date') }]}
                 >
                     <DatePicker style={{ width: '100%' }} />
                 </Form.Item>
