@@ -4,6 +4,146 @@
   align-items: flex-start;
   justify-content: flex-start;
   width: 100%;
-  min-height: calc(100vh - 60px);
+  /* min-height: calc(100vh - 60px); */
   padding: 20px;
+}
+
+.buttonsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.returnButtonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+.returnIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.returnText {
+  color: #000;
+  font-size: 16px;
+  margin-left: 5px;
+  border-bottom: 1px solid #000;
+}
+
+.returnButtonContainer:hover {
+  .returnIcon {
+    opacity: 0.8;
+  }
+  .returnText {
+    color: #494949;
+  }
+}
+
+.returnButtonContainer:active {
+  .returnIcon {
+    opacity: 0.6;
+  }
+  .returnText {
+    color: #242424;
+  }
+}
+
+.headerPartContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  margin-bottom: 20px;
+  height: 30vh;
+  border-radius: 10px;
+  padding: 10px 20px;
+  border: 1px solid #e0e0e0;
+}
+
+.imageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  padding: 5px;
+  border: 1px solid #e0e0e0;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.detailsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: calc(80% - 150px);
+  height: 100%;
+  margin-left: 20px;
+  gap: 20px;
+}
+
+.details {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start
+}
+
+.detailsIcon {
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+}
+
+.detailsText {
+  color: #000;
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+@media (max-width: 768px) {
+  .headerPartContainer {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .imageContainer {
+    width: 100px;
+    height: 100px;
+  }
+
+  .detailsContainer {
+    margin-left: 0;
+    margin-top: 20px;
+    width: 100%;
+  }
+}
+
+.moreInfosContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  flex-grow: 1;
+  height: 100%;
+}
+
+.childrenContainer {
+  width: 100%;
 }
