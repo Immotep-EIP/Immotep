@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
+
 import useNavigation from '@/hooks/useNavigation/useNavigation'
+import useFetchProperties from "@/hooks/useEffect/useFetchProperties.ts";
 
 import appartmentIcon from '@/assets/icons/appartement.png'
 import locationIcon from '@/assets/icons/location.png'
@@ -9,8 +11,6 @@ import tenantIcon from '@/assets/icons/tenant.png'
 import dateIcon from '@/assets/icons/date.png'
 
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
-import { GetProperty } from '@/interfaces/Property/Property'
-import GetProperties from '@/services/api/Property/GetProperties'
 import style from './RealProperty.module.css'
 
 interface CardComponentProps {
@@ -122,20 +122,15 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
   const { goToRealPropertyCreate } = useNavigation()
-  const [properties, setProperties] = useState<GetProperty[]>([])
+  const { properties, loading, error } = useFetchProperties();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await GetProperties()
-      if (res) {
-        setProperties(res)
-        console.log('Data fetched:', res)
-      } else {
-        console.error('Error fetching data')
-      }
-    }
-    fetchData()
-  }, [])
+  if (loading) {
+    return <p>{t("widgets.userInfo.loading")}</p>;
+  }
+
+  if (error) {
+    return <p>{t("widgets.userInfo.error")}: {error}</p>;
+  }
 
   return (
     <div className={style.pageContainer}>
