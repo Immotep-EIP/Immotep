@@ -19,7 +19,7 @@ struct PropertyView: View {
                 HStack {
                     Spacer()
                     NavigationLink(destination: CreatePropertyView(viewModel: viewModel)) {
-                        Text("Add a property")
+                        Text("Add a property".localized())
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding(.horizontal)
@@ -88,7 +88,11 @@ struct PropertyCardView: View {
                         }
 
                         if let leaseStart = property.leaseStartDate {
-                            Text("Started on \(leaseStart, formatter: dateFormatter)")
+                            Text(
+                                String(
+                                    format: "started_on".localized(),
+                                    dateFormatter.string(from: leaseStart)
+                                ))
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
@@ -98,7 +102,7 @@ struct PropertyCardView: View {
             }
 
             if property.isAvailable {
-                Text("Available")
+                Text("Available".localized())
                     .font(.caption)
                     .foregroundColor(.green)
                     .padding(.horizontal, 8)
@@ -106,7 +110,7 @@ struct PropertyCardView: View {
                     .background(Capsule().fill(Color.green.opacity(0.2)))
                     .frame(maxWidth: .infinity, alignment: .topTrailing)
             } else {
-                Text("Busy")
+                Text("Busy".localized())
                     .font(.caption)
                     .foregroundColor(.red)
                     .padding(.horizontal, 8)

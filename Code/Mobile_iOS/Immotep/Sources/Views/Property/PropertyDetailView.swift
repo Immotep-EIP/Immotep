@@ -13,13 +13,13 @@ struct PropertyDetailView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TopBar(title: "Property Details")
+            TopBar(title: "Property Details".localized())
 
             Form {
                 PropertyCardView(property: property)
                     .padding(.vertical, 4)
 
-                Section(header: Text("About the property")) {
+                Section(header: Text("About the property".localized())) {
                     AboutCardView(property: $property)
                 }
 
@@ -27,7 +27,7 @@ struct PropertyDetailView: View {
                     DocumentsGrid(documents: $property.documents)
                 }
             }
-            Button("Start Inventory") {
+            Button("Start Inventory".localized()) {
                 // Action to define
             }
             .frame(maxWidth: .infinity)
@@ -52,23 +52,33 @@ struct AboutCardView: View {
         Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 10) {
             buildRow(
                 icon: "person",
-                leftText: property.tenantName ?? "No tenant assigned",
+                leftText: property.tenantName ?? "No tenant assigned".localized(),
                 rightIcon: "square.split.bottomrightquarter",
-                rightText: "Area: \(formattedValue(property.surface)) m²"
+                rightText: String(format: "area".localized(), formattedValue(property.surface))
             )
 
             buildRow(
                 icon: "calendar",
-                leftText: "Start: \(property.leaseStartDate?.formatted(.dateTime.day().month().year()) ?? "No start date assigned")",
+                leftText:
+                    String(format: "start_date".localized(),
+                           property.leaseStartDate?.formatted(.dateTime.day().month().year()) ?? "No start date assigned".localized()),
                 rightIcon: "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90",
-                rightText: "Rent / Months: \(property.monthlyRent)€"
+                rightText:
+                    String(
+                        format: "rent_month".localized(),
+                        property.monthlyRent)
             )
 
             buildRow(
                 icon: "calendar",
-                leftText: "End: \(property.leaseEndDate?.formatted(.dateTime.day().month().year()) ?? "No end date assigned")",
+                leftText:
+                    String(
+                        format: "end_date".localized(), property.leaseEndDate?.formatted(.dateTime.day().month().year()) ?? "No end date assigned"),
                 rightIcon: "eurosign.bank.building",
-                rightText: "Deposit: \(property.deposit)€"
+                rightText:
+                    String(
+                        format: "deposit_value".localized(),
+                        property.deposit)
             )
         }
         .padding(.vertical, 10)

@@ -29,13 +29,13 @@ actor ApiService: Sendable, ApiServiceProtocol {
         let (_, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server."])
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
         }
         guard httpResponse.statusCode == 201 else {
             if httpResponse.statusCode == 409 {
-                throw NSError(domain: "", code: 409, userInfo: [NSLocalizedDescriptionKey: "Email already exists."])
+                throw NSError(domain: "", code: 409, userInfo: [NSLocalizedDescriptionKey: "Email already exists.".localized()])
             } else if httpResponse.statusCode == 400 {
-                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Empty fields."])
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Empty fields.".localized()])
             } else {
                 throw NSError(domain: "", code: httpResponse.statusCode,
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])

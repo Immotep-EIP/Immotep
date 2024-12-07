@@ -11,7 +11,7 @@ struct MessagesView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                TopBar()
+                TopBar(title: "Messages".localized())
                 Spacer()
 
                 TaskBar()

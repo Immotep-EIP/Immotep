@@ -62,7 +62,7 @@ class LoginViewModel: ObservableObject {
 
     func validateFields() -> String? {
         guard !model.email.isEmpty, !model.password.isEmpty else {
-            return "Please enter both email and password."
+            return "Please enter both email and password.".localized()
         }
         return nil
     }

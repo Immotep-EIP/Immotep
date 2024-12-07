@@ -1,35 +1,103 @@
-"Already have an account ?" = "Already have an account ?";
+"Join Immotep for your peace of mind!" = "Join Immotep for your peace of mind!";
 "Create your account" = "Create your account";
+"I agree to all Term, Privacy Policy and Fees" = "I agree to all Term, Privacy Policy and Fees";
+"Already have an account ?" = "Already have an account ?";
+"Sign Up" = "Sign Up";
+"Registration successful!" = "Registration successful!";
+
+"Welcome back!" = "Welcome back";
 "Don't have an account ?" = "Don't have an account ?";
-"Email*" = "Email*";
+"Forgot password?" = "Forgot password?";
+"Keep me signed in" = "Keep me signed in";
+"Log In" = "Log In";
+"Please enter your details to sign in." = "Please enter your details to sign in.";
+"Sign In" = "Sign In";
+"Login successful!" = "Login successful!";
+
+"Hello" = "Hello";
+
+"Overview" = "Overview";
+"welcome_message" = "Welcome %@!";
+"New messages" = "New messages";
+"Scheduled inventory" = "Scheduled inventory";
+"Damage in progress" = "Damage in progress";
+"Available properties" = "Available properties";
+
+"Real Property" = "Real Property";
+"Property" = "Property";
+"Add a property" = "Add a property";
+"started_on" = "Started on %@";
+"Available" = "Available";
+"Busy" = "Busy";
+
+"New Property" = "New Property";
+"Click on the image to change" = "Click on the image to change";
+"Cancel" = "Cancel";
+"Add Property" = "Add Property";
+"Select Image Source" = "Select Image Source";
+"Take Photo" = "Take Photo";
+"Choose from Library" = "Choose from Library";
+
+"Property Details" = "Property Details";
+"About the property" = "About the property";
+"Start Inventory" = "Start Inventory";
+"No tenant assigned" = "No tenant assigned";
+"area" = "Area: %@ m²";
+"start_date" = "Start date: %@";
+"No start date assigned" = "No start date assigned";
+"rent_month" = "Rent: %d€";
+"end_date" = "End: %$";
+"No end date assigned" = "No end date assigned";
+"deposit_value" = "Deposit: %d€";
+
+"Messages" = "Messages";
+
+"Settings" = "Settings";
+"Language" = "Language";
+"Select Language" = "Select Language";
 "English" = "English";
+"Français" = "Français";
+"Logout" = "Logout";
+"theme_system" = "System";
+"theme_light" = "Light";
+"theme_dark" = "Dark";
+
+"First name*" = "First name*";
+"Name*" = "Name*";
+"Email*" = "Email*";
+"Password*" = "Password*";
+"Password confirmation*" = "Password confirmation*";
+
 "Enter your email" = "Enter your email";
 "Enter your first name" = "Enter your first name";
 "Enter your name" = "Enter your name";
 "Enter your password" = "Enter your password";
 "Enter your password confirmation" = "Enter your password confirmation";
-"First name*" = "First name*";
-"Forgot password?" = "Forgot password?";
-"Français" = "Français";
-"Hello" = "Hello";
-"I agree to all Term, Privacy Policy and Fees" = "I agree to all Term, Privacy Policy and Fees";
-"Immotep" = "Immotep";
-"Join Immotep for your peace of mind!" = "Join Immotep for your peace of mind!";
-"Keep me signed in" = "Keep me signed in";
-"Language" = "Language";
-"Log In" = "Log In";
-"Messages" = "Messages";
-"Name*" = "Name*";
-"Overview" = "Overview";
-"Password confirmation*" = "Password confirmation*";
-"Password*" = "Password*";
-"Please enter your details to sign in." = "Please enter your details to sign in.";
-"Real Property" = "Real Property";
-"Select Language" = "Select Language";
-"Settings" = "Settings";
-"Sign In" = "Sign In";
-"Sign Up" = "Sign Up";
-"Welcome back!" = "Welcome back";
-"Login successful!" = "Login successful!";
-"Registration successful!" = "Registration successful!";
-"Logout" = "Logout";
+
+"Name" = "Name";
+"Address" = "Address";
+"City" = "City";
+"Postal Code" = "Postal Code";
+"Country" = "Country";
+"Monthly Rent" = "Monthly Rent";
+"Deposit" = "Deposit";
+"Surface (m²)" = "Surface (m²)";
+
+"Enter property name" = "Enter property name";
+"Enter address" = "Enter address";
+"Enter city" = "Enter city";
+"Enter postal code" = "Enter postal code";
+"Enter country" = "Enter country";
+"Enter monthly rent" = "Enter monthly rent";
+"Enter deposit" = "Enter deposit";
+"Enter surface" = "Enter surface";
+
+"Invalid response from server." = "Invalid response from server.";
+"Email already exists." = "Email already exists.";
+"Empty fields." = "Empty fields.";
+
+"Please fill in all fields." = "Please fill in all fields.";
+"Passwords do not match." = "Passwords do not match.";
+"You must agree to the terms and conditions." = "You must agree to the terms and conditions.";
+"Please enter a valid email address." = "Please enter a valid email address.";
+"Please enter both email and password." = "Please enter both email and password.";

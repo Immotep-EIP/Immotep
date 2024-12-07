@@ -86,7 +86,7 @@ struct LoginView: View {
                         .resizable()
                         .frame(width: 50, height: 50)
                         .padding(.bottom, 40)
-                    Text("Immotep".localized())
+                    Text("Immotep")
                         .font(.title)
                         .bold()
                         .padding(.bottom, 40)

@@ -14,14 +14,29 @@ struct OverviewView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                TopBar(title: "Immotep".localized())
+                TopBar(title: "Immotep")
                 ScrollView {
                     VStack(spacing: 30) {
-                        OverviewBox(title: "", content: ["Welcome \(viewModel.user?.firstname ?? "")!", "Here is an overview of your appartments"])
-                        OverviewBox(title: "New messages", content: ["Email 1: Subject", "Email 2: Subject", "Email 3: Subject"])
-                        OverviewBox(title: "Scheduled inventory", content: ["Inventory 1: Scheduled", "Inventory 2: Scheduled"])
-                        OverviewBox(title: "Damage in progress", content: ["Damage 1: In Progress", "Damage 2: In Progress"])
-                        OverviewBox(title: "Available properties", content: ["Property 1: Available", "Property 2: Available"])
+                        OverviewBox(
+                            title: "",
+                            content: [
+                                String(
+                                    format: "welcome_message".localized(),
+                                    viewModel.user?.firstname ?? ""),
+                                    "Here is an overview of your appartments".localized()
+                            ])
+                        OverviewBox(
+                            title: "New messages".localized(),
+                            content: ["Email 1: Subject", "Email 2: Subject", "Email 3: Subject"])
+                        OverviewBox(
+                            title: "Scheduled inventory".localized(),
+                            content: ["Inventory 1: Scheduled", "Inventory 2: Scheduled"])
+                        OverviewBox(
+                            title: "Damage in progress".localized(),
+                            content: ["Damage 1: In Progress", "Damage 2: In Progress"])
+                        OverviewBox(
+                            title: "Available properties".localized(),
+                            content: ["Property 1: Available", "Property 2: Available"])
                     }
                     .padding()
                 }

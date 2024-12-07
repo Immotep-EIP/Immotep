@@ -8,9 +8,13 @@
 import SwiftUI
 
 enum ThemeOption: String, CaseIterable {
-    case system = "System"
-    case light = "Light"
-    case dark = "Dark"
+    case system = "theme_system"
+    case light = "theme_light"
+    case dark = "theme_dark"
+
+    var localized: String {
+        rawValue.localized()
+    }
 }
 
 struct ThemeManager {

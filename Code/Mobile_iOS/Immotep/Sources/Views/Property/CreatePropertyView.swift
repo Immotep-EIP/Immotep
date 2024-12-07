@@ -28,7 +28,7 @@ struct CreatePropertyView: View {
 
     var body: some View {
         VStack {
-            TopBar(title: "New Property")
+            TopBar(title: "New Property".localized())
 
             Form {
                 Section {
@@ -44,7 +44,7 @@ struct CreatePropertyView: View {
                                 showImagePickerOptions()
                             }
 
-                        Text("Click on the image to change")
+                        Text("Click on the image to change".localized())
                             .font(.subheadline)
                             .foregroundColor(.gray)
                             .padding(.top, 8)
@@ -63,7 +63,7 @@ struct CreatePropertyView: View {
 
             HStack {
                 Spacer()
-                Button("Cancel") {
+                Button("Cancel".localized()) {
                     dismiss()
                 }
                 .padding(.horizontal, 25)
@@ -73,7 +73,7 @@ struct CreatePropertyView: View {
                 .font(.headline)
                 .cornerRadius(8)
                 Spacer()
-                Button("Add Property") {
+                Button("Add Property".localized()) {
                     Task {
                         await addProperty()
                     }
@@ -98,19 +98,19 @@ struct CreatePropertyView: View {
     }
 
     private func showImagePickerOptions() {
-        let actionSheet = UIAlertController(title: "Select Image Source", message: nil, preferredStyle: .actionSheet)
+        let actionSheet = UIAlertController(title: "Select Image Source".localized(), message: nil, preferredStyle: .actionSheet)
 
-        actionSheet.addAction(UIAlertAction(title: "Take Photo", style: .default, handler: { _ in
+        actionSheet.addAction(UIAlertAction(title: "Take Photo".localized(), style: .default, handler: { _ in
             self.sourceType = .camera
             self.showSheet.toggle()
         }))
 
-        actionSheet.addAction(UIAlertAction(title: "Choose from Library", style: .default, handler: { _ in
+        actionSheet.addAction(UIAlertAction(title: "Choose from Library".localized(), style: .default, handler: { _ in
             self.sourceType = .photoLibrary
             self.showSheet.toggle()
         }))
 
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "Cancel".localized(), style: .cancel, handler: nil))
 
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
@@ -144,8 +144,10 @@ struct CreatePropertyView: View {
         }
 
         do {
-            try await viewModel.createProperty(request: newProperty, token: token)
-            dismiss()
+            let response = try await viewModel.createProperty(request: newProperty, token: token)
+            if response == "Property successfully created!" {
+                dismiss()
+            }
         } catch {
             print("Error: \(error)")
         }

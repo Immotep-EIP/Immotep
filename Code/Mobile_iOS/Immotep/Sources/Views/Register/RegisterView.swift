@@ -43,7 +43,8 @@ struct RegisterView: View {
                                 HStack {
                                     Image(systemName: viewModel.model.agreement ? "checkmark.circle.fill" : "circle")
                                     Text("I agree to all Term, Privacy Policy and Fees".localized())
-                                        .font(.system(size: 14))
+                                        .font(.system(size: 12))
+                                        .multilineTextAlignment(.leading)
                                 }
                                 .foregroundStyle((Color("textColor")))
                             })

@@ -1,35 +1,103 @@
-"Already have an account ?" = "Vous avez déjà un compte ?";
+"Join Immotep for your peace of mind!" = "Rejoignez Immotep pour votre tranquillité d’esprit !";
 "Create your account" = "Créer un compte";
+"I agree to all Term, Privacy Policy and Fees" = "J'accepte les Termes, la Politique de confidentialité et les Frais";
+"Already have an account ?" = "Vous avez déjà un compte ?";
+"Sign Up" = "S’inscrire";
+"Registration successful!" = "Inscription réussie !";
+
+"Welcome back!" = "Bienvenue !";
 "Don't have an account ?" = "Vous n’avez pas de compte ?";
-"Email*" = "Email*";
+"Forgot password?" = "Mot de passe oublié ?";
+"Keep me signed in" = "Rester connecté";
+"Log In" = "Se connecter";
+"Please enter your details to sign in." = "Veuillez entrer vos identifiants pour vous connecter";
+"Sign In" = "Se connecter";
+"Login successful!" = "Connexion réussie !";
+
+"Hello" = "Bonjour";
+
+"Overview" = "Menu";
+"welcome_message" = "Bienvenue %@ !";
+"New messages" = "Nouveaux messages";
+"Scheduled inventory" = "États des lieux prévus";
+"Damage in progress" = "Sinistres en cours";
+"Available properties" = "Propriétés disponibles";
+
+"Real Property" = "Propriétés";
+"Property" = "Propriétés";
+"Add a property" = "Ajouter une propriété";
+"started_on" = "Commencé le %@";
+"Available" = "Disponible";
+"Busy" = "Occupé";
+
+"New Property" = "Nouvelle propriété";
+"Click on the image to change" = "Cliquez sur l'image pour la changer";
+"Cancel" = "Annuler";
+"Add Property" = "Ajouter une propriété";
+"Select Image Source" = "Sélectionner la source de l'image";
+"Take Photo" = "Prendre une photo";
+"Choose from Library" = "Choisir depuis la gallerie";
+
+"Property Details" = "Détails";
+"About the property" = "À propos";
+"Start Inventory" = "Commencer l'état des lieux";
+"No tenant assigned" = "Pas de locataire alloué";
+"area" = "Surface : %@ m²";
+"start_date" = "Date de début : %@";
+"No start date assigned" = "Pas de date renseignée";
+"rent_month" = "Loyer: %d€";
+"end_date" = "Fin : %@";
+"No end date assigned" = "Pas de date renseignée";
+"deposit_value" = "Caution : %d€";
+
+"Messages" = "Messages";
+
+"Settings" = "Paramètres";
+"Language" = "Langage";
+"Select Language" = "Selectionner une langue";
 "English" = "English";
+"Français" = "Français";
+"Logout" = "Se déconnecter";
+"theme_system" = "Système";
+"theme_light" = "Clair";
+"theme_dark" = "Sombre";
+
+"First name*" = "Prénom*";
+"Name*" = "Nom*";
+"Email*" = "Email*";
+"Password*" = "Mot de passe*";
+"Password confirmation*" = "Confirmation du mot de passe*";
+
 "Enter your email" = "Entrez votre email";
 "Enter your first name" = "Entrez votre prénom";
 "Enter your name" = "Entrez votre nom";
 "Enter your password" = "Entrez votre mot de passe";
 "Enter your password confirmation" = "Confirmez votre mot de passe";
-"First name*" = "Prénom*";
-"Forgot password?" = "Mot de passe oublié ?";
-"Français" = "Français";
-"Hello" = "Bonjour";
-"I agree to all Term, Privacy Policy and Fees" = "J'accepte les Termes, la Politique de confidentialité et les Frais";
-"Immotep" = "Immotep";
-"Join Immotep for your peace of mind!" = "Rejoignez Immotep pour votre tranquillité d’esprit !";
-"Keep me signed in" = "Rester connecté";
-"Language" = "Langage";
-"Log In" = "Se connecter";
-"Messages" = "Messages";
-"Name*" = "Nom*";
-"Overview" = "Menu";
-"Password confirmation*" = "Confirmation du mot de passe*";
-"Password*" = "Mot de passe*";
-"Please enter your details to sign in." = "Veuillez entrer vos identifiants pour vous connecter";
-"Real Property" = "Propriétés";
-"Select Language" = "Selectionner une langue";
-"Settings" = "Paramètres";
-"Sign In" = "Se connecter";
-"Sign Up" = "S’inscrire";
-"Welcome back!" = "Bienvenue !";
-"Login successful!" = "Connexion réussie !";
-"Registration successful!" = "Inscription réussie !";
-"Logout" = "Se déconnecter";
+
+"Name" = "Nom";
+"Address" = "Adresse";
+"City" = "Ville";
+"Postal Code" = "Code postal";
+"Country" = "Pays";
+"Monthly Rent" = "Loyer";
+"Deposit" = "Caution";
+"Surface (m²)" = "Surface (m²)";
+
+"Enter property name" = "Entrez le nom de la propriété";
+"Enter address" = "Entrez l'adresse";
+"Enter city" = "Entrez la ville";
+"Enter postal code" = "Entrez le code postal";
+"Enter country" = "Entrez le pays";
+"Enter monthly rent" = "Entrez le montant du loyer";
+"Enter deposit" = "Entrez le montant de la caution";
+"Enter surface" = "Entrez la surface du bien";
+
+"Invalid response from server." = "Réponse invalide du serveur.";
+"Email already exists." = "Le mail entré est déjà associé à un compte.";
+"Empty fields." = "Champs vides.";
+
+"Please fill in all fields." = "Veuillez remplir tous les champs.";
+"Passwords do not match." = "Les mots de passes sont différents.";
+"You must agree to the terms and conditions." = "Vous devez accepter les termes et conditions.";
+"Please enter a valid email address." = "Veuillez entrer une adresse mail valide.";
+"Please enter both email and password." = "Veuillez entrer un mail et un mot de passe valides.";

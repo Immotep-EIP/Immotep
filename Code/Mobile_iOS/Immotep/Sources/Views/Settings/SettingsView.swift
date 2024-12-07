@@ -31,7 +31,7 @@ struct SettingsView: View {
                 Section(header: Text("Theme")) {
                     Picker("Theme", selection: $selectedTheme) {
                         ForEach(ThemeOption.allCases, id: \.self) { theme in
-                            Text(theme.rawValue)
+                            Text(theme.rawValue.localized())
                                 .tag(theme.rawValue)
                         }
                     }
