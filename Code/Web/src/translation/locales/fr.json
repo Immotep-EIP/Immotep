@@ -96,6 +96,16 @@
           "label": "Nom du document",
           "placeholder": "Entrez le nom du document",
           "error": "Veuillez renseigner le nom du document."
+        },
+        "room_name": {
+          "label": "Nom de la pièce",
+          "placeholder": "Entrez le nom de la pièce",
+          "error": "Veuillez renseigner le nom de la pièce."
+        },
+        "stuff_name": {
+          "label": "Nom de l'objet",
+          "placeholder": "Entrez le nom de l'objet",
+          "error": "Veuillez renseigner le nom de l'objet."
         }
       },
       "button": {
@@ -176,6 +186,9 @@
         "tabs": {
           "documents": {
             "modal_title": "Ajouter un document"
+          },
+          "inventory": {
+            "list_object_name": "Objets dans la pièce"
           }
         }
       },
