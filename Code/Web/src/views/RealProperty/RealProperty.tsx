@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Tag } from 'antd'
+import React from 'react'
+import { Button } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import useNavigation from '@/hooks/useNavigation/useNavigation'
@@ -10,6 +10,7 @@ import locationIcon from '@/assets/icons/location.png'
 import tenantIcon from '@/assets/icons/tenant.png'
 import dateIcon from '@/assets/icons/date.png'
 
+import PageTitle from "@/components/PageText/Title.tsx";
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 import style from './RealProperty.module.css'
 
@@ -125,19 +126,17 @@ const RealPropertyPage: React.FC = () => {
   const { properties, loading, error } = useFetchProperties();
 
   if (loading) {
-    return <p>{t("widgets.userInfo.loading")}</p>;
+    return <p>{t("generals.loading")}</p>;
   }
 
   if (error) {
-    return <p>{t("widgets.userInfo.error")}: {error}</p>;
+    return <p>{t("pages.property.error.errorFetchingData")}</p>;
   }
 
   return (
     <div className={style.pageContainer}>
       <div className={style.pageHeader}>
-        <span className={style.pageTitle}>
-          {t('pages.real_property.title')}
-        </span>
+        <PageTitle title={t('pages.real_property.title')} size="title" />
         <Button type="primary" onClick={goToRealPropertyCreate}>
           {t('components.button.add_real_property')}
         </Button>

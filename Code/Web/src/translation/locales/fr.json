@@ -182,6 +182,9 @@
           }
         }
       },
+      "overview": {
+        "title": "Aperçu"
+      },
       "property": {
         "add_real_property": {
           "title": "Ajouter un bien",
@@ -195,6 +198,9 @@
         },
         "damage": {
           "unread": "Dommage non lu"
+        },
+        "error" : {
+            "errorFetchingData": "Erreur lors de la récupération des données"
         }
       }
     },

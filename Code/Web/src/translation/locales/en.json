@@ -92,6 +92,9 @@
       "409Error": "Invitation already sent",
       "fillFields": "Please fill in the required fields"
     },
+    "overview": {
+      "title": "Overview"
+    },
     "lost": {
       "pageNotFound": "Page not found",
       "backHome": "Back to home"
