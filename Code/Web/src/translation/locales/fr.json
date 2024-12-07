@@ -133,6 +133,9 @@
         "add_document": "Ajouter un document"
       }
     },
+    "generals": {
+      "loading": "Chargement..."
+    },
     "pages": {
       "login": {
         "title": "Bienvenue !",
@@ -192,6 +195,9 @@
           }
         }
       },
+      "overview": {
+        "title": "Aperçu"
+      },
       "property": {
         "add_real_property": {
           "title": "Ajouter un bien",
@@ -205,7 +211,24 @@
         },
         "damage": {
           "unread": "Dommage non lu"
+        },
+        "error" : {
+            "errorFetchingData": "Erreur lors de la récupération des données"
         }
+      }
+    },
+    "widgets": {
+      "userInfo": {
+        "title": "Bienvenue",
+        "propertiesNumber": "Voici un aperçu de vos",
+        "realProperties": "biens",
+        "errorFetching": "Erreur lors de la récupération des données"
+      },
+      "maintenance": {
+        "title": "Maintenance",
+        "noMaintenance": "Aucune maintenance en cours",
+        "noMaintenanceDescription": "Vous n'avez aucune maintenance en cours pour le moment.",
+        "completeButton": "Confirmer"
       }
     }
   }
