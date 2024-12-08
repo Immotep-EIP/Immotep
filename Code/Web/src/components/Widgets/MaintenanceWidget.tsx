@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { List, Button, Tag } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 
-import {MaintenanceTask} from "@/interfaces/Widgets/Widgets.ts";
+import {MaintenanceTask, WidgetProps} from "@/interfaces/Widgets/Widgets.ts";
 import { useTranslation } from "react-i18next";
 import style from "./MaintenanceWidget.module.css";
 
-const MaintenanceWidget: React.FC = () => {
+const MaintenanceWidget: React.FC<WidgetProps> = ({ height }) => {
     const { t } = useTranslation();
+    const rowHeight = 70;
+    const pixelHeight = height * rowHeight;
 
     const [tasks, setTasks] = useState<MaintenanceTask[]>([
         { id: 1, description: "Réparation de la chaudière", priority: "high", completed: false },
@@ -33,37 +35,41 @@ const MaintenanceWidget: React.FC = () => {
     };
 
     return (
-        <div className={style.maintenanceWidgetContainer}>
+        <div className={style.maintenanceWidgetContainer} style={{height:  `${pixelHeight}px`}}>
             <h4 className={style.maintenanceWidgetTitle}>{t("widgets.maintenance.title")}</h4>
-            <List
-                dataSource={tasks}
-                renderItem={(task) => (
-                    <List.Item className={style.maintenanceWidgetListItem}>
-                        <div className={style.maintenanceWidgetTask}>
-                            {renderPriorityTag(task.priority)}
-                            <span
-                                className={
-                                    task.completed
-                                        ? style.maintenanceWidgetTaskCompleted
-                                        : style.maintenanceWidgetTaskPending
-                                }
-                            >
-                                {task.description}
-                            </span>
-                        </div>
-                        {!task.completed && (
-                            <Button
-                                type="primary"
-                                size="small"
-                                icon={<CheckOutlined />}
-                                onClick={() => markAsCompleted(task.id)}
-                            >
-                                {t("widgets.maintenance.completeButton")}
-                            </Button>
-                        )}
-                    </List.Item>
-                )}
-            />
+            <div
+                className={style.maintenanceWidgetScrollList}
+            >
+                <List
+                    dataSource={tasks}
+                    renderItem={(task) => (
+                        <List.Item className={style.maintenanceWidgetListItem}>
+                            <div className={style.maintenanceWidgetTask}>
+                                {renderPriorityTag(task.priority)}
+                                <span
+                                    className={
+                                        task.completed
+                                            ? style.maintenanceWidgetTaskCompleted
+                                            : style.maintenanceWidgetTaskPending
+                                    }
+                                >
+                                    {task.description}
+                                </span>
+                            </div>
+                            {!task.completed && (
+                                <Button
+                                    type="primary"
+                                    size="small"
+                                    icon={<CheckOutlined />}
+                                    onClick={() => markAsCompleted(task.id)}
+                                >
+                                    {t("widgets.maintenance.completeButton")}
+                                </Button>
+                            )}
+                        </List.Item>
+                    )}
+                />
+            </div>
         </div>
     );
 };
