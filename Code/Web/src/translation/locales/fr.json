@@ -106,6 +106,26 @@
           "label": "Nom de l'objet",
           "placeholder": "Entrez le nom de l'objet",
           "error": "Veuillez renseigner le nom de l'objet."
+        },
+        "widgetName" : {
+          "label" : "Nom du widget",
+          "placeholder" : "Entrez le nom du widget",
+          "error" : "Veuillez renseigner le nom du widget"
+        },
+        "widgetType" : {
+          "label" : "Type de widget",
+          "placeholder" : "Choisissez le type de widget",
+          "error" : "Veuillez renseigner le type de widget"
+        },
+        "widgetWidth" : {
+          "label" : "Largeur du widget",
+          "placeholder" : "Entrez la largeur du widget",
+          "error" : "Veuillez renseigner la largeur du widget"
+        },
+        "widgetHeight" : {
+          "label" : "Hauteur du widget",
+          "placeholder" : "Entrez la hauteur du widget",
+          "error" : "Veuillez renseigner la hauteur du widget"
         }
       },
       "button": {
@@ -131,7 +151,8 @@
         "inventory": "État des lieux",
         "documents": "Documents",
         "add_document": "Ajouter un document",
-        "add_room": "Ajouter une pièce"
+        "add_room": "Ajouter une pièce",
+        "addWidget": "Ajouter un widget"
       }
     },
     "generals": {
@@ -198,8 +219,15 @@
           }
         }
       },
-      "overview": {
-        "title": "Aperçu"
+        "overview": {
+        "title": "Aperçu",
+        "widgetCreation": {
+          "title": "Ajouter un widget",
+          "error": "Erreur lors de la création du widget",
+          "error_fetching_data": "Erreur lors de la récupération des données",
+          "fillFields": "Veuillez remplir tous les champs",
+          "widgetCreated": "Widget créé avec succès"
+        }
       },
       "property": {
         "add_real_property": {

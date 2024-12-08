@@ -1,4 +1,6 @@
 .maintenanceWidgetContainer {
+    display: flex;
+    flex-direction: column;
     padding: 10px;
 }
 
@@ -29,4 +31,10 @@
 .maintenanceWidgetTaskPending {
     text-decoration: none;
     color: #000;
+}
+
+.maintenanceWidgetScrollList {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
 }
