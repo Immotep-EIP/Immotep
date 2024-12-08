@@ -1,0 +1,40 @@
+.maintenanceWidgetContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.maintenanceWidgetTitle {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.maintenanceWidgetListItem {
+    padding: 8px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.maintenanceWidgetTask {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.maintenanceWidgetTaskCompleted {
+    text-decoration: line-through;
+    color: #aaa;
+}
+
+.maintenanceWidgetTaskPending {
+    text-decoration: none;
+    color: #000;
+}
+
+.maintenanceWidgetScrollList {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+}

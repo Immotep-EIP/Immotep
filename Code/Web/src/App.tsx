@@ -15,6 +15,8 @@ import ForgotPassword from '@/views/Authentification/ForgotPassword/ForgotPasswo
 // ! MAIN LAYOUT - SIDEBAR
 import OverviewContent from '@/views/Overview/Overview'
 import RealPropertyContent from '@/views/RealProperty/RealProperty'
+import RealPropertyCreate from '@/views/RealProperty/create/RealPropertyCreate.tsx'
+import RealPropertyDetails from '@/views/RealProperty/details/RealPropertyDetails.tsx'
 import MessagesContent from '@/views/Messages/Messages'
 
 // ! MAIN LAYOUT - HEADER
@@ -22,15 +24,24 @@ import Settings from '@/views/Settings/Settings'
 import MyProfile from '@/views/MyProfile/MyProfile'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
+import Lost from './views/Lost/Lost.tsx'
+
 const App: React.FC = () => (
   <Router>
     <AuthProvider>
       <Routes>
         <Route path={NavigationEnum.LOGIN} element={<Login />} />
         <Route path={NavigationEnum.REGISTER} element={<Register />} />
+        <Route path={NavigationEnum.REGISTER_TENANT} element={<Register />} />
         <Route
           path={NavigationEnum.FORGOT_PASSWORD}
           element={<ForgotPassword />}
+        />
+        <Route path="*" element={<Lost />} />
+
+        <Route
+          path={NavigationEnum.REAL_PROPERTY_CREATE}
+          element={<RealPropertyCreate />}
         />
 
         <Route element={<MainLayout />}>
@@ -42,6 +53,10 @@ const App: React.FC = () => (
             <Route
               path={NavigationEnum.REAL_PROPERTY}
               element={<RealPropertyContent />}
+            />
+            <Route
+              path={NavigationEnum.REAL_PROPERTY_DETAILS}
+              element={<RealPropertyDetails />}
             />
             <Route
               path={NavigationEnum.MESSAGES}

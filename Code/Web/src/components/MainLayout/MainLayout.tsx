@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useLocation, Outlet } from 'react-router-dom'
-import { Button, Layout, Menu, Tooltip } from 'antd'
-import RealProprtyIcon from '@/assets/icons/realProperty.png'
+import { useNavigate, Outlet, useLocation } from 'react-router-dom'
+import { Layout } from 'antd'
+
+import Property from '@/assets/icons/realProperty.png'
 import Overview from '@/assets/icons/overview.png'
 import Messages from '@/assets/icons/messages.png'
 import Immotep from '@/assets/icons/ImmotepLogo.svg'
 import Settings from '@/assets/icons/settings.png'
-import Me from '@/assets/icons/me.png'
+
 import NavigationEnum from '@/enums/NavigationEnum'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
 import style from './MainLayout.module.css'
 
-const { Content, Sider } = Layout
+const { Content } = Layout
 
 const items = [
   {
@@ -23,34 +23,32 @@ const items = [
   {
     label: 'components.button.realProperty',
     key: NavigationEnum.REAL_PROPERTY,
-    icon: (
-      <img
-        src={RealProprtyIcon}
-        alt="Real Property"
-        className={style.menuIcon}
-      />
-    )
+    icon: <img src={Property} alt="Real Property" className={style.menuIcon} />
   },
   {
     label: 'components.button.messages',
     key: NavigationEnum.MESSAGES,
     icon: <img src={Messages} alt="Messages" className={style.menuIcon} />
+  },
+  {
+    label: 'components.button.settings',
+    key: NavigationEnum.SETTINGS,
+    icon: <img src={Settings} alt="Messages" className={style.menuIcon} />
   }
 ]
 
 const MainLayout: React.FC = () => {
-  const screenWidth = window.innerWidth
-  const [collapsed, setCollapsed] = useState(!(screenWidth > 500))
-  const [selectedTab, setSelectedTab] = useState('')
-  const location = useLocation()
   const navigate = useNavigate()
-  const { goToSettings, goToMyProfile } = useNavigation()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const location = useLocation();
+  const currentLocation = location.pathname;
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen)
+  }
 
   const { t } = useTranslation()
-
-  useEffect(() => {
-    setSelectedTab(location.pathname)
-  }, [location.pathname])
 
   const translatedItems = items.map(item => ({
     ...item,
@@ -65,63 +63,74 @@ const MainLayout: React.FC = () => {
           <span className={style.headerTitle}>Immotep</span>
         </div>
         <div className={style.rightPartHeader}>
-          <Tooltip title={t('components.button.settings')} placement="bottom">
-            <Button
-              shape="circle"
-              style={{ marginRight: 10 }}
-              color="default"
-              variant="solid"
-              size="middle"
-              onClick={() => goToSettings()}
+          <div
+            className={`${style.menuToggleButton} ${menuOpen ? style.open : ''}`}
+            onClick={toggleMenu}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                toggleMenu()
+              }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label="Toggle menu"
+          >
+            <div className={style.burgerLine} />
+            <div className={style.burgerLine} />
+            <div className={style.burgerLine} />
+          </div>
+
+          {translatedItems.map(item => (
+            <span
+              className={`${style.buttonText} ${currentLocation === item.key ? style.active : ''}`}
+              onClick={() => navigate(item.key)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  navigate(item.key)
+                }
+              }}
+              tabIndex={0}
+              aria-label="button"
+              role="button"
+              key={item.key}
             >
-              <img
-                src={Settings}
-                alt="Settings"
-                style={{ width: 17, height: 17 }}
-              />
-            </Button>
-          </Tooltip>
-          {/* <Tooltip title={t('components.button.myProfile')} placement="bottom">
-            <Button
-              shape="circle"
-              style={{ marginRight: 10 }}
-              color="default"
-              variant="solid"
-              size="middle"
-              onClick={() => goToMyProfile()}
-            >
-              <img src={Me} alt="Me" style={{ width: 17, height: 17 }} />
-            </Button>
-          </Tooltip> */}
+              {t(item.label)}
+            </span>
+          ))}
+
+          {menuOpen && (
+            <div className={style.menuDropdown}>
+              {translatedItems.map(item => (
+                <div
+                  key={item.key}
+                  className={style.menuItem}
+                  onClick={() => {
+                    navigate(item.key)
+                    setMenuOpen(false)
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      navigate(item.key)
+                      setMenuOpen(false)
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={t(item.label)}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-      <Layout style={{ height: '100%', width: '100%' }}>
-        <Sider
-          collapsible={screenWidth > 500}
-          collapsed={collapsed}
-          onCollapse={value => setCollapsed(value)}
-          theme="light"
-        >
-          <Menu
-            theme="light"
-            selectedKeys={[selectedTab]}
-            mode="inline"
-            items={translatedItems}
-            onClick={e => {
-              setSelectedTab(e.key)
-              navigate(e.key)
-            }}
-            style={{
-              height: '100%',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
-            }}
-          />
-        </Sider>
-        <Layout>
-          <Content style={{ height: '100%', width: '100%' }}>
-            <Outlet />
-          </Content>
-        </Layout>
+
+      <Layout style={{ height: '100%', width: '100%', paddingTop: '70px' }}>
+        <Content style={{ height: '100%', width: '100%' }}>
+          <Outlet />
+        </Content>
       </Layout>
     </div>
   )

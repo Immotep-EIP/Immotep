@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Input, Form, message } from "antd";
 import type { FormProps } from 'antd';
@@ -14,16 +14,16 @@ type FieldType = {
 const ForgotPassword: React.FC = () => {
   const { goToLogin } = useNavigation();
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+    setLoading(true);
     if (values.email !== values.emailConfirmation) {
       message.error(t('pages.forgotPassword.emailsDontMatch'));
-      return;
-    }
-    if (!values) {
-      message.error(t('pages.forgotPassword.sendEmailError'));
+      setLoading(false);
     } else {
       message.success(t('pages.forgotPassword.sendEmailSuccess'));
+      setLoading(false);
       goToLogin();
     }
   };
@@ -78,6 +78,7 @@ const ForgotPassword: React.FC = () => {
             size="large"
             color="default"
             variant="solid"
+            loading={loading}
           >
             {t('components.button.sendEmail')}
           </Button>
