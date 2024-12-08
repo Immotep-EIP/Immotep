@@ -130,7 +130,8 @@
         "damage": "Dommages",
         "inventory": "État des lieux",
         "documents": "Documents",
-        "add_document": "Ajouter un document"
+        "add_document": "Ajouter un document",
+        "add_room": "Ajouter une pièce"
       }
     },
     "generals": {
@@ -191,6 +192,8 @@
             "modal_title": "Ajouter un document"
           },
           "inventory": {
+            "add_room_modal_title": "Ajouter une pièce",
+            "add_stuff_modal_title": "Ajouter un objet",
             "list_object_name": "Objets dans la pièce"
           }
         }
