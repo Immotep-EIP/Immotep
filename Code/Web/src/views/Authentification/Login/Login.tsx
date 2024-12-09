@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Input, Form, message, Checkbox } from 'antd'
@@ -14,6 +14,7 @@ import style from './Login.module.css'
 const Login: React.FC = () => {
   const { goToSignup, goToOverview, goToForgotPassword } = useNavigation()
   const { login } = useAuth()
+  const [loading, setLoading] = useState(false)
 
   const { t } = useTranslation()
 
@@ -37,6 +38,7 @@ const Login: React.FC = () => {
   }, [])
 
   const onFinish: FormProps<UserToken>['onFinish'] = async values => {
+    setLoading(true)
     try {
       const loginValues = {
         ...values,
@@ -45,10 +47,14 @@ const Login: React.FC = () => {
       loginValues.grant_type = 'password'
       await login(loginValues)
       message.success(t('pages.login.connectionSuccess'))
+      setLoading(false)
       goToOverview()
     } catch (error: any) {
-      if (error.response.status === 401)
+      if (error.response.status === 401) {
         message.error(t('pages.login.connectionError'))
+        setLoading(false)
+      }
+      setLoading(false)
     }
   }
 
@@ -118,6 +124,7 @@ const Login: React.FC = () => {
             size="large"
             color="default"
             variant="solid"
+            loading={loading}
           >
             {t('components.button.signIn')}
           </Button>

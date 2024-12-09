@@ -1,6 +1,6 @@
 import React from "react";
 import logo from '@/assets/icons/ImmotepLogo.svg';
-import PageTitle from '@/components/PageText/Text';
+import PageTitle from '@/components/PageText/Title.tsx';
 import style from './AuthentificationPage.module.css';
 
 interface AuthentificationPageProps {

@@ -1,8 +1,8 @@
 type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 
-export interface ApiCallerParams<Type> {
+export interface ApiCallerParams<TData> {
   method: ApiMethod
   endpoint: string
-  data?: Type | string
+  data?: TData | string
   headers?: Record<string, string>
 }
