@@ -65,9 +65,10 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavContr
             }
         }
     )
+    val onClose : () -> Unit = { viewModel.reset(); close() }
     if (open) {
         ModalBottomSheet (
-            onDismissRequest = close,
+            onDismissRequest = onClose,
             sheetState = sheetState,
             modifier = Modifier
                 .fillMaxWidth()
@@ -101,7 +102,7 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavContr
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(stringResource(R.string.create_new_property), fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    IconButton(onClick = close) {
+                    IconButton(onClick = onClose) {
                         Icon(Icons.Filled.Close, contentDescription = "Close")
                     }
                 }
@@ -114,6 +115,14 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavContr
                 ) {
                     Text(stringResource(R.string.fill_property_infos))
                     OutlinedTextField(
+                        value = form.value.name,
+                        onValueChange = { value -> viewModel.setName(value)},
+                        label = "${stringResource(R.string.name)}*",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp)
+                    )
+                    OutlinedTextField(
                         value = form.value.address,
                         onValueChange = { value -> viewModel.setAddress(value)},
                         label = "${stringResource(R.string.address)}*",
@@ -122,8 +131,20 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavContr
                             .padding(top = 10.dp)
                     )
                     OutlinedTextField(
-                        value = form.value.zipCode,
-                        onValueChange = { value -> viewModel.setZipCode(value) },
+                        value = form.value.city,
+                        onValueChange = { value -> viewModel.setCity(value)},
+                        label = "${stringResource(R.string.city)}*",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp)
+                    )
+                    OutlinedTextField(
+                        value = form.value.postal_code,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onValueChange =
+                        {
+                            value -> viewModel.setZipCode(value)
+                        },
                         label = "${stringResource(R.string.zip_code)}*",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -138,17 +159,17 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavContr
                             .padding(top = 10.dp)
                     )
                     OutlinedTextField(
-                        value = form.value.area.toString(),
+                        value = form.value.area_sqm.toString(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange =
                         {
                             value ->
                             run {
                                 if (value.isEmpty()) {
-                                    viewModel.setArea(0)
+                                    viewModel.setArea(0.0)
                                     return@run
                                 }
-                                val area = value.toIntOrNull() ?: return@run
+                                val area = value.toDoubleOrNull() ?: return@run
                                 viewModel.setArea(area)
                             }
                         },
@@ -158,7 +179,7 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavContr
                             .padding(top = 10.dp)
                     )
                     OutlinedTextField(
-                        value = form.value.rental.toString(),
+                        value = form.value.rental_price_per_month.toString(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange =
                         {
@@ -178,7 +199,7 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavContr
                             .padding(top = 10.dp)
                     )
                     OutlinedTextField(
-                        value = form.value.deposit.toString(),
+                        value = form.value.deposit_price.toString(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange =
                         {
@@ -234,7 +255,7 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavContr
                             )
                         }
                     Button(
-                        onClick = {  viewModel.onSubmit(close, navController) },
+                        onClick = {  viewModel.onSubmit(onClose, navController) },
                         colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary),
                         modifier = Modifier
                             .fillMaxWidth()

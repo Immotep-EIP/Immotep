@@ -43,14 +43,29 @@ data class ProfileResponse(
 )
 
 data class AddPropertyInput(
+    val name: String = "",
+    val address: String = "",
+    val city: String = "",
+    val postal_code: String ="",
+    val country: String = "",
+    val area_sqm: Double = 0.0,
+    val rental_price_per_month: Int = 0,
+    val deposit_price: Int = 0,
+)
+
+data class AddPropertyResponse(
+    val id: String,
+    val owner_id: String,
     val name: String,
     val address: String,
     val city: String,
-    val postal_code: Int,
+    val postal_code: String,
     val country: String,
-    val area_sqm: Int,
+    val area_sqm: Double,
     val rental_price_per_month: Int,
     val deposit_price: Int,
+    val picture: String?,
+    val created_at: String,
 )
 
 const val API_PREFIX = "/api/v1"
@@ -80,5 +95,5 @@ interface ApiService {
     suspend fun getProfile(@Header("Authorization") authHeader : String): ProfileResponse
 
     @POST("${API_PREFIX}/owner/properties")
-    suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput)
+    suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : AddPropertyResponse
 }

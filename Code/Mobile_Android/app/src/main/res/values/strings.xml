@@ -73,4 +73,6 @@
     <string name="deposit">Deposit</string>
     <string name="rental">Rental</string>
     <string name="add_picture">Add a picture</string>
+    <string name="city">City</string>
+    <string name="name">Name</string>
 </resources>
