@@ -3,7 +3,6 @@ import java.util.Locale
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     jacoco
 }
 

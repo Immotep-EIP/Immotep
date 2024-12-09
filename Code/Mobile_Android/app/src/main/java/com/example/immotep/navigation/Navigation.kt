@@ -6,7 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.immotep.AuthService.AuthService
+import com.example.immotep.authService.AuthService
 import com.example.immotep.dashboard.DashBoardScreen
 import com.example.immotep.login.LoginScreen
 import com.example.immotep.login.dataStore

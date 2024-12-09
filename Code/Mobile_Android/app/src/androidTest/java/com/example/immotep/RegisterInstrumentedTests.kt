@@ -1,6 +1,5 @@
 package com.example.immotep
 
-import android.content.res.Resources
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -9,7 +8,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.immotep.AuthService.AuthService
+import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -23,7 +22,7 @@ import kotlin.random.Random
 class RegisterInstrumentedTests {
     @get:Rule
     val mainAct = createAndroidComposeRule<MainActivity>()
-    private val res: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
+    private val res = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
     private fun removeToken() {
         val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
@@ -40,7 +39,8 @@ class RegisterInstrumentedTests {
         try {
             runBlocking {
                 authServ.getToken()
-                mainAct.onNodeWithTag("loggedTopBarImage").assertIsDisplayed().performClick()
+                mainAct.onNodeWithTag("loggedTopBarImage").assertIsDisplayed()
+                    .performClick()
                 Thread.sleep(5000)
             }
         } catch (e: Exception) {
@@ -62,14 +62,16 @@ class RegisterInstrumentedTests {
 
     @Test
     fun canGoToRegisterScreen() {
-        mainAct.onNodeWithTag("loginScreenToRegisterButton").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("loginScreenToRegisterButton").assertIsDisplayed()
+            .performClick()
         mainAct.onNodeWithText(res.getString(R.string.create_account)).assertIsDisplayed()
     }
 
     @Test
     fun canGoBackToLoginScreen() {
         this.canGoToRegisterScreen()
-        mainAct.onNodeWithTag("registerScreenToLoginButton").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("registerScreenToLoginButton").assertIsDisplayed()
+            .performClick()
         mainAct.onNodeWithText(res.getString(R.string.login_hello)).assertIsDisplayed()
     }
 
@@ -139,11 +141,15 @@ class RegisterInstrumentedTests {
         this.canGoToRegisterScreen()
         val email = "test${Random.nextInt(0, 10000)}@gmail.com"
         println(email)
-        mainAct.onNodeWithTag("registerLastName").performClick().performTextInput("test")
-        mainAct.onNodeWithTag("registerFirstName").performClick().performTextInput("android")
+        mainAct.onNodeWithTag("registerLastName").performClick()
+            .performTextInput("test")
+        mainAct.onNodeWithTag("registerFirstName").performClick()
+            .performTextInput("android")
         mainAct.onNodeWithTag("registerEmail").performClick().performTextInput(email)
-        mainAct.onNodeWithTag("registerPassword").performClick().performTextInput("test123&")
-        mainAct.onNodeWithTag("registerPasswordConfirm").performClick().performTextInput("test123&")
+        mainAct.onNodeWithTag("registerPassword").performClick()
+            .performTextInput("test123&")
+        mainAct.onNodeWithTag("registerPasswordConfirm").performClick()
+            .performTextInput("test123&")
         mainAct.onNodeWithTag("registerAgreeToTerm").performClick()
         mainAct.onNodeWithTag("registerButton").performClick()
         Thread.sleep(10000)

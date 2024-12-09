@@ -1,4 +1,4 @@
-package com.example.immotep.ApiClient
+package com.example.immotep.apiClient
 
 import com.example.immotep.realProperty.details.DetailedProperty
 import java.util.Date

@@ -1,11 +1,11 @@
-package com.example.immotep.AuthService
+package com.example.immotep.authService
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavController
-import com.example.immotep.ApiClient.ApiClient
+import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.components.decodeRetroFitMessagesToHttpCodes
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

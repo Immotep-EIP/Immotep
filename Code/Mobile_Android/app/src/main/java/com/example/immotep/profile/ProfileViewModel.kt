@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.ApiClient.ApiClient
-import com.example.immotep.AuthService.AuthService
+import com.example.immotep.apiClient.ApiClient
+import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

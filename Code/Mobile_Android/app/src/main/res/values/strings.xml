@@ -58,5 +58,19 @@
     <string name="start_inventory">Start an inventory</string>
     <string name="area">Area</string>
     <string name="rentMonth">Rent</string>
+    <string name="create_new_property">Create a new property</string>
+    <string name="fill_property_infos">Please, fill your property informations</string>
+    <string name="address_placeholder">Please, enter your property address</string>
+    <string name="zip_placeholder">Please, enter your property zip code</string>
+    <string name="country_placeholder">Please, enter your property country</string>
+    <string name="area_placeholder">Please, enter your property area size, in m²</string>
+    <string name="rental_placeholder">Please, enter your property rental per month</string>
+    <string name="deposit_placeholder">Please, enter your property deposit</string>
+    <string name="picture">Picture</string>
+    <string name="address">Address</string>
+    <string name="zip_code">Zip code</string>
+    <string name="country">Country</string>
     <string name="deposit">Deposit</string>
+    <string name="rental">Rental</string>
+    <string name="add_picture">Add a picture</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.immotep.ApiClient
+package com.example.immotep.apiClient
 
 import retrofit2.http.Body
 import retrofit2.http.Field
@@ -42,6 +42,17 @@ data class ProfileResponse(
     val updated_at: String,
 )
 
+data class AddPropertyInput(
+    val name: String,
+    val address: String,
+    val city: String,
+    val postal_code: Int,
+    val country: String,
+    val area_sqm: Int,
+    val rental_price_per_month: Int,
+    val deposit_price: Int,
+)
+
 const val API_PREFIX = "/api/v1"
 
 interface ApiService {
@@ -67,4 +78,7 @@ interface ApiService {
 
     @GET("${API_PREFIX}/profile")
     suspend fun getProfile(@Header("Authorization") authHeader : String): ProfileResponse
+
+    @POST("${API_PREFIX}/owner/properties")
+    suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput)
 }

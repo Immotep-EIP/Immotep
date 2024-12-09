@@ -42,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.R
+import com.example.immotep.addPropertyModal.AddPropertyModal
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
 import java.text.SimpleDateFormat
@@ -131,13 +132,13 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
 fun RealPropertyScreen(navController: NavController) {
     val viewModel: RealPropertyViewModel = viewModel(factory = RealPropertyViewModelFactory(navController))
     val properties = viewModel.properties.collectAsState()
-    var addOpen by rememberSaveable { mutableStateOf(false) }
     var detailsOpen by rememberSaveable { mutableStateOf<String?>(null) }
+    var addPropertyModalOpen by rememberSaveable { mutableStateOf(false) }
     DashBoardLayout(navController, "realPropertyScreen") {
         if (detailsOpen == null) {
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Button(
-                    onClick = { addOpen = true },
+                    onClick = { addPropertyModalOpen = true },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                     modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
@@ -158,5 +159,6 @@ fun RealPropertyScreen(navController: NavController) {
         } else {
             RealPropertyDetailsScreen(navController, detailsOpen!!, getBack = { detailsOpen = null })
         }
+        AddPropertyModal(addPropertyModalOpen, close = { addPropertyModalOpen = false })
     }
 }

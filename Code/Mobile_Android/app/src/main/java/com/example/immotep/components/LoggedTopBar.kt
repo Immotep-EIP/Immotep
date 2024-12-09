@@ -30,7 +30,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.immotep.AuthService.AuthService
+import com.example.immotep.authService.AuthService
 import com.example.immotep.R
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.launch

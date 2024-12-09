@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -74,6 +75,7 @@ fun OneDocument(name: String) {
 fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, getBack: () -> Unit) {
     val viewModel: RealPropertyDetailsViewModel = viewModel(factory = RealPropertyDetailsViewModelFactory(propertyId))
     val property = viewModel.property.collectAsState()
+
     Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

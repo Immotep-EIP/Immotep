@@ -3,7 +3,7 @@ package com.example.immotep.realProperty
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import com.example.immotep.ApiClient.newTestArray
+import com.example.immotep.apiClient.newTestArray
 import com.example.immotep.realProperty.details.toProperty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

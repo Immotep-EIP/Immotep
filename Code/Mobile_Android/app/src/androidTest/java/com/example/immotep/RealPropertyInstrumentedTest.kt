@@ -12,7 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.immotep.AuthService.AuthService
+import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
