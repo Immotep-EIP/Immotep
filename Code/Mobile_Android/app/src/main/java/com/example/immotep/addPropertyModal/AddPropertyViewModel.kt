@@ -3,9 +3,14 @@ package com.example.immotep.addPropertyModal
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.example.immotep.authService.AuthService
+import com.example.immotep.login.dataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 data class PropertyForm(
     val address: String = "",
@@ -63,7 +68,7 @@ class AddPropertyViewModelViewModel() : ViewModel() {
         _propertyForm.value = PropertyForm()
     }
 
-    fun onSubmit(onClose : () -> Unit) {
+    fun onSubmit(onClose : () -> Unit, navController: NavController) {
         val newPropertyErrors : PropertyFormError = PropertyFormError()
         if (_propertyForm.value.address.length < 3) {
             newPropertyErrors.address = true
@@ -86,6 +91,15 @@ class AddPropertyViewModelViewModel() : ViewModel() {
         if (newPropertyErrors.address || newPropertyErrors.zipCode || newPropertyErrors.country || newPropertyErrors.area || newPropertyErrors.rental || newPropertyErrors.deposit) {
             _propertyFormError.value = newPropertyErrors
             return
+        }
+        try {
+            viewModelScope.launch {
+                val authService = AuthService(navController.context.dataStore)
+                reset()
+                onClose()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

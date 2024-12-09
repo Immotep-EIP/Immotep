@@ -159,6 +159,6 @@ fun RealPropertyScreen(navController: NavController) {
         } else {
             RealPropertyDetailsScreen(navController, detailsOpen!!, getBack = { detailsOpen = null })
         }
-        AddPropertyModal(addPropertyModalOpen, close = { addPropertyModalOpen = false })
+        AddPropertyModal(addPropertyModalOpen, close = { addPropertyModalOpen = false }, navController)
     }
 }

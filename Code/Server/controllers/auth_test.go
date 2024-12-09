@@ -13,6 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"immotep/backend/controllers"
+	"immotep/backend/database"
+	"immotep/backend/prisma/db"
 	"immotep/backend/router"
 	"immotep/backend/utils"
 )
@@ -30,14 +32,14 @@ func TestTokenAuth(t *testing.T) {
 	assert.IsType(t, expected, f)
 }
 
-func TestCreateUserInvalidBody(t *testing.T) {
+func TestRegisterOwnerInvalidBody(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/users", nil)
+	c.Request = httptest.NewRequest(http.MethodPost, "/", nil)
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	controllers.CreateUser(c)
+	controllers.RegisterOwner(c)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
@@ -46,7 +48,7 @@ func TestCreateUserInvalidBody(t *testing.T) {
 	assert.Equal(t, utils.MissingFields, errorResponse.Code)
 }
 
-func TestCreateUserMissingFields(t *testing.T) {
+func TestRegisterOwnerMissingFields(t *testing.T) {
 	user := BuildTestUser("1")
 	user.Email = ""
 	b, err := json.Marshal(user)
@@ -55,10 +57,10 @@ func TestCreateUserMissingFields(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(b))
+	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	controllers.CreateUser(c)
+	controllers.RegisterOwner(c)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
@@ -67,7 +69,7 @@ func TestCreateUserMissingFields(t *testing.T) {
 	assert.Equal(t, utils.MissingFields, errorResponse.Code)
 }
 
-func TestCreateUserWrongPassword(t *testing.T) {
+func TestRegisterOwnerWrongPassword(t *testing.T) {
 	user := BuildTestUser("1")
 	user.Password = "1234"
 	b, err := json.Marshal(user)
@@ -76,14 +78,131 @@ func TestCreateUserWrongPassword(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(b))
+	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	controllers.CreateUser(c)
+	controllers.RegisterOwner(c)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
 	assert.Equal(t, utils.MissingFields, errorResponse.Code)
+}
+
+func TestRegisterTenantInvalidBody(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/", nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controllers.RegisterTenant(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	var errorResponse utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.MissingFields, errorResponse.Code)
+}
+
+func TestRegisterTenantMissingFields(t *testing.T) {
+	user := BuildTestUser("1")
+	user.Email = ""
+	b, err := json.Marshal(user)
+	require.NoError(t, err)
+
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controllers.RegisterTenant(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	var errorResponse utils.Error
+	err = json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.MissingFields, errorResponse.Code)
+}
+
+func TestRegisterTenantWrongPassword(t *testing.T) {
+	user := BuildTestUser("1")
+	user.Password = "1234"
+	b, err := json.Marshal(user)
+	require.NoError(t, err)
+
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controllers.RegisterTenant(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	var errorResponse utils.Error
+	err = json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.MissingFields, errorResponse.Code)
+}
+
+func TestRegisterTenantInviteNotFound(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals("wrong")),
+	).Errors(db.ErrNotFound)
+
+	user := BuildTestUser("1")
+	b, err := json.Marshal(user)
+	require.NoError(t, err)
+
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Params = gin.Params{{Key: "id", Value: "wrong"}}
+
+	controllers.RegisterTenant(c)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	var errorResponse utils.Error
+	err = json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.InviteNotFound, errorResponse.Code)
+}
+
+func TestRegisterTenantWrongEmail(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	pendingContract := BuildTestPendingContract()
+	pendingContract.TenantEmail = "test1@example.com"
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
+	).Returns(pendingContract)
+
+	user := BuildTestUser("1")
+	user.Email = "test2@example.com"
+	b, err := json.Marshal(user)
+	require.NoError(t, err)
+
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Params = gin.Params{{Key: "id", Value: "1"}}
+
+	controllers.RegisterTenant(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	var errorResponse utils.Error
+	err = json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.UserSameEmailAsInvite, errorResponse.Code)
 }

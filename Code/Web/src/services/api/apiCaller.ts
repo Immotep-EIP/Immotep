@@ -89,12 +89,12 @@ api.interceptors.response.use(
   }
 )
 
-const callApi = async <Type>({
+const callApi = async < TData = undefined, TResponse = TData>({
   method,
   endpoint,
   data,
   headers
-}: ApiCallerParams<Type>): Promise<Type> => {
+}: ApiCallerParams<TData>): Promise<TResponse> => {
   try {
     const response = await api({
       method,
@@ -105,7 +105,7 @@ const callApi = async <Type>({
         ...headers
       }
     })
-    return response.data as Type
+    return response.data as TResponse
   } catch (error) {
     console.error(`Error during API call to ${endpoint}:`, error)
     throw error

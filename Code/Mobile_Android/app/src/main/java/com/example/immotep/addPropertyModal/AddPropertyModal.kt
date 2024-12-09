@@ -45,13 +45,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.R
 import com.example.immotep.ui.components.OutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPropertyModal(open : Boolean, close : () -> Unit) {
+fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavController) {
     val viewModel: AddPropertyViewModelViewModel = viewModel()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val surfaceColor = MaterialTheme.colors.onBackground
@@ -233,7 +234,7 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit) {
                             )
                         }
                     Button(
-                        onClick = {  viewModel.onSubmit(close) },
+                        onClick = {  viewModel.onSubmit(close, navController) },
                         colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary),
                         modifier = Modifier
                             .fillMaxWidth()

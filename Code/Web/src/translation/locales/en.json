@@ -86,6 +86,32 @@
       "userInfos": "User informations",
       "logout": "Logout",
       "logoutSuccess": "You are now disconnected."
+    },
+    "realPropertyDetails": {
+      "inviteTenant": "Invitation sent successfully",
+      "409Error": "Invitation already sent",
+      "fillFields": "Please fill in the required fields"
+    },
+    "overview": {
+      "title": "Overview"
+    },
+    "lost": {
+      "pageNotFound": "Page not found",
+      "backHome": "Back to home"
+    }
+  },
+  "widgets": {
+    "userInfo": {
+      "title": "Welcome",
+      "propertiesNumber": "Here's an overview of your",
+      "realProperties": "properties",
+      "errorFetching": "Data recovery error"
+    },
+    "maintenance": {
+      "title": "Maintenance",
+      "noMaintenance": "No maintenance in progress",
+      "noMaintenanceDescription": "You have no maintenance in progress at the moment",
+      "completeButton": "Confirm"
     }
   }
 }
