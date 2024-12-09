@@ -8,7 +8,6 @@ import Overview from '@/assets/icons/overview.png'
 import Messages from '@/assets/icons/messages.png'
 import Immotep from '@/assets/icons/ImmotepLogo.svg'
 import Settings from '@/assets/icons/settings.png'
-
 import NavigationEnum from '@/enums/NavigationEnum'
 import style from './MainLayout.module.css'
 

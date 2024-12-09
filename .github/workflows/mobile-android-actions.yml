@@ -3,13 +3,11 @@ name: Android CI 🤖
 on:
     push:
         branches:
-            - main
-            - android-dev
             - dev
+            - android-dev
     pull_request:
         branches:
             - main
-            - dev
 
 jobs:
     # test-build:
@@ -49,13 +47,10 @@ jobs:
                   sudo udevadm control --reload-rules
                   sudo udevadm trigger --name-match=kvm
 
-
             - uses: actions/setup-java@v4
               with:
                   distribution: "zulu"
                   java-version: 21
-
-            
 
             - uses: gradle/actions/setup-gradle@v4
             - name: Cache gradle
@@ -64,7 +59,7 @@ jobs:
                 path: ~/.gradle/caches
                 key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
                 restore-keys: |
-                   ${{ runner.os }}-gradle-   
+                   ${{ runner.os }}-gradle-
             - name: Instrumentation tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
@@ -73,5 +68,3 @@ jobs:
                   target: ${{ steps.avd-info.outputs.target }}
                   profile: 'pixel_6'
                   script: mv .github/debug.keystore ~/.android; cd Code/Mobile_Android ; ./gradlew connectedDebugAndroidTest
-
-                
