@@ -79,7 +79,7 @@ const HeaderPart: React.FC<{ propertyData: GetProperty | null }> = ({
 
       <div className={style.moreInfosContainer}>
         <Tag color={propertyData.nb_damage > 0 ? 'red' : 'green'}>
-          {propertyData.nb_damage || 0} {t('pages.property.damage.unread')}
+          {propertyData.nb_damage || 0} {t('pages.property.damage.waiting')}
         </Tag>
         <Tag color={propertyData.status === 'available' ? 'green' : 'red'}>
           {propertyData.status === 'available'

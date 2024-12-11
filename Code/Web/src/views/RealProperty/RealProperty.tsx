@@ -43,7 +43,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
             : t('pages.property.status.unavailable')}
         </Tag>
         <Tag color={realProperty.nb_damage > 0 ? 'red' : 'green'}>
-          {realProperty.nb_damage || 0} {t('pages.property.damage.unread')}
+          {realProperty.nb_damage || 0} {t('pages.property.damage.waiting')}
         </Tag>
       </div>
 

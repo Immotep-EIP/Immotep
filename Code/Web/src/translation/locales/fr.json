@@ -241,7 +241,7 @@
           "occupied": "Occupé"
         },
         "damage": {
-          "unread": "Dommage(s) non lu(s)"
+          "waiting": "Dommage(s) non traité(s)"
         },
         "error" : {
             "errorFetchingData": "Erreur lors de la récupération des données"
