@@ -11,6 +11,11 @@ export interface GetProperty {
   deposit_price: number
   picture: string
   created_at: string
+  nb_damage: number
+  status: string
+  tenant: string
+  start_date: string
+  end_date: string
 }
 
 export interface CreateProperty {
@@ -37,4 +42,9 @@ export interface PropertyDetails {
   deposit_price: number
   picture: string
   created_at: string
+  nb_damage: number
+  status: string
+  tenant: string
+  start_date: string
+  end_date: string
 }

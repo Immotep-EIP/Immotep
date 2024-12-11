@@ -89,13 +89,12 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         <div className={style.informations}>
           <img src={tenantIcon} alt="location" className={style.icon} />
           <span>
-            {realProperty.tenant ? realProperty.tenant.name : '-----------'}
+            {realProperty.tenant ? realProperty.tenant : '-----------'}
           </span>
         </div>
         <div className={style.informations}>
           <img src={dateIcon} alt="location" className={style.icon} />
           <span>
-            {/* soon available */}
             {realProperty.start_date
               ? `${new Date(realProperty.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
               : '...'}

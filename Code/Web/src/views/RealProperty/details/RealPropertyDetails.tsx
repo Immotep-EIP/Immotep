@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Button, message, Tabs, TabsProps } from 'antd'
+import { Button, message, Tabs, TabsProps, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
@@ -23,6 +23,8 @@ import DocumentsTab from './tabs/4DocumentsTab'
 const HeaderPart: React.FC<{ propertyData: GetProperty | null }> = ({
   propertyData
 }) => {
+  const { t } = useTranslation()
+
   if (!propertyData) {
     return null
   }
@@ -56,31 +58,34 @@ const HeaderPart: React.FC<{ propertyData: GetProperty | null }> = ({
           </span>
         </div>
         <div className={style.details}>
-          <img
-            src={tenantIcon}
-            alt="Tenant"
-            className={style.detailsIcon}
-          />
+          <img src={tenantIcon} alt="Tenant" className={style.detailsIcon} />
           <span className={style.detailsText}>
-            soon available
-            {/* {propertyData.tenants.length > 0
-              ? propertyData.tenants.map(tenant => tenant.name).join(' & ')
-              : '-----------'} */}
+            {propertyData.tenant ? propertyData.tenant : '-----------'}
           </span>
         </div>
         <div className={style.details}>
           <img src={dateIcon} alt="Date" className={style.detailsIcon} />
           <span className={style.detailsText}>
-            soon available
-            {/* {propertyData.startDate && propertyData.endDate
-              ? `${new Date(propertyData.startDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} - ${new Date(realProperty.endDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
-              : '-----------'} */}
+            {propertyData.start_date
+              ? `${new Date(propertyData.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
+              : '...'}
+            {' - '}
+            {propertyData.end_date
+              ? `${new Date(propertyData.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
+              : '...'}
           </span>
         </div>
       </div>
 
       <div className={style.moreInfosContainer}>
-        soon available
+        <Tag color={propertyData.nb_damage > 0 ? 'red' : 'green'}>
+          {propertyData.nb_damage || 0} {t('pages.property.damage.unread')}
+        </Tag>
+        <Tag color={propertyData.status === 'available' ? 'green' : 'red'}>
+          {propertyData.status === 'available'
+            ? t('pages.property.status.available')
+            : t('pages.property.status.unavailable')}
+        </Tag>
       </div>
     </div>
   )
@@ -96,27 +101,27 @@ const ChildrenComponent: React.FC<ChildrenComponentProps> = ({ t }) => {
   // }
 
   const items: TabsProps['items'] = [
-      {
-        key: '1',
-        label: t('components.button.about'),
-        children: <AboutTab />,
-      },
-      {
-        key: '2',
-        label: t('components.button.damage'),
-        children: <DamageTab />,
-      },
-      {
-        key: '3',
-        label: t('components.button.inventory'),
-        children: <InventoryTab />,
-      },
-      {
-        key: '4',
-        label: t('components.button.documents'),
-        children: <DocumentsTab />,
-      },
-    ];
+    {
+      key: '1',
+      label: t('components.button.about'),
+      children: <AboutTab />
+    },
+    {
+      key: '2',
+      label: t('components.button.damage'),
+      children: <DamageTab />
+    },
+    {
+      key: '3',
+      label: t('components.button.inventory'),
+      children: <InventoryTab />
+    },
+    {
+      key: '4',
+      label: t('components.button.documents'),
+      children: <DocumentsTab />
+    }
+  ]
 
   return (
     <div className={style.childrenContainer}>
@@ -172,12 +177,15 @@ const RealPropertyDetails: React.FC = () => {
           {t('components.button.addTenant')}
         </Button>
       </div>
-      <InviteTenantModal isOpen={isModalOpen} onClose={handleCancel} propertyId={id} />
+      <InviteTenantModal
+        isOpen={isModalOpen}
+        onClose={handleCancel}
+        propertyId={id}
+      />
 
       <HeaderPart propertyData={propertyData} />
 
       <ChildrenComponent t={t} />
-
     </div>
   )
 }
