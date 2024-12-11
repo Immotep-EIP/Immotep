@@ -21,7 +21,12 @@ func GetAllByOwnerId(ownerId string) []db.PropertyModel {
 
 func GetByID(id string) *db.PropertyModel {
 	pdb := database.DBclient
-	property, err := pdb.Client.Property.FindUnique(db.Property.ID.Equals(id)).Exec(pdb.Context)
+	property, err := pdb.Client.Property.FindUnique(
+		db.Property.ID.Equals(id),
+	).With(
+		db.Property.Damages.Fetch(),
+		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
 			return nil
