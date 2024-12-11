@@ -12,6 +12,13 @@ enum role {
     tenant
 }
 
+enum priority {
+    low
+    medium
+    high
+    urgent
+}
+
 model user {
     id          String   @id @default(cuid())
     email       String   @unique @db.VarChar(255)
@@ -40,6 +47,21 @@ model contract {
     @@id([tenant_id, property_id])
 }
 
+model damage {
+    id          String   @id @default(cuid())
+    comment     String
+    room        String
+    priority    priority
+    read        Boolean  @default(false)
+
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
+    fixed_at    DateTime?
+
+    property    property @relation(fields: [property_id], references: [id])
+    property_id String
+}
+
 model property {
     id          String   @id @default(cuid())
     name        String
@@ -58,6 +80,7 @@ model property {
 
     contracts          contract[]
     pending_contracts  pendingContract?
+    damages            damage[]
 
     @@unique([name, owner_id])
 }
