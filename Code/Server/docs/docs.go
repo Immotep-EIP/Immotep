@@ -334,6 +334,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{id}/picture": {
+            "put": {
+                "description": "Update property's image",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Update property's image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Picture data as a Base64 string",
+                        "name": "picture",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ImageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Updated property data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/send-invite/{propertyId}": {
             "post": {
                 "security": [
@@ -546,6 +608,17 @@ const docTemplate = `{
                 "RoleTenant"
             ]
         },
+        "models.ImageRequest": {
+            "type": "object",
+            "required": [
+                "data"
+            ],
+            "properties": {
+                "data": {
+                    "type": "string"
+                }
+            }
+        },
         "models.InviteRequest": {
             "type": "object",
             "required": [
@@ -618,9 +691,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "picture": {
-                    "type": "string"
-                },
                 "postal_code": {
                     "type": "string"
                 },
@@ -665,7 +735,7 @@ const docTemplate = `{
                 "owner_id": {
                     "type": "string"
                 },
-                "picture": {
+                "picture_id": {
                     "type": "string"
                 },
                 "postal_code": {
@@ -770,7 +840,9 @@ const docTemplate = `{
                 "not-an-owner",
                 "not-a-tenant",
                 "property-already-exists",
-                "property-not-available"
+                "property-not-available",
+                "failed-to-link-image",
+                "bad-base64-string"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -793,7 +865,9 @@ const docTemplate = `{
                 "NotAnOwner",
                 "NotATenant",
                 "PropertyAlreadyExists",
-                "PropertyNotAvailable"
+                "PropertyNotAvailable",
+                "FailedLinkImage",
+                "BadBase64String"
             ]
         }
     },

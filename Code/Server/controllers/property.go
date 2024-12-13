@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
+	imageservice "immotep/backend/services/image"
 	propertyservice "immotep/backend/services/property"
 	"immotep/backend/utils"
 )
@@ -85,4 +86,53 @@ func CreateProperty(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, models.DbPropertyToResponse(*property))
+}
+
+// UpdatePropertyImage godoc
+//
+//	@Summary		Update property's image
+//	@Description	Update property's image
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		string					true	"Property ID"
+//	@Param			picture	body		models.ImageRequest		true	"Picture data as a Base64 string"
+//	@Success		201		{object}	models.PropertyResponse	"Updated property data"
+//	@Failure		401		{object}	utils.Error				"Unauthorized"
+//	@Failure		403		{object}	utils.Error				"Property not yours"
+//	@Failure		404		{object}	utils.Error				"Property not found"
+//	@Failure		500
+//	@Router			/owner/properties/{id}/picture [put]
+func UpdatePropertyImage(c *gin.Context) {
+	claims := utils.GetClaims(c)
+	property := propertyservice.GetByID(c.Param("id"))
+	if property == nil {
+		utils.SendError(c, http.StatusNotFound, utils.PropertyNotFound, nil)
+		return
+	}
+	if property.OwnerID != claims["id"] {
+		utils.SendError(c, http.StatusForbidden, utils.PropertyNotYours, nil)
+		return
+	}
+
+	var req models.ImageRequest
+	err := c.ShouldBindBodyWithJSON(&req)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	image := req.ToDbImage()
+	if image == nil {
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
+		return
+	}
+	newImage := imageservice.Create(*image)
+
+	newProperty := propertyservice.UpdatePicture(*property, newImage)
+	if newProperty == nil {
+		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)
+		return
+	}
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*newProperty))
 }

@@ -8,6 +8,13 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  models.ImageRequest:
+    properties:
+      data:
+        type: string
+    required:
+    - data
+    type: object
   models.InviteRequest:
     properties:
       end_date:
@@ -49,8 +56,6 @@ definitions:
         type: integer
       name:
         type: string
-      picture:
-        type: string
       postal_code:
         type: string
       rental_price_per_month:
@@ -89,7 +94,7 @@ definitions:
         type: integer
       owner_id:
         type: string
-      picture:
+      picture_id:
         type: string
       postal_code:
         type: string
@@ -167,6 +172,8 @@ definitions:
     - not-a-tenant
     - property-already-exists
     - property-not-available
+    - failed-to-link-image
+    - bad-base64-string
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -190,6 +197,8 @@ definitions:
     - NotATenant
     - PropertyAlreadyExists
     - PropertyNotAvailable
+    - FailedLinkImage
+    - BadBase64String
 host: localhost:3001
 info:
   contact:
@@ -404,6 +413,47 @@ paths:
       security:
       - Bearer: []
       summary: Get property by ID
+      tags:
+      - owner
+  /owner/properties/{id}/picture:
+    put:
+      consumes:
+      - application/json
+      description: Update property's image
+      parameters:
+      - description: Property ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Picture data as a Base64 string
+        in: body
+        name: picture
+        required: true
+        schema:
+          $ref: '#/definitions/models.ImageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Updated property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Update property's image
       tags:
       - owner
   /owner/send-invite/{propertyId}:

@@ -28,6 +28,8 @@ const (
 	NotATenant            ErrorCode = "not-a-tenant"
 	PropertyAlreadyExists ErrorCode = "property-already-exists"
 	PropertyNotAvailable  ErrorCode = "property-not-available"
+	FailedLinkImage       ErrorCode = "failed-to-link-image"
+	BadBase64String       ErrorCode = "bad-base64-string"
 )
 
 type Error struct {
