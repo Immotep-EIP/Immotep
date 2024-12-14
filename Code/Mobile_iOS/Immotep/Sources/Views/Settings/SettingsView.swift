@@ -47,6 +47,9 @@ struct SettingsView: View {
             TaskBar()
         }
         .navigationBarBackButtonHidden(true)
+        .navigationTransition(
+            .fade(.in).animation(.easeInOut(duration: 0))
+        )
     }
 }
 

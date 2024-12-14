@@ -106,5 +106,4 @@ class PropertyViewModel: ObservableObject {
             print("Error fetching properties: \(error.localizedDescription)")
         }
     }
-
 }

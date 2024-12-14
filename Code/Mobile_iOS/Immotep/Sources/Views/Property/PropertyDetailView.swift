@@ -23,7 +23,7 @@ struct PropertyDetailView: View {
                     AboutCardView(property: $property)
                 }
 
-                Section(header: Text("Documents")) {
+                Section(header: Text("Documents").accessibilityLabel("documents_header")) {
                     DocumentsGrid(documents: $property.documents)
                 }
             }
@@ -36,12 +36,16 @@ struct PropertyDetailView: View {
             .cornerRadius(10)
             .padding()
             .foregroundStyle(.white)
+            .accessibilityLabel("inventory_btn_start")
 
             if !keyboardObserver.isKeyboardVisible {
                 TaskBar()
             }
         }
         .navigationBarBackButtonHidden(true)
+        .navigationTransition(
+            .fade(.in).animation(.easeInOut(duration: 0))
+        )
     }
 }
 
@@ -73,7 +77,8 @@ struct AboutCardView: View {
                 icon: "calendar",
                 leftText:
                     String(
-                        format: "end_date".localized(), property.leaseEndDate?.formatted(.dateTime.day().month().year()) ?? "No end date assigned"),
+                        format: "end_date".localized(), property.leaseEndDate?.formatted(.dateTime.day().month().year()) ??
+                        "No end date assigned".localized()),
                 rightIcon: "eurosign.bank.building",
                 rightText:
                     String(

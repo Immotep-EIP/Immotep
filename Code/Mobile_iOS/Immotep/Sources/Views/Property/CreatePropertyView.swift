@@ -43,11 +43,13 @@ struct CreatePropertyView: View {
                             .onTapGesture {
                                 showImagePickerOptions()
                             }
+                            .accessibilityIdentifier("image_property")
 
                         Text("Click on the image to change".localized())
                             .font(.subheadline)
                             .foregroundColor(.gray)
                             .padding(.top, 8)
+                            .accessibilityIdentifier("touch_to_change_image")
                     }
                     .frame(maxWidth: .infinity)
                     CustomTextInput(title: "Name", placeholder: "Enter property name", text: $name, isSecure: false)
@@ -72,6 +74,8 @@ struct CreatePropertyView: View {
                 .foregroundStyle(Color.white)
                 .font(.headline)
                 .cornerRadius(8)
+                .accessibilityIdentifier("cancel_button")
+
                 Spacer()
                 Button("Add Property".localized()) {
                     Task {
@@ -84,6 +88,8 @@ struct CreatePropertyView: View {
                 .foregroundStyle(Color.white)
                 .font(.headline)
                 .cornerRadius(8)
+                .accessibilityIdentifier("confirm_button")
+
                 Spacer()
             }
 

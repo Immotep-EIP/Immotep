@@ -28,16 +28,29 @@ struct PropertyView: View {
                             .cornerRadius(8)
                     }
                     .padding()
+                    .accessibilityLabel("add_property")
                 }
 
                 ScrollView {
-                    ForEach($viewModel.properties) { $property in
-                        NavigationLink(destination: PropertyDetailView(property: $property)) {
-                            PropertyCardView(property: property)
+                    if !viewModel.properties.isEmpty {
+                        ForEach($viewModel.properties) { $property in
+                            NavigationLink(destination: PropertyDetailView(property: $property)) {
+                                PropertyCardView(property: property)
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 4)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    } else {
+                        NavigationLink(destination: PropertyDetailView(property: Binding(
+                            get: { exampleDataProperty },
+                            set: { _ in }
+                        ))) {
+                            PropertyCardView(property: exampleDataProperty)
                                 .padding(.horizontal)
                                 .padding(.vertical, 4)
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .accessibilityLabel("nav_link_details")
                     }
                 }
                 TaskBar()
@@ -72,7 +85,8 @@ struct PropertyCardView: View {
                             .scaledToFit()
                             .frame(width: 50, height: 50)
                             .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.black, lineWidth: 1))
+                            .overlay(Circle().stroke(Color("textColor"), lineWidth: 1))
+                            .accessibilityLabel("image_property")
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
@@ -80,11 +94,13 @@ struct PropertyCardView: View {
                             .font(.headline)
                             .padding(.trailing, 25)
                             .lineLimit(2)
+                            .accessibilityLabel("text_address")
 
                         if let tenant = property.tenantName {
                             Text(tenant)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
+                                .accessibilityLabel("text_tenant")
                         }
 
                         if let leaseStart = property.leaseStartDate {
@@ -95,6 +111,7 @@ struct PropertyCardView: View {
                                 ))
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
+                                .accessibilityLabel("text_started_on")
                         }
                     }
                 }
@@ -109,6 +126,7 @@ struct PropertyCardView: View {
                     .padding(.vertical, 4)
                     .background(Capsule().fill(Color.green.opacity(0.2)))
                     .frame(maxWidth: .infinity, alignment: .topTrailing)
+                    .accessibilityLabel("text_available")
             } else {
                 Text("Busy".localized())
                     .font(.caption)
@@ -117,10 +135,10 @@ struct PropertyCardView: View {
                     .padding(.vertical, 4)
                     .background(Capsule().fill(Color.red.opacity(0.2)))
                     .frame(maxWidth: .infinity, alignment: .topTrailing)
+                    .accessibilityLabel("text_busy")
             }
         }
         .padding(10)
-        .background(Color.white)
         .cornerRadius(10)
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
         .overlay(
@@ -128,6 +146,9 @@ struct PropertyCardView: View {
                 .stroke(Color.gray.opacity(0.5), lineWidth: 1)
         )
         .navigationBarBackButtonHidden(true)
+        .navigationTransition(
+            .fade(.in).animation(.easeInOut(duration: 0))
+        )
     }
 }
 

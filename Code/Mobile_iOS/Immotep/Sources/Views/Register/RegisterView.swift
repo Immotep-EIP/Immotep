@@ -74,6 +74,7 @@ struct RegisterView: View {
                                 .padding(.top, 30)
                                 .padding(.bottom, 10)
                         })
+                        .accessibilityIdentifier("SignUpButton")
 
                         HStack {
                             Text("Already have an account ?".localized())
