@@ -7,7 +7,7 @@ import (
 )
 
 type ImageRequest struct {
-	Data string `binding:"required" json:"data"`
+	Data string `binding:"required,base64" json:"data"`
 }
 
 func (i *ImageRequest) ToDbImage() *db.ImageModel {

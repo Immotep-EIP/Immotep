@@ -2,6 +2,7 @@ package userservice
 
 import (
 	"immotep/backend/database"
+	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 )
 
@@ -36,6 +37,25 @@ func Create(user db.UserModel, role db.Role) *db.UserModel {
 		db.User.Role.Set(role),
 	).Exec(pdb.Context)
 	if err != nil {
+		if info, is := db.IsErrUniqueConstraint(err); is && info.Fields[0] == db.User.Email.Field() {
+			return nil
+		}
+		panic(err)
+	}
+	return newUser
+}
+
+func Update(id string, user models.UserUpdateRequest) *db.UserModel {
+	pdb := database.DBclient
+	newUser, err := pdb.Client.User.FindUnique(db.User.ID.Equals(id)).Update(
+		db.User.Email.SetIfPresent(user.Email),
+		db.User.Firstname.SetIfPresent(user.Firstname),
+		db.User.Lastname.SetIfPresent(user.Lastname),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
 		if info, is := db.IsErrUniqueConstraint(err); is && info.Fields[0] == db.User.Email.Field() {
 			return nil
 		}

@@ -22,6 +22,13 @@ func (u *UserRequest) ToDbUser() db.UserModel {
 	}
 }
 
+type UserUpdateRequest struct {
+	Email     *string `binding:"omitempty,email"  json:"email,omitempty"`
+	Firstname *string `json:"firstname,omitempty"`
+	Lastname  *string `json:"lastname,omitempty"`
+	// Password  *string `binding:"min=8" json:"password,omitempty"`
+}
+
 type UserResponse struct {
 	ID               string      `json:"id"`
 	ProfilePictureID *string     `json:"profile_picture_id,omitempty"`

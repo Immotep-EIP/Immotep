@@ -106,6 +106,44 @@ func GetCurrentUserProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, models.DbUserToResponse(*user))
 }
 
+// UpdateCurrentUserProfile godoc
+//
+//	@Summary		Update current user profile
+//	@Description	Update current user profile
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.UserUpdateRequest	true	"User update info"
+//	@Success		200		{object}	models.UserResponse			"User data"
+//	@Failure		400		{object}	utils.Error					"Missing fields"
+//	@Failure		404		{object}	utils.Error					"User not found"
+//	@Failure		409		{object}	utils.Error					"Email already exists"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/profile [put]
+func UpdateCurrentUserProfile(c *gin.Context) {
+	claims := utils.GetClaims(c)
+	user := userservice.GetByID(claims["id"])
+	if user == nil {
+		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
+		return
+	}
+
+	var req models.UserUpdateRequest
+	err := c.ShouldBindBodyWithJSON(&req)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	newUser := userservice.Update(claims["id"], req)
+	if newUser == nil {
+		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, nil)
+		return
+	}
+	c.JSON(http.StatusOK, models.DbUserToResponse(*newUser))
+}
+
 // GetCurrentUserProfilePicture godoc
 //
 //	@Summary		Get current user's profile picture

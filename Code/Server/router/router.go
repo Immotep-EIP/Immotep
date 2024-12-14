@@ -43,6 +43,7 @@ func registerAPIRoutes(r *gin.Engine) {
 			root.GET("/user/:id", controllers.GetUserByID)
 			root.GET("/user/:id/picture", controllers.GetUserProfilePicture)
 			root.GET("/profile", controllers.GetCurrentUserProfile)
+			root.PUT("/profile", controllers.UpdateCurrentUserProfile)
 			root.GET("/profile/picture", controllers.GetCurrentUserProfilePicture)
 			root.PUT("/profile/picture", controllers.UpdateCurrentUserProfilePicture)
 

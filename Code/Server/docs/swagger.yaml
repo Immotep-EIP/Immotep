@@ -153,6 +153,15 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.UserUpdateRequest:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+    type: object
   utils.Error:
     properties:
       code:
@@ -583,6 +592,43 @@ paths:
       security:
       - Bearer: []
       summary: Get current user profile
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update current user profile
+      parameters:
+      - description: User update info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Email already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update current user profile
       tags:
       - user
   /profile/picture:
