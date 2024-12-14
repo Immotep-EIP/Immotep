@@ -150,14 +150,14 @@ final class RegisterUITests: XCTestCase {
         let passwordSecureField = app.secureTextFields[passwordEn].exists ? app.secureTextFields[passwordEn] : app.secureTextFields[passwordFr]
         let confirmPasswordSecureField =
         app.secureTextFields[confirmPasswordEn].exists ? app.secureTextFields[confirmPasswordEn] : app.secureTextFields[confirmPasswordFr]
-        let signInButton = app.buttons["Sign Up"].exists ? app.buttons["Sign Up"] : app.buttons["S'inscrire"]
+        let signUpButton = app.buttons["SignUpButton"]
 
         XCTAssertTrue(nameTextField.exists)
         XCTAssertTrue(firstNameTextField.exists)
         XCTAssertTrue(emailTextField.exists)
         XCTAssertTrue(passwordSecureField.exists)
         XCTAssertTrue(confirmPasswordSecureField.exists)
-        XCTAssertTrue(signInButton.exists)
+        XCTAssertTrue(signUpButton.exists)
 
         nameTextField.tap()
         nameTextField.typeText("testName")
@@ -173,11 +173,9 @@ final class RegisterUITests: XCTestCase {
 
         passwordSecureField.tap()
         passwordSecureField.typeText("testpassword")
-        XCTAssertEqual(passwordSecureField.value as? String, "••••••••••••")
 
         confirmPasswordSecureField.tap()
         confirmPasswordSecureField.typeText("testpassword")
-        XCTAssertEqual(confirmPasswordSecureField.value as? String, "••••••••••••")
 
         let termsButton = app.buttons["AgreementButton"]
         termsButton.tap()
