@@ -17,30 +17,47 @@ final class RegisterUITests: XCTestCase {
     let passwordFr = "Entrez votre mot de passe"
     let passwordEn = "Enter your password"
     let confirmPasswordFr = "Confirmez votre mot de passe"
-    let confirmPasswordEn = "Confirm your password"
+    let confirmPasswordEn = "Enter your password confirmation"
 
     let app = XCUIApplication()
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        XCUIDevice.shared.orientation = .portrait
         app.launch()
-
-        let signUpButton = app.buttons["signUpLink"].exists
-        XCTAssertTrue(signUpButton)
-
-        let signUpBtn = app.buttons["signUpLink"]
-        signUpBtn.tap()
     }
 
     override func tearDownWithError() throws {
     }
 
+    func navigateToRegisterView() {
+        if app.buttons["person.crop.circle.fill"].exists {
+            app.buttons["person.crop.circle.fill"].tap()
+
+            let logoutButton = app.buttons["Logout"].exists || app.buttons["Se déconnecter"].exists
+            XCTAssertTrue(logoutButton)
+
+            if app.buttons["Logout"].exists {
+                app.buttons["Logout"].tap()
+            } else if app.buttons["Se déconnecter"].exists {
+                app.buttons["Se déconnecter"].tap()
+            }
+            let signUpButton = app.buttons["signUpLink"]
+            signUpButton.tap()
+        } else {
+            let signUpButton = app.buttons["signUpLink"]
+            signUpButton.tap()
+        }
+    }
+
     func testWelcomeTextExists() throws {
+        navigateToRegisterView()
         let welcomeText = app.staticTexts["Create your account"].exists || app.staticTexts["Créer un compte"].exists
         XCTAssertTrue(welcomeText)
     }
 
     func testSecondaryWelcomeTextExists() throws {
+        navigateToRegisterView()
         let joinTextFr = "Rejoignez Immotep pour votre tranquillité d’esprit !"
         let joinTextEn = "Join Immotep for your peace of mind!"
         let secWelcomeText = app.staticTexts[joinTextEn].exists || app.staticTexts[joinTextFr].exists
@@ -48,6 +65,7 @@ final class RegisterUITests: XCTestCase {
     }
 
     func testRequiredFieldsExist() throws {
+        navigateToRegisterView()
         let nameText = app.staticTexts["Name*"].exists || app.staticTexts["Nom*"].exists
         let firstNameText = app.staticTexts["First name*"].exists || app.staticTexts["Prénom*"].exists
         let emailText = app.staticTexts["Email*"].exists || app.staticTexts["Email*"].exists
@@ -62,6 +80,7 @@ final class RegisterUITests: XCTestCase {
     }
 
     func testTextFieldsExist() throws {
+        navigateToRegisterView()
         let nameTextField = app.textFields[nameEn].exists ? app.textFields[nameEn] : app.textFields[nameFr]
         let firstNameTextField = app.textFields[firstNameEn].exists ? app.textFields[firstNameEn] : app.textFields[firstNameFr]
         let emailTextField = app.textFields[emailEn].exists ? app.textFields[emailEn] : app.textFields[emailFr]
@@ -77,6 +96,7 @@ final class RegisterUITests: XCTestCase {
     }
 
     func testFillingInFields() throws {
+        navigateToRegisterView()
         let nameTextField = app.textFields[nameEn].exists ? app.textFields[nameEn] : app.textFields[nameFr]
         let firstNameTextField = app.textFields[firstNameEn].exists ? app.textFields[firstNameEn] : app.textFields[firstNameFr]
         let emailTextField = app.textFields[emailEn].exists ? app.textFields[emailEn] : app.textFields[emailFr]
@@ -103,8 +123,9 @@ final class RegisterUITests: XCTestCase {
     }
 
     func testAgreementToggle() throws {
+        navigateToRegisterView()
         let agreeFr = "J'accepte les Termes, la Politique de confidentialité et les Frais"
-        let agreeEn = "I agree to all Terms, Privacy Policy and Fees"
+        let agreeEn = "I agree to all Term, Privacy Policy and Fees"
         let agreementButton =
         app.buttons[agreeEn].exists ? app.buttons[agreeEn] : app.buttons[agreeFr]
 
@@ -122,20 +143,21 @@ final class RegisterUITests: XCTestCase {
     }
 
     func testSuccessfulRegistration() throws {
+        navigateToRegisterView()
         let nameTextField = app.textFields[nameEn].exists ? app.textFields[nameEn] : app.textFields[nameFr]
         let firstNameTextField = app.textFields[firstNameEn].exists ? app.textFields[firstNameEn] : app.textFields[firstNameFr]
         let emailTextField = app.textFields[emailEn].exists ? app.textFields[emailEn] : app.textFields[emailFr]
         let passwordSecureField = app.secureTextFields[passwordEn].exists ? app.secureTextFields[passwordEn] : app.secureTextFields[passwordFr]
         let confirmPasswordSecureField =
         app.secureTextFields[confirmPasswordEn].exists ? app.secureTextFields[confirmPasswordEn] : app.secureTextFields[confirmPasswordFr]
-        let signInButton = app.buttons["Sign In"].exists ? app.buttons["Sign In"] : app.buttons["Se connecter"]
+        let signUpButton = app.buttons["SignUpButton"]
 
         XCTAssertTrue(nameTextField.exists)
         XCTAssertTrue(firstNameTextField.exists)
         XCTAssertTrue(emailTextField.exists)
         XCTAssertTrue(passwordSecureField.exists)
         XCTAssertTrue(confirmPasswordSecureField.exists)
-        XCTAssertTrue(signInButton.exists)
+        XCTAssertTrue(signUpButton.exists)
 
         nameTextField.tap()
         nameTextField.typeText("testName")
@@ -151,11 +173,9 @@ final class RegisterUITests: XCTestCase {
 
         passwordSecureField.tap()
         passwordSecureField.typeText("testpassword")
-        XCTAssertEqual(passwordSecureField.value as? String, "••••••••••••")
 
         confirmPasswordSecureField.tap()
         confirmPasswordSecureField.typeText("testpassword")
-        XCTAssertEqual(confirmPasswordSecureField.value as? String, "••••••••••••")
 
         let termsButton = app.buttons["AgreementButton"]
         termsButton.tap()

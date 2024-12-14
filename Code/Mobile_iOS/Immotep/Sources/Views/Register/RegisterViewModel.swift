@@ -32,7 +32,9 @@ class RegisterViewModel: ObservableObject {
         Task {
             do {
                 let response = try await apiServiceCopy.registerUser(with: model)
-                registerStatus = "Registration successful!"
+                if response == "Registration successful!" {
+                    registerStatus = "Registration successful!"
+                }
             } catch {
                 registerStatus = "Error: \(error.localizedDescription)"
             }
@@ -45,19 +47,19 @@ class RegisterViewModel: ObservableObject {
               !model.email.isEmpty,
               !model.password.isEmpty,
               !model.passwordConfirmation.isEmpty else {
-            return "Please fill in all fields."
+            return "Please fill in all fields.".localized()
         }
 
         guard model.password == model.passwordConfirmation else {
-            return "Passwords do not match."
+            return "Passwords do not match.".localized()
         }
 
         guard model.agreement else {
-            return "You must agree to the terms and conditions."
+            return "You must agree to the terms and conditions.".localized()
         }
 
         guard isValidEmail(model.email) else {
-            return "Please enter a valid email address."
+            return "Please enter a valid email address.".localized()
         }
 
         return nil

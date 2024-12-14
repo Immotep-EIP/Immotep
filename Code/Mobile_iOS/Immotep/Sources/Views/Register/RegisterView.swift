@@ -43,11 +43,14 @@ struct RegisterView: View {
                                 HStack {
                                     Image(systemName: viewModel.model.agreement ? "checkmark.circle.fill" : "circle")
                                     Text("I agree to all Term, Privacy Policy and Fees".localized())
-                                        .font(.system(size: 14))
+                                        .font(.system(size: 12))
+                                        .multilineTextAlignment(.leading)
                                 }
-                                .foregroundStyle(.black)
+                                .foregroundStyle((Color("textColor")))
                             })
                             .accessibilityIdentifier("AgreementButton")
+                            .padding(.top, 10)
+
                             Spacer()
                         }
 
@@ -61,16 +64,17 @@ struct RegisterView: View {
                                 await viewModel.signIn()
                             }
                         }, label: {
-                            Text("Sign In".localized())
+                            Text("Sign Up".localized())
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.black)
+                                .background(Color("btnColor"))
                                 .foregroundColor(.white)
                                 .font(.headline)
                                 .cornerRadius(20)
                                 .padding(.top, 30)
                                 .padding(.bottom, 10)
                         })
+                        .accessibilityIdentifier("SignUpButton")
 
                         HStack {
                             Text("Already have an account ?".localized())

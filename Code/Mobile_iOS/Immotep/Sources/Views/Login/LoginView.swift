@@ -9,11 +9,13 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
+    @AppStorage("keepMeSignedIn") var keepMeSignedIn: Bool = false
+
     var body: some View {
         NavigationStack {
             VStack {
                 Spacer()
-
                 VStack {
                     Text("Welcome back!".localized())
                         .font(.system(size: 25))
@@ -26,7 +28,6 @@ struct LoginView: View {
 
                     VStack(alignment: .leading, spacing: 15) {
                         CustomTextInput(title: "Email*", placeholder: "Enter your email", text: $viewModel.model.email, isSecure: false)
-
                         CustomTextInput(title: "Password*", placeholder: "Enter your password", text: $viewModel.model.password, isSecure: true)
 
                         HStack {
@@ -38,12 +39,10 @@ struct LoginView: View {
                                     Text("Keep me signed in".localized())
                                         .font(.system(size: 14))
                                 }
-                                .foregroundStyle(.black)
+                                .foregroundStyle((Color("btnColor")))
                             })
                             Spacer()
-
-                            Button(action: {
-                            }, label: {
+                            Button(action: {}, label: {
                                 Text("Forgot password?".localized())
                                     .font(.system(size: 14))
                             })
@@ -57,7 +56,7 @@ struct LoginView: View {
                             Text("Sign In".localized())
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.black)
+                                .background(Color("btnColor"))
                                 .foregroundColor(.white)
                                 .font(.headline)
                                 .cornerRadius(20)
@@ -78,18 +77,16 @@ struct LoginView: View {
                     }
                     .padding(.horizontal, 40)
                 }
-
                 Spacer()
             }
             .frame(maxHeight: .infinity)
-
             .safeAreaInset(edge: .top) {
                 HStack(spacing: 20) {
                     Image("immotepLogo")
                         .resizable()
                         .frame(width: 50, height: 50)
                         .padding(.bottom, 40)
-                    Text("Immotep".localized())
+                    Text("Immotep")
                         .font(.title)
                         .bold()
                         .padding(.bottom, 40)
@@ -101,12 +98,11 @@ struct LoginView: View {
             VStack {
                 Spacer()
                 Text(viewModel.loginStatus.localized())
-                    .foregroundColor(viewModel.loginStatus == "Login successful!" ? .green : .red)
-                    .padding(.top, 10)
+                .foregroundColor(viewModel.loginStatus == "Login successful!" ? .green : .red)
+                .padding(.top, 10)
                 Spacer()
             }
             .padding()
-
             .navigationDestination(isPresented: $viewModel.isLoggedIn) {
                 OverviewView()
             }

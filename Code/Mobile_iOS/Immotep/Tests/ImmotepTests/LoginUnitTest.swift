@@ -39,14 +39,14 @@ extension UserServiceError: LocalizedError {
 class MockAuthService: AuthServiceProtocol {
     var shouldReturnError: Bool = false
 
-    func loginUser(email: String, password: String) async throws -> (String, String) {
+    func loginUser(email: String, password: String, keepMeSignedIn: Bool) async throws -> (String, String) {
         if shouldReturnError {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Invalid credentials."])
         }
         return ("mockAccessToken", "mockRefreshToken")
     }
 
-    func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil) async throws -> (String, String) {
+    func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil, keepMeSignedIn: Bool) async throws -> (String, String) {
         throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Mock requestToken not implemented."])
     }
 
@@ -110,7 +110,15 @@ class LoginViewModelTests: XCTestCase {
     func testLoginWithEmptyFields() async {
         await viewModel.signIn()
 
-        XCTAssertEqual(viewModel.loginStatus, "Please enter both email and password.")
+        let expectedMessages = [
+            "Please enter both email and password.",
+            "Veuillez entrer un mail et un mot de passe valides."
+        ]
+
+        XCTAssertTrue(
+            expectedMessages.contains(viewModel.loginStatus),
+            "loginStatus is '\(viewModel.loginStatus)', but expected one of \(expectedMessages)"
+        )
     }
 
     func testLoginWithMockedError() async {
