@@ -13,26 +13,39 @@ struct CustomTextInput: View {
     @Binding var text: String
     var isSecure: Bool = false
 
+    @State private var isSecured: Bool = true
+
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(title.localized())
 
-            if isSecure {
-                SecureField(placeholder.localized(), text: $text)
-                    .padding(8)
-                    .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
-                    .foregroundStyle(Color("placeholderColor"))
+            ZStack(alignment: .trailing) {
+                Group {
+                    if isSecure && isSecured {
+                        SecureField(placeholder.localized(), text: $text)
+                            .accessibilityIdentifier("\(title)_textfield")
+                    } else {
+                        TextField(placeholder.localized(), text: $text)
+                            .accessibilityIdentifier("\(title)_textfield")
+                    }
+                }
+                .padding(8)
+                .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
+                .foregroundStyle(Color("placeholderColor"))
+                .autocapitalization(.none)
 
-            } else {
-                TextField(placeholder.localized(), text: $text)
-                    .padding(8)
-                    .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
-                    .foregroundStyle(Color("placeholderColor"))
-
+                if isSecure {
+                    Button(action: {
+                        isSecured.toggle()
+                    }, label: {
+                        Image(systemName: isSecured ? "eye.slash" : "eye")
+                            .accentColor(.gray)
+                            .padding(.trailing, 8)
+                    })
+                }
             }
         }
         .font(.system(size: 14))
-        .autocapitalization(.none)
     }
 }
 
@@ -69,6 +82,7 @@ struct CustomTextInputNB: View {
                 .padding(8)
                 .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
                 .foregroundStyle(Color("placeholderColor"))
+                .accessibilityIdentifier("\(title)_textfield")
             } else {
                 TextField(placeholder.localized(), text: Binding(
                     get: {
@@ -92,6 +106,8 @@ struct CustomTextInputNB: View {
                 .padding(8)
                 .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
                 .foregroundStyle(Color("placeholderColor"))
+                .accessibilityIdentifier("\(title)_textfield")
+
             }
         }
         .font(.system(size: 14))

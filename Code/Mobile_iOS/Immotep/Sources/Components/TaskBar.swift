@@ -12,7 +12,6 @@ struct TaskBar: View {
     @AppStorage("lang") private var lang: String = "en"
 
     var body: some View {
-        NavigationStack {
             VStack {
                 Divider()
                     .background(Color("textColor"))
@@ -71,8 +70,4 @@ struct TaskBar: View {
                 .frame(maxWidth: .infinity, alignment: .center)
             }
         }
-        .navigationTransition(
-            .fade(.in).animation(.easeInOut(duration: 0))
-        )
-    }
 }
