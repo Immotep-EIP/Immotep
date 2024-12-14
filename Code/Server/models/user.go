@@ -23,17 +23,19 @@ func (u *UserRequest) ToDbUser() db.UserModel {
 }
 
 type UserResponse struct {
-	ID        string      `json:"id"`
-	Email     string      `json:"email"`
-	Firstname string      `json:"firstname"`
-	Lastname  string      `json:"lastname"`
-	Role      db.Role     `json:"role"`
-	CreatedAt db.DateTime `json:"created_at"`
-	UpdatedAt db.DateTime `json:"updated_at"`
+	ID               string      `json:"id"`
+	ProfilePictureID *string     `json:"profile_picture_id,omitempty"`
+	Email            string      `json:"email"`
+	Firstname        string      `json:"firstname"`
+	Lastname         string      `json:"lastname"`
+	Role             db.Role     `json:"role"`
+	CreatedAt        db.DateTime `json:"created_at"`
+	UpdatedAt        db.DateTime `json:"updated_at"`
 }
 
 func (u *UserResponse) FromDbUser(model db.UserModel) {
 	u.ID = model.ID
+	u.ProfilePictureID = model.InnerUser.ProfilePictureID
 	u.Email = model.Email
 	u.Firstname = model.Firstname
 	u.Lastname = model.Lastname

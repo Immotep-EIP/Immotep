@@ -41,15 +41,18 @@ func registerAPIRoutes(r *gin.Engine) {
 			root.Use(middlewares.CheckClaims())
 			root.GET("/users", controllers.GetAllUsers)
 			root.GET("/user/:id", controllers.GetUserByID)
-			root.GET("/profile", controllers.GetProfile)
+			root.GET("/user/:id/picture", controllers.GetUserProfilePicture)
+			root.GET("/profile", controllers.GetCurrentUserProfile)
+			root.GET("/profile/picture", controllers.GetCurrentUserProfilePicture)
+			root.PUT("/profile/picture", controllers.UpdateCurrentUserProfilePicture)
 
 			owner := root.Group("/owner")
 			{
 				owner.Use(middlewares.AuthorizeOwner())
 				owner.GET("/properties", controllers.GetAllProperties)
 				owner.GET("/properties/:id", controllers.GetPropertyById)
-				owner.GET("/properties/:id/picture", controllers.GetPropertyImage)
-				owner.PUT("/properties/:id/picture", controllers.UpdatePropertyImage)
+				owner.GET("/properties/:id/picture", controllers.GetPropertyPicture)
+				owner.PUT("/properties/:id/picture", controllers.UpdatePropertyPicture)
 				owner.POST("/properties", controllers.CreateProperty)
 				owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
 			}

@@ -88,22 +88,22 @@ func CreateProperty(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbPropertyToResponse(*property))
 }
 
-// GetPropertyImage godoc
+// GetPropertyPicture godoc
 //
-//	@Summary		Get property's image
-//	@Description	Get property's image
+//	@Summary		Get property's picture
+//	@Description	Get property's picture
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		string					true	"Property ID"
 //	@Success		201	{object}	models.ImageResponse	"Image data"
-//	@Success		204	"No image associated"
+//	@Success		204	"No picture associated"
 //	@Failure		401	{object}	utils.Error	"Unauthorized"
 //	@Failure		403	{object}	utils.Error	"Property not yours"
 //	@Failure		404	{object}	utils.Error	"Property not found"
 //	@Failure		500
 //	@Router			/owner/properties/{id}/picture [get]
-func GetPropertyImage(c *gin.Context) {
+func GetPropertyPicture(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	property := propertyservice.GetByID(c.Param("id"))
 	if property == nil {
@@ -122,28 +122,29 @@ func GetPropertyImage(c *gin.Context) {
 	}
 	image := imageservice.GetByID(pictureId)
 	if image == nil {
-		utils.SendError(c, http.StatusNotFound, utils.PropertyImageNotFound, nil)
+		utils.SendError(c, http.StatusNotFound, utils.PropertyPictureNotFound, nil)
 		return
 	}
 	c.JSON(http.StatusOK, models.DbImageToResponse(*image))
 }
 
-// UpdatePropertyImage godoc
+// UpdatePropertyPicture godoc
 //
-//	@Summary		Update property's image
-//	@Description	Update property's image
+//	@Summary		Update property's picture
+//	@Description	Update property's picture
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		string					true	"Property ID"
 //	@Param			picture	body		models.ImageRequest		true	"Picture data as a Base64 string"
 //	@Success		201		{object}	models.PropertyResponse	"Updated property data"
+//	@Failure		400		{object}	utils.Error				"Missing fields or bad base64 string"
 //	@Failure		401		{object}	utils.Error				"Unauthorized"
 //	@Failure		403		{object}	utils.Error				"Property not yours"
 //	@Failure		404		{object}	utils.Error				"Property not found"
 //	@Failure		500
 //	@Router			/owner/properties/{id}/picture [put]
-func UpdatePropertyImage(c *gin.Context) {
+func UpdatePropertyPicture(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	property := propertyservice.GetByID(c.Param("id"))
 	if property == nil {

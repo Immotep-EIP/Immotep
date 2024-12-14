@@ -43,3 +43,19 @@ func Create(user db.UserModel, role db.Role) *db.UserModel {
 	}
 	return newUser
 }
+
+func UpdatePicture(user db.UserModel, image db.ImageModel) *db.UserModel {
+	pdb := database.DBclient
+	newUser, err := pdb.Client.User.FindUnique(
+		db.User.ID.Equals(user.ID),
+	).Update(
+		db.User.ProfilePicture.Link(db.Image.ID.Equals(image.ID)),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return newUser
+}

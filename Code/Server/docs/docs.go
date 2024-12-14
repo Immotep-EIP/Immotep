@@ -336,7 +336,7 @@ const docTemplate = `{
         },
         "/owner/properties/{id}/picture": {
             "get": {
-                "description": "Get property's image",
+                "description": "Get property's picture",
                 "consumes": [
                     "application/json"
                 ],
@@ -346,7 +346,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Get property's image",
+                "summary": "Get property's picture",
                 "parameters": [
                     {
                         "type": "string",
@@ -364,7 +364,7 @@ const docTemplate = `{
                         }
                     },
                     "204": {
-                        "description": "No image associated"
+                        "description": "No picture associated"
                     },
                     "401": {
                         "description": "Unauthorized",
@@ -390,7 +390,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update property's image",
+                "description": "Update property's picture",
                 "consumes": [
                     "application/json"
                 ],
@@ -400,7 +400,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Update property's image",
+                "summary": "Update property's picture",
                 "parameters": [
                     {
                         "type": "string",
@@ -424,6 +424,12 @@ const docTemplate = `{
                         "description": "Updated property data",
                         "schema": {
                             "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields or bad base64 string",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "401": {
@@ -530,7 +536,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get user profile information",
+                "description": "Get current user profile",
                 "consumes": [
                     "application/json"
                 ],
@@ -540,12 +546,127 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "Get user profile",
+                "summary": "Get current user profile",
                 "responses": {
                     "200": {
                         "description": "User data",
                         "schema": {
                             "$ref": "#/definitions/models.UserResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/profile/picture": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get current user's profile picture",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get current user's profile picture",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Image data",
+                        "schema": {
+                            "$ref": "#/definitions/models.ImageResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No picture associated"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update current user's profile picture",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update current user's profile picture",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Picture data as a Base64 string",
+                        "name": "picture",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ImageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Updated user data",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields or bad base64 string",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "401": {
@@ -630,6 +751,61 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.UserResponse"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/users/{id}/picture": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get user's picture",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user's picture",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Image data",
+                        "schema": {
+                            "$ref": "#/definitions/models.ImageResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No picture associated"
                     },
                     "401": {
                         "description": "Unauthorized",
@@ -866,6 +1042,9 @@ const docTemplate = `{
                 "lastname": {
                     "type": "string"
                 },
+                "profile_picture_id": {
+                    "type": "string"
+                },
                 "role": {
                     "$ref": "#/definitions/db.Role"
                 },
@@ -911,7 +1090,8 @@ const docTemplate = `{
                 "property-not-available",
                 "failed-to-link-image",
                 "bad-base64-string",
-                "property-image-not-found"
+                "property-picture-not-found",
+                "user-profile-picture-not-found"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -937,7 +1117,8 @@ const docTemplate = `{
                 "PropertyNotAvailable",
                 "FailedLinkImage",
                 "BadBase64String",
-                "PropertyImageNotFound"
+                "PropertyPictureNotFound",
+                "UserProfilePictureNotFound"
             ]
         }
     },
