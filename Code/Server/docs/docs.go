@@ -335,6 +335,60 @@ const docTemplate = `{
             }
         },
         "/owner/properties/{id}/picture": {
+            "get": {
+                "description": "Get property's image",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get property's image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Image data",
+                        "schema": {
+                            "$ref": "#/definitions/models.ImageResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No image associated"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
             "put": {
                 "description": "Update property's image",
                 "consumes": [
@@ -619,6 +673,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ImageResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.InviteRequest": {
             "type": "object",
             "required": [
@@ -842,7 +910,8 @@ const docTemplate = `{
                 "property-already-exists",
                 "property-not-available",
                 "failed-to-link-image",
-                "bad-base64-string"
+                "bad-base64-string",
+                "property-image-not-found"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -867,7 +936,8 @@ const docTemplate = `{
                 "PropertyAlreadyExists",
                 "PropertyNotAvailable",
                 "FailedLinkImage",
-                "BadBase64String"
+                "BadBase64String",
+                "PropertyImageNotFound"
             ]
         }
     },

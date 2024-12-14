@@ -30,6 +30,7 @@ const (
 	PropertyNotAvailable  ErrorCode = "property-not-available"
 	FailedLinkImage       ErrorCode = "failed-to-link-image"
 	BadBase64String       ErrorCode = "bad-base64-string"
+	PropertyImageNotFound ErrorCode = "property-image-not-found"
 )
 
 type Error struct {

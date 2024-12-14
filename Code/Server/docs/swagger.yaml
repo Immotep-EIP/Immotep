@@ -15,6 +15,15 @@ definitions:
     required:
     - data
     type: object
+  models.ImageResponse:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      id:
+        type: string
+    type: object
   models.InviteRequest:
     properties:
       end_date:
@@ -174,6 +183,7 @@ definitions:
     - property-not-available
     - failed-to-link-image
     - bad-base64-string
+    - property-image-not-found
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -199,6 +209,7 @@ definitions:
     - PropertyNotAvailable
     - FailedLinkImage
     - BadBase64String
+    - PropertyImageNotFound
 host: localhost:3001
 info:
   contact:
@@ -416,6 +427,42 @@ paths:
       tags:
       - owner
   /owner/properties/{id}/picture:
+    get:
+      consumes:
+      - application/json
+      description: Get property's image
+      parameters:
+      - description: Property ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Image data
+          schema:
+            $ref: '#/definitions/models.ImageResponse'
+        "204":
+          description: No image associated
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Get property's image
+      tags:
+      - owner
     put:
       consumes:
       - application/json

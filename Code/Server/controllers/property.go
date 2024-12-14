@@ -88,6 +88,46 @@ func CreateProperty(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbPropertyToResponse(*property))
 }
 
+// GetPropertyImage godoc
+//
+//	@Summary		Get property's image
+//	@Description	Get property's image
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		string					true	"Property ID"
+//	@Success		201	{object}	models.ImageResponse	"Image data"
+//	@Success		204	"No image associated"
+//	@Failure		401	{object}	utils.Error	"Unauthorized"
+//	@Failure		403	{object}	utils.Error	"Property not yours"
+//	@Failure		404	{object}	utils.Error	"Property not found"
+//	@Failure		500
+//	@Router			/owner/properties/{id}/picture [get]
+func GetPropertyImage(c *gin.Context) {
+	claims := utils.GetClaims(c)
+	property := propertyservice.GetByID(c.Param("id"))
+	if property == nil {
+		utils.SendError(c, http.StatusNotFound, utils.PropertyNotFound, nil)
+		return
+	}
+	if property.OwnerID != claims["id"] {
+		utils.SendError(c, http.StatusForbidden, utils.PropertyNotYours, nil)
+		return
+	}
+
+	pictureId, ok := property.PictureID()
+	if !ok {
+		c.Status(http.StatusNoContent)
+		return
+	}
+	image := imageservice.GetByID(pictureId)
+	if image == nil {
+		utils.SendError(c, http.StatusNotFound, utils.PropertyImageNotFound, nil)
+		return
+	}
+	c.JSON(http.StatusOK, models.DbImageToResponse(*image))
+}
+
 // UpdatePropertyImage godoc
 //
 //	@Summary		Update property's image
