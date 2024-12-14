@@ -45,7 +45,7 @@
 "area" = "Surface : %@ m²";
 "start_date" = "Date de début : %@";
 "No start date assigned" = "Pas de date renseignée";
-"rent_month" = "Loyer: %d€";
+"rent_month" = "Loyer : %d€";
 "end_date" = "Fin : %@";
 "No end date assigned" = "Pas de date renseignée";
 "deposit_value" = "Caution : %d€";

@@ -46,7 +46,7 @@
 "start_date" = "Start date: %@";
 "No start date assigned" = "No start date assigned";
 "rent_month" = "Rent: %d€";
-"end_date" = "End: %$";
+"end_date" = "End: %@";
 "No end date assigned" = "No end date assigned";
 "deposit_value" = "Deposit: %d€";
 
