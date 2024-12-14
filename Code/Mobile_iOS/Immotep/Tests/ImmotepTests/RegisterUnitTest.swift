@@ -48,7 +48,8 @@ class MockApiService: ApiServiceProtocol {
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(mockResponseCode)"])
             }
         }
-        return ("Response")
+        print("############## OKAY ##############")
+        return ("Registration successful!")
     }
 }
 
@@ -82,7 +83,15 @@ final class RegisterViewModelTests: XCTestCase {
     func testRegistrationWithEmptyFields() async {
         await viewModel.signIn()
 
-        XCTAssertEqual(viewModel.registerStatus, "Please fill in all fields.")
+        let expectedMessages = [
+            "Please fill in all fields.",
+            "Veuillez remplir tous les champs."
+        ]
+
+        XCTAssertTrue(
+            expectedMessages.contains(viewModel.registerStatus),
+            "registerStatus is '\(viewModel.registerStatus)', but expected one of \(expectedMessages)"
+        )
     }
 
     func testRegistrationWithMismatchedPasswords() async {
@@ -95,7 +104,15 @@ final class RegisterViewModelTests: XCTestCase {
 
         await viewModel.signIn()
 
-        XCTAssertEqual(viewModel.registerStatus, "Passwords do not match.")
+        let expectedMessages = [
+            "Passwords do not match.",
+            "Les mots de passes sont différents."
+        ]
+
+        XCTAssertTrue(
+            expectedMessages.contains(viewModel.registerStatus),
+            "registerStatus is '\(viewModel.registerStatus)', but expected one of \(expectedMessages)"
+        )
     }
 
     func testRegistrationWithMockedError() async {
