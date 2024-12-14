@@ -13,7 +13,6 @@ import (
 )
 
 func BuildTestProperty(id string) db.PropertyModel {
-	picture := "test.png"
 	return db.PropertyModel{
 		InnerProperty: db.InnerProperty{
 			ID:                  id,
@@ -25,9 +24,12 @@ func BuildTestProperty(id string) db.PropertyModel {
 			AreaSqm:             20.0,
 			RentalPricePerMonth: 500,
 			DepositPrice:        1000,
-			Picture:             &picture,
 			CreatedAt:           time.Now(),
 			OwnerID:             "1",
+		},
+		RelationsProperty: db.RelationsProperty{
+			Damages:   []db.DamageModel{},
+			Contracts: []db.ContractModel{},
 		},
 	}
 }
@@ -41,6 +43,9 @@ func TestGetAllProperties(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
 		),
 	).ReturnsMany([]db.PropertyModel{property})
 
@@ -59,6 +64,9 @@ func TestGetAllPropertiesMultipleProperties(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
 		),
 	).ReturnsMany([]db.PropertyModel{user1, user2})
 
@@ -75,6 +83,9 @@ func TestGetAllPropertiesNoProperties(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
 		),
 	).ReturnsMany([]db.PropertyModel{})
 
@@ -89,6 +100,9 @@ func TestGetAllPropertiesNoConnection(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
 		),
 	).Errors(errors.New("connection failed"))
 
@@ -104,7 +118,10 @@ func TestGetPropertyByID(t *testing.T) {
 	property := BuildTestProperty("1")
 
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")),
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Returns(property)
 
 	foundProperty := userservice.GetByID("1")
@@ -117,7 +134,10 @@ func TestGetPropertyByIDNotFound(t *testing.T) {
 	defer ensure(t)
 
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")),
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Errors(db.ErrNotFound)
 
 	foundProperty := userservice.GetByID("1")
@@ -129,7 +149,10 @@ func TestGetPropertyByIDNoConnection(t *testing.T) {
 	defer ensure(t)
 
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")),
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
@@ -154,7 +177,6 @@ func TestCreateProperty(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Returns(property)
 
@@ -180,7 +202,6 @@ func TestCreatePropertyAlreadyExists(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -212,7 +233,6 @@ func TestCreatePropertyNoConnection(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Errors(errors.New("connection failed"))
 
