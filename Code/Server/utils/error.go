@@ -27,6 +27,7 @@ const (
 	NotAnOwner            ErrorCode = "not-an-owner"
 	NotATenant            ErrorCode = "not-a-tenant"
 	PropertyAlreadyExists ErrorCode = "property-already-exists"
+	PropertyNotAvailable  ErrorCode = "property-not-available"
 )
 
 type Error struct {

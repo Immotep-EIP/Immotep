@@ -650,11 +650,17 @@ const docTemplate = `{
                 "deposit_price": {
                     "type": "integer"
                 },
+                "end_date": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
+                },
+                "nb_damage": {
+                    "type": "integer"
                 },
                 "owner_id": {
                     "type": "string"
@@ -667,6 +673,16 @@ const docTemplate = `{
                 },
                 "rental_price_per_month": {
                     "type": "integer"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "calculated fields",
+                    "type": "string"
+                },
+                "tenant": {
+                    "type": "string"
                 }
             }
         },
@@ -753,7 +769,8 @@ const docTemplate = `{
                 "property-is-not-yours",
                 "not-an-owner",
                 "not-a-tenant",
-                "property-already-exists"
+                "property-already-exists",
+                "property-not-available"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -775,7 +792,8 @@ const docTemplate = `{
                 "PropertyNotYours",
                 "NotAnOwner",
                 "NotATenant",
-                "PropertyAlreadyExists"
+                "PropertyAlreadyExists",
+                "PropertyNotAvailable"
             ]
         }
     },

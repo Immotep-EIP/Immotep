@@ -57,7 +57,7 @@ linters:
     - ineffassign
     - interfacebloat
     - intrange
-    - ireturn
+    # - ireturn
     # - lll
     - loggercheck
     - maintidx
@@ -124,6 +124,8 @@ linters-settings:
         disabled: true
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#get-return
       - name: get-return
+        disabled: true
+      - name: flag-parameter
         disabled: true
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#import-alias-naming
       - name: import-alias-naming

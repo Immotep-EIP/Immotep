@@ -1,7 +1,10 @@
 package models
 
 import (
+	"slices"
+
 	"immotep/backend/prisma/db"
+	"immotep/backend/utils"
 )
 
 type PropertyRequest struct {
@@ -45,6 +48,13 @@ type PropertyResponse struct {
 	DepositPrice        int         `json:"deposit_price"`
 	Picture             *string     `json:"picture"`
 	CreatedAt           db.DateTime `json:"created_at"`
+
+	// calculated fields
+	Status    string       `json:"status"`
+	NbDamage  int          `json:"nb_damage"`
+	Tenant    string       `json:"tenant"`
+	StartDate *db.DateTime `json:"start_date"`
+	EndDate   *db.DateTime `json:"end_date"`
 }
 
 func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
@@ -60,6 +70,23 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	p.DepositPrice = model.DepositPrice
 	p.Picture = model.InnerProperty.Picture
 	p.CreatedAt = model.CreatedAt
+
+	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+
+	activeIndex := slices.IndexFunc(model.Contracts(), func(x db.ContractModel) bool { return x.Active })
+	if activeIndex != -1 {
+		active := model.Contracts()[activeIndex]
+
+		p.Status = "unavailable"
+		p.Tenant = active.Tenant().Firstname + " " + active.Tenant().Lastname
+		p.StartDate = &active.StartDate
+		p.EndDate = active.InnerContract.EndDate
+	} else {
+		p.Status = "available"
+		p.Tenant = ""
+		p.StartDate = nil
+		p.EndDate = nil
+	}
 }
 
 func DbPropertyToResponse(pc db.PropertyModel) PropertyResponse {

@@ -8,6 +8,28 @@ import (
 	"immotep/backend/prisma/db"
 )
 
+func GetCurrentActive(propertyId string) *db.ContractModel {
+	pdb := database.DBclient
+	c, err := pdb.Client.Contract.FindMany(
+		db.Contract.PropertyID.Equals(propertyId),
+		db.Contract.Active.Equals(true),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	l := len(c)
+	if l == 0 {
+		return nil
+	}
+	if l > 1 {
+		panic("Only one active contract must exist for a property")
+	}
+	return &c[0]
+}
+
 func Create(pendingContract db.PendingContractModel, tenant db.UserModel) *db.ContractModel {
 	pdb := database.DBclient
 	newContract, err := pdb.Client.Contract.CreateOne(

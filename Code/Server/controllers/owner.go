@@ -47,6 +47,11 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
+	if contractservice.GetCurrentActive(property.ID) != nil {
+		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
+		return
+	}
+
 	pendingContract := contractservice.CreatePending(inviteReq.ToDbPendingContract(), *property)
 	if pendingContract == nil {
 		utils.SendError(c, http.StatusConflict, utils.InviteAlreadyExists, nil)
