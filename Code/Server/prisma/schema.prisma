@@ -29,6 +29,9 @@ model user {
     created_at  DateTime @default(now())
     updated_at  DateTime @updatedAt
 
+    profile_picture    image?   @relation(fields: [profile_picture_id], references: [id])
+    profile_picture_id String?
+
     owned_properties   property[]
     rented_properties  contract[]
 }
@@ -72,8 +75,10 @@ model property {
     area_sqm               Float
     rental_price_per_month Int
     deposit_price          Int
-    picture     String?
     created_at  DateTime @default(now())
+
+    picture    image?   @relation(fields: [picture_id], references: [id])
+    picture_id String?
 
     owner       user     @relation(fields: [owner_id], references: [id])
     owner_id    String
@@ -95,4 +100,13 @@ model pendingContract {
 
     property     property  @relation(fields: [property_id], references: [id])
     property_id  String    @unique
+}
+
+model image {
+    id         String    @id @default(cuid())
+    data       Bytes
+    created_at DateTime  @default(now())
+
+    users      user[]
+    properties property[]
 }

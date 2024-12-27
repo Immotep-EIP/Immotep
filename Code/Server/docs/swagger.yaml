@@ -8,6 +8,22 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  models.ImageRequest:
+    properties:
+      data:
+        type: string
+    required:
+    - data
+    type: object
+  models.ImageResponse:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      id:
+        type: string
+    type: object
   models.InviteRequest:
     properties:
       end_date:
@@ -49,8 +65,6 @@ definitions:
         type: integer
       name:
         type: string
-      picture:
-        type: string
       postal_code:
         type: string
       rental_price_per_month:
@@ -89,7 +103,7 @@ definitions:
         type: integer
       owner_id:
         type: string
-      picture:
+      picture_id:
         type: string
       postal_code:
         type: string
@@ -132,9 +146,20 @@ definitions:
         type: string
       lastname:
         type: string
+      profile_picture_id:
+        type: string
       role:
         $ref: '#/definitions/db.Role'
       updated_at:
+        type: string
+    type: object
+  models.UserUpdateRequest:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
         type: string
     type: object
   utils.Error:
@@ -167,6 +192,10 @@ definitions:
     - not-a-tenant
     - property-already-exists
     - property-not-available
+    - failed-to-link-image
+    - bad-base64-string
+    - property-picture-not-found
+    - user-profile-picture-not-found
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -190,6 +219,10 @@ definitions:
     - NotATenant
     - PropertyAlreadyExists
     - PropertyNotAvailable
+    - FailedLinkImage
+    - BadBase64String
+    - PropertyPictureNotFound
+    - UserProfilePictureNotFound
 host: localhost:3001
 info:
   contact:
@@ -406,6 +439,87 @@ paths:
       summary: Get property by ID
       tags:
       - owner
+  /owner/properties/{id}/picture:
+    get:
+      consumes:
+      - application/json
+      description: Get property's picture
+      parameters:
+      - description: Property ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Image data
+          schema:
+            $ref: '#/definitions/models.ImageResponse'
+        "204":
+          description: No picture associated
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Get property's picture
+      tags:
+      - owner
+    put:
+      consumes:
+      - application/json
+      description: Update property's picture
+      parameters:
+      - description: Property ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Picture data as a Base64 string
+        in: body
+        name: picture
+        required: true
+        schema:
+          $ref: '#/definitions/models.ImageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Updated property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Missing fields or bad base64 string
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Update property's picture
+      tags:
+      - owner
   /owner/send-invite/{propertyId}:
     post:
       consumes:
@@ -457,7 +571,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get user profile information
+      description: Get current user profile
       produces:
       - application/json
       responses:
@@ -477,7 +591,119 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Get user profile
+      summary: Get current user profile
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update current user profile
+      parameters:
+      - description: User update info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Email already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update current user profile
+      tags:
+      - user
+  /profile/picture:
+    get:
+      consumes:
+      - application/json
+      description: Get current user's profile picture
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Image data
+          schema:
+            $ref: '#/definitions/models.ImageResponse'
+        "204":
+          description: No picture associated
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get current user's profile picture
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update current user's profile picture
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Picture data as a Base64 string
+        in: body
+        name: picture
+        required: true
+        schema:
+          $ref: '#/definitions/models.ImageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Updated user data
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+        "400":
+          description: Missing fields or bad base64 string
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Update current user's profile picture
       tags:
       - user
   /users:
@@ -530,6 +756,41 @@ paths:
       security:
       - Bearer: []
       summary: Get user by ID
+      tags:
+      - user
+  /users/{id}/picture:
+    get:
+      consumes:
+      - application/json
+      description: Get user's picture
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Image data
+          schema:
+            $ref: '#/definitions/models.ImageResponse'
+        "204":
+          description: No picture associated
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get user's picture
       tags:
       - user
 securityDefinitions:
