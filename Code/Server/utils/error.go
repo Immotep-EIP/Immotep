@@ -32,6 +32,10 @@ const (
 	BadBase64String            ErrorCode = "bad-base64-string"
 	PropertyPictureNotFound    ErrorCode = "property-picture-not-found"
 	UserProfilePictureNotFound ErrorCode = "user-profile-picture-not-found"
+	RoomAlreadyExists          ErrorCode = "room-already-exists"
+	RoomNotFound               ErrorCode = "room-not-found"
+	FurnitureNotFound          ErrorCode = "furniture-not-found"
+	FurnitureAlreadyExists     ErrorCode = "furniture-already-exists"
 )
 
 type Error struct {

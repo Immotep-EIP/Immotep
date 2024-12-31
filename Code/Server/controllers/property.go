@@ -35,25 +35,16 @@ func GetAllProperties(c *gin.Context) {
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		string					true	"Property ID"
-//	@Success		200	{object}	models.PropertyResponse	"Property data"
-//	@Failure		401	{object}	utils.Error				"Unauthorized"
-//	@Failure		403	{object}	utils.Error				"Property not yours"
-//	@Failure		404	{object}	utils.Error				"Property not found"
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Success		200			{object}	models.PropertyResponse	"Property data"
+//	@Failure		401			{object}	utils.Error				"Unauthorized"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{id} [get]
+//	@Router			/owner/properties/{property_id} [get]
 func GetPropertyById(c *gin.Context) {
-	claims := utils.GetClaims(c)
-	property := propertyservice.GetByID(c.Param("id"))
-	if property == nil {
-		utils.SendError(c, http.StatusNotFound, utils.PropertyNotFound, nil)
-		return
-	}
-	if property.OwnerID != claims["id"] {
-		utils.SendError(c, http.StatusForbidden, utils.PropertyNotYours, nil)
-		return
-	}
+	property := propertyservice.GetByID(c.Param("property_id"))
 	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
 }
 
@@ -69,6 +60,7 @@ func GetPropertyById(c *gin.Context) {
 //	@Failure		400		{object}	utils.Error				"Missing fields"
 //	@Failure		409		{object}	utils.Error				"Property already exists"
 //	@Failure		500
+//	@Security		Bearer
 //	@Router			/owner/properties [post]
 func CreateProperty(c *gin.Context) {
 	claims := utils.GetClaims(c)
@@ -95,26 +87,17 @@ func CreateProperty(c *gin.Context) {
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		string					true	"Property ID"
-//	@Success		201	{object}	models.ImageResponse	"Image data"
-//	@Success		204	"No picture associated"
-//	@Failure		401	{object}	utils.Error	"Unauthorized"
-//	@Failure		403	{object}	utils.Error	"Property not yours"
-//	@Failure		404	{object}	utils.Error	"Property not found"
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Success		201			{object}	models.ImageResponse	"Image data"
+//	@Success		204			"No picture associated"
+//	@Failure		401			{object}	utils.Error	"Unauthorized"
+//	@Failure		403			{object}	utils.Error	"Property not yours"
+//	@Failure		404			{object}	utils.Error	"Property not found"
 //	@Failure		500
-//	@Router			/owner/properties/{id}/picture [get]
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/picture [get]
 func GetPropertyPicture(c *gin.Context) {
-	claims := utils.GetClaims(c)
-	property := propertyservice.GetByID(c.Param("id"))
-	if property == nil {
-		utils.SendError(c, http.StatusNotFound, utils.PropertyNotFound, nil)
-		return
-	}
-	if property.OwnerID != claims["id"] {
-		utils.SendError(c, http.StatusForbidden, utils.PropertyNotYours, nil)
-		return
-	}
-
+	property := propertyservice.GetByID(c.Param("property_id"))
 	pictureId, ok := property.PictureID()
 	if !ok {
 		c.Status(http.StatusNoContent)
@@ -135,27 +118,17 @@ func GetPropertyPicture(c *gin.Context) {
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
-//	@Param			id		path		string					true	"Property ID"
-//	@Param			picture	body		models.ImageRequest		true	"Picture data as a Base64 string"
-//	@Success		201		{object}	models.PropertyResponse	"Updated property data"
-//	@Failure		400		{object}	utils.Error				"Missing fields or bad base64 string"
-//	@Failure		401		{object}	utils.Error				"Unauthorized"
-//	@Failure		403		{object}	utils.Error				"Property not yours"
-//	@Failure		404		{object}	utils.Error				"Property not found"
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Param			picture		body		models.ImageRequest		true	"Picture data as a Base64 string"
+//	@Success		201			{object}	models.PropertyResponse	"Updated property data"
+//	@Failure		400			{object}	utils.Error				"Missing fields or bad base64 string"
+//	@Failure		401			{object}	utils.Error				"Unauthorized"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"Property not found"
 //	@Failure		500
-//	@Router			/owner/properties/{id}/picture [put]
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/picture [put]
 func UpdatePropertyPicture(c *gin.Context) {
-	claims := utils.GetClaims(c)
-	property := propertyservice.GetByID(c.Param("id"))
-	if property == nil {
-		utils.SendError(c, http.StatusNotFound, utils.PropertyNotFound, nil)
-		return
-	}
-	if property.OwnerID != claims["id"] {
-		utils.SendError(c, http.StatusForbidden, utils.PropertyNotYours, nil)
-		return
-	}
-
 	var req models.ImageRequest
 	err := c.ShouldBindBodyWithJSON(&req)
 	if err != nil {
@@ -170,6 +143,7 @@ func UpdatePropertyPicture(c *gin.Context) {
 	}
 	newImage := imageservice.Create(*image)
 
+	property := propertyservice.GetByID(c.Param("property_id"))
 	newProperty := propertyservice.UpdatePicture(*property, newImage)
 	if newProperty == nil {
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)

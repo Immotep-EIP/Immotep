@@ -48,6 +48,9 @@ func Create(property db.PropertyModel, ownerId string) *db.PropertyModel {
 		db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 		db.Property.DepositPrice.Set(property.DepositPrice),
 		db.Property.Owner.Link(db.User.ID.Equals(ownerId)),
+	).With(
+		db.Property.Contracts.Fetch(),
+		db.Property.Damages.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {

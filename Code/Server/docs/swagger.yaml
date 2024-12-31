@@ -8,6 +8,28 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  models.FurnitureRequest:
+    properties:
+      name:
+        type: string
+      quantity:
+        type: integer
+    required:
+    - name
+    type: object
+  models.FurnitureResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      property_id:
+        type: string
+      quantity:
+        type: integer
+      room_id:
+        type: string
+    type: object
   models.ImageRequest:
     properties:
       data:
@@ -117,6 +139,22 @@ definitions:
       tenant:
         type: string
     type: object
+  models.RoomRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  models.RoomResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      property_id:
+        type: string
+    type: object
   models.UserRequest:
     properties:
       email:
@@ -196,6 +234,10 @@ definitions:
     - bad-base64-string
     - property-picture-not-found
     - user-profile-picture-not-found
+    - room-already-exists
+    - room-not-found
+    - furniture-not-found
+    - furniture-already-exists
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -223,6 +265,10 @@ definitions:
     - BadBase64String
     - PropertyPictureNotFound
     - UserProfilePictureNotFound
+    - RoomAlreadyExists
+    - RoomNotFound
+    - FurnitureNotFound
+    - FurnitureAlreadyExists
 host: localhost:3001
 info:
   contact:
@@ -399,10 +445,12 @@ paths:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
+      security:
+      - Bearer: []
       summary: Create a new property
       tags:
       - owner
-  /owner/properties/{id}:
+  /owner/properties/{property_id}:
     get:
       consumes:
       - application/json
@@ -410,7 +458,7 @@ paths:
       parameters:
       - description: Property ID
         in: path
-        name: id
+        name: property_id
         required: true
         type: string
       produces:
@@ -439,7 +487,7 @@ paths:
       summary: Get property by ID
       tags:
       - owner
-  /owner/properties/{id}/picture:
+  /owner/properties/{property_id}/picture:
     get:
       consumes:
       - application/json
@@ -447,7 +495,7 @@ paths:
       parameters:
       - description: Property ID
         in: path
-        name: id
+        name: property_id
         required: true
         type: string
       produces:
@@ -473,6 +521,8 @@ paths:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
+      security:
+      - Bearer: []
       summary: Get property's picture
       tags:
       - owner
@@ -483,7 +533,7 @@ paths:
       parameters:
       - description: Property ID
         in: path
-        name: id
+        name: property_id
         required: true
         type: string
       - description: Picture data as a Base64 string
@@ -517,7 +567,315 @@ paths:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
+      security:
+      - Bearer: []
       summary: Update property's picture
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms:
+    get:
+      consumes:
+      - application/json
+      description: Get all rooms for a specific property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of rooms
+          schema:
+            items:
+              $ref: '#/definitions/models.RoomResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get rooms by property ID
+      tags:
+      - owner
+    post:
+      consumes:
+      - application/json
+      description: Create a new room for a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room data
+        in: body
+        name: room
+        required: true
+        schema:
+          $ref: '#/definitions/models.RoomRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created room data
+          schema:
+            $ref: '#/definitions/models.RoomResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create a new room
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a room by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Delete room by ID
+      tags:
+      - owner
+    get:
+      consumes:
+      - application/json
+      description: Get room information by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Room data
+          schema:
+            $ref: '#/definitions/models.RoomResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get room by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures:
+    get:
+      consumes:
+      - application/json
+      description: Get all furnitures for a specific room
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of furnitures
+          schema:
+            items:
+              $ref: '#/definitions/models.FurnitureResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get furnitures by room ID
+      tags:
+      - owner
+    post:
+      consumes:
+      - application/json
+      description: Create a new furniture for a room
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Furniture data
+        in: body
+        name: furniture
+        required: true
+        schema:
+          $ref: '#/definitions/models.FurnitureRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created furniture data
+          schema:
+            $ref: '#/definitions/models.FurnitureResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property or room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create a new furniture
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a furniture by its ID
+      parameters:
+      - description: Furniture ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Furniture not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Delete furniture by ID
+      tags:
+      - owner
+    get:
+      consumes:
+      - application/json
+      description: Get furniture information by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Furniture ID
+        in: path
+        name: furniture_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Furniture data
+          schema:
+            $ref: '#/definitions/models.FurnitureResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Furniture not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get furniture by ID
       tags:
       - owner
   /owner/send-invite/{propertyId}:
@@ -703,6 +1061,8 @@ paths:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
+      security:
+      - Bearer: []
       summary: Update current user's profile picture
       tags:
       - user
@@ -795,7 +1155,7 @@ paths:
       - user
 securityDefinitions:
   Bearer:
-    description: 'Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".'
+    description: Enter the token with the `Bearer ` prefix, e.g. "Bearer abcde12345".
     in: header
     name: Authorization
     type: apiKey

@@ -48,17 +48,42 @@ func registerAPIRoutes(r *gin.Engine) {
 			root.PUT("/profile/picture", controllers.UpdateCurrentUserProfilePicture)
 
 			owner := root.Group("/owner")
-			{
-				owner.Use(middlewares.AuthorizeOwner())
-				owner.GET("/properties", controllers.GetAllProperties)
-				owner.GET("/properties/:id", controllers.GetPropertyById)
-				owner.GET("/properties/:id/picture", controllers.GetPropertyPicture)
-				owner.PUT("/properties/:id/picture", controllers.UpdatePropertyPicture)
-				owner.POST("/properties", controllers.CreateProperty)
-				owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
-			}
+			registerOwnerRoutes(owner)
 		}
 	}
+}
+
+func registerOwnerRoutes(owner *gin.RouterGroup) {
+	owner.Use(middlewares.AuthorizeOwner())
+	owner.POST("/properties", controllers.CreateProperty)
+	owner.GET("/properties", controllers.GetAllProperties)
+
+	property := owner.Group("/properties/:property_id")
+	{
+		property.Use(middlewares.CheckPropertyOwnership("property_id"))
+		property.GET("/", controllers.GetPropertyById)
+		property.GET("/picture", controllers.GetPropertyPicture)
+		property.PUT("/picture", controllers.UpdatePropertyPicture)
+
+		rooms := property.Group("/rooms")
+		{
+			rooms.POST("/", controllers.CreateRoom)
+			rooms.GET("/", controllers.GetRoomsByProperty)
+			rooms.GET("/:room_id", controllers.GetRoomByID)
+			rooms.DELETE("/:room_id", controllers.DeleteRoom)
+		}
+
+		furnitures := property.Group("/rooms/:room_id/furnitures")
+		{
+			furnitures.Use(middlewares.CheckRoomExists("property_id", "room_id"))
+			furnitures.POST("/", controllers.CreateFurniture)
+			furnitures.GET("/", controllers.GetFurnituresByRoom)
+			furnitures.GET("/:furniture_id", controllers.GetFurnitureByID)
+			furnitures.DELETE("/:furniture_id", controllers.DeleteFurniture)
+		}
+	}
+
+	owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
 }
 
 func Routes() *gin.Engine {

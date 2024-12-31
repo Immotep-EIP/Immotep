@@ -194,6 +194,7 @@ func GetCurrentUserProfilePicture(c *gin.Context) {
 //	@Failure		401		{object}	utils.Error			"Unauthorized"
 //	@Failure		404		{object}	utils.Error			"User not found"
 //	@Failure		500
+//	@Security		Bearer
 //	@Router			/profile/picture [put]
 func UpdateCurrentUserProfilePicture(c *gin.Context) {
 	claims := utils.GetClaims(c)

@@ -19,6 +19,27 @@ enum priority {
     urgent
 }
 
+enum reportType {
+    start
+    middle
+    end
+}
+
+enum state {
+    broken
+    needsRepair
+    bad
+    medium
+    good
+    new
+}
+
+enum cleanliness {
+    dirty
+    medium
+    clean
+}
+
 model user {
     id          String   @id @default(cuid())
     email       String   @unique @db.VarChar(255)
@@ -86,6 +107,8 @@ model property {
     contracts          contract[]
     pending_contracts  pendingContract?
     damages            damage[]
+    rooms              room[]
+    reports            inventoryReport[]
 
     @@unique([name, owner_id])
 }
@@ -109,4 +132,68 @@ model image {
 
     users      user[]
     properties property[]
+}
+
+model room {
+    id          String   @id @default(cuid())
+    name        String
+
+    property    property @relation(fields: [property_id], references: [id])
+    property_id String
+
+    furnitures  furniture[]
+    roomStates  roomState[]
+
+    @@unique([name, property_id])
+}
+
+model furniture {
+    id        String @id @default(cuid())
+    name      String
+    quantity  Int    @default(1)
+
+    room      room   @relation(fields: [room_id], references: [id])
+    room_id   String
+
+    furnitureStates furnitureState[]
+
+    @@unique([name, room_id])
+}
+
+model inventoryReport {
+    id      String     @id @default(cuid())
+    date    DateTime   @default(now())
+    type    reportType
+
+    property    property @relation(fields: [property_id], references: [id])
+    property_id String
+
+    roomStates      roomState[]
+    furnitureStates furnitureState[]
+}
+
+model roomState {
+    cleanliness cleanliness
+    state       state
+    note        String
+
+    report    inventoryReport @relation(fields: [report_id], references: [id])
+    report_id String
+    room      room            @relation(fields: [room_id], references: [id])
+    room_id   String
+
+    @@id([report_id, room_id])
+}
+
+model furnitureState {
+    cleanliness cleanliness
+    state       state
+    note        String
+
+    report         inventoryReport @relation(fields: [report_id], references: [id])
+    report_id      String
+    furniture      furniture       @relation(fields: [furniture_id], references: [id])
+    furniture_id   String
+
+    @@id([report_id, furniture_id])
 }
