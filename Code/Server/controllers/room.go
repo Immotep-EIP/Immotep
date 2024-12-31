@@ -76,10 +76,6 @@ func GetRoomsByProperty(c *gin.Context) {
 //	@Router			/owner/properties/{property_id}/rooms/{room_id} [get]
 func GetRoomByID(c *gin.Context) {
 	room := roomservice.GetByID(c.Param("room_id"))
-	if room == nil || room.PropertyID != c.Param("property_id") {
-		utils.SendError(c, http.StatusNotFound, utils.RoomNotFound, nil)
-		return
-	}
 	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
 }
 
@@ -99,11 +95,6 @@ func GetRoomByID(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id} [delete]
 func DeleteRoom(c *gin.Context) {
-	room := roomservice.GetByID(c.Param("room_id"))
-	if room == nil || room.PropertyID != c.Param("property_id") {
-		utils.SendError(c, http.StatusNotFound, utils.RoomNotFound, nil)
-		return
-	}
 	ok := roomservice.Delete(c.Param("room_id"))
 	if !ok {
 		utils.SendError(c, http.StatusNotFound, utils.RoomNotFound, nil)

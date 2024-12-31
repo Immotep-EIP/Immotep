@@ -55,31 +55,44 @@ func registerAPIRoutes(r *gin.Engine) {
 
 func registerOwnerRoutes(owner *gin.RouterGroup) {
 	owner.Use(middlewares.AuthorizeOwner())
-	owner.POST("/properties", controllers.CreateProperty)
-	owner.GET("/properties", controllers.GetAllProperties)
 
-	property := owner.Group("/properties/:property_id")
+	properties := owner.Group("/properties")
 	{
-		property.Use(middlewares.CheckPropertyOwnership("property_id"))
-		property.GET("/", controllers.GetPropertyById)
-		property.GET("/picture", controllers.GetPropertyPicture)
-		property.PUT("/picture", controllers.UpdatePropertyPicture)
+		properties.POST("/properties", controllers.CreateProperty)
+		properties.GET("/properties", controllers.GetAllProperties)
 
-		rooms := property.Group("/rooms")
+		propertyId := properties.Group("/:property_id")
 		{
-			rooms.POST("/", controllers.CreateRoom)
-			rooms.GET("/", controllers.GetRoomsByProperty)
-			rooms.GET("/:room_id", controllers.GetRoomByID)
-			rooms.DELETE("/:room_id", controllers.DeleteRoom)
-		}
+			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
+			propertyId.GET("/", controllers.GetPropertyById)
+			propertyId.GET("/picture", controllers.GetPropertyPicture)
+			propertyId.PUT("/picture", controllers.UpdatePropertyPicture)
 
-		furnitures := property.Group("/rooms/:room_id/furnitures")
-		{
-			furnitures.Use(middlewares.CheckRoomExists("property_id", "room_id"))
-			furnitures.POST("/", controllers.CreateFurniture)
-			furnitures.GET("/", controllers.GetFurnituresByRoom)
-			furnitures.GET("/:furniture_id", controllers.GetFurnitureByID)
-			furnitures.DELETE("/:furniture_id", controllers.DeleteFurniture)
+			rooms := propertyId.Group("/rooms")
+			{
+				rooms.POST("/", controllers.CreateRoom)
+				rooms.GET("/", controllers.GetRoomsByProperty)
+
+				roomId := rooms.Group("/:room_id")
+				{
+					roomId.Use(middlewares.CheckRoomOwnership("property_id", "room_id"))
+					roomId.GET("/", controllers.GetRoomByID)
+					roomId.DELETE("/", controllers.DeleteRoom)
+
+					furnitures := roomId.Group("/furnitures")
+					{
+						furnitures.POST("/", controllers.CreateFurniture)
+						furnitures.GET("/", controllers.GetFurnituresByRoom)
+
+						furnitureId := furnitures.Group("/:furniture_id")
+						{
+							furnitureId.Use(middlewares.CheckFurnitureOwnership("room_id", "furniture_id"))
+							furnitureId.GET("/", controllers.GetFurnitureByID)
+							furnitureId.DELETE("/", controllers.DeleteFurniture)
+						}
+					}
+				}
+			}
 		}
 	}
 

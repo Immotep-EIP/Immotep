@@ -79,10 +79,6 @@ func GetFurnituresByRoom(c *gin.Context) {
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id} [get]
 func GetFurnitureByID(c *gin.Context) {
 	furniture := furnitureservice.GetByID(c.Param("furniture_id"))
-	if furniture == nil || furniture.RoomID != c.Param("room_id") {
-		utils.SendError(c, http.StatusNotFound, utils.FurnitureNotFound, nil)
-		return
-	}
 	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
 }
 
@@ -100,11 +96,6 @@ func GetFurnitureByID(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id} [delete]
 func DeleteFurniture(c *gin.Context) {
-	furniture := furnitureservice.GetByID(c.Param("furniture_id"))
-	if furniture == nil || furniture.RoomID != c.Param("room_id") {
-		utils.SendError(c, http.StatusNotFound, utils.FurnitureNotFound, nil)
-		return
-	}
 	ok := furnitureservice.Delete(c.Param("furniture_id"))
 	if !ok {
 		utils.SendError(c, http.StatusNotFound, utils.FurnitureNotFound, nil)
