@@ -78,4 +78,5 @@
     <string name="inventory_title">Immotep - Inventory</string>
     <string name="entry_inventory">Entry inventory</string>
     <string name="exit_inventory">Exit inventory</string>
+    <string name="edit">Edit</string>
 </resources>

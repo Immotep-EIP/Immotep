@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun InventoryTopBar(navController: NavController) {
+fun InventoryTopBar(onExit: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -87,9 +87,7 @@ fun InventoryTopBar(navController: NavController) {
         )
         Spacer(Modifier.weight(1f).fillMaxHeight())
         IconButton(
-            onClick = {
-                    navController.popBackStack()
-            },
+            onClick = onExit,
             modifier = Modifier.testTag("inventoryTopBarCloseIcon")
         ) {
             Icon(Icons.Outlined.Close, contentDescription = "Close inventory page")
@@ -100,12 +98,12 @@ fun InventoryTopBar(navController: NavController) {
 
 @Composable
 fun InventoryLayout(
-    navController: NavController,
     testTag: String,
+    onExit: () -> Unit,
     content: @Composable () -> Unit
 ) {
     Column(modifier = Modifier.testTag(testTag)) {
-        InventoryTopBar(navController)
+        InventoryTopBar(onExit)
         Column(modifier = Modifier.weight(1f).padding(10.dp).testTag("dashboardLayout")) {
             content()
         }
