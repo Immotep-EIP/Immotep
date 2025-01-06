@@ -75,4 +75,7 @@
     <string name="add_picture">Add a picture</string>
     <string name="city">City</string>
     <string name="name">Name</string>
+    <string name="inventory_title">Immotep - Inventory</string>
+    <string name="entry_inventory">Entry inventory</string>
+    <string name="exit_inventory">Exit inventory</string>
 </resources>

@@ -141,7 +141,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
             }
         }
         Button(
-            onClick = { },
+            onClick = { navController.navigate("inventory/$propertyId") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))

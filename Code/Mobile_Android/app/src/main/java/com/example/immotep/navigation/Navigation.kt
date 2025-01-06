@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.immotep.authService.AuthService
 import com.example.immotep.dashboard.DashBoardScreen
+import com.example.immotep.inventory.InventoryScreen
 import com.example.immotep.login.LoginScreen
 import com.example.immotep.login.dataStore
 import com.example.immotep.profile.ProfileScreen
@@ -41,5 +42,12 @@ fun Navigation() {
         composable("register") { RegisterScreen(navController) }
         composable("profile") { ProfileScreen(navController) }
         composable("realProperty") { RealPropertyScreen(navController) }
+        composable("inventory/{propertyId}") {
+            navBackStackEntry ->
+            val propertyId = navBackStackEntry.arguments?.getString("propertyId")
+            propertyId?.let {
+                InventoryScreen(navController, propertyId)
+            }
+        }
     }
 }
