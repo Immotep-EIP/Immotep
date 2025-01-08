@@ -27,8 +27,11 @@ struct PropertyDetailView: View {
                     DocumentsGrid(documents: $property.documents)
                 }
             }
-            Button("Start Inventory".localized()) {
-                // Action to define
+
+            NavigationLink {
+                InventoryTypeView(property: $property)
+            } label: {
+                Text("Start Inventory")
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
@@ -169,7 +172,8 @@ struct PropertyDetailView_Previews: PreviewProvider {
                 PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
                 PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
 
-            ]
+            ],
+            rooms: []
         )
         PropertyDetailView(property: .constant(property))
     }

@@ -26,6 +26,7 @@ struct Property: Identifiable {
     var leaseEndDate: Date?
     var documents: [PropertyDocument]
     var createdAt: String?
+    var rooms: [PropertyRooms]
 }
 
 struct PropertyDocument: Identifiable {

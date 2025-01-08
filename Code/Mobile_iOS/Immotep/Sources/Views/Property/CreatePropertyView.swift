@@ -17,7 +17,7 @@ struct CreatePropertyView: View {
     @State private var city = ""
     @State private var postalCode = ""
     @State private var country = ""
-    @State private var photo = UIImage(named: "DefaultImageProperty") ?? UIImage()
+    @State private var photo: UIImage? = UIImage(named: "DefaultImageProperty")
     @State private var monthlyRent: NSNumber?
     @State private var deposit: NSNumber?
     @State private var surface: NSNumber?
@@ -141,7 +141,8 @@ struct CreatePropertyView: View {
             tenantName: nil,
             leaseStartDate: nil,
             leaseEndDate: nil,
-            documents: []
+            documents: [],
+            rooms: []
         )
 
         guard let token = await TokenStorage.getAccessToken() else {

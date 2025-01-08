@@ -99,7 +99,8 @@ class PropertyViewModel: ObservableObject {
                     tenantName: nil,
                     leaseStartDate: nil,
                     leaseEndDate: nil,
-                    documents: []
+                    documents: [],
+                    rooms: []
                 )
             }
         } catch {
