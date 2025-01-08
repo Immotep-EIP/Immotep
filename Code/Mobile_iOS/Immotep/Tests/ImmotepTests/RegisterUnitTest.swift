@@ -48,7 +48,6 @@ class MockApiService: ApiServiceProtocol {
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(mockResponseCode)"])
             }
         }
-        print("############## OKAY ##############")
         return ("Registration successful!")
     }
 }
