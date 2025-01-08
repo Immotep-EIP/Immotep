@@ -339,6 +339,185 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/inventory-reports": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all inventory reports for a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get all inventory reports for a property",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of inventory reports",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.InventoryReportResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new inventory report for a room",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Create a new inventory report",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Inventory report data",
+                        "name": "invReport",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property or room not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/inventory-reports/{report_id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get inventory report information by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get inventory report by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Report ID",
+                        "name": "report_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Inventory report not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/picture": {
             "get": {
                 "security": [
@@ -826,8 +1005,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.Error"
                         }
                     },
-                    "404": {
-                        "description": "Property or room not found",
+                    "409": {
+                        "description": "Furniture already exists",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -1424,6 +1603,65 @@ const docTemplate = `{
                 }
             }
         },
+        "models.FurnitureStateRequest": {
+            "type": "object",
+            "required": [
+                "cleanliness",
+                "id",
+                "note",
+                "state"
+            ],
+            "properties": {
+                "cleanliness": {
+                    "type": "string",
+                    "enum": [
+                        "dirty",
+                        "medium",
+                        "clean"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string",
+                    "enum": [
+                        "broken",
+                        "needsRepair",
+                        "bad",
+                        "medium",
+                        "good",
+                        "new"
+                    ]
+                }
+            }
+        },
+        "models.FurnitureStateResponse": {
+            "type": "object",
+            "properties": {
+                "cleanliness": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ImageRequest": {
             "type": "object",
             "required": [
@@ -1445,6 +1683,52 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.InventoryReportRequest": {
+            "type": "object",
+            "required": [
+                "rooms",
+                "type"
+            ],
+            "properties": {
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.RoomStateRequest"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "start",
+                        "middle",
+                        "end"
+                    ]
+                }
+            }
+        },
+        "models.InventoryReportResponse": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.RoomStateResponse"
+                    }
+                },
+                "type": {
                     "type": "string"
                 }
             }
@@ -1611,6 +1895,75 @@ const docTemplate = `{
                 }
             }
         },
+        "models.RoomStateRequest": {
+            "type": "object",
+            "required": [
+                "cleanliness",
+                "furnitures",
+                "id",
+                "note",
+                "state"
+            ],
+            "properties": {
+                "cleanliness": {
+                    "type": "string",
+                    "enum": [
+                        "dirty",
+                        "medium",
+                        "clean"
+                    ]
+                },
+                "furnitures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FurnitureStateRequest"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string",
+                    "enum": [
+                        "broken",
+                        "needsRepair",
+                        "bad",
+                        "medium",
+                        "good",
+                        "new"
+                    ]
+                }
+            }
+        },
+        "models.RoomStateResponse": {
+            "type": "object",
+            "properties": {
+                "cleanliness": {
+                    "type": "string"
+                },
+                "furnitures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FurnitureStateResponse"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UserRequest": {
             "type": "object",
             "required": [
@@ -1720,7 +2073,12 @@ const docTemplate = `{
                 "room-already-exists",
                 "room-not-found",
                 "furniture-not-found",
-                "furniture-already-exists"
+                "furniture-already-exists",
+                "furniture-not-in-this-room",
+                "inventory-report-already-exists",
+                "inventory-report-not-found",
+                "room-state-already-exists",
+                "furniture-state-already-exists"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -1751,7 +2109,12 @@ const docTemplate = `{
                 "RoomAlreadyExists",
                 "RoomNotFound",
                 "FurnitureNotFound",
-                "FurnitureAlreadyExists"
+                "FurnitureAlreadyExists",
+                "FurnitureNotInThisRoom",
+                "InventoryReportAlreadyExists",
+                "InventoryReportNotFound",
+                "RoomStateAlreadyExists",
+                "FurnitureStateAlreadyExists"
             ]
         }
     },

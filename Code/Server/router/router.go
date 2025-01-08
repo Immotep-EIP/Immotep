@@ -93,6 +93,18 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 					}
 				}
 			}
+
+			invReports := propertyId.Group("/inventory-reports")
+			{
+				invReports.POST("/", controllers.CreateInventoryReport)
+				invReports.GET("/", controllers.GetInventoryReportsByProperty)
+
+				invReportId := invReports.Group("/:report_id")
+				{
+					invReportId.Use(middlewares.CheckInventoryReportOwnership("property_id", "report_id"))
+					invReportId.GET("/", controllers.GetInventoryReportByID)
+				}
+			}
 		}
 	}
 

@@ -22,7 +22,7 @@ import (
 //	@Success		201			{object}	models.FurnitureResponse	"Created furniture data"
 //	@Failure		400			{object}	utils.Error					"Missing fields"
 //	@Failure		403			{object}	utils.Error					"Property not yours"
-//	@Failure		404			{object}	utils.Error					"Property or room not found"
+//	@Failure		409			{object}	utils.Error					"Furniture already exists"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures [post]
@@ -35,7 +35,7 @@ func CreateFurniture(c *gin.Context) {
 
 	furniture := furnitureservice.Create(req.ToDbFurniture(), c.Param("room_id"))
 	if furniture == nil {
-		utils.SendError(c, http.StatusNotFound, utils.FurnitureAlreadyExists, nil)
+		utils.SendError(c, http.StatusConflict, utils.FurnitureAlreadyExists, nil)
 		return
 	}
 	c.JSON(http.StatusCreated, models.DbFurnitureToResponse(*furniture))

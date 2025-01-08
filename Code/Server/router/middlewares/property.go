@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	furnitureservice "immotep/backend/services/furniture"
+	inventoryreportservice "immotep/backend/services/inventoryreport"
 	propertyservice "immotep/backend/services/property"
 	roomservice "immotep/backend/services/room"
 	"immotep/backend/utils"
@@ -44,6 +45,18 @@ func CheckFurnitureOwnership(roomIdUrlParam string, furnitureIdUrlParam string) 
 		furniture := furnitureservice.GetByID(c.Param(furnitureIdUrlParam))
 		if furniture == nil || furniture.RoomID != c.Param(roomIdUrlParam) {
 			utils.AbortSendError(c, http.StatusNotFound, utils.FurnitureNotFound, nil)
+			return
+		}
+
+		c.Next()
+	}
+}
+
+func CheckInventoryReportOwnership(propertyIdUrlParam string, reportIdUrlParam string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		invrep := inventoryreportservice.GetByID(c.Param(reportIdUrlParam))
+		if invrep == nil || invrep.PropertyID != c.Param(propertyIdUrlParam) {
+			utils.AbortSendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
 			return
 		}
 

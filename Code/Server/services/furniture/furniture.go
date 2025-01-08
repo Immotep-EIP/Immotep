@@ -44,7 +44,10 @@ func GetByID(id string) *db.FurnitureModel {
 		db.Furniture.Room.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
-		return nil
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
 	}
 	return furniture
 }
