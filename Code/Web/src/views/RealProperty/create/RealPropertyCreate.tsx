@@ -1,12 +1,20 @@
 import React, { useState } from 'react'
 
-import { FormProps, Form, Input, Button, Upload, UploadProps, message } from 'antd'
+import {
+  FormProps,
+  Form,
+  Input,
+  Button,
+  Upload,
+  UploadProps,
+  message
+} from 'antd'
 import { useTranslation } from 'react-i18next'
 
+import { UploadOutlined } from '@ant-design/icons'
 import closeIcon from '@/assets/icons/close.png'
 
-import { UploadOutlined } from '@ant-design/icons'
-import CreatePropertyFunction from '@/services/api/Property/CreateProperty'
+import CreatePropertyFunction from '@/services/api/Owner/Properties/CreateProperty'
 import style from './RealPropertyCreate.module.css'
 
 type FieldType = {
@@ -26,19 +34,19 @@ const props: UploadProps = {
   action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
   maxCount: 1,
   headers: {
-    authorization: 'authorization-text',
+    authorization: 'authorization-text'
   },
   onChange(info) {
     if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
+      console.log(info.file, info.fileList)
     }
     if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
+      message.success(`${info.file.name} file uploaded successfully`)
     } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
+      message.error(`${info.file.name} file upload failed.`)
     }
-  },
-};
+  }
+}
 
 const RealPropertyCreate: React.FC = () => {
   const { t } = useTranslation()
@@ -62,10 +70,14 @@ const RealPropertyCreate: React.FC = () => {
         const req = await CreatePropertyFunction(out)
         if (req) {
           setLoading(false)
-          message.success(t('pages.property.add_real_property.property_created'))
+          message.success(
+            t('pages.property.add_real_property.property_created')
+          )
         } else {
           setLoading(false)
-          message.error(t('pages.property.add_real_property.error_property_created'))
+          message.error(
+            t('pages.property.add_real_property.error_property_created')
+          )
         }
         window.history.back()
       } catch (error) {
@@ -78,7 +90,10 @@ const RealPropertyCreate: React.FC = () => {
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo: any
   ) => {
-    message.error(t('pages.property.add_real_property.fill_all_fields'), errorInfo)
+    message.error(
+      t('pages.property.add_real_property.fill_all_fields'),
+      errorInfo
+    )
   }
 
   return (
@@ -111,10 +126,15 @@ const RealPropertyCreate: React.FC = () => {
           label={t('components.input.property_name.label')}
           name="name"
           rules={[
-            { required: true, message: t('components.input.property_name.error') }
+            {
+              required: true,
+              message: t('components.input.property_name.error')
+            }
           ]}
         >
-          <Input placeholder={t('components.input.property_name.placeholder')} />
+          <Input
+            placeholder={t('components.input.property_name.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item<FieldType>
@@ -190,9 +210,7 @@ const RealPropertyCreate: React.FC = () => {
         <Form.Item<FieldType>
           label={t('components.input.picture.label')}
           name="picture"
-          rules={[
-            { required: false }
-          ]}
+          rules={[{ required: false }]}
         >
           <Upload {...props}>
             <Button icon={<UploadOutlined />}>

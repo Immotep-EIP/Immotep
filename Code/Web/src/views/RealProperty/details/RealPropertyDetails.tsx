@@ -10,8 +10,8 @@ import tenantIcon from '@/assets/icons/tenant.png'
 import dateIcon from '@/assets/icons/date.png'
 
 import InviteTenantModal from '@/components/DetailsPage/InviteTenantModal'
-import GetPropertyDetails from '@/services/api/Property/GetPropertyDetails'
-import { GetProperty } from '@/interfaces/Property/Property'
+import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
+import { PropertyDetails } from '@/interfaces/Property/Property'
 import returnIcon from '@/assets/icons/retour.png'
 import style from './RealPropertyDetails.module.css'
 
@@ -20,7 +20,7 @@ import DamageTab from './tabs/2DamageTab'
 import InventoryTab from './tabs/3InventoryTab'
 import DocumentsTab from './tabs/4DocumentsTab'
 
-const HeaderPart: React.FC<{ propertyData: GetProperty | null }> = ({
+const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
   propertyData
 }) => {
   const { t } = useTranslation()
@@ -33,7 +33,7 @@ const HeaderPart: React.FC<{ propertyData: GetProperty | null }> = ({
     <div className={style.headerPartContainer}>
       <div className={style.imageContainer}>
         <img
-          src={propertyData.picture || defaultHouse}
+          src={propertyData.picture_id || defaultHouse}
           alt="Property"
           className={style.image}
         />
@@ -134,7 +134,7 @@ const RealPropertyDetails: React.FC = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const { id } = location.state || {}
-  const [propertyData, setPropertyData] = useState<GetProperty | null>(null)
+  const [propertyData, setPropertyData] = useState<PropertyDetails | null>(null)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 

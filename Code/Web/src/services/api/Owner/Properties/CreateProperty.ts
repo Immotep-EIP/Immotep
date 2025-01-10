@@ -5,7 +5,7 @@ const CreatePropertyFunction = async (data: CreateProperty) => {
   try {
     return await callApi({
       method: 'POST',
-      endpoint: 'owner/properties',
+      endpoint: 'owner/properties/properties',
       data
     })
   } catch (error) {
