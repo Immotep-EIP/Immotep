@@ -24,7 +24,12 @@ func TestGetAllProperties(t *testing.T) {
 
 	property := BuildTestProperty("1")
 	mock.Property.Expect(
-		client.Client.Property.FindMany(db.Property.OwnerID.Equals("1")),
+		client.Client.Property.FindMany(
+			db.Property.OwnerID.Equals("1"),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).ReturnsMany([]db.PropertyModel{property})
 
 	gin.SetMode(gin.TestMode)
@@ -46,7 +51,10 @@ func TestGetPropertyById(t *testing.T) {
 
 	property := BuildTestProperty("1")
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)),
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Returns(property)
 
 	gin.SetMode(gin.TestMode)
@@ -69,7 +77,10 @@ func TestGetPropertyByIdNotFound(t *testing.T) {
 
 	property := BuildTestProperty("1")
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)),
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Errors(db.ErrNotFound)
 
 	gin.SetMode(gin.TestMode)
@@ -92,7 +103,10 @@ func TestGetPropertyByIdNotYours(t *testing.T) {
 
 	property := BuildTestProperty("1")
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)),
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Returns(property)
 
 	gin.SetMode(gin.TestMode)
@@ -125,7 +139,6 @@ func TestCreateProperty(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Returns(property)
 
@@ -186,7 +199,6 @@ func TestCreatePropertyAlreadyExists(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,

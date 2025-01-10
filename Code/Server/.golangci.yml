@@ -133,7 +133,7 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#line-length-limit
       - name: line-length-limit
         exclude: [""]
-        arguments: [120]
+        arguments: [130]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
       - name: max-public-structs
         disabled: true

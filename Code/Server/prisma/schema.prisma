@@ -19,6 +19,27 @@ enum priority {
     urgent
 }
 
+enum reportType {
+    start
+    middle
+    end
+}
+
+enum state {
+    broken
+    needsRepair
+    bad
+    medium
+    good
+    new
+}
+
+enum cleanliness {
+    dirty
+    medium
+    clean
+}
+
 model user {
     id          String   @id @default(cuid())
     email       String   @unique @db.VarChar(255)
@@ -28,6 +49,9 @@ model user {
     role        role
     created_at  DateTime @default(now())
     updated_at  DateTime @updatedAt
+
+    profile_picture    image?   @relation(fields: [profile_picture_id], references: [id])
+    profile_picture_id String?
 
     owned_properties   property[]
     rented_properties  contract[]
@@ -72,8 +96,10 @@ model property {
     area_sqm               Float
     rental_price_per_month Int
     deposit_price          Int
-    picture     String?
     created_at  DateTime @default(now())
+
+    picture    image?   @relation(fields: [picture_id], references: [id])
+    picture_id String?
 
     owner       user     @relation(fields: [owner_id], references: [id])
     owner_id    String
@@ -81,6 +107,8 @@ model property {
     contracts          contract[]
     pending_contracts  pendingContract?
     damages            damage[]
+    rooms              room[]
+    reports            inventoryReport[]
 
     @@unique([name, owner_id])
 }
@@ -95,4 +123,77 @@ model pendingContract {
 
     property     property  @relation(fields: [property_id], references: [id])
     property_id  String    @unique
+}
+
+model image {
+    id         String    @id @default(cuid())
+    data       Bytes
+    created_at DateTime  @default(now())
+
+    users      user[]
+    properties property[]
+}
+
+model room {
+    id          String   @id @default(cuid())
+    name        String
+
+    property    property @relation(fields: [property_id], references: [id])
+    property_id String
+
+    furnitures  furniture[]
+    roomStates  roomState[]
+
+    @@unique([name, property_id])
+}
+
+model furniture {
+    id        String @id @default(cuid())
+    name      String
+    quantity  Int    @default(1)
+
+    room      room   @relation(fields: [room_id], references: [id])
+    room_id   String
+
+    furnitureStates furnitureState[]
+
+    @@unique([name, room_id])
+}
+
+model inventoryReport {
+    id      String     @id @default(cuid())
+    date    DateTime   @default(now())
+    type    reportType
+
+    property    property @relation(fields: [property_id], references: [id])
+    property_id String
+
+    roomStates      roomState[]
+    furnitureStates furnitureState[]
+}
+
+model roomState {
+    cleanliness cleanliness
+    state       state
+    note        String
+
+    report    inventoryReport @relation(fields: [report_id], references: [id])
+    report_id String
+    room      room            @relation(fields: [room_id], references: [id])
+    room_id   String
+
+    @@id([report_id, room_id])
+}
+
+model furnitureState {
+    cleanliness cleanliness
+    state       state
+    note        String
+
+    report         inventoryReport @relation(fields: [report_id], references: [id])
+    report_id      String
+    furniture      furniture       @relation(fields: [furniture_id], references: [id])
+    furniture_id   String
+
+    @@id([report_id, furniture_id])
 }
