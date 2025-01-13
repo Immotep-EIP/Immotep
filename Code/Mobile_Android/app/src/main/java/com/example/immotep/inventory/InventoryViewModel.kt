@@ -15,7 +15,7 @@ data class RoomDetail(
 data class Room (
     val name : String = "",
     val description : String = "",
-    val details : Array<RoomDetail> = arrayOf()
+    var details : Array<RoomDetail> = arrayOf()
 )
 
 class InventoryViewModel : ViewModel() {

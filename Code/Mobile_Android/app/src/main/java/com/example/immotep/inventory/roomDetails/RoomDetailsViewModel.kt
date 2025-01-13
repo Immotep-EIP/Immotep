@@ -1,27 +1,31 @@
 package com.example.immotep.inventory.roomDetails
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.rooms.RoomsViewModel
 import com.example.immotep.realProperty.RealPropertyViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class RoomDetailsViewModel(
     private val closeRoomPanel : (roomIndex: Int, details: Array<RoomDetail>) -> Unit,
-    private val baseDetails: Array<RoomDetail>,
-    private val roomIndex: Int
-) {
+)  : ViewModel()  {
 
-    val details = mutableListOf<RoomDetail>()
+    val details = mutableStateListOf<RoomDetail>()
+    val currentlyOpenDetailIndex = MutableStateFlow<Int?>(null)
 
-    init {
+    fun addBaseDetails(bDetails: Array<RoomDetail>) {
         details.clear()
-        details.addAll(baseDetails)
+        details.addAll(bDetails)
     }
 
-    fun onClose() {
+    fun onClose(roomIndex : Int) {
         closeRoomPanel(roomIndex, details.toTypedArray())
+        details.clear()
     }
 
     fun addDetail(name : String) {
@@ -43,14 +47,12 @@ class RoomDetailsViewModel(
 
 class RoomDetailsViewModelFactory(
     private val closeRoomPanel : (roomIndex: Int, details: Array<RoomDetail>) -> Unit,
-    private val baseDetails: Array<RoomDetail>,
-    private val roomIndex: Int
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RoomDetailsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RoomDetailsViewModel(closeRoomPanel, baseDetails, roomIndex) as T
+            return RoomDetailsViewModel(closeRoomPanel) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

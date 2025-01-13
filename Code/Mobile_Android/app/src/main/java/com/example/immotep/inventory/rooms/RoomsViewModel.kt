@@ -1,5 +1,6 @@
 package com.example.immotep.inventory.rooms
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.immotep.inventory.Room
@@ -11,22 +12,42 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class RoomsViewModel(
     private val rooms: Array<Room>,
-    val addRoom: (String) -> Unit,
-    val removeRoom: (Int) -> Unit,
+    private val addRoom: (String) -> Unit,
+    private val removeRoom: (Int) -> Unit,
     private val editRoom: (Int, Room) -> Unit) : ViewModel() {
 
     val _currentlyOpenRoomIndex = MutableStateFlow<Int?>(null)
     val currentlyOpenRoomIndex: StateFlow<Int?> = _currentlyOpenRoomIndex.asStateFlow()
+    val allRooms = mutableStateListOf<Room>()
+
+    init {
+        allRooms.clear()
+        allRooms.addAll(rooms)
+    }
+
+    fun onClose() {
+        allRooms.clear()
+    }
+
+    fun addARoom(name: String) {
+        val room = Room(name)
+        addRoom(room.name)
+        allRooms.add(room)
+    }
 
     fun openRoomPanel(roomIndex: Int) {
+        if (roomIndex < 0 || roomIndex >= allRooms.size) return
         _currentlyOpenRoomIndex.value = roomIndex
     }
 
     fun closeRoomPanel(roomIndex: Int, details: Array<RoomDetail>) {
-        if (roomIndex < 0 || roomIndex >= rooms.size) return
-        val roomSelected = rooms[roomIndex]
-        details.copyInto(roomSelected.details)
+        if (roomIndex < 0 || roomIndex >= allRooms.size) return
+        println("room index : $roomIndex")
+        val roomSelected = allRooms[roomIndex]
+        roomSelected.details = details
         editRoom(roomIndex, roomSelected)
+        allRooms[roomIndex] = roomSelected
+        _currentlyOpenRoomIndex.value = null
     }
 }
 

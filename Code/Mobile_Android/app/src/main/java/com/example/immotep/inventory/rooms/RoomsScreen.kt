@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -15,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -23,9 +25,12 @@ import com.example.immotep.inventory.Room
 import com.example.immotep.layouts.InventoryLayout
 import com.example.immotep.realProperty.PropertyBox
 import com.example.immotep.R
+import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InventoryCenterAddButton
+import com.example.immotep.inventory.roomDetails.RoomDetailsScreen
 
 fun roomIsCompleted(room: Room): Boolean {
+    if (room.details.isEmpty()) return false
     for (detail in room.details) {
         if (!detail.completed) {
             return false
@@ -49,28 +54,52 @@ fun RoomsScreen(
 
     val currentlyOpenRoomIndex = viewModel.currentlyOpenRoomIndex.collectAsState()
     if (currentlyOpenRoomIndex.value == null) {
-        InventoryLayout(testTag = "roomsScreen", closeInventory) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                Button(
-                    shape = RoundedCornerShape(5.dp),
-                    colors = androidx.compose.material.ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colorScheme.tertiary),
-                    onClick = { }) {
-                        Text(stringResource(R.string.edit))
+        InventoryLayout(testTag = "roomsScreen", { viewModel.onClose();closeInventory() }) {
+            InitialFadeIn {
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            shape = RoundedCornerShape(5.dp),
+                            colors = androidx.compose.material.ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colorScheme.tertiary
+                            ),
+                            onClick = { }) {
+                            Text(stringResource(R.string.edit))
+                        }
                     }
-            }
-            Column {
-                LazyColumn {
-                    items(rooms) { room ->
-                        NextInventoryButton(
-                            leftIcon = if (roomIsCompleted(room)) Icons.Outlined.Check else null,
-                            leftText = room.name,
-                            onClick = { viewModel.openRoomPanel(rooms.indexOf(room)) },
-                            testTag = "roomButton ${rooms.indexOf(room)}"
+                    Column {
+                        LazyColumn {
+                            itemsIndexed(viewModel.allRooms) { index, room ->
+                                NextInventoryButton(
+                                    leftIcon = if (roomIsCompleted(room)) Icons.Outlined.Check else null,
+                                    leftText = room.name,
+                                    onClick = {
+                                        println("room index : $index")
+                                        println("rooms : ${viewModel.allRooms}")
+                                        viewModel.openRoomPanel(index)
+                                    },
+                                    testTag = "roomButton $index"
+                                )
+                            }
+                        }
+                        InventoryCenterAddButton(
+                            onClick = { viewModel.addARoom("testRoom") },
+                            testTag = "addRoomButton"
                         )
                     }
                 }
-                InventoryCenterAddButton(onClick = { viewModel.addRoom("testRoom") }, testTag = "addRoomButton")
             }
         }
+    } else {
+        RoomDetailsScreen(
+            closeRoomPanel = { roomIndex, details ->
+                viewModel.closeRoomPanel(roomIndex, details)
+            },
+            roomDetails = viewModel.allRooms[currentlyOpenRoomIndex.value!!].details,
+            roomIndex = currentlyOpenRoomIndex.value!!
+        )
     }
 }
