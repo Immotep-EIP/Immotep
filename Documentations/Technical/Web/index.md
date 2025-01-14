@@ -2,4 +2,6 @@
 
 ## Summary
 
-1. Global overview of the application
+1. [Global overview of the application](global-overview.md)
+
+2. [Authentication and security](auth-and-security.md)
