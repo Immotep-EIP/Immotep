@@ -6,6 +6,8 @@ plugins {
     jacoco
 }
 
+val cameraXVersion = "1.0.1"
+
 android {
     namespace = "com.example.immotep"
     compileSdk = 35
@@ -85,6 +87,11 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    implementation("androidx.camera:camera-camera2:1.0.1")
+    implementation("androidx.camera:camera-lifecycle:1.0.1")
+    implementation("androidx.camera:camera-view:1.0.0-alpha27")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

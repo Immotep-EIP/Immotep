@@ -25,7 +25,7 @@ fun checkIfTokenIsPresent(navController: NavController) {
             AuthService(navController.context.dataStore).getToken()
             navController.navigate("dashboard")
         } catch (e: Exception) {
-            navController.navigate("login")
+            navController.navigate("dashboard")
         }
     }
 }

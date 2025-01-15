@@ -25,6 +25,7 @@ import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InventoryCenterAddButton
 import com.example.immotep.components.NextInventoryButton
 import com.example.immotep.inventory.RoomDetail
+import com.example.immotep.inventory.roomDetails.OneDetail.OneDetailScreen
 import com.example.immotep.inventory.rooms.roomIsCompleted
 import com.example.immotep.layouts.InventoryLayout
 
@@ -65,8 +66,8 @@ fun RoomDetailsScreen(
                                 NextInventoryButton(
                                     leftIcon = if (detail.completed) Icons.Outlined.Check else null,
                                     leftText = detail.name,
-                                    onClick = { },
-                                    testTag = "detailButton ${viewModel.details.indexOf(detail)}"
+                                    onClick = { viewModel.onOpenDetail(index) },
+                                    testTag = "detailButton $index"
                                 )
                             }
                         }
@@ -78,5 +79,13 @@ fun RoomDetailsScreen(
                 }
             }
         }
+    } else {
+        OneDetailScreen(
+            onModifyDetail = { detailIndex, detail ->
+                viewModel.onModifyDetail(detailIndex, detail)
+            },
+            index = currentlyOpenRoomIndex.value!!,
+            baseDetail = viewModel.details[currentlyOpenRoomIndex.value!!]
+        )
     }
 }

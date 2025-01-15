@@ -38,10 +38,14 @@ class RoomDetailsViewModel(
         details.removeAt(detailIndex)
     }
 
-    fun onConfirmDetail(detailIndex: Int, detailValue : RoomDetail) {
+    fun onModifyDetail(detailIndex: Int, detailValue : RoomDetail) {
         if (detailIndex < 0 || detailIndex >= details.size) return
         details[detailIndex] = detailValue
-        details[detailIndex].completed = true
+        currentlyOpenDetailIndex.value = null
+    }
+
+    fun onOpenDetail(detailIndex: Int) {
+        currentlyOpenDetailIndex.value = detailIndex
     }
 }
 

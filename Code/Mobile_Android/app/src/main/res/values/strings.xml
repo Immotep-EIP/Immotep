@@ -79,4 +79,6 @@
     <string name="entry_inventory">Entry inventory</string>
     <string name="exit_inventory">Exit inventory</string>
     <string name="edit">Edit</string>
+    <string name="add_picture_from_gallery">Add picture from gallery</string>
+    <string name="take_picture">Take picture</string>
 </resources>
