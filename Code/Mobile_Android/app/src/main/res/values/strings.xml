@@ -97,4 +97,8 @@
     <string name="comment_error">The comment must be at least 3 characters long</string>
     <string name="add_picture_error">You must add at least one picture</string>
     <string name="status_error">You must set a status</string>
+    <string name="confirm_inventory">Confirm the inventory</string>
+    <string name="entry_pictures">Entry pictures</string>
+    <string name="exit_pictures">Exit pictures</string>
+    <string name="compare_images">Compare entry and exit pictures</string>
 </resources>

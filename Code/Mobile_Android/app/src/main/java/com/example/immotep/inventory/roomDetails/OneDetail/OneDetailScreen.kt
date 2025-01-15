@@ -45,7 +45,7 @@ import com.example.immotep.ui.components.OutlinedTextField
 
 
 @Composable
-fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int, baseDetail : RoomDetail) {
+fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int, baseDetail : RoomDetail, isExit : Boolean) {
     val viewModel : OneDetailViewModel = viewModel()
     val detailValue = viewModel.detail.collectAsState()
     val detailError = viewModel.errors.collectAsState()
@@ -54,15 +54,26 @@ fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) ->
     }
     InventoryLayout(
         testTag = "oneDetailScreen",
-        { viewModel.onClose(onModifyDetail, index) }
+        { viewModel.onClose(onModifyDetail, index, isExit) }
     ) {
         InitialFadeIn {
             Column {
-                Text(stringResource(R.string.pictures))
+                Text(if (isExit) stringResource(R.string.entry_pictures) else stringResource(R.string.pictures))
                 AddingPicturesCarousel(pictures = viewModel.picture, addPicture = { uri -> viewModel.addPicture(uri) })
                 if (detailError.value.picture) Text(stringResource(R.string.add_picture_error),
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(top = 10.dp))
+                if (isExit) {
+                    Text(stringResource(R.string.exit_pictures))
+                    AddingPicturesCarousel(pictures = viewModel.exitPicture, addPicture = { uri -> viewModel.addExitPicture(uri) })
+                    if (detailError.value.exitPicture) {
+                        Text(
+                            stringResource(R.string.add_picture_error),
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(top = 10.dp)
+                        )
+                    }
+                }
                 OutlinedTextField(
                     value = detailValue.value.comment,
                     onValueChange = { newVal -> viewModel.setComment(newVal) },
@@ -100,7 +111,7 @@ fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) ->
                         ),
                         onClick = { },
                     ) {
-                        Text(stringResource(R.string.analyze_pictures))
+                        Text(stringResource(if (isExit) R.string.compare_images else R.string.analyze_pictures))
                     }
                     Button(
                         shape = RoundedCornerShape(5.dp),
@@ -109,7 +120,7 @@ fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) ->
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        onClick = { viewModel.onConfirm(onModifyDetail, index, baseDetail) },
+                        onClick = { viewModel.onConfirm(onModifyDetail, index, isExit) },
                     ) {
                         Text(stringResource(R.string.validate))
                     }

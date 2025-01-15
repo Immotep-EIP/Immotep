@@ -6,6 +6,7 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 data class LoginResponse(
     val access_token: String,
@@ -68,6 +69,24 @@ data class AddPropertyResponse(
     val created_at: String,
 )
 
+data class InventoryReportFurniture(
+    val id: String,
+    val cleanliness: String,
+    val state: String,
+)
+
+data class InventoryReportRoom(
+    val id: String,
+    val cleanliness: String,
+    val state: String,
+    val furnitures: Array<InventoryReportFurniture>
+)
+
+data class InventoryReportInput(
+    val type: String,
+    val rooms: Array<InventoryReportRoom>
+)
+
 const val API_PREFIX = "/api/v1"
 
 interface ApiService {
@@ -96,4 +115,11 @@ interface ApiService {
 
     @POST("${API_PREFIX}/owner/properties")
     suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : AddPropertyResponse
+
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")
+    suspend fun inventoryReport(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Body inventoryReportInput: InventoryReportInput
+    )
 }

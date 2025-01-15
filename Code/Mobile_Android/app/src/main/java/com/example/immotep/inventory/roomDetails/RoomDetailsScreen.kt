@@ -33,9 +33,9 @@ import com.example.immotep.layouts.InventoryLayout
 fun RoomDetailsScreen(
     closeRoomPanel : (roomIndex: Int, details: Array<RoomDetail>) -> Unit,
     roomDetails: Array<RoomDetail>,
-    roomIndex: Int
-
-    ) {
+    roomIndex: Int,
+    isExit : Boolean
+) {
     val viewModel: RoomDetailsViewModel = viewModel(factory = RoomDetailsViewModelFactory(closeRoomPanel))
 
     val currentlyOpenRoomIndex = viewModel.currentlyOpenDetailIndex.collectAsState()
@@ -54,7 +54,8 @@ fun RoomDetailsScreen(
                         Button(
                             shape = RoundedCornerShape(5.dp),
                             colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colorScheme.tertiary
+                                backgroundColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             onClick = { }) {
                             Text(stringResource(R.string.edit))
@@ -85,7 +86,8 @@ fun RoomDetailsScreen(
                 viewModel.onModifyDetail(detailIndex, detail)
             },
             index = currentlyOpenRoomIndex.value!!,
-            baseDetail = viewModel.details[currentlyOpenRoomIndex.value!!]
+            baseDetail = viewModel.details[currentlyOpenRoomIndex.value!!],
+            isExit = isExit
         )
     }
 }

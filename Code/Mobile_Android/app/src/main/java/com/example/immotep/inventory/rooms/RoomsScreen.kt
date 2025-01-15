@@ -48,7 +48,8 @@ fun RoomsScreen(
     addRoom: (String) -> Unit,
     removeRoom: (Int) -> Unit,
     editRoom: (Int, Room) -> Unit,
-    closeInventory: () -> Unit
+    closeInventory: () -> Unit,
+    isExit : Boolean
 ) {
     val viewModel: RoomsViewModel = viewModel(factory = RoomsViewModelFactory(rooms, addRoom, removeRoom, editRoom))
 
@@ -59,12 +60,22 @@ fun RoomsScreen(
                 Column {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Button(
                             shape = RoundedCornerShape(5.dp),
                             colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colorScheme.tertiary
+                                backgroundColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            onClick = { }) {
+                            Text(stringResource(R.string.confirm_inventory))
+                        }
+                        Button(
+                            shape = RoundedCornerShape(5.dp),
+                            colors = androidx.compose.material.ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             onClick = { }) {
                             Text(stringResource(R.string.edit))
@@ -97,7 +108,8 @@ fun RoomsScreen(
                 viewModel.closeRoomPanel(roomIndex, details)
             },
             roomDetails = viewModel.allRooms[currentlyOpenRoomIndex.value!!].details,
-            roomIndex = currentlyOpenRoomIndex.value!!
+            roomIndex = currentlyOpenRoomIndex.value!!,
+            isExit = isExit
         )
     }
 }

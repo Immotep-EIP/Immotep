@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.TurnRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -42,9 +43,6 @@ import com.example.immotep.R
 import com.example.immotep.components.NextInventoryButton
 import com.example.immotep.inventory.rooms.RoomsScreen
 
-enum class InventoryOpenValues {
-    ENTRY, EXIT, CLOSED
-}
 
 @Composable
 fun InventoryScreen(
@@ -77,7 +75,8 @@ fun InventoryScreen(
             {
                 viewModel.onClose()
                 inventoryOpen = InventoryOpenValues.CLOSED
-            }
+            },
+            isExit = inventoryOpen == InventoryOpenValues.EXIT
         )
     }
 }

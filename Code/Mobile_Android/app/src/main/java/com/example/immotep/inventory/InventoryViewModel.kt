@@ -3,13 +3,16 @@ package com.example.immotep.inventory
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 data class RoomDetail(
     var name : String = "",
     var completed : Boolean = false,
     var comment : String = "",
     var status : String = "",
-    val pictures : Array<Uri> = arrayOf()
+    val pictures : Array<Uri> = arrayOf(),
+    val exitPictures : Array<Uri>? = null
 )
 
 data class Room (
@@ -18,9 +21,12 @@ data class Room (
     var details : Array<RoomDetail> = arrayOf()
 )
 
+enum class InventoryOpenValues {
+    ENTRY, EXIT, CLOSED
+}
+
 class InventoryViewModel : ViewModel() {
     val rooms = mutableStateListOf<Room>()
-
     fun addRoom(name: String) {
         val room = Room(name)
         rooms.add(room)
@@ -38,5 +44,9 @@ class InventoryViewModel : ViewModel() {
 
     fun onClose() {
         rooms.clear()
+    }
+
+    fun sendInventory(openValue: InventoryOpenValues) {
+
     }
 }

@@ -11,22 +11,27 @@ data class RoomDetailsError(
     var name: Boolean = false,
     var comment: Boolean = false,
     var status: Boolean = false,
-    var picture: Boolean = false
+    var picture: Boolean = false,
+    var exitPicture: Boolean = false
 )
 
 class OneDetailViewModel : ViewModel() {
     private val _detail = MutableStateFlow(RoomDetail())
     val detail = _detail.asStateFlow()
     val picture = mutableStateListOf<Uri>()
+    val exitPicture = mutableStateListOf<Uri>()
     private val _errors = MutableStateFlow(RoomDetailsError())
     val errors = _errors.asStateFlow()
 
     fun reset(newDetail : RoomDetail?) {
         picture.clear()
+        exitPicture.clear()
         if (newDetail != null) {
             _detail.value = newDetail
-            println(newDetail)
             picture.addAll(newDetail.pictures)
+            if (newDetail.exitPictures != null) {
+                exitPicture.addAll(newDetail.exitPictures)
+            }
         } else {
             _detail.value = RoomDetail()
         }
@@ -64,7 +69,16 @@ class OneDetailViewModel : ViewModel() {
         this.picture.removeAt(index)
     }
 
-    fun onConfirm(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int, baseDetail : RoomDetail) {
+    fun addExitPicture(picture : Uri) {
+        this.exitPicture.add(picture)
+        _errors.value = _errors.value.copy(picture = false)
+    }
+
+    fun removeExitPicture(index : Int) {
+        this.exitPicture.removeAt(index)
+    }
+
+    fun onConfirm(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int, isExit : Boolean) {
         val error = RoomDetailsError()
         if (_detail.value.name.length < 3) {
             error.name = true
@@ -78,17 +92,27 @@ class OneDetailViewModel : ViewModel() {
         if (picture.isEmpty()) {
             error.picture = true
         }
+        if (isExit && exitPicture.isEmpty()) {
+            error.exitPicture = true
+        }
         if (error.name || error.comment || error.status || error.picture) {
             _errors.value = error
             return
         }
-        _detail.value = _detail.value.copy(pictures = picture.toTypedArray(), completed = true)
+        _detail.value = _detail.value.copy(
+            pictures = picture.toTypedArray(),
+            completed = true,
+            exitPictures = if (isExit) exitPicture.toTypedArray() else null
+        )
         onModifyDetail(index, detail.value)
         reset(null)
     }
 
-    fun onClose(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int) {
-        _detail.value = _detail.value.copy(pictures = picture.toTypedArray())
+    fun onClose(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int, isExit: Boolean) {
+        _detail.value = _detail.value.copy(
+            pictures = picture.toTypedArray(),
+            exitPictures = if (isExit) exitPicture.toTypedArray() else null
+        )
         onModifyDetail(index, _detail.value)
         reset(null)
     }
