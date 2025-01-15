@@ -8,15 +8,14 @@ import (
 )
 
 type PropertyRequest struct {
-	Name                string  `binding:"required"       json:"name"`
-	Address             string  `binding:"required"       json:"address"`
-	City                string  `binding:"required"       json:"city"`
-	PostalCode          string  `binding:"required"       json:"postal_code"`
-	Country             string  `binding:"required"       json:"country"`
-	AreaSqm             float64 `binding:"required"       json:"area_sqm"`
-	RentalPricePerMonth int     `binding:"required"       json:"rental_price_per_month"`
-	DepositPrice        int     `binding:"required"       json:"deposit_price"`
-	Picture             *string `json:"picture,omitempty"`
+	Name                string  `binding:"required" json:"name"`
+	Address             string  `binding:"required" json:"address"`
+	City                string  `binding:"required" json:"city"`
+	PostalCode          string  `binding:"required" json:"postal_code"`
+	Country             string  `binding:"required" json:"country"`
+	AreaSqm             float64 `binding:"required" json:"area_sqm"`
+	RentalPricePerMonth int     `binding:"required" json:"rental_price_per_month"`
+	DepositPrice        int     `binding:"required" json:"deposit_price"`
 }
 
 func (p *PropertyRequest) ToDbProperty() db.PropertyModel {
@@ -30,7 +29,6 @@ func (p *PropertyRequest) ToDbProperty() db.PropertyModel {
 			AreaSqm:             p.AreaSqm,
 			RentalPricePerMonth: p.RentalPricePerMonth,
 			DepositPrice:        p.DepositPrice,
-			Picture:             p.Picture,
 		},
 	}
 }
@@ -38,6 +36,7 @@ func (p *PropertyRequest) ToDbProperty() db.PropertyModel {
 type PropertyResponse struct {
 	ID                  string      `json:"id"`
 	OwnerID             string      `json:"owner_id"`
+	PictureID           *string     `json:"picture_id,omitempty"`
 	Name                string      `json:"name"`
 	Address             string      `json:"address"`
 	City                string      `json:"city"`
@@ -46,7 +45,6 @@ type PropertyResponse struct {
 	AreaSqm             float64     `json:"area_sqm"`
 	RentalPricePerMonth int         `json:"rental_price_per_month"`
 	DepositPrice        int         `json:"deposit_price"`
-	Picture             *string     `json:"picture"`
 	CreatedAt           db.DateTime `json:"created_at"`
 
 	// calculated fields
@@ -60,6 +58,7 @@ type PropertyResponse struct {
 func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	p.ID = model.ID
 	p.OwnerID = model.OwnerID
+	p.PictureID = model.InnerProperty.PictureID
 	p.Name = model.Name
 	p.Address = model.Address
 	p.City = model.City
@@ -68,7 +67,6 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	p.AreaSqm = model.AreaSqm
 	p.RentalPricePerMonth = model.RentalPricePerMonth
 	p.DepositPrice = model.DepositPrice
-	p.Picture = model.InnerProperty.Picture
 	p.CreatedAt = model.CreatedAt
 
 	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })

@@ -20,7 +20,6 @@ import (
 )
 
 func BuildTestProperty(id string) db.PropertyModel {
-	picture := "test.png"
 	return db.PropertyModel{
 		InnerProperty: db.InnerProperty{
 			ID:                  id,
@@ -32,9 +31,12 @@ func BuildTestProperty(id string) db.PropertyModel {
 			AreaSqm:             20.0,
 			RentalPricePerMonth: 500,
 			DepositPrice:        1000,
-			Picture:             &picture,
 			CreatedAt:           time.Now(),
 			OwnerID:             "1",
+		},
+		RelationsProperty: db.RelationsProperty{
+			Damages:   []db.DamageModel{{}},
+			Contracts: []db.ContractModel{{}},
 		},
 	}
 }
@@ -59,8 +61,18 @@ func TestInviteTenant(t *testing.T) {
 
 	property := BuildTestProperty("1")
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)),
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Returns(property)
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals(property.ID),
+			db.Contract.Active.Equals(true),
+		),
+	).Errors(db.ErrNotFound)
 
 	pendingContract := BuildTestPendingContract()
 	mock.PendingContract.Expect(
@@ -127,7 +139,10 @@ func TestInviteTenantPropertyNotFound(t *testing.T) {
 	defer ensure(t)
 
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")),
+		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Errors(db.ErrNotFound)
 
 	pendingContract := BuildTestPendingContract()
@@ -162,7 +177,10 @@ func TestInviteTenantPropertyNotYours(t *testing.T) {
 
 	property := BuildTestProperty("1")
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)),
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Returns(property)
 
 	pendingContract := BuildTestPendingContract()
@@ -197,8 +215,18 @@ func TestInviteTenantAlreadyExists(t *testing.T) {
 
 	property := BuildTestProperty("1")
 	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)),
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
 	).Returns(property)
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals(property.ID),
+			db.Contract.Active.Equals(true),
+		),
+	).Errors(db.ErrNotFound)
 
 	pendingContract := BuildTestPendingContract()
 	mock.PendingContract.Expect(

@@ -41,18 +41,74 @@ func registerAPIRoutes(r *gin.Engine) {
 			root.Use(middlewares.CheckClaims())
 			root.GET("/users", controllers.GetAllUsers)
 			root.GET("/user/:id", controllers.GetUserByID)
-			root.GET("/profile", controllers.GetProfile)
+			root.GET("/user/:id/picture", controllers.GetUserProfilePicture)
+			root.GET("/profile", controllers.GetCurrentUserProfile)
+			root.PUT("/profile", controllers.UpdateCurrentUserProfile)
+			root.GET("/profile/picture", controllers.GetCurrentUserProfilePicture)
+			root.PUT("/profile/picture", controllers.UpdateCurrentUserProfilePicture)
 
 			owner := root.Group("/owner")
+			registerOwnerRoutes(owner)
+		}
+	}
+}
+
+func registerOwnerRoutes(owner *gin.RouterGroup) {
+	owner.Use(middlewares.AuthorizeOwner())
+
+	properties := owner.Group("/properties")
+	{
+		properties.POST("/properties", controllers.CreateProperty)
+		properties.GET("/properties", controllers.GetAllProperties)
+
+		propertyId := properties.Group("/:property_id")
+		{
+			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
+			propertyId.GET("/", controllers.GetPropertyById)
+			propertyId.GET("/picture", controllers.GetPropertyPicture)
+			propertyId.PUT("/picture", controllers.UpdatePropertyPicture)
+
+			rooms := propertyId.Group("/rooms")
 			{
-				owner.Use(middlewares.AuthorizeOwner())
-				owner.GET("/properties", controllers.GetAllProperties)
-				owner.GET("/properties/:id", controllers.GetPropertyById)
-				owner.POST("/properties", controllers.CreateProperty)
-				owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
+				rooms.POST("/", controllers.CreateRoom)
+				rooms.GET("/", controllers.GetRoomsByProperty)
+
+				roomId := rooms.Group("/:room_id")
+				{
+					roomId.Use(middlewares.CheckRoomOwnership("property_id", "room_id"))
+					roomId.GET("/", controllers.GetRoomByID)
+					roomId.DELETE("/", controllers.DeleteRoom)
+
+					furnitures := roomId.Group("/furnitures")
+					{
+						furnitures.POST("/", controllers.CreateFurniture)
+						furnitures.GET("/", controllers.GetFurnituresByRoom)
+
+						furnitureId := furnitures.Group("/:furniture_id")
+						{
+							furnitureId.Use(middlewares.CheckFurnitureOwnership("room_id", "furniture_id"))
+							furnitureId.GET("/", controllers.GetFurnitureByID)
+							furnitureId.DELETE("/", controllers.DeleteFurniture)
+						}
+					}
+				}
+			}
+
+			invReports := propertyId.Group("/inventory-reports")
+			{
+				invReports.POST("/", controllers.CreateInventoryReport)
+				invReports.GET("/", controllers.GetInventoryReportsByProperty)
+
+				invReportId := invReports.Group("/:report_id")
+				{
+					invReportId.Use(middlewares.CheckInventoryReportOwnership("property_id", "report_id"))
+					invReportId.GET("/", controllers.GetInventoryReportByID)
+				}
 			}
 		}
 	}
+
+	owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
 }
 
 func Routes() *gin.Engine {

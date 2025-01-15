@@ -2,6 +2,7 @@ package models_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"immotep/backend/models"
@@ -28,41 +29,65 @@ func TestPropertyRequest(t *testing.T) {
 	})
 }
 
-func TestPropertyResponse(t *testing.T) {
-	pc := db.PropertyModel{
+func BuildTestProperty(id string) db.PropertyModel {
+	return db.PropertyModel{
 		InnerProperty: db.InnerProperty{
-			ID:         "1",
-			Name:       "Test",
-			Address:    "Test",
-			City:       "Test",
-			PostalCode: "Test",
-			Country:    "Test",
-			OwnerID:    "1",
+			ID:                  id,
+			Name:                "Test",
+			Address:             "Test",
+			City:                "Test",
+			PostalCode:          "Test",
+			Country:             "Test",
+			AreaSqm:             20.0,
+			RentalPricePerMonth: 500,
+			DepositPrice:        1000,
+			CreatedAt:           time.Now(),
+			OwnerID:             "1",
+		},
+		RelationsProperty: db.RelationsProperty{
+			Damages:   []db.DamageModel{{}},
+			Contracts: []db.ContractModel{{}},
 		},
 	}
+}
+
+func TestPropertyResponse(t *testing.T) {
+	pc := BuildTestProperty("1")
 
 	t.Run("FromProperty", func(t *testing.T) {
-		inviteResponse := models.PropertyResponse{}
-		inviteResponse.FromDbProperty(pc)
+		propertyResponse := models.PropertyResponse{}
+		propertyResponse.FromDbProperty(pc)
 
-		assert.Equal(t, pc.ID, inviteResponse.ID)
-		assert.Equal(t, pc.Name, inviteResponse.Name)
-		assert.Equal(t, pc.Address, inviteResponse.Address)
-		assert.Equal(t, pc.City, inviteResponse.City)
-		assert.Equal(t, pc.PostalCode, inviteResponse.PostalCode)
-		assert.Equal(t, pc.Country, inviteResponse.Country)
-		assert.Equal(t, pc.OwnerID, inviteResponse.OwnerID)
+		assert.Equal(t, pc.ID, propertyResponse.ID)
+		assert.Equal(t, pc.Name, propertyResponse.Name)
+		assert.Equal(t, pc.Address, propertyResponse.Address)
+		assert.Equal(t, pc.City, propertyResponse.City)
+		assert.Equal(t, pc.PostalCode, propertyResponse.PostalCode)
+		assert.Equal(t, pc.Country, propertyResponse.Country)
+		assert.Equal(t, pc.OwnerID, propertyResponse.OwnerID)
+
+		assert.Equal(t, "available", propertyResponse.Status)
+		assert.Equal(t, 1, propertyResponse.NbDamage)
+		assert.Equal(t, "", propertyResponse.Tenant)
+		assert.Nil(t, propertyResponse.StartDate)
+		assert.Nil(t, propertyResponse.EndDate)
 	})
 
 	t.Run("PropertyToResponse", func(t *testing.T) {
-		inviteResponse := models.DbPropertyToResponse(pc)
+		propertyResponse := models.DbPropertyToResponse(pc)
 
-		assert.Equal(t, pc.ID, inviteResponse.ID)
-		assert.Equal(t, pc.Name, inviteResponse.Name)
-		assert.Equal(t, pc.Address, inviteResponse.Address)
-		assert.Equal(t, pc.City, inviteResponse.City)
-		assert.Equal(t, pc.PostalCode, inviteResponse.PostalCode)
-		assert.Equal(t, pc.Country, inviteResponse.Country)
-		assert.Equal(t, pc.OwnerID, inviteResponse.OwnerID)
+		assert.Equal(t, pc.ID, propertyResponse.ID)
+		assert.Equal(t, pc.Name, propertyResponse.Name)
+		assert.Equal(t, pc.Address, propertyResponse.Address)
+		assert.Equal(t, pc.City, propertyResponse.City)
+		assert.Equal(t, pc.PostalCode, propertyResponse.PostalCode)
+		assert.Equal(t, pc.Country, propertyResponse.Country)
+		assert.Equal(t, pc.OwnerID, propertyResponse.OwnerID)
+
+		assert.Equal(t, "available", propertyResponse.Status)
+		assert.Equal(t, 1, propertyResponse.NbDamage)
+		assert.Equal(t, "", propertyResponse.Tenant)
+		assert.Nil(t, propertyResponse.StartDate)
+		assert.Nil(t, propertyResponse.EndDate)
 	})
 }

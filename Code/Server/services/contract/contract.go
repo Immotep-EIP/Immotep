@@ -74,9 +74,9 @@ func CreatePending(pendingContract db.PendingContractModel, property db.Property
 		db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 	).Exec(pdb.Context)
 	if err != nil {
+		// https://www.prisma.io/docs/orm/reference/error-reference#p2014
 		var ufr *protocol.UserFacingError
-		if ok := errors.As(err, &ufr); ok &&
-			ufr.ErrorCode == "P2014" { // https://www.prisma.io/docs/orm/reference/error-reference#p2014
+		if ok := errors.As(err, &ufr); ok && ufr.ErrorCode == "P2014" {
 			return nil
 		}
 		if _, is := db.IsErrUniqueConstraint(err); is {
