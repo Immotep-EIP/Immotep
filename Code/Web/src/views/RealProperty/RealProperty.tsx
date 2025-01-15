@@ -39,11 +39,12 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
       <div className={style.statusContainer}>
         <Tag color={realProperty.status === 'available' ? 'green' : 'red'}>
           {realProperty.status === 'available'
-            ? t('pages.property.status.available')
-            : t('pages.property.status.unavailable')}
+            ? t('pages.real_property.status.available')
+            : t('pages.real_property.status.unavailable')}
         </Tag>
         <Tag color={realProperty.nb_damage > 0 ? 'red' : 'green'}>
-          {realProperty.nb_damage || 0} {t('pages.property.damage.waiting')}
+          {realProperty.nb_damage || 0}{' '}
+          {t('pages.real_property.damage.waiting')}
         </Tag>
       </div>
 
@@ -120,7 +121,7 @@ const RealPropertyPage: React.FC = () => {
   }
 
   if (error) {
-    return <p>{t('pages.property.error.errorFetchingData')}</p>
+    return <p>{t('pages.real_property.error.error_fetching_data')}</p>
   }
 
   return (

@@ -94,11 +94,11 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
         )}
       </div>
       <div className={style.userInformations}>
-        <b>{t('pages.settings.userInfos')}</b>
-        <SubtitledElement subtitleKey={t('components.input.firstName.label')}>
+        <b>{t('pages.settings.user_infos')}</b>
+        <SubtitledElement subtitleKey={t('components.input.first_name.label')}>
           {user?.firstname}
         </SubtitledElement>
-        <SubtitledElement subtitleKey={t('components.input.lastName.label')}>
+        <SubtitledElement subtitleKey={t('components.input.last_name.label')}>
           {user?.lastname}
         </SubtitledElement>
         <SubtitledElement subtitleKey={t('components.input.email.label')}>
