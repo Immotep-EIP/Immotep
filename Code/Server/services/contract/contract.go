@@ -8,6 +8,28 @@ import (
 	"immotep/backend/prisma/db"
 )
 
+func GetCurrentActive(propertyId string) *db.ContractModel {
+	pdb := database.DBclient
+	c, err := pdb.Client.Contract.FindMany(
+		db.Contract.PropertyID.Equals(propertyId),
+		db.Contract.Active.Equals(true),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	l := len(c)
+	if l == 0 {
+		return nil
+	}
+	if l > 1 {
+		panic("Only one active contract must exist for a property")
+	}
+	return &c[0]
+}
+
 func Create(pendingContract db.PendingContractModel, tenant db.UserModel) *db.ContractModel {
 	pdb := database.DBclient
 	newContract, err := pdb.Client.Contract.CreateOne(
@@ -52,9 +74,9 @@ func CreatePending(pendingContract db.PendingContractModel, property db.Property
 		db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 	).Exec(pdb.Context)
 	if err != nil {
+		// https://www.prisma.io/docs/orm/reference/error-reference#p2014
 		var ufr *protocol.UserFacingError
-		if ok := errors.As(err, &ufr); ok &&
-			ufr.ErrorCode == "P2014" { // https://www.prisma.io/docs/orm/reference/error-reference#p2014
+		if ok := errors.As(err, &ufr); ok && ufr.ErrorCode == "P2014" {
 			return nil
 		}
 		if _, is := db.IsErrUniqueConstraint(err); is {

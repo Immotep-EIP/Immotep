@@ -105,7 +105,7 @@ func TestGetProfile(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Set("oauth.claims", map[string]string{"id": user.ID})
-	controllers.GetProfile(c)
+	controllers.GetCurrentUserProfile(c)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	var userResponse models.UserResponse
@@ -126,7 +126,7 @@ func TestGetProfileUserNotFound(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Set("oauth.claims", map[string]string{"id": "nonexistent"})
-	controllers.GetProfile(c)
+	controllers.GetCurrentUserProfile(c)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
 	var errorResponse utils.Error

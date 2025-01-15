@@ -9,6 +9,9 @@ func GetAllByOwnerId(ownerId string) []db.PropertyModel {
 	pdb := database.DBclient
 	allProperties, err := pdb.Client.Property.FindMany(
 		db.Property.OwnerID.Equals(ownerId),
+	).With(
+		db.Property.Damages.Fetch(),
+		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -18,7 +21,12 @@ func GetAllByOwnerId(ownerId string) []db.PropertyModel {
 
 func GetByID(id string) *db.PropertyModel {
 	pdb := database.DBclient
-	property, err := pdb.Client.Property.FindUnique(db.Property.ID.Equals(id)).Exec(pdb.Context)
+	property, err := pdb.Client.Property.FindUnique(
+		db.Property.ID.Equals(id),
+	).With(
+		db.Property.Damages.Fetch(),
+		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
 			return nil
@@ -40,10 +48,31 @@ func Create(property db.PropertyModel, ownerId string) *db.PropertyModel {
 		db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 		db.Property.DepositPrice.Set(property.DepositPrice),
 		db.Property.Owner.Link(db.User.ID.Equals(ownerId)),
-		db.Property.Picture.SetIfPresent(property.InnerProperty.Picture),
+	).With(
+		db.Property.Contracts.Fetch(),
+		db.Property.Damages.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {
+			return nil
+		}
+		panic(err)
+	}
+	return newProperty
+}
+
+func UpdatePicture(property db.PropertyModel, image db.ImageModel) *db.PropertyModel {
+	pdb := database.DBclient
+	newProperty, err := pdb.Client.Property.FindUnique(
+		db.Property.ID.Equals(property.ID),
+	).With(
+		db.Property.Damages.Fetch(),
+		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+	).Update(
+		db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
 			return nil
 		}
 		panic(err)

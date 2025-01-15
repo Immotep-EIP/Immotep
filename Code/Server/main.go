@@ -24,7 +24,7 @@ import (
 //	@securityDefinitions.apikey	Bearer
 //	@in							header
 //	@name						Authorization
-//	@description				Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".
+//	@description				Enter the token with the `Bearer ` prefix, e.g. "Bearer abcde12345".
 
 func mainFunc() int {
 	err := godotenv.Load()
