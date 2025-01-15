@@ -58,8 +58,8 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 
 	properties := owner.Group("/properties")
 	{
-		properties.POST("/properties", controllers.CreateProperty)
-		properties.GET("/properties", controllers.GetAllProperties)
+		properties.POST("/", controllers.CreateProperty)
+		properties.GET("/", controllers.GetAllProperties)
 
 		propertyId := properties.Group("/:property_id")
 		{
