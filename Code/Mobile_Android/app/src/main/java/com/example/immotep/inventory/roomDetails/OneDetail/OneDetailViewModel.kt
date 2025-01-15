@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.immotep.inventory.RoomDetail
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 data class RoomDetailsError(
     var name: Boolean = false,
@@ -14,38 +15,49 @@ data class RoomDetailsError(
 )
 
 class OneDetailViewModel : ViewModel() {
-    val detail = MutableStateFlow<RoomDetail>(RoomDetail())
+    private val _detail = MutableStateFlow(RoomDetail())
+    val detail = _detail.asStateFlow()
     val picture = mutableStateListOf<Uri>()
-    val errors = MutableStateFlow<RoomDetailsError>(RoomDetailsError())
+    private val _errors = MutableStateFlow(RoomDetailsError())
+    val errors = _errors.asStateFlow()
 
     fun reset(newDetail : RoomDetail?) {
+        picture.clear()
         if (newDetail != null) {
-            detail.value = newDetail
+            _detail.value = newDetail
+            println(newDetail)
+            picture.addAll(newDetail.pictures)
         } else {
-            detail.value = RoomDetail()
+            _detail.value = RoomDetail()
         }
+        _errors.value = RoomDetailsError()
     }
 
     fun setName(name : String) {
         if (name.length > 50) {
             return
         }
-        detail.value.name = name
+        _detail.value = _detail.value.copy(name = name)
+        _errors.value = _errors.value.copy(name = false)
+
     }
 
     fun setComment(comment : String) {
         if (comment.length > 500) {
             return
         }
-        detail.value.comment = comment
+        _detail.value = _detail.value.copy(comment = comment)
+        _errors.value = _errors.value.copy(comment = false)
     }
 
     fun setStatus(status : String) {
-        detail.value.status = status
+        _detail.value = _detail.value.copy(status = status)
+        _errors.value = _errors.value.copy(status = false)
     }
 
     fun addPicture(picture : Uri) {
         this.picture.add(picture)
+        _errors.value = _errors.value.copy(picture = false)
     }
 
     fun removePicture(index : Int) {
@@ -54,30 +66,30 @@ class OneDetailViewModel : ViewModel() {
 
     fun onConfirm(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int, baseDetail : RoomDetail) {
         val error = RoomDetailsError()
-        if (detail.value.name.length < 3) {
+        if (_detail.value.name.length < 3) {
             error.name = true
         }
-        if (detail.value.comment.length < 3) {
+        if (_detail.value.comment.length < 3) {
             error.comment = true
         }
-        if (detail.value.status.length < 3) {
+        if (_detail.value.status.isEmpty()) {
             error.status = true
         }
-        if (detail.value.pictures.size < 1) {
+        if (picture.isEmpty()) {
             error.picture = true
         }
         if (error.name || error.comment || error.status || error.picture) {
-            errors.value = error
+            _errors.value = error
+            return
         }
-        detail.value.completed = true
+        _detail.value = _detail.value.copy(pictures = picture.toTypedArray(), completed = true)
         onModifyDetail(index, detail.value)
         reset(null)
     }
 
     fun onClose(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int) {
-        onModifyDetail(index, detail.value)
+        _detail.value = _detail.value.copy(pictures = picture.toTypedArray())
+        onModifyDetail(index, _detail.value)
         reset(null)
     }
-
-
 }

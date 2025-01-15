@@ -88,4 +88,5 @@ fun LoggedBottomBar(navController: NavController) {
         LoggedBottomBarElement(navController, stringResource(R.string.messages), Icons.Outlined.MailOutline, "Message icon, go to the messages page", "messages")
         LoggedBottomBarElement(navController, stringResource(R.string.settings), Icons.Outlined.Settings, "Settings icon, go to the settings page", "settings")
     }
+    Spacer(modifier = Modifier.height(10.dp))
 }

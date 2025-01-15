@@ -1,13 +1,6 @@
 package com.example.immotep.components
 
-import android.Manifest
-import android.content.ContentValues
-import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Environment
-import android.provider.MediaStore
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +12,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
@@ -36,38 +30,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
 import com.example.immotep.R
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Objects
-
-
-fun createImageFile(context: Context): File {
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-    val imageFileName = "JPEG_" + timeStamp + "_"
-    val outputDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-    val image = File.createTempFile(
-        imageFileName,
-        ".jpg",
-        outputDir
-    )
-    return image
-}
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : (picture : Uri) -> Unit) {
+fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : ((picture : Uri) -> Unit)?, maxPictures : Int = 10) {
 
     var chooseOpen by rememberSaveable { mutableStateOf(false) }
     val onClose = { chooseOpen = false }
@@ -75,16 +47,19 @@ fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : (picture : Uri) ->
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
-            if (uri != null) {
+            if (uri != null && addPicture != null) {
                 addPicture(uri)
             }
         }
     )
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceDim)
+        modifier = Modifier
+            .clip(RoundedCornerShape(5.dp))
+            .background(color = MaterialTheme.colorScheme.surfaceDim)
+
     ) {
-        if (chooseOpen) {
+        if (chooseOpen && addPicture != null) {
             ModalBottomSheet(
                 onDismissRequest = onClose,
                 modifier = Modifier
@@ -133,7 +108,7 @@ fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : (picture : Uri) ->
                     model = pictures[index],
                     contentDescription = "Preview of the added picture at index $index"
                 )
-            } else {
+            } else if (addPicture != null && pictures.size < maxPictures) {
                 Button(onClick = {
                     chooseOpen = true
                 },

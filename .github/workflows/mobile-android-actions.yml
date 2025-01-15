@@ -3,12 +3,8 @@ name: Android CI 🤖
 on:
     push:
         branches:
-<<<<<<< HEAD
             - main
-=======
->>>>>>> origin/backend
             - dev
-            - android-dev
     pull_request:
         branches:
             - main

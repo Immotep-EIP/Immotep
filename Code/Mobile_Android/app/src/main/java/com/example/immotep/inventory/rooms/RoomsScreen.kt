@@ -77,8 +77,6 @@ fun RoomsScreen(
                                     leftIcon = if (roomIsCompleted(room)) Icons.Outlined.Check else null,
                                     leftText = room.name,
                                     onClick = {
-                                        println("room index : $index")
-                                        println("rooms : ${viewModel.allRooms}")
                                         viewModel.openRoomPanel(index)
                                     },
                                     testTag = "roomButton $index"

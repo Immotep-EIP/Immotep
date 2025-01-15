@@ -38,10 +38,12 @@ fun OutlinedTextField(
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    minLines: Int = 1
 ) {
     Column {
         OutlinedTextField(
             modifier = modifier,
+            minLines = minLines,
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,
