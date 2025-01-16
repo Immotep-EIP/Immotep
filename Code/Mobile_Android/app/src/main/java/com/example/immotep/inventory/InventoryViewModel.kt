@@ -41,7 +41,9 @@ class InventoryViewModel(
 ) : ViewModel() {
     val rooms = mutableStateListOf<Room>()
     fun addRoom(name: String) {
-        val room = Room(name)
+        println("addRoom $name")
+        val room = Room(name = name)
+        println(room)
         rooms.add(room)
     }
 
@@ -59,7 +61,7 @@ class InventoryViewModel(
         rooms.clear()
     }
 
-    suspend fun createNewRooms(roomsToCheck : Array<Room>, bearerToken : String) {
+    private suspend fun createNewRooms(roomsToCheck : Array<Room>, bearerToken : String) {
         try {
             roomsToCheck.forEach {
                 if (it.id != null) {
@@ -73,6 +75,7 @@ class InventoryViewModel(
             e.printStackTrace()
         }
     }
+
     fun sendInventory(openValue: InventoryOpenValues) {
         viewModelScope.launch {
             var bearerToken = ""

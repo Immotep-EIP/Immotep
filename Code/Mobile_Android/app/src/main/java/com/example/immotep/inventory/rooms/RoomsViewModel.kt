@@ -30,7 +30,7 @@ class RoomsViewModel(
     }
 
     fun addARoom(name: String) {
-        val room = Room(name)
+        val room = Room(name = name)
         addRoom(room.name)
         allRooms.add(room)
     }

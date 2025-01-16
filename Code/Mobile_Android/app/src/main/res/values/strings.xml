@@ -101,4 +101,12 @@
     <string name="entry_pictures">Entry pictures</string>
     <string name="exit_pictures">Exit pictures</string>
     <string name="compare_images">Compare entry and exit pictures</string>
+    <string name="are_you_sure_exit">Are you sure to exit this page ?</string>
+    <string name="not_saved_modifications">The modifications will be lost</string>
+    <string name="exit">Exit</string>
+    <string name="cancel">Cancel</string>
+    <string name="room_name">Room name</string>
+    <string name="add_room">Add a room</string>
+    <string name="confirm_inventory_end">Are you sure to upload this inventory ?</string>
+    <string name="not_forget">Have you forget anything such as a room or a detail ? If not please press confirm.</string>
 </resources>

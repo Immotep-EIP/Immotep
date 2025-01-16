@@ -16,6 +16,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -26,6 +30,7 @@ import com.example.immotep.components.InventoryCenterAddButton
 import com.example.immotep.components.NextInventoryButton
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.roomDetails.OneDetail.OneDetailScreen
+import com.example.immotep.inventory.rooms.AddRoomModal
 import com.example.immotep.inventory.rooms.roomIsCompleted
 import com.example.immotep.layouts.InventoryLayout
 
@@ -39,10 +44,15 @@ fun RoomDetailsScreen(
     val viewModel: RoomDetailsViewModel = viewModel(factory = RoomDetailsViewModelFactory(closeRoomPanel))
 
     val currentlyOpenRoomIndex = viewModel.currentlyOpenDetailIndex.collectAsState()
-
+    var addDetailModalOpen by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         viewModel.addBaseDetails(roomDetails)
     }
+    AddRoomModal(
+        open = addDetailModalOpen,
+        addRoom = { viewModel.addDetail(it); addDetailModalOpen = false },
+        close = { addDetailModalOpen = false }
+    )
     if (currentlyOpenRoomIndex.value == null) {
         InventoryLayout(testTag = "roomsScreen", { viewModel.onClose(roomIndex) }) {
             InitialFadeIn {
@@ -73,7 +83,7 @@ fun RoomDetailsScreen(
                             }
                         }
                         InventoryCenterAddButton(
-                            onClick = { viewModel.addDetail("testDetail") },
+                            onClick = { addDetailModalOpen = true },
                             testTag = "addDetailsButton"
                         )
                     }

@@ -44,7 +44,7 @@ class RealPropertyViewModel(private val navController: NavController) : ViewMode
 
     fun getProperties() {
         viewModelScope.launch {
-            var bearerToken = ""
+            val bearerToken: String
             val authService = AuthService(navController.context.dataStore)
             try {
                 bearerToken = authService.getBearerToken()

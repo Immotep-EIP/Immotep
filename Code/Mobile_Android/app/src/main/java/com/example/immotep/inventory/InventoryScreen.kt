@@ -76,7 +76,8 @@ fun InventoryScreen(
                 viewModel.onClose()
                 inventoryOpen = InventoryOpenValues.CLOSED
             },
-            isExit = inventoryOpen == InventoryOpenValues.EXIT
+            isExit = inventoryOpen == InventoryOpenValues.EXIT,
+            confirmInventory = { viewModel.sendInventory(inventoryOpen) }
         )
     }
 }

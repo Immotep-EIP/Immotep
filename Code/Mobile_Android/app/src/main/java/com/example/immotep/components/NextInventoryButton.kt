@@ -34,7 +34,7 @@ fun NextInventoryButton(leftIcon: ImageVector?, leftText: String, onClick: () ->
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (leftIcon != null) { Icon(leftIcon, contentDescription = "Camera icon", modifier = Modifier.size(50.dp)) }
-                Text(text = leftText)
+                Text(text = leftText, color = MaterialTheme.colorScheme.primary)
             }
             Icon(Icons.AutoMirrored.Outlined.ArrowForwardIos, contentDescription = "Arrow forward icon")
         }
