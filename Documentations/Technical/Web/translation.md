@@ -1,4 +1,4 @@
-# Technical Documentation: Translation Management with i18n
+# Translation Management with i18n
 
 ## Overview
 

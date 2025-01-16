@@ -6,4 +6,6 @@
 
 2. [Authentication and security](auth-and-security.md)
 
-3. [Translation](translation.md)
+3. [Translation management with i18n](translation.md)
+
+4. [Navigation system](navigation-system.md)
