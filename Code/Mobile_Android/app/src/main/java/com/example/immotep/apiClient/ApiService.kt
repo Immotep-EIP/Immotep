@@ -145,6 +145,9 @@ interface ApiService {
     @GET("${API_PREFIX}/owner/properties")
     suspend fun getProperties(@Header("Authorization") authHeader : String): Array<GetPropertyResponse>
 
+    @GET("${API_PREFIX}/owner/properties/{propertyId}")
+    suspend fun getProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): GetPropertyResponse
+
     @POST("${API_PREFIX}/owner/properties")
     suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : AddPropertyResponse
 

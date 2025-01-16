@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,9 +74,12 @@ fun OneDocument(name: String) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, getBack: () -> Unit) {
-    val viewModel: RealPropertyDetailsViewModel = viewModel(factory = RealPropertyDetailsViewModelFactory(propertyId))
+    val viewModel: RealPropertyDetailsViewModel = viewModel(factory = RealPropertyDetailsViewModelFactory(propertyId, navController))
     val property = viewModel.property.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadProperty()
+    }
     Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -100,16 +104,19 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
             Column(modifier = Modifier.fillMaxWidth(0.5f)) {
                 PropertyBoxTextLine(property.value.tenant, Icons.Outlined.AccountBox)
                 PropertyBoxTextLine(
-                    SimpleDateFormat("dd/MM/yyyy").format(property.value.startDate),
+                    if (property.value.startDate != null)
+                        SimpleDateFormat("dd/MM/yyyy").format(property.value.startDate)
+                    else
+                        "---------------------",
                     Icons.Outlined.CalendarMonth
                 )
                 PropertyBoxTextLine(
                     (
-                        if (property.value.endDate != null)
-                            SimpleDateFormat("dd/MM/yyyy").format(property.value.endDate)
-                        else
-                            "---------------------"
-                        ),
+                            if (property.value.endDate != null)
+                                SimpleDateFormat("dd/MM/yyyy").format(property.value.endDate)
+                            else
+                                "---------------------"
+                    ),
                     Icons.Outlined.CalendarMonth
                 )
             }

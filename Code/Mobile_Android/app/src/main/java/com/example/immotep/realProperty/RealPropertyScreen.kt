@@ -103,7 +103,11 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
             ) {
                 PropertyBoxTextLine(property.address, Icons.Outlined.Place)
                 PropertyBoxTextLine(property.tenant, Icons.Outlined.AccountCircle)
-                PropertyBoxTextLine(SimpleDateFormat("dd/MM/yyyy").format(property.startDate), Icons.Outlined.DateRange)
+                PropertyBoxTextLine(
+                    if (property.startDate == null)
+                        "---------------------"
+                    else
+                        SimpleDateFormat("dd/MM/yyyy").format(property.startDate), Icons.Outlined.DateRange)
             }
         }
         Box(
@@ -164,6 +168,11 @@ fun RealPropertyScreen(navController: NavController) {
         } else {
             RealPropertyDetailsScreen(navController, detailsOpen!!, getBack = { detailsOpen = null })
         }
-        AddPropertyModal(addPropertyModalOpen, close = { addPropertyModalOpen = false }, navController)
+        AddPropertyModal(
+            addPropertyModalOpen,
+            close = { addPropertyModalOpen = false },
+            navController,
+            { property -> viewModel.addProperty(property) }
+        )
     }
 }

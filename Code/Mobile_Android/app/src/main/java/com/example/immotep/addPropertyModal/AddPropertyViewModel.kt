@@ -9,6 +9,7 @@ import com.example.immotep.apiClient.AddPropertyInput
 import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
+import com.example.immotep.realProperty.Property
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -71,7 +72,7 @@ class AddPropertyViewModelViewModel() : ViewModel() {
         _propertyForm.value = AddPropertyInput()
     }
 
-    fun onSubmit(onClose : () -> Unit, navController: NavController) {
+    fun onSubmit(onClose : () -> Unit, navController: NavController, addPropertyToList : (property : Property) -> Unit) {
         val newPropertyErrors : PropertyFormError = PropertyFormError()
         if (_propertyForm.value.address.length < 3) {
             newPropertyErrors.address = true
@@ -100,7 +101,12 @@ class AddPropertyViewModelViewModel() : ViewModel() {
                 try {
                     val authService = AuthService(navController.context.dataStore)
                     val property = ApiClient.apiService.addProperty(authService.getBearerToken(), _propertyForm.value)
-                    //todo, add to the list
+                    addPropertyToList(
+                        Property(
+                            id = property.id,
+                            address = property.address,
+                        )
+                    )
                     reset()
                     onClose()
                 } catch (e: Exception) {
