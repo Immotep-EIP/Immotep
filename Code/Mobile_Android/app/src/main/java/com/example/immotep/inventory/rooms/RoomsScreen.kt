@@ -67,7 +67,7 @@ fun roomIsCompleted(room: Room): Boolean {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRoomModal(open: Boolean, addRoom: (roomName : String) -> Unit, close: () -> Unit) {
+fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit, close: () -> Unit, isRoom : Boolean) {
     if (open) {
         val focusRequester = remember { FocusRequester() }
         var roomName by rememberSaveable { mutableStateOf("") }
@@ -84,7 +84,7 @@ fun AddRoomModal(open: Boolean, addRoom: (roomName : String) -> Unit, close: () 
                 OutlinedTextField(
                     value = roomName,
                     onValueChange = { roomName = it },
-                    label = { Text(stringResource(R.string.room_name)) },
+                    label = { Text(stringResource(if (isRoom) R.string.room_name else R.string.detail_name)) },
                     modifier = Modifier
                         .fillMaxWidth().focusRequester(focusRequester)
                 )
@@ -107,8 +107,8 @@ fun AddRoomModal(open: Boolean, addRoom: (roomName : String) -> Unit, close: () 
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        onClick = { addRoom(roomName) }) {
-                        Text(stringResource(R.string.add_room))
+                        onClick = { addRoomOrDetail(roomName) }) {
+                        Text(stringResource(if (isRoom) R.string.add_room else R.string.add_detail))
                     }
                 }
             }
@@ -182,10 +182,11 @@ fun RoomsScreen(
 
                     )
             }
-            AddRoomModal(
+            AddRoomOrDetailModal(
                 open = addRoomModalOpen,
-                addRoom = { viewModel.addARoom(it); addRoomModalOpen = false },
+                addRoomOrDetail = { viewModel.addARoom(it); addRoomModalOpen = false },
                 close = { addRoomModalOpen = false },
+                isRoom = true
             )
             InitialFadeIn {
                 Column {
@@ -199,7 +200,7 @@ fun RoomsScreen(
                                 backgroundColor = MaterialTheme.colorScheme.secondary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            onClick = { }) {
+                            onClick = { confirmPopUpOpen = true }) {
                             Text(stringResource(R.string.confirm_inventory))
                         }
                         Button(
@@ -208,7 +209,7 @@ fun RoomsScreen(
                                 backgroundColor = MaterialTheme.colorScheme.tertiary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            onClick = { confirmPopUpOpen = true }) {
+                            onClick = { }) {
                             Text(stringResource(R.string.edit))
                         }
                     }

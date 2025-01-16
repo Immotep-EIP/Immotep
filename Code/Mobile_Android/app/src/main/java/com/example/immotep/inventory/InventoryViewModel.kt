@@ -41,7 +41,6 @@ class InventoryViewModel(
 ) : ViewModel() {
     val rooms = mutableStateListOf<Room>()
     fun addRoom(name: String) {
-        println("addRoom $name")
         val room = Room(name = name)
         println(room)
         rooms.add(room)
@@ -59,6 +58,29 @@ class InventoryViewModel(
 
     fun onClose() {
         rooms.clear()
+    }
+
+    fun getBaseRooms() {
+        viewModelScope.launch {
+            val authService = AuthService(navController.context.dataStore)
+            val bearerToken : String = try {
+                authService.getBearerToken()
+            } catch (e : Exception) {
+                e.printStackTrace()
+                authService.onLogout(navController)
+                ""
+            }
+            rooms.clear()
+            try {
+                val rooms = ApiClient.apiService.getAllRooms(bearerToken, propertyId)
+                rooms.forEach {
+                    val room = Room(it.id, it.name, "")
+                    this@InventoryViewModel.rooms.add(room)
+                }
+            } catch (e : Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private suspend fun createNewRooms(roomsToCheck : Array<Room>, bearerToken : String) {

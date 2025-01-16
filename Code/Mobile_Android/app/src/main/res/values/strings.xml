@@ -106,7 +106,9 @@
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
     <string name="room_name">Room name</string>
+    <string name="detail_name">Detail name</string>
     <string name="add_room">Add a room</string>
+    <string name="add_detail">Add a detail</string>
     <string name="confirm_inventory_end">Are you sure to upload this inventory ?</string>
     <string name="not_forget">Have you forget anything such as a room or a detail ? If not please press confirm.</string>
 </resources>

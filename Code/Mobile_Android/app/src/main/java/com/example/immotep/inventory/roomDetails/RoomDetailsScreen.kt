@@ -30,7 +30,7 @@ import com.example.immotep.components.InventoryCenterAddButton
 import com.example.immotep.components.NextInventoryButton
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.roomDetails.OneDetail.OneDetailScreen
-import com.example.immotep.inventory.rooms.AddRoomModal
+import com.example.immotep.inventory.rooms.AddRoomOrDetailModal
 import com.example.immotep.inventory.rooms.roomIsCompleted
 import com.example.immotep.layouts.InventoryLayout
 
@@ -48,10 +48,11 @@ fun RoomDetailsScreen(
     LaunchedEffect(Unit) {
         viewModel.addBaseDetails(roomDetails)
     }
-    AddRoomModal(
+    AddRoomOrDetailModal(
         open = addDetailModalOpen,
-        addRoom = { viewModel.addDetail(it); addDetailModalOpen = false },
-        close = { addDetailModalOpen = false }
+        addRoomOrDetail = { viewModel.addDetail(it); addDetailModalOpen = false },
+        close = { addDetailModalOpen = false },
+        isRoom = false
     )
     if (currentlyOpenRoomIndex.value == null) {
         InventoryLayout(testTag = "roomsScreen", { viewModel.onClose(roomIndex) }) {

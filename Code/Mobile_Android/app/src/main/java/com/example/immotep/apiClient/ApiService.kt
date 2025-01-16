@@ -110,7 +110,7 @@ data class CreateRoomInput(
     val name : String,
 )
 
-data class CreateRoomOutput(
+data class RoomOutput(
     val id : String,
     val name : String,
     val property_id : String,
@@ -119,6 +119,8 @@ data class CreateRoomOutput(
 const val API_PREFIX = "/api/v1"
 
 interface ApiService {
+
+    //Login functions
     @FormUrlEncoded
     @POST("${API_PREFIX}/auth/token")
     suspend fun login(
@@ -139,9 +141,11 @@ interface ApiService {
         @Body registrationInput: RegistrationInput,
     ): RegistrationResponse
 
+    //profile functions
     @GET("${API_PREFIX}/profile")
     suspend fun getProfile(@Header("Authorization") authHeader : String): ProfileResponse
 
+    //property functions
     @GET("${API_PREFIX}/owner/properties")
     suspend fun getProperties(@Header("Authorization") authHeader : String): Array<GetPropertyResponse>
 
@@ -151,17 +155,26 @@ interface ApiService {
     @POST("${API_PREFIX}/owner/properties")
     suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : AddPropertyResponse
 
-    @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")
-    suspend fun inventoryReport(
+
+    //rooms functions
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms")
+    suspend fun getAllRooms(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
-        @Body inventoryReportInput: InventoryReportInput
-    )
+    ) : Array<RoomOutput>
 
     @POST("${API_PREFIX}/owner/properties/{propertyId}/rooms")
     suspend fun createRoom(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Body room: CreateRoomInput
-    ) : CreateRoomOutput
+    ) : RoomOutput
+
+    //inventory report functions
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")
+    suspend fun inventoryReport(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Body inventoryReportInput: InventoryReportInput
+    )
 }
