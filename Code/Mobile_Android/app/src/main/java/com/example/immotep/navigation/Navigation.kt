@@ -23,8 +23,8 @@ fun checkIfTokenIsPresent(navController: NavController) {
     runBlocking {
         try {
             AuthService(navController.context.dataStore).getToken()
-            navController.navigate("dashboard")
         } catch (e: Exception) {
+            //change this to login
             navController.navigate("dashboard")
         }
     }
@@ -36,7 +36,7 @@ fun Navigation() {
     LaunchedEffect(Unit) {
         checkIfTokenIsPresent(navController)
     }
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "dashboard") {
         composable("login") { LoginScreen(navController) }
         composable("dashboard") { DashBoardScreen(navController) }
         composable("register") { RegisterScreen(navController) }

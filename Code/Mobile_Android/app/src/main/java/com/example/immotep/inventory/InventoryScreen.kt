@@ -48,8 +48,8 @@ import com.example.immotep.inventory.rooms.RoomsScreen
 fun InventoryScreen(
     navController: NavController,
     propertyId: String,
-    viewModel: InventoryViewModel = viewModel()
 ) {
+    val viewModel: InventoryViewModel = viewModel(factory = InventoryViewModelFactory(navController, propertyId))
     var inventoryOpen by rememberSaveable { mutableStateOf(InventoryOpenValues.CLOSED) }
     if (inventoryOpen == InventoryOpenValues.CLOSED) {
         InventoryLayout(testTag = "inventoryScreen", { navController.popBackStack() }) {

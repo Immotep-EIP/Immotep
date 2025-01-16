@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -131,9 +132,13 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
 @Composable
 fun RealPropertyScreen(navController: NavController) {
     val viewModel: RealPropertyViewModel = viewModel(factory = RealPropertyViewModelFactory(navController))
-    val properties = viewModel.properties.collectAsState()
     var detailsOpen by rememberSaveable { mutableStateOf<String?>(null) }
     var addPropertyModalOpen by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.getProperties()
+    }
+
     DashBoardLayout(navController, "realPropertyScreen") {
         if (detailsOpen == null) {
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
@@ -152,7 +157,7 @@ fun RealPropertyScreen(navController: NavController) {
                 }
             }
             LazyColumn {
-                items(properties.value) { item ->
+                items(viewModel.properties) { item ->
                     PropertyBox(item, onClick = { detailsOpen = item.id })
                 }
             }
