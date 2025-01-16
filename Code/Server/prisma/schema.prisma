@@ -130,8 +130,10 @@ model image {
     data       Bytes
     created_at DateTime  @default(now())
 
-    users      user[]
-    properties property[]
+    users           user[]
+    properties      property[]
+    roomstates      roomState[]
+    furniturestates furnitureState[]
 }
 
 model room {
@@ -173,6 +175,7 @@ model inventoryReport {
 }
 
 model roomState {
+    id          String        @id @default(cuid())
     cleanliness cleanliness
     state       state
     note        String
@@ -182,10 +185,13 @@ model roomState {
     room      room            @relation(fields: [room_id], references: [id])
     room_id   String
 
-    @@id([report_id, room_id])
+    pictures image[]
+
+    @@unique([report_id, room_id])
 }
 
 model furnitureState {
+    id          String             @id @default(cuid())
     cleanliness cleanliness
     state       state
     note        String
@@ -195,5 +201,7 @@ model furnitureState {
     furniture      furniture       @relation(fields: [furniture_id], references: [id])
     furniture_id   String
 
-    @@id([report_id, furniture_id])
+    pictures image[]
+
+    @@unique([report_id, furniture_id])
 }

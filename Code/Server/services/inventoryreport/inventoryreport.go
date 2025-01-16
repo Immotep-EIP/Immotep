@@ -20,7 +20,12 @@ func Create(repType db.ReportType, propertyId string) *db.InventoryReportModel {
 	return newInvReport
 }
 
-func CreateRoomState(roomState db.RoomStateModel, invReportID string) *db.RoomStateModel {
+func CreateRoomState(roomState db.RoomStateModel, picturesId []string, invReportID string) *db.RoomStateModel {
+	params := make([]db.RoomStateSetParam, 0, len(picturesId))
+	for _, id := range picturesId {
+		params = append(params, db.RoomState.Pictures.Link(db.Image.ID.Equals(id)))
+	}
+
 	pdb := database.DBclient
 	newRoomState, err := pdb.Client.RoomState.CreateOne(
 		db.RoomState.Cleanliness.Set(roomState.Cleanliness),
@@ -28,6 +33,7 @@ func CreateRoomState(roomState db.RoomStateModel, invReportID string) *db.RoomSt
 		db.RoomState.Note.Set(roomState.Note),
 		db.RoomState.Report.Link(db.InventoryReport.ID.Equals(invReportID)),
 		db.RoomState.Room.Link(db.Room.ID.Equals(roomState.RoomID)),
+		params...,
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {
@@ -38,7 +44,12 @@ func CreateRoomState(roomState db.RoomStateModel, invReportID string) *db.RoomSt
 	return newRoomState
 }
 
-func CreateFurnitureState(furnitureState db.FurnitureStateModel, invReportID string) *db.FurnitureStateModel {
+func CreateFurnitureState(furnitureState db.FurnitureStateModel, picturesId []string, invReportID string) *db.FurnitureStateModel {
+	params := make([]db.FurnitureStateSetParam, 0, len(picturesId))
+	for _, id := range picturesId {
+		params = append(params, db.FurnitureState.Pictures.Link(db.Image.ID.Equals(id)))
+	}
+
 	pdb := database.DBclient
 	newFurnitureState, err := pdb.Client.FurnitureState.CreateOne(
 		db.FurnitureState.Cleanliness.Set(furnitureState.Cleanliness),
@@ -46,6 +57,7 @@ func CreateFurnitureState(furnitureState db.FurnitureStateModel, invReportID str
 		db.FurnitureState.Note.Set(furnitureState.Note),
 		db.FurnitureState.Report.Link(db.InventoryReport.ID.Equals(invReportID)),
 		db.FurnitureState.Furniture.Link(db.Furniture.ID.Equals(furnitureState.FurnitureID)),
+		params...,
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {
@@ -62,8 +74,8 @@ func GetByPropertyID(propertyID string) []db.InventoryReportModel {
 		db.InventoryReport.PropertyID.Equals(propertyID),
 	).With(
 		db.InventoryReport.Property.Fetch(),
-		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()),
-		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -77,8 +89,8 @@ func GetByID(id string) *db.InventoryReportModel {
 		db.InventoryReport.ID.Equals(id),
 	).With(
 		db.InventoryReport.Property.Fetch(),
-		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()),
-		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
