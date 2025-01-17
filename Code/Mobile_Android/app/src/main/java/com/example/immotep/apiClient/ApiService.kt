@@ -9,6 +9,27 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import java.util.Vector
 
+//enums classes
+
+enum class Cleaniness {
+    not_set,
+    dirty,
+    medium,
+    clean,
+}
+
+enum class State {
+    not_set,
+    broken,
+    needsRepair,
+    bad,
+    medium,
+    good,
+    new
+}
+
+//input and output classes
+
 data class LoginResponse(
     val access_token: String,
     val refresh_token: String,
@@ -104,14 +125,14 @@ data class FurnitureInput(
 
 data class InventoryReportFurniture(
     val id: String,
-    val cleanliness: String,
-    val state: String,
+    val cleanliness: Cleaniness,
+    val state: State,
 )
 
 data class InventoryReportRoom(
     val id: String,
-    val cleanliness: String,
-    val state: String,
+    val cleanliness: Cleaniness,
+    val state: State,
     val furnitures: Vector<InventoryReportFurniture>
 )
 

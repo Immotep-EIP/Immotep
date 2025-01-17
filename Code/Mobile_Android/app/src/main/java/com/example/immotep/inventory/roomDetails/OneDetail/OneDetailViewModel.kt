@@ -3,6 +3,8 @@ package com.example.immotep.inventory.roomDetails.OneDetail
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.example.immotep.apiClient.Cleaniness
+import com.example.immotep.apiClient.State
 import com.example.immotep.inventory.RoomDetail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,12 +58,12 @@ class OneDetailViewModel : ViewModel() {
         _errors.value = _errors.value.copy(comment = false)
     }
 
-    fun setCleaniness(cleaniness : String) {
+    fun setCleaniness(cleaniness : Cleaniness) {
         _detail.value = _detail.value.copy(cleaniness = cleaniness)
         _errors.value = _errors.value.copy(cleaniness = false)
     }
 
-    fun setStatus(status : String) {
+    fun setStatus(status : State) {
         _detail.value = _detail.value.copy(status = status)
         _errors.value = _errors.value.copy(status = false)
     }
@@ -92,10 +94,10 @@ class OneDetailViewModel : ViewModel() {
         if (_detail.value.comment.length < 3) {
             error.comment = true
         }
-        if (_detail.value.status.isEmpty()) {
+        if (_detail.value.status == State.not_set) {
             error.status = true
         }
-        if (_detail.value.cleaniness.isEmpty()) {
+        if (_detail.value.cleaniness == Cleaniness.not_set) {
             error.cleaniness = true
         }
         if (picture.isEmpty()) {

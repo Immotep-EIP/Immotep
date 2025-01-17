@@ -124,15 +124,19 @@ fun RoomsScreen(
     removeRoom: (Int) -> Unit,
     editRoom: (Int, Room) -> Unit,
     closeInventory: () -> Unit,
-    confirmInventory: () -> Unit,
+    confirmInventory: () -> Boolean,
     isExit : Boolean
 ) {
-    val viewModel: RoomsViewModel = viewModel(factory = RoomsViewModelFactory(getRooms, addRoom, removeRoom, editRoom))
+    val viewModel: RoomsViewModel = viewModel(
+        factory = RoomsViewModelFactory(getRooms, addRoom, removeRoom, editRoom, closeInventory, confirmInventory)
+    )
 
     val currentlyOpenRoomIndex = viewModel.currentlyOpenRoomIndex.collectAsState()
     var exitPopUpOpen by rememberSaveable { mutableStateOf(false) }
     var confirmPopUpOpen by rememberSaveable { mutableStateOf(false) }
     var addRoomModalOpen by rememberSaveable { mutableStateOf(false) }
+
+    val showNotCompletedRooms = viewModel.showNotCompletedRooms.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.handleBaseRooms()
@@ -145,7 +149,7 @@ fun RoomsScreen(
                     shape = RoundedCornerShape(10.dp),
                     onDismissRequest = { exitPopUpOpen = false },
                     confirmButton = {
-                        TextButton(onClick = { exitPopUpOpen = false; viewModel.onClose(); closeInventory() }) {
+                        TextButton(onClick = { exitPopUpOpen = false; viewModel.onClose()}) {
                             Text(stringResource(R.string.exit))
                         }
                                     },
@@ -168,7 +172,7 @@ fun RoomsScreen(
                     shape = RoundedCornerShape(10.dp),
                     onDismissRequest = { confirmPopUpOpen = false },
                     confirmButton = {
-                        TextButton(onClick = { confirmPopUpOpen = false; confirmInventory() }) {
+                        TextButton(onClick = { confirmPopUpOpen = false; viewModel.onConfirmInventory() }) {
                             Text(stringResource(R.string.confirm))
                         }
                     },
@@ -226,7 +230,8 @@ fun RoomsScreen(
                                     onClick = {
                                         viewModel.openRoomPanel(index)
                                     },
-                                    testTag = "roomButton $index"
+                                    testTag = "roomButton $index",
+                                    error = !roomIsCompleted(room) && showNotCompletedRooms.value
                                 )
                             }
                         }

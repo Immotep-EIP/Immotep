@@ -8,12 +8,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiClient
+import com.example.immotep.apiClient.Cleaniness
 import com.example.immotep.apiClient.FurnitureInput
 import com.example.immotep.apiClient.InventoryReportFurniture
 import com.example.immotep.apiClient.InventoryReportInput
 import com.example.immotep.apiClient.InventoryReportRoom
+import com.example.immotep.apiClient.State
 import com.example.immotep.authService.AuthService
-import com.example.immotep.inventory.rooms.RoomsViewModel
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,8 +26,8 @@ data class RoomDetail(
     var name : String = "",
     var completed : Boolean = false,
     var comment : String = "",
-    var status : String = "",
-    var cleaniness : String = "",
+    var status : State = State.not_set,
+    var cleaniness : Cleaniness = Cleaniness.not_set,
     val pictures : Array<Uri> = arrayOf(),
     val exitPictures : Array<Uri>? = null
 )
@@ -174,17 +175,21 @@ class InventoryViewModel(
 
     private fun checkIfAllAreCompleted() : Boolean {
         rooms.forEach { room ->
+            if (room.details.isEmpty()) {
+                return false
+            }
             room.details.forEach { detail ->
                 if (!detail.completed) {
                     return false
                 }
-                }
+            }
         }
         return true
     }
 
-    fun sendInventory() {
-        if (!checkIfAllAreCompleted()) return
+    fun sendInventory() : Boolean {
+        if (!checkIfAllAreCompleted()) return false
+        println("SEND INVENTORY")
         viewModelScope.launch {
             var bearerToken = ""
             try {
@@ -193,10 +198,18 @@ class InventoryViewModel(
             } catch (e : Exception) {
                 e.printStackTrace()
             }
-            val roomsToSend = rooms.toTypedArray()
-            createNewRooms(roomsToSend, bearerToken)
-            setInventoryOpen(InventoryOpenValues.CLOSED)
+            try {
+                val roomsToSend = rooms.toTypedArray()
+                createNewRooms(roomsToSend, bearerToken)
+                val inventoryReport = roomsToInventoryReport(inventoryOpen.value)
+                ApiClient.apiService.inventoryReport(bearerToken, propertyId, inventoryReport)
+                setInventoryOpen(InventoryOpenValues.CLOSED)
+                return@launch
+            } catch (e : Exception) {
+                e.printStackTrace()
+            }
         }
+        return true
     }
 }
 

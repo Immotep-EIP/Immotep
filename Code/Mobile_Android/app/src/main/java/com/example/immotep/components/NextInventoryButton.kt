@@ -11,6 +11,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForwardIos
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,9 +22,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun NextInventoryButton(leftIcon: ImageVector?, leftText: String, onClick: () -> Unit, testTag: String) {
+fun NextInventoryButton(leftIcon: ImageVector?, leftText: String, onClick: () -> Unit, testTag: String, error : Boolean = false) {
     Button(onClick = onClick,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+        border = BorderStroke(1.dp, if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary),
         shape = RoundedCornerShape(5.dp),
         colors = androidx.compose.material.ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colorScheme.background),
         modifier = Modifier
@@ -34,9 +35,9 @@ fun NextInventoryButton(leftIcon: ImageVector?, leftText: String, onClick: () ->
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (leftIcon != null) { Icon(leftIcon, contentDescription = "Camera icon", modifier = Modifier.size(50.dp)) }
-                Text(text = leftText, color = MaterialTheme.colorScheme.primary)
+                Text(text = leftText, color = if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
             }
-            Icon(Icons.AutoMirrored.Outlined.ArrowForwardIos, contentDescription = "Arrow forward icon")
+            Icon(Icons.Outlined.ChevronRight, contentDescription = "Arrow forward icon")
         }
     }
 }

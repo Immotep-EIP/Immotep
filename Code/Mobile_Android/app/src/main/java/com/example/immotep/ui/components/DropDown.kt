@@ -24,13 +24,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.immotep.R
 
-data class DropDownItem(
+data class DropDownItem<T>(
     val label : String,
-    val value : String
+    val value : T
 )
 
 @Composable
-fun DropDown(items : List<DropDownItem>, selectedItem : String, onItemSelected : (String) -> Unit, error : String? = null) {
+fun <T>DropDown(items : List<DropDownItem<T>>, selectedItem : T, onItemSelected : (T) -> Unit, error : String? = null) {
     val isDropDownExpanded = remember {
         mutableStateOf(false)
     }
@@ -51,11 +51,7 @@ fun DropDown(items : List<DropDownItem>, selectedItem : String, onItemSelected :
                 isDropDownExpanded.value = true
             }.fillMaxWidth()
         ) {
-            Text(text = items.find { it.value == selectedItem }?.label ?:
-            if (selectedItem.isEmpty())
-                stringResource(R.string.select_an_element)
-            else
-                selectedItem)
+            Text(text = items.find { it.value == selectedItem }?.label ?: stringResource(R.string.select_an_element))
             Icon(Icons.Outlined.ArrowDropDown, contentDescription = "Drop Down")
         }
         DropdownMenu(

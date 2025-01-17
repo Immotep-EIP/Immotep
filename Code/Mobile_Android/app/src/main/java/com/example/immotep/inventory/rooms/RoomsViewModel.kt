@@ -14,10 +14,15 @@ class RoomsViewModel(
     private val getRooms: () -> Array<Room>,
     private val addRoom: (String) -> Unit,
     private val removeRoom: (Int) -> Unit,
-    private val editRoom: (Int, Room) -> Unit) : ViewModel() {
+    private val closeInventory: () -> Unit,
+    private val editRoom: (Int, Room) -> Unit,
+    private val confirmInventory: () -> Boolean
+    ) : ViewModel() {
 
-    val _currentlyOpenRoomIndex = MutableStateFlow<Int?>(null)
+    private val _currentlyOpenRoomIndex = MutableStateFlow<Int?>(null)
     val currentlyOpenRoomIndex: StateFlow<Int?> = _currentlyOpenRoomIndex.asStateFlow()
+    private val _showNotCompletedRooms = MutableStateFlow(false)
+    val showNotCompletedRooms: StateFlow<Boolean> = _showNotCompletedRooms.asStateFlow()
     val allRooms = mutableStateListOf<Room>()
 
     fun handleBaseRooms() {
@@ -25,8 +30,18 @@ class RoomsViewModel(
         allRooms.addAll(getRooms())
     }
 
+    fun onConfirmInventory() {
+        if (!confirmInventory()) {
+            _showNotCompletedRooms.value = true
+            return
+        }
+        allRooms.clear()
+        closeInventory()
+    }
+
     fun onClose() {
         allRooms.clear()
+        closeInventory()
     }
 
     fun addARoom(name: String) {
@@ -54,13 +69,15 @@ class RoomsViewModelFactory(
     private val getRooms: () -> Array<Room>,
     private val addRoom: (String) -> Unit,
     private val removeRoom: (Int) -> Unit,
-    private val editRoom: (Int, Room) -> Unit
+    private val editRoom: (Int, Room) -> Unit,
+    private val closeInventory: () -> Unit,
+    private val confirmInventory: () -> Boolean
     ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RoomsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RoomsViewModel(getRooms, addRoom, removeRoom, editRoom) as T
+            return RoomsViewModel(getRooms, addRoom, removeRoom, closeInventory, editRoom, confirmInventory) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

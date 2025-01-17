@@ -34,6 +34,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.immotep.R
+import com.example.immotep.apiClient.Cleaniness
+import com.example.immotep.apiClient.State
 import com.example.immotep.components.AddingPicturesCarousel
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.inventory.RoomDetail
@@ -88,13 +90,10 @@ fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) ->
                 Text(stringResource(R.string.status), modifier = Modifier.padding(top = 10.dp))
                 DropDown(
                     items = listOf(
-                        DropDownItem(stringResource(R.string.new_state), "new"),
-                        DropDownItem(stringResource(R.string.very_good_state), "very_good"),
-                        DropDownItem(stringResource(R.string.good_state), "good_state"),
-                        DropDownItem(stringResource(R.string.ok_state), "ok"),
-                        DropDownItem(stringResource(R.string.degraded_state), "degraded"),
-                        DropDownItem(stringResource(R.string.bad_state), "bad"),
-                        DropDownItem(stringResource(R.string.broken_state), "broken"),
+                        DropDownItem(stringResource(R.string.new_state), State.new),
+                        DropDownItem(stringResource(R.string.good_state), State.good),
+                        DropDownItem(stringResource(R.string.bad_state), State.bad),
+                        DropDownItem(stringResource(R.string.broken_state), State.broken),
                     ),
                     selectedItem = detailValue.value.status,
                     onItemSelected = { newVal -> viewModel.setStatus(newVal) },
@@ -103,13 +102,9 @@ fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) ->
                 Text(stringResource(R.string.cleaniness), modifier = Modifier.padding(top = 10.dp))
                 DropDown(
                     items = listOf(
-                        DropDownItem(stringResource(R.string.very_clean), "very_clean"),
-                        DropDownItem(stringResource(R.string.clean), "clean"),
-                        DropDownItem(stringResource(R.string.good_state), "good"),
-                        DropDownItem(stringResource(R.string.ok_state), "ok"),
-                        DropDownItem(stringResource(R.string.little_dirty), "little_dirty"),
-                        DropDownItem(stringResource(R.string.dirty), "dirty"),
-                        DropDownItem(stringResource(R.string.filthy), "filthy"),
+                        DropDownItem(stringResource(R.string.clean), Cleaniness.clean),
+                        DropDownItem(stringResource(R.string.ok_state), Cleaniness.medium),
+                        DropDownItem(stringResource(R.string.dirty), Cleaniness.dirty),
                     ),
                     selectedItem = detailValue.value.cleaniness,
                     onItemSelected = { newVal -> viewModel.setCleaniness(newVal) },
