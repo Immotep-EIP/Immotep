@@ -29,7 +29,7 @@ class RoomDetailsViewModel(
     }
 
     fun addDetail(name : String) {
-        val newDetail = RoomDetail(name)
+        val newDetail = RoomDetail(name = name)
         details.add(newDetail)
     }
 

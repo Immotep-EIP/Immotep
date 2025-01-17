@@ -7,6 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import java.util.Vector
 
 data class LoginResponse(
     val access_token: String,
@@ -88,6 +89,19 @@ data class GetPropertyResponse(
     val end_date: String?
 )
 
+data class FurnitureOutput(
+    val id: String,
+    val property_id: String,
+    val room_id: String,
+    val name: String,
+    val quantity: Int
+)
+
+data class FurnitureInput(
+    val name: String,
+    val quantity: Int
+)
+
 data class InventoryReportFurniture(
     val id: String,
     val cleanliness: String,
@@ -98,15 +112,15 @@ data class InventoryReportRoom(
     val id: String,
     val cleanliness: String,
     val state: String,
-    val furnitures: Array<InventoryReportFurniture>
+    val furnitures: Vector<InventoryReportFurniture>
 )
 
 data class InventoryReportInput(
     val type: String,
-    val rooms: Array<InventoryReportRoom>
+    val rooms: Vector<InventoryReportRoom>
 )
 
-data class CreateRoomInput(
+data class AddRoomInput(
     val name : String,
 )
 
@@ -164,11 +178,27 @@ interface ApiService {
     ) : Array<RoomOutput>
 
     @POST("${API_PREFIX}/owner/properties/{propertyId}/rooms")
-    suspend fun createRoom(
+    suspend fun addRoom(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
-        @Body room: CreateRoomInput
+        @Body room: AddRoomInput
     ) : RoomOutput
+
+    //furnitures functions
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/furnitures")
+    suspend fun getAllFurnitures(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("roomId") roomId: String,
+    ) : Array<FurnitureOutput>
+
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/furnitures")
+    suspend fun addFurniture(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("roomId") roomId: String,
+        @Body furniture: FurnitureInput
+    ) : FurnitureOutput
 
     //inventory report functions
     @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")

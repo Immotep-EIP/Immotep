@@ -6,16 +6,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiClient
-import com.example.immotep.apiClient.CreateRoomInput
+import com.example.immotep.apiClient.FurnitureInput
+import com.example.immotep.apiClient.InventoryReportFurniture
+import com.example.immotep.apiClient.InventoryReportInput
+import com.example.immotep.apiClient.InventoryReportRoom
 import com.example.immotep.authService.AuthService
 import com.example.immotep.inventory.rooms.RoomsViewModel
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Vector
 
 data class RoomDetail(
+    var id : String? = null,
     var name : String = "",
     var completed : Boolean = false,
     var comment : String = "",
@@ -40,10 +46,21 @@ class InventoryViewModel(
     private val navController: NavController,
     private val propertyId : String,
 ) : ViewModel() {
+    private val _inventoryOpen = MutableStateFlow(InventoryOpenValues.CLOSED)
+    val inventoryOpen = _inventoryOpen.asStateFlow()
+
     val rooms = mutableStateListOf<Room>()
+
+    fun setInventoryOpen(value: InventoryOpenValues) {
+        _inventoryOpen.value = value
+    }
+
+    fun getRooms() : Array<Room> {
+        return rooms.toTypedArray()
+    }
+
     fun addRoom(name: String) {
         val room = Room(name = name)
-        println(room)
         rooms.add(room)
     }
 
@@ -58,7 +75,7 @@ class InventoryViewModel(
     }
 
     fun onClose() {
-        rooms.clear()
+        //rooms.clear()
     }
 
     fun getBaseRooms() {
@@ -75,7 +92,11 @@ class InventoryViewModel(
             try {
                 val rooms = ApiClient.apiService.getAllRooms(bearerToken, propertyId)
                 rooms.forEach {
-                    val room = Room(it.id, it.name, "")
+                    val roomsDetails = ApiClient.apiService.getAllFurnitures(bearerToken, propertyId, it.id)
+                    val room = Room(it.id, it.name, "", roomsDetails.map { detail -> RoomDetail(
+                        id = detail.id,
+                        name = detail.name,
+                    )}.toTypedArray())
                     this@InventoryViewModel.rooms.add(room)
                 }
             } catch (e : Exception) {
@@ -84,27 +105,86 @@ class InventoryViewModel(
         }
     }
 
-    private suspend fun createNewRooms(roomsToCheck : Array<Room>, bearerToken : String) {
+    private suspend fun createNewFurnitures(roomId : String, furnitures : Array<RoomDetail>, bearerToken : String) {
+        try {
+            furnitures.forEach {
+                if (it.id == null) {
+                    val createdFurniture = ApiClient.apiService.addFurniture(
+                        bearerToken,
+                        propertyId,
+                        roomId,
+                        FurnitureInput(it.name, 1)
+                    )
+                    it.id = createdFurniture.id
+                }
+            }
+            furnitures.forEach {
+                println("furni created ${it.id}, ${it.name} !")
+            }
+        } catch(e : Exception) {
+            e.printStackTrace()
+        }
+    }
+    private suspend fun createNewRooms(roomsToCheck : Array<Room>, bearerToken : String){
         try {
             roomsToCheck.forEach {
                 if (it.id == null) {
-                    val createdRoom = ApiClient.apiService.createRoom(
+                    val createdRoom = ApiClient.apiService.addRoom(
                         bearerToken,
                         propertyId,
-                        CreateRoomInput(it.name)
+                        AddRoomInput(it.name)
                     )
                     it.id = createdRoom.id
                 }
-            }
-            roomsToCheck.forEach {
-                println("rooms created ${it.id}, ${it.name}")
+                this.createNewFurnitures(it.id!!, it.details, bearerToken)
+                it.details.forEach {
+                    println("check for furni ${it.id}, ${it.name}")
+                }
             }
         } catch(e : Exception) {
             e.printStackTrace()
         }
     }
 
-    fun sendInventory(openValue: InventoryOpenValues) {
+    private fun roomsToInventoryReport(openValue: InventoryOpenValues) : InventoryReportInput {
+        val inventoryReportInput = InventoryReportInput(
+            type = if (openValue === InventoryOpenValues.ENTRY) "start" else "end",
+            rooms = Vector()
+        )
+        rooms.forEach { room ->
+            val tmpRoom = InventoryReportRoom(
+                id = room.id!!,
+                state = room.details[0].status,
+                cleanliness = room.details[0].cleaniness,
+                furnitures = Vector()
+            )
+            room.details.forEach { detail ->
+                tmpRoom.furnitures.add(
+                    InventoryReportFurniture(
+                        state = detail.status,
+                        cleanliness = detail.cleaniness,
+                        id = detail.id!!
+                    )
+                )
+            }
+            inventoryReportInput.rooms.add(tmpRoom)
+        }
+        return inventoryReportInput
+    }
+
+    private fun checkIfAllAreCompleted() : Boolean {
+        rooms.forEach { room ->
+            room.details.forEach { detail ->
+                if (!detail.completed) {
+                    return false
+                }
+                }
+        }
+        return true
+    }
+
+    fun sendInventory() {
+        if (!checkIfAllAreCompleted()) return
         viewModelScope.launch {
             var bearerToken = ""
             try {
@@ -115,7 +195,7 @@ class InventoryViewModel(
             }
             val roomsToSend = rooms.toTypedArray()
             createNewRooms(roomsToSend, bearerToken)
-
+            setInventoryOpen(InventoryOpenValues.CLOSED)
         }
     }
 }

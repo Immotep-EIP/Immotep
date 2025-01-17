@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class RoomsViewModel(
-    private val rooms: Array<Room>,
+    private val getRooms: () -> Array<Room>,
     private val addRoom: (String) -> Unit,
     private val removeRoom: (Int) -> Unit,
     private val editRoom: (Int, Room) -> Unit) : ViewModel() {
@@ -20,9 +20,9 @@ class RoomsViewModel(
     val currentlyOpenRoomIndex: StateFlow<Int?> = _currentlyOpenRoomIndex.asStateFlow()
     val allRooms = mutableStateListOf<Room>()
 
-    init {
+    fun handleBaseRooms() {
         allRooms.clear()
-        allRooms.addAll(rooms)
+        allRooms.addAll(getRooms())
     }
 
     fun onClose() {
@@ -42,7 +42,6 @@ class RoomsViewModel(
 
     fun closeRoomPanel(roomIndex: Int, details: Array<RoomDetail>) {
         if (roomIndex < 0 || roomIndex >= allRooms.size) return
-        println("room index : $roomIndex")
         val roomSelected = allRooms[roomIndex]
         roomSelected.details = details
         editRoom(roomIndex, roomSelected)
@@ -52,7 +51,7 @@ class RoomsViewModel(
 }
 
 class RoomsViewModelFactory(
-    private val rooms: Array<Room>,
+    private val getRooms: () -> Array<Room>,
     private val addRoom: (String) -> Unit,
     private val removeRoom: (Int) -> Unit,
     private val editRoom: (Int, Room) -> Unit
@@ -61,7 +60,7 @@ class RoomsViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RoomsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RoomsViewModel(rooms, addRoom, removeRoom, editRoom) as T
+            return RoomsViewModel(getRooms, addRoom, removeRoom, editRoom) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

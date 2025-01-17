@@ -119,7 +119,7 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
 
 @Composable
 fun RoomsScreen(
-    rooms: Array<Room>,
+    getRooms: () -> Array<Room>,
     addRoom: (String) -> Unit,
     removeRoom: (Int) -> Unit,
     editRoom: (Int, Room) -> Unit,
@@ -127,12 +127,16 @@ fun RoomsScreen(
     confirmInventory: () -> Unit,
     isExit : Boolean
 ) {
-    val viewModel: RoomsViewModel = viewModel(factory = RoomsViewModelFactory(rooms, addRoom, removeRoom, editRoom))
+    val viewModel: RoomsViewModel = viewModel(factory = RoomsViewModelFactory(getRooms, addRoom, removeRoom, editRoom))
 
     val currentlyOpenRoomIndex = viewModel.currentlyOpenRoomIndex.collectAsState()
     var exitPopUpOpen by rememberSaveable { mutableStateOf(false) }
     var confirmPopUpOpen by rememberSaveable { mutableStateOf(false) }
     var addRoomModalOpen by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.handleBaseRooms()
+    }
 
     if (currentlyOpenRoomIndex.value == null) {
         InventoryLayout(testTag = "roomsScreen", { exitPopUpOpen = true }) {

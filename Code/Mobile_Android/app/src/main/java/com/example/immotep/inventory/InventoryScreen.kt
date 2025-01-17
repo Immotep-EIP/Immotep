@@ -51,38 +51,38 @@ fun InventoryScreen(
     propertyId: String,
 ) {
     val viewModel: InventoryViewModel = viewModel(factory = InventoryViewModelFactory(navController, propertyId))
-    var inventoryOpen by rememberSaveable { mutableStateOf(InventoryOpenValues.CLOSED) }
+    var inventoryOpen = viewModel.inventoryOpen.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getBaseRooms()
     }
-    if (inventoryOpen == InventoryOpenValues.CLOSED) {
+    if (inventoryOpen.value == InventoryOpenValues.CLOSED) {
         InventoryLayout(testTag = "inventoryScreen", { navController.popBackStack() }) {
             NextInventoryButton(
                 Icons.Outlined.TurnRight,
                 stringResource(R.string.entry_inventory),
-                { inventoryOpen = InventoryOpenValues.ENTRY },
+                { viewModel.setInventoryOpen(InventoryOpenValues.ENTRY) },
                 testTag = "entryInventoryButton"
             )
             NextInventoryButton(
                 Icons.Outlined.TurnLeft,
                 stringResource(R.string.exit_inventory),
-                { inventoryOpen = InventoryOpenValues.EXIT },
+                { viewModel.setInventoryOpen(InventoryOpenValues.EXIT) },
                 testTag = "exitInventoryButton"
             )
         }
     } else {
         RoomsScreen(
-            viewModel.rooms.toTypedArray(),
+            { viewModel.getRooms() },
             { viewModel.addRoom(it) },
             { viewModel.removeRoom(it) },
             { index, room -> viewModel.editRoom(index, room) },
             {
                 viewModel.onClose()
-                inventoryOpen = InventoryOpenValues.CLOSED
+                viewModel.setInventoryOpen(InventoryOpenValues.CLOSED)
             },
-            isExit = inventoryOpen == InventoryOpenValues.EXIT,
-            confirmInventory = { viewModel.sendInventory(inventoryOpen) }
+            isExit = inventoryOpen.value == InventoryOpenValues.EXIT,
+            confirmInventory = { viewModel.sendInventory() }
         )
     }
 }

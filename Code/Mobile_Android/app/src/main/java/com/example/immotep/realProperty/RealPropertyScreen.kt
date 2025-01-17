@@ -136,7 +136,8 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
 
 @Composable
 fun RealPropertyScreen(navController: NavController) {
-    val viewModel: RealPropertyViewModel = viewModel(factory = RealPropertyViewModelFactory(navController))
+    val viewModel: RealPropertyViewModel =
+        viewModel(factory = RealPropertyViewModelFactory(navController))
     var detailsOpen by rememberSaveable { mutableStateOf<String?>(null) }
     var addPropertyModalOpen by rememberSaveable { mutableStateOf(false) }
 
@@ -144,41 +145,42 @@ fun RealPropertyScreen(navController: NavController) {
         viewModel.getProperties()
     }
 
-    InitialFadeIn {
-        DashBoardLayout(navController, "realPropertyScreen") {
-            if (detailsOpen == null) {
-                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                    Button(
-                        onClick = { addPropertyModalOpen = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(5.dp))
-                            .padding(5.dp)
-                            .testTag("addAPropertyBtn")
-                    ) {
-                        Text(
-                            stringResource(R.string.add_prop),
-                            color = MaterialTheme.colorScheme.onTertiary
-                        )
-                    }
+    DashBoardLayout(navController, "realPropertyScreen") {
+        if (detailsOpen == null) {
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = { addPropertyModalOpen = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .padding(5.dp)
+                        .testTag("addAPropertyBtn")
+                ) {
+                    Text(
+                        stringResource(R.string.add_prop),
+                        color = MaterialTheme.colorScheme.onTertiary
+                    )
                 }
+            }
+            InitialFadeIn {
                 LazyColumn {
                     items(viewModel.properties) { item ->
                         PropertyBox(item, onClick = { detailsOpen = item.id })
                     }
                 }
-            } else {
-                RealPropertyDetailsScreen(
-                    navController,
-                    detailsOpen!!,
-                    getBack = { detailsOpen = null })
             }
-            AddPropertyModal(
-                addPropertyModalOpen,
-                close = { addPropertyModalOpen = false },
+
+        } else {
+            RealPropertyDetailsScreen(
                 navController,
-                { property -> viewModel.addProperty(property) }
-            )
+                detailsOpen!!,
+                getBack = { detailsOpen = null })
         }
+        AddPropertyModal(
+            addPropertyModalOpen,
+            close = { addPropertyModalOpen = false },
+            navController,
+            { property -> viewModel.addProperty(property) }
+        )
     }
 }
