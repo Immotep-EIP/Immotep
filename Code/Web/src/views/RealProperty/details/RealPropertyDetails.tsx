@@ -13,8 +13,9 @@ import InviteTenantModal from '@/components/DetailsPage/InviteTenantModal'
 import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
 import { PropertyDetails } from '@/interfaces/Property/Property'
 import returnIcon from '@/assets/icons/retour.png'
-import style from './RealPropertyDetails.module.css'
 
+import { PropertyIdProvider } from '@/context/propertyIdContext'
+import style from './RealPropertyDetails.module.css'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
 import InventoryTab from './tabs/3InventoryTab'
@@ -79,12 +80,13 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
 
       <div className={style.moreInfosContainer}>
         <Tag color={propertyData.nb_damage > 0 ? 'red' : 'green'}>
-          {propertyData.nb_damage || 0} {t('pages.property.damage.waiting')}
+          {propertyData.nb_damage || 0}{' '}
+          {t('pages.real_property.damage.waiting')}
         </Tag>
         <Tag color={propertyData.status === 'available' ? 'green' : 'red'}>
           {propertyData.status === 'available'
-            ? t('pages.property.status.available')
-            : t('pages.property.status.unavailable')}
+            ? t('pages.real_property.status.available')
+            : t('pages.real_property.status.unavailable')}
         </Tag>
       </div>
     </div>
@@ -147,7 +149,7 @@ const RealPropertyDetails: React.FC = () => {
       if (req) {
         setPropertyData(req)
       } else {
-        message.error(t('pages.realPropertyDetails.error_fetching_data'))
+        message.error(t('pages.real_property_details.error_fetching_data'))
       }
     }
     fetchData()
@@ -174,7 +176,7 @@ const RealPropertyDetails: React.FC = () => {
         </div>
 
         <Button type="primary" onClick={showModal}>
-          {t('components.button.addTenant')}
+          {t('components.button.add_tenant')}
         </Button>
       </div>
       <InviteTenantModal
@@ -184,8 +186,9 @@ const RealPropertyDetails: React.FC = () => {
       />
 
       <HeaderPart propertyData={propertyData} />
-
-      <ChildrenComponent t={t} />
+      <PropertyIdProvider id={id}>
+        <ChildrenComponent t={t} />
+      </PropertyIdProvider>
     </div>
   )
 }

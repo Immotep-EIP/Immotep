@@ -20,10 +20,10 @@ const Lost: React.FC = () => {
         type="secondary"
         style={{ fontSize: '1.5rem', marginBottom: '2rem' }}
       >
-        {t('pages.lost.pageNotFound')}
+        {t('pages.lost.page_not_found')}
       </Text>
       <Button type="primary" onClick={goToOverview}>
-        {t('pages.lost.backHome')}
+        {t('pages.lost.back_home')}
       </Button>
     </div>
   )

@@ -71,12 +71,12 @@ const RealPropertyCreate: React.FC = () => {
         if (req) {
           setLoading(false)
           message.success(
-            t('pages.property.add_real_property.property_created')
+            t('pages.real_property.add_real_property.property_created')
           )
         } else {
           setLoading(false)
           message.error(
-            t('pages.property.add_real_property.error_property_created')
+            t('pages.real_property.add_real_property.error_property_created')
           )
         }
         window.history.back()
@@ -91,7 +91,7 @@ const RealPropertyCreate: React.FC = () => {
     errorInfo: any
   ) => {
     message.error(
-      t('pages.property.add_real_property.fill_all_fields'),
+      t('pages.real_property.add_real_property.fill_all_fields'),
       errorInfo
     )
   }
@@ -100,7 +100,7 @@ const RealPropertyCreate: React.FC = () => {
     <div className={style.pageContainer}>
       <div className={style.header}>
         <span className={style.title}>
-          {t('pages.property.add_real_property.title')}
+          {t('pages.real_property.add_real_property.title')}
         </span>
         <Button
           shape="circle"

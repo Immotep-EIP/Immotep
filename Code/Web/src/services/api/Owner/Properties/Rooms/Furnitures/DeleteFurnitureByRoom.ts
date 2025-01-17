@@ -8,7 +8,7 @@ const DeleteFurnitureByRoom = async (
   try {
     return await callApi({
       method: 'DELETE',
-      endpoint: `owner/properties/${PropertyId}/rooms/${RoomId}/furnitures/${FurnitureId}`
+      endpoint: `owner/properties/${PropertyId}/rooms/${RoomId}/furnitures/${FurnitureId}/`
     })
   } catch (error) {
     console.error('Error fetching data:', error)
