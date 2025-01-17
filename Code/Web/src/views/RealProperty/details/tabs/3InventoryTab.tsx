@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CloseOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Modal, message } from 'antd'
+import { Button, Form, Input, InputNumber, Modal, message } from 'antd'
 
 import addIcon from '@/assets/icons/plus.png'
 import { usePropertyId } from '@/context/propertyIdContext'
@@ -113,7 +113,7 @@ const InventoryTab: React.FC = () => {
     formAddStuff
       .validateFields()
       .then(async () => {
-        const { stuffName } = formAddStuff.getFieldsValue()
+        const { stuffName, itemQuantity } = formAddStuff.getFieldsValue()
 
         if (selectedRoomName && id) {
           const room = inventory.find(r => r.roomName === selectedRoomName)
@@ -124,7 +124,7 @@ const InventoryTab: React.FC = () => {
                 room.roomId,
                 {
                   name: stuffName,
-                  quantity: 0
+                  quantity: itemQuantity
                 }
               )
 
@@ -137,7 +137,8 @@ const InventoryTab: React.FC = () => {
                           ...r.stuffs,
                           {
                             name: newFurniture.name,
-                            id: newFurniture.id
+                            id: newFurniture.id,
+                            quantity: newFurniture.quantity
                           }
                         ]
                       }
@@ -235,7 +236,7 @@ const InventoryTab: React.FC = () => {
       </div>
       <Modal
         title={t(
-          'pages.realPropertyDetails.tabs.inventory.add_room_modal_title'
+          'pages.real_property_details.tabs.inventory.add_room_modal_title'
         )}
         open={isModalAddRoomOpen}
         onOk={handleAddRoom}
@@ -305,7 +306,7 @@ const InventoryTab: React.FC = () => {
         ))}
         <Modal
           title={t(
-            'pages.realPropertyDetails.tabs.inventory.add_stuff_modal_title'
+            'pages.real_property_details.tabs.inventory.add_stuff_modal_title'
           )}
           open={isModalAddStuffOpen}
           onOk={handleAddStuff}
@@ -329,6 +330,32 @@ const InventoryTab: React.FC = () => {
                   show: true,
                   max: 20
                 }}
+              />
+            </Form.Item>
+            <Form.Item
+              label={t('components.input.item_quantity.label')}
+              name="itemQuantity"
+              rules={[
+                {
+                  required: true,
+                  message: t('components.input.item_quantity.error')
+                },
+                {
+                  type: 'number',
+                  min: 1,
+                  max: 1000,
+                  message: t(
+                    'components.input.item_quantity.validation_message'
+                  )
+                }
+              ]}
+            >
+              <InputNumber
+                type="number"
+                placeholder={t('components.input.item_quantity.placeholder')}
+                max={1000}
+                min={1}
+                style={{ width: '100%' }}
               />
             </Form.Item>
           </Form>

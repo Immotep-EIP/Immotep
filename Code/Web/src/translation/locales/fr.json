@@ -86,6 +86,12 @@
         "placeholder": "Entrez le nom de l'objet",
         "error": "Veuillez remplir le nom de l'objet."
       },
+      "item_quantity": {
+        "label": "Quantité",
+        "placeholder": "Entrez la quantité",
+        "error": "Veuillez entrer une quantité valide.",
+        "validation_message": "La quantité doit être comprise entre 1 et 1000."
+      },
       "widget_name": {
         "label": "Nom du widget",
         "placeholder": "Entrez le nom du widget",
