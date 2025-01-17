@@ -5,7 +5,7 @@ const GetProperties = async () => {
   try {
     return await callApi<PropertyDetails[]>({
       method: 'GET',
-      endpoint: 'owner/properties/properties'
+      endpoint: 'owner/properties/'
     })
   } catch (error) {
     console.error('Error fetching data:', error)

@@ -70,7 +70,7 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
             { type: 'email', message: t('form.error.valid_email') }
           ]}
         >
-          <Input />
+          <Input placeholder={t('components.input.email.placeholder')} />
         </Form.Item>
 
         <Form.Item
