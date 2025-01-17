@@ -9,4 +9,7 @@ export interface Furniture {
 export interface CreateFurniture {
   name: string
   quantity: number
+  id?: string
+  property_id?: string
+  room_id?: string
 }

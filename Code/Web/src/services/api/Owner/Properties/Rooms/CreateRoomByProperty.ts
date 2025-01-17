@@ -6,7 +6,7 @@ const CreateRoomByProperty = async (id: string, PropertyName: string) => {
     return await callApi<Room>({
       method: 'POST',
       endpoint: `owner/properties/${id}/rooms/`,
-      data: JSON.stringify({ PropertyName })
+      data: JSON.stringify({ name: PropertyName })
     })
   } catch (error) {
     console.error('Error fetching data:', error)

@@ -5,7 +5,7 @@ const GetRoomByPropertyById = async (PropertyId: string, RoomId: string) => {
   try {
     return await callApi<Room>({
       method: 'GET',
-      endpoint: `owner/properties/${PropertyId}/rooms/${RoomId}`
+      endpoint: `owner/properties/${PropertyId}/rooms/${RoomId}/`
     })
   } catch (error) {
     console.error('Error fetching data:', error)
