@@ -12,7 +12,8 @@ data class RoomDetailsError(
     var comment: Boolean = false,
     var status: Boolean = false,
     var picture: Boolean = false,
-    var exitPicture: Boolean = false
+    var exitPicture: Boolean = false,
+    var cleaniness: Boolean = false
 )
 
 class OneDetailViewModel : ViewModel() {
@@ -55,6 +56,11 @@ class OneDetailViewModel : ViewModel() {
         _errors.value = _errors.value.copy(comment = false)
     }
 
+    fun setCleaniness(cleaniness : String) {
+        _detail.value = _detail.value.copy(cleaniness = cleaniness)
+        _errors.value = _errors.value.copy(cleaniness = false)
+    }
+
     fun setStatus(status : String) {
         _detail.value = _detail.value.copy(status = status)
         _errors.value = _errors.value.copy(status = false)
@@ -89,13 +95,16 @@ class OneDetailViewModel : ViewModel() {
         if (_detail.value.status.isEmpty()) {
             error.status = true
         }
+        if (_detail.value.cleaniness.isEmpty()) {
+            error.cleaniness = true
+        }
         if (picture.isEmpty()) {
             error.picture = true
         }
         if (isExit && exitPicture.isEmpty()) {
             error.exitPicture = true
         }
-        if (error.name || error.comment || error.status || error.picture) {
+        if (error.name || error.comment || error.status || error.picture || error.exitPicture || error.cleaniness) {
             _errors.value = error
             return
         }

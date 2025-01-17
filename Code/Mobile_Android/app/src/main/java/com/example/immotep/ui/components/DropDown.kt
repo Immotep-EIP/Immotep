@@ -30,7 +30,7 @@ data class DropDownItem(
 )
 
 @Composable
-fun DropDown(items : List<DropDownItem>, selectedItem : String, onItemSelected : (String) -> Unit) {
+fun DropDown(items : List<DropDownItem>, selectedItem : String, onItemSelected : (String) -> Unit, error : String? = null) {
     val isDropDownExpanded = remember {
         mutableStateOf(false)
     }
@@ -39,7 +39,7 @@ fun DropDown(items : List<DropDownItem>, selectedItem : String, onItemSelected :
         .padding(top = 10.dp)
         .border(
             width = 2.dp,
-            color = MaterialTheme.colors.onSurface,
+            color = if (error == null) MaterialTheme.colors.onSurface else MaterialTheme.colors.error,
             shape = RoundedCornerShape(8.dp)
         )
         .padding(10.dp).fillMaxWidth()
@@ -74,5 +74,11 @@ fun DropDown(items : List<DropDownItem>, selectedItem : String, onItemSelected :
                     })
             }
         }
+    }
+    if (error != null )  {
+        Text(
+            error,
+            modifier = Modifier.padding(top = 10.dp),
+            color = androidx.compose.material3.MaterialTheme.colorScheme.error)
     }
 }

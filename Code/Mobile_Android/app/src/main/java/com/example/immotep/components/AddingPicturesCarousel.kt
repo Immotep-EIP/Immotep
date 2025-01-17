@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -39,7 +40,7 @@ import com.example.immotep.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : ((picture : Uri) -> Unit)?, maxPictures : Int = 10) {
+fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : ((picture : Uri) -> Unit)?, maxPictures : Int = 10, error : String? = null) {
 
     var chooseOpen by rememberSaveable { mutableStateOf(false) }
     val onClose = { chooseOpen = false }
@@ -57,6 +58,7 @@ fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : ((picture : Uri) -
         modifier = Modifier
             .clip(RoundedCornerShape(5.dp))
             .background(color = MaterialTheme.colorScheme.surfaceDim)
+            .border(1.dp, if (error == null) MaterialTheme.colorScheme.surfaceDim else MaterialTheme.colorScheme.error, RoundedCornerShape(5.dp))
 
     ) {
         if (chooseOpen && addPicture != null) {
@@ -124,5 +126,12 @@ fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : ((picture : Uri) -
                 }
             }
         }
+    }
+    if (error != null) {
+        Text(
+            error,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(top = 10.dp)
+        )
     }
 }

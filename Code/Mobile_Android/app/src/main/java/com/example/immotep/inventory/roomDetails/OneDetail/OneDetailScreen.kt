@@ -59,10 +59,11 @@ fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) ->
         InitialFadeIn {
             Column {
                 Text(if (isExit) stringResource(R.string.entry_pictures) else stringResource(R.string.pictures))
-                AddingPicturesCarousel(pictures = viewModel.picture, addPicture = { uri -> viewModel.addPicture(uri) })
-                if (detailError.value.picture) Text(stringResource(R.string.add_picture_error),
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 10.dp))
+                AddingPicturesCarousel(
+                    pictures = viewModel.picture,
+                    addPicture = { uri -> viewModel.addPicture(uri) },
+                    error = if (detailError.value.picture) stringResource(R.string.add_picture_error) else null
+                )
                 if (isExit) {
                     Text(stringResource(R.string.exit_pictures))
                     AddingPicturesCarousel(pictures = viewModel.exitPicture, addPicture = { uri -> viewModel.addExitPicture(uri) })
@@ -96,11 +97,24 @@ fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) ->
                         DropDownItem(stringResource(R.string.broken_state), "broken"),
                     ),
                     selectedItem = detailValue.value.status,
-                    onItemSelected = { newVal -> viewModel.setStatus(newVal) }
+                    onItemSelected = { newVal -> viewModel.setStatus(newVal) },
+                    error = if (detailError.value.status) stringResource(R.string.status_error) else null
                 )
-                if (detailError.value.status) Text(stringResource(R.string.status_error),
-                    modifier = Modifier.padding(top = 10.dp),
-                    color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.cleaniness), modifier = Modifier.padding(top = 10.dp))
+                DropDown(
+                    items = listOf(
+                        DropDownItem(stringResource(R.string.very_clean), "very_clean"),
+                        DropDownItem(stringResource(R.string.clean), "clean"),
+                        DropDownItem(stringResource(R.string.good_state), "good"),
+                        DropDownItem(stringResource(R.string.ok_state), "ok"),
+                        DropDownItem(stringResource(R.string.little_dirty), "little_dirty"),
+                        DropDownItem(stringResource(R.string.dirty), "dirty"),
+                        DropDownItem(stringResource(R.string.filthy), "filthy"),
+                    ),
+                    selectedItem = detailValue.value.cleaniness,
+                    onItemSelected = { newVal -> viewModel.setCleaniness(newVal) },
+                    error = if (detailError.value.cleaniness) stringResource(R.string.cleaniness_error) else null
+                )
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                     Button(
                         shape = RoundedCornerShape(5.dp),

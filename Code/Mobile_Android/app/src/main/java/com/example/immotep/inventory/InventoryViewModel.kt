@@ -20,6 +20,7 @@ data class RoomDetail(
     var completed : Boolean = false,
     var comment : String = "",
     var status : String = "",
+    var cleaniness : String = "",
     val pictures : Array<Uri> = arrayOf(),
     val exitPictures : Array<Uri>? = null
 )
@@ -86,13 +87,18 @@ class InventoryViewModel(
     private suspend fun createNewRooms(roomsToCheck : Array<Room>, bearerToken : String) {
         try {
             roomsToCheck.forEach {
-                if (it.id != null) {
-                    return
+                if (it.id == null) {
+                    val createdRoom = ApiClient.apiService.createRoom(
+                        bearerToken,
+                        propertyId,
+                        CreateRoomInput(it.name)
+                    )
+                    it.id = createdRoom.id
                 }
-                val createdRoom = ApiClient.apiService.createRoom(bearerToken, propertyId, CreateRoomInput(it.name))
-                it.id = createdRoom.id
             }
-            println(roomsToCheck)
+            roomsToCheck.forEach {
+                println("rooms created ${it.id}, ${it.name}")
+            }
         } catch(e : Exception) {
             e.printStackTrace()
         }
@@ -102,13 +108,14 @@ class InventoryViewModel(
         viewModelScope.launch {
             var bearerToken = ""
             try {
-                val authService: AuthService = AuthService(navController.context.dataStore)
+                val authService = AuthService(navController.context.dataStore)
                 bearerToken = authService.getBearerToken()
             } catch (e : Exception) {
                 e.printStackTrace()
             }
             val roomsToSend = rooms.toTypedArray()
             createNewRooms(roomsToSend, bearerToken)
+
         }
     }
 }

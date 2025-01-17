@@ -165,7 +165,7 @@ fun RoomsScreen(
                     onDismissRequest = { confirmPopUpOpen = false },
                     confirmButton = {
                         TextButton(onClick = { confirmPopUpOpen = false; confirmInventory() }) {
-                            Text(stringResource(R.string.exit))
+                            Text(stringResource(R.string.confirm))
                         }
                     },
                     dismissButton = {

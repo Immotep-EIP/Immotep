@@ -91,7 +91,7 @@ class AuthService(
         navController.navigate("login")
     }
 
-    suspend fun refreshToken() {
+    private suspend fun refreshToken() {
         val refreshToken = dataStore.data.map { it[REFRESH_TOKEN] }.firstOrNull()
         if (refreshToken == null) {
             throw IllegalArgumentException("no refresh token stored")
@@ -106,7 +106,7 @@ class AuthService(
         this.store(response.access_token, response.refresh_token, response.expires_in)
     }
 
-    suspend fun isAccessTokenExpired(): Boolean {
+    private suspend fun isAccessTokenExpired(): Boolean {
         val expirationTime = dataStore.data.map { it[EXPIRES_IN] }.firstOrNull()
         val expTime = LocalDateTime.parse(expirationTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         val actTime = LocalDateTime.now()

@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.R
 import com.example.immotep.addPropertyModal.AddPropertyModal
+import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
 import java.text.SimpleDateFormat
@@ -143,36 +144,41 @@ fun RealPropertyScreen(navController: NavController) {
         viewModel.getProperties()
     }
 
-    DashBoardLayout(navController, "realPropertyScreen") {
-        if (detailsOpen == null) {
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = { addPropertyModalOpen = true },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .padding(5.dp)
-                        .testTag("addAPropertyBtn")
-                ) {
-                    Text(
-                        stringResource(R.string.add_prop),
-                        color = MaterialTheme.colorScheme.onTertiary
-                    )
+    InitialFadeIn {
+        DashBoardLayout(navController, "realPropertyScreen") {
+            if (detailsOpen == null) {
+                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = { addPropertyModalOpen = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(5.dp))
+                            .padding(5.dp)
+                            .testTag("addAPropertyBtn")
+                    ) {
+                        Text(
+                            stringResource(R.string.add_prop),
+                            color = MaterialTheme.colorScheme.onTertiary
+                        )
+                    }
                 }
-            }
-            LazyColumn {
-                items(viewModel.properties) { item ->
-                    PropertyBox(item, onClick = { detailsOpen = item.id })
+                LazyColumn {
+                    items(viewModel.properties) { item ->
+                        PropertyBox(item, onClick = { detailsOpen = item.id })
+                    }
                 }
+            } else {
+                RealPropertyDetailsScreen(
+                    navController,
+                    detailsOpen!!,
+                    getBack = { detailsOpen = null })
             }
-        } else {
-            RealPropertyDetailsScreen(navController, detailsOpen!!, getBack = { detailsOpen = null })
+            AddPropertyModal(
+                addPropertyModalOpen,
+                close = { addPropertyModalOpen = false },
+                navController,
+                { property -> viewModel.addProperty(property) }
+            )
         }
-        AddPropertyModal(
-            addPropertyModalOpen,
-            close = { addPropertyModalOpen = false },
-            navController,
-            { property -> viewModel.addProperty(property) }
-        )
     }
 }
