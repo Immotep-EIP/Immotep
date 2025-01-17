@@ -42,6 +42,11 @@ definitions:
         type: string
       note:
         type: string
+      pictures:
+        items:
+          type: string
+        minItems: 1
+        type: array
       state:
         enum:
         - broken
@@ -55,6 +60,7 @@ definitions:
     - cleanliness
     - id
     - note
+    - pictures
     - state
     type: object
   models.FurnitureStateResponse:
@@ -67,6 +73,10 @@ definitions:
         type: string
       note:
         type: string
+      pictures:
+        items:
+          type: string
+        type: array
       quantity:
         type: integer
       state:
@@ -244,6 +254,11 @@ definitions:
         type: string
       note:
         type: string
+      pictures:
+        items:
+          type: string
+        minItems: 1
+        type: array
       state:
         enum:
         - broken
@@ -258,6 +273,7 @@ definitions:
     - furnitures
     - id
     - note
+    - pictures
     - state
     type: object
   models.RoomStateResponse:
@@ -274,6 +290,10 @@ definitions:
         type: string
       note:
         type: string
+      pictures:
+        items:
+          type: string
+        type: array
       state:
         type: string
     type: object

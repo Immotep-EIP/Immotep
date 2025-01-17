@@ -1609,6 +1609,7 @@ const docTemplate = `{
                 "cleanliness",
                 "id",
                 "note",
+                "pictures",
                 "state"
             ],
             "properties": {
@@ -1625,6 +1626,13 @@ const docTemplate = `{
                 },
                 "note": {
                     "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "state": {
                     "type": "string",
@@ -1653,6 +1661,12 @@ const docTemplate = `{
                 },
                 "note": {
                     "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "quantity": {
                     "type": "integer"
@@ -1902,6 +1916,7 @@ const docTemplate = `{
                 "furnitures",
                 "id",
                 "note",
+                "pictures",
                 "state"
             ],
             "properties": {
@@ -1924,6 +1939,13 @@ const docTemplate = `{
                 },
                 "note": {
                     "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "state": {
                     "type": "string",
@@ -1958,6 +1980,12 @@ const docTemplate = `{
                 },
                 "note": {
                     "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "state": {
                     "type": "string"

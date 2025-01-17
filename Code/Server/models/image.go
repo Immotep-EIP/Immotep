@@ -23,6 +23,10 @@ func (i *ImageRequest) ToDbImage() *db.ImageModel {
 	}
 }
 
+func StringToDbImage(data string) *db.ImageModel {
+	return (&ImageRequest{Data: data}).ToDbImage()
+}
+
 type ImageResponse struct {
 	ID        string      `json:"id"`
 	Data      string      `json:"data"`
