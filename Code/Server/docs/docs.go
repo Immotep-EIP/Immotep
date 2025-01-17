@@ -459,6 +459,147 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Generate comparison from photo for last inventory report",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ai"
+                ],
+                "summary": "Generate comparison from photo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Previous report ID to compare with",
+                        "name": "old_report_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Compare data",
+                        "name": "aiData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SummarizeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property or old report not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/inventory-reports/summarize": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Generate summary from photo for first inventory report",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ai"
+                ],
+                "summary": "Generate summary from photo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Summarize data",
+                        "name": "aiData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SummarizeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Summarize data",
+                        "schema": {
+                            "$ref": "#/definitions/models.SummarizeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/inventory-reports/{report_id}": {
             "get": {
                 "security": [
@@ -1992,6 +2133,47 @@ const docTemplate = `{
                 }
             }
         },
+        "models.SummarizeRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "pictures",
+                "type"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "room",
+                        "furniture"
+                    ]
+                }
+            }
+        },
+        "models.SummarizeResponse": {
+            "type": "object",
+            "properties": {
+                "cleanliness": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UserRequest": {
             "type": "object",
             "required": [
@@ -2106,7 +2288,8 @@ const docTemplate = `{
                 "inventory-report-already-exists",
                 "inventory-report-not-found",
                 "room-state-already-exists",
-                "furniture-state-already-exists"
+                "furniture-state-already-exists",
+                "error-request-chatgpt-api"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -2142,7 +2325,8 @@ const docTemplate = `{
                 "InventoryReportAlreadyExists",
                 "InventoryReportNotFound",
                 "RoomStateAlreadyExists",
-                "FurnitureStateAlreadyExists"
+                "FurnitureStateAlreadyExists",
+                "ErrorRequestChatGPTAPI"
             ]
         }
     },

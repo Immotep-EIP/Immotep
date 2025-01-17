@@ -41,6 +41,7 @@ const (
 	InventoryReportNotFound      ErrorCode = "inventory-report-not-found"
 	RoomStateAlreadyExists       ErrorCode = "room-state-already-exists"
 	FurnitureStateAlreadyExists  ErrorCode = "furniture-state-already-exists"
+	ErrorRequestChatGPTAPI       ErrorCode = "error-request-chatgpt-api"
 )
 
 type Error struct {
