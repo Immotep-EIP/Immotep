@@ -19,7 +19,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/invite/{id}": {
+        "/auth/invite/{id}/": {
             "post": {
                 "description": "Answer an invite from an owner with an invite link",
                 "consumes": [
@@ -81,7 +81,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/register": {
+        "/auth/register/": {
             "post": {
                 "description": "Create a new user with owner role",
                 "consumes": [
@@ -130,7 +130,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/token": {
+        "/auth/token/": {
             "post": {
                 "description": "Authenticate user with email and password",
                 "consumes": [
@@ -189,7 +189,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties": {
+        "/owner/properties/": {
             "get": {
                 "security": [
                     {
@@ -281,7 +281,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}": {
+        "/owner/properties/{property_id}/": {
             "get": {
                 "security": [
                     {
@@ -339,7 +339,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/inventory-reports": {
+        "/owner/properties/{property_id}/inventory-reports/": {
             "get": {
                 "security": [
                     {
@@ -459,7 +459,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}": {
+        "/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/": {
             "get": {
                 "security": [
                     {
@@ -533,7 +533,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/inventory-reports/summarize": {
+        "/owner/properties/{property_id}/inventory-reports/summarize/": {
             "get": {
                 "security": [
                     {
@@ -600,7 +600,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/inventory-reports/{report_id}": {
+        "/owner/properties/{property_id}/inventory-reports/{report_id}/": {
             "get": {
                 "security": [
                     {
@@ -659,7 +659,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/picture": {
+        "/owner/properties/{property_id}/picture/": {
             "get": {
                 "security": [
                     {
@@ -791,7 +791,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/rooms": {
+        "/owner/properties/{property_id}/rooms/": {
             "get": {
                 "security": [
                     {
@@ -911,7 +911,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/rooms/{room_id}": {
+        "/owner/properties/{property_id}/rooms/{room_id}/": {
             "get": {
                 "security": [
                     {
@@ -1024,7 +1024,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/rooms/{room_id}/furnitures": {
+        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/": {
             "get": {
                 "security": [
                     {
@@ -1158,7 +1158,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}": {
+        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/": {
             "get": {
                 "security": [
                     {
@@ -1265,7 +1265,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/send-invite/{propertyId}": {
+        "/owner/send-invite/{propertyId}/": {
             "post": {
                 "security": [
                     {
@@ -1338,7 +1338,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/profile": {
+        "/profile/": {
             "get": {
                 "security": [
                     {
@@ -1439,7 +1439,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/profile/picture": {
+        "/profile/picture/": {
             "get": {
                 "security": [
                     {
@@ -1559,7 +1559,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/users/": {
             "get": {
                 "security": [
                     {
@@ -1590,7 +1590,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/users/{id}/": {
             "get": {
                 "security": [
                     {
@@ -1642,7 +1642,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}/picture": {
+        "/users/{id}/picture/": {
             "get": {
                 "security": [
                     {

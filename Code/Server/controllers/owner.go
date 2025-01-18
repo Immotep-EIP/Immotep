@@ -26,7 +26,7 @@ import (
 //	@Failure		409			{object}	utils.Error				"Invite already exists for this email"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/send-invite/{propertyId} [post]
+//	@Router			/owner/send-invite/{propertyId}/ [post]
 func InviteTenant(c *gin.Context) {
 	claims := utils.GetClaims(c)
 

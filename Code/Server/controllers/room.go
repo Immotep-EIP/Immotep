@@ -24,7 +24,7 @@ import (
 //	@Failure		404			{object}	utils.Error			"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms [post]
+//	@Router			/owner/properties/{property_id}/rooms/ [post]
 func CreateRoom(c *gin.Context) {
 	var req models.RoomRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -53,7 +53,7 @@ func CreateRoom(c *gin.Context) {
 //	@Failure		404			{object}	utils.Error			"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms [get]
+//	@Router			/owner/properties/{property_id}/rooms/ [get]
 func GetRoomsByProperty(c *gin.Context) {
 	rooms := roomservice.GetByPropertyID(c.Param("property_id"))
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
@@ -73,7 +73,7 @@ func GetRoomsByProperty(c *gin.Context) {
 //	@Failure		404			{object}	utils.Error			"Room not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id} [get]
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [get]
 func GetRoomByID(c *gin.Context) {
 	room := roomservice.GetByID(c.Param("room_id"))
 	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
@@ -93,7 +93,7 @@ func GetRoomByID(c *gin.Context) {
 //	@Failure		404	{object}	utils.Error	"Room not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id} [delete]
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [delete]
 func DeleteRoom(c *gin.Context) {
 	ok := roomservice.Delete(c.Param("room_id"))
 	if !ok {

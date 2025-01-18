@@ -143,7 +143,7 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 //	@Failure		404			{object}	utils.Error						"Property or room not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/inventory-reports [post]
+//	@Router			/owner/properties/{property_id}/inventory-reports/ [post]
 func CreateInventoryReport(c *gin.Context) {
 	var req models.InventoryReportRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -175,7 +175,7 @@ func CreateInventoryReport(c *gin.Context) {
 //	@Failure		404			{object}	utils.Error						"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/inventory-reports [get]
+//	@Router			/owner/properties/{property_id}/inventory-reports/ [get]
 func GetInventoryReportsByProperty(c *gin.Context) {
 	reports := inventoryreportservice.GetByPropertyID(c.Param("property_id"))
 	c.JSON(http.StatusOK, utils.Map(reports, models.DbInventoryReportToResponse))
@@ -195,7 +195,7 @@ func GetInventoryReportsByProperty(c *gin.Context) {
 //	@Failure		404			{object}	utils.Error						"Inventory report not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/inventory-reports/{report_id} [get]
+//	@Router			/owner/properties/{property_id}/inventory-reports/{report_id}/ [get]
 func GetInventoryReportByID(c *gin.Context) {
 	report := inventoryreportservice.GetByID(c.Param("report_id"))
 	if report == nil {

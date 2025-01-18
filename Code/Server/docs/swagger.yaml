@@ -461,7 +461,7 @@ info:
   title: Immotep API
   version: "1.0"
 paths:
-  /auth/invite/{id}:
+  /auth/invite/{id}/:
     post:
       consumes:
       - application/json
@@ -502,7 +502,7 @@ paths:
       summary: Create a new tenant
       tags:
       - auth
-  /auth/register:
+  /auth/register/:
     post:
       consumes:
       - application/json
@@ -534,7 +534,7 @@ paths:
       summary: Create a new owner
       tags:
       - auth
-  /auth/token:
+  /auth/token/:
     post:
       consumes:
       - application/x-www-form-urlencoded
@@ -574,7 +574,7 @@ paths:
       summary: Authenticate user
       tags:
       - auth
-  /owner/properties:
+  /owner/properties/:
     get:
       consumes:
       - application/json
@@ -632,7 +632,7 @@ paths:
       summary: Create a new property
       tags:
       - owner
-  /owner/properties/{property_id}:
+  /owner/properties/{property_id}/:
     get:
       consumes:
       - application/json
@@ -669,7 +669,7 @@ paths:
       summary: Get property by ID
       tags:
       - owner
-  /owner/properties/{property_id}/inventory-reports:
+  /owner/properties/{property_id}/inventory-reports/:
     get:
       consumes:
       - application/json
@@ -746,7 +746,7 @@ paths:
       summary: Create a new inventory report
       tags:
       - owner
-  /owner/properties/{property_id}/inventory-reports/{report_id}:
+  /owner/properties/{property_id}/inventory-reports/{report_id}/:
     get:
       consumes:
       - application/json
@@ -784,7 +784,7 @@ paths:
       summary: Get inventory report by ID
       tags:
       - owner
-  /owner/properties/{property_id}/inventory-reports/compare/{old_report_id}:
+  /owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/:
     get:
       consumes:
       - application/json
@@ -832,7 +832,7 @@ paths:
       summary: Generate comparison from photo
       tags:
       - ai
-  /owner/properties/{property_id}/inventory-reports/summarize:
+  /owner/properties/{property_id}/inventory-reports/summarize/:
     get:
       consumes:
       - application/json
@@ -875,7 +875,7 @@ paths:
       summary: Generate summary from photo
       tags:
       - ai
-  /owner/properties/{property_id}/picture:
+  /owner/properties/{property_id}/picture/:
     get:
       consumes:
       - application/json
@@ -960,7 +960,7 @@ paths:
       summary: Update property's picture
       tags:
       - owner
-  /owner/properties/{property_id}/rooms:
+  /owner/properties/{property_id}/rooms/:
     get:
       consumes:
       - application/json
@@ -1037,7 +1037,7 @@ paths:
       summary: Create a new room
       tags:
       - owner
-  /owner/properties/{property_id}/rooms/{room_id}:
+  /owner/properties/{property_id}/rooms/{room_id}/:
     delete:
       consumes:
       - application/json
@@ -1110,7 +1110,7 @@ paths:
       summary: Get room by ID
       tags:
       - owner
-  /owner/properties/{property_id}/rooms/{room_id}/furnitures:
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures/:
     get:
       consumes:
       - application/json
@@ -1197,7 +1197,7 @@ paths:
       summary: Create a new furniture
       tags:
       - owner
-  /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}:
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/:
     delete:
       consumes:
       - application/json
@@ -1266,7 +1266,7 @@ paths:
       summary: Get furniture by ID
       tags:
       - owner
-  /owner/send-invite/{propertyId}:
+  /owner/send-invite/{propertyId}/:
     post:
       consumes:
       - application/json
@@ -1313,7 +1313,7 @@ paths:
       summary: Invite tenant to owner's property
       tags:
       - owner
-  /profile:
+  /profile/:
     get:
       consumes:
       - application/json
@@ -1377,7 +1377,7 @@ paths:
       summary: Update current user profile
       tags:
       - user
-  /profile/picture:
+  /profile/picture/:
     get:
       consumes:
       - application/json
@@ -1454,7 +1454,7 @@ paths:
       summary: Update current user's profile picture
       tags:
       - user
-  /users:
+  /users/:
     get:
       description: Get all users information
       produces:
@@ -1473,7 +1473,7 @@ paths:
       summary: Get all users
       tags:
       - user
-  /users/{id}:
+  /users/{id}/:
     get:
       consumes:
       - application/json
@@ -1506,7 +1506,7 @@ paths:
       summary: Get user by ID
       tags:
       - user
-  /users/{id}/picture:
+  /users/{id}/picture/:
     get:
       consumes:
       - application/json
