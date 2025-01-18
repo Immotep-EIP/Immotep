@@ -9,6 +9,12 @@ import SwiftUI
 
 struct InventoryTypeView: View {
     @Binding var property: Property
+    @StateObject private var inventoryViewModel: InventoryViewModel
+
+    init(property: Binding<Property>) {
+        self._property = property
+        self._inventoryViewModel = StateObject(wrappedValue: InventoryViewModel(property: property.wrappedValue))
+    }
 
     var body: some View {
         NavigationView {
@@ -16,7 +22,7 @@ struct InventoryTypeView: View {
                 TopBar(title: "Inventory")
                 VStack {
                     NavigationLink {
-                        InventoryRoomView(rooms: $property.rooms)
+                        InventoryRoomView(inventoryViewModel: inventoryViewModel)
                     } label: {
                         HStack {
                             Image(systemName: "figure.walk.arrival")
@@ -39,9 +45,12 @@ struct InventoryTypeView: View {
                             .stroke(Color.gray.opacity(0.5), lineWidth: 1)
                     )
                     .padding(.horizontal)
+                    .onTapGesture {
+                        inventoryViewModel.isEntryInventory = true
+                    }
 
                     NavigationLink {
-                        InventoryRoomView(rooms: $property.rooms)
+                        InventoryRoomView(inventoryViewModel: inventoryViewModel)
                     } label: {
                         HStack {
                             Image(systemName: "figure.walk.departure")
@@ -64,6 +73,9 @@ struct InventoryTypeView: View {
                             .stroke(Color.gray.opacity(0.5), lineWidth: 1)
                     )
                     .padding()
+                    .onTapGesture {
+                        inventoryViewModel.isEntryInventory = false
+                    }
                 }
                 .padding(.top, 20)
 

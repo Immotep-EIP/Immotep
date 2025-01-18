@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InventoryStuffView: View {
-    @Binding var inventory: [RoomInventory]
+    @ObservedObject var inventoryViewModel: InventoryViewModel
 
     var body: some View {
         NavigationView {
@@ -16,13 +16,16 @@ struct InventoryStuffView: View {
                 TopBar(title: "Inventory")
                 VStack {
                     ScrollView {
-                        ForEach($inventory) { $stuff in
-                            NavigationLink(destination: InventoryEvaluationView(stuff: $stuff)) {
+                        ForEach(inventoryViewModel.selectedInventory) { stuff in
+                            NavigationLink(destination: InventoryEvaluationView(inventoryViewModel: inventoryViewModel)) {
                                 StuffCard(stuff: stuff)
+                                    .onTapGesture {
+                                        inventoryViewModel.selectStuff(stuff)
+                                    }
                             }
                         }
                         Button {
-                            // Add a new Room
+                            inventoryViewModel.addStuff(name: "New Stuff")
                         } label: {
                             HStack {
                                 Image(systemName: "plus.circle")
@@ -80,6 +83,8 @@ struct StuffCard: View {
 struct InventoryStuffView_Previews: PreviewProvider {
     static var previews: some View {
         let fakeProperty = exampleDataProperty
-        InventoryStuffView(inventory: .constant(fakeProperty.rooms[1].inventory))
+        let viewModel = InventoryViewModel(property: fakeProperty)
+        viewModel.selectRoom(fakeProperty.rooms[0])
+        return InventoryStuffView(inventoryViewModel: viewModel)
     }
 }

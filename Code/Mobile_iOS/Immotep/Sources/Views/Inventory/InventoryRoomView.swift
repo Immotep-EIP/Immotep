@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct InventoryRoomView: View {
-    @Binding var rooms: [PropertyRooms]
+    @ObservedObject var inventoryViewModel: InventoryViewModel
 
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                TopBar(title: "Inventory")
+                TopBar(title: inventoryViewModel.isEntryInventory ? "Entry Inventory" : "Exit Inventory")
                 VStack {
                     HStack {
                         Spacer()
@@ -31,27 +31,30 @@ struct InventoryRoomView: View {
                         }
                     }
                     ScrollView {
-                        ForEach($rooms) { $room in
-                            NavigationLink(destination: InventoryStuffView(inventory: $room.inventory)) {
-                                RoomCard(room: room)
+                        ForEach(inventoryViewModel.property.rooms) { room in
+                            NavigationLink(destination: InventoryStuffView(inventoryViewModel: inventoryViewModel)) {
+                                RoomCard(room: room, isEntryInventory: inventoryViewModel.isEntryInventory)
+                                    .onTapGesture {
+                                        inventoryViewModel.selectRoom(room)
+                                    }
                             }
                         }
                         Button {
-                            // Add a new Room
+                            inventoryViewModel.addRoom(name: "New Room")
                         } label: {
-                        HStack {
-                            Image(systemName: "plus.circle")
-                                .font(.title)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .foregroundStyle(Color("textColor"))
-                        .padding()
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                        )
-                        .padding(.horizontal)
-                        .padding(.vertical, 5)
+                            HStack {
+                                Image(systemName: "plus.circle")
+                                    .font(.title)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .foregroundStyle(Color("textColor"))
+                            .padding()
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                            )
+                            .padding(.horizontal)
+                            .padding(.vertical, 5)
                         }
                     }
                 }
@@ -69,33 +72,45 @@ struct InventoryRoomView: View {
 
 struct RoomCard: View {
     let room: PropertyRooms
+    let isEntryInventory: Bool
+
     var body: some View {
-            HStack {
-                if room.checked {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(Color.green)
-                }
-                Text(room.name)
+        HStack {
+            if room.checked {
+                Image(systemName: "checkmark")
+                    .foregroundStyle(Color.green)
+            }
+            Text(room.name)
+                .foregroundStyle(Color("textColor"))
+            Spacer()
+            if isEntryInventory {
+                Image(systemName: "figure.walk.arrival")
+                    .font(.title)
                     .foregroundStyle(Color("textColor"))
-                Spacer()
-                Image(systemName: "arrowshape.right.circle.fill")
+            } else {
+                Image(systemName: "figure.walk.departure")
                     .font(.title)
                     .foregroundStyle(Color("textColor"))
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-            )
-            .padding(.horizontal)
-            .padding(.vertical, 5)
+            Image(systemName: "arrowshape.right.circle.fill")
+                .font(.title)
+                .foregroundStyle(Color("textColor"))
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+        )
+        .padding(.horizontal)
+        .padding(.vertical, 5)
     }
 }
 
 struct InventoryRoomView_Previews: PreviewProvider {
     static var previews: some View {
         let fakeProperty = exampleDataProperty
-        InventoryRoomView(rooms: .constant(fakeProperty.rooms))
+        let viewModel = InventoryViewModel(property: fakeProperty)
+        InventoryRoomView(inventoryViewModel: viewModel)
     }
 }

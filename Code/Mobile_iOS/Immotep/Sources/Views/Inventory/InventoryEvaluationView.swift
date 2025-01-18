@@ -6,14 +6,8 @@
 //
 
 import SwiftUI
-
 struct InventoryEvaluationView: View {
-    @Binding var stuff: RoomInventory
-
-    @State private var selectedImages: [UIImage] = []
-    @State private var comment: String = ""
-    @State private var selectedStatus: String = "Select your equipment status"
-    let statusOptions = ["Available", "Unavailable", "Maintenance", "Retired"]
+    @ObservedObject var inventoryViewModel: InventoryViewModel
 
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
@@ -26,7 +20,7 @@ struct InventoryEvaluationView: View {
 
                 ScrollView {
                     Section {
-                        PicturesSegment(selectedImages: $selectedImages, showImagePickerOptions: showImagePickerOptions)
+                        PicturesSegment(selectedImages: $inventoryViewModel.selectedImages, showImagePickerOptions: showImagePickerOptions)
                     }
 
                     VStack {
@@ -35,7 +29,7 @@ struct InventoryEvaluationView: View {
                                 .font(.headline)
                             Spacer()
                         }
-                        TextEditor(text: $comment)
+                        TextEditor(text: $inventoryViewModel.comment)
                             .frame(height: 100)
                             .padding()
                             .cornerRadius(20)
@@ -53,9 +47,9 @@ struct InventoryEvaluationView: View {
                             Spacer()
                         }
                         HStack {
-                            Picker("Select Equipment Status", selection: $selectedStatus) {
+                            Picker("Select Equipment Status", selection: $inventoryViewModel.selectedStatus) {
                                 Text("Select your equipment status").tag("Select your equipment status")
-                                ForEach(statusOptions, id: \.self) { status in
+                                ForEach(["Available", "Unavailable", "Maintenance", "Retired"], id: \.self) { status in
                                     Text(status).tag(status)
                                 }
                             }
@@ -72,26 +66,29 @@ struct InventoryEvaluationView: View {
                         }
                     }
                     .padding()
-
                 }
 
                 TaskBar()
             }
             .fullScreenCover(isPresented: $showSheet) {
-                ImagePicker(sourceType: $sourceType, selectedImage: Binding(
-                    get: { nil },
-                    set: { image in
-                        if let image = image {
-                            if let index = replaceIndex {
-                                selectedImages[index] = image
-                            } else {
-                                selectedImages.append(image)
-                            }
-                        }
-                    }
-                ))
+                ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
             }
         }
+    }
+
+    private func createImagePickerBinding() -> Binding<UIImage?> {
+        return Binding(
+            get: { nil },
+            set: { image in
+                if let image = image {
+                    if let index = replaceIndex {
+                        inventoryViewModel.selectedImages[index] = image
+                    } else {
+                        inventoryViewModel.selectedImages.append(image)
+                    }
+                }
+            }
+        )
     }
 
     private func showImagePickerOptions(replaceIndex: Int?) {
@@ -186,12 +183,14 @@ struct PicturesSegment: View {
                 ]
             )
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
 struct InventoryEvaluationView_Previews: PreviewProvider {
     static var previews: some View {
         let fakeProperty = exampleDataProperty
-        InventoryEvaluationView(stuff: .constant(fakeProperty.rooms[1].inventory[1]))
+        let viewModel = InventoryViewModel(property: fakeProperty)
+        InventoryEvaluationView(inventoryViewModel: viewModel)
     }
 }
