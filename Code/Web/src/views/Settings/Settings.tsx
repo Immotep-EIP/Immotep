@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
 import {
@@ -8,12 +8,18 @@ import {
   Upload,
   GetProp,
   UploadFile,
-  UploadProps
+  UploadProps,
+  Input,
+  message
 } from 'antd'
 import { PlusOutlined, LogoutOutlined } from '@ant-design/icons'
 
 import { useAuth } from '@/context/authContext'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
+import EditIcon from '@/assets/icons/edit.png'
+import SaveIcon from '@/assets/icons/save.png'
+import CloseIcon from '@/assets/icons/close.png'
+import UpdateUserInfos from '@/services/api/User/UpdateUserInfos'
 import style from './Settings.module.css'
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
@@ -31,7 +37,7 @@ interface UserSettingsProps {
 }
 
 const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
 
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState('')
@@ -43,6 +49,60 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
       url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
     }
   ])
+  const [editData, setEditData] = useState(false)
+  const [oldData, setOldData] = useState({
+    firstname: user?.firstname,
+    lastname: user?.lastname,
+    email: user?.email
+  })
+  const [newData, setNewData] = useState({
+    firstname: user?.firstname,
+    lastname: user?.lastname,
+    email: user?.email
+  })
+
+  const saveNewData = async () => {
+    if (
+      newData.firstname === oldData.firstname &&
+      newData.lastname === oldData.lastname
+    ) {
+      setEditData(false);
+      message.info(t('components.messages.no_modifications'));
+      return;
+    }
+    try {
+      await UpdateUserInfos({
+        firstname: newData.firstname as string,
+        lastname: newData.lastname as string,
+      });
+      setOldData(newData);
+      updateUser(newData);
+      setEditData(false);
+      message.success(t('components.messages.modifications_saved'));
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
+  };
+
+  const cancelEdit = () => {
+    setNewData(oldData);
+    setEditData(false);
+  };
+
+  useEffect(() => {
+    if (user) {
+      setNewData({
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+      });
+      setOldData({
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+      });
+    }
+  }, [user]);
 
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
@@ -94,14 +154,60 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
         )}
       </div>
       <div className={style.userInformations}>
-        <b>{t('pages.settings.user_infos')}</b>
-        <SubtitledElement subtitleKey={t('components.input.first_name.label')}>
-          {user?.firstname}
+        <div className={style.titleContainer}>
+          <b>{t('pages.settings.user_infos')}</b>
+          <div className={style.editButtons}>
+            {editData && (
+              <Button
+                type="link"
+                style={{ width: 25, height: 25, padding: 10 }}
+                onClick={cancelEdit}
+              >
+                <img
+                  src={CloseIcon}
+                  alt="edit"
+                  style={{ width: 20, height: 20 }}
+                />
+              </Button>
+            )}
+            <Button
+              type="link"
+              style={{ width: 25, height: 25, padding: 10 }}
+              onClick={() => editData ? saveNewData() : setEditData(!editData)}
+            >
+              <img
+                src={editData ? SaveIcon : EditIcon}
+                alt="edit"
+                style={{ width: 20, height: 20 }}
+              />
+            </Button>
+          </div>
+        </div>
+        <SubtitledElement subtitleKey={t('components.input.first_name.label')} subTitleStyle={{ opacity: 0.6 }}>
+          {!editData ? (
+            user?.firstname
+          ) : (
+            <Input
+              defaultValue={user?.firstname}
+              onChange={e =>
+                setNewData({ ...newData, firstname: e.target.value })
+              }
+            />
+          )}
         </SubtitledElement>
-        <SubtitledElement subtitleKey={t('components.input.last_name.label')}>
-          {user?.lastname}
+        <SubtitledElement subtitleKey={t('components.input.last_name.label')} subTitleStyle={{ opacity: 0.6 }}>
+          {!editData ? (
+            user?.lastname
+          ) : (
+            <Input
+              defaultValue={user?.lastname}
+              onChange={e =>
+                setNewData({ ...newData, lastname: e.target.value })
+              }
+            />
+          )}
         </SubtitledElement>
-        <SubtitledElement subtitleKey={t('components.input.email.label')}>
+        <SubtitledElement subtitleKey={t('components.input.email.label')} subTitleStyle={{ opacity: 0.6 }}>
           {user?.email}
         </SubtitledElement>
       </div>

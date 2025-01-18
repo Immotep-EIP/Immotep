@@ -35,6 +35,18 @@
   gap: 20px;
 }
 
+.titleContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editButtons {
+  display: flex;
+  gap: 15px;
+}
+
 .userInformations {
   width: 100%;
   display: flex;

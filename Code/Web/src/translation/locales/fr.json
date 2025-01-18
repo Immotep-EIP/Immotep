@@ -129,6 +129,10 @@
         "error": "Veuillez sélectionner un document."
       }
     },
+    "messages": {
+      "modifications_saved": "Modifications sauvegardées",
+      "no_modifications": "Aucune modification à sauvegarder"
+    },
     "button": {
       "sign_in": "Se connecter",
       "sign_up": "S'inscrire",

@@ -129,6 +129,10 @@
         "error": "Please fill the document."
       }
     },
+    "messages": {
+      "modifications_saved": "Modifications saved",
+      "no_modifications": "No modifications to save"
+    },
     "button": {
       "sign_in": "Sign in",
       "sign_up": "Sign up",
