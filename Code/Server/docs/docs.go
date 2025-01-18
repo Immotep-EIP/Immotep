@@ -339,6 +339,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/end-contract": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "End active contract for a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "End contract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Contract ended"
+                    },
+                    "403": {
+                        "description": "Property is not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active contract",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/inventory-reports/": {
             "get": {
                 "security": [
@@ -1265,7 +1314,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/send-invite/{propertyId}/": {
+        "/owner/properties/{property_id}/send-invite": {
             "post": {
                 "security": [
                     {
@@ -1287,7 +1336,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Property ID",
-                        "name": "propertyId",
+                        "name": "property_id",
                         "in": "path",
                         "required": true
                     },
@@ -2276,6 +2325,7 @@ const docTemplate = `{
                 "not-a-tenant",
                 "property-already-exists",
                 "property-not-available",
+                "no-active-contract",
                 "failed-to-link-image",
                 "bad-base64-string",
                 "property-picture-not-found",
@@ -2313,6 +2363,7 @@ const docTemplate = `{
                 "NotATenant",
                 "PropertyAlreadyExists",
                 "PropertyNotAvailable",
+                "NoActiveContract",
                 "FailedLinkImage",
                 "BadBase64String",
                 "PropertyPictureNotFound",

@@ -400,6 +400,7 @@ definitions:
     - not-a-tenant
     - property-already-exists
     - property-not-available
+    - no-active-contract
     - failed-to-link-image
     - bad-base64-string
     - property-picture-not-found
@@ -437,6 +438,7 @@ definitions:
     - NotATenant
     - PropertyAlreadyExists
     - PropertyNotAvailable
+    - NoActiveContract
     - FailedLinkImage
     - BadBase64String
     - PropertyPictureNotFound
@@ -667,6 +669,37 @@ paths:
       security:
       - Bearer: []
       summary: Get property by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/end-contract:
+    put:
+      consumes:
+      - application/json
+      description: End active contract for a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Contract ended
+        "403":
+          description: Property is not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: End contract
       tags:
       - owner
   /owner/properties/{property_id}/inventory-reports/:
@@ -1266,7 +1299,7 @@ paths:
       summary: Get furniture by ID
       tags:
       - owner
-  /owner/send-invite/{propertyId}/:
+  /owner/properties/{property_id}/send-invite:
     post:
       consumes:
       - application/json
@@ -1274,7 +1307,7 @@ paths:
       parameters:
       - description: Property ID
         in: path
-        name: propertyId
+        name: property_id
         required: true
         type: string
       - description: Invite params
