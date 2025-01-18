@@ -21,7 +21,7 @@ import (
 //	@Failure		401	{object}	utils.Error				"Unauthorized"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties [get]
+//	@Router			/owner/properties/ [get]
 func GetAllProperties(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	allProperties := propertyservice.GetAllByOwnerId(claims["id"])
@@ -42,7 +42,7 @@ func GetAllProperties(c *gin.Context) {
 //	@Failure		404			{object}	utils.Error				"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id} [get]
+//	@Router			/owner/properties/{property_id}/ [get]
 func GetPropertyById(c *gin.Context) {
 	property := propertyservice.GetByID(c.Param("property_id"))
 	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
@@ -61,7 +61,7 @@ func GetPropertyById(c *gin.Context) {
 //	@Failure		409		{object}	utils.Error				"Property already exists"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties [post]
+//	@Router			/owner/properties/ [post]
 func CreateProperty(c *gin.Context) {
 	claims := utils.GetClaims(c)
 
@@ -95,7 +95,7 @@ func CreateProperty(c *gin.Context) {
 //	@Failure		404			{object}	utils.Error	"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/picture [get]
+//	@Router			/owner/properties/{property_id}/picture/ [get]
 func GetPropertyPicture(c *gin.Context) {
 	property := propertyservice.GetByID(c.Param("property_id"))
 	pictureId, ok := property.PictureID()
@@ -127,7 +127,7 @@ func GetPropertyPicture(c *gin.Context) {
 //	@Failure		404			{object}	utils.Error				"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/picture [put]
+//	@Router			/owner/properties/{property_id}/picture/ [put]
 func UpdatePropertyPicture(c *gin.Context) {
 	var req models.ImageRequest
 	err := c.ShouldBindBodyWithJSON(&req)

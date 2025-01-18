@@ -58,8 +58,8 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 
 	properties := owner.Group("/properties")
 	{
-		properties.POST("/properties", controllers.CreateProperty)
-		properties.GET("/properties", controllers.GetAllProperties)
+		properties.POST("/", controllers.CreateProperty)
+		properties.GET("/", controllers.GetAllProperties)
 
 		propertyId := properties.Group("/:property_id")
 		{
@@ -95,20 +95,25 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			}
 
 			invReports := propertyId.Group("/inventory-reports")
-			{
-				invReports.POST("/", controllers.CreateInventoryReport)
-				invReports.GET("/", controllers.GetInventoryReportsByProperty)
-
-				invReportId := invReports.Group("/:report_id")
-				{
-					invReportId.Use(middlewares.CheckInventoryReportOwnership("property_id", "report_id"))
-					invReportId.GET("/", controllers.GetInventoryReportByID)
-				}
-			}
+			registerInvReportRoutes(invReports)
 		}
 	}
 
 	owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
+}
+
+func registerInvReportRoutes(invReports *gin.RouterGroup) {
+	invReports.POST("/", controllers.CreateInventoryReport)
+	invReports.GET("/", controllers.GetInventoryReportsByProperty)
+
+	invReports.GET("/:report_id",
+		middlewares.CheckInventoryReportOwnership("property_id", "report_id"),
+		controllers.GetInventoryReportByID)
+
+	invReports.GET("/summarize", controllers.GenerateSummary)
+	invReports.GET("/compare/:old_report_id",
+		middlewares.CheckInventoryReportOwnership("property_id", "old_report_id"),
+		controllers.GenerateComparison)
 }
 
 func Routes() *gin.Engine {
