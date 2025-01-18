@@ -66,8 +66,8 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
           label={t('components.input.email.label')}
           name="tenant_email"
           rules={[
-            { required: true, message: t('form.error.email') },
-            { type: 'email', message: t('form.error.valid_email') }
+            { required: true, message: t('components.input.email.error') },
+            { type: 'email', message: t('components.input.email.valid_email') }
           ]}
         >
           <Input placeholder={t('components.input.email.placeholder')} />

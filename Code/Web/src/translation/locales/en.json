@@ -4,7 +4,8 @@
       "email": {
         "label": "Email",
         "placeholder": "Enter your email",
-        "error": "Please fill your email."
+        "error": "Please fill your email.",
+        "valid_email": "Please enter a valid email."
       },
       "email_confirmation": {
         "label": "Email confirmation",
