@@ -15,6 +15,8 @@ import { PropertyDetails } from '@/interfaces/Property/Property'
 import returnIcon from '@/assets/icons/retour.png'
 
 import { PropertyIdProvider } from '@/context/propertyIdContext'
+import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
+import base64ToFile from '@/utils/base64/baseToFile'
 import style from './RealPropertyDetails.module.css'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
@@ -25,6 +27,17 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
   propertyData
 }) => {
   const { t } = useTranslation()
+  const [picture, setPicture] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchPicture = async () => {
+      const picture = await GetPropertyPicture(propertyData?.id || '')
+      const file = base64ToFile(picture.data, 'property.jpg', 'image/jpeg')
+      const url = URL.createObjectURL(file)
+      setPicture(url)
+    }
+    fetchPicture()
+  }, [propertyData?.id])
 
   if (!propertyData) {
     return null
@@ -34,7 +47,7 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
     <div className={style.headerPartContainer}>
       <div className={style.imageContainer}>
         <img
-          src={propertyData.picture_id || defaultHouse}
+          src={picture || defaultHouse}
           alt="Property"
           className={style.image}
         />
