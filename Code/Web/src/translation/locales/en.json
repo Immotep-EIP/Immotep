@@ -131,7 +131,9 @@
     },
     "messages": {
       "modifications_saved": "Modifications saved",
-      "no_modifications": "No modifications to save"
+      "no_modifications": "No modifications to save",
+      "picture_updated": "Picture updated successfully",
+      "picture_not_updated": "Error while updating the picture"
     },
     "button": {
       "sign_in": "Sign in",
