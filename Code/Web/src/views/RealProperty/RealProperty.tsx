@@ -114,7 +114,6 @@ const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
   const { goToRealPropertyCreate } = useNavigation()
   const { properties, loading, error } = useFetchProperties()
-  console.log('properties ->', properties)
 
   if (loading) {
     return <p>{t('generals.loading')}</p>

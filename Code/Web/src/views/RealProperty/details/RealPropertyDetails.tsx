@@ -175,7 +175,7 @@ const RealPropertyDetails: React.FC = () => {
           </span>
         </div>
 
-        <Button type="primary" onClick={showModal}>
+        <Button type="primary" onClick={showModal} disabled={propertyData?.status !== 'available'}>
           {t('components.button.add_tenant')}
         </Button>
       </div>
