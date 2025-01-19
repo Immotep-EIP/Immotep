@@ -26,11 +26,18 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
   const [picture, setPicture] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!realProperty.id) {
+      return
+    }
     const fetchPicture = async () => {
       const picture = await GetPropertyPicture(realProperty.id)
-      const file = base64ToFile(picture.data, 'property.jpg', 'image/jpeg')
-      const url = URL.createObjectURL(file)
-      setPicture(url)
+      if (!picture) {
+        setPicture(defaultHouse)
+      } else {
+        const file = base64ToFile(picture.data, 'property.jpg', 'image/jpeg')
+        const url = URL.createObjectURL(file)
+        setPicture(url)
+      }
     }
     fetchPicture()
   }, [realProperty.id])

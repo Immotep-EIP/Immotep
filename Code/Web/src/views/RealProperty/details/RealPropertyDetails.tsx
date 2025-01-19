@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Button, message, Tabs, TabsProps, Tag } from 'antd'
+import { Button, message, Modal, Tabs, TabsProps, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
@@ -17,6 +17,7 @@ import returnIcon from '@/assets/icons/retour.png'
 import { PropertyIdProvider } from '@/context/propertyIdContext'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
 import base64ToFile from '@/utils/base64/baseToFile'
+import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentContract'
 import style from './RealPropertyDetails.module.css'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
@@ -30,11 +31,18 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
   const [picture, setPicture] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!propertyData) {
+      return
+    }
     const fetchPicture = async () => {
-      const picture = await GetPropertyPicture(propertyData?.id || '')
-      const file = base64ToFile(picture.data, 'property.jpg', 'image/jpeg')
-      const url = URL.createObjectURL(file)
-      setPicture(url)
+      const picture = await GetPropertyPicture(propertyData.id)
+      if (!picture) {
+        setPicture(defaultHouse)
+      } else {
+        const file = base64ToFile(picture.data, 'property.jpg', 'image/jpeg')
+        const url = URL.createObjectURL(file)
+        setPicture(url)
+      }
     }
     fetchPicture()
   }, [propertyData?.id])
@@ -152,21 +160,32 @@ const RealPropertyDetails: React.FC = () => {
   const [propertyData, setPropertyData] = useState<PropertyDetails | null>(null)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalRemoveTenant, setModalRemoveTenant] = useState(false)
+
+  const fetchData = async () => {
+    const req = await GetPropertyDetails(id)
+    if (req) {
+      setPropertyData(req)
+    } else {
+      message.error(t('pages.real_property_details.error_fetching_data'))
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [id])
 
   const showModal = () => setIsModalOpen(true)
   const handleCancel = () => setIsModalOpen(false)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const req = await GetPropertyDetails(id)
-      if (req) {
-        setPropertyData(req)
-      } else {
-        message.error(t('pages.real_property_details.error_fetching_data'))
-      }
-    }
-    fetchData()
-  }, [])
+  const showModalRemoveTenant = () => setModalRemoveTenant(true)
+  const handleCancelRemoveTenant = () => setModalRemoveTenant(false)
+  const handleRemoveTenant = async () => {
+    await StopCurrentContract(id)
+    setModalRemoveTenant(false)
+    message.success(t('components.modal.end_contract.success'))
+    await fetchData()
+  }
 
   return (
     <div className={style.pageContainer}>
@@ -188,10 +207,37 @@ const RealPropertyDetails: React.FC = () => {
           </span>
         </div>
 
-        <Button type="primary" onClick={showModal} disabled={propertyData?.status !== 'available'}>
-          {t('components.button.add_tenant')}
-        </Button>
+        <div className={style.actionButtonsContainer}>
+          <Button type="primary" onClick={showModal} disabled={propertyData?.status !== 'available'}>
+            {t('components.button.add_tenant')}
+          </Button>
+          <Button
+            type="primary"
+            danger
+            disabled={propertyData?.status !== 'unavailable'}
+            onClick={showModalRemoveTenant}
+          >
+            {t('components.button.end_contract')}
+          </Button>
+        </div>
       </div>
+
+      <Modal
+        title={t('components.modal.end_contract.title')}
+        open={modalRemoveTenant}
+        onCancel={handleCancelRemoveTenant}
+        footer={[
+          <Button key="cancel" onClick={handleCancelRemoveTenant}>
+            {t('components.button.cancel')}
+          </Button>,
+          <Button key="ok" type="primary" onClick={handleRemoveTenant}>
+            {t('components.button.confirm')}
+          </Button>
+        ]}
+      >
+        {t('components.modal.end_contract.description')}
+      </Modal>
+
       <InviteTenantModal
         isOpen={isModalOpen}
         onClose={handleCancel}

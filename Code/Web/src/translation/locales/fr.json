@@ -154,12 +154,21 @@
       "documents": "Documents",
       "return": "Retour",
       "add_tenant": "Ajouter un locataire",
+      "end_contract": "Mettre fin au bail",
       "add_document": "Ajouter un document",
       "add_room": "Ajouter une pièce",
       "edit": "Modifier",
       "save": "Sauvegarder",
       "cancel": "Annuler",
+      "confirm": "Confirmer",
       "add": "Ajouter"
+    },
+    "modal": {
+      "end_contract": {
+        "title": "Mettre fin au bail",
+        "description": "Êtes-vous sûr de vouloir mettre fin au bail de ce locataire ?",
+        "success": "Bail terminé avec succès"
+      }
     }
   },
   "pages": {
