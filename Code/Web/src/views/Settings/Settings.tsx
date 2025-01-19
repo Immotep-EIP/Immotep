@@ -10,13 +10,10 @@ import {
   Input,
   message
 } from 'antd'
-import { LogoutOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, CloseCircleOutlined, EditOutlined, LogoutOutlined } from '@ant-design/icons'
 
 import { useAuth } from '@/context/authContext'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
-import EditIcon from '@/assets/icons/edit.png'
-import SaveIcon from '@/assets/icons/save.png'
-import CloseIcon from '@/assets/icons/close.png'
 import DefaultUser from '@/assets/images/DefaultProfile.png'
 import UpdateUserInfos from '@/services/api/User/UpdateUserInfos'
 import GetUserPicture from '@/services/api/User/GetUserPicture'
@@ -176,26 +173,22 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
             {editData && (
               <Button
                 type="link"
-                style={{ width: 25, height: 25, padding: 10 }}
+                style={{ width: 35, height: 35, padding: 10 }}
                 onClick={cancelEdit}
               >
-                <img
-                  src={CloseIcon}
-                  alt="edit"
-                  style={{ width: 20, height: 20 }}
-                />
+                <CloseCircleOutlined style={{ fontSize: '20px', color: 'red' }} />
               </Button>
             )}
             <Button
               type="link"
-              style={{ width: 25, height: 25, padding: 10 }}
+              style={{ width: 35, height: 35, padding: 10 }}
               onClick={() => editData ? saveNewData() : setEditData(!editData)}
             >
-              <img
-                src={editData ? SaveIcon : EditIcon}
-                alt="edit"
-                style={{ width: 20, height: 20 }}
-              />
+              {!editData ? (
+                <EditOutlined style={{ fontSize: '20px' }} />
+              ) : (
+                <CheckCircleOutlined style={{ fontSize: '20px', color: 'green' }} />
+              )}
             </Button>
           </div>
         </div>
