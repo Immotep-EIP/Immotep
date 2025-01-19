@@ -19,7 +19,7 @@ import (
 //	@Success		200	{array}	models.UserResponse	"List of users"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/users [get]
+//	@Router			/users/ [get]
 func GetAllUsers(c *gin.Context) {
 	allUsers := userservice.GetAll()
 	c.JSON(http.StatusOK, utils.Map(allUsers, models.DbUserToResponse))
@@ -38,7 +38,7 @@ func GetAllUsers(c *gin.Context) {
 //	@Failure		404	{object}	utils.Error			"User not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/users/{id} [get]
+//	@Router			/users/{id}/ [get]
 func GetUserByID(c *gin.Context) {
 	user := userservice.GetByID(c.Param("id"))
 	if user == nil {
@@ -62,7 +62,7 @@ func GetUserByID(c *gin.Context) {
 //	@Failure		404	{object}	utils.Error	"User not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/users/{id}/picture [get]
+//	@Router			/users/{id}/picture/ [get]
 func GetUserProfilePicture(c *gin.Context) {
 	user := userservice.GetByID(c.Param("id"))
 	if user == nil {
@@ -95,7 +95,7 @@ func GetUserProfilePicture(c *gin.Context) {
 //	@Failure		404	{object}	utils.Error			"User not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/profile [get]
+//	@Router			/profile/ [get]
 func GetCurrentUserProfile(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	user := userservice.GetByID(claims["id"])
@@ -120,7 +120,7 @@ func GetCurrentUserProfile(c *gin.Context) {
 //	@Failure		409		{object}	utils.Error					"Email already exists"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/profile [put]
+//	@Router			/profile/ [put]
 func UpdateCurrentUserProfile(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	user := userservice.GetByID(claims["id"])
@@ -158,7 +158,7 @@ func UpdateCurrentUserProfile(c *gin.Context) {
 //	@Failure		404	{object}	utils.Error	"User not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/profile/picture [get]
+//	@Router			/profile/picture/ [get]
 func GetCurrentUserProfilePicture(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	user := userservice.GetByID(claims["id"])
@@ -195,7 +195,7 @@ func GetCurrentUserProfilePicture(c *gin.Context) {
 //	@Failure		404		{object}	utils.Error			"User not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/profile/picture [put]
+//	@Router			/profile/picture/ [put]
 func UpdateCurrentUserProfilePicture(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	user := userservice.GetByID(claims["id"])
