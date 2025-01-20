@@ -6,26 +6,65 @@
 //
 
 import SwiftUI
-
 struct InventoryStuffView: View {
-    @ObservedObject var inventoryViewModel: InventoryViewModel
+    @EnvironmentObject var inventoryViewModel: InventoryViewModel
+    @State private var selectedRoom: PropertyRooms
+
+    @State private var showAddStuffAlert: Bool = false
+    @State private var showDeleteConfirmationAlert: Bool = false
+    @State private var stuffToDelete: RoomInventory?
+
+    init(selectedRoom: PropertyRooms) {
+        self._selectedRoom = State(initialValue: selectedRoom)
+    }
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                TopBar(title: "Inventory")
-                VStack {
-                    ScrollView {
-                        ForEach(inventoryViewModel.selectedInventory) { stuff in
-                            NavigationLink(destination: InventoryEvaluationView(inventoryViewModel: inventoryViewModel)) {
-                                StuffCard(stuff: stuff)
-                                    .onTapGesture {
-                                        inventoryViewModel.selectStuff(stuff)
+            ZStack {
+                VStack(spacing: 0) {
+                    TopBar(title: "Inventory")
+                    VStack {
+                        Spacer()
+                        List {
+                            ForEach(inventoryViewModel.selectedInventory) { stuff in
+                                ZStack(alignment: .leading) {
+                                    StuffCard(stuff: stuff)
+                                        .onTapGesture {
+                                            inventoryViewModel.selectStuff(stuff)
+                                        }
+
+                                    NavigationLink(
+                                        destination: {
+                                            if inventoryViewModel.isEntryInventory {
+                                                InventoryEntryEvaluationView()
+                                                    .environmentObject(inventoryViewModel)
+                                            } else {
+                                                InventoryExitEvaluationView()
+                                                    .environmentObject(inventoryViewModel)
+                                            }
+                                        },
+                                        label: {
+                                            EmptyView()
+                                        }
+                                    )
+                                    .opacity(0.0)
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        stuffToDelete = stuff
+                                        showDeleteConfirmationAlert = true
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
                                     }
+                                }
+                                .listRowInsets(EdgeInsets())
+                                .listRowSeparator(.hidden)
                             }
                         }
+                        .listStyle(.plain)
+
                         Button {
-                            inventoryViewModel.addStuff(name: "New Stuff")
+                            showAddStuffAlert = true
                         } label: {
                             HStack {
                                 Image(systemName: "plus.circle")
@@ -42,13 +81,60 @@ struct InventoryStuffView: View {
                             .padding(.vertical, 5)
                         }
                     }
-                    .padding(.top, 10)
+                    Spacer()
+                    TaskBar()
                 }
-                TaskBar()
+                .navigationTransition(
+                    .fade(.in).animation(.easeInOut(duration: 0))
+                )
+                .onAppear {
+                    Task {
+                        await inventoryViewModel.fetchStuff(selectedRoom)
+                    }
+                }
+
+                if showAddStuffAlert {
+                    CustomAlertWithTwoTextFields(
+                        isActive: $showAddStuffAlert,
+                        title: "Add an element",
+                        message: "Please enter details:",
+                        buttonTitle: "Add",
+                        secondaryButtonTitle: "Cancel",
+                        action: { name, quantity in
+                            Task {
+                                do {
+                                    try await inventoryViewModel.addStuff(name: name, quantity: quantity, to: selectedRoom)
+                                } catch {
+                                    print("Error adding stuff: \(error.localizedDescription)")
+                                }
+                            }
+                        },
+                        secondaryAction: {
+                        }
+                    )
+                }
+
+                if showDeleteConfirmationAlert {
+                    CustomAlert(
+                        isActive: $showDeleteConfirmationAlert,
+                        title: "Delete Stuff",
+                        message: stuffToDelete != nil ? "Are you sure you want to delete the stuff \(stuffToDelete!.name)?" : "",
+                        buttonTitle: "Delete",
+                        secondaryButtonTitle: "Cancel",
+                        showTextField: false,
+                        action: {
+                            if let stuffToDelete = stuffToDelete {
+                                Task {
+                                    await inventoryViewModel.deleteStuff(stuffToDelete, from: selectedRoom)
+                                }
+                            }
+                        },
+                        secondaryAction: {
+                            stuffToDelete = nil
+                        }
+                    )
+                }
             }
-            .navigationTransition(
-                .fade(.in).animation(.easeInOut(duration: 0))
-            )
         }
         .navigationBarBackButtonHidden(true)
     }
@@ -58,15 +144,15 @@ struct StuffCard: View {
     let stuff: RoomInventory
     var body: some View {
             HStack {
-                if stuff.checked {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(Color.green)
-                }
+//                if stuff.checked {
+//                    Image(systemName: "checkmark")
+//                        .foregroundStyle(Color.green)
+//                }
                 Text(stuff.name)
                     .foregroundStyle(Color("textColor"))
                 Spacer()
-                Image(systemName: "arrowshape.right.circle.fill")
-                    .font(.title)
+                Image(systemName: "chevron.right")
+                    .font(.title2)
                     .foregroundStyle(Color("textColor"))
             }
             .frame(maxWidth: .infinity)
@@ -85,6 +171,7 @@ struct InventoryStuffView_Previews: PreviewProvider {
         let fakeProperty = exampleDataProperty
         let viewModel = InventoryViewModel(property: fakeProperty)
         viewModel.selectRoom(fakeProperty.rooms[0])
-        return InventoryStuffView(inventoryViewModel: viewModel)
+        return InventoryStuffView(selectedRoom: fakeProperty.rooms[0])
+            .environmentObject(viewModel)
     }
 }

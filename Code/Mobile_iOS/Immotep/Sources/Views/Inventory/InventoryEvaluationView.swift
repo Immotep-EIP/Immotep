@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
-struct InventoryEvaluationView: View {
-    @ObservedObject var inventoryViewModel: InventoryViewModel
+
+struct InventoryEntryEvaluationView: View {
+    @EnvironmentObject var inventoryViewModel: InventoryViewModel
 
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
@@ -74,6 +75,7 @@ struct InventoryEvaluationView: View {
                 ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
 
     private func createImagePickerBinding() -> Binding<UIImage?> {
@@ -187,10 +189,11 @@ struct PicturesSegment: View {
     }
 }
 
-struct InventoryEvaluationView_Previews: PreviewProvider {
+struct InventoryEntryEvaluationView_Previews: PreviewProvider {
     static var previews: some View {
         let fakeProperty = exampleDataProperty
         let viewModel = InventoryViewModel(property: fakeProperty)
-        InventoryEvaluationView(inventoryViewModel: viewModel)
+        InventoryEntryEvaluationView()
+            .environmentObject(viewModel)
     }
 }

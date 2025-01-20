@@ -22,7 +22,8 @@ struct InventoryTypeView: View {
                 TopBar(title: "Inventory")
                 VStack {
                     NavigationLink {
-                        InventoryRoomView(inventoryViewModel: inventoryViewModel)
+                        InventoryRoomView()
+                            .environmentObject(inventoryViewModel)
                     } label: {
                         HStack {
                             Image(systemName: "figure.walk.arrival")
@@ -50,7 +51,8 @@ struct InventoryTypeView: View {
                     }
 
                     NavigationLink {
-                        InventoryRoomView(inventoryViewModel: inventoryViewModel)
+                        InventoryRoomView()
+                            .environmentObject(inventoryViewModel)
                     } label: {
                         HStack {
                             Image(systemName: "figure.walk.departure")
