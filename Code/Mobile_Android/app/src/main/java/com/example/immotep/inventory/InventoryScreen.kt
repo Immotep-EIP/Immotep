@@ -73,16 +73,17 @@ fun InventoryScreen(
         }
     } else {
         RoomsScreen(
-            { viewModel.getRooms() },
-            { viewModel.addRoom(it) },
-            { viewModel.removeRoom(it) },
-            { index, room -> viewModel.editRoom(index, room) },
-            {
+            getRooms = { viewModel.getRooms() },
+            addRoom = { viewModel.addRoom(it) },
+            removeRoom = { viewModel.removeRoom(it) },
+            editRoom = { index, room -> viewModel.editRoom(index, room) },
+            closeInventory = {
                 viewModel.onClose()
                 viewModel.setInventoryOpen(InventoryOpenValues.CLOSED)
             },
             isExit = inventoryOpen.value == InventoryOpenValues.EXIT,
-            confirmInventory = { viewModel.sendInventory() }
+            confirmInventory = { viewModel.sendInventory() },
+            addDetail = { roomId, name -> viewModel.addFurniture(roomId, name) }
         )
     }
 }

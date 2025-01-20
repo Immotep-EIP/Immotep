@@ -1,35 +1,18 @@
 package com.example.immotep.inventory.roomDetails.OneDetail
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,10 +27,8 @@ import com.example.immotep.ui.components.DropDown
 import com.example.immotep.ui.components.DropDownItem
 import com.example.immotep.ui.components.OutlinedTextField
 
-
-
 @Composable
-fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int, baseDetail : RoomDetail, isExit : Boolean) {
+fun OneDetailScreen(onModifyDetail : (detail : RoomDetail) -> Unit, baseDetail : RoomDetail, isExit : Boolean) {
     val viewModel : OneDetailViewModel = viewModel()
     val detailValue = viewModel.detail.collectAsState()
     val detailError = viewModel.errors.collectAsState()
@@ -56,7 +37,7 @@ fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) ->
     }
     InventoryLayout(
         testTag = "oneDetailScreen",
-        { viewModel.onClose(onModifyDetail, index, isExit) }
+        { viewModel.onClose(onModifyDetail, isExit) }
     ) {
         InitialFadeIn {
             Column {
@@ -129,7 +110,7 @@ fun OneDetailScreen(onModifyDetail : (detailIndex : Int, detail : RoomDetail) ->
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        onClick = { viewModel.onConfirm(onModifyDetail, index, isExit) },
+                        onClick = { viewModel.onConfirm(onModifyDetail, isExit) },
                     ) {
                         Text(stringResource(R.string.validate))
                     }

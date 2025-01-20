@@ -67,7 +67,6 @@ class RealPropertyViewModel(private val navController: NavController) : ViewMode
                         endDate = if (it.end_date != null) LocalDateTime.parse(it.end_date) else null
                     ))
                 }
-                println(newProperties)
             } catch (e : Exception) {
                 println("error getting properties")
                 e.printStackTrace()

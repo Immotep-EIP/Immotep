@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -20,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,7 @@ import com.example.immotep.R
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InventoryCenterAddButton
 import com.example.immotep.components.NextInventoryButton
+import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.roomDetails.OneDetail.OneDetailScreen
 import com.example.immotep.inventory.rooms.AddRoomOrDetailModal
@@ -36,26 +39,28 @@ import com.example.immotep.layouts.InventoryLayout
 
 @Composable
 fun RoomDetailsScreen(
-    closeRoomPanel : (roomIndex: Int, details: Array<RoomDetail>) -> Unit,
+    closeRoomPanel : (roomIndex: String, details: Array<RoomDetail>) -> Unit,
     roomDetails: Array<RoomDetail>,
-    roomIndex: Int,
+    addDetail: suspend (roomId : String, name : String) -> String?,
+    roomId: String,
+    roomName : String,
     isExit : Boolean
 ) {
-    val viewModel: RoomDetailsViewModel = viewModel(factory = RoomDetailsViewModelFactory(closeRoomPanel))
+    val viewModel: RoomDetailsViewModel = viewModel(factory = RoomDetailsViewModelFactory(closeRoomPanel, addDetail, roomId))
 
-    val currentlyOpenRoomIndex = viewModel.currentlyOpenDetailIndex.collectAsState()
+    val currentlyOpenDetail = viewModel.currentlyOpenDetail.collectAsState()
     var addDetailModalOpen by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         viewModel.addBaseDetails(roomDetails)
     }
     AddRoomOrDetailModal(
         open = addDetailModalOpen,
-        addRoomOrDetail = { viewModel.addDetail(it); addDetailModalOpen = false },
+        addRoomOrDetail = { viewModel.addDetailToRoomDetailPage(it); addDetailModalOpen = false },
         close = { addDetailModalOpen = false },
         isRoom = false
     )
-    if (currentlyOpenRoomIndex.value == null) {
-        InventoryLayout(testTag = "roomsScreen", { viewModel.onClose(roomIndex) }) {
+    if (currentlyOpenDetail.value == null) {
+        InventoryLayout(testTag = "roomsScreen", { viewModel.onClose(roomId) }) {
             InitialFadeIn {
                 Column {
                     Row(
@@ -74,12 +79,12 @@ fun RoomDetailsScreen(
                     }
                     Column {
                         LazyColumn {
-                            itemsIndexed(viewModel.details) { index, detail ->
+                            items(viewModel.details) { detail ->
                                 NextInventoryButton(
                                     leftIcon = if (detail.completed) Icons.Outlined.Check else null,
                                     leftText = detail.name,
-                                    onClick = { viewModel.onOpenDetail(index) },
-                                    testTag = "detailButton $index"
+                                    onClick = { viewModel.onOpenDetail(detail) },
+                                    testTag = "detailButton ${detail.id}"
                                 )
                             }
                         }
@@ -88,16 +93,30 @@ fun RoomDetailsScreen(
                             testTag = "addDetailsButton"
                         )
                     }
+                    if (roomIsCompleted(Room(id = roomId, details = viewModel.details.toTypedArray(), name = roomName))) {
+                        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Button(
+                                shape = RoundedCornerShape(5.dp),
+                                modifier = Modifier.padding(top = 10.dp),
+                                colors = androidx.compose.material.ButtonDefaults.buttonColors(
+                                    backgroundColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                onClick = { viewModel.onClose(roomId) },
+                            ) {
+                                Text("${stringResource(R.string.complete_room)} $roomName")
+                            }
+                        }
+                    }
                 }
             }
         }
     } else {
         OneDetailScreen(
-            onModifyDetail = { detailIndex, detail ->
-                viewModel.onModifyDetail(detailIndex, detail)
+            onModifyDetail = { detail ->
+                viewModel.onModifyDetail(detail)
             },
-            index = currentlyOpenRoomIndex.value!!,
-            baseDetail = viewModel.details[currentlyOpenRoomIndex.value!!],
+            baseDetail = currentlyOpenDetail.value!!,
             isExit = isExit
         )
     }

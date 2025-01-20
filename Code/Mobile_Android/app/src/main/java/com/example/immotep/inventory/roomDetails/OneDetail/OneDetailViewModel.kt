@@ -19,7 +19,7 @@ data class RoomDetailsError(
 )
 
 class OneDetailViewModel : ViewModel() {
-    private val _detail = MutableStateFlow(RoomDetail())
+    private val _detail = MutableStateFlow(RoomDetail(name = "", id = ""))
     val detail = _detail.asStateFlow()
     val picture = mutableStateListOf<Uri>()
     val exitPicture = mutableStateListOf<Uri>()
@@ -36,7 +36,7 @@ class OneDetailViewModel : ViewModel() {
                 exitPicture.addAll(newDetail.exitPictures)
             }
         } else {
-            _detail.value = RoomDetail()
+            _detail.value = RoomDetail(name = "", id = "")
         }
         _errors.value = RoomDetailsError()
     }
@@ -86,7 +86,7 @@ class OneDetailViewModel : ViewModel() {
         this.exitPicture.removeAt(index)
     }
 
-    fun onConfirm(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int, isExit : Boolean) {
+    fun onConfirm(onModifyDetail : (detail : RoomDetail) -> Unit, isExit : Boolean) {
         val error = RoomDetailsError()
         if (_detail.value.name.length < 3) {
             error.name = true
@@ -115,16 +115,16 @@ class OneDetailViewModel : ViewModel() {
             completed = true,
             exitPictures = if (isExit) exitPicture.toTypedArray() else null
         )
-        onModifyDetail(index, detail.value)
+        onModifyDetail(detail.value)
         reset(null)
     }
 
-    fun onClose(onModifyDetail : (detailIndex : Int, detail : RoomDetail) -> Unit, index : Int, isExit: Boolean) {
+    fun onClose(onModifyDetail : (detail : RoomDetail) -> Unit, isExit: Boolean) {
         _detail.value = _detail.value.copy(
             pictures = picture.toTypedArray(),
             exitPictures = if (isExit) exitPicture.toTypedArray() else null
         )
-        onModifyDetail(index, _detail.value)
+        onModifyDetail(_detail.value)
         reset(null)
     }
 }

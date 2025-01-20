@@ -120,9 +120,10 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
 @Composable
 fun RoomsScreen(
     getRooms: () -> Array<Room>,
-    addRoom: (String) -> Unit,
-    removeRoom: (Int) -> Unit,
-    editRoom: (Int, Room) -> Unit,
+    addRoom: suspend (String) -> String?,
+    addDetail: suspend (roomId : String, name : String) -> String?,
+    removeRoom: (String) -> Unit,
+    editRoom: (String, Room) -> Unit,
     closeInventory: () -> Unit,
     confirmInventory: () -> Boolean,
     isExit : Boolean
@@ -131,7 +132,7 @@ fun RoomsScreen(
         factory = RoomsViewModelFactory(getRooms, addRoom, removeRoom, editRoom, closeInventory, confirmInventory)
     )
 
-    val currentlyOpenRoomIndex = viewModel.currentlyOpenRoomIndex.collectAsState()
+    val currentlyOpenRoom = viewModel.currentlyOpenRoom.collectAsState()
     var exitPopUpOpen by rememberSaveable { mutableStateOf(false) }
     var confirmPopUpOpen by rememberSaveable { mutableStateOf(false) }
     var addRoomModalOpen by rememberSaveable { mutableStateOf(false) }
@@ -142,7 +143,7 @@ fun RoomsScreen(
         viewModel.handleBaseRooms()
     }
 
-    if (currentlyOpenRoomIndex.value == null) {
+    if (currentlyOpenRoom.value == null) {
         InventoryLayout(testTag = "roomsScreen", { exitPopUpOpen = true }) {
             if (exitPopUpOpen) {
                 AlertDialog(
@@ -223,14 +224,14 @@ fun RoomsScreen(
                     }
                     Column {
                         LazyColumn {
-                            itemsIndexed(viewModel.allRooms) { index, room ->
+                            items(viewModel.allRooms) { room ->
                                 NextInventoryButton(
                                     leftIcon = if (roomIsCompleted(room)) Icons.Outlined.Check else null,
                                     leftText = room.name,
                                     onClick = {
-                                        viewModel.openRoomPanel(index)
+                                        viewModel.openRoomPanel(room)
                                     },
-                                    testTag = "roomButton $index",
+                                    testTag = "roomButton ${room.id}",
                                     error = !roomIsCompleted(room) && showNotCompletedRooms.value
                                 )
                             }
@@ -245,12 +246,14 @@ fun RoomsScreen(
         }
     } else {
         RoomDetailsScreen(
-            closeRoomPanel = { roomIndex, details ->
-                viewModel.closeRoomPanel(roomIndex, details)
+            closeRoomPanel = { roomId, details ->
+                viewModel.closeRoomPanel(roomId, details)
             },
-            roomDetails = viewModel.allRooms[currentlyOpenRoomIndex.value!!].details,
-            roomIndex = currentlyOpenRoomIndex.value!!,
-            isExit = isExit
+            roomDetails = currentlyOpenRoom.value!!.details,
+            roomId = currentlyOpenRoom.value!!.id,
+            isExit = isExit,
+            addDetail = addDetail,
+            roomName = currentlyOpenRoom.value!!.name
         )
     }
 }

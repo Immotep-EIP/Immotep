@@ -126,6 +126,8 @@ data class FurnitureInput(
 data class InventoryReportFurniture(
     val id: String,
     val cleanliness: Cleaniness,
+    val note: String,
+    val pictures: Vector<String>,
     val state: State,
 )
 
@@ -133,6 +135,8 @@ data class InventoryReportRoom(
     val id: String,
     val cleanliness: Cleaniness,
     val state: State,
+    val note: String,
+    val pictures: Vector<String>,
     val furnitures: Vector<InventoryReportFurniture>
 )
 

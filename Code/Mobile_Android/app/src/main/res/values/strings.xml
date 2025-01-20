@@ -119,4 +119,5 @@
     <string name="filthy">Filthy</string>
     <string name="confirm_inventory_end">Are you sure to upload this inventory ?</string>
     <string name="not_forget">Have you forget anything such as a room or a detail ? If not please press confirm.</string>
+    <string name="complete_room">Complete the</string>
 </resources>
