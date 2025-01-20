@@ -23,7 +23,7 @@ class PropertyViewModel: ObservableObject {
             "rental_price_per_month": request.monthlyRent
         ]
 
-        let url = URL(string: "\(baseURL)/owner/properties")!
+        let url = URL(string: "\(baseURL)/owner/properties/")!
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
@@ -54,18 +54,15 @@ class PropertyViewModel: ObservableObject {
     }
 
     func fetchProperties() async {
-        let url = URL(string: "\(baseURL)/owner/properties")!
-
-        guard let token = await TokenStorage.getAccessToken() else {
-            print("Token is nil")
-            return
-        }
-
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "GET"
-        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        let url = URL(string: "\(baseURL)/owner/properties/")!
 
         do {
+            let token = try await TokenStorage.getValidAccessToken()
+
+            var urlRequest = URLRequest(url: url)
+            urlRequest.httpMethod = "GET"
+            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
             guard let httpResponse = response as? HTTPURLResponse else {

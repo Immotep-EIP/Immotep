@@ -28,8 +28,8 @@ struct TokenStorage {
                 UserDefaults.standard.set(expirationDate, forKey: tokenExpiryKey)
             }
         } else {
-                SessionStorage.setAccessToken(accessToken)
-                SessionStorage.setRefreshToken(refreshToken)
+            SessionStorage.setAccessToken(accessToken)
+            SessionStorage.setRefreshToken(refreshToken)
         }
     }
 
@@ -100,6 +100,28 @@ struct TokenStorage {
             return expiresIn
         } else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse expiry date from response."])
+        }
+    }
+
+    static func getValidAccessToken() async throws -> String {
+        if let accessToken = await TokenStorage.getAccessToken(), !TokenStorage.isTokenExpired() {
+            return accessToken
+        }
+
+        guard let refreshToken = await TokenStorage.getRefreshToken() else {
+            throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No refresh token found. Please log in again."])
+        }
+
+        do {
+            let (newAccessToken, _) = try await AuthService.shared.requestToken(
+                grantType: "refresh_token",
+                refreshToken: refreshToken,
+                keepMeSignedIn: TokenStorage.keepMeSignedIn()
+            )
+            return newAccessToken
+        } catch {
+            print("Error while refreshing token: \(error)")
+            throw error
         }
     }
 }
