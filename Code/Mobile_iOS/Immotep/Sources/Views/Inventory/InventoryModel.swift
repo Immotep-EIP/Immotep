@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+struct RoomResponse: Codable {
+    let id: String
+    let name: String
+}
+
 struct PropertyRooms: Identifiable {
     var id: String
     var name: String
@@ -16,10 +21,40 @@ struct PropertyRooms: Identifiable {
 
 struct RoomInventory: Identifiable {
     var id: String
+    let propertyId: String
+    let roomId: String
     var name: String
-    var number: Int?
-    var state: String?
-    var image: String?
-    var description: String?
-    var checked: Bool
+    var quantity: Int?
+//    var state: String?
+//    var image: String?
+//    var description: String?
+//    var checked: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case propertyId = "property_id"
+        case roomId = "room_id"
+        case name
+        case quantity
+    }
+}
+
+struct FurnitureRequest: Codable {
+    let name: String
+}
+
+struct FurnitureResponse: Codable, Identifiable {
+    let id: String
+    let propertyId: String
+    let roomId: String
+    let name: String
+    let quantity: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case propertyId = "property_id"
+        case roomId = "room_id"
+        case name
+        case quantity
+    }
 }
