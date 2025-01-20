@@ -19,7 +19,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/invite/{id}": {
+        "/auth/invite/{id}/": {
             "post": {
                 "description": "Answer an invite from an owner with an invite link",
                 "consumes": [
@@ -81,7 +81,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/register": {
+        "/auth/register/": {
             "post": {
                 "description": "Create a new user with owner role",
                 "consumes": [
@@ -130,7 +130,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/token": {
+        "/auth/token/": {
             "post": {
                 "description": "Authenticate user with email and password",
                 "consumes": [
@@ -189,7 +189,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties": {
+        "/owner/properties/": {
             "get": {
                 "security": [
                     {
@@ -281,7 +281,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}": {
+        "/owner/properties/{property_id}/": {
             "get": {
                 "security": [
                     {
@@ -339,7 +339,56 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/inventory-reports": {
+        "/owner/properties/{property_id}/end-contract": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "End active contract for a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "End contract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Contract ended"
+                    },
+                    "403": {
+                        "description": "Property is not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active contract",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/inventory-reports/": {
             "get": {
                 "security": [
                     {
@@ -459,7 +508,148 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/inventory-reports/{report_id}": {
+        "/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Generate comparison from photo for last inventory report",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ai"
+                ],
+                "summary": "Generate comparison from photo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Previous report ID to compare with",
+                        "name": "old_report_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Compare data",
+                        "name": "aiData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SummarizeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property or old report not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/inventory-reports/summarize/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Generate summary from photo for first inventory report",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ai"
+                ],
+                "summary": "Generate summary from photo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Summarize data",
+                        "name": "aiData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SummarizeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Summarize data",
+                        "schema": {
+                            "$ref": "#/definitions/models.SummarizeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/inventory-reports/{report_id}/": {
             "get": {
                 "security": [
                     {
@@ -518,7 +708,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/picture": {
+        "/owner/properties/{property_id}/picture/": {
             "get": {
                 "security": [
                     {
@@ -650,7 +840,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/rooms": {
+        "/owner/properties/{property_id}/rooms/": {
             "get": {
                 "security": [
                     {
@@ -770,7 +960,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/rooms/{room_id}": {
+        "/owner/properties/{property_id}/rooms/{room_id}/": {
             "get": {
                 "security": [
                     {
@@ -883,7 +1073,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/rooms/{room_id}/furnitures": {
+        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/": {
             "get": {
                 "security": [
                     {
@@ -1017,7 +1207,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}": {
+        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/": {
             "get": {
                 "security": [
                     {
@@ -1124,7 +1314,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/send-invite/{propertyId}": {
+        "/owner/properties/{property_id}/send-invite": {
             "post": {
                 "security": [
                     {
@@ -1146,7 +1336,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Property ID",
-                        "name": "propertyId",
+                        "name": "property_id",
                         "in": "path",
                         "required": true
                     },
@@ -1197,7 +1387,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/profile": {
+        "/profile/": {
             "get": {
                 "security": [
                     {
@@ -1298,7 +1488,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/profile/picture": {
+        "/profile/picture/": {
             "get": {
                 "security": [
                     {
@@ -1418,7 +1608,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/users/": {
             "get": {
                 "security": [
                     {
@@ -1449,7 +1639,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/users/{id}/": {
             "get": {
                 "security": [
                     {
@@ -1501,7 +1691,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}/picture": {
+        "/users/{id}/picture/": {
             "get": {
                 "security": [
                     {
@@ -1609,6 +1799,7 @@ const docTemplate = `{
                 "cleanliness",
                 "id",
                 "note",
+                "pictures",
                 "state"
             ],
             "properties": {
@@ -1625,6 +1816,13 @@ const docTemplate = `{
                 },
                 "note": {
                     "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "state": {
                     "type": "string",
@@ -1653,6 +1851,12 @@ const docTemplate = `{
                 },
                 "note": {
                     "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "quantity": {
                     "type": "integer"
@@ -1902,6 +2106,7 @@ const docTemplate = `{
                 "furnitures",
                 "id",
                 "note",
+                "pictures",
                 "state"
             ],
             "properties": {
@@ -1924,6 +2129,13 @@ const docTemplate = `{
                 },
                 "note": {
                     "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "state": {
                     "type": "string",
@@ -1954,6 +2166,53 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SummarizeRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "pictures",
+                "type"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "room",
+                        "furniture"
+                    ]
+                }
+            }
+        },
+        "models.SummarizeResponse": {
+            "type": "object",
+            "properties": {
+                "cleanliness": {
                     "type": "string"
                 },
                 "note": {
@@ -2066,6 +2325,7 @@ const docTemplate = `{
                 "not-a-tenant",
                 "property-already-exists",
                 "property-not-available",
+                "no-active-contract",
                 "failed-to-link-image",
                 "bad-base64-string",
                 "property-picture-not-found",
@@ -2078,7 +2338,8 @@ const docTemplate = `{
                 "inventory-report-already-exists",
                 "inventory-report-not-found",
                 "room-state-already-exists",
-                "furniture-state-already-exists"
+                "furniture-state-already-exists",
+                "error-request-chatgpt-api"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -2102,6 +2363,7 @@ const docTemplate = `{
                 "NotATenant",
                 "PropertyAlreadyExists",
                 "PropertyNotAvailable",
+                "NoActiveContract",
                 "FailedLinkImage",
                 "BadBase64String",
                 "PropertyPictureNotFound",
@@ -2114,7 +2376,8 @@ const docTemplate = `{
                 "InventoryReportAlreadyExists",
                 "InventoryReportNotFound",
                 "RoomStateAlreadyExists",
-                "FurnitureStateAlreadyExists"
+                "FurnitureStateAlreadyExists",
+                "ErrorRequestChatGPTAPI"
             ]
         }
     },

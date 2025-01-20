@@ -25,7 +25,7 @@ import (
 //	@Failure		409			{object}	utils.Error					"Furniture already exists"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures [post]
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/ [post]
 func CreateFurniture(c *gin.Context) {
 	var req models.FurnitureRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -55,7 +55,7 @@ func CreateFurniture(c *gin.Context) {
 //	@Failure		404			{object}	utils.Error					"Room not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures [get]
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/ [get]
 func GetFurnituresByRoom(c *gin.Context) {
 	furnitures := furnitureservice.GetByRoomID(c.Param("room_id"))
 	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
@@ -76,7 +76,7 @@ func GetFurnituresByRoom(c *gin.Context) {
 //	@Failure		404				{object}	utils.Error					"Furniture not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id} [get]
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [get]
 func GetFurnitureByID(c *gin.Context) {
 	furniture := furnitureservice.GetByID(c.Param("furniture_id"))
 	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
@@ -94,7 +94,7 @@ func GetFurnitureByID(c *gin.Context) {
 //	@Failure		404	{object}	utils.Error	"Furniture not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id} [delete]
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [delete]
 func DeleteFurniture(c *gin.Context) {
 	ok := furnitureservice.Delete(c.Param("furniture_id"))
 	if !ok {

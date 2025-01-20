@@ -71,7 +71,7 @@ linters:
     - nilerr
     - nilnil
     # - nlreturn
-    - noctx
+    # - noctx
     - nolintlint
     - nonamedreturns
     - nosprintfhostport
@@ -133,7 +133,8 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#line-length-limit
       - name: line-length-limit
         exclude: [""]
-        arguments: [130]
+        arguments: [120]
+        disabled: true
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
       - name: max-public-structs
         disabled: true

@@ -28,6 +28,7 @@ const (
 	NotATenant                   ErrorCode = "not-a-tenant"
 	PropertyAlreadyExists        ErrorCode = "property-already-exists"
 	PropertyNotAvailable         ErrorCode = "property-not-available"
+	NoActiveContract             ErrorCode = "no-active-contract"
 	FailedLinkImage              ErrorCode = "failed-to-link-image"
 	BadBase64String              ErrorCode = "bad-base64-string"
 	PropertyPictureNotFound      ErrorCode = "property-picture-not-found"
@@ -41,6 +42,7 @@ const (
 	InventoryReportNotFound      ErrorCode = "inventory-report-not-found"
 	RoomStateAlreadyExists       ErrorCode = "room-state-already-exists"
 	FurnitureStateAlreadyExists  ErrorCode = "furniture-state-already-exists"
+	ErrorRequestChatGPTAPI       ErrorCode = "error-request-chatgpt-api"
 )
 
 type Error struct {
