@@ -2,10 +2,10 @@ name: Deploy backend
 
 on:
   push:
-    tags:
-      - 'v*'
     branches:
-      - deployVM
+      - main
+    # tags:
+    #   - 'v*'
 
 # env:
 #   DOCKER_REPO: "${{ vars.DOCKER_HUB_USERNAME }}/immotep-server"
@@ -46,7 +46,7 @@ jobs:
           host: ${{ secrets.DEPLOY_SERVER_DEV }}
           username: ${{ vars.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/Server && git switch deployVM && git pull && docker compose down && docker compose up --build -d
+          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/Server && git switch main && git pull && docker compose down && docker compose up --build -d
 
   deploy-prod:
     name: Deploy on prod VM
@@ -60,4 +60,4 @@ jobs:
           host: ${{ secrets.DEPLOY_SERVER_PROD }}
           username: ${{ vars.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/Server && git switch deployVM && git pull && docker compose down && docker compose up --build -d
+          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/Server && git switch main && git pull && docker compose down && docker compose up --build -d
