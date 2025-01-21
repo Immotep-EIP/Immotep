@@ -255,7 +255,7 @@ interface ApiService {
     )
 
     //ia functions
-    @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/summarize/")
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/summarize/")
     suspend fun aiSummarize(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,

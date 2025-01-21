@@ -152,7 +152,7 @@ class OneDetailViewModel : ViewModel() {
                 val picturesInput = Vector<String>()
                 picture.forEach {
                     base64Utils.setFileUri(it)
-                    picturesInput.add(base64Utils.encodeImageToBase64(navController.context, withPrefix = true))
+                    picturesInput.add(base64Utils.encodeImageToBase64(navController.context))
                 }
                 val aiResponse = ApiClient.apiService.aiSummarize(
                     authHeader = bearerToken,
