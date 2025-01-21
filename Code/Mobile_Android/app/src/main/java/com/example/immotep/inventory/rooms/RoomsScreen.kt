@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.immotep.components.NextInventoryButton
 import com.example.immotep.inventory.Room
 import com.example.immotep.layouts.InventoryLayout
@@ -126,7 +127,9 @@ fun RoomsScreen(
     editRoom: (String, Room) -> Unit,
     closeInventory: () -> Unit,
     confirmInventory: () -> Boolean,
-    isExit : Boolean
+    isExit : Boolean,
+    navController: NavController,
+    propertyId: String
 ) {
     val viewModel: RoomsViewModel = viewModel(
         factory = RoomsViewModelFactory(getRooms, addRoom, removeRoom, editRoom, closeInventory, confirmInventory)
@@ -253,7 +256,9 @@ fun RoomsScreen(
             roomId = currentlyOpenRoom.value!!.id,
             isExit = isExit,
             addDetail = addDetail,
-            roomName = currentlyOpenRoom.value!!.name
+            roomName = currentlyOpenRoom.value!!.name,
+            navController = navController,
+            propertyId = propertyId
         )
     }
 }

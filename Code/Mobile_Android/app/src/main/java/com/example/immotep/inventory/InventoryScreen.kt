@@ -83,7 +83,9 @@ fun InventoryScreen(
             },
             isExit = inventoryOpen.value == InventoryOpenValues.EXIT,
             confirmInventory = { viewModel.sendInventory() },
-            addDetail = { roomId, name -> viewModel.addFurniture(roomId, name) }
+            addDetail = { roomId, name -> viewModel.addFurniture(roomId, name) },
+            navController = navController,
+            propertyId = propertyId
         )
     }
 }

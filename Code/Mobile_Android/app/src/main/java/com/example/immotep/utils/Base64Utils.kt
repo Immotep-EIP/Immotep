@@ -118,11 +118,15 @@ class Base64Utils(fileUri: Uri) {
     }
 
     //ne pas oublier de rajouter le data:image/${file.extension};base64,
-    fun encodeImageToBase64(context: Context): String {
+    fun encodeImageToBase64(context: Context, withPrefix : Boolean = false): String {
         val path = getPathFromUri(context) ?: return ""
-        val bytes = File(path).readBytes()
+        val file = File(path)
+        val bytes = file.readBytes()
         val base64 = Base64.getEncoder().encodeToString(bytes)
-        return base64
+        if (!withPrefix) {
+            return base64
+        }
+        return "data:image/${file.extension};base64,$base64"
     }
 
 }

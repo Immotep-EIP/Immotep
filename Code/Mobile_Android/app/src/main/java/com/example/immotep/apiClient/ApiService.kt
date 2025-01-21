@@ -11,7 +11,7 @@ import java.util.Vector
 
 //enums classes
 
-enum class Cleaniness {
+enum class Cleanliness {
     not_set,
     dirty,
     medium,
@@ -26,6 +26,11 @@ enum class State {
     medium,
     good,
     new
+}
+
+enum class InventoryLocationsTypes {
+    room,
+    furniture
 }
 
 //input and output classes
@@ -125,7 +130,7 @@ data class FurnitureInput(
 
 data class InventoryReportFurniture(
     val id: String,
-    val cleanliness: Cleaniness,
+    val cleanliness: Cleanliness,
     val note: String,
     val pictures: Vector<String>,
     val state: State,
@@ -133,7 +138,7 @@ data class InventoryReportFurniture(
 
 data class InventoryReportRoom(
     val id: String,
-    val cleanliness: Cleaniness,
+    val cleanliness: Cleanliness,
     val state: State,
     val note: String,
     val pictures: Vector<String>,
@@ -153,6 +158,22 @@ data class RoomOutput(
     val id : String,
     val name : String,
     val property_id : String,
+)
+
+//ai input data classes
+
+data class SummarizeInput(
+    val id : String,
+    val pictures : Vector<String>,
+    val type : InventoryLocationsTypes
+)
+
+//ai output data classes
+
+data class SummarizeOutput(
+    val cleanliness: Cleanliness,
+    val note: String,
+    val state: State
 )
 
 const val API_PREFIX = "/api/v1"
@@ -232,4 +253,12 @@ interface ApiService {
         @Path("propertyId") propertyId: String,
         @Body inventoryReportInput: InventoryReportInput
     )
+
+    //ia functions
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/summarize/")
+    suspend fun aiSummarize(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Body summarizeInput: SummarizeInput
+    ) : SummarizeOutput
 }

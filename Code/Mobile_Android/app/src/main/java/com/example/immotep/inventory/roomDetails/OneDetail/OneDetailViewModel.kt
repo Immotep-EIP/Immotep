@@ -3,11 +3,21 @@ package com.example.immotep.inventory.roomDetails.OneDetail
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.example.immotep.apiClient.Cleaniness
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.example.immotep.apiClient.ApiClient
+import com.example.immotep.apiClient.Cleanliness
+import com.example.immotep.apiClient.InventoryLocationsTypes
 import com.example.immotep.apiClient.State
+import com.example.immotep.apiClient.SummarizeInput
+import com.example.immotep.authService.AuthService
 import com.example.immotep.inventory.RoomDetail
+import com.example.immotep.login.dataStore
+import com.example.immotep.utils.Base64Utils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import java.util.Vector
 
 data class RoomDetailsError(
     var name: Boolean = false,
@@ -15,7 +25,7 @@ data class RoomDetailsError(
     var status: Boolean = false,
     var picture: Boolean = false,
     var exitPicture: Boolean = false,
-    var cleaniness: Boolean = false
+    var cleanliness: Boolean = false
 )
 
 class OneDetailViewModel : ViewModel() {
@@ -58,9 +68,9 @@ class OneDetailViewModel : ViewModel() {
         _errors.value = _errors.value.copy(comment = false)
     }
 
-    fun setCleaniness(cleaniness : Cleaniness) {
-        _detail.value = _detail.value.copy(cleaniness = cleaniness)
-        _errors.value = _errors.value.copy(cleaniness = false)
+    fun setCleanliness(cleanliness : Cleanliness) {
+        _detail.value = _detail.value.copy(cleanliness = cleanliness)
+        _errors.value = _errors.value.copy(cleanliness = false)
     }
 
     fun setStatus(status : State) {
@@ -97,8 +107,8 @@ class OneDetailViewModel : ViewModel() {
         if (_detail.value.status == State.not_set) {
             error.status = true
         }
-        if (_detail.value.cleaniness == Cleaniness.not_set) {
-            error.cleaniness = true
+        if (_detail.value.cleanliness == Cleanliness.not_set) {
+            error.cleanliness = true
         }
         if (picture.isEmpty()) {
             error.picture = true
@@ -106,7 +116,7 @@ class OneDetailViewModel : ViewModel() {
         if (isExit && exitPicture.isEmpty()) {
             error.exitPicture = true
         }
-        if (error.name || error.comment || error.status || error.picture || error.exitPicture || error.cleaniness) {
+        if (error.name || error.comment || error.status || error.picture || error.exitPicture || error.cleanliness) {
             _errors.value = error
             return
         }
@@ -126,5 +136,54 @@ class OneDetailViewModel : ViewModel() {
         )
         onModifyDetail(_detail.value)
         reset(null)
+    }
+
+    private fun summarize(navController: NavController, propertyId: String) {
+        viewModelScope.launch {
+            val authService = AuthService(navController.context.dataStore)
+            val bearerToken = try {
+                authService.getBearerToken()
+            } catch (e: Exception) {
+                authService.onLogout(navController)
+                return@launch
+            }
+            try {
+                val base64Utils = Base64Utils(Uri.EMPTY)
+                val picturesInput = Vector<String>()
+                picture.forEach {
+                    base64Utils.setFileUri(it)
+                    picturesInput.add(base64Utils.encodeImageToBase64(navController.context, withPrefix = true))
+                }
+                val aiResponse = ApiClient.apiService.aiSummarize(
+                    authHeader = bearerToken,
+                    propertyId = propertyId,
+                    summarizeInput = SummarizeInput(
+                        id = _detail.value.id,
+                        pictures = picturesInput,
+                        type = InventoryLocationsTypes.furniture
+                    )
+                )
+                println("AI response : ${aiResponse.note}")
+                _detail.value = _detail.value.copy(
+                    cleanliness = aiResponse.cleanliness,
+                    status = aiResponse.state,
+                    comment = aiResponse.note
+                )
+            } catch (e : Exception) {
+                println("impossible to analyze ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun summarizeOrCompare(isExit: Boolean, navController: NavController, propertyId: String) {
+        if (picture.isEmpty()) {
+            _errors.value = _errors.value.copy(picture = true)
+            println("picture is empty")
+            return
+        }
+        if (!isExit) {
+            return summarize(navController, propertyId)
+        }
     }
 }

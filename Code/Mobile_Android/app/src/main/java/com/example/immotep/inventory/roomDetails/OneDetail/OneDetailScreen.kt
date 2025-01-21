@@ -16,8 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.immotep.R
-import com.example.immotep.apiClient.Cleaniness
+import com.example.immotep.apiClient.Cleanliness
 import com.example.immotep.apiClient.State
 import com.example.immotep.components.AddingPicturesCarousel
 import com.example.immotep.components.InitialFadeIn
@@ -28,7 +30,12 @@ import com.example.immotep.ui.components.DropDownItem
 import com.example.immotep.ui.components.OutlinedTextField
 
 @Composable
-fun OneDetailScreen(onModifyDetail : (detail : RoomDetail) -> Unit, baseDetail : RoomDetail, isExit : Boolean) {
+fun OneDetailScreen(
+    onModifyDetail : (detail : RoomDetail) -> Unit,
+    baseDetail : RoomDetail, isExit : Boolean,
+    navController : NavController,
+    propertyId : String
+) {
     val viewModel : OneDetailViewModel = viewModel()
     val detailValue = viewModel.detail.collectAsState()
     val detailError = viewModel.errors.collectAsState()
@@ -83,13 +90,13 @@ fun OneDetailScreen(onModifyDetail : (detail : RoomDetail) -> Unit, baseDetail :
                 Text(stringResource(R.string.cleaniness), modifier = Modifier.padding(top = 10.dp))
                 DropDown(
                     items = listOf(
-                        DropDownItem(stringResource(R.string.clean), Cleaniness.clean),
-                        DropDownItem(stringResource(R.string.ok_state), Cleaniness.medium),
-                        DropDownItem(stringResource(R.string.dirty), Cleaniness.dirty),
+                        DropDownItem(stringResource(R.string.clean), Cleanliness.clean),
+                        DropDownItem(stringResource(R.string.ok_state), Cleanliness.medium),
+                        DropDownItem(stringResource(R.string.dirty), Cleanliness.dirty),
                     ),
-                    selectedItem = detailValue.value.cleaniness,
-                    onItemSelected = { newVal -> viewModel.setCleaniness(newVal) },
-                    error = if (detailError.value.cleaniness) stringResource(R.string.cleaniness_error) else null
+                    selectedItem = detailValue.value.cleanliness,
+                    onItemSelected = { newVal -> viewModel.setCleanliness(newVal) },
+                    error = if (detailError.value.cleanliness) stringResource(R.string.cleaniness_error) else null
                 )
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                     Button(
@@ -99,7 +106,7 @@ fun OneDetailScreen(onModifyDetail : (detail : RoomDetail) -> Unit, baseDetail :
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        onClick = { },
+                        onClick = { viewModel.summarizeOrCompare(isExit = isExit, navController = navController, propertyId = propertyId) },
                     ) {
                         Text(stringResource(if (isExit) R.string.compare_images else R.string.analyze_pictures))
                     }

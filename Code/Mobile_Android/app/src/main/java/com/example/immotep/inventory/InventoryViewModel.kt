@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiClient
-import com.example.immotep.apiClient.Cleaniness
+import com.example.immotep.apiClient.Cleanliness
 import com.example.immotep.apiClient.FurnitureInput
 import com.example.immotep.apiClient.InventoryReportFurniture
 import com.example.immotep.apiClient.InventoryReportInput
@@ -29,7 +29,7 @@ data class RoomDetail(
     var completed : Boolean = false,
     var comment : String = "",
     var status : State = State.not_set,
-    var cleaniness : Cleaniness = Cleaniness.not_set,
+    var cleanliness : Cleanliness = Cleanliness.not_set,
     val pictures : Array<Uri> = arrayOf(),
     val exitPictures : Array<Uri>? = null
 )
@@ -164,7 +164,7 @@ class InventoryViewModel(
             val tmpRoom = InventoryReportRoom(
                 id = room.id,
                 state = room.details[0].status,
-                cleanliness = room.details[0].cleaniness,
+                cleanliness = room.details[0].cleanliness,
                 note = room.details[0].comment,
                 pictures = Vector(),
                 furnitures = Vector()
@@ -185,7 +185,7 @@ class InventoryViewModel(
                 tmpRoom.furnitures.add(
                     InventoryReportFurniture(
                         state = detail.status,
-                        cleanliness = detail.cleaniness,
+                        cleanliness = detail.cleanliness,
                         id = detail.id,
                         note = detail.comment,
                         pictures = tmpFurniturePictures

@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.immotep.R
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InventoryCenterAddButton
@@ -44,7 +45,9 @@ fun RoomDetailsScreen(
     addDetail: suspend (roomId : String, name : String) -> String?,
     roomId: String,
     roomName : String,
-    isExit : Boolean
+    isExit : Boolean,
+    navController: NavController,
+    propertyId: String
 ) {
     val viewModel: RoomDetailsViewModel = viewModel(factory = RoomDetailsViewModelFactory(closeRoomPanel, addDetail, roomId))
 
@@ -117,7 +120,9 @@ fun RoomDetailsScreen(
                 viewModel.onModifyDetail(detail)
             },
             baseDetail = currentlyOpenDetail.value!!,
-            isExit = isExit
+            isExit = isExit,
+            navController = navController,
+            propertyId = propertyId
         )
     }
 }
