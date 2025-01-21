@@ -1,5 +1,7 @@
 package com.example.immotep.apiClient
 
+import com.example.immotep.inventory.InventoryReportOutput
+import com.example.immotep.inventory.InventoryReportRoom
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -128,23 +130,6 @@ data class FurnitureInput(
     val quantity: Int
 )
 
-data class InventoryReportFurniture(
-    val id: String,
-    val cleanliness: Cleanliness,
-    val note: String,
-    val pictures: Vector<String>,
-    val state: State,
-)
-
-data class InventoryReportRoom(
-    val id: String,
-    val cleanliness: Cleanliness,
-    val state: State,
-    val note: String,
-    val pictures: Vector<String>,
-    val furnitures: Vector<InventoryReportFurniture>
-)
-
 data class InventoryReportInput(
     val type: String,
     val rooms: Vector<InventoryReportRoom>
@@ -252,7 +237,13 @@ interface ApiService {
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Body inventoryReportInput: InventoryReportInput
-    )
+    ) : InventoryReportOutput
+
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")
+    suspend fun getAllInventoryReports(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+    ) : Array<InventoryReportOutput>
 
     //ia functions
     @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/summarize/")

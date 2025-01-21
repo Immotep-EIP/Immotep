@@ -1,6 +1,5 @@
 package com.example.immotep.inventory
 
-import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -8,42 +7,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiClient
-import com.example.immotep.apiClient.Cleanliness
 import com.example.immotep.apiClient.FurnitureInput
-import com.example.immotep.apiClient.InventoryReportFurniture
 import com.example.immotep.apiClient.InventoryReportInput
-import com.example.immotep.apiClient.InventoryReportRoom
-import com.example.immotep.apiClient.State
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
-import com.example.immotep.utils.Base64Utils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.Optional
 import java.util.Vector
-
-data class RoomDetail(
-    var id : String,
-    var name : String,
-    var completed : Boolean = false,
-    var comment : String = "",
-    var status : State = State.not_set,
-    var cleanliness : Cleanliness = Cleanliness.not_set,
-    val pictures : Array<Uri> = arrayOf(),
-    val exitPictures : Array<Uri>? = null
-)
-
-data class Room (
-    var id : String,
-    val name : String,
-    val description : String = "",
-    var details : Array<RoomDetail> = arrayOf()
-)
-
-enum class InventoryOpenValues {
-    ENTRY, EXIT, CLOSED
-}
 
 class InventoryViewModel(
     private val navController: NavController,
@@ -172,40 +143,8 @@ class InventoryViewModel(
             type = if (openValue === InventoryOpenValues.ENTRY) "start" else "end",
             rooms = Vector()
         )
-        val base64Utils = Base64Utils(Uri.EMPTY)
-        rooms.forEach { room ->
-            val tmpRoom = InventoryReportRoom(
-                id = room.id,
-                state = room.details[0].status,
-                cleanliness = room.details[0].cleanliness,
-                note = room.details[0].comment,
-                pictures = Vector(),
-                furnitures = Vector()
-            )
-            var addedPicture = false
-            room.details.forEach { detail ->
-                val tmpFurniturePictures = Vector<String>()
-                detail.pictures.forEach { uri ->
-                    base64Utils.setFileUri(uri)
-                    val encodedPicture = base64Utils.encodeImageToBase64(navController.context)
-                    println("picture : $encodedPicture")
-                    if (!addedPicture) {
-                        tmpRoom.pictures.add(encodedPicture)
-                        addedPicture = true
-                    }
-                    tmpFurniturePictures.add(encodedPicture)
-                }
-                tmpRoom.furnitures.add(
-                    InventoryReportFurniture(
-                        state = detail.status,
-                        cleanliness = detail.cleanliness,
-                        id = detail.id,
-                        note = detail.comment,
-                        pictures = tmpFurniturePictures
-                    )
-                )
-            }
-            inventoryReportInput.rooms.add(tmpRoom)
+        rooms.forEach {
+            inventoryReportInput.rooms.add(it.toInventoryReportRoom(navController.context))
         }
         return inventoryReportInput
     }
@@ -240,6 +179,18 @@ class InventoryViewModel(
             }
         }
         return true
+    }
+
+    fun setRoomsAsLastInventory() {
+        viewModelScope.launch {
+            val bearerToken = getBearerToken() ?: return@launch
+            try {
+                val inventoryReports = ApiClient.apiService.getAllInventoryReports(bearerToken, propertyId)
+            } catch (e : Exception) {
+                println("Error getting last inventory ${e.message}")
+                e.printStackTrace()
+            }
+        }
     }
 }
 
