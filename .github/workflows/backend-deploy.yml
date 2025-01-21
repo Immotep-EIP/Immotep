@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+    branches:
+      - backend
 
 env:
   DOCKER_REPO: "${{ vars.DOCKER_HUB_USERNAME }}/immotep-server"
