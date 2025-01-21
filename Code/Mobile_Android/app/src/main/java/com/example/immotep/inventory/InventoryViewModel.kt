@@ -50,7 +50,7 @@ class InventoryViewModel(
     private val propertyId : String,
 ) : ViewModel() {
     private val _inventoryOpen = MutableStateFlow(InventoryOpenValues.CLOSED)
-    private var baseRooms: Array<Room> = arrayOf()
+    private var baseRooms: Vector<Room> = Vector()
     val inventoryOpen = _inventoryOpen.asStateFlow()
 
     val rooms = mutableStateListOf<Room>()
@@ -118,7 +118,14 @@ class InventoryViewModel(
 
     fun onClose() {
         rooms.clear()
-        rooms.addAll(this.baseRooms)
+        this.baseRooms.forEach {
+            it.details.forEach { detail ->
+                println(detail.completed)
+            }
+        }
+        this.baseRooms.forEach {
+            rooms.add(it.copy())
+        }
     }
 
     fun closeInventory() {
@@ -127,13 +134,17 @@ class InventoryViewModel(
                 detail.completed = false
             }
         }
-        baseRooms = rooms.toTypedArray()
+        baseRooms.clear()
+        rooms.forEach {
+            baseRooms.add(it.copy())
+        }
     }
 
     fun getBaseRooms() {
         viewModelScope.launch {
             val bearerToken = getBearerToken() ?: return@launch
             rooms.clear()
+            baseRooms.clear()
             try {
                 val rooms = ApiClient.apiService.getAllRooms(bearerToken, propertyId)
                 val newRooms = mutableListOf<Room>()
@@ -146,7 +157,9 @@ class InventoryViewModel(
                     newRooms.add(room)
                 }
                 this@InventoryViewModel.rooms.addAll(newRooms)
-                baseRooms = newRooms.toTypedArray()
+                newRooms.forEach {
+                    baseRooms.add(it.copy())
+                }
             } catch (e : Exception) {
                 println("Error during get base rooms ${e.message}")
                 e.printStackTrace()
