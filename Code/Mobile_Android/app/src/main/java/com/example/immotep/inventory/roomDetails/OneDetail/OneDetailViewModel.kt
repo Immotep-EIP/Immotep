@@ -29,11 +29,15 @@ data class RoomDetailsError(
 
 class OneDetailViewModel : ViewModel() {
     private val _detail = MutableStateFlow(RoomDetail(name = "", id = ""))
-    val detail = _detail.asStateFlow()
+    private val _aiLoading = MutableStateFlow(false)
+    private val _errors = MutableStateFlow(RoomDetailsError())
+
     val picture = mutableStateListOf<Uri>()
     val entryPictures = mutableStateListOf<String>()
-    private val _errors = MutableStateFlow(RoomDetailsError())
+
+    val detail = _detail.asStateFlow()
     val errors = _errors.asStateFlow()
+    val aiLoading = _aiLoading.asStateFlow()
 
     fun reset(newDetail : RoomDetail?) {
         picture.clear()
@@ -127,10 +131,12 @@ class OneDetailViewModel : ViewModel() {
 
     private fun summarize(navController: NavController, propertyId: String) {
         viewModelScope.launch {
+            _aiLoading.value = true
             val authService = AuthService(navController.context.dataStore)
             val bearerToken = try {
                 authService.getBearerToken()
             } catch (e: Exception) {
+                _aiLoading.value = false
                 authService.onLogout(navController)
                 return@launch
             }
@@ -158,15 +164,18 @@ class OneDetailViewModel : ViewModel() {
                 println("impossible to analyze ${e.message}")
                 e.printStackTrace()
             }
+            _aiLoading.value = false
         }
     }
 
     private fun compare(oldReportId : String, navController: NavController, propertyId: String) {
         viewModelScope.launch {
+            _aiLoading.value = true
             val authService = AuthService(navController.context.dataStore)
             val bearerToken = try {
                 authService.getBearerToken()
             } catch (e: Exception) {
+                _aiLoading.value = false
                 authService.onLogout(navController)
                 return@launch
             }
@@ -190,10 +199,12 @@ class OneDetailViewModel : ViewModel() {
                     status = aiResponse.state ?: _detail.value.status,
                     comment = aiResponse.note ?: _detail.value.comment
                 )
+
             } catch (e : Exception) {
                 println("impossible to analyze ${e.message}")
                 e.printStackTrace()
             }
+            _aiLoading.value = false
         }
     }
 
@@ -203,7 +214,6 @@ class OneDetailViewModel : ViewModel() {
             println("picture is empty")
             return
         }
-        println(oldReportId)
         if (oldReportId == null) {
             return summarize(navController, propertyId)
         }

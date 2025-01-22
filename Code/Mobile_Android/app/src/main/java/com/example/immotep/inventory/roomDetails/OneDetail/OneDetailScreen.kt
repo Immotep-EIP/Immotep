@@ -4,10 +4,12 @@ package com.example.immotep.inventory.roomDetails.OneDetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +24,7 @@ import androidx.navigation.NavController
 import com.example.immotep.R
 import com.example.immotep.components.AddingPicturesCarousel
 import com.example.immotep.components.InitialFadeIn
+import com.example.immotep.components.LoadingDialog
 import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.State
@@ -41,6 +44,7 @@ fun OneDetailScreen(
     val viewModel : OneDetailViewModel = viewModel()
     val detailValue = viewModel.detail.collectAsState()
     val detailError = viewModel.errors.collectAsState()
+    val isLoading = viewModel.aiLoading.collectAsState()
     val isExit = oldReportId != null
     LaunchedEffect(Unit) {
         viewModel.reset(baseDetail)
@@ -50,6 +54,7 @@ fun OneDetailScreen(
         { viewModel.onClose(onModifyDetail, isExit) }
     ) {
         InitialFadeIn {
+            LoadingDialog(isOpen = isLoading.value)
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (isExit) {
                     Text(stringResource(R.string.entry_pictures))
@@ -96,6 +101,7 @@ fun OneDetailScreen(
                     onItemSelected = { newVal -> viewModel.setCleanliness(newVal) },
                     error = if (detailError.value.cleanliness) stringResource(R.string.cleaniness_error) else null
                 )
+
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                     Button(
                         shape = RoundedCornerShape(5.dp),
