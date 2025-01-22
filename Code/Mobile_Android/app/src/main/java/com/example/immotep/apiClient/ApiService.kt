@@ -126,7 +126,7 @@ data class RoomOutput(
 
 //ai input data classes
 
-data class SummarizeInput(
+data class AiCallInput(
     val id : String,
     val pictures : Vector<String>,
     val type : InventoryLocationsTypes
@@ -134,10 +134,10 @@ data class SummarizeInput(
 
 //ai output data classes
 
-data class SummarizeOutput(
-    val cleanliness: Cleanliness,
-    val note: String,
-    val state: State
+data class AiCallOutput(
+    val cleanliness: Cleanliness?,
+    val note: String?,
+    val state: State?
 )
 
 const val API_PREFIX = "/api/v1"
@@ -216,7 +216,7 @@ interface ApiService {
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Body inventoryReportInput: InventoryReportInput
-    ) : InventoryReportOutput
+    )
 
     @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")
     suspend fun getAllInventoryReports(
@@ -236,6 +236,14 @@ interface ApiService {
     suspend fun aiSummarize(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
-        @Body summarizeInput: SummarizeInput
-    ) : SummarizeOutput
+        @Body summarizeInput: AiCallInput
+    ) : AiCallOutput
+
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/compare/{old_report_id}")
+    suspend fun aiCompare(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("old_report_id") oldReportId: String,
+        @Body summarizeInput: AiCallInput
+    ) : AiCallOutput
 }

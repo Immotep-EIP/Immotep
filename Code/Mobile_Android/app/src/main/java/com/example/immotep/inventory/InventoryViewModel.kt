@@ -22,12 +22,17 @@ class InventoryViewModel(
 ) : ViewModel() {
     private val _inventoryOpen = MutableStateFlow(InventoryOpenValues.CLOSED)
     private val _oldReportId = MutableStateFlow<String?>(null)
-    private var baseRooms: Vector<Room> = Vector()
-    private var lastInventoryBaseRooms: Vector<Room> = Vector()
-    val inventoryOpen = _inventoryOpen.asStateFlow()
-    val oldReportId = _oldReportId.asStateFlow()
+    private val _cannotMakeExitInventory = MutableStateFlow(false)
+
     private val rooms = mutableStateListOf<Room>()
     private val lastInventoryRooms = mutableStateListOf<Room>()
+
+    private var baseRooms: Vector<Room> = Vector()
+    private var lastInventoryBaseRooms: Vector<Room> = Vector()
+
+    val cannotMakeExitInventory = _cannotMakeExitInventory.asStateFlow()
+    val inventoryOpen = _inventoryOpen.asStateFlow()
+    val oldReportId = _oldReportId.asStateFlow()
 
     private suspend fun getBearerToken() : String? {
         val authService = AuthService(navController.context.dataStore)
@@ -42,7 +47,15 @@ class InventoryViewModel(
     }
 
     fun setInventoryOpen(value: InventoryOpenValues) {
+        if (value === InventoryOpenValues.EXIT && (_oldReportId.value == null || lastInventoryBaseRooms.isEmpty())) {
+            _cannotMakeExitInventory.value = true
+            return
+        }
         _inventoryOpen.value = value
+    }
+
+    fun closeCannotMakeExitInventory() {
+        _cannotMakeExitInventory.value = false
     }
 
     fun getRooms() : Array<Room> {
@@ -105,7 +118,7 @@ class InventoryViewModel(
         }
     }
 
-    fun closeInventory() {
+    private fun closeInventory() {
         rooms.forEach {
             it.details.forEach { detail ->
                 detail.completed = false
@@ -123,6 +136,7 @@ class InventoryViewModel(
         try {
             val inventoryReport = ApiClient.apiService.getInventoryReportByIdOrLatest(bearerToken, propertyId, "latest")
             val lastInventoryRoomsAsRooms = inventoryReport.getRoomsAsRooms(empty = true)
+            _oldReportId.value = inventoryReport.id
             lastInventoryRooms.addAll(lastInventoryRoomsAsRooms)
             lastInventoryRoomsAsRooms.forEach {
                 lastInventoryBaseRooms.add(it.copy())
@@ -194,6 +208,7 @@ class InventoryViewModel(
                 ApiClient.apiService.inventoryReport(bearerToken, propertyId, inventoryReport)
                 closeInventory()
                 setInventoryOpen(InventoryOpenValues.CLOSED)
+                getLastInventory(bearerToken)
                 return@launch
             } catch (e : Exception) {
                 println("Error sending inventory ${e.message}")

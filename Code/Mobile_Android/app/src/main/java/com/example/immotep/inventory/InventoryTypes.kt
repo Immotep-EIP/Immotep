@@ -17,7 +17,9 @@ enum class Cleanliness {
 enum class State {
     not_set,
     broken,
+    needsRepair,
     bad,
+    medium,
     good,
     new
 }
@@ -39,7 +41,7 @@ data class RoomDetail(
     var status : State = State.not_set,
     var cleanliness : Cleanliness = Cleanliness.not_set,
     val pictures : Array<Uri> = arrayOf(),
-    val exitPictures : Array<String>? = null,
+    val entryPictures : Array<String>? = null,
 ) {
     fun toInventoryReportFurniture(context: Context) : InventoryReportFurniture {
         val tmpFurniturePictures = Vector<String>()
@@ -81,6 +83,7 @@ data class Room (
                 val tmpRoomDetail = it.toInventoryReportFurniture(context)
                 tmpRoom.pictures.add(tmpRoomDetail.pictures[0])
                 addedPicture = true
+                tmpRoom.furnitures.add(tmpRoomDetail)
             } else {
                 tmpRoom.furnitures.add(it.toInventoryReportFurniture(context))
             }
@@ -153,7 +156,7 @@ data class InventoryReportFurniture(
             status = if (empty) State.not_set else state,
             cleanliness = if (empty) Cleanliness.not_set else cleanliness,
             pictures = arrayOf(),
-            exitPictures = pictures.toTypedArray()
+            entryPictures = pictures.toTypedArray()
         )
         return tmpRoomDetail
     }

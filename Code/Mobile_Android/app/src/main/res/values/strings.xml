@@ -85,6 +85,8 @@
     <string name="comment">Comment</string>
     <string name="status">Status</string>
     <string name="new_state">New</string>
+    <string name="medium_state">OK</string>
+    <string name="needs_repair">Needs repair</string>
     <string name="very_good_state">Very good</string>
     <string name="good_state">Good</string>
     <string name="ok_state">OK</string>
@@ -122,4 +124,7 @@
     <string name="complete_room">Complete the</string>
     <string name="no_pictures_added">No pictures added</string>
     <string name="picture_not_supported">This picture is not supported</string>
+    <string name="understand">Understand</string>
+    <string name="cannot_make_exit_inventory">You cannot make an exit inventory</string>
+    <string name="cannot_exit_inventory_text">You need to create at least on entry inventory before creating an exit inventory. The exit inventory will be based on the entry inventory.</string>
 </resources>

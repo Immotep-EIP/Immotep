@@ -1,7 +1,6 @@
 package com.example.immotep.inventory.roomDetails.OneDetail
 
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.immotep.R
 import com.example.immotep.components.AddingPicturesCarousel
 import com.example.immotep.components.InitialFadeIn
@@ -53,23 +51,16 @@ fun OneDetailScreen(
     ) {
         InitialFadeIn {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Text(if (isExit) stringResource(R.string.entry_pictures) else stringResource(R.string.pictures))
+                if (isExit) {
+                    Text(stringResource(R.string.entry_pictures))
+                    AddingPicturesCarousel(stringPictures = viewModel.entryPictures)
+                }
+                Text(if (isExit) stringResource(R.string.exit_pictures) else stringResource(R.string.pictures))
                 AddingPicturesCarousel(
                     uriPictures = viewModel.picture,
                     addPicture = { uri -> viewModel.addPicture(uri) },
                     error = if (detailError.value.picture) stringResource(R.string.add_picture_error) else null
                 )
-                if (isExit) {
-                    Text(stringResource(R.string.exit_pictures))
-                    AddingPicturesCarousel(stringPictures = viewModel.exitPicture)
-                    if (detailError.value.exitPicture) {
-                        Text(
-                            stringResource(R.string.add_picture_error),
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(top = 10.dp)
-                        )
-                    }
-                }
                 OutlinedTextField(
                     value = detailValue.value.comment,
                     onValueChange = { newVal -> viewModel.setComment(newVal) },
@@ -85,8 +76,10 @@ fun OneDetailScreen(
                     items = listOf(
                         DropDownItem(stringResource(R.string.new_state), State.new),
                         DropDownItem(stringResource(R.string.good_state), State.good),
+                        DropDownItem(stringResource(R.string.medium_state), State.medium),
                         DropDownItem(stringResource(R.string.bad_state), State.bad),
-                        DropDownItem(stringResource(R.string.broken_state), State.broken),
+                        DropDownItem(stringResource(R.string.needs_repair), State.needsRepair),
+                        DropDownItem(stringResource(R.string.broken_state), State.broken)
                     ),
                     selectedItem = detailValue.value.status,
                     onItemSelected = { newVal -> viewModel.setStatus(newVal) },
@@ -111,7 +104,11 @@ fun OneDetailScreen(
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        onClick = { viewModel.summarizeOrCompare(isExit = isExit, navController = navController, propertyId = propertyId) },
+                        onClick = { viewModel.summarizeOrCompare(
+                            oldReportId = oldReportId,
+                            navController = navController,
+                            propertyId = propertyId
+                        ) },
                     ) {
                         Text(stringResource(if (isExit) R.string.compare_images else R.string.analyze_pictures))
                     }
