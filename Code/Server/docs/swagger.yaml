@@ -818,7 +818,7 @@ paths:
       tags:
       - owner
   /owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/:
-    get:
+    post:
       consumes:
       - application/json
       description: Generate comparison from photo for last inventory report
@@ -866,7 +866,7 @@ paths:
       tags:
       - ai
   /owner/properties/{property_id}/inventory-reports/summarize/:
-    get:
+    post:
       consumes:
       - application/json
       description: Generate summary from photo for first inventory report

@@ -5,6 +5,10 @@ import (
 	"os"
 	"time"
 
+	"immotep/backend/controllers"
+	_ "immotep/backend/docs" // mandatory import for swagger doc
+	"immotep/backend/router/middlewares"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/maxzerbini/oauth"
@@ -13,9 +17,6 @@ import (
 	"github.com/ulule/limiter/v3"
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	"github.com/ulule/limiter/v3/drivers/store/memory"
-	"immotep/backend/controllers"
-	_ "immotep/backend/docs" // mandatory import for swagger doc
-	"immotep/backend/router/middlewares"
 )
 
 func registerAPIRoutes(r *gin.Engine) {
@@ -112,7 +113,7 @@ func registerInvReportRoutes(invReports *gin.RouterGroup) {
 		controllers.GetInventoryReportByID)
 
 	invReports.POST("/summarize", controllers.GenerateSummary)
-	invReports.GET("/compare/:old_report_id",
+	invReports.POST("/compare/:old_report_id",
 		middlewares.CheckInventoryReportOwnership("property_id", "old_report_id"),
 		controllers.GenerateComparison)
 }

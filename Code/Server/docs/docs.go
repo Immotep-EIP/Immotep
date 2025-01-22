@@ -509,7 +509,7 @@ const docTemplate = `{
             }
         },
         "/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "Bearer": []
@@ -583,7 +583,7 @@ const docTemplate = `{
             }
         },
         "/owner/properties/{property_id}/inventory-reports/summarize/": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "Bearer": []
