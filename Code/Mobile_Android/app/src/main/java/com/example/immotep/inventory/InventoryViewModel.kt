@@ -22,9 +22,11 @@ class InventoryViewModel(
 ) : ViewModel() {
     private val _inventoryOpen = MutableStateFlow(InventoryOpenValues.CLOSED)
     private var baseRooms: Vector<Room> = Vector()
+    private var lastInventoryBaseRooms: Vector<Room> = Vector()
     val inventoryOpen = _inventoryOpen.asStateFlow()
 
-    val rooms = mutableStateListOf<Room>()
+    private val rooms = mutableStateListOf<Room>()
+    private val lastInventoryRooms = mutableStateListOf<Room>()
 
     private suspend fun getBearerToken() : String? {
         val authService = AuthService(navController.context.dataStore)
@@ -43,7 +45,10 @@ class InventoryViewModel(
     }
 
     fun getRooms() : Array<Room> {
-        return rooms.toTypedArray()
+        if (inventoryOpen.value === InventoryOpenValues.ENTRY) {
+            return rooms.toTypedArray()
+        }
+        return lastInventoryRooms.toTypedArray()
     }
 
     suspend fun addRoom(name: String) : String? {
@@ -111,6 +116,21 @@ class InventoryViewModel(
         }
     }
 
+    private suspend fun getLastInventory(bearerToken : String) {
+        lastInventoryRooms.clear()
+        lastInventoryBaseRooms.clear()
+        try {
+            val inventoryReport = ApiClient.apiService.getInventoryReportByIdOrLatest(bearerToken, propertyId, "latest")
+            val lastInventoryRoomsAsRooms = inventoryReport.getRoomsAsRooms(empty = true)
+            lastInventoryRooms.addAll(lastInventoryRoomsAsRooms)
+            lastInventoryRoomsAsRooms.forEach {
+                lastInventoryBaseRooms.add(it.copy())
+            }
+        } catch (e : Exception) {
+            println("Error during get last inventory ${e.message}")
+            e.printStackTrace()
+        }
+    }
     fun getBaseRooms() {
         viewModelScope.launch {
             val bearerToken = getBearerToken() ?: return@launch
@@ -135,6 +155,7 @@ class InventoryViewModel(
                 println("Error during get base rooms ${e.message}")
                 e.printStackTrace()
             }
+            getLastInventory(bearerToken)
         }
     }
 
@@ -181,17 +202,6 @@ class InventoryViewModel(
         return true
     }
 
-    fun setRoomsAsLastInventory() {
-        viewModelScope.launch {
-            val bearerToken = getBearerToken() ?: return@launch
-            try {
-                val inventoryReports = ApiClient.apiService.getAllInventoryReports(bearerToken, propertyId)
-            } catch (e : Exception) {
-                println("Error getting last inventory ${e.message}")
-                e.printStackTrace()
-            }
-        }
-    }
 }
 
 class InventoryViewModelFactory(

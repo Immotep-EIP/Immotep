@@ -120,4 +120,6 @@
     <string name="confirm_inventory_end">Are you sure to upload this inventory ?</string>
     <string name="not_forget">Have you forget anything such as a room or a detail ? If not please press confirm.</string>
     <string name="complete_room">Complete the</string>
+    <string name="no_pictures_added">No pictures added</string>
+    <string name="picture_not_supported">This picture is not supported</string>
 </resources>

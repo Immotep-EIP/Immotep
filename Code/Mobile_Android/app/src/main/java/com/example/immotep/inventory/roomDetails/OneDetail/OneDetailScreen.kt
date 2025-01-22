@@ -1,10 +1,13 @@
 package com.example.immotep.inventory.roomDetails.OneDetail
 
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
@@ -19,11 +22,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.immotep.R
-import com.example.immotep.apiClient.Cleanliness
-import com.example.immotep.apiClient.State
 import com.example.immotep.components.AddingPicturesCarousel
 import com.example.immotep.components.InitialFadeIn
+import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.RoomDetail
+import com.example.immotep.inventory.State
 import com.example.immotep.layouts.InventoryLayout
 import com.example.immotep.ui.components.DropDown
 import com.example.immotep.ui.components.DropDownItem
@@ -47,16 +50,16 @@ fun OneDetailScreen(
         { viewModel.onClose(onModifyDetail, isExit) }
     ) {
         InitialFadeIn {
-            Column {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Text(if (isExit) stringResource(R.string.entry_pictures) else stringResource(R.string.pictures))
                 AddingPicturesCarousel(
-                    pictures = viewModel.picture,
+                    uriPictures = viewModel.picture,
                     addPicture = { uri -> viewModel.addPicture(uri) },
                     error = if (detailError.value.picture) stringResource(R.string.add_picture_error) else null
                 )
                 if (isExit) {
                     Text(stringResource(R.string.exit_pictures))
-                    AddingPicturesCarousel(pictures = viewModel.exitPicture, addPicture = { uri -> viewModel.addExitPicture(uri) })
+                    AddingPicturesCarousel(stringPictures = viewModel.exitPicture)
                     if (detailError.value.exitPicture) {
                         Text(
                             stringResource(R.string.add_picture_error),

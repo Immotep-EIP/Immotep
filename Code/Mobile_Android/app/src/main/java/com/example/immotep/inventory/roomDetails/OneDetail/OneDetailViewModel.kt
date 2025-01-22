@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiClient
-import com.example.immotep.apiClient.Cleanliness
-import com.example.immotep.apiClient.InventoryLocationsTypes
-import com.example.immotep.apiClient.State
 import com.example.immotep.apiClient.SummarizeInput
 import com.example.immotep.authService.AuthService
+import com.example.immotep.inventory.Cleanliness
+import com.example.immotep.inventory.InventoryLocationsTypes
 import com.example.immotep.inventory.RoomDetail
+import com.example.immotep.inventory.State
 import com.example.immotep.login.dataStore
 import com.example.immotep.utils.Base64Utils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,7 @@ class OneDetailViewModel : ViewModel() {
     private val _detail = MutableStateFlow(RoomDetail(name = "", id = ""))
     val detail = _detail.asStateFlow()
     val picture = mutableStateListOf<Uri>()
-    val exitPicture = mutableStateListOf<Uri>()
+    val exitPicture = mutableStateListOf<String>()
     private val _errors = MutableStateFlow(RoomDetailsError())
     val errors = _errors.asStateFlow()
 
@@ -87,15 +87,6 @@ class OneDetailViewModel : ViewModel() {
         this.picture.removeAt(index)
     }
 
-    fun addExitPicture(picture : Uri) {
-        this.exitPicture.add(picture)
-        _errors.value = _errors.value.copy(picture = false)
-    }
-
-    fun removeExitPicture(index : Int) {
-        this.exitPicture.removeAt(index)
-    }
-
     fun onConfirm(onModifyDetail : (detail : RoomDetail) -> Unit, isExit : Boolean) {
         val error = RoomDetailsError()
         if (_detail.value.name.length < 3) {
@@ -148,11 +139,9 @@ class OneDetailViewModel : ViewModel() {
                 return@launch
             }
             try {
-                val base64Utils = Base64Utils(Uri.EMPTY)
                 val picturesInput = Vector<String>()
                 picture.forEach {
-                    base64Utils.setFileUri(it)
-                    picturesInput.add(base64Utils.encodeImageToBase64(navController.context))
+                    picturesInput.add(Base64Utils.encodeImageToBase64(it, navController.context))
                 }
                 val aiResponse = ApiClient.apiService.aiSummarize(
                     authHeader = bearerToken,

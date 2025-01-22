@@ -1,9 +1,12 @@
 package com.example.immotep.components
 
+import android.graphics.BitmapFactory
+import android.media.Image
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -32,19 +35,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.immotep.R
+import com.example.immotep.utils.Base64Utils
+import java.util.Base64
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : ((picture : Uri) -> Unit)?, maxPictures : Int = 10, error : String? = null) {
-
+fun AddingPicturesCarousel(
+    uriPictures : List<Uri>? = null,
+    addPicture : ((picture : Uri) -> Unit)? = null,
+    stringPictures : List<String>? = null,
+    maxPictures : Int = 10,
+    error : String? = null
+) {
     var chooseOpen by rememberSaveable { mutableStateOf(false) }
     val onClose = { chooseOpen = false }
-
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
@@ -87,44 +99,82 @@ fun AddingPicturesCarousel(pictures : List<Uri>, addPicture : ((picture : Uri) -
                 }
             }
         }
-
-        HorizontalUncontainedCarousel(
-            state = rememberCarouselState {
-                pictures.size + 1
-            },
-            itemWidth = 150.dp,
-            itemSpacing = 6.dp,
-            contentPadding = PaddingValues(start = 6.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(top = 12.dp, bottom = 12.dp)
-        )
-        { index ->
-            if (index < pictures.size) {
-                AsyncImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .padding(top = 10.dp),
-                    model = pictures[index],
-                    contentDescription = "Preview of the added picture at index $index"
-                )
-            } else if (addPicture != null && pictures.size < maxPictures) {
-                Button(onClick = {
-                    chooseOpen = true
+        if (uriPictures != null && stringPictures == null) {
+            HorizontalUncontainedCarousel(
+                state = rememberCarouselState {
+                    uriPictures.size + 1
                 },
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.surfaceDim
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                ) {
-                    Icon(Icons.Outlined.Add, contentDescription = "Add picture")
+                itemWidth = 150.dp,
+                itemSpacing = 6.dp,
+                contentPadding = PaddingValues(start = 6.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(top = 12.dp, bottom = 12.dp)
+            )
+            { index ->
+                if (index < uriPictures.size) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .padding(top = 10.dp),
+                        model = uriPictures[index],
+                        contentDescription = "Preview of the added picture at index $index"
+                    )
+                } else if (addPicture != null && uriPictures.size < maxPictures) {
+                    Button(
+                        onClick = {
+                            chooseOpen = true
+                        },
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.surfaceDim
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                    ) {
+                        Icon(Icons.Outlined.Add, contentDescription = "Add picture")
+                    }
                 }
             }
+        } else if (stringPictures != null) {
+            HorizontalUncontainedCarousel(
+                state = rememberCarouselState {
+                    stringPictures.size
+                },
+                itemWidth = 150.dp,
+                itemSpacing = 6.dp,
+                contentPadding = PaddingValues(start = 6.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(top = 12.dp, bottom = 12.dp)
+            )
+            { index ->
+                val bitmap = Base64Utils.decodeBase64ToImage(stringPictures[index])
+                if (bitmap != null) {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .padding(top = 10.dp),
+                        bitmap = bitmap,
+                        contentDescription = "Preview of the added picture at index $index"
+                    )
+                } else {
+                    Text(
+                        stringResource(R.string.picture_not_supported),
+                        modifier = Modifier.padding(top = 10.dp)
+                    )
+                }
+            }
+        } else {
+            Text(
+                stringResource(R.string.no_pictures_added),
+                modifier = Modifier.padding(top = 10.dp)
+            )
         }
     }
     if (error != null) {

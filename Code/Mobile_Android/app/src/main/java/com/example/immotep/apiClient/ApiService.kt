@@ -1,7 +1,10 @@
 package com.example.immotep.apiClient
 
+import com.example.immotep.inventory.Cleanliness
+import com.example.immotep.inventory.InventoryLocationsTypes
 import com.example.immotep.inventory.InventoryReportOutput
 import com.example.immotep.inventory.InventoryReportRoom
+import com.example.immotep.inventory.State
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -10,30 +13,6 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import java.util.Vector
-
-//enums classes
-
-enum class Cleanliness {
-    not_set,
-    dirty,
-    medium,
-    clean,
-}
-
-enum class State {
-    not_set,
-    broken,
-    needsRepair,
-    bad,
-    medium,
-    good,
-    new
-}
-
-enum class InventoryLocationsTypes {
-    room,
-    furniture
-}
 
 //input and output classes
 
@@ -244,6 +223,13 @@ interface ApiService {
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
     ) : Array<InventoryReportOutput>
+
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/{report_id}")
+    suspend fun getInventoryReportByIdOrLatest(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("report_id") reportId: String,
+    ) : InventoryReportOutput
 
     //ia functions
     @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/summarize/")
