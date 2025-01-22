@@ -107,14 +107,26 @@ class InventoryViewModel(
     }
 
     fun onClose() {
-        rooms.clear()
-        this.baseRooms.forEach {
-            it.details.forEach { detail ->
-                println(detail.completed)
+        if (inventoryOpen.value == InventoryOpenValues.ENTRY) {
+            rooms.clear()
+            this.baseRooms.forEach {
+                rooms.add(it.copy())
+                val tmpRoom = rooms.last()
+                for (i in tmpRoom.details.indices) {
+                    tmpRoom.details[i] = it.details[i].copy(completed = false)
+                }
             }
+            return
         }
-        this.baseRooms.forEach {
-            rooms.add(it.copy())
+        if (inventoryOpen.value == InventoryOpenValues.EXIT) {
+            lastInventoryRooms.clear()
+            this.lastInventoryBaseRooms.forEach {
+                lastInventoryRooms.add(it.copy())
+                val tmpRoom = lastInventoryRooms.last()
+                for (i in tmpRoom.details.indices) {
+                    tmpRoom.details[i] = it.details[i].copy(completed = false)
+                }
+            }
         }
     }
 
@@ -146,6 +158,7 @@ class InventoryViewModel(
             e.printStackTrace()
         }
     }
+
     fun getBaseRooms() {
         viewModelScope.launch {
             val bearerToken = getBearerToken() ?: return@launch
