@@ -783,14 +783,14 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get inventory report information by its ID
+      description: Get inventory report information by its ID or get the latest one
       parameters:
       - description: Property ID
         in: path
         name: property_id
         required: true
         type: string
-      - description: Report ID or latest for get the latest one
+      - description: Report ID or 'latest' to get the latest one
         in: path
         name: report_id
         required: true
