@@ -1,11 +1,11 @@
 import callApi from '@/services/api/apiCaller'
-import { CreateProperty } from '@/interfaces/Property/Property'
+import { CreateProperty, PropertyDetails } from '@/interfaces/Property/Property'
 
-const CreatePropertyFunction = async (data: CreateProperty) => {
+const CreatePropertyFunction = async (data: CreateProperty): Promise<PropertyDetails> => {
   try {
     return await callApi({
       method: 'POST',
-      endpoint: 'owner/properties',
+      endpoint: 'owner/properties/',
       data
     })
   } catch (error) {

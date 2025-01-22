@@ -1,11 +1,11 @@
 import callApi from '@/services/api/apiCaller'
-import { GetProperty } from '@/interfaces/Property/Property'
+import { PropertyDetails } from '@/interfaces/Property/Property'
 
 const GetProperties = async () => {
   try {
-    return await callApi<GetProperty[]>({
+    return await callApi<PropertyDetails[]>({
       method: 'GET',
-      endpoint: 'owner/properties'
+      endpoint: 'owner/properties/'
     })
   } catch (error) {
     console.error('Error fetching data:', error)

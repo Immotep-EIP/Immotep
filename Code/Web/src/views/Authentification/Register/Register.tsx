@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Input, Form, message, Checkbox } from 'antd'
@@ -14,7 +14,7 @@ import style from './Register.module.css'
 const Register: React.FC = () => {
   const { goToLogin } = useNavigation()
   const [form] = Form.useForm()
-  const { contractId } = useParams();
+  const { contractId } = useParams()
   const [loading, setLoading] = useState(false)
 
   const { t } = useTranslation()
@@ -26,24 +26,24 @@ const Register: React.FC = () => {
       if (password === confirmPassword) {
         const userInfo = {
           ...values,
-          contractId,
+          contractId
         }
         await register(userInfo)
-        message.success(t('pages.register.registrationSuccess'))
+        message.success(t('pages.register.register_success'))
         form.resetFields()
         setLoading(false)
         goToLogin()
-      } else message.error(t('pages.register.passwordsNotMatch'))
+      } else message.error(t('pages.register.confirm_password_error'))
     } catch (err: any) {
       if (err.response.status === 409)
-        message.error(t('pages.register.emailAlreadyUsed'))
-      console.error(t('pages.register.registrationError'), err)
+        message.error(t('pages.register.email_already_used'))
+      console.error(t('pages.register.register_error'), err)
       setLoading(false)
     }
   }
 
   const onFinishFailed: FormProps<UserRegister>['onFinishFailed'] = () => {
-    message.error(t('pages.register.fillFields'))
+    message.error(t('pages.register.fill_fields'))
   }
 
   return (
@@ -62,12 +62,12 @@ const Register: React.FC = () => {
         style={{ width: '90%', maxWidth: '400px' }}
       >
         <Form.Item
-          label={t('components.input.firstName.label')}
+          label={t('components.input.first_name.label')}
           name="firstname"
           rules={[
             {
               required: true,
-              message: t('components.input.firstName.error'),
+              message: t('components.input.first_name.error'),
               pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
             }
           ]}
@@ -75,17 +75,17 @@ const Register: React.FC = () => {
           <Input
             className="input"
             size="middle"
-            placeholder={t('components.input.firstName.placeholder')}
+            placeholder={t('components.input.first_name.placeholder')}
           />
         </Form.Item>
 
         <Form.Item
-          label={t('components.input.lastName.label')}
+          label={t('components.input.last_name.label')}
           name="lastname"
           rules={[
             {
               required: true,
-              message: t('components.input.lastName.error'),
+              message: t('components.input.last_name.error'),
               pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
             }
           ]}
@@ -93,7 +93,7 @@ const Register: React.FC = () => {
           <Input
             className="input"
             size="middle"
-            placeholder={t('components.input.lastName.placeholder')}
+            placeholder={t('components.input.last_name.placeholder')}
           />
         </Form.Item>
 
@@ -118,7 +118,9 @@ const Register: React.FC = () => {
         <Form.Item
           label={t('components.input.password.label')}
           name="password"
-          rules={[{ required: true, message: t('components.input.password.error') }]}
+          rules={[
+            { required: true, message: t('components.input.password.error') }
+          ]}
         >
           <Input.Password
             className="input"
@@ -128,21 +130,24 @@ const Register: React.FC = () => {
         </Form.Item>
 
         <Form.Item
-          label={t('components.input.confirmPassword.label')}
+          label={t('components.input.confirm_password.label')}
           name="confirmPassword"
-          rules={[{ required: true, message: t('components.input.confirmPassword.error') }]}
+          rules={[
+            {
+              required: true,
+              message: t('components.input.confirm_password.error')
+            }
+          ]}
         >
           <Input.Password
             className="input"
             size="middle"
-            placeholder={t('components.input.confirmPassword.placeholder')}
+            placeholder={t('components.input.confirm_password.placeholder')}
           />
         </Form.Item>
         <Form.Item name="termAgree" valuePropName="checked">
           <div className={style.optionsContainer}>
-            <Checkbox>
-              {t('pages.register.agreeTerms')}
-            </Checkbox>
+            <Checkbox>{t('pages.register.agree_terms')}</Checkbox>
           </div>
         </Form.Item>
         <Form.Item>
@@ -154,13 +159,13 @@ const Register: React.FC = () => {
             variant="solid"
             loading={loading}
           >
-            {t('components.button.signUp')}
+            {t('components.button.sign_up')}
           </Button>
         </Form.Item>
 
         <div className={style.dontHaveAccountContainer}>
           <span className={style.footerText}>
-            {t('pages.register.alreadyHaveAccount')}
+            {t('pages.register.already_have_account')}
           </span>
           <span
             className={style.footerLink}
@@ -171,7 +176,7 @@ const Register: React.FC = () => {
               if (e.key === 'Enter') goToLogin()
             }}
           >
-            {t('components.button.signIn')}
+            {t('components.button.sign_in')}
           </span>
         </div>
       </Form>
