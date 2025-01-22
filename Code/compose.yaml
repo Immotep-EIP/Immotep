@@ -20,7 +20,7 @@ services:
     restart: always
     ports:
       - 3001:3001
-    env_file: .env.docker
+    env_file: ./Server/.env.docker
     depends_on:
       db:
         condition: service_healthy
