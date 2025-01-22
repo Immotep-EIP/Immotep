@@ -189,7 +189,7 @@ func GetInventoryReportsByProperty(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string							true	"Property ID"
-//	@Param			report_id	path		string							true	"Report ID"
+//	@Param			report_id	path		string							true	"Report ID or latest for get the latest one"
 //	@Success		200			{object}	models.InventoryReportResponse	"Inventory report data"
 //	@Failure		403			{object}	utils.Error						"Property not yours"
 //	@Failure		404			{object}	utils.Error						"Inventory report not found"
@@ -197,9 +197,14 @@ func GetInventoryReportsByProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/{report_id}/ [get]
 func GetInventoryReportByID(c *gin.Context) {
-	report := inventoryreportservice.GetByID(c.Param("report_id"))
+	var report *db.InventoryReportModel
+	if c.Param("report_id") == "latest" {
+		report = inventoryreportservice.GetLatest(c.Param("property_id"))
+	} else {
+		report = inventoryreportservice.GetByID(c.Param("report_id"))
+	}
 	if report == nil {
-		utils.SendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
+		utils.SendError(c, http.StatusNotFound, utils.InventoryReportNotFound, c.Error(errors.New("Inventory report not found"+c.Param("report_id"))))
 		return
 	}
 	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(*report))

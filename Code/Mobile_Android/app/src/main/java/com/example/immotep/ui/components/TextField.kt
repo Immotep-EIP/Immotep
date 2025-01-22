@@ -26,7 +26,7 @@ fun OutlinedTextField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    label: @Composable (() -> Unit)? = null,
+    label: String,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
@@ -38,15 +38,22 @@ fun OutlinedTextField(
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    minLines: Int = 1
 ) {
     Column {
         OutlinedTextField(
             modifier = modifier,
+            minLines = minLines,
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,
             readOnly = readOnly,
-            label = label,
+            label = {
+                Text(
+                    text = label,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                    },
             placeholder = placeholder,
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
