@@ -111,7 +111,7 @@ func registerInvReportRoutes(invReports *gin.RouterGroup) {
 		middlewares.CheckInventoryReportOwnership("property_id", "report_id"),
 		controllers.GetInventoryReportByID)
 
-	invReports.GET("/summarize", controllers.GenerateSummary)
+	invReports.POST("/summarize", controllers.GenerateSummary)
 	invReports.GET("/compare/:old_report_id",
 		middlewares.CheckInventoryReportOwnership("property_id", "old_report_id"),
 		controllers.GenerateComparison)

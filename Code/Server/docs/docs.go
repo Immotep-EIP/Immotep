@@ -677,7 +677,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Report ID",
+                        "description": "Report ID or latest for get the latest one",
                         "name": "report_id",
                         "in": "path",
                         "required": true

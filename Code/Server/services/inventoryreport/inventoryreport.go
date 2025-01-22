@@ -72,7 +72,8 @@ func GetByPropertyID(propertyID string) []db.InventoryReportModel {
 	pdb := database.DBclient
 	invReports, err := pdb.Client.InventoryReport.FindMany(
 		db.InventoryReport.PropertyID.Equals(propertyID),
-	).With(
+	).OrderBy(
+		db.InventoryReport.Date.Order(db.SortOrderDesc)).With(
 		db.InventoryReport.Property.Fetch(),
 		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
 		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
@@ -88,6 +89,25 @@ func GetByID(id string) *db.InventoryReportModel {
 	invReport, err := pdb.Client.InventoryReport.FindUnique(
 		db.InventoryReport.ID.Equals(id),
 	).With(
+		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return invReport
+}
+
+func GetLatest(propertyID string) *db.InventoryReportModel {
+	pdb := database.DBclient
+	invReport, err := pdb.Client.InventoryReport.FindFirst(
+		db.InventoryReport.PropertyID.Equals(propertyID),
+	).OrderBy(
+		db.InventoryReport.Date.Order(db.SortOrderDesc)).With(
 		db.InventoryReport.Property.Fetch(),
 		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
 		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),

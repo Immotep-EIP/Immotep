@@ -790,7 +790,7 @@ paths:
         name: property_id
         required: true
         type: string
-      - description: Report ID
+      - description: Report ID or latest for get the latest one
         in: path
         name: report_id
         required: true
