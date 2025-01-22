@@ -123,9 +123,16 @@ func Routes() *gin.Engine {
 		Limit:  3000,
 	}
 
+	var allowOrigins []string
+	if gin.Mode() == gin.ReleaseMode {
+		allowOrigins = []string{"https://immotep.mazettt.fr", "https://dev.immotep.mazettt.fr"}
+	} else {
+		allowOrigins = []string{"https://*", "http://*", "http://localhost:4242", "http://localhost:3002"}
+	}
+
 	r := gin.New()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://*", "http://*", "http://localhost:4242"},
+		AllowOrigins: allowOrigins,
 		// AllowOriginFunc:  func(origin string) bool { return origin == "https://github.com" },
 		AllowMethods: []string{
 			http.MethodGet,

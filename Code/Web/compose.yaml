@@ -1,12 +1,12 @@
-name: immotep
-services:
-  frontend:
-    container_name: immotep-frontend
-    build:
-      context: .
-      args:
-        - VITE_API_URL=${VITE_API_URL}
-    # image: mazettt/immotep-frontend:latest
-    restart: always
-    ports:
-      - 3002:3002
+# name: immotep
+# services:
+#   frontend:
+#     container_name: immotep-frontend
+#     build:
+#       context: .
+#       args:
+#         - VITE_API_URL=${VITE_API_URL}
+#     # image: mazettt/immotep-frontend:latest
+#     restart: always
+#     ports:
+#       - 3002:3002
