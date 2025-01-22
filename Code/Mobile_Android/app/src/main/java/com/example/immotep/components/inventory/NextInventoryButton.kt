@@ -1,4 +1,4 @@
-package com.example.immotep.components
+package com.example.immotep.components.inventory
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowForwardIos
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

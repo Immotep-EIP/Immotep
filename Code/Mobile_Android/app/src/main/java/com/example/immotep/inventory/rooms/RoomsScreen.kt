@@ -1,17 +1,11 @@
 package com.example.immotep.inventory.rooms
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -19,41 +13,26 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.immotep.components.NextInventoryButton
+import com.example.immotep.components.inventory.NextInventoryButton
 import com.example.immotep.inventory.Room
 import com.example.immotep.layouts.InventoryLayout
-import com.example.immotep.realProperty.PropertyBox
 import com.example.immotep.R
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InventoryCenterAddButton
+import com.example.immotep.components.inventory.AddRoomOrDetailModal
 import com.example.immotep.inventory.roomDetails.RoomDetailsScreen
 
 fun roomIsCompleted(room: Room): Boolean {
@@ -66,58 +45,6 @@ fun roomIsCompleted(room: Room): Boolean {
     return true
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit, close: () -> Unit, isRoom : Boolean) {
-    if (open) {
-        val focusRequester = remember { FocusRequester() }
-        var roomName by rememberSaveable { mutableStateOf("") }
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
-        ModalBottomSheet(
-            onDismissRequest = close,
-            modifier = Modifier
-                .testTag("addRoomModal")
-
-        ) {
-            Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 20.dp, bottom = 20.dp)) {
-                OutlinedTextField(
-                    value = roomName,
-                    onValueChange = { roomName = it },
-                    label = { Text(stringResource(if (isRoom) R.string.room_name else R.string.detail_name)) },
-                    modifier = Modifier
-                        .fillMaxWidth().focusRequester(focusRequester)
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Button(
-                        shape = RoundedCornerShape(5.dp),
-                        colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onError
-                        ),
-                        onClick = { close() }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    Button(
-                        shape = RoundedCornerShape(5.dp),
-                        colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colorScheme.tertiary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        onClick = { addRoomOrDetail(roomName) }) {
-                        Text(stringResource(if (isRoom) R.string.add_room else R.string.add_detail))
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 @Composable
 fun RoomsScreen(
     getRooms: () -> Array<Room>,
@@ -127,7 +54,7 @@ fun RoomsScreen(
     editRoom: (String, Room) -> Unit,
     closeInventory: () -> Unit,
     confirmInventory: () -> Boolean,
-    isExit : Boolean,
+    oldReportId : String?,
     navController: NavController,
     propertyId: String
 ) {
@@ -254,7 +181,7 @@ fun RoomsScreen(
             },
             roomDetails = currentlyOpenRoom.value!!.details,
             roomId = currentlyOpenRoom.value!!.id,
-            isExit = isExit,
+            oldReportId = oldReportId,
             addDetail = addDetail,
             roomName = currentlyOpenRoom.value!!.name,
             navController = navController,

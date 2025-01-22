@@ -21,10 +21,11 @@ class InventoryViewModel(
     private val propertyId : String,
 ) : ViewModel() {
     private val _inventoryOpen = MutableStateFlow(InventoryOpenValues.CLOSED)
+    private val _oldReportId = MutableStateFlow<String?>(null)
     private var baseRooms: Vector<Room> = Vector()
     private var lastInventoryBaseRooms: Vector<Room> = Vector()
     val inventoryOpen = _inventoryOpen.asStateFlow()
-
+    val oldReportId = _oldReportId.asStateFlow()
     private val rooms = mutableStateListOf<Room>()
     private val lastInventoryRooms = mutableStateListOf<Room>()
 

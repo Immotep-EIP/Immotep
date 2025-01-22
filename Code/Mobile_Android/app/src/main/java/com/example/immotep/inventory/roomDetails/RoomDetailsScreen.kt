@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -30,11 +29,11 @@ import androidx.navigation.NavController
 import com.example.immotep.R
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InventoryCenterAddButton
-import com.example.immotep.components.NextInventoryButton
+import com.example.immotep.components.inventory.AddRoomOrDetailModal
+import com.example.immotep.components.inventory.NextInventoryButton
 import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.roomDetails.OneDetail.OneDetailScreen
-import com.example.immotep.inventory.rooms.AddRoomOrDetailModal
 import com.example.immotep.inventory.rooms.roomIsCompleted
 import com.example.immotep.layouts.InventoryLayout
 
@@ -45,7 +44,7 @@ fun RoomDetailsScreen(
     addDetail: suspend (roomId : String, name : String) -> String?,
     roomId: String,
     roomName : String,
-    isExit : Boolean,
+    oldReportId : String?,
     navController: NavController,
     propertyId: String
 ) {
@@ -120,7 +119,7 @@ fun RoomDetailsScreen(
                 viewModel.onModifyDetail(detail)
             },
             baseDetail = currentlyOpenDetail.value!!,
-            isExit = isExit,
+            oldReportId = oldReportId,
             navController = navController,
             propertyId = propertyId
         )

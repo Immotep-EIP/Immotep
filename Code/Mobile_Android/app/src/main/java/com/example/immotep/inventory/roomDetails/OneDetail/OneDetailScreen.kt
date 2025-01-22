@@ -35,13 +35,15 @@ import com.example.immotep.ui.components.OutlinedTextField
 @Composable
 fun OneDetailScreen(
     onModifyDetail : (detail : RoomDetail) -> Unit,
-    baseDetail : RoomDetail, isExit : Boolean,
+    baseDetail : RoomDetail,
+    oldReportId : String?,
     navController : NavController,
     propertyId : String
 ) {
     val viewModel : OneDetailViewModel = viewModel()
     val detailValue = viewModel.detail.collectAsState()
     val detailError = viewModel.errors.collectAsState()
+    val isExit = oldReportId != null
     LaunchedEffect(Unit) {
         viewModel.reset(baseDetail)
     }
