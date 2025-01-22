@@ -184,12 +184,12 @@ func GetInventoryReportsByProperty(c *gin.Context) {
 // GetInventoryReportByID godoc
 //
 //	@Summary		Get inventory report by ID
-//	@Description	Get inventory report information by its ID
+//	@Description	Get inventory report information by its ID or get the latest one
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string							true	"Property ID"
-//	@Param			report_id	path		string							true	"Report ID or latest for get the latest one"
+//	@Param			report_id	path		string							true	"Report ID or 'latest' to get the latest one"
 //	@Success		200			{object}	models.InventoryReportResponse	"Inventory report data"
 //	@Failure		403			{object}	utils.Error						"Property not yours"
 //	@Failure		404			{object}	utils.Error						"Inventory report not found"
@@ -204,7 +204,7 @@ func GetInventoryReportByID(c *gin.Context) {
 		report = inventoryreportservice.GetByID(c.Param("report_id"))
 	}
 	if report == nil {
-		utils.SendError(c, http.StatusNotFound, utils.InventoryReportNotFound, c.Error(errors.New("Inventory report not found"+c.Param("report_id"))))
+		utils.SendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
 		return
 	}
 	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(*report))

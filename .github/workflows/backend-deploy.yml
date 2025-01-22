@@ -2,31 +2,62 @@ name: Deploy backend
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+    # tags:
+    #   - 'v*'
 
-env:
-  DOCKER_REPO: "${{ vars.DOCKER_HUB_USERNAME }}/immotep-server"
+# env:
+#   DOCKER_REPO: "${{ vars.DOCKER_HUB_USERNAME }}/immotep-server"
 
 jobs:
-  build:
+  # deploy-docker:
+  #   name: Deploy on Docker hub
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ vars.DOCKER_HUB_USERNAME }}
+  #         password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
+
+  #     - name: Build and push
+  #       uses: docker/build-push-action@v6
+  #       with:
+  #         platforms: linux/amd64,linux/arm64
+  #         context: Code/Server/
+  #         push: true
+  #         tags: ${{ env.DOCKER_REPO }}:latest,${{ env.DOCKER_REPO }}:${{ github.ref_name }}
+
+  deploy-dev:
+    name: Deploy on dev VM
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v1.2.0
         with:
-          username: ${{ vars.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          host: ${{ secrets.DEPLOY_SERVER_DEV }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/Server && git switch main && git pull && docker compose down && docker compose up --build -d
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  deploy-prod:
+    name: Deploy on prod VM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v1.2.0
         with:
-          platforms: linux/amd64,linux/arm64
-          context: Code/Server/
-          push: true
-          tags: ${{ env.DOCKER_REPO }}:latest,${{ env.DOCKER_REPO }}:${{ github.ref_name }}
+          host: ${{ secrets.DEPLOY_SERVER_PROD }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/Server && git switch main && git pull && docker compose down && docker compose up --build -d

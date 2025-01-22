@@ -656,7 +656,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get inventory report information by its ID",
+                "description": "Get inventory report information by its ID or get the latest one",
                 "consumes": [
                     "application/json"
                 ],
@@ -677,7 +677,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Report ID or latest for get the latest one",
+                        "description": "Report ID or 'latest' to get the latest one",
                         "name": "report_id",
                         "in": "path",
                         "required": true

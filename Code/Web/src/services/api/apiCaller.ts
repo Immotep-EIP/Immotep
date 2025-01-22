@@ -89,7 +89,7 @@ api.interceptors.response.use(
   }
 )
 
-const callApi = async < TData = undefined, TResponse = TData>({
+const callApi = async <TData = undefined, TResponse = TData>({
   method,
   endpoint,
   data,
