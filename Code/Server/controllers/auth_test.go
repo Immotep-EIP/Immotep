@@ -38,7 +38,6 @@ func TestRegisterOwnerMissingFields(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/register/", bytes.NewReader(b))
@@ -58,7 +57,6 @@ func TestRegisterOwnerWrongPassword(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/register/", bytes.NewReader(b))
@@ -78,7 +76,6 @@ func TestRegisterTenantMissingFields(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))
@@ -98,7 +95,6 @@ func TestRegisterTenantWrongPassword(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))
@@ -124,7 +120,6 @@ func TestRegisterTenantInviteNotFound(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/wrong/", bytes.NewReader(b))
@@ -153,7 +148,6 @@ func TestRegisterTenantWrongEmail(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))

@@ -157,6 +157,7 @@ func Routes() *gin.Engine {
 }
 
 func TestRoutes() *gin.Engine {
+	gin.SetMode(gin.TestMode)
 	r := gin.New()
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	registerAPIRoutes(r, true)

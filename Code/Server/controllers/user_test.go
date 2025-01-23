@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"immotep/backend/database"
@@ -37,7 +36,6 @@ func TestGetAllUsers(t *testing.T) {
 		client.Client.User.FindMany(),
 	).ReturnsMany([]db.UserModel{user})
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -60,7 +58,6 @@ func TestGetUserByID(t *testing.T) {
 		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
 	).Returns(user)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -82,7 +79,6 @@ func TestGetUserByIDNotFound(t *testing.T) {
 		client.Client.User.FindUnique(db.User.ID.Equals("nonexistent")),
 	).Errors(db.ErrNotFound)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -105,7 +101,6 @@ func TestGetProfile(t *testing.T) {
 		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
 	).Returns(user)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -129,7 +124,6 @@ func TestGetProfileUserNotFound(t *testing.T) {
 		client.Client.User.FindUnique(db.User.ID.Equals("nonexistent")),
 	).Errors(db.ErrNotFound)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()

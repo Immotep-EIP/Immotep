@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -69,7 +68,6 @@ func TestGetAllProperties(t *testing.T) {
 		),
 	).ReturnsMany([]db.PropertyModel{property})
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -97,7 +95,6 @@ func TestGetPropertyById(t *testing.T) {
 		),
 	).Returns(property)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -125,7 +122,6 @@ func TestGetPropertyByIdNotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -153,7 +149,6 @@ func TestGetPropertyByIdNotYours(t *testing.T) {
 		),
 	).Returns(property)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -194,7 +189,6 @@ func TestCreateProperty(t *testing.T) {
 	b, err := json.Marshal(property)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -217,7 +211,6 @@ func TestCreatePropertyMissingFields(t *testing.T) {
 	b, err := json.Marshal(property)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -266,7 +259,6 @@ func TestCreatePropertyAlreadyExists(t *testing.T) {
 	b, err := json.Marshal(property)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -320,7 +312,6 @@ func TestInviteTenant(t *testing.T) {
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -347,7 +338,6 @@ func TestInviteTenantMissingField(t *testing.T) {
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -385,7 +375,6 @@ func TestInviteTenantPropertyNotFound(t *testing.T) {
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -424,7 +413,6 @@ func TestInviteTenantPropertyNotYours(t *testing.T) {
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
@@ -485,7 +473,6 @@ func TestInviteTenantAlreadyExists(t *testing.T) {
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
