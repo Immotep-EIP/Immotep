@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - build
   pull_request:
     branches:
       - main
@@ -154,4 +155,4 @@ jobs:
           host: ${{ secrets.DEPLOY_SERVER_DEV }}
           username: ${{ vars.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/ && git switch dev && git pull && docker compose down && docker compose up --build -d
+          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/ && git switch build && git pull && docker compose down && docker compose up --build -d
