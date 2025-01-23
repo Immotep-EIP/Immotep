@@ -62,7 +62,7 @@ jobs:
       - name: Test
         id: test
         run: |
-          OUTPUT=$(./run_tests.sh no-interactive)
+          OUTPUT=$(./run_tests.sh no-interactive | tee /dev/tty)
           echo "# Coverage report" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`txt" >> $GITHUB_STEP_SUMMARY
           echo "$OUTPUT" >> $GITHUB_STEP_SUMMARY
