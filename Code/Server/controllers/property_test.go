@@ -12,10 +12,10 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/controllers"
 	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
+	"immotep/backend/router"
 	"immotep/backend/utils"
 )
 
@@ -70,12 +70,15 @@ func TestGetAllProperties(t *testing.T) {
 	).ReturnsMany([]db.PropertyModel{property})
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
+	r := router.TestRoutes()
 
-	controllers.GetAllProperties(c)
-	assert.Equal(t, http.StatusOK, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
 	var resp []models.PropertyResponse
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
@@ -95,13 +98,15 @@ func TestGetPropertyById(t *testing.T) {
 	).Returns(property)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{gin.Param{Key: "id", Value: property.ID}}
-	controllers.GetPropertyById(c)
+	r := router.TestRoutes()
 
-	assert.Equal(t, http.StatusOK, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/"+property.ID+"/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
 	var propertyResponse models.PropertyResponse
 	err := json.Unmarshal(w.Body.Bytes(), &propertyResponse)
 	require.NoError(t, err)
@@ -121,13 +126,15 @@ func TestGetPropertyByIdNotFound(t *testing.T) {
 	).Errors(db.ErrNotFound)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{gin.Param{Key: "id", Value: property.ID}}
-	controllers.GetPropertyById(c)
+	r := router.TestRoutes()
 
-	assert.Equal(t, http.StatusNotFound, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/"+property.ID+"/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
@@ -147,13 +154,15 @@ func TestGetPropertyByIdNotYours(t *testing.T) {
 	).Returns(property)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "2"})
-	c.Params = gin.Params{gin.Param{Key: "id", Value: property.ID}}
-	controllers.GetPropertyById(c)
+	r := router.TestRoutes()
 
-	assert.Equal(t, http.StatusForbidden, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/"+property.ID+"/", nil)
+	req.Header.Set("Oauth.claims.id", "2")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusForbidden, w.Code)
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
@@ -176,6 +185,9 @@ func TestCreateProperty(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+		).With(
+			db.Property.Contracts.Fetch(),
+			db.Property.Damages.Fetch(),
 		),
 	).Returns(property)
 
@@ -183,15 +195,16 @@ func TestCreateProperty(t *testing.T) {
 	require.NoError(t, err)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{{Key: "propertyId", Value: property.ID}}
+	r := router.TestRoutes()
 
-	controllers.CreateProperty(c)
-	assert.Equal(t, http.StatusCreated, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusCreated, w.Code)
 	var resp models.PropertyResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
@@ -205,15 +218,16 @@ func TestCreatePropertyMissingFields(t *testing.T) {
 	require.NoError(t, err)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{{Key: "propertyId", Value: property.ID}}
+	r := router.TestRoutes()
 
-	controllers.CreateProperty(c)
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusBadRequest, w.Code)
 	var resp utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
@@ -236,6 +250,9 @@ func TestCreatePropertyAlreadyExists(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+		).With(
+			db.Property.Contracts.Fetch(),
+			db.Property.Damages.Fetch(),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -250,15 +267,16 @@ func TestCreatePropertyAlreadyExists(t *testing.T) {
 	require.NoError(t, err)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{{Key: "propertyId", Value: property.ID}}
+	r := router.TestRoutes()
 
-	controllers.CreateProperty(c)
-	assert.Equal(t, http.StatusConflict, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusConflict, w.Code)
 	var resp utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
@@ -294,24 +312,25 @@ func TestInviteTenant(t *testing.T) {
 		),
 	).Returns(pendingContract)
 
-	req := models.InviteRequest{
+	reqBody := models.InviteRequest{
 		TenantEmail: pendingContract.TenantEmail,
 		StartDate:   pendingContract.StartDate,
 		EndDate:     pendingContract.InnerPendingContract.EndDate,
 	}
-	b, err := json.Marshal(req)
+	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{{Key: "propertyId", Value: property.ID}}
+	r := router.TestRoutes()
 
-	controllers.InviteTenant(c)
-	assert.Equal(t, http.StatusOK, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/"+property.ID+"/send-invite/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
 	var resp models.InviteResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
@@ -321,23 +340,24 @@ func TestInviteTenant(t *testing.T) {
 func TestInviteTenantMissingField(t *testing.T) {
 	property := BuildTestProperty("1")
 	pendingContract := BuildTestPendingContract()
-	req := models.InviteRequest{
+	reqBody := models.InviteRequest{
 		StartDate: pendingContract.StartDate,
 		EndDate:   pendingContract.InnerPendingContract.EndDate,
 	}
-	b, err := json.Marshal(req)
+	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{{Key: "propertyId", Value: property.ID}}
+	r := router.TestRoutes()
 
-	controllers.InviteTenant(c)
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/"+property.ID+"/send-invite/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusBadRequest, w.Code)
 	var resp utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
@@ -357,24 +377,25 @@ func TestInviteTenantPropertyNotFound(t *testing.T) {
 
 	pendingContract := BuildTestPendingContract()
 
-	req := models.InviteRequest{
+	reqBody := models.InviteRequest{
 		TenantEmail: pendingContract.TenantEmail,
 		StartDate:   pendingContract.StartDate,
 		EndDate:     pendingContract.InnerPendingContract.EndDate,
 	}
-	b, err := json.Marshal(req)
+	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{{Key: "propertyId", Value: "wrong"}}
+	r := router.TestRoutes()
 
-	controllers.InviteTenant(c)
-	assert.Equal(t, http.StatusNotFound, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/wrong/send-invite/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
 	var resp utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
@@ -395,24 +416,25 @@ func TestInviteTenantPropertyNotYours(t *testing.T) {
 
 	pendingContract := BuildTestPendingContract()
 
-	req := models.InviteRequest{
+	reqBody := models.InviteRequest{
 		TenantEmail: pendingContract.TenantEmail,
 		StartDate:   pendingContract.StartDate,
 		EndDate:     pendingContract.InnerPendingContract.EndDate,
 	}
-	b, err := json.Marshal(req)
+	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Set("oauth.claims", map[string]string{"id": "wrong"})
-	c.Params = gin.Params{{Key: "propertyId", Value: property.ID}}
+	r := router.TestRoutes()
 
-	controllers.InviteTenant(c)
-	assert.Equal(t, http.StatusForbidden, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/"+property.ID+"/send-invite/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "wrong")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusForbidden, w.Code)
 	var resp utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
@@ -455,24 +477,25 @@ func TestInviteTenantAlreadyExists(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	req := models.InviteRequest{
+	reqBody := models.InviteRequest{
 		TenantEmail: pendingContract.TenantEmail,
 		StartDate:   pendingContract.StartDate,
 		EndDate:     pendingContract.InnerPendingContract.EndDate,
 	}
-	b, err := json.Marshal(req)
+	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{{Key: "propertyId", Value: property.ID}}
+	r := router.TestRoutes()
 
-	controllers.InviteTenant(c)
-	assert.Equal(t, http.StatusConflict, w.Code)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/"+property.ID+"/send-invite/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusConflict, w.Code)
 	var resp utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)

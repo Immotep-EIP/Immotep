@@ -9,10 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/controllers"
 	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
+	"immotep/backend/router"
 	"immotep/backend/utils"
 )
 
@@ -38,9 +38,11 @@ func TestGetAllUsers(t *testing.T) {
 	).ReturnsMany([]db.UserModel{user})
 
 	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
+
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	controllers.GetAllUsers(c)
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/", nil)
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	var users []models.UserResponse
@@ -59,10 +61,11 @@ func TestGetUserByID(t *testing.T) {
 	).Returns(user)
 
 	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
+
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "id", Value: user.ID}}
-	controllers.GetUserByID(c)
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/"+user.ID+"/", nil)
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	var userResponse models.UserResponse
@@ -80,10 +83,11 @@ func TestGetUserByIDNotFound(t *testing.T) {
 	).Errors(db.ErrNotFound)
 
 	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
+
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "id", Value: "nonexistent"}}
-	controllers.GetUserByID(c)
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/nonexistent/", nil)
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
 	var errorResponse utils.Error
@@ -102,10 +106,13 @@ func TestGetProfile(t *testing.T) {
 	).Returns(user)
 
 	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
+
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": user.ID})
-	controllers.GetCurrentUserProfile(c)
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	var userResponse models.UserResponse
@@ -123,10 +130,13 @@ func TestGetProfileUserNotFound(t *testing.T) {
 	).Errors(db.ErrNotFound)
 
 	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
+
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "nonexistent"})
-	controllers.GetCurrentUserProfile(c)
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/", nil)
+	req.Header.Set("Oauth.claims.id", "nonexistent")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
 	var errorResponse utils.Error

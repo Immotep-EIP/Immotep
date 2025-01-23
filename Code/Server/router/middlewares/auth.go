@@ -8,6 +8,16 @@ import (
 	"immotep/backend/utils"
 )
 
+func MockClaims() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("oauth.claims", map[string]string{
+			"id":   c.GetHeader("oauth.claims.id"),
+			"role": c.GetHeader("oauth.claims.role"),
+		})
+		c.Next()
+	}
+}
+
 func CheckClaims() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		claims := utils.GetClaims(c)
