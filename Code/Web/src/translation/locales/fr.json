@@ -211,7 +211,11 @@
         "inventory": {
           "add_room_modal_title": "Ajouter une pièce",
           "add_stuff_modal_title": "Ajouter un objet",
-          "list_object_name": "Objets dans la pièce"
+          "list_object_name": "Objets dans la pièce",
+          "remove_room_confirmation": "Êtes-vous sûr de vouloir supprimer cet pièce ?",
+          "remove_room_success": "Pièce supprimé avec succès",
+          "remove_stuff_confirmation": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+          "remove_stuff_success": "Élément supprimé avec succès"
         }
       }
     },
