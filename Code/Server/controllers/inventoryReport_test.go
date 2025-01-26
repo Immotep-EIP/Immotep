@@ -554,3 +554,134 @@ func TestGetInventoryReportByID_NotFound(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, utils.InventoryReportNotFound, resp.Code)
 }
+
+func TestCreateInventoryReport_RoomNotFound(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Returns(property)
+
+	invReport := BuildTestInvReport("1", "1", false)
+	mock.InventoryReport.Expect(
+		client.Client.InventoryReport.CreateOne(
+			db.InventoryReport.Type.Set(invReport.Type),
+			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport.PropertyID)),
+		),
+	).Returns(invReport)
+
+	room := BuildTestRoom("1", "1")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Errors(db.ErrNotFound)
+
+	reqBody := BuildInvReportRequest()
+	b, err := json.Marshal(reqBody)
+	require.NoError(t, err)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusCreated, w.Code)
+	var resp []string
+	err = json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	require.Len(t, resp, 1)
+	assert.Equal(t, string(utils.RoomNotFound), resp[0])
+}
+
+func TestCreateInventoryReport_FurnitureNotFound(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Returns(property)
+
+	invReport := BuildTestInvReport("1", "1", false)
+	mock.InventoryReport.Expect(
+		client.Client.InventoryReport.CreateOne(
+			db.InventoryReport.Type.Set(invReport.Type),
+			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport.PropertyID)),
+		),
+	).Returns(invReport)
+
+	room := BuildTestRoom("1", "1")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Returns(room)
+
+	roomPicture := BuildTestImage("1", "b3Vp")
+	mock.Image.Expect(
+		client.Client.Image.CreateOne(
+			db.Image.Data.Set(roomPicture.Data),
+		),
+	).Returns(roomPicture)
+
+	picturesId := []string{roomPicture.ID}
+	roomParams := make([]db.RoomStateSetParam, 0, len(picturesId))
+	for _, id := range picturesId {
+		roomParams = append(roomParams, db.RoomState.Pictures.Link(db.Image.ID.Equals(id)))
+	}
+	roomState := BuildTestRoomState("1", "1", "1")
+	mock.RoomState.Expect(
+		client.Client.RoomState.CreateOne(
+			db.RoomState.Cleanliness.Set(roomState.Cleanliness),
+			db.RoomState.State.Set(roomState.State),
+			db.RoomState.Note.Set(roomState.Note),
+			db.RoomState.Report.Link(db.InventoryReport.ID.Equals(invReport.ID)),
+			db.RoomState.Room.Link(db.Room.ID.Equals(roomState.RoomID)),
+			roomParams...,
+		),
+	).Returns(roomState)
+
+	furniture := BuildTestFurniture("1", "1")
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindUnique(
+			db.Furniture.ID.Equals(furniture.ID),
+		).With(
+			db.Furniture.Room.Fetch(),
+		),
+	).Errors(db.ErrNotFound)
+
+	reqBody := BuildInvReportRequest()
+	b, err := json.Marshal(reqBody)
+	require.NoError(t, err)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusCreated, w.Code)
+	var resp []string
+	err = json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	require.Len(t, resp, 1)
+	assert.Equal(t, string(utils.FurnitureNotFound), resp[0])
+}
