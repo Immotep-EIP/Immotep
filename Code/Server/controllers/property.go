@@ -218,12 +218,8 @@ func EndContract(c *gin.Context) {
 
 	_, ok := currentActive.EndDate()
 	if !ok {
-		now := time.Now()
-		newContract := contractservice.EndContract(currentActive.PropertyID, currentActive.TenantID, &now)
-		if newContract == nil {
-			utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
-			return
-		}
+		now := time.Now().Truncate(time.Minute)
+		contractservice.EndContract(currentActive.PropertyID, currentActive.TenantID, &now)
 		c.Status(http.StatusNoContent)
 	} else {
 		contractservice.EndContract(currentActive.PropertyID, currentActive.TenantID, nil)

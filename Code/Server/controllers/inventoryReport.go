@@ -71,11 +71,7 @@ func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomState
 		}
 		picturesId, el := getFurnitureStatePictures(f)
 		errorList = append(errorList, el...)
-		fState := inventoryreportservice.CreateFurnitureState(fModel, picturesId, invrep.ID)
-		if fState == nil {
-			errorList = append(errorList, string(utils.FurnitureStateAlreadyExists))
-			continue
-		}
+		inventoryreportservice.CreateFurnitureState(fModel, picturesId, invrep.ID)
 	}
 
 	return errorList
@@ -116,12 +112,7 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 		}
 		picturesId, el := getRoomStatePictures(r)
 		errorList = append(errorList, el...)
-		rState := inventoryreportservice.CreateRoomState(rModel, picturesId, invrep.ID)
-		if rState == nil {
-			errorList = append(errorList, string(utils.RoomStateAlreadyExists))
-			continue
-		}
-
+		inventoryreportservice.CreateRoomState(rModel, picturesId, invrep.ID)
 		errorList = append(errorList, createFurnitureState(invrep, r)...)
 	}
 
@@ -202,10 +193,6 @@ func GetInventoryReportByID(c *gin.Context) {
 		report = inventoryreportservice.GetLatest(c.Param("property_id"))
 	} else {
 		report = inventoryreportservice.GetByID(c.Param("report_id"))
-	}
-	if report == nil {
-		utils.SendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
-		return
 	}
 	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(*report))
 }

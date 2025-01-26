@@ -34,7 +34,7 @@ func CreateRoom(c *gin.Context) {
 
 	room := roomservice.Create(req.ToDbRoom(), c.Param("property_id"))
 	if room == nil {
-		utils.SendError(c, http.StatusNotFound, utils.RoomAlreadyExists, nil)
+		utils.SendError(c, http.StatusConflict, utils.RoomAlreadyExists, nil)
 		return
 	}
 	c.JSON(http.StatusCreated, models.DbRoomToResponse(*room))
