@@ -4,7 +4,7 @@ const PutUserPicture = async (pictureData: string) => {
   try {
     return await callApi({
       method: 'PUT',
-      endpoint: `profile/picture`,
+      endpoint: `profile/picture/`,
       data: JSON.stringify({ data: pictureData }),
     })
   } catch (error) {

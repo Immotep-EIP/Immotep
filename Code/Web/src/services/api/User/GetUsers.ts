@@ -5,7 +5,7 @@ export const getUsers = async () => {
   try {
     const response = await callApi<User>({
       method: 'GET',
-      endpoint: 'users'
+      endpoint: 'users/'
     })
     return response
   } catch (error) {

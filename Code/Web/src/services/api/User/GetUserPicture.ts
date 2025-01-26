@@ -5,7 +5,7 @@ const GetUserPicture = async (id: string) => {
   try {
     return await callApi<UserPictureResponse>({
       method: 'GET',
-      endpoint: `user/${id}/picture`
+      endpoint: `user/${id}/picture/`
     })
   } catch (error) {
     console.error('Error fetching data:', error)
