@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Button, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 
@@ -13,7 +13,7 @@ import dateIcon from '@/assets/icons/date.png'
 import PageTitle from '@/components/PageText/Title.tsx'
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
-import base64ToFile from '@/utils/base64/baseToFile'
+import useImageCache from '@/hooks/useEffect/useImageCache'
 import style from './RealProperty.module.css'
 
 interface CardComponentProps {
@@ -23,17 +23,11 @@ interface CardComponentProps {
 
 const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
   const { goToRealPropertyDetails } = useNavigation()
-  const [picture, setPicture] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchPicture = async () => {
-      const picture = await GetPropertyPicture(realProperty.id)
-      const file = base64ToFile(picture.data, 'property.jpg', 'image/jpeg')
-      const url = URL.createObjectURL(file)
-      setPicture(url)
-    }
-    fetchPicture()
-  }, [realProperty.id])
+  const { data: picture, isLoading } = useImageCache(
+    realProperty.id,
+    GetPropertyPicture
+  )
 
   return (
     <div
@@ -64,7 +58,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
       {/* SECOND PART */}
       <div className={style.pictureContainer}>
         <img
-          src={picture || defaultHouse}
+          src={isLoading ? defaultHouse : picture || defaultHouse}
           alt="property"
           className={style.picture}
         />
