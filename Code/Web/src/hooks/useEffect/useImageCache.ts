@@ -9,6 +9,11 @@ const useImageCache = (
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
+    if (!id) {
+      setIsLoading(false)
+      return
+    }
+
     const fetchData = async () => {
       setIsLoading(true)
 
@@ -34,6 +39,7 @@ const useImageCache = (
 
     fetchData()
 
+    // eslint-disable-next-line consistent-return
     return () => {
       if (data) URL.revokeObjectURL(data)
     }
