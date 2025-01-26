@@ -46,7 +46,7 @@ func BuildTestProperty(id string) db.PropertyModel {
 		},
 		RelationsProperty: db.RelationsProperty{
 			Damages:   []db.DamageModel{{}},
-			Contracts: []db.ContractModel{{}},
+			Contracts: []db.ContractModel{},
 		},
 	}
 }
@@ -54,7 +54,7 @@ func BuildTestProperty(id string) db.PropertyModel {
 func TestPropertyResponse(t *testing.T) {
 	pc := BuildTestProperty("1")
 
-	t.Run("FromProperty", func(t *testing.T) {
+	t.Run("FromProperty1", func(t *testing.T) {
 		propertyResponse := models.PropertyResponse{}
 		propertyResponse.FromDbProperty(pc)
 
@@ -70,6 +70,45 @@ func TestPropertyResponse(t *testing.T) {
 		assert.Equal(t, 1, propertyResponse.NbDamage)
 		assert.Equal(t, "", propertyResponse.Tenant)
 		assert.Nil(t, propertyResponse.StartDate)
+		assert.Nil(t, propertyResponse.EndDate)
+	})
+
+	t.Run("FromProperty2", func(t *testing.T) {
+		date := time.Now()
+		newPc := BuildTestProperty("2")
+		newPc.RelationsProperty.Contracts = []db.ContractModel{
+			{
+				InnerContract: db.InnerContract{
+					Active:    true,
+					StartDate: date,
+					EndDate:   nil,
+				},
+				RelationsContract: db.RelationsContract{
+					Tenant: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Name",
+						},
+					},
+				},
+			},
+		}
+
+		propertyResponse := models.PropertyResponse{}
+		propertyResponse.FromDbProperty(newPc)
+
+		assert.Equal(t, newPc.ID, propertyResponse.ID)
+		assert.Equal(t, newPc.Name, propertyResponse.Name)
+		assert.Equal(t, newPc.Address, propertyResponse.Address)
+		assert.Equal(t, newPc.City, propertyResponse.City)
+		assert.Equal(t, newPc.PostalCode, propertyResponse.PostalCode)
+		assert.Equal(t, newPc.Country, propertyResponse.Country)
+		assert.Equal(t, newPc.OwnerID, propertyResponse.OwnerID)
+
+		assert.Equal(t, "unavailable", propertyResponse.Status)
+		assert.Equal(t, 1, propertyResponse.NbDamage)
+		assert.Equal(t, "Test Name", propertyResponse.Tenant)
+		assert.Equal(t, propertyResponse.StartDate, &date)
 		assert.Nil(t, propertyResponse.EndDate)
 	})
 

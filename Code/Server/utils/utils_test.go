@@ -49,3 +49,62 @@ func TestCheckPasswordHash(t *testing.T) {
 	match = utils.CheckPasswordHash(wrongPassword, hash)
 	assert.False(t, match)
 }
+
+func TestMapIf(t *testing.T) {
+	input := []int{1, 2, 3, 4, 5}
+	condition := func(n int) bool { return n%2 == 0 }
+	transform := strconv.Itoa
+	expected := []string{"2", "4"}
+
+	result := utils.MapIf(input, condition, transform)
+	assert.Equal(t, expected, result)
+}
+
+func TestTernary(t *testing.T) {
+	assert.Equal(t, "yes", utils.Ternary(true, "yes", "no"))
+	assert.Equal(t, "no", utils.Ternary(false, "yes", "no"))
+
+	assert.Equal(t, 10, utils.Ternary(true, 10, 20))
+	assert.Equal(t, 20, utils.Ternary(false, 10, 20))
+
+	assert.InEpsilon(t, 3.14, utils.Ternary(true, 3.14, 2.71), 0.0)
+	assert.InEpsilon(t, 2.71, utils.Ternary(false, 3.14, 2.71), 0.0)
+}
+
+func TestCountIf(t *testing.T) {
+	input := []int{1, 2, 3, 4, 5, 6}
+	condition := func(n int) bool { return n%2 == 0 }
+	expected := 3
+
+	result := utils.CountIf(input, condition)
+	assert.Equal(t, expected, result)
+
+	condition = func(n int) bool { return n > 3 }
+	expected = 3
+
+	result = utils.CountIf(input, condition)
+	assert.Equal(t, expected, result)
+
+	condition = func(n int) bool { return n < 0 }
+	expected = 0
+
+	result = utils.CountIf(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestPtr(t *testing.T) {
+	value := 42
+	ptr := utils.Ptr(value)
+	require.NotNil(t, ptr)
+	assert.Equal(t, value, *ptr)
+
+	str := "hello"
+	ptrStr := utils.Ptr(str)
+	require.NotNil(t, ptrStr)
+	assert.Equal(t, str, *ptrStr)
+
+	boolean := true
+	ptrBool := utils.Ptr(boolean)
+	require.NotNil(t, ptrBool)
+	assert.Equal(t, boolean, *ptrBool)
+}

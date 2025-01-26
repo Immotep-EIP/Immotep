@@ -5,7 +5,7 @@ set -e
 
 ./run_linter.sh
 
-list=$(go list ./... | grep -ve prisma -ve docs -ve database)
+list=$(go list ./... | grep -ve prisma -ve docs -ve database -ve '^immotep/backend$')
 
 # Run tests and generate coverage report for all packages except prisma
 if [[ $1 == "debug" ]]; then

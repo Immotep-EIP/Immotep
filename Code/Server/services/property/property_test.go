@@ -8,8 +8,10 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"immotep/backend/database"
+	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	propertyservice "immotep/backend/services/property"
+	"immotep/backend/utils"
 )
 
 func BuildTestProperty(id string) db.PropertyModel {
@@ -26,12 +28,22 @@ func BuildTestProperty(id string) db.PropertyModel {
 			DepositPrice:        1000,
 			CreatedAt:           time.Now(),
 			OwnerID:             "1",
+			PictureID:           utils.Ptr("1"),
 		},
 		RelationsProperty: db.RelationsProperty{
 			Damages:   []db.DamageModel{{}},
 			Contracts: []db.ContractModel{{}},
 		},
 	}
+}
+
+func BuildTestImage(id string, base64data string) db.ImageModel {
+	ret := models.StringToDbImage(base64data)
+	if ret == nil {
+		panic("Invalid base64 string")
+	}
+	ret.ID = id
+	return *ret
 }
 
 func TestGetAllProperties(t *testing.T) {
@@ -54,7 +66,7 @@ func TestGetAllProperties(t *testing.T) {
 	assert.Equal(t, property.ID, allProperties[0].ID)
 }
 
-func TestGetAllPropertiesMultipleProperties(t *testing.T) {
+func TestGetAllProperties_MultipleProperties(t *testing.T) {
 	client, mock, ensure := database.ConnectDBTest()
 	defer ensure(t)
 
@@ -76,7 +88,7 @@ func TestGetAllPropertiesMultipleProperties(t *testing.T) {
 	assert.Equal(t, user2.ID, allProperties[1].ID)
 }
 
-func TestGetAllPropertiesNoProperties(t *testing.T) {
+func TestGetAllProperties_NoProperties(t *testing.T) {
 	client, mock, ensure := database.ConnectDBTest()
 	defer ensure(t)
 
@@ -93,7 +105,7 @@ func TestGetAllPropertiesNoProperties(t *testing.T) {
 	assert.Empty(t, allProperties)
 }
 
-func TestGetAllPropertiesNoConnection(t *testing.T) {
+func TestGetAllProperties_NoConnection(t *testing.T) {
 	client, mock, ensure := database.ConnectDBTest()
 	defer ensure(t)
 
@@ -129,7 +141,7 @@ func TestGetPropertyByID(t *testing.T) {
 	assert.Equal(t, property.ID, foundProperty.ID)
 }
 
-func TestGetPropertyByIDNotFound(t *testing.T) {
+func TestGetPropertyByID_NotFound(t *testing.T) {
 	client, mock, ensure := database.ConnectDBTest()
 	defer ensure(t)
 
@@ -144,7 +156,7 @@ func TestGetPropertyByIDNotFound(t *testing.T) {
 	assert.Nil(t, foundProperty)
 }
 
-func TestGetPropertyByIDNoConnection(t *testing.T) {
+func TestGetPropertyByID_NoConnection(t *testing.T) {
 	client, mock, ensure := database.ConnectDBTest()
 	defer ensure(t)
 
@@ -188,7 +200,7 @@ func TestCreateProperty(t *testing.T) {
 	assert.Equal(t, property.ID, newProperty.ID)
 }
 
-func TestCreatePropertyAlreadyExists(t *testing.T) {
+func TestCreateProperty_AlreadyExists(t *testing.T) {
 	client, mock, ensure := database.ConnectDBTest()
 	defer ensure(t)
 
@@ -222,7 +234,7 @@ func TestCreatePropertyAlreadyExists(t *testing.T) {
 	assert.Nil(t, newProperty)
 }
 
-func TestCreatePropertyNoConnection(t *testing.T) {
+func TestCreateProperty_NoConnection(t *testing.T) {
 	client, mock, ensure := database.ConnectDBTest()
 	defer ensure(t)
 
@@ -247,5 +259,67 @@ func TestCreatePropertyNoConnection(t *testing.T) {
 
 	assert.Panics(t, func() {
 		propertyservice.Create(property, "1")
+	})
+}
+
+func TestUpdatePicture(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	image := BuildTestImage("1", "b3Vp")
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		).Update(
+			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
+		),
+	).Returns(property)
+
+	updatedProperty := propertyservice.UpdatePicture(property, image)
+	assert.NotNil(t, updatedProperty)
+	assert.Equal(t, property.ID, updatedProperty.ID)
+}
+
+func TestUpdatePicture_NotFound(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	image := BuildTestImage("1", "b3Vp")
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		).Update(
+			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
+		),
+	).Errors(db.ErrNotFound)
+
+	updatedProperty := propertyservice.UpdatePicture(property, image)
+	assert.Nil(t, updatedProperty)
+}
+
+func TestUpdatePicture_NoConnection(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	image := BuildTestImage("1", "b3Vp")
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		).Update(
+			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		propertyservice.UpdatePicture(property, image)
 	})
 }
