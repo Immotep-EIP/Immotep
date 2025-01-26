@@ -1,16 +1,14 @@
 import callApi from '@/services/api/apiCaller'
-import { User } from '@/interfaces/User/User'
 
-export const PutUserPicture = async (data: string) => {
+const PutUserPicture = async (pictureData: string) => {
   try {
-    const response = await callApi<User>({
+    return await callApi({
       method: 'PUT',
-      endpoint: 'profile/picture/',
-      data
+      endpoint: `profile/picture`,
+      data: JSON.stringify({ data: pictureData }),
     })
-    return response
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error updating property picture:', error)
     throw error
   }
 }

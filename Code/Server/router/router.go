@@ -68,6 +68,9 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			propertyId.GET("/picture", controllers.GetPropertyPicture)
 			propertyId.PUT("/picture", controllers.UpdatePropertyPicture)
 
+			propertyId.POST("/send-invite", controllers.InviteTenant)
+			propertyId.PUT("/end-contract", controllers.EndContract)
+
 			rooms := propertyId.Group("/rooms")
 			{
 				rooms.POST("/", controllers.CreateRoom)
@@ -98,8 +101,6 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			registerInvReportRoutes(invReports)
 		}
 	}
-
-	owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
 }
 
 func registerInvReportRoutes(invReports *gin.RouterGroup) {

@@ -132,7 +132,9 @@
     },
     "messages": {
       "modifications_saved": "Modifications saved",
-      "no_modifications": "No modifications to save"
+      "no_modifications": "No modifications to save",
+      "picture_updated": "Picture updated successfully",
+      "picture_not_updated": "Error while updating the picture"
     },
     "button": {
       "sign_in": "Sign in",
@@ -153,12 +155,21 @@
       "documents": "Documents",
       "return": "Return",
       "add_tenant": "Add a tenant",
+      "end_contract": "End the lease",
       "add_document": "Add a document",
       "add_room": "Add a room",
       "edit": "Edit",
       "save": "Save",
       "cancel": "Cancel",
+      "confirm": "Confirm",
       "add": "Add"
+    },
+    "modal": {
+      "end_contract": {
+        "title": "End the lease",
+        "description": "Are you sure you want to end the lease of this tenant?",
+        "success": "The lease has been terminated successfully."
+      }
     }
   },
   "pages": {

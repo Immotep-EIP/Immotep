@@ -186,7 +186,7 @@ func TestCreatePending(t *testing.T) {
 		),
 	).Returns(pendingContract)
 
-	newContract := contractservice.CreatePending(pendingContract, property)
+	newContract := contractservice.CreatePending(pendingContract, property.ID)
 	assert.NotNil(t, newContract)
 	assert.Equal(t, pendingContract.ID, newContract.ID)
 }
@@ -213,7 +213,7 @@ func TestCreatePendingAlreadyExists1(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newContract := contractservice.CreatePending(pendingContract, property)
+	newContract := contractservice.CreatePending(pendingContract, property.ID)
 	assert.Nil(t, newContract)
 }
 
@@ -239,6 +239,6 @@ func TestCreatePendingAlreadyExists2(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newContract := contractservice.CreatePending(pendingContract, property)
+	newContract := contractservice.CreatePending(pendingContract, property.ID)
 	assert.Nil(t, newContract)
 }

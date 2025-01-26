@@ -30,3 +30,9 @@ export interface User {
   created_at: Date
   updated_at: Date
 }
+
+export interface UserPictureResponse {
+  id: string
+  created_at: string
+  data: string
+}

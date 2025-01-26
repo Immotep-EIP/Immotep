@@ -3,34 +3,23 @@ import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
 import {
   Button,
-  Image,
   Segmented,
   Upload,
-  GetProp,
   UploadFile,
   UploadProps,
   Input,
   message
 } from 'antd'
-import { PlusOutlined, LogoutOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, CloseCircleOutlined, EditOutlined, LogoutOutlined } from '@ant-design/icons'
 
 import { useAuth } from '@/context/authContext'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
-import EditIcon from '@/assets/icons/edit.png'
-import SaveIcon from '@/assets/icons/save.png'
-import CloseIcon from '@/assets/icons/close.png'
+import DefaultUser from '@/assets/images/DefaultProfile.png'
 import UpdateUserInfos from '@/services/api/User/UpdateUserInfos'
+import GetUserPicture from '@/services/api/User/GetUserPicture'
+import base64ToFile from '@/utils/base64/baseToFile'
+import PutUserPicture from '@/services/api/User/PutUserPicture'
 import style from './Settings.module.css'
-
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
-
-const getBase64 = (file: FileType): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = error => reject(error)
-  })
 
 interface UserSettingsProps {
   t: (key: string) => string
@@ -38,17 +27,71 @@ interface UserSettingsProps {
 
 const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
   const { user, updateUser } = useAuth()
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [picture, setPicture] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const [previewOpen, setPreviewOpen] = useState(false)
-  const [previewImage, setPreviewImage] = useState('')
-  const [fileList, setFileList] = useState<UploadFile[]>([
-    {
-      uid: '-1',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
+  const putUserPicture = async (pictureData: string) => {
+    if (isUploading) return;
+
+    setIsUploading(true);
+    try {
+      const req = await PutUserPicture(pictureData.split(',')[1]);
+      if (req) {
+        message.success(t('components.messages.picture_updated'));
+      } else {
+        message.error(t('components.messages.picture_not_updated'));
+      }
+    } catch (error) {
+      console.error('Error updating user picture:', error);
+    } finally {
+      setIsUploading(false);
     }
-  ])
+  };
+
+  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
+  const customRequest: UploadProps['customRequest'] = async ({ file }) => {
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          const base64 = e.target.result as string;
+          setPicture(base64);
+          putUserPicture(base64);
+        }
+      };
+      reader.readAsDataURL(file as File);
+    } catch (error) {
+      message.error(t('components.messages.error_uploading_picture'));
+    }
+  };
+
+  const beforeUpload = (file: File) => {
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('Only image files are allowed');
+    }
+    return isImage;
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchPicture = async () => {
+      try {
+        const picture = await GetUserPicture(user?.id || '');
+        const file = base64ToFile(picture.data, 'user.jpg', 'image/jpeg');
+        const imageUrl = URL.createObjectURL(file);
+        setPicture(imageUrl);
+      } catch (error) {
+        console.error('Error fetching user picture:', error);
+      }
+    };
+    fetchPicture();
+  }, [user?.id]);
+
   const [editData, setEditData] = useState(false)
   const [oldData, setOldData] = useState({
     firstname: user?.firstname,
@@ -104,54 +147,24 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
     }
   }, [user]);
 
-  const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      const newFile = {
-        ...file,
-        preview: await getBase64(file.originFileObj as FileType)
-      }
-      setFileList(prevList =>
-        prevList.map(f => (f.uid === newFile.uid ? newFile : f))
-      )
-    }
-
-    setPreviewImage(file.url || (file.preview as string))
-    setPreviewOpen(true)
-  }
-
-  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
-    setFileList(newFileList)
-
-  const uploadButton = (
-    <button style={{ border: 0, background: 'none' }} type="button">
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </button>
-  )
-
   return (
     <div className={style.settingsContainer}>
       <div className={style.userItem}>
-        <Upload
-          action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-          listType="picture-circle"
-          fileList={fileList}
-          onPreview={handlePreview}
-          onChange={handleChange}
-        >
-          {fileList.length >= 1 ? null : uploadButton}
-        </Upload>
-        {previewImage && (
-          <Image
-            wrapperStyle={{ display: 'none' }}
-            preview={{
-              visible: previewOpen,
-              onVisibleChange: visible => setPreviewOpen(visible),
-              afterOpenChange: visible => !visible && setPreviewImage('')
-            }}
-            src={previewImage}
-          />
-        )}
+      <Upload
+        fileList={fileList}
+        onChange={handleChange}
+        beforeUpload={beforeUpload}
+        showUploadList={false}
+        listType="picture-circle"
+        maxCount={1}
+        customRequest={customRequest}
+      >
+        <img
+          src={picture || DefaultUser}
+          alt="user"
+          className={style.image}
+        />
+      </Upload>
       </div>
       <div className={style.userInformations}>
         <div className={style.titleContainer}>
@@ -160,26 +173,22 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
             {editData && (
               <Button
                 type="link"
-                style={{ width: 25, height: 25, padding: 10 }}
+                style={{ width: 35, height: 35, padding: 10 }}
                 onClick={cancelEdit}
               >
-                <img
-                  src={CloseIcon}
-                  alt="edit"
-                  style={{ width: 20, height: 20 }}
-                />
+                <CloseCircleOutlined style={{ fontSize: '20px', color: 'red' }} />
               </Button>
             )}
             <Button
               type="link"
-              style={{ width: 25, height: 25, padding: 10 }}
+              style={{ width: 35, height: 35, padding: 10 }}
               onClick={() => editData ? saveNewData() : setEditData(!editData)}
             >
-              <img
-                src={editData ? SaveIcon : EditIcon}
-                alt="edit"
-                style={{ width: 20, height: 20 }}
-              />
+              {!editData ? (
+                <EditOutlined style={{ fontSize: '20px' }} />
+              ) : (
+                <CheckCircleOutlined style={{ fontSize: '20px', color: 'green' }} />
+              )}
             </Button>
           </div>
         </div>

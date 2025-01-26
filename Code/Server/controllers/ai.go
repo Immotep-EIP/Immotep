@@ -39,7 +39,7 @@ func imagesToBase64Strings(images []db.ImageModel) []string {
 //	@Failure		404			{object}	utils.Error					"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/inventory-reports/summarize [get]
+//	@Router			/owner/properties/{property_id}/inventory-reports/summarize/ [get]
 func GenerateSummary(c *gin.Context) {
 	var req models.SummarizeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -94,7 +94,7 @@ func GenerateSummary(c *gin.Context) {
 //	@Failure		404				{object}	utils.Error						"Property or old report not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/inventory-reports/compare/{old_report_id} [get]
+//	@Router			/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/ [get]
 func GenerateComparison(c *gin.Context) {
 	var req models.CompareRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
