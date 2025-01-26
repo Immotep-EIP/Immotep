@@ -203,9 +203,5 @@ func GetInventoryReportByID(c *gin.Context) {
 	} else {
 		report = inventoryreportservice.GetByID(c.Param("report_id"))
 	}
-	if report == nil {
-		utils.SendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
-		return
-	}
 	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(*report))
 }

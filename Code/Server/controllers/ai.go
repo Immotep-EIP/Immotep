@@ -24,7 +24,7 @@ func imagesToBase64Strings(images []db.ImageModel) []string {
 	return res
 }
 
-// GenerateRoomSummary godoc
+// GenerateSummary godoc
 //
 //	@Summary		Generate summary from photo
 //	@Description	Generate summary from photo for first inventory report
@@ -78,7 +78,7 @@ func GenerateSummary(c *gin.Context) {
 	}
 }
 
-// GenerateRoomSummary godoc
+// GenerateComparison godoc
 //
 //	@Summary		Generate comparison from photo
 //	@Description	Generate comparison from photo for last inventory report

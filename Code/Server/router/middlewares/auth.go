@@ -11,8 +11,8 @@ import (
 func MockClaims() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set("oauth.claims", map[string]string{
-			"id":   c.GetHeader("oauth.claims.id"),
-			"role": c.GetHeader("oauth.claims.role"),
+			"id":   c.GetHeader("Oauth.claims.id"),
+			"role": c.GetHeader("Oauth.claims.role"),
 		})
 		c.Next()
 	}
