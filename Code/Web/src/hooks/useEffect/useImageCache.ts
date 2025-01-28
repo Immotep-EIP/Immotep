@@ -24,35 +24,37 @@ const useImageCache = (
     setData(url)
   }
 
-  useEffect(() => {
+  const fetchData = async () => {
     if (!id) {
       setIsLoading(false)
       return
     }
 
-    const fetchData = async () => {
-      setIsLoading(true)
+    setIsLoading(true)
 
-      const cachedResponse = await caches.match(`/images/${id}`)
-      if (cachedResponse) {
-        const blob = await cachedResponse.blob()
-        const url = URL.createObjectURL(blob)
-        setData(url)
-        setIsLoading(false)
-        return
-      }
-
-      const response = await fetchImage(id)
-      const file = base64ToFile(response.data, 'image.jpg', 'image/jpeg')
-
-      const cache = await caches.open('immotep-cache-v1')
-      await cache.put(`/images/${id}`, new Response(file))
-
-      const url = URL.createObjectURL(file)
+    const cachedResponse = await caches.match(`/images/${id}`)
+    if (cachedResponse) {
+      const blob = await cachedResponse.blob()
+      const url = URL.createObjectURL(blob)
       setData(url)
       setIsLoading(false)
+      return
     }
 
+    const response = await fetchImage(id)
+    if (response) {
+      const file = base64ToFile(response.data, 'image.jpg', 'image/jpeg')
+      const cache = await caches.open('immotep-cache-v1')
+      await cache.put(`/images/${id}`, new Response(file))
+      const url = URL.createObjectURL(file)
+      setData(url)
+    } else {
+      setData(null)
+    }
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
     fetchData()
 
     // eslint-disable-next-line consistent-return

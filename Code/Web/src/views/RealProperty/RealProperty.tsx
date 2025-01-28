@@ -3,7 +3,7 @@ import { Button, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import useNavigation from '@/hooks/useNavigation/useNavigation'
-import useFetchProperties from '@/hooks/useEffect/useFetchProperties.ts'
+import useProperties from '@/hooks/useEffect/useProperties.ts'
 
 import appartmentIcon from '@/assets/icons/appartement.png'
 import locationIcon from '@/assets/icons/location.png'
@@ -120,7 +120,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
   const { goToRealPropertyCreate } = useNavigation()
-  const { properties, loading, error } = useFetchProperties()
+  const { properties, loading, error } = useProperties()
 
   if (loading) {
     return <p>{t('generals.loading')}</p>
