@@ -6,11 +6,11 @@ This application is the backend part of the Immotep application. It provides an 
 
 ## Technologies used
 
-The API is built using the Go programming language with the Gin framework, ensuring efficient handling of requests and responses. The system relies on a PostgreSQL database, leveraging Prisma as the ORM (Object-Relational Mapping) tool to facilitate seamless interactions with the database. User authentication is implemented using OAuth, utilizing the `github.com/maxzerbini/oauth` package to provide secure access control to protected resources.
+The API is built using the Go programming language with the Gin framework, ensuring efficient handling of requests and responses. The system relies on a PostgreSQL database, leveraging Prisma as the ORM (Object-Relational Mapping) tool to facilitate seamless interactions with the database. User authentication is implemented using OAuth, using the `github.com/maxzerbini/oauth` package to provide secure access control to protected resources.
 
 ## API documentation
 
-API documentation is available via Swagger, allowing developers to explore and test API endpoints directly. The documentation is hosted at http://localhost:3001/docs/index.html and is automatically updated to reflect the current state of the API.
+API documentation is available via Swagger, allowing developers to explore and test API endpoints directly. The documentation is hosted at `BASE_URL/docs/index.html` and is automatically updated based on code comments to reflect the current state of the API.
 
 ## System Architecture
 
@@ -18,4 +18,4 @@ The system's architecture is available [here](./architecture.md).
 
 ## Deployment Architecture
 
-TODO
+The deployment architecture for the whole project is available [here](../deploy.md).
