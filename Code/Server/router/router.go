@@ -145,6 +145,10 @@ func Routes() *gin.Engine {
 
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/sw/serviceWorker.ts", func(c *gin.Context) {
+		c.Header("Service-Worker-Allowed", "/")
+		c.File("./sw/serviceWorker.js")
+	})
 
 	registerAPIRoutes(r)
 	return r

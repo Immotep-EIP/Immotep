@@ -11,12 +11,15 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "composite": true
   },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "public/sw/serviceWorker.ts"]
 }

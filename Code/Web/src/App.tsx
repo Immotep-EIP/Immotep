@@ -1,4 +1,5 @@
 import React from 'react'
+import { registerSW } from 'virtual:pwa-register'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import './translation/i18n.tsx'
@@ -26,18 +27,14 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
 import Lost from './views/Lost/Lost.tsx'
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/service-worker.js')
-      .then(registration => {
-        console.log('Service Worker enregistré avec succès :', registration)
-      })
-      .catch(error => {
-        console.log("Échec de l'enregistrement du Service Worker :", error)
-      })
-  })
-}
+registerSW({
+  onNeedRefresh() {
+    console.log('Nouvelle version disponible. Veuillez recharger la page.')
+  },
+  onOfflineReady() {
+    console.log("L'application est prête à fonctionner hors ligne.")
+  }
+})
 
 const App: React.FC = () => (
   <Router>
