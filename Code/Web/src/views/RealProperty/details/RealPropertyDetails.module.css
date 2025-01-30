@@ -87,6 +87,14 @@
   border-radius: 50%;
 }
 
+.actionButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
 .detailsContainer {
   display: flex;
   flex-direction: column;

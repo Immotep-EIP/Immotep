@@ -1,6 +1,7 @@
 package router
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -18,7 +19,7 @@ import (
 	"immotep/backend/router/middlewares"
 )
 
-func registerAPIRoutes(r *gin.Engine) {
+func registerAPIRoutes(r *gin.Engine, test bool) {
 	secretKey := os.Getenv("SECRET_KEY")
 	bServer := oauth.NewOAuthBearerServer(
 		secretKey,
@@ -30,29 +31,97 @@ func registerAPIRoutes(r *gin.Engine) {
 	{
 		auth := v1.Group("/auth")
 		{
-			auth.POST("/register", controllers.RegisterOwner)
-			auth.POST("/invite/:id", controllers.RegisterTenant)
-			auth.POST("/token", controllers.TokenAuth(bServer))
+			auth.POST("/register/", controllers.RegisterOwner)
+			auth.POST("/invite/:id/", controllers.RegisterTenant)
+			if !test {
+				auth.POST("/token/", controllers.TokenAuth(bServer))
+			}
 		}
 
 		root := v1.Group("/")
 		{
-			root.Use(oauth.Authorize(secretKey, nil))
+			if !test {
+				root.Use(oauth.Authorize(secretKey, nil))
+			} else {
+				root.Use(middlewares.MockClaims())
+			}
 			root.Use(middlewares.CheckClaims())
-			root.GET("/users", controllers.GetAllUsers)
-			root.GET("/user/:id", controllers.GetUserByID)
-			root.GET("/profile", controllers.GetProfile)
+			root.GET("/users/", controllers.GetAllUsers)
+			root.GET("/user/:id/", controllers.GetUserByID)
+			root.GET("/user/:id/picture/", controllers.GetUserProfilePicture)
+			root.GET("/profile/", controllers.GetCurrentUserProfile)
+			root.PUT("/profile/", controllers.UpdateCurrentUserProfile)
+			root.GET("/profile/picture/", controllers.GetCurrentUserProfilePicture)
+			root.PUT("/profile/picture/", controllers.UpdateCurrentUserProfilePicture)
 
 			owner := root.Group("/owner")
-			{
-				owner.Use(middlewares.AuthorizeOwner())
-				owner.GET("/properties", controllers.GetAllProperties)
-				owner.GET("/properties/:id", controllers.GetPropertyById)
-				owner.POST("/properties", controllers.CreateProperty)
-				owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
-			}
+			registerOwnerRoutes(owner)
 		}
 	}
+}
+
+func registerOwnerRoutes(owner *gin.RouterGroup) {
+	owner.Use(middlewares.AuthorizeOwner())
+
+	properties := owner.Group("/properties")
+	{
+		properties.POST("/", controllers.CreateProperty)
+		properties.GET("/", controllers.GetAllProperties)
+
+		propertyId := properties.Group("/:property_id/")
+		{
+			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
+			propertyId.GET("/", controllers.GetPropertyById)
+			propertyId.GET("/picture/", controllers.GetPropertyPicture)
+			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
+
+			propertyId.POST("/send-invite/", controllers.InviteTenant)
+			propertyId.PUT("/end-contract/", controllers.EndContract)
+
+			rooms := propertyId.Group("/rooms")
+			{
+				rooms.POST("/", controllers.CreateRoom)
+				rooms.GET("/", controllers.GetRoomsByProperty)
+
+				roomId := rooms.Group("/:room_id")
+				{
+					roomId.Use(middlewares.CheckRoomOwnership("property_id", "room_id"))
+					roomId.GET("/", controllers.GetRoomByID)
+					roomId.DELETE("/", controllers.DeleteRoom)
+
+					furnitures := roomId.Group("/furnitures")
+					{
+						furnitures.POST("/", controllers.CreateFurniture)
+						furnitures.GET("/", controllers.GetFurnituresByRoom)
+
+						furnitureId := furnitures.Group("/:furniture_id")
+						{
+							furnitureId.Use(middlewares.CheckFurnitureOwnership("room_id", "furniture_id"))
+							furnitureId.GET("/", controllers.GetFurnitureByID)
+							furnitureId.DELETE("/", controllers.DeleteFurniture)
+						}
+					}
+				}
+			}
+
+			invReports := propertyId.Group("/inventory-reports")
+			registerInvReportRoutes(invReports)
+		}
+	}
+}
+
+func registerInvReportRoutes(invReports *gin.RouterGroup) {
+	invReports.POST("/", controllers.CreateInventoryReport)
+	invReports.GET("/", controllers.GetInventoryReportsByProperty)
+
+	invReports.GET("/:report_id/",
+		middlewares.CheckInventoryReportOwnership("property_id", "report_id"),
+		controllers.GetInventoryReportByID)
+
+	invReports.POST("/summarize/", controllers.GenerateSummary)
+	invReports.POST("/compare/:old_report_id/",
+		middlewares.CheckInventoryReportOwnership("property_id", "old_report_id"),
+		controllers.GenerateComparison)
 }
 
 func Routes() *gin.Engine {
@@ -61,9 +130,18 @@ func Routes() *gin.Engine {
 		Limit:  3000,
 	}
 
+	var allowOrigins []string
+	if gin.Mode() == gin.ReleaseMode {
+		allowOrigins = []string{"https://immotep.mazettt.fr", "https://dev.immotep.mazettt.fr"}
+		log.Println("Running in release mode")
+	} else {
+		allowOrigins = []string{"https://*", "http://*", "http://localhost:4242", "http://localhost:3002"}
+		log.Println("Running in debug mode")
+	}
+
 	r := gin.New()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://*", "http://*", "http://localhost:4242"},
+		AllowOrigins: allowOrigins,
 		// AllowOriginFunc:  func(origin string) bool { return origin == "https://github.com" },
 		AllowMethods: []string{
 			http.MethodGet,
@@ -84,6 +162,14 @@ func Routes() *gin.Engine {
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	registerAPIRoutes(r)
+	registerAPIRoutes(r, false)
+	return r
+}
+
+func TestRoutes() *gin.Engine {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
+	registerAPIRoutes(r, true)
 	return r
 }

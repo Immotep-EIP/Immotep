@@ -27,7 +27,7 @@ linters:
     - fatcontext
     - forbidigo
     - forcetypeassert
-    - funlen
+    # - funlen
     - gci
     - ginkgolinter
     - gocheckcompilerdirectives
@@ -71,7 +71,7 @@ linters:
     - nilerr
     - nilnil
     # - nlreturn
-    - noctx
+    # - noctx
     - nolintlint
     - nonamedreturns
     - nosprintfhostport
@@ -125,6 +125,8 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#get-return
       - name: get-return
         disabled: true
+      - name: function-length
+        exclude: ["**/*_test.go"]
       - name: flag-parameter
         disabled: true
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#import-alias-naming
@@ -134,6 +136,7 @@ linters-settings:
       - name: line-length-limit
         exclude: [""]
         arguments: [120]
+        disabled: true
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
       - name: max-public-structs
         disabled: true

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 
@@ -12,6 +12,8 @@ import dateIcon from '@/assets/icons/date.png'
 
 import PageTitle from '@/components/PageText/Title.tsx'
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
+import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
+import base64ToFile from '@/utils/base64/baseToFile'
 import style from './RealProperty.module.css'
 
 interface CardComponentProps {
@@ -21,6 +23,24 @@ interface CardComponentProps {
 
 const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
   const { goToRealPropertyDetails } = useNavigation()
+  const [picture, setPicture] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!realProperty.id) {
+      return
+    }
+    const fetchPicture = async () => {
+      const picture = await GetPropertyPicture(realProperty.id)
+      if (!picture) {
+        setPicture(defaultHouse)
+      } else {
+        const file = base64ToFile(picture.data, 'property.jpg', 'image/jpeg')
+        const url = URL.createObjectURL(file)
+        setPicture(url)
+      }
+    }
+    fetchPicture()
+  }, [realProperty.id])
 
   return (
     <div
@@ -39,18 +59,19 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
       <div className={style.statusContainer}>
         <Tag color={realProperty.status === 'available' ? 'green' : 'red'}>
           {realProperty.status === 'available'
-            ? t('pages.property.status.available')
-            : t('pages.property.status.unavailable')}
+            ? t('pages.real_property.status.available')
+            : t('pages.real_property.status.unavailable')}
         </Tag>
         <Tag color={realProperty.nb_damage > 0 ? 'red' : 'green'}>
-          {realProperty.nb_damage || 0} {t('pages.property.damage.waiting')}
+          {realProperty.nb_damage || 0}{' '}
+          {t('pages.real_property.damage.waiting')}
         </Tag>
       </div>
 
       {/* SECOND PART */}
       <div className={style.pictureContainer}>
         <img
-          src={realProperty.image || defaultHouse}
+          src={picture || defaultHouse}
           alt="property"
           className={style.picture}
         />
@@ -72,7 +93,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
           </span>
         </div>
         <div className={style.informations}>
-          <img src={locationIcon} alt="location" className={style.icon} />
+          <img src={locationIcon} alt="locationIcon" className={style.icon} />
           <span>
             {realProperty.address &&
             realProperty.postal_code &&
@@ -87,13 +108,13 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
           </span>
         </div>
         <div className={style.informations}>
-          <img src={tenantIcon} alt="location" className={style.icon} />
+          <img src={tenantIcon} alt="tenantIcon" className={style.icon} />
           <span>
             {realProperty.tenant ? realProperty.tenant : '-----------'}
           </span>
         </div>
         <div className={style.informations}>
-          <img src={dateIcon} alt="location" className={style.icon} />
+          <img src={dateIcon} alt="dateIcon" className={style.icon} />
           <span>
             {realProperty.start_date
               ? `${new Date(realProperty.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
@@ -113,14 +134,13 @@ const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
   const { goToRealPropertyCreate } = useNavigation()
   const { properties, loading, error } = useFetchProperties()
-  console.log('properties ->', properties)
 
   if (loading) {
     return <p>{t('generals.loading')}</p>
   }
 
   if (error) {
-    return <p>{t('pages.property.error.errorFetchingData')}</p>
+    return <p>{t('pages.real_property.error.error_fetching_data')}</p>
   }
 
   return (

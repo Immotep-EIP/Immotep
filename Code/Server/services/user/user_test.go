@@ -7,8 +7,10 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"immotep/backend/database"
+	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	userservice "immotep/backend/services/user"
+	"immotep/backend/utils"
 )
 
 func BuildTestUser(id string) db.UserModel {
@@ -21,6 +23,15 @@ func BuildTestUser(id string) db.UserModel {
 			Password:  "Password123",
 		},
 	}
+}
+
+func BuildTestImage(id string, base64data string) db.ImageModel {
+	ret := models.StringToDbImage(base64data)
+	if ret == nil {
+		panic("Invalid base64 string")
+	}
+	ret.ID = id
+	return *ret
 }
 
 func TestGetAllUsers(t *testing.T) {
@@ -193,5 +204,158 @@ func TestCreateUser_NoConnection(t *testing.T) {
 
 	assert.Panics(t, func() {
 		userservice.Create(user, db.RoleOwner)
+	})
+}
+
+func TestUpdateUser(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	user := BuildTestUser("1")
+	updateRequest := models.UserUpdateRequest{
+		Email:     utils.Ptr("updated@example.com"),
+		Firstname: utils.Ptr("Updated"),
+		Lastname:  utils.Ptr("User"),
+	}
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
+			db.User.Email.SetIfPresent(updateRequest.Email),
+			db.User.Firstname.SetIfPresent(updateRequest.Firstname),
+			db.User.Lastname.SetIfPresent(updateRequest.Lastname),
+		),
+	).Returns(user)
+
+	updatedUser := userservice.Update(user.ID, updateRequest)
+	assert.NotNil(t, updatedUser)
+	assert.Equal(t, user.ID, updatedUser.ID)
+}
+
+func TestUpdateUser_NotFound(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	updateRequest := models.UserUpdateRequest{
+		Email:     utils.Ptr("updated@example.com"),
+		Firstname: utils.Ptr("Updated"),
+		Lastname:  utils.Ptr("User"),
+	}
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.ID.Equals("1")).Update(
+			db.User.Email.SetIfPresent(updateRequest.Email),
+			db.User.Firstname.SetIfPresent(updateRequest.Firstname),
+			db.User.Lastname.SetIfPresent(updateRequest.Lastname),
+		),
+	).Errors(db.ErrNotFound)
+
+	updatedUser := userservice.Update("1", updateRequest)
+	assert.Nil(t, updatedUser)
+}
+
+func TestUpdateUser_DuplicateEmail(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	user := BuildTestUser("1")
+	updateRequest := models.UserUpdateRequest{
+		Email:     utils.Ptr("duplicate@example.com"),
+		Firstname: utils.Ptr("Updated"),
+		Lastname:  utils.Ptr("User"),
+	}
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
+			db.User.Email.SetIfPresent(updateRequest.Email),
+			db.User.Firstname.SetIfPresent(updateRequest.Firstname),
+			db.User.Lastname.SetIfPresent(updateRequest.Lastname),
+		),
+	).Errors(&protocol.UserFacingError{
+		IsPanic:   false,
+		ErrorCode: "P2002",
+		Meta: protocol.Meta{
+			Target: []any{"email"},
+		},
+		Message: "Unique constraint failed",
+	})
+
+	updatedUser := userservice.Update(user.ID, updateRequest)
+	assert.Nil(t, updatedUser)
+}
+
+func TestUpdateUser_NoConnection(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	user := BuildTestUser("1")
+	updateRequest := models.UserUpdateRequest{
+		Email:     utils.Ptr("updated@example.com"),
+		Firstname: utils.Ptr("Updated"),
+		Lastname:  utils.Ptr("User"),
+	}
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
+			db.User.Email.SetIfPresent(updateRequest.Email),
+			db.User.Firstname.SetIfPresent(updateRequest.Firstname),
+			db.User.Lastname.SetIfPresent(updateRequest.Lastname),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		userservice.Update(user.ID, updateRequest)
+	})
+}
+
+func TestUpdatePicture(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	user := BuildTestUser("1")
+	image := BuildTestImage("1", "b3Vp")
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
+			db.User.ProfilePicture.Link(db.Image.ID.Equals(image.ID)),
+		),
+	).Returns(user)
+
+	updatedUser := userservice.UpdatePicture(user, image)
+	assert.NotNil(t, updatedUser)
+	assert.Equal(t, user.ID, updatedUser.ID)
+}
+
+func TestUpdatePicture_NotFound(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	user := BuildTestUser("1")
+	image := BuildTestImage("1", "b3Vp")
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
+			db.User.ProfilePicture.Link(db.Image.ID.Equals(image.ID)),
+		),
+	).Errors(db.ErrNotFound)
+
+	updatedUser := userservice.UpdatePicture(user, image)
+	assert.Nil(t, updatedUser)
+}
+
+func TestUpdatePicture_NoConnection(t *testing.T) {
+	client, mock, ensure := database.ConnectDBTest()
+	defer ensure(t)
+
+	user := BuildTestUser("1")
+	image := BuildTestImage("1", "b3Vp")
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
+			db.User.ProfilePicture.Link(db.Image.ID.Equals(image.ID)),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		userservice.UpdatePicture(user, image)
 	})
 }

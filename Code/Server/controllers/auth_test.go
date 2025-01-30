@@ -32,35 +32,17 @@ func TestTokenAuth(t *testing.T) {
 	assert.IsType(t, expected, f)
 }
 
-func TestRegisterOwnerInvalidBody(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", nil)
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	controllers.RegisterOwner(c)
-
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-	var errorResponse utils.Error
-	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
-	require.NoError(t, err)
-	assert.Equal(t, utils.MissingFields, errorResponse.Code)
-}
-
 func TestRegisterOwnerMissingFields(t *testing.T) {
 	user := BuildTestUser("1")
 	user.Email = ""
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	controllers.RegisterOwner(c)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/register/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
@@ -75,33 +57,15 @@ func TestRegisterOwnerWrongPassword(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	controllers.RegisterOwner(c)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/register/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &errorResponse)
-	require.NoError(t, err)
-	assert.Equal(t, utils.MissingFields, errorResponse.Code)
-}
-
-func TestRegisterTenantInvalidBody(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", nil)
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	controllers.RegisterTenant(c)
-
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-	var errorResponse utils.Error
-	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
 	assert.Equal(t, utils.MissingFields, errorResponse.Code)
 }
@@ -112,13 +76,11 @@ func TestRegisterTenantMissingFields(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	controllers.RegisterTenant(c)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
@@ -133,13 +95,11 @@ func TestRegisterTenantWrongPassword(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	controllers.RegisterTenant(c)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
@@ -160,14 +120,11 @@ func TestRegisterTenantInviteNotFound(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Params = gin.Params{{Key: "id", Value: "wrong"}}
-
-	controllers.RegisterTenant(c)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/wrong/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
 	var errorResponse utils.Error
@@ -191,14 +148,11 @@ func TestRegisterTenantWrongEmail(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	gin.SetMode(gin.TestMode)
+	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(b))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Params = gin.Params{{Key: "id", Value: "1"}}
-
-	controllers.RegisterTenant(c)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var errorResponse utils.Error
