@@ -71,11 +71,7 @@ func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomState
 		}
 		picturesId, el := getFurnitureStatePictures(f)
 		errorList = append(errorList, el...)
-		fState := inventoryreportservice.CreateFurnitureState(fModel, picturesId, invrep.ID)
-		if fState == nil {
-			errorList = append(errorList, string(utils.FurnitureStateAlreadyExists))
-			continue
-		}
+		inventoryreportservice.CreateFurnitureState(fModel, picturesId, invrep.ID)
 	}
 
 	return errorList
@@ -116,12 +112,7 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 		}
 		picturesId, el := getRoomStatePictures(r)
 		errorList = append(errorList, el...)
-		rState := inventoryreportservice.CreateRoomState(rModel, picturesId, invrep.ID)
-		if rState == nil {
-			errorList = append(errorList, string(utils.RoomStateAlreadyExists))
-			continue
-		}
-
+		inventoryreportservice.CreateRoomState(rModel, picturesId, invrep.ID)
 		errorList = append(errorList, createFurnitureState(invrep, r)...)
 	}
 
@@ -184,12 +175,12 @@ func GetInventoryReportsByProperty(c *gin.Context) {
 // GetInventoryReportByID godoc
 //
 //	@Summary		Get inventory report by ID
-//	@Description	Get inventory report information by its ID
+//	@Description	Get inventory report information by its ID or get the latest one
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string							true	"Property ID"
-//	@Param			report_id	path		string							true	"Report ID"
+//	@Param			report_id	path		string							true	"Report ID or 'latest' to get the latest one"
 //	@Success		200			{object}	models.InventoryReportResponse	"Inventory report data"
 //	@Failure		403			{object}	utils.Error						"Property not yours"
 //	@Failure		404			{object}	utils.Error						"Inventory report not found"
@@ -197,10 +188,11 @@ func GetInventoryReportsByProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/{report_id}/ [get]
 func GetInventoryReportByID(c *gin.Context) {
-	report := inventoryreportservice.GetByID(c.Param("report_id"))
-	if report == nil {
-		utils.SendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
-		return
+	var report *db.InventoryReportModel
+	if c.Param("report_id") == "latest" {
+		report = inventoryreportservice.GetLatest(c.Param("property_id"))
+	} else {
+		report = inventoryreportservice.GetByID(c.Param("report_id"))
 	}
 	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(*report))
 }

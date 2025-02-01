@@ -27,7 +27,7 @@ linters:
     - fatcontext
     - forbidigo
     - forcetypeassert
-    - funlen
+    # - funlen
     - gci
     - ginkgolinter
     - gocheckcompilerdirectives
@@ -125,6 +125,8 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#get-return
       - name: get-return
         disabled: true
+      - name: function-length
+        exclude: ["**/*_test.go"]
       - name: flag-parameter
         disabled: true
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#import-alias-naming

@@ -10,7 +10,7 @@ export const UpdateUserInfos = async (data: UpdateUserInfosProps) => {
   try {
     const response = await callApi<User>({
       method: 'PUT',
-      endpoint: 'profile',
+      endpoint: 'profile/',
       data: JSON.stringify(data),
     })
     return response

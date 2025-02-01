@@ -1,8 +1,12 @@
+import java.util.Locale
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+    jacoco
 }
+
+val cameraXVersion = "1.0.1"
 
 android {
     namespace = "com.example.immotep"
@@ -31,6 +35,10 @@ android {
                 "proguard-rules.pro",
                 "proguard-rules.pro",
             )
+        }
+        debug {
+            enableAndroidTestCoverage = true
+            enableUnitTestCoverage = true
         }
     }
     compileOptions {
@@ -76,6 +84,14 @@ dependencies {
     implementation("io.github.osipxd:security-crypto-datastore-preferences:1.0.0-alpha04")
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha05")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.2")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    implementation("androidx.camera:camera-camera2:1.0.1")
+    implementation("androidx.camera:camera-lifecycle:1.0.1")
+    implementation("androidx.camera:camera-view:1.0.0-alpha27")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -83,4 +99,58 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+val exclusions = listOf(
+    "**/R.class",
+    "**/R\$*.class",
+    "**/BuildConfig.*",
+    "**/Manifest*.*",
+    "**/*Test*.*"
+)
+
+tasks.withType(Test::class) {
+    configure<JacocoTaskExtension> {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
+}
+
+android {
+    applicationVariants.all(
+        closureOf<com.android.build.gradle.internal.api.BaseVariantImpl> {
+            val variant = this@closureOf.name.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    Locale.getDefault()
+                ) else it.toString()
+            }
+            val unitTests = "test${variant}UnitTest"
+            val androidTests = "connected${variant}AndroidTest"
+            tasks.register<JacocoReport>("Jacoco${variant}CodeCoverage") {
+                dependsOn(listOf(unitTests, androidTests))
+                group = "Reporting"
+                description = "Execute ui and unit tests, generate and combine Jacoco coverage report"
+                reports {
+                    xml.required.set(true)
+                    html.required.set(true)
+                }
+                sourceDirectories.setFrom(layout.projectDirectory.dir("src/main"))
+                classDirectories.setFrom(
+                    files(
+                        fileTree(layout.buildDirectory.dir("intermediates/javac/")) {
+                            exclude(exclusions)
+                        },
+                        fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/")) {
+                            exclude(exclusions)
+                        }
+                    )
+                )
+                executionData.setFrom(
+                    files(
+                        fileTree(layout.buildDirectory) { include(listOf("**/*.exec", "**/*.ec")) }
+                    )
+                )
+            }
+        }
+    )
 }

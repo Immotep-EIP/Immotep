@@ -8,8 +8,11 @@
 **/.classpath
 **/.dockerignore
 **/.env
+**/.env.*
+**/.env_*
 **/.git
 **/.gitignore
+**/password.txt
 **/.project
 **/.settings
 **/.toolstarget

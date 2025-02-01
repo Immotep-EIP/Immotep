@@ -11,7 +11,11 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.immotep.authService.AuthService
+import com.example.immotep.login.dataStore
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,10 +26,34 @@ class LoginInstrumentedTest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
     private val res: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
+    private fun removeToken() {
+        val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
+        val authServ = AuthService(dataStore)
+        runBlocking {
+            authServ.deleteToken()
+        }
+    }
+
+    @Before
+    fun setup() {
+        val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
+        val authServ = AuthService(dataStore)
+        try {
+            runBlocking {
+                authServ.getToken()
+                composeTestRule.onNodeWithTag("loggedTopBarImage").assertIsDisplayed().performClick()
+                Thread.sleep(5000)
+            }
+        } catch (e: Exception) {
+            return
+        }
+    }
+
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.example.immotep", appContext.packageName)
+        this.removeToken()
     }
 
     @Test
@@ -44,7 +72,7 @@ class LoginInstrumentedTest {
     @Test
     fun canChangeViewToRegister() {
         composeTestRule.onNodeWithTag("loginScreenToRegisterButton").assertIsDisplayed().performClick()
-        composeTestRule.onNodeWithText(res.getString(R.string.create_account)).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("registerScreen").assertIsDisplayed()
     }
 
     @Test
@@ -95,11 +123,13 @@ class LoginInstrumentedTest {
     /* for this test you need to be connected to the internet, to have a server running and to register a user with the right email and password */
     @Test
     fun canGoToDashboard() {
+        this.removeToken()
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
-        composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("test99")
+        composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("Ttest99&")
         composeTestRule.onNodeWithTag("loginButton").performClick()
         Thread.sleep(10000)
         composeTestRule.onNodeWithTag("dashboardScreen").assertIsDisplayed()
+        this.removeToken()
     }
 
     @Test

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +27,7 @@ fun PasswordInput(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    label: @Composable (() -> Unit)? = null,
+    label: String,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     errorMessage: String? = null,
@@ -62,7 +63,7 @@ fun PasswordInput(
                     modifier =
                     Modifier.testTag(iconButtonTestId),
                 ) {
-                    Icon(Icons.Outlined.Lock, contentDescription = "Toggle password visibility")
+                    Icon(Icons.Outlined.Lock, contentDescription = "Toggle password visibility", tint = MaterialTheme.colorScheme.primary)
                 }
             },
         )

@@ -509,7 +509,7 @@ const docTemplate = `{
             }
         },
         "/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "Bearer": []
@@ -583,7 +583,7 @@ const docTemplate = `{
             }
         },
         "/owner/properties/{property_id}/inventory-reports/summarize/": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "Bearer": []
@@ -656,7 +656,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get inventory report information by its ID",
+                "description": "Get inventory report information by its ID or get the latest one",
                 "consumes": [
                     "application/json"
                 ],
@@ -677,7 +677,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Report ID",
+                        "description": "Report ID or 'latest' to get the latest one",
                         "name": "report_id",
                         "in": "path",
                         "required": true
