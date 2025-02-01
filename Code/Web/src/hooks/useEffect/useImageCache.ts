@@ -30,6 +30,10 @@ const useImageCache = (
       const response = await fetchImage(id)
       if (response) {
         const file = base64ToFile(response.data, 'image.jpg', 'image/jpeg')
+
+        const cache = await caches.open('immotep-cache-v1')
+        await cache.put(`/images/${id}`, new Response(file))
+
         const fileUrl = URL.createObjectURL(file)
         setData(fileUrl)
       } else {
