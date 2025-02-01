@@ -19,7 +19,8 @@ const Login: React.FC = () => {
   const { t } = useTranslation()
 
   useEffect(() => {
-    if (sessionStorage.getItem('access_token') &&
+    if (
+      sessionStorage.getItem('access_token') &&
       sessionStorage.getItem('refresh_token') &&
       sessionStorage.getItem('expires_in')
     ) {
@@ -46,12 +47,12 @@ const Login: React.FC = () => {
       }
       loginValues.grant_type = 'password'
       await login(loginValues)
-      message.success(t('pages.login.connectionSuccess'))
+      message.success(t('pages.login.connection_success'))
       setLoading(false)
       goToOverview()
     } catch (error: any) {
       if (error.response.status === 401) {
-        message.error(t('pages.login.connectionError'))
+        message.error(t('pages.login.connection_error'))
         setLoading(false)
       }
       setLoading(false)
@@ -59,7 +60,7 @@ const Login: React.FC = () => {
   }
 
   const onFinishFailed: FormProps<UserToken>['onFinishFailed'] = () => {
-    message.error(t('pages.login.fillFields'))
+    message.error(t('pages.login.fill_fields'))
   }
 
   return (
@@ -79,7 +80,9 @@ const Login: React.FC = () => {
         <Form.Item
           label={t('components.input.email.label')}
           name="username"
-          rules={[{ required: true, message: t('components.input.email.error') }]}
+          rules={[
+            { required: true, message: t('components.input.email.error') }
+          ]}
         >
           <Input
             className="input"
@@ -91,7 +94,9 @@ const Login: React.FC = () => {
         <Form.Item
           label={t('components.input.password.label')}
           name="password"
-          rules={[{ required: true, message: t('components.input.password.error') }]}
+          rules={[
+            { required: true, message: t('components.input.password.error') }
+          ]}
         >
           <Input.Password
             className="input"
@@ -102,7 +107,7 @@ const Login: React.FC = () => {
 
         <div className={style.optionsContainer}>
           <Form.Item name="rememberMe" valuePropName="checked">
-            <Checkbox>{t('components.button.rememberMe')}</Checkbox>
+            <Checkbox>{t('components.button.remember_me')}</Checkbox>
           </Form.Item>
           <span
             className={style.footerLink}
@@ -113,7 +118,7 @@ const Login: React.FC = () => {
               if (e.key === 'Enter') goToForgotPassword()
             }}
           >
-            {t('components.button.askForgotPassword')}
+            {t('components.button.ask_forgot_password')}
           </span>
         </div>
 
@@ -126,13 +131,13 @@ const Login: React.FC = () => {
             variant="solid"
             loading={loading}
           >
-            {t('components.button.signIn')}
+            {t('components.button.sign_in')}
           </Button>
         </Form.Item>
 
         <div className={style.dontHaveAccountContainer}>
           <span className={style.footerText}>
-            {t('pages.login.dontHaveAccount')}
+            {t('pages.login.dont_have_account')}
           </span>
           <span
             className={style.footerLink}
@@ -143,7 +148,7 @@ const Login: React.FC = () => {
               if (e.key === 'Enter') goToSignup()
             }}
           >
-            {t('components.button.signUp')}
+            {t('components.button.sign_up')}
           </span>
         </div>
       </Form>

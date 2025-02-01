@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Button, message, Tabs, TabsProps, Tag } from 'antd'
+import { Button, message, Modal, Tabs, TabsProps, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
@@ -10,20 +10,29 @@ import tenantIcon from '@/assets/icons/tenant.png'
 import dateIcon from '@/assets/icons/date.png'
 
 import InviteTenantModal from '@/components/DetailsPage/InviteTenantModal'
-import GetPropertyDetails from '@/services/api/Property/GetPropertyDetails'
-import { GetProperty } from '@/interfaces/Property/Property'
+import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
+import { PropertyDetails } from '@/interfaces/Property/Property'
 import returnIcon from '@/assets/icons/retour.png'
-import style from './RealPropertyDetails.module.css'
 
+import { PropertyIdProvider } from '@/context/propertyIdContext'
+import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
+import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentContract'
+import useImageCache from '@/hooks/useEffect/useImageCache'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
 import InventoryTab from './tabs/3InventoryTab'
 import DocumentsTab from './tabs/4DocumentsTab'
+import style from './RealPropertyDetails.module.css'
 
-const HeaderPart: React.FC<{ propertyData: GetProperty | null }> = ({
+const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
   propertyData
 }) => {
   const { t } = useTranslation()
+
+  const { data: picture, isLoading } = useImageCache(
+    propertyData?.id || '',
+    GetPropertyPicture
+  )
 
   if (!propertyData) {
     return null
@@ -33,7 +42,7 @@ const HeaderPart: React.FC<{ propertyData: GetProperty | null }> = ({
     <div className={style.headerPartContainer}>
       <div className={style.imageContainer}>
         <img
-          src={propertyData.picture || defaultHouse}
+          src={isLoading ? defaultHouse : picture || defaultHouse}
           alt="Property"
           className={style.image}
         />
@@ -79,12 +88,13 @@ const HeaderPart: React.FC<{ propertyData: GetProperty | null }> = ({
 
       <div className={style.moreInfosContainer}>
         <Tag color={propertyData.nb_damage > 0 ? 'red' : 'green'}>
-          {propertyData.nb_damage || 0} {t('pages.property.damage.waiting')}
+          {propertyData.nb_damage || 0}{' '}
+          {t('pages.real_property.damage.waiting')}
         </Tag>
         <Tag color={propertyData.status === 'available' ? 'green' : 'red'}>
           {propertyData.status === 'available'
-            ? t('pages.property.status.available')
-            : t('pages.property.status.unavailable')}
+            ? t('pages.real_property.status.available')
+            : t('pages.real_property.status.unavailable')}
         </Tag>
       </div>
     </div>
@@ -134,24 +144,35 @@ const RealPropertyDetails: React.FC = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const { id } = location.state || {}
-  const [propertyData, setPropertyData] = useState<GetProperty | null>(null)
+  const [propertyData, setPropertyData] = useState<PropertyDetails | null>(null)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalRemoveTenant, setModalRemoveTenant] = useState(false)
+
+  const fetchData = async () => {
+    const req = await GetPropertyDetails(id)
+    if (req) {
+      setPropertyData(req)
+    } else {
+      message.error(t('pages.real_property_details.error_fetching_data'))
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [id])
 
   const showModal = () => setIsModalOpen(true)
   const handleCancel = () => setIsModalOpen(false)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const req = await GetPropertyDetails(id)
-      if (req) {
-        setPropertyData(req)
-      } else {
-        message.error(t('pages.realPropertyDetails.error_fetching_data'))
-      }
-    }
-    fetchData()
-  }, [])
+  const showModalRemoveTenant = () => setModalRemoveTenant(true)
+  const handleCancelRemoveTenant = () => setModalRemoveTenant(false)
+  const handleRemoveTenant = async () => {
+    await StopCurrentContract(id)
+    setModalRemoveTenant(false)
+    message.success(t('components.modal.end_contract.success'))
+    await fetchData()
+  }
 
   return (
     <div className={style.pageContainer}>
@@ -173,10 +194,41 @@ const RealPropertyDetails: React.FC = () => {
           </span>
         </div>
 
-        <Button type="primary" onClick={showModal}>
-          {t('components.button.addTenant')}
-        </Button>
+        <div className={style.actionButtonsContainer}>
+          <Button
+            type="primary"
+            onClick={showModal}
+            disabled={propertyData?.status !== 'available'}
+          >
+            {t('components.button.add_tenant')}
+          </Button>
+          <Button
+            type="primary"
+            danger
+            disabled={propertyData?.status !== 'unavailable'}
+            onClick={showModalRemoveTenant}
+          >
+            {t('components.button.end_contract')}
+          </Button>
+        </div>
       </div>
+
+      <Modal
+        title={t('components.modal.end_contract.title')}
+        open={modalRemoveTenant}
+        onCancel={handleCancelRemoveTenant}
+        footer={[
+          <Button key="cancel" onClick={handleCancelRemoveTenant}>
+            {t('components.button.cancel')}
+          </Button>,
+          <Button key="ok" type="primary" onClick={handleRemoveTenant}>
+            {t('components.button.confirm')}
+          </Button>
+        ]}
+      >
+        {t('components.modal.end_contract.description')}
+      </Modal>
+
       <InviteTenantModal
         isOpen={isModalOpen}
         onClose={handleCancel}
@@ -184,8 +236,9 @@ const RealPropertyDetails: React.FC = () => {
       />
 
       <HeaderPart propertyData={propertyData} />
-
-      <ChildrenComponent t={t} />
+      <PropertyIdProvider id={id}>
+        <ChildrenComponent t={t} />
+      </PropertyIdProvider>
     </div>
   )
 }

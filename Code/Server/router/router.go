@@ -41,18 +41,80 @@ func registerAPIRoutes(r *gin.Engine) {
 			root.Use(middlewares.CheckClaims())
 			root.GET("/users", controllers.GetAllUsers)
 			root.GET("/user/:id", controllers.GetUserByID)
-			root.GET("/profile", controllers.GetProfile)
+			root.GET("/user/:id/picture", controllers.GetUserProfilePicture)
+			root.GET("/profile", controllers.GetCurrentUserProfile)
+			root.PUT("/profile", controllers.UpdateCurrentUserProfile)
+			root.GET("/profile/picture", controllers.GetCurrentUserProfilePicture)
+			root.PUT("/profile/picture", controllers.UpdateCurrentUserProfilePicture)
 
 			owner := root.Group("/owner")
-			{
-				owner.Use(middlewares.AuthorizeOwner())
-				owner.GET("/properties", controllers.GetAllProperties)
-				owner.GET("/properties/:id", controllers.GetPropertyById)
-				owner.POST("/properties", controllers.CreateProperty)
-				owner.POST("/send-invite/:propertyId", controllers.InviteTenant)
-			}
+			registerOwnerRoutes(owner)
 		}
 	}
+}
+
+func registerOwnerRoutes(owner *gin.RouterGroup) {
+	owner.Use(middlewares.AuthorizeOwner())
+
+	properties := owner.Group("/properties")
+	{
+		properties.POST("/", controllers.CreateProperty)
+		properties.GET("/", controllers.GetAllProperties)
+
+		propertyId := properties.Group("/:property_id")
+		{
+			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
+			propertyId.GET("/", controllers.GetPropertyById)
+			propertyId.GET("/picture", controllers.GetPropertyPicture)
+			propertyId.PUT("/picture", controllers.UpdatePropertyPicture)
+
+			propertyId.POST("/send-invite", controllers.InviteTenant)
+			propertyId.PUT("/end-contract", controllers.EndContract)
+
+			rooms := propertyId.Group("/rooms")
+			{
+				rooms.POST("/", controllers.CreateRoom)
+				rooms.GET("/", controllers.GetRoomsByProperty)
+
+				roomId := rooms.Group("/:room_id")
+				{
+					roomId.Use(middlewares.CheckRoomOwnership("property_id", "room_id"))
+					roomId.GET("/", controllers.GetRoomByID)
+					roomId.DELETE("/", controllers.DeleteRoom)
+
+					furnitures := roomId.Group("/furnitures")
+					{
+						furnitures.POST("/", controllers.CreateFurniture)
+						furnitures.GET("/", controllers.GetFurnituresByRoom)
+
+						furnitureId := furnitures.Group("/:furniture_id")
+						{
+							furnitureId.Use(middlewares.CheckFurnitureOwnership("room_id", "furniture_id"))
+							furnitureId.GET("/", controllers.GetFurnitureByID)
+							furnitureId.DELETE("/", controllers.DeleteFurniture)
+						}
+					}
+				}
+			}
+
+			invReports := propertyId.Group("/inventory-reports")
+			registerInvReportRoutes(invReports)
+		}
+	}
+}
+
+func registerInvReportRoutes(invReports *gin.RouterGroup) {
+	invReports.POST("/", controllers.CreateInventoryReport)
+	invReports.GET("/", controllers.GetInventoryReportsByProperty)
+
+	invReports.GET("/:report_id",
+		middlewares.CheckInventoryReportOwnership("property_id", "report_id"),
+		controllers.GetInventoryReportByID)
+
+	invReports.GET("/summarize", controllers.GenerateSummary)
+	invReports.GET("/compare/:old_report_id",
+		middlewares.CheckInventoryReportOwnership("property_id", "old_report_id"),
+		controllers.GenerateComparison)
 }
 
 func Routes() *gin.Engine {
@@ -83,6 +145,10 @@ func Routes() *gin.Engine {
 
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/sw/serviceWorker.ts", func(c *gin.Context) {
+		c.Header("Service-Worker-Allowed", "/")
+		c.File("./sw/serviceWorker.js")
+	})
 
 	registerAPIRoutes(r)
 	return r

@@ -27,7 +27,7 @@ import (
 //	@Failure		400				{object}	oauth.Any	"Invalid grant_type"
 //	@Failure		401				{object}	oauth.Any	"Unauthorized"
 //	@Failure		500
-//	@Router			/auth/token [post]
+//	@Router			/auth/token/ [post]
 func TokenAuth(s *oauth.OAuthBearerServer) func(c *gin.Context) {
 	return s.UserCredentials
 }
@@ -44,7 +44,7 @@ func TokenAuth(s *oauth.OAuthBearerServer) func(c *gin.Context) {
 //	@Failure		400		{object}	utils.Error			"Missing fields"
 //	@Failure		409		{object}	utils.Error			"Email already exists"
 //	@Failure		500
-//	@Router			/auth/register [post]
+//	@Router			/auth/register/ [post]
 func RegisterOwner(c *gin.Context) {
 	var userReq models.UserRequest
 	err := c.ShouldBindBodyWithJSON(&userReq)
@@ -81,7 +81,7 @@ func RegisterOwner(c *gin.Context) {
 //	@Failure		404		{object}	utils.Error			"Pending contract not found"
 //	@Failure		409		{object}	utils.Error			"Email already exists"
 //	@Failure		500
-//	@Router			/auth/invite/{id} [post]
+//	@Router			/auth/invite/{id}/ [post]
 func RegisterTenant(c *gin.Context) {
 	var userReq models.UserRequest
 	err := c.ShouldBindBodyWithJSON(&userReq)

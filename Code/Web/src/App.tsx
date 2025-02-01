@@ -1,4 +1,5 @@
 import React from 'react'
+import { registerSW } from 'virtual:pwa-register'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import './translation/i18n.tsx'
@@ -25,6 +26,15 @@ import MyProfile from '@/views/MyProfile/MyProfile'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
 import Lost from './views/Lost/Lost.tsx'
+
+registerSW({
+  onNeedRefresh() {
+    console.log('Nouvelle version disponible. Veuillez recharger la page.')
+  },
+  onOfflineReady() {
+    console.log("L'application est prête à fonctionner hors ligne.")
+  }
+})
 
 const App: React.FC = () => (
   <Router>

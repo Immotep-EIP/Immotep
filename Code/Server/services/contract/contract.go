@@ -53,6 +53,23 @@ func Create(pendingContract db.PendingContractModel, tenant db.UserModel) *db.Co
 	return newContract
 }
 
+func EndContract(propertyId string, tenantId string, endDate *db.DateTime) *db.ContractModel {
+	pdb := database.DBclient
+	newContract, err := pdb.Client.Contract.FindUnique(
+		db.Contract.TenantIDPropertyID(db.Contract.TenantID.Equals(tenantId), db.Contract.PropertyID.Equals(propertyId)),
+	).Update(
+		db.Contract.Active.Set(false),
+		db.Contract.EndDate.SetIfPresent(endDate),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return newContract
+}
+
 func GetPendingById(id string) *db.PendingContractModel {
 	pdb := database.DBclient
 	pc, err := pdb.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(id)).Exec(pdb.Context)
@@ -65,18 +82,18 @@ func GetPendingById(id string) *db.PendingContractModel {
 	return pc
 }
 
-func CreatePending(pendingContract db.PendingContractModel, property db.PropertyModel) *db.PendingContractModel {
+func CreatePending(pendingContract db.PendingContractModel, propertyId string) *db.PendingContractModel {
 	pdb := database.DBclient
 	newContract, err := pdb.Client.PendingContract.CreateOne(
 		db.PendingContract.TenantEmail.Set(pendingContract.TenantEmail),
 		db.PendingContract.StartDate.Set(pendingContract.StartDate),
-		db.PendingContract.Property.Link(db.Property.ID.Equals(property.ID)),
+		db.PendingContract.Property.Link(db.Property.ID.Equals(propertyId)),
 		db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 	).Exec(pdb.Context)
 	if err != nil {
+		// https://www.prisma.io/docs/orm/reference/error-reference#p2014
 		var ufr *protocol.UserFacingError
-		if ok := errors.As(err, &ufr); ok &&
-			ufr.ErrorCode == "P2014" { // https://www.prisma.io/docs/orm/reference/error-reference#p2014
+		if ok := errors.As(err, &ufr); ok && ufr.ErrorCode == "P2014" {
 			return nil
 		}
 		if _, is := db.IsErrUniqueConstraint(err); is {

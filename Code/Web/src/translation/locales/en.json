@@ -4,9 +4,10 @@
       "email": {
         "label": "Email",
         "placeholder": "Enter your email",
-        "error": "Please fill your email."
+        "error": "Please fill your email.",
+        "valid_email": "Please enter a valid email."
       },
-      "emailConfirmation": {
+      "email_confirmation": {
         "label": "Email confirmation",
         "placeholder": "Confirm your email",
         "error": "Please fill your email confirmation."
@@ -16,66 +17,188 @@
         "placeholder": "Enter your password",
         "error": "Please fill your password."
       },
-      "confirmPassword": {
+      "confirm_password": {
         "label": "Confirm password",
         "placeholder": "Confirm your password",
         "error": "Please fill your password confirmation."
       },
-      "firstName": {
+      "first_name": {
         "label": "First name",
         "placeholder": "Enter your first name",
         "error": "Please fill your first name."
       },
-      "lastName": {
+      "last_name": {
         "label": "Last name",
         "placeholder": "Enter your last name",
         "error": "Please fill your last name."
+      },
+      "property_name": {
+        "label": "Property name",
+        "placeholder": "Enter the property name",
+        "error": "Please fill the property name."
+      },
+      "address": {
+        "label": "Address",
+        "placeholder": "Enter your address",
+        "error": "Please fill your address."
+      },
+      "zip_code": {
+        "label": "Zip code",
+        "placeholder": "Enter your zip code",
+        "error": "Please fill your zip code."
+      },
+      "city": {
+        "label": "City",
+        "placeholder": "Enter your city",
+        "error": "Please fill your city."
+      },
+      "country": {
+        "label": "Country",
+        "placeholder": "Enter your country",
+        "error": "Please fill your country."
+      },
+      "area": {
+        "label": "Area",
+        "placeholder": "Enter the area",
+        "error": "Please fill the area."
+      },
+      "rental": {
+        "label": "Rental",
+        "placeholder": "Enter the rental",
+        "error": "Please fill the rental."
+      },
+      "deposit": {
+        "label": "Deposit",
+        "placeholder": "Enter the deposit",
+        "error": "Please fill the deposit."
+      },
+      "picture": {
+        "label": "Picture",
+        "placeholder": "Choose a picture",
+        "error": "Please fill a picture."
+      },
+      "room_name": {
+        "label": "Room name",
+        "placeholder": "Enter the room name",
+        "error": "Please fill the room name."
+      },
+      "stuff_name": {
+        "label": "Item name",
+        "placeholder": "Enter the item name",
+        "error": "Please fill the item name."
+      },
+      "item_quantity": {
+        "label": "Quantity",
+        "placeholder": "Enter the quantity",
+        "error": "Please enter a valid quantity.",
+        "validation_message": "The quantity must be between 1 and 1000."
+      },
+      "widget_name": {
+        "label": "Widget name",
+        "placeholder": "Enter the widget name",
+        "error": "Please fill the widget name."
+      },
+      "widget_type": {
+        "label": "Widget type",
+        "placeholder": "Choose the widget type",
+        "error": "Please fill the widget type."
+      },
+      "widget_width": {
+        "label": "Widget width",
+        "placeholder": "Enter the widget width",
+        "error": "Please fill the widget width."
+      },
+      "widget_height": {
+        "label": "Widget height",
+        "placeholder": "Enter the widget height",
+        "error": "Please fill the widget height."
+      },
+      "start_date": {
+        "label": "Start date"
+      },
+      "end_date": {
+        "label": "End date"
+      },
+      "document_name": {
+        "label": "Document name",
+        "placeholder": "Enter the document name",
+        "error": "Please fill the document name."
+      },
+      "document": {
+        "label": "Document",
+        "placeholder": "Choose a document",
+        "error": "Please fill the document."
       }
     },
+    "messages": {
+      "modifications_saved": "Modifications saved",
+      "no_modifications": "No modifications to save",
+      "picture_updated": "Picture updated successfully",
+      "picture_not_updated": "Error while updating the picture"
+    },
     "button": {
-      "signIn": "Sign in",
-      "signUp": "Sign up",
-      "rememberMe": "Remember me",
-      "askForgotPassword": "Forgot password ?",
-      "sendEmail": "Send email",
+      "sign_in": "Sign in",
+      "sign_up": "Sign up",
+      "remember_me": "Remember me",
+      "ask_forgot_password": "Forgot password ?",
+      "send_email": "Send email",
       "overview": "Overview",
-      "realProperty": "Real property",
+      "real_property": "Real property",
       "messages": "Messages",
       "settings": "Settings",
-      "myProfile": "My profile",
-
+      "my_profile": "My profile",
+      "add_real_property": "Add a property",
+      "add_widget": "Add a widget",
+      "about": "About",
+      "damage": "Damage",
+      "inventory": "Inventory",
+      "documents": "Documents",
+      "return": "Return",
+      "add_tenant": "Add a tenant",
+      "end_contract": "End the lease",
+      "add_document": "Add a document",
+      "add_room": "Add a room",
       "edit": "Edit",
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "add": "Add"
+    },
+    "modal": {
+      "end_contract": {
+        "title": "End the lease",
+        "description": "Are you sure you want to end the lease of this tenant?",
+        "success": "The lease has been terminated successfully."
+      }
     }
   },
   "pages": {
     "login": {
       "title": "Welcome back!",
       "description": "Please enter your details to sign in.",
-      "dontHaveAccount": "Don't have an account ?",
-      "connectionSuccess": "You are now connected.",
-      "connectionError": "An error occurred while trying to connect, please try again.",
-      "fillFields": "Please fill all fields."
+      "dont_have_account": "Don't have an account ?",
+      "connection_success": "You are now connected.",
+      "connection_error": "An error occurred while trying to connect, please try again.",
+      "fill_fields": "Please fill all fields."
     },
     "register": {
       "title": "Create an account",
       "description": "Join immotep for your peace of mind !",
-      "agreeTerms": "I agree to all Term, Privacy Policy and Fees",
-      "alreadyHaveAccount": "Already have an account?",
-      "registerSuccess": "You are now registered.",
-      "registerError": "An error occurred while trying to register, please try again.",
-      "emailAlreadyUsed": "This email is already used.",
-      "confirmPasswordError": "Passwords do not match.",
-      "fillFields": "Please fill all fields."
+      "agree_terms": "I agree to all Term and Privacy Policy",
+      "already_have_account": "Already have an account?",
+      "register_success": "You are now registered.",
+      "register_error": "An error occurred while trying to register, please try again.",
+      "email_already_used": "This email is already used.",
+      "confirm_password_error": "Passwords do not match.",
+      "fill_fields": "Please fill all fields."
     },
-    "forgotPassword": {
+    "forgot_password": {
       "title": "Forgot password",
       "description": "Please enter your email to reset your password.",
-      "sendEmailSuccess": "An email has been sent to reset your password.",
-      "sendEmailError": "An error occurred while trying to send the email, please try again.",
-      "emailsDontMatch": "Emails do not match.",
-      "fillFields": "Please fill all fields."
+      "send_email_success": "An email has been sent to reset your password.",
+      "send_email_error": "An error occurred while trying to send the email, please try again.",
+      "emails_dont_match": "Emails do not match.",
+      "fill_fields": "Please fill all fields."
     },
     "settings": {
       "title": "Settings",
@@ -83,35 +206,76 @@
       "language": "Language",
       "en": "English",
       "fr": "French",
-      "userInfos": "User informations",
+      "user_infos": "User informations",
       "logout": "Logout",
-      "logoutSuccess": "You are now disconnected."
+      "logout_success": "You are now disconnected"
     },
-    "realPropertyDetails": {
-      "inviteTenant": "Invitation sent successfully",
-      "409Error": "Invitation already sent",
-      "fillFields": "Please fill in the required fields"
+    "real_property_details": {
+      "invite_tenant": "Invitation sent successfully",
+      "409_error": "Invitation already sent",
+      "fill_fields": "Please fill in the required fields",
+      "error_fetching_data": "Error while fetching data",
+      "tabs": {
+        "documents": {
+          "modal_title": "Add a document"
+        },
+        "inventory": {
+          "add_room_modal_title": "Add a room",
+          "add_stuff_modal_title": "Add an item",
+          "list_object_name": "Items in the room",
+          "remove_room_confirmation": "Are you sure you want to remove this room?",
+          "remove_room_success": "Room deleted successfully",
+          "remove_stuff_confirmation": "Are you sure you want to remove this item?",
+          "remove_stuff_success": "Item deleted successfully"
+        }
+      }
     },
     "overview": {
-      "title": "Overview"
+      "title": "Overview",
+      "widget_creation": {
+        "title": "Add a widget",
+        "error": "Error while creating the widget",
+        "error_fetching_data": "Error fetching data",
+        "fill_fields": "Please fill all fields",
+        "widget_created": "Widget created successfully"
+      }
     },
     "lost": {
-      "pageNotFound": "Page not found",
-      "backHome": "Back to home"
+      "page_not_found": "Page not found",
+      "back_home": "Back to home"
+    },
+    "real_property": {
+      "title": "Real property",
+      "add_real_property": {
+        "title": "Add a property",
+        "property_created": "Property created successfully",
+        "error_property_created": "Error while creating the property",
+        "fill_all_fields": "Please fill all fields"
+      },
+      "status": {
+        "available": "Available",
+        "unavailable": "Unavailable"
+      },
+      "damage": {
+        "waiting": "Unresolved damage(s)"
+      },
+      "error": {
+        "error_fetching_data": "Error fetching data"
+      }
     }
   },
   "widgets": {
-    "userInfo": {
+    "user_info": {
       "title": "Welcome",
-      "propertiesNumber": "Here's an overview of your",
-      "realProperties": "properties",
-      "errorFetching": "Data recovery error"
+      "properties_number": "Here's an overview of your",
+      "real_properties": "properties",
+      "error_fetching": "Data recovery error"
     },
     "maintenance": {
       "title": "Maintenance",
-      "noMaintenance": "No maintenance in progress",
-      "noMaintenanceDescription": "You have no maintenance in progress at the moment",
-      "completeButton": "Confirm"
+      "no_maintenance": "No maintenance in progress",
+      "no_maintenance_description": "You have no maintenance in progress at the moment",
+      "complete_button": "Confirm"
     }
   }
 }
