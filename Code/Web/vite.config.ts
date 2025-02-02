@@ -12,8 +12,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
-        enabled: true, // Activer le mode de développement
-        type: 'module' // Utiliser les modules ES pour le SW
+        enabled: true,
+        type: 'module'
       },
       injectRegister: 'auto',
       includeAssets: ['**/*.{js,css,html,png,jpg,svg}'],
@@ -33,7 +33,6 @@ export default defineConfig({
     })
   ],
   server: {
-    https: {},
     port: 4242,
     open: true
   }
