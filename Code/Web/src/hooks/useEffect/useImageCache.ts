@@ -8,6 +8,22 @@ const useImageCache = (
   const [data, setData] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
+  const updateCache = async (newImageData: string) => {
+    if (!id) return
+
+    const file = base64ToFile(
+      newImageData.split(',')[1],
+      'image.jpg',
+      'image/jpeg'
+    )
+
+    const cache = await caches.open('immotep-cache-v1')
+    await cache.put(`/images/${id}`, new Response(file))
+
+    const url = URL.createObjectURL(file)
+    setData(url)
+  }
+
   const fetchData = async () => {
     if (!id) {
       setIsLoading(false)
@@ -55,7 +71,7 @@ const useImageCache = (
     }
   }, [id, fetchImage])
 
-  return { data, isLoading }
+  return { data, isLoading, updateCache }
 }
 
 export default useImageCache

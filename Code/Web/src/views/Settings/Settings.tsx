@@ -10,18 +10,20 @@ import {
   Input,
   message
 } from 'antd'
-import { LogoutOutlined } from '@ant-design/icons'
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EditOutlined,
+  LogoutOutlined
+} from '@ant-design/icons'
 
 import { useAuth } from '@/context/authContext'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
-import EditIcon from '@/assets/icons/edit.png'
-import SaveIcon from '@/assets/icons/save.png'
-import CloseIcon from '@/assets/icons/close.png'
 import DefaultUser from '@/assets/images/DefaultProfile.png'
 import UpdateUserInfos from '@/services/api/User/UpdateUserInfos'
 import GetUserPicture from '@/services/api/User/GetUserPicture'
-import base64ToFile from '@/utils/base64/baseToFile'
 import PutUserPicture from '@/services/api/User/PutUserPicture'
+import useImageCache from '@/hooks/useEffect/useImageCache'
 import style from './Settings.module.css'
 
 interface UserSettingsProps {
@@ -31,8 +33,13 @@ interface UserSettingsProps {
 const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
   const { user, updateUser } = useAuth()
   const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [picture, setPicture] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+
+  const {
+    data: picture,
+    isLoading,
+    updateCache
+  } = useImageCache(user?.id, GetUserPicture)
 
   const putUserPicture = async (pictureData: string) => {
     if (isUploading) return
@@ -42,6 +49,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
       const req = await PutUserPicture(pictureData.split(',')[1])
       if (req) {
         message.success(t('components.messages.picture_updated'))
+        await updateCache(pictureData)
       } else {
         message.error(t('components.messages.picture_not_updated'))
       }
@@ -59,11 +67,10 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
   const customRequest: UploadProps['customRequest'] = async ({ file }) => {
     try {
       const reader = new FileReader()
-      reader.onload = e => {
+      reader.onload = async e => {
         if (e.target?.result) {
           const base64 = e.target.result as string
-          setPicture(base64)
-          putUserPicture(base64)
+          await putUserPicture(base64)
         }
       }
       reader.readAsDataURL(file as File)
@@ -79,21 +86,6 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
     }
     return isImage
   }
-
-  useEffect(() => {
-    if (!user) return
-    const fetchPicture = async () => {
-      try {
-        const picture = await GetUserPicture(user?.id || '')
-        const file = base64ToFile(picture.data, 'user.jpg', 'image/jpeg')
-        const imageUrl = URL.createObjectURL(file)
-        setPicture(imageUrl)
-      } catch (error) {
-        console.error('Error fetching user picture:', error)
-      }
-    }
-    fetchPicture()
-  }, [user?.id])
 
   const [editData, setEditData] = useState(false)
   const [oldData, setOldData] = useState({
@@ -163,7 +155,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
           customRequest={customRequest}
         >
           <img
-            src={picture || DefaultUser}
+            src={isLoading ? DefaultUser : picture || DefaultUser}
             alt="user"
             className={style.image}
           />
@@ -176,28 +168,28 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
             {editData && (
               <Button
                 type="link"
-                style={{ width: 25, height: 25, padding: 10 }}
+                style={{ width: 35, height: 35, padding: 10 }}
                 onClick={cancelEdit}
               >
-                <img
-                  src={CloseIcon}
-                  alt="edit"
-                  style={{ width: 20, height: 20 }}
+                <CloseCircleOutlined
+                  style={{ fontSize: '20px', color: 'red' }}
                 />
               </Button>
             )}
             <Button
               type="link"
-              style={{ width: 25, height: 25, padding: 10 }}
+              style={{ width: 35, height: 35, padding: 10 }}
               onClick={() =>
                 editData ? saveNewData() : setEditData(!editData)
               }
             >
-              <img
-                src={editData ? SaveIcon : EditIcon}
-                alt="edit"
-                style={{ width: 20, height: 20 }}
-              />
+              {!editData ? (
+                <EditOutlined style={{ fontSize: '20px' }} />
+              ) : (
+                <CheckCircleOutlined
+                  style={{ fontSize: '20px', color: 'green' }}
+                />
+              )}
             </Button>
           </div>
         </div>
