@@ -14,6 +14,7 @@ import PageTitle from '@/components/PageText/Title.tsx'
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
 import useImageCache from '@/hooks/useEffect/useImageCache'
+import CardPropertyLoader from '@/components/Loader/CardPropertyLoader'
 import style from './RealProperty.module.css'
 
 interface CardComponentProps {
@@ -122,10 +123,6 @@ const RealPropertyPage: React.FC = () => {
   const { goToRealPropertyCreate } = useNavigation()
   const { properties, loading, error } = useProperties()
 
-  if (loading) {
-    return <p>{t('generals.loading')}</p>
-  }
-
   if (error) {
     return <p>{t('pages.real_property.error.error_fetching_data')}</p>
   }
@@ -138,6 +135,9 @@ const RealPropertyPage: React.FC = () => {
           {t('components.button.add_real_property')}
         </Button>
       </div>
+
+      {loading && <CardPropertyLoader cards={9} />}
+
       <div className={style.cardsContainer}>
         {properties.map(realProperty => (
           <CardComponent
