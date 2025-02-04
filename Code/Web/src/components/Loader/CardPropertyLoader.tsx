@@ -15,8 +15,8 @@ const CardPropertyLoader: React.FC<CardPropertyLoaderProps> = ({ cards }) => (
         // eslint-disable-next-line react/no-array-index-key
         <div className={style.card} key={index}>
           <div className={style.statusContainer}>
-            <Skeleton.Input style={{ height: 20 }} active />
-            <Skeleton.Input style={{ height: 20 }} active />
+            <Skeleton.Input size="small" active />
+            <Skeleton.Input size="small" active />
           </div>
           <div className={style.pictureContainer}>
             <Skeleton.Avatar
