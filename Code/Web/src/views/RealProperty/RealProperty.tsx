@@ -68,7 +68,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
       {/* THIRD PART */}
       <div className={style.informationsContainer}>
         <div className={style.informations}>
-          <img src={appartmentIcon} alt="location" className={style.icon} />
+          <img src={appartmentIcon} alt="appartment" className={style.icon} />
           <span>
             {(() => {
               if (realProperty.name) {
@@ -81,7 +81,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
           </span>
         </div>
         <div className={style.informations}>
-          <img src={locationIcon} alt="locationIcon" className={style.icon} />
+          <img src={locationIcon} alt="location" className={style.icon} />
           <span>
             {realProperty.address &&
             realProperty.postal_code &&
@@ -96,13 +96,13 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
           </span>
         </div>
         <div className={style.informations}>
-          <img src={tenantIcon} alt="tenantIcon" className={style.icon} />
+          <img src={tenantIcon} alt="tenant" className={style.icon} />
           <span>
             {realProperty.tenant ? realProperty.tenant : '-----------'}
           </span>
         </div>
         <div className={style.informations}>
-          <img src={dateIcon} alt="dateIcon" className={style.icon} />
+          <img src={dateIcon} alt="date" className={style.icon} />
           <span>
             {realProperty.start_date
               ? `${new Date(realProperty.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`

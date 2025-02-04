@@ -32,7 +32,7 @@ const items = [
   {
     label: 'components.button.settings',
     key: NavigationEnum.SETTINGS,
-    icon: <img src={Settings} alt="Messages" className={style.menuIcon} />
+    icon: <img src={Settings} alt="Settings" className={style.menuIcon} />
   }
 ]
 
