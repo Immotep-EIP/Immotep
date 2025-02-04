@@ -18,6 +18,8 @@ To ensure high code quality, ESLint is configured with the Airbnb style guide to
 - Husky version: 4.3.8
 - Lint-Staged version: 15.2.10
 
+---
+
 ## Code Structure
 
 The project's codebase is organized into a clear and modular structure, facilitating maintainability and scalability. Here's an overview of the key directories and their contents:
@@ -43,6 +45,8 @@ The project's codebase is organized into a clear and modular structure, facilita
   - **context/**: This directory holds context files that can be shared across the application, enabling state management.
 
 This organized structure promotes clarity, making it easier to navigate and maintain the codebase as the application grows.
+
+---
 
 ## Testing
 
