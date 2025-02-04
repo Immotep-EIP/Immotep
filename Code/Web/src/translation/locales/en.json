@@ -162,7 +162,8 @@
       "save": "Save",
       "cancel": "Cancel",
       "confirm": "Confirm",
-      "add": "Add"
+      "add": "Add",
+      "close": "Close"
     },
     "modal": {
       "end_contract": {

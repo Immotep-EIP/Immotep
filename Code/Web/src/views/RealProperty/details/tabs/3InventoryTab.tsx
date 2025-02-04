@@ -238,7 +238,11 @@ const InventoryTab: React.FC = () => {
   return (
     <div className={style.tabContent}>
       <div className={style.buttonAddContainer}>
-        <Button type="primary" onClick={() => showModal('addRoom')}>
+        <Button
+          type="primary"
+          onClick={() => showModal('addRoom')}
+          aria-label={t('components.button.add_room')}
+        >
           {t('components.button.add_room')}
         </Button>
       </div>
@@ -260,6 +264,7 @@ const InventoryTab: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.room_name.placeholder')}
+              aria-label={t('components.input.room_name.placeholder')}
               maxLength={20}
               count={{
                 show: true,
@@ -277,6 +282,7 @@ const InventoryTab: React.FC = () => {
               <span>{room.roomName}</span>
               <CloseOutlined
                 onClick={() => removeRoom(room.roomName, room.roomId)}
+                aria-label={t('component.button.close')}
               />
             </div>
             <div className={style.stuffsContainer}>
@@ -287,6 +293,7 @@ const InventoryTab: React.FC = () => {
                     onClick={() =>
                       removeStuff(room.roomName, room.roomId, stuff.id || '')
                     }
+                    aria-label={t('component.button.close')}
                     className={style.removeStuffIcon}
                     style={{ width: '20px', height: '20px' }}
                   />
@@ -302,6 +309,7 @@ const InventoryTab: React.FC = () => {
                 }}
                 role="button"
                 tabIndex={0}
+                aria-label={t('component.button.add')}
               >
                 <img
                   src={addIcon}
@@ -333,6 +341,7 @@ const InventoryTab: React.FC = () => {
             >
               <Input
                 placeholder={t('components.input.stuff_name.placeholder')}
+                aria-label={t('components.input.stuff_name.placeholder')}
                 maxLength={20}
                 count={{
                   show: true,
@@ -342,6 +351,7 @@ const InventoryTab: React.FC = () => {
             </Form.Item>
             <Form.Item
               label={t('components.input.item_quantity.label')}
+              aria-label={t('components.input.item_quantity.label')}
               name="itemQuantity"
               rules={[
                 {
@@ -361,6 +371,7 @@ const InventoryTab: React.FC = () => {
               <InputNumber
                 type="number"
                 placeholder={t('components.input.item_quantity.placeholder')}
+                aria-label={t('components.input.item_quantity.placeholder')}
                 max={1000}
                 min={1}
                 style={{ width: '100%' }}

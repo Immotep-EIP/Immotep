@@ -170,6 +170,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
                 type="link"
                 style={{ width: 35, height: 35, padding: 10 }}
                 onClick={cancelEdit}
+                aria-label={t('component.button.close')}
               >
                 <CloseCircleOutlined
                   style={{ fontSize: '20px', color: 'red' }}
@@ -182,6 +183,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
               onClick={() =>
                 editData ? saveNewData() : setEditData(!editData)
               }
+              aria-label={t('component.button.edit')}
             >
               {!editData ? (
                 <EditOutlined style={{ fontSize: '20px' }} />
@@ -205,6 +207,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
               onChange={e =>
                 setNewData({ ...newData, firstname: e.target.value })
               }
+              aria-label={t('component.input.first_name.label')}
             />
           )}
         </SubtitledElement>
@@ -220,6 +223,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
               onChange={e =>
                 setNewData({ ...newData, lastname: e.target.value })
               }
+              aria-label={t('component.input.last_name.label')}
             />
           )}
         </SubtitledElement>
@@ -282,6 +286,7 @@ const Settings: React.FC = () => {
             shape="circle"
             icon={<LogoutOutlined />}
             onClick={() => logout()}
+            aria-label={t('pages.settings.logout')}
           />
         </div>
       </div>

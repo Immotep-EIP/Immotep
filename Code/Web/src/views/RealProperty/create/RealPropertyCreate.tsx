@@ -100,6 +100,7 @@ const RealPropertyCreate: React.FC = () => {
           shape="circle"
           style={{ margin: '20px', width: '40px', height: '40px' }}
           onClick={() => window.history.back()}
+          aria-label={t('component.button.close')}
         >
           <img
             src={closeIcon}
@@ -128,6 +129,7 @@ const RealPropertyCreate: React.FC = () => {
         >
           <Input
             placeholder={t('components.input.property_name.placeholder')}
+            aria-label={t('components.input.property_name.placeholder')}
           />
         </Form.Item>
 
@@ -138,7 +140,10 @@ const RealPropertyCreate: React.FC = () => {
             { required: true, message: t('components.input.address.error') }
           ]}
         >
-          <Input placeholder={t('components.input.address.placeholder')} />
+          <Input
+            placeholder={t('components.input.address.placeholder')}
+            aria-label={t('components.input.address.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item<FieldType>
@@ -148,7 +153,10 @@ const RealPropertyCreate: React.FC = () => {
             { required: true, message: t('components.input.zip_code.error') }
           ]}
         >
-          <Input placeholder={t('components.input.zip_code.placeholder')} />
+          <Input
+            placeholder={t('components.input.zip_code.placeholder')}
+            aria-label={t('components.input.zip_code.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item<FieldType>
@@ -158,7 +166,10 @@ const RealPropertyCreate: React.FC = () => {
             { required: true, message: t('components.input.city.error') }
           ]}
         >
-          <Input placeholder={t('components.input.city.placeholder')} />
+          <Input
+            placeholder={t('components.input.city.placeholder')}
+            aria-label={t('components.input.city.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item<FieldType>
@@ -168,7 +179,10 @@ const RealPropertyCreate: React.FC = () => {
             { required: true, message: t('components.input.country.error') }
           ]}
         >
-          <Input placeholder={t('components.input.country.placeholder')} />
+          <Input
+            placeholder={t('components.input.country.placeholder')}
+            aria-label={t('components.input.country.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item<FieldType>
@@ -178,7 +192,10 @@ const RealPropertyCreate: React.FC = () => {
             { required: true, message: t('components.input.area.error') }
           ]}
         >
-          <Input placeholder={t('components.input.area.placeholder')} />
+          <Input
+            placeholder={t('components.input.area.placeholder')}
+            aria-label={t('components.input.area.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item<FieldType>
@@ -188,7 +205,10 @@ const RealPropertyCreate: React.FC = () => {
             { required: true, message: t('components.input.rental.error') }
           ]}
         >
-          <Input placeholder={t('components.input.rental.placeholder')} />
+          <Input
+            placeholder={t('components.input.rental.placeholder')}
+            aria-label={t('components.input.rental.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item<FieldType>
@@ -198,7 +218,10 @@ const RealPropertyCreate: React.FC = () => {
             { required: true, message: t('components.input.deposit.error') }
           ]}
         >
-          <Input placeholder={t('components.input.deposit.placeholder')} />
+          <Input
+            placeholder={t('components.input.deposit.placeholder')}
+            aria-label={t('components.input.deposit.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item<FieldType>
@@ -207,7 +230,10 @@ const RealPropertyCreate: React.FC = () => {
           rules={[{ required: false }]}
         >
           <Upload {...props}>
-            <Button icon={<UploadOutlined />}>
+            <Button
+              icon={<UploadOutlined />}
+              aria-label={t('components.input.picture.placeholder')}
+            >
               {t('components.input.picture.placeholder')}
             </Button>
           </Upload>
@@ -219,6 +245,7 @@ const RealPropertyCreate: React.FC = () => {
             htmlType="submit"
             style={{ marginRight: '20px' }}
             loading={loading}
+            aria-label={t('components.button.add')}
           >
             {t('components.button.add')}
           </Button>

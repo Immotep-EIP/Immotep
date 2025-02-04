@@ -76,6 +76,7 @@ const Register: React.FC = () => {
             className="input"
             size="middle"
             placeholder={t('components.input.first_name.placeholder')}
+            aria-label={t('components.input.first_name.placeholder')}
           />
         </Form.Item>
 
@@ -94,6 +95,7 @@ const Register: React.FC = () => {
             className="input"
             size="middle"
             placeholder={t('components.input.last_name.placeholder')}
+            aria-label={t('components.input.last_name.placeholder')}
           />
         </Form.Item>
 
@@ -112,6 +114,7 @@ const Register: React.FC = () => {
             className="input"
             size="middle"
             placeholder={t('components.input.email.placeholder')}
+            aria-label={t('components.input.email.placeholder')}
           />
         </Form.Item>
 
@@ -126,6 +129,7 @@ const Register: React.FC = () => {
             className="input"
             size="middle"
             placeholder={t('components.input.password.placeholder')}
+            aria-label={t('components.input.password.placeholder')}
           />
         </Form.Item>
 
@@ -143,11 +147,14 @@ const Register: React.FC = () => {
             className="input"
             size="middle"
             placeholder={t('components.input.confirm_password.placeholder')}
+            aria-label={t('components.input.confirm_password.placeholder')}
           />
         </Form.Item>
         <Form.Item name="termAgree" valuePropName="checked">
           <div className={style.optionsContainer}>
-            <Checkbox>{t('pages.register.agree_terms')}</Checkbox>
+            <Checkbox aria-label={t('pages.register.agree_terms')}>
+              {t('pages.register.agree_terms')}
+            </Checkbox>
           </div>
         </Form.Item>
         <Form.Item>
@@ -158,13 +165,17 @@ const Register: React.FC = () => {
             color="default"
             variant="solid"
             loading={loading}
+            aria-label={t('components.button.sign_up')}
           >
             {t('components.button.sign_up')}
           </Button>
         </Form.Item>
 
         <div className={style.dontHaveAccountContainer}>
-          <span className={style.footerText}>
+          <span
+            className={style.footerText}
+            aria-label={t('pages.register.already_have_account')}
+          >
             {t('pages.register.already_have_account')}
           </span>
           <span
@@ -175,6 +186,7 @@ const Register: React.FC = () => {
             onKeyDown={e => {
               if (e.key === 'Enter') goToLogin()
             }}
+            aria-label={t('components.button.sign_in')}
           >
             {t('components.button.sign_in')}
           </span>

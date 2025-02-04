@@ -22,7 +22,11 @@ const Lost: React.FC = () => {
       >
         {t('pages.lost.page_not_found')}
       </Text>
-      <Button type="primary" onClick={goToOverview}>
+      <Button
+        type="primary"
+        onClick={goToOverview}
+        aria-label={t('pages.lost.back_home')}
+      >
         {t('pages.lost.back_home')}
       </Button>
     </div>

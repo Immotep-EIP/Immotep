@@ -129,7 +129,11 @@ const Overview: React.FC = () => {
     <div className={style.pageContainer}>
       <div className={style.pageHeader}>
         <PageTitle title={t('pages.overview.title')} size="title" />
-        <Button type="primary" onClick={showModal}>
+        <Button
+          type="primary"
+          onClick={showModal}
+          aria-label={t('components.button.add_widget')}
+        >
           {t('components.button.add_widget')}
         </Button>
       </div>

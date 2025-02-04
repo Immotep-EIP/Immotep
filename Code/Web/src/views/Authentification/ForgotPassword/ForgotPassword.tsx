@@ -57,6 +57,7 @@ const ForgotPassword: React.FC = () => {
             className="input"
             size="large"
             placeholder={t('components.input.email.placeholder')}
+            aria-label={t('components.input.email.placeholder')}
           />
         </Form.Item>
 
@@ -74,6 +75,7 @@ const ForgotPassword: React.FC = () => {
             className="input"
             size="large"
             placeholder={t('components.input.email_confirmation.placeholder')}
+            aria-label={t('components.input.email_confirmation.placeholder')}
           />
         </Form.Item>
 
@@ -86,6 +88,7 @@ const ForgotPassword: React.FC = () => {
             color="default"
             variant="solid"
             loading={loading}
+            aria-label={t('components.button.send_email')}
           >
             {t('components.button.send_email')}
           </Button>
