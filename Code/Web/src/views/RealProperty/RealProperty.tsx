@@ -131,11 +131,7 @@ const RealPropertyPage: React.FC = () => {
     <div className={style.pageContainer}>
       <div className={style.pageHeader}>
         <PageTitle title={t('pages.real_property.title')} size="title" />
-        <Button
-          type="primary"
-          onClick={goToRealPropertyCreate}
-          aria-label={t('components.button.add_real_property')}
-        >
+        <Button type="primary" onClick={goToRealPropertyCreate}>
           {t('components.button.add_real_property')}
         </Button>
       </div>

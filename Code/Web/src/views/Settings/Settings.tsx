@@ -286,7 +286,6 @@ const Settings: React.FC = () => {
             shape="circle"
             icon={<LogoutOutlined />}
             onClick={() => logout()}
-            aria-label={t('pages.settings.logout')}
           />
         </div>
       </div>

@@ -230,10 +230,7 @@ const RealPropertyCreate: React.FC = () => {
           rules={[{ required: false }]}
         >
           <Upload {...props}>
-            <Button
-              icon={<UploadOutlined />}
-              aria-label={t('components.input.picture.placeholder')}
-            >
+            <Button icon={<UploadOutlined />}>
               {t('components.input.picture.placeholder')}
             </Button>
           </Upload>
@@ -245,7 +242,6 @@ const RealPropertyCreate: React.FC = () => {
             htmlType="submit"
             style={{ marginRight: '20px' }}
             loading={loading}
-            aria-label={t('components.button.add')}
           >
             {t('components.button.add')}
           </Button>

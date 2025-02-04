@@ -214,10 +214,7 @@ const DocumentsTab: React.FC = () => {
             ]}
           >
             <Upload name="file" listType="text" beforeUpload={() => false}>
-              <Button
-                icon={<UploadOutlined />}
-                aria-label={t('components.input.document.placeholder')}
-              >
+              <Button icon={<UploadOutlined />}>
                 {t('components.input.document.placeholder')}
               </Button>
             </Upload>

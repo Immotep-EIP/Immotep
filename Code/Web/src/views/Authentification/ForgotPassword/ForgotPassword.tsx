@@ -88,7 +88,6 @@ const ForgotPassword: React.FC = () => {
             color="default"
             variant="solid"
             loading={loading}
-            aria-label={t('components.button.send_email')}
           >
             {t('components.button.send_email')}
           </Button>

@@ -109,9 +109,7 @@ const Login: React.FC = () => {
 
         <div className={style.optionsContainer}>
           <Form.Item name="rememberMe" valuePropName="checked">
-            <Checkbox aria-label={t('components.button.remember_me')}>
-              {t('components.button.remember_me')}
-            </Checkbox>
+            <Checkbox>{t('components.button.remember_me')}</Checkbox>
           </Form.Item>
           <span
             className={style.footerLink}
@@ -121,7 +119,6 @@ const Login: React.FC = () => {
             onKeyDown={e => {
               if (e.key === 'Enter') goToForgotPassword()
             }}
-            aria-label={t('components.button.ask_forgot_password')}
           >
             {t('components.button.ask_forgot_password')}
           </span>
@@ -135,17 +132,13 @@ const Login: React.FC = () => {
             color="default"
             variant="solid"
             loading={loading}
-            aria-label={t('components.button.sign_in')}
           >
             {t('components.button.sign_in')}
           </Button>
         </Form.Item>
 
         <div className={style.dontHaveAccountContainer}>
-          <span
-            className={style.footerText}
-            aria-label={t('pages.login.dont_have_account')}
-          >
+          <span className={style.footerText}>
             {t('pages.login.dont_have_account')}
           </span>
           <span
@@ -156,7 +149,6 @@ const Login: React.FC = () => {
             onKeyDown={e => {
               if (e.key === 'Enter') goToSignup()
             }}
-            aria-label={t('components.button.sign_up')}
           >
             {t('components.button.sign_up')}
           </span>

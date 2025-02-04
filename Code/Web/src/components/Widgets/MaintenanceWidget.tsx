@@ -86,7 +86,6 @@ const MaintenanceWidget: React.FC<WidgetProps> = ({ height }) => {
                   size="small"
                   icon={<CheckOutlined />}
                   onClick={() => markAsCompleted(task.id)}
-                  aria-label={t('widgets.maintenance.complete_button')}
                 >
                   {t('widgets.maintenance.complete_button')}
                 </Button>

@@ -238,11 +238,7 @@ const InventoryTab: React.FC = () => {
   return (
     <div className={style.tabContent}>
       <div className={style.buttonAddContainer}>
-        <Button
-          type="primary"
-          onClick={() => showModal('addRoom')}
-          aria-label={t('components.button.add_room')}
-        >
+        <Button type="primary" onClick={() => showModal('addRoom')}>
           {t('components.button.add_room')}
         </Button>
       </div>

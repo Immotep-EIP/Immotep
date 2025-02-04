@@ -99,11 +99,7 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
         </Form.Item>
 
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            aria-label={t('components.button.add')}
-          >
+          <Button type="primary" htmlType="submit">
             {t('components.button.add')}
           </Button>
         </Form.Item>
