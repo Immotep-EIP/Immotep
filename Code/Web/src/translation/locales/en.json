@@ -175,6 +175,8 @@
   },
   "pages": {
     "login": {
+      "document_title": "Sign in",
+      "document_description": "Sign in to your Immotep account. Manage your properties and tenants easily.",
       "title": "Welcome back!",
       "description": "Please enter your details to sign in.",
       "dont_have_account": "Don't have an account ?",
@@ -183,6 +185,8 @@
       "fill_fields": "Please fill all fields."
     },
     "register": {
+      "document_title": "Sign up",
+      "document_description": "Create an Immotep account to manage your properties and tenants easily.",
       "title": "Create an account",
       "description": "Join immotep for your peace of mind !",
       "agree_terms": "I agree to all Term and Privacy Policy",
@@ -194,6 +198,8 @@
       "fill_fields": "Please fill all fields."
     },
     "forgot_password": {
+      "document_title": "Forgot password",
+      "document_description": "Easily reset your Immotep password if you have forgotten it. Simple and quick process to regain access to your account.",
       "title": "Forgot password",
       "description": "Please enter your email to reset your password.",
       "send_email_success": "An email has been sent to reset your password.",
@@ -202,6 +208,8 @@
       "fill_fields": "Please fill all fields."
     },
     "settings": {
+      "document_title": "Settings",
+      "document_description": "Manage your account settings. Change your language, update your profile and more.",
       "title": "Settings",
       "description": "Manage your account settings.",
       "language": "Language",
@@ -212,6 +220,8 @@
       "logout_success": "You are now disconnected"
     },
     "real_property_details": {
+      "document_title": "Real property details",
+      "document_description": "Details of your real property. Manage your property easily.",
       "invite_tenant": "Invitation sent successfully",
       "409_error": "Invitation already sent",
       "fill_fields": "Please fill in the required fields",
@@ -232,6 +242,8 @@
       }
     },
     "overview": {
+      "document_title": "Overview",
+      "document_description": "Overview of your properties and tenants. Manage your properties and tenants easily.",
       "title": "Overview",
       "widget_creation": {
         "title": "Add a widget",
@@ -242,12 +254,18 @@
       }
     },
     "lost": {
+      "document_title": "Page not found",
+      "document_description": "The page you are looking for does not exist. Please return to the home page.",
       "page_not_found": "Page not found",
       "back_home": "Back to home"
     },
     "real_property": {
+      "document_title": "Real property",
+      "document_description": "Manage your real properties easily. Add, edit or delete your properties.",
       "title": "Real property",
       "add_real_property": {
+        "document_title": "Add a property",
+        "document_description": "Add a property to manage it easily. Fill in the required fields to add a property.",
         "title": "Add a property",
         "property_created": "Property created successfully",
         "error_property_created": "Error while creating the property",
@@ -266,6 +284,8 @@
     }
   },
   "widgets": {
+    "document_title": "Widgets",
+    "document_description": "Manage your widgets easily. Add, edit or delete your widgets.",
     "user_info": {
       "title": "Welcome",
       "properties_number": "Here's an overview of your",

@@ -24,6 +24,7 @@ import UpdateUserInfos from '@/services/api/User/UpdateUserInfos'
 import GetUserPicture from '@/services/api/User/GetUserPicture'
 import PutUserPicture from '@/services/api/User/PutUserPicture'
 import useImageCache from '@/hooks/useEffect/useImageCache'
+import PageMeta from '@/components/PageMeta/PageMeta'
 import style from './Settings.module.css'
 
 interface UserSettingsProps {
@@ -262,34 +263,42 @@ const Settings: React.FC = () => {
   }
 
   return (
-    <div className={style.layoutContainer}>
-      <UserSettings t={t} />
+    <>
+      <PageMeta
+        title={t('pages.settings.document_title')}
+        description={t('pages.settings.document_description')}
+        keywords="settings, user, Immotep"
+      />
+      <div className={style.layoutContainer}>
+        <UserSettings t={t} />
 
-      <div className={style.settingsContainer}>
-        <div className={style.settingsItem}>
-          {t('pages.settings.language')}
-          <Segmented
-            options={[
-              { label: t('pages.settings.fr'), value: 'fr' },
-              { label: t('pages.settings.en'), value: 'en' }
-            ]}
-            value={i18n.language}
-            onChange={value => switchLanguage(value as string)}
-          />
-        </div>
+        <div id="main-content" className={style.settingsContainer}>
+          <div className={style.settingsItem}>
+            {t('pages.settings.language')}
+            <Segmented
+              options={[
+                { label: t('pages.settings.fr'), value: 'fr' },
+                { label: t('pages.settings.en'), value: 'en' }
+              ]}
+              value={i18n.language}
+              onChange={value => switchLanguage(value as string)}
+              tabIndex={0}
+            />
+          </div>
 
-        <div className={style.settingsItem}>
-          {t('pages.settings.logout')}
-          <Button
-            type="primary"
-            danger
-            shape="circle"
-            icon={<LogoutOutlined />}
-            onClick={() => logout()}
-          />
+          <div className={style.settingsItem}>
+            {t('pages.settings.logout')}
+            <Button
+              type="primary"
+              danger
+              shape="circle"
+              icon={<LogoutOutlined />}
+              onClick={() => logout()}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

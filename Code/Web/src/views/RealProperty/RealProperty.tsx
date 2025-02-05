@@ -15,6 +15,7 @@ import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
 import useImageCache from '@/hooks/useEffect/useImageCache'
 import CardPropertyLoader from '@/components/Loader/CardPropertyLoader'
+import PageMeta from '@/components/PageMeta/PageMeta'
 import style from './RealProperty.module.css'
 
 interface CardComponentProps {
@@ -128,26 +129,33 @@ const RealPropertyPage: React.FC = () => {
   }
 
   return (
-    <div className={style.pageContainer}>
-      <div className={style.pageHeader}>
-        <PageTitle title={t('pages.real_property.title')} size="title" />
-        <Button type="primary" onClick={goToRealPropertyCreate}>
-          {t('components.button.add_real_property')}
-        </Button>
-      </div>
+    <>
+      <PageMeta
+        title={t('pages.real_property.document_title')}
+        description={t('pages.real_property.document_description')}
+        keywords="real property, Property info, Immotep"
+      />
+      <div className={style.pageContainer}>
+        <div className={style.pageHeader}>
+          <PageTitle title={t('pages.real_property.title')} size="title" />
+          <Button type="primary" onClick={goToRealPropertyCreate}>
+            {t('components.button.add_real_property')}
+          </Button>
+        </div>
 
-      {loading && <CardPropertyLoader cards={9} />}
+        {loading && <CardPropertyLoader cards={9} />}
 
-      <div className={style.cardsContainer}>
-        {properties.map(realProperty => (
-          <CardComponent
-            key={realProperty.id}
-            realProperty={realProperty}
-            t={t}
-          />
-        ))}
+        <div className={style.cardsContainer}>
+          {properties.map(realProperty => (
+            <CardComponent
+              key={realProperty.id}
+              realProperty={realProperty}
+              t={t}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
