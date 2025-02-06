@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import Register from '@/views/Authentification/Register/Register'
 import { register } from '@/services/api/Authentification/AuthApi'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
@@ -33,8 +34,12 @@ describe('Register Component', () => {
     mockGoToLogin.mockReset()
   })
 
+  // eslint-disable-next-line no-undef
+  const renderWithHelmet = (component: React.ReactNode) =>
+    render(<HelmetProvider>{component}</HelmetProvider>)
+
   it('renders the form elements correctly', () => {
-    render(<Register />)
+    renderWithHelmet(<Register />)
 
     expect(
       screen.getByLabelText('components.input.first_name.label')
@@ -60,7 +65,7 @@ describe('Register Component', () => {
   })
 
   it('displays error message if passwords do not match', async () => {
-    render(<Register />)
+    renderWithHelmet(<Register />)
 
     fireEvent.input(
       screen.getByLabelText('components.input.first_name.label'),
@@ -100,7 +105,7 @@ describe('Register Component', () => {
 
   it('registers user and redirects to login on success', async () => {
     mockRegister.mockResolvedValueOnce({})
-    render(<Register />)
+    renderWithHelmet(<Register />)
 
     fireEvent.input(
       screen.getByLabelText('components.input.first_name.label'),
@@ -146,7 +151,7 @@ describe('Register Component', () => {
   it('displays error if email already exists', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
     mockRegister.mockRejectedValueOnce({ response: { status: 409 } })
-    render(<Register />)
+    renderWithHelmet(<Register />)
 
     fireEvent.input(
       screen.getByLabelText('components.input.first_name.label'),
@@ -192,7 +197,7 @@ describe('Register Component', () => {
   })
 
   test('displays error message when form submission fails', async () => {
-    render(<Register />)
+    renderWithHelmet(<Register />)
 
     fireEvent.click(screen.getByText('components.button.sign_up'))
 
@@ -202,7 +207,7 @@ describe('Register Component', () => {
   })
 
   it('navigates to Login page when "Sign In" link is clicked', () => {
-    render(<Register />)
+    renderWithHelmet(<Register />)
 
     const signInLink = screen.getByText('components.button.sign_in')
 
