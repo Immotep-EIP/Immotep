@@ -415,6 +415,7 @@ definitions:
     - room-state-already-exists
     - furniture-state-already-exists
     - error-request-chatgpt-api
+    - failed-send-email
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -453,6 +454,7 @@ definitions:
     - RoomStateAlreadyExists
     - FurnitureStateAlreadyExists
     - ErrorRequestChatGPTAPI
+    - FailedSendEmail
 host: localhost:3001
 info:
   contact:

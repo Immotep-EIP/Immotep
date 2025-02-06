@@ -232,6 +232,8 @@ func TestCreatePending(t *testing.T) {
 			db.PendingContract.StartDate.Set(pendingContract.StartDate),
 			db.PendingContract.Property.Link(db.Property.ID.Equals("1")),
 			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+		).With(
+			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Returns(pendingContract)
 
@@ -252,6 +254,8 @@ func TestCreatePending_AlreadyExists1(t *testing.T) {
 			db.PendingContract.StartDate.Set(pendingContract.StartDate),
 			db.PendingContract.Property.Link(db.Property.ID.Equals("1")),
 			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+		).With(
+			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -278,6 +282,8 @@ func TestCreatePending_AlreadyExists2(t *testing.T) {
 			db.PendingContract.StartDate.Set(pendingContract.StartDate),
 			db.PendingContract.Property.Link(db.Property.ID.Equals("1")),
 			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+		).With(
+			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -304,6 +310,8 @@ func TestCreatePending_NoConnection(t *testing.T) {
 			db.PendingContract.StartDate.Set(pendingContract.StartDate),
 			db.PendingContract.Property.Link(db.Property.ID.Equals("1")),
 			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+		).With(
+			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(errors.New("connection failed"))
 

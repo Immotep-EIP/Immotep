@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
+	brevoservice "immotep/backend/services/brevo"
 	contractservice "immotep/backend/services/contract"
 	imageservice "immotep/backend/services/image"
 	propertyservice "immotep/backend/services/property"
@@ -190,7 +192,12 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
-	// TODO send email
+	res, err := brevoservice.SendEmailInvite(*pendingContract)
+	if err != nil {
+		log.Println(res, err.Error())
+		utils.SendError(c, http.StatusInternalServerError, utils.FailedSendEmail, err)
+		return
+	}
 
 	c.JSON(http.StatusOK, models.DbPendingContractToResponse(*pendingContract))
 }

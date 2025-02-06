@@ -43,6 +43,7 @@ const (
 	RoomStateAlreadyExists       ErrorCode = "room-state-already-exists"
 	FurnitureStateAlreadyExists  ErrorCode = "furniture-state-already-exists"
 	ErrorRequestChatGPTAPI       ErrorCode = "error-request-chatgpt-api"
+	FailedSendEmail              ErrorCode = "failed-send-email"
 )
 
 type Error struct {

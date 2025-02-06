@@ -314,6 +314,8 @@ func TestInviteTenant(t *testing.T) {
 			db.PendingContract.StartDate.Set(pendingContract.StartDate),
 			db.PendingContract.Property.Link(db.Property.ID.Equals(property.ID)),
 			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+		).With(
+			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Returns(pendingContract)
 
@@ -512,6 +514,8 @@ func TestInviteTenant_AlreadyExists(t *testing.T) {
 			db.PendingContract.StartDate.Set(pendingContract.StartDate),
 			db.PendingContract.Property.Link(db.Property.ID.Equals(property.ID)),
 			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+		).With(
+			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
