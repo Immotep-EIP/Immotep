@@ -1,12 +1,12 @@
-package furnitureservice
+package database
 
 import (
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
+	"immotep/backend/services"
 )
 
-func Create(furniture db.FurnitureModel, roomId string) *db.FurnitureModel {
-	pdb := database.DBclient
+func CreateFurniture(furniture db.FurnitureModel, roomId string) *db.FurnitureModel {
+	pdb := services.DBclient
 	newFurniture, err := pdb.Client.Furniture.CreateOne(
 		db.Furniture.Name.Set(furniture.Name),
 		db.Furniture.Room.Link(db.Room.ID.Equals(roomId)),
@@ -23,8 +23,8 @@ func Create(furniture db.FurnitureModel, roomId string) *db.FurnitureModel {
 	return newFurniture
 }
 
-func GetByRoomID(roomID string) []db.FurnitureModel {
-	pdb := database.DBclient
+func GetFurnitureByRoomID(roomID string) []db.FurnitureModel {
+	pdb := services.DBclient
 	furnitures, err := pdb.Client.Furniture.FindMany(
 		db.Furniture.RoomID.Equals(roomID),
 	).With(
@@ -36,8 +36,8 @@ func GetByRoomID(roomID string) []db.FurnitureModel {
 	return furnitures
 }
 
-func GetByID(id string) *db.FurnitureModel {
-	pdb := database.DBclient
+func GetFurnitureByID(id string) *db.FurnitureModel {
+	pdb := services.DBclient
 	furniture, err := pdb.Client.Furniture.FindUnique(
 		db.Furniture.ID.Equals(id),
 	).With(
@@ -52,8 +52,8 @@ func GetByID(id string) *db.FurnitureModel {
 	return furniture
 }
 
-func Delete(id string) bool {
-	pdb := database.DBclient
+func DeleteFurniture(id string) bool {
+	pdb := services.DBclient
 	_, err := pdb.Client.Furniture.FindUnique(
 		db.Furniture.ID.Equals(id),
 	).Delete().Exec(pdb.Context)

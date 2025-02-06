@@ -1,4 +1,4 @@
-package imageservice_test
+package database_test
 
 import (
 	"errors"
@@ -6,10 +6,10 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
-	imageservice "immotep/backend/services/image"
+	"immotep/backend/services"
+	"immotep/backend/services/database"
 )
 
 func BuildTestImage(id string, base64data string) db.ImageModel {
@@ -22,7 +22,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 }
 
 func TestGetImageByID(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	image := BuildTestImage("1", "b3Vp")
@@ -31,25 +31,25 @@ func TestGetImageByID(t *testing.T) {
 		client.Client.Image.FindUnique(db.Image.ID.Equals("1")),
 	).Returns(image)
 
-	foundImage := imageservice.GetByID("1")
+	foundImage := database.GetImageByID("1")
 	assert.NotNil(t, foundImage)
 	assert.Equal(t, image.ID, foundImage.ID)
 }
 
 func TestGetImageByID_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Image.Expect(
 		client.Client.Image.FindUnique(db.Image.ID.Equals("1")),
 	).Errors(db.ErrNotFound)
 
-	foundImage := imageservice.GetByID("1")
+	foundImage := database.GetImageByID("1")
 	assert.Nil(t, foundImage)
 }
 
 func TestGetImageByID_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Image.Expect(
@@ -57,12 +57,12 @@ func TestGetImageByID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		imageservice.GetByID("1")
+		database.GetImageByID("1")
 	})
 }
 
 func TestCreateImage(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	image := BuildTestImage("1", "b3Vp")
@@ -73,13 +73,13 @@ func TestCreateImage(t *testing.T) {
 		),
 	).Returns(image)
 
-	newImage := imageservice.Create(image)
+	newImage := database.CreateImage(image)
 	assert.NotNil(t, newImage)
 	assert.Equal(t, image.ID, newImage.ID)
 }
 
 func TestCreateImage_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	image := BuildTestImage("1", "b3Vp")
@@ -98,12 +98,12 @@ func TestCreateImage_AlreadyExists(t *testing.T) {
 	})
 
 	assert.Panics(t, func() {
-		imageservice.Create(image)
+		database.CreateImage(image)
 	})
 }
 
 func TestCreateImage_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	image := BuildTestImage("1", "b3Vp")
@@ -115,6 +115,6 @@ func TestCreateImage_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		imageservice.Create(image)
+		database.CreateImage(image)
 	})
 }

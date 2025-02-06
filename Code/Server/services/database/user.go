@@ -1,13 +1,13 @@
-package userservice
+package database
 
 import (
-	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
+	"immotep/backend/services"
 )
 
-func GetAll() []db.UserModel {
-	pdb := database.DBclient
+func GetAllUsers() []db.UserModel {
+	pdb := services.DBclient
 	allUsers, err := pdb.Client.User.FindMany().Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -15,8 +15,8 @@ func GetAll() []db.UserModel {
 	return allUsers
 }
 
-func GetByID(id string) *db.UserModel {
-	pdb := database.DBclient
+func GetUserByID(id string) *db.UserModel {
+	pdb := services.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.ID.Equals(id)).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -27,8 +27,8 @@ func GetByID(id string) *db.UserModel {
 	return user
 }
 
-func Create(user db.UserModel, role db.Role) *db.UserModel {
-	pdb := database.DBclient
+func CreateUser(user db.UserModel, role db.Role) *db.UserModel {
+	pdb := services.DBclient
 	newUser, err := pdb.Client.User.CreateOne(
 		db.User.Email.Set(user.Email),
 		db.User.Password.Set(user.Password),
@@ -45,8 +45,8 @@ func Create(user db.UserModel, role db.Role) *db.UserModel {
 	return newUser
 }
 
-func Update(id string, user models.UserUpdateRequest) *db.UserModel {
-	pdb := database.DBclient
+func UpdateUser(id string, user models.UserUpdateRequest) *db.UserModel {
+	pdb := services.DBclient
 	newUser, err := pdb.Client.User.FindUnique(db.User.ID.Equals(id)).Update(
 		db.User.Email.SetIfPresent(user.Email),
 		db.User.Firstname.SetIfPresent(user.Firstname),
@@ -64,8 +64,8 @@ func Update(id string, user models.UserUpdateRequest) *db.UserModel {
 	return newUser
 }
 
-func UpdatePicture(user db.UserModel, image db.ImageModel) *db.UserModel {
-	pdb := database.DBclient
+func UpdateUserPicture(user db.UserModel, image db.ImageModel) *db.UserModel {
+	pdb := services.DBclient
 	newUser, err := pdb.Client.User.FindUnique(
 		db.User.ID.Equals(user.ID),
 	).Update(

@@ -1,4 +1,4 @@
-package propertyservice_test
+package database_test
 
 import (
 	"errors"
@@ -7,10 +7,9 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/database"
-	"immotep/backend/models"
 	"immotep/backend/prisma/db"
-	propertyservice "immotep/backend/services/property"
+	"immotep/backend/services"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -37,17 +36,8 @@ func BuildTestProperty(id string) db.PropertyModel {
 	}
 }
 
-func BuildTestImage(id string, base64data string) db.ImageModel {
-	ret := models.StringToDbImage(base64data)
-	if ret == nil {
-		panic("Invalid base64 string")
-	}
-	ret.ID = id
-	return *ret
-}
-
 func TestGetAllProperties(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -61,13 +51,13 @@ func TestGetAllProperties(t *testing.T) {
 		),
 	).ReturnsMany([]db.PropertyModel{property})
 
-	allProperties := propertyservice.GetAllByOwnerId("1")
+	allProperties := database.GetAllPropertyByOwnerId("1")
 	assert.Len(t, allProperties, 1)
 	assert.Equal(t, property.ID, allProperties[0].ID)
 }
 
 func TestGetAllProperties_MultipleProperties(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user1 := BuildTestProperty("1")
@@ -82,14 +72,14 @@ func TestGetAllProperties_MultipleProperties(t *testing.T) {
 		),
 	).ReturnsMany([]db.PropertyModel{user1, user2})
 
-	allProperties := propertyservice.GetAllByOwnerId("1")
+	allProperties := database.GetAllPropertyByOwnerId("1")
 	assert.Len(t, allProperties, 2)
 	assert.Equal(t, user1.ID, allProperties[0].ID)
 	assert.Equal(t, user2.ID, allProperties[1].ID)
 }
 
 func TestGetAllProperties_NoProperties(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -101,12 +91,12 @@ func TestGetAllProperties_NoProperties(t *testing.T) {
 		),
 	).ReturnsMany([]db.PropertyModel{})
 
-	allProperties := propertyservice.GetAllByOwnerId("1")
+	allProperties := database.GetAllPropertyByOwnerId("1")
 	assert.Empty(t, allProperties)
 }
 
 func TestGetAllProperties_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -119,12 +109,12 @@ func TestGetAllProperties_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		propertyservice.GetAllByOwnerId("1")
+		database.GetAllPropertyByOwnerId("1")
 	})
 }
 
 func TestGetPropertyByID(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -136,13 +126,13 @@ func TestGetPropertyByID(t *testing.T) {
 		),
 	).Returns(property)
 
-	foundProperty := propertyservice.GetByID("1")
+	foundProperty := database.GetPropertyByID("1")
 	assert.NotNil(t, foundProperty)
 	assert.Equal(t, property.ID, foundProperty.ID)
 }
 
 func TestGetPropertyByID_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -152,12 +142,12 @@ func TestGetPropertyByID_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	foundProperty := propertyservice.GetByID("1")
+	foundProperty := database.GetPropertyByID("1")
 	assert.Nil(t, foundProperty)
 }
 
 func TestGetPropertyByID_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -168,12 +158,12 @@ func TestGetPropertyByID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		propertyservice.GetByID("1")
+		database.GetPropertyByID("1")
 	})
 }
 
 func TestCreateProperty(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -195,13 +185,13 @@ func TestCreateProperty(t *testing.T) {
 		),
 	).Returns(property)
 
-	newProperty := propertyservice.Create(property, "1")
+	newProperty := database.CreateProperty(property, "1")
 	assert.NotNil(t, newProperty)
 	assert.Equal(t, property.ID, newProperty.ID)
 }
 
 func TestCreateProperty_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -230,12 +220,12 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newProperty := propertyservice.Create(property, "1")
+	newProperty := database.CreateProperty(property, "1")
 	assert.Nil(t, newProperty)
 }
 
 func TestCreateProperty_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -258,12 +248,12 @@ func TestCreateProperty_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		propertyservice.Create(property, "1")
+		database.CreateProperty(property, "1")
 	})
 }
 
-func TestUpdatePicture(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestUpdatePropertyPicture(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -278,13 +268,13 @@ func TestUpdatePicture(t *testing.T) {
 		),
 	).Returns(property)
 
-	updatedProperty := propertyservice.UpdatePicture(property, image)
+	updatedProperty := database.UpdatePropertyPicture(property, image)
 	assert.NotNil(t, updatedProperty)
 	assert.Equal(t, property.ID, updatedProperty.ID)
 }
 
-func TestUpdatePicture_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestUpdatePropertyPicture_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -299,12 +289,12 @@ func TestUpdatePicture_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	updatedProperty := propertyservice.UpdatePicture(property, image)
+	updatedProperty := database.UpdatePropertyPicture(property, image)
 	assert.Nil(t, updatedProperty)
 }
 
-func TestUpdatePicture_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestUpdatePropertyPicture_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -320,6 +310,6 @@ func TestUpdatePicture_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		propertyservice.UpdatePicture(property, image)
+		database.UpdatePropertyPicture(property, image)
 	})
 }

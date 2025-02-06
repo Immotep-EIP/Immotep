@@ -1,15 +1,15 @@
-package contractservice
+package database
 
 import (
 	"errors"
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
+	"immotep/backend/services"
 )
 
-func GetCurrentActive(propertyId string) *db.ContractModel {
-	pdb := database.DBclient
+func GetCurrentActiveContract(propertyId string) *db.ContractModel {
+	pdb := services.DBclient
 	c, err := pdb.Client.Contract.FindMany(
 		db.Contract.PropertyID.Equals(propertyId),
 		db.Contract.Active.Equals(true),
@@ -30,8 +30,8 @@ func GetCurrentActive(propertyId string) *db.ContractModel {
 	return &c[0]
 }
 
-func Create(pendingContract db.PendingContractModel, tenant db.UserModel) *db.ContractModel {
-	pdb := database.DBclient
+func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel) *db.ContractModel {
+	pdb := services.DBclient
 	newContract, err := pdb.Client.Contract.CreateOne(
 		db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
 		db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
@@ -54,7 +54,7 @@ func Create(pendingContract db.PendingContractModel, tenant db.UserModel) *db.Co
 }
 
 func EndContract(propertyId string, tenantId string, endDate *db.DateTime) *db.ContractModel {
-	pdb := database.DBclient
+	pdb := services.DBclient
 	newContract, err := pdb.Client.Contract.FindUnique(
 		db.Contract.TenantIDPropertyID(db.Contract.TenantID.Equals(tenantId), db.Contract.PropertyID.Equals(propertyId)),
 	).Update(
@@ -70,8 +70,8 @@ func EndContract(propertyId string, tenantId string, endDate *db.DateTime) *db.C
 	return newContract
 }
 
-func GetPendingById(id string) *db.PendingContractModel {
-	pdb := database.DBclient
+func GetPendingContractById(id string) *db.PendingContractModel {
+	pdb := services.DBclient
 	pc, err := pdb.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(id)).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -82,8 +82,8 @@ func GetPendingById(id string) *db.PendingContractModel {
 	return pc
 }
 
-func CreatePending(pendingContract db.PendingContractModel, propertyId string) *db.PendingContractModel {
-	pdb := database.DBclient
+func CreatePendingContract(pendingContract db.PendingContractModel, propertyId string) *db.PendingContractModel {
+	pdb := services.DBclient
 	newContract, err := pdb.Client.PendingContract.CreateOne(
 		db.PendingContract.TenantEmail.Set(pendingContract.TenantEmail),
 		db.PendingContract.StartDate.Set(pendingContract.StartDate),

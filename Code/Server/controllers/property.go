@@ -7,10 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
-	brevoservice "immotep/backend/services/brevo"
-	contractservice "immotep/backend/services/contract"
-	imageservice "immotep/backend/services/image"
-	propertyservice "immotep/backend/services/property"
+	"immotep/backend/services/brevo"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -28,7 +26,7 @@ import (
 //	@Router			/owner/properties/ [get]
 func GetAllProperties(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	allProperties := propertyservice.GetAllByOwnerId(claims["id"])
+	allProperties := database.GetAllPropertyByOwnerId(claims["id"])
 	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
 }
 
@@ -48,7 +46,7 @@ func GetAllProperties(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/ [get]
 func GetPropertyById(c *gin.Context) {
-	property := propertyservice.GetByID(c.Param("property_id"))
+	property := database.GetPropertyByID(c.Param("property_id"))
 	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
 }
 
@@ -76,7 +74,7 @@ func CreateProperty(c *gin.Context) {
 		return
 	}
 
-	property := propertyservice.Create(req.ToDbProperty(), claims["id"])
+	property := database.CreateProperty(req.ToDbProperty(), claims["id"])
 	if property == nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
 		return
@@ -101,13 +99,13 @@ func CreateProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/picture/ [get]
 func GetPropertyPicture(c *gin.Context) {
-	property := propertyservice.GetByID(c.Param("property_id"))
+	property := database.GetPropertyByID(c.Param("property_id"))
 	pictureId, ok := property.PictureID()
 	if !ok {
 		c.Status(http.StatusNoContent)
 		return
 	}
-	image := imageservice.GetByID(pictureId)
+	image := database.GetImageByID(pictureId)
 	if image == nil {
 		utils.SendError(c, http.StatusNotFound, utils.PropertyPictureNotFound, nil)
 		return
@@ -145,10 +143,10 @@ func UpdatePropertyPicture(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
 		return
 	}
-	newImage := imageservice.Create(*image)
+	newImage := database.CreateImage(*image)
 
-	property := propertyservice.GetByID(c.Param("property_id"))
-	newProperty := propertyservice.UpdatePicture(*property, newImage)
+	property := database.GetPropertyByID(c.Param("property_id"))
+	newProperty := database.UpdatePropertyPicture(*property, newImage)
 	if newProperty == nil {
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)
 		return
@@ -181,18 +179,18 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
-	if contractservice.GetCurrentActive(c.Param("property_id")) != nil {
+	if database.GetCurrentActiveContract(c.Param("property_id")) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
 
-	pendingContract := contractservice.CreatePending(inviteReq.ToDbPendingContract(), c.Param("property_id"))
+	pendingContract := database.CreatePendingContract(inviteReq.ToDbPendingContract(), c.Param("property_id"))
 	if pendingContract == nil {
 		utils.SendError(c, http.StatusConflict, utils.InviteAlreadyExists, nil)
 		return
 	}
 
-	res, err := brevoservice.SendEmailInvite(*pendingContract)
+	res, err := brevo.SendEmailInvite(*pendingContract)
 	if err != nil {
 		log.Println(res, err.Error())
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedSendEmail, err)
@@ -217,7 +215,7 @@ func InviteTenant(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/end-contract [put]
 func EndContract(c *gin.Context) {
-	currentActive := contractservice.GetCurrentActive(c.Param("property_id"))
+	currentActive := database.GetCurrentActiveContract(c.Param("property_id"))
 	if currentActive == nil {
 		utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
 		return
@@ -226,10 +224,10 @@ func EndContract(c *gin.Context) {
 	_, ok := currentActive.EndDate()
 	if !ok {
 		now := time.Now().Truncate(time.Minute)
-		contractservice.EndContract(currentActive.PropertyID, currentActive.TenantID, &now)
+		database.EndContract(currentActive.PropertyID, currentActive.TenantID, &now)
 		c.Status(http.StatusNoContent)
 	} else {
-		contractservice.EndContract(currentActive.PropertyID, currentActive.TenantID, nil)
+		database.EndContract(currentActive.PropertyID, currentActive.TenantID, nil)
 		c.Status(http.StatusNoContent)
 	}
 }

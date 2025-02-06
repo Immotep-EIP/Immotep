@@ -10,10 +10,10 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
+	"immotep/backend/services"
 	"immotep/backend/utils"
 )
 
@@ -30,7 +30,7 @@ func BuildTestUser(id string) db.UserModel {
 }
 
 func TestGetAllUsers(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -52,7 +52,7 @@ func TestGetAllUsers(t *testing.T) {
 }
 
 func TestGetUserByID(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -74,7 +74,7 @@ func TestGetUserByID(t *testing.T) {
 }
 
 func TestGetUserByID_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
@@ -95,7 +95,7 @@ func TestGetUserByID_NotFound(t *testing.T) {
 }
 
 func TestGetProfile(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -119,7 +119,7 @@ func TestGetProfile(t *testing.T) {
 }
 
 func TestGetProfile_UserNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
@@ -142,7 +142,7 @@ func TestGetProfile_UserNotFound(t *testing.T) {
 }
 
 func TestGetUserProfilePicture(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -170,7 +170,7 @@ func TestGetUserProfilePicture(t *testing.T) {
 }
 
 func TestGetUserProfilePicture_NoContent(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -189,7 +189,7 @@ func TestGetUserProfilePicture_NoContent(t *testing.T) {
 }
 
 func TestGetUserProfilePicture_UserNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
@@ -210,7 +210,7 @@ func TestGetUserProfilePicture_UserNotFound(t *testing.T) {
 }
 
 func TestGetUserProfilePicture_ImageNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -238,7 +238,7 @@ func TestGetUserProfilePicture_ImageNotFound(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfile(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -279,7 +279,7 @@ func TestUpdateCurrentUserProfile(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfile_UserNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
@@ -308,7 +308,7 @@ func TestUpdateCurrentUserProfile_UserNotFound(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfile_MissingFields(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -338,7 +338,7 @@ func TestUpdateCurrentUserProfile_MissingFields(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfile_EmailAlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -383,7 +383,7 @@ func TestUpdateCurrentUserProfile_EmailAlreadyExists(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfilePicture(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -429,7 +429,7 @@ func TestUpdateCurrentUserProfilePicture(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfilePicture_UserNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
@@ -458,7 +458,7 @@ func TestUpdateCurrentUserProfilePicture_UserNotFound(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfilePicture_MissingFields(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -486,7 +486,7 @@ func TestUpdateCurrentUserProfilePicture_MissingFields(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfilePicture_BadBase64String(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -516,7 +516,7 @@ func TestUpdateCurrentUserProfilePicture_BadBase64String(t *testing.T) {
 }
 
 func TestGetCurrentUserProfilePicture(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -546,7 +546,7 @@ func TestGetCurrentUserProfilePicture(t *testing.T) {
 }
 
 func TestGetCurrentUserProfilePicture_NoContent(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -566,7 +566,7 @@ func TestGetCurrentUserProfilePicture_NoContent(t *testing.T) {
 }
 
 func TestGetCurrentUserProfilePicture_UserNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
@@ -588,7 +588,7 @@ func TestGetCurrentUserProfilePicture_UserNotFound(t *testing.T) {
 }
 
 func TestGetCurrentUserProfilePicture_ImageNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
-	furnitureservice "immotep/backend/services/furniture"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -33,7 +33,7 @@ func CreateFurniture(c *gin.Context) {
 		return
 	}
 
-	furniture := furnitureservice.Create(req.ToDbFurniture(), c.Param("room_id"))
+	furniture := database.CreateFurniture(req.ToDbFurniture(), c.Param("room_id"))
 	if furniture == nil {
 		utils.SendError(c, http.StatusConflict, utils.FurnitureAlreadyExists, nil)
 		return
@@ -57,7 +57,7 @@ func CreateFurniture(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/ [get]
 func GetFurnituresByRoom(c *gin.Context) {
-	furnitures := furnitureservice.GetByRoomID(c.Param("room_id"))
+	furnitures := database.GetFurnitureByRoomID(c.Param("room_id"))
 	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
 }
 
@@ -78,7 +78,7 @@ func GetFurnituresByRoom(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [get]
 func GetFurnitureByID(c *gin.Context) {
-	furniture := furnitureservice.GetByID(c.Param("furniture_id"))
+	furniture := database.GetFurnitureByID(c.Param("furniture_id"))
 	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
 }
 
@@ -96,7 +96,7 @@ func GetFurnitureByID(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [delete]
 func DeleteFurniture(c *gin.Context) {
-	ok := furnitureservice.Delete(c.Param("furniture_id"))
+	ok := database.DeleteFurniture(c.Param("furniture_id"))
 	if !ok {
 		utils.SendError(c, http.StatusNotFound, utils.FurnitureNotFound, nil)
 		return

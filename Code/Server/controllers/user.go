@@ -5,8 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
-	imageservice "immotep/backend/services/image"
-	userservice "immotep/backend/services/user"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -21,7 +20,7 @@ import (
 //	@Security		Bearer
 //	@Router			/users/ [get]
 func GetAllUsers(c *gin.Context) {
-	allUsers := userservice.GetAll()
+	allUsers := database.GetAllUsers()
 	c.JSON(http.StatusOK, utils.Map(allUsers, models.DbUserToResponse))
 }
 
@@ -40,7 +39,7 @@ func GetAllUsers(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/users/{id}/ [get]
 func GetUserByID(c *gin.Context) {
-	user := userservice.GetByID(c.Param("id"))
+	user := database.GetUserByID(c.Param("id"))
 	if user == nil {
 		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
@@ -64,7 +63,7 @@ func GetUserByID(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/users/{id}/picture/ [get]
 func GetUserProfilePicture(c *gin.Context) {
-	user := userservice.GetByID(c.Param("id"))
+	user := database.GetUserByID(c.Param("id"))
 	if user == nil {
 		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
@@ -75,7 +74,7 @@ func GetUserProfilePicture(c *gin.Context) {
 		c.Status(http.StatusNoContent)
 		return
 	}
-	image := imageservice.GetByID(pictureId)
+	image := database.GetImageByID(pictureId)
 	if image == nil {
 		utils.SendError(c, http.StatusNotFound, utils.UserProfilePictureNotFound, nil)
 		return
@@ -98,7 +97,7 @@ func GetUserProfilePicture(c *gin.Context) {
 //	@Router			/profile/ [get]
 func GetCurrentUserProfile(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	user := userservice.GetByID(claims["id"])
+	user := database.GetUserByID(claims["id"])
 	if user == nil {
 		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
@@ -123,7 +122,7 @@ func GetCurrentUserProfile(c *gin.Context) {
 //	@Router			/profile/ [put]
 func UpdateCurrentUserProfile(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	user := userservice.GetByID(claims["id"])
+	user := database.GetUserByID(claims["id"])
 	if user == nil {
 		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
@@ -136,7 +135,7 @@ func UpdateCurrentUserProfile(c *gin.Context) {
 		return
 	}
 
-	newUser := userservice.Update(claims["id"], req)
+	newUser := database.UpdateUser(claims["id"], req)
 	if newUser == nil {
 		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, nil)
 		return
@@ -161,7 +160,7 @@ func UpdateCurrentUserProfile(c *gin.Context) {
 //	@Router			/profile/picture/ [get]
 func GetCurrentUserProfilePicture(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	user := userservice.GetByID(claims["id"])
+	user := database.GetUserByID(claims["id"])
 	if user == nil {
 		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
@@ -172,7 +171,7 @@ func GetCurrentUserProfilePicture(c *gin.Context) {
 		c.Status(http.StatusNoContent)
 		return
 	}
-	image := imageservice.GetByID(pictureId)
+	image := database.GetImageByID(pictureId)
 	if image == nil {
 		utils.SendError(c, http.StatusNotFound, utils.UserProfilePictureNotFound, nil)
 		return
@@ -198,7 +197,7 @@ func GetCurrentUserProfilePicture(c *gin.Context) {
 //	@Router			/profile/picture/ [put]
 func UpdateCurrentUserProfilePicture(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	user := userservice.GetByID(claims["id"])
+	user := database.GetUserByID(claims["id"])
 	if user == nil {
 		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
@@ -216,9 +215,9 @@ func UpdateCurrentUserProfilePicture(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
 		return
 	}
-	newImage := imageservice.Create(*image)
+	newImage := database.CreateImage(*image)
 
-	newUser := userservice.UpdatePicture(*user, newImage)
+	newUser := database.UpdateUserPicture(*user, newImage)
 	if newUser == nil {
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)
 		return

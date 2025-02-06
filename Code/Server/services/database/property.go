@@ -1,12 +1,12 @@
-package propertyservice
+package database
 
 import (
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
+	"immotep/backend/services"
 )
 
-func GetAllByOwnerId(ownerId string) []db.PropertyModel {
-	pdb := database.DBclient
+func GetAllPropertyByOwnerId(ownerId string) []db.PropertyModel {
+	pdb := services.DBclient
 	allProperties, err := pdb.Client.Property.FindMany(
 		db.Property.OwnerID.Equals(ownerId),
 	).With(
@@ -19,8 +19,8 @@ func GetAllByOwnerId(ownerId string) []db.PropertyModel {
 	return allProperties
 }
 
-func GetByID(id string) *db.PropertyModel {
-	pdb := database.DBclient
+func GetPropertyByID(id string) *db.PropertyModel {
+	pdb := services.DBclient
 	property, err := pdb.Client.Property.FindUnique(
 		db.Property.ID.Equals(id),
 	).With(
@@ -36,8 +36,8 @@ func GetByID(id string) *db.PropertyModel {
 	return property
 }
 
-func Create(property db.PropertyModel, ownerId string) *db.PropertyModel {
-	pdb := database.DBclient
+func CreateProperty(property db.PropertyModel, ownerId string) *db.PropertyModel {
+	pdb := services.DBclient
 	newProperty, err := pdb.Client.Property.CreateOne(
 		db.Property.Name.Set(property.Name),
 		db.Property.Address.Set(property.Address),
@@ -61,8 +61,8 @@ func Create(property db.PropertyModel, ownerId string) *db.PropertyModel {
 	return newProperty
 }
 
-func UpdatePicture(property db.PropertyModel, image db.ImageModel) *db.PropertyModel {
-	pdb := database.DBclient
+func UpdatePropertyPicture(property db.PropertyModel, image db.ImageModel) *db.PropertyModel {
+	pdb := services.DBclient
 	newProperty, err := pdb.Client.Property.FindUnique(
 		db.Property.ID.Equals(property.ID),
 	).With(

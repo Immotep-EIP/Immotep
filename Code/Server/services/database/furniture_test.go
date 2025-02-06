@@ -1,4 +1,4 @@
-package furnitureservice_test
+package database_test
 
 import (
 	"errors"
@@ -6,13 +6,13 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
-	furnitureservice "immotep/backend/services/furniture"
+	"immotep/backend/services"
+	"immotep/backend/services/database"
 )
 
 func TestCreateFurniture(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furniture := db.FurnitureModel{
@@ -33,13 +33,13 @@ func TestCreateFurniture(t *testing.T) {
 		),
 	).Returns(furniture)
 
-	newFurniture := furnitureservice.Create(furniture, "1")
+	newFurniture := database.CreateFurniture(furniture, "1")
 	assert.NotNil(t, newFurniture)
 	assert.Equal(t, furniture.ID, newFurniture.ID)
 }
 
 func TestCreateFurniture_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furniture := db.FurnitureModel{
@@ -67,12 +67,12 @@ func TestCreateFurniture_AlreadyExists(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newFurniture := furnitureservice.Create(furniture, "1")
+	newFurniture := database.CreateFurniture(furniture, "1")
 	assert.Nil(t, newFurniture)
 }
 
 func TestCreateFurniture_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furniture := db.FurnitureModel{
@@ -94,12 +94,12 @@ func TestCreateFurniture_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		furnitureservice.Create(furniture, "1")
+		database.CreateFurniture(furniture, "1")
 	})
 }
 
-func TestGetByRoomID(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetFurnitureByRoomID(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furniture1 := db.FurnitureModel{
@@ -125,14 +125,14 @@ func TestGetByRoomID(t *testing.T) {
 		),
 	).ReturnsMany([]db.FurnitureModel{furniture1, furniture2})
 
-	furnitures := furnitureservice.GetByRoomID("1")
+	furnitures := database.GetFurnitureByRoomID("1")
 	assert.Len(t, furnitures, 2)
 	assert.Equal(t, furniture1.ID, furnitures[0].ID)
 	assert.Equal(t, furniture2.ID, furnitures[1].ID)
 }
 
-func TestGetByRoomID_NoFurnitures(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetFurnitureByRoomID_NoFurnitures(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Furniture.Expect(
@@ -143,12 +143,12 @@ func TestGetByRoomID_NoFurnitures(t *testing.T) {
 		),
 	).ReturnsMany([]db.FurnitureModel{})
 
-	furnitures := furnitureservice.GetByRoomID("1")
+	furnitures := database.GetFurnitureByRoomID("1")
 	assert.Empty(t, furnitures)
 }
 
-func TestGetByRoomID_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetFurnitureByRoomID_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Furniture.Expect(
@@ -160,12 +160,12 @@ func TestGetByRoomID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		furnitureservice.GetByRoomID("1")
+		database.GetFurnitureByRoomID("1")
 	})
 }
 
-func TestGetByID(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetFurnitureByID(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furniture := db.FurnitureModel{
@@ -184,13 +184,13 @@ func TestGetByID(t *testing.T) {
 		),
 	).Returns(furniture)
 
-	foundFurniture := furnitureservice.GetByID("1")
+	foundFurniture := database.GetFurnitureByID("1")
 	assert.NotNil(t, foundFurniture)
 	assert.Equal(t, furniture.ID, foundFurniture.ID)
 }
 
-func TestGetByID_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetFurnitureByID_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Furniture.Expect(
@@ -201,12 +201,12 @@ func TestGetByID_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	foundFurniture := furnitureservice.GetByID("1")
+	foundFurniture := database.GetFurnitureByID("1")
 	assert.Nil(t, foundFurniture)
 }
 
-func TestGetByID_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetFurnitureByID_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Furniture.Expect(
@@ -218,6 +218,6 @@ func TestGetByID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		furnitureservice.GetByID("1")
+		database.GetFurnitureByID("1")
 	})
 }

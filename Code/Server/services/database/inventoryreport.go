@@ -1,12 +1,12 @@
-package inventoryreportservice
+package database
 
 import (
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
+	"immotep/backend/services"
 )
 
-func Create(repType db.ReportType, propertyId string) *db.InventoryReportModel {
-	pdb := database.DBclient
+func CreateInvReport(repType db.ReportType, propertyId string) *db.InventoryReportModel {
+	pdb := services.DBclient
 	newInvReport, err := pdb.Client.InventoryReport.CreateOne(
 		db.InventoryReport.Type.Set(repType),
 		db.InventoryReport.Property.Link(db.Property.ID.Equals(propertyId)),
@@ -26,7 +26,7 @@ func CreateRoomState(roomState db.RoomStateModel, picturesId []string, invReport
 		params = append(params, db.RoomState.Pictures.Link(db.Image.ID.Equals(id)))
 	}
 
-	pdb := database.DBclient
+	pdb := services.DBclient
 	newRoomState, err := pdb.Client.RoomState.CreateOne(
 		db.RoomState.Cleanliness.Set(roomState.Cleanliness),
 		db.RoomState.State.Set(roomState.State),
@@ -50,7 +50,7 @@ func CreateFurnitureState(furnitureState db.FurnitureStateModel, picturesId []st
 		params = append(params, db.FurnitureState.Pictures.Link(db.Image.ID.Equals(id)))
 	}
 
-	pdb := database.DBclient
+	pdb := services.DBclient
 	newFurnitureState, err := pdb.Client.FurnitureState.CreateOne(
 		db.FurnitureState.Cleanliness.Set(furnitureState.Cleanliness),
 		db.FurnitureState.State.Set(furnitureState.State),
@@ -68,8 +68,8 @@ func CreateFurnitureState(furnitureState db.FurnitureStateModel, picturesId []st
 	return newFurnitureState
 }
 
-func GetByPropertyID(propertyID string) []db.InventoryReportModel {
-	pdb := database.DBclient
+func GetInvReportByPropertyID(propertyID string) []db.InventoryReportModel {
+	pdb := services.DBclient
 	invReports, err := pdb.Client.InventoryReport.FindMany(
 		db.InventoryReport.PropertyID.Equals(propertyID),
 	).OrderBy(
@@ -85,8 +85,8 @@ func GetByPropertyID(propertyID string) []db.InventoryReportModel {
 	return invReports
 }
 
-func GetByID(id string) *db.InventoryReportModel {
-	pdb := database.DBclient
+func GetInvReportByID(id string) *db.InventoryReportModel {
+	pdb := services.DBclient
 	invReport, err := pdb.Client.InventoryReport.FindUnique(
 		db.InventoryReport.ID.Equals(id),
 	).With(
@@ -103,8 +103,8 @@ func GetByID(id string) *db.InventoryReportModel {
 	return invReport
 }
 
-func GetLatest(propertyID string) *db.InventoryReportModel {
-	pdb := database.DBclient
+func GetLatestInvReport(propertyID string) *db.InventoryReportModel {
+	pdb := services.DBclient
 	invReport, err := pdb.Client.InventoryReport.FindFirst(
 		db.InventoryReport.PropertyID.Equals(propertyID),
 	).OrderBy(

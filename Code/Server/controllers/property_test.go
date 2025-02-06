@@ -11,10 +11,10 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
+	"immotep/backend/services"
 	"immotep/backend/utils"
 )
 
@@ -80,7 +80,7 @@ func BuildTestContract() db.ContractModel {
 }
 
 func TestGetAllProperties(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -109,7 +109,7 @@ func TestGetAllProperties(t *testing.T) {
 }
 
 func TestGetPropertyById(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -136,7 +136,7 @@ func TestGetPropertyById(t *testing.T) {
 }
 
 func TestGetPropertyById_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -163,7 +163,7 @@ func TestGetPropertyById_NotFound(t *testing.T) {
 }
 
 func TestGetPropertyById_NotYours(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -190,7 +190,7 @@ func TestGetPropertyById_NotYours(t *testing.T) {
 }
 
 func TestCreateProperty(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -253,7 +253,7 @@ func TestCreateProperty_MissingFields(t *testing.T) {
 }
 
 func TestCreateProperty_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -301,7 +301,7 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 }
 
 func TestInviteTenant(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -381,7 +381,7 @@ func TestInviteTenant_MissingField(t *testing.T) {
 }
 
 func TestInviteTenant_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -418,7 +418,7 @@ func TestInviteTenant_PropertyNotFound(t *testing.T) {
 }
 
 func TestInviteTenant_PropertyNotYours(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -456,7 +456,7 @@ func TestInviteTenant_PropertyNotYours(t *testing.T) {
 }
 
 func TestInviteTenant_PropertyNotAvailable(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -501,7 +501,7 @@ func TestInviteTenant_PropertyNotAvailable(t *testing.T) {
 }
 
 func TestInviteTenant_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -563,7 +563,7 @@ func TestInviteTenant_AlreadyExists(t *testing.T) {
 }
 
 func TestGetPropertyPicture(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -594,7 +594,7 @@ func TestGetPropertyPicture(t *testing.T) {
 }
 
 func TestGetPropertyPicture_NoContent(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -617,7 +617,7 @@ func TestGetPropertyPicture_NoContent(t *testing.T) {
 }
 
 func TestGetPropertyPicture_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -647,7 +647,7 @@ func TestGetPropertyPicture_NotFound(t *testing.T) {
 }
 
 func TestGetPropertyPicture_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -672,7 +672,7 @@ func TestGetPropertyPicture_PropertyNotFound(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -721,7 +721,7 @@ func TestUpdatePropertyPicture(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_MissingFields(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -752,7 +752,7 @@ func TestUpdatePropertyPicture_MissingFields(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_BadBase64String(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -785,7 +785,7 @@ func TestUpdatePropertyPicture_BadBase64String(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -817,7 +817,7 @@ func TestUpdatePropertyPicture_PropertyNotFound(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -866,7 +866,7 @@ func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
 }
 
 func TestEndContract1(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -905,7 +905,7 @@ func TestEndContract1(t *testing.T) {
 }
 
 func TestEndContract2(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -945,7 +945,7 @@ func TestEndContract2(t *testing.T) {
 }
 
 func TestEndContract_NoActiveContract(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -979,7 +979,7 @@ func TestEndContract_NoActiveContract(t *testing.T) {
 }
 
 func TestEndContract_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(

@@ -10,10 +10,10 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
+	"immotep/backend/services"
 	"immotep/backend/utils"
 )
 
@@ -42,7 +42,7 @@ func BuildTestFurniture(id string, roomId string) db.FurnitureModel {
 }
 
 func TestCreateFurniture(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -92,7 +92,7 @@ func TestCreateFurniture(t *testing.T) {
 }
 
 func TestCreateFurniture_MissingFields(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -133,7 +133,7 @@ func TestCreateFurniture_MissingFields(t *testing.T) {
 }
 
 func TestCreateFurniture_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -190,7 +190,7 @@ func TestCreateFurniture_AlreadyExists(t *testing.T) {
 }
 
 func TestGetFurnituresByRoom(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -238,7 +238,7 @@ func TestGetFurnituresByRoom(t *testing.T) {
 }
 
 func TestGetFurnituresByRoom_RoomNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -272,7 +272,7 @@ func TestGetFurnituresByRoom_RoomNotFound(t *testing.T) {
 }
 
 func TestGetFurnituresByRoom_WrongProperty(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -307,7 +307,7 @@ func TestGetFurnituresByRoom_WrongProperty(t *testing.T) {
 }
 
 func TestGetFurnituresByRoom_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -334,7 +334,7 @@ func TestGetFurnituresByRoom_PropertyNotFound(t *testing.T) {
 }
 
 func TestGetFurnitureById(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -378,7 +378,7 @@ func TestGetFurnitureById(t *testing.T) {
 }
 
 func TestGetFurnitureById_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -421,7 +421,7 @@ func TestGetFurnitureById_NotFound(t *testing.T) {
 }
 
 func TestGetFurnitureById_WrongRoom(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -465,7 +465,7 @@ func TestGetFurnitureById_WrongRoom(t *testing.T) {
 }
 
 func TestGetFurnitureById_RoomNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -499,7 +499,7 @@ func TestGetFurnitureById_RoomNotFound(t *testing.T) {
 }
 
 func TestGetFurnitureById_WrongProperty(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -534,7 +534,7 @@ func TestGetFurnitureById_WrongProperty(t *testing.T) {
 }
 
 func TestGetFurnitureById_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(

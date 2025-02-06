@@ -10,10 +10,10 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
+	"immotep/backend/services"
 	"immotep/backend/utils"
 )
 
@@ -136,7 +136,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 }
 
 func TestCreateInventoryReport(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -241,7 +241,7 @@ func TestCreateInventoryReport(t *testing.T) {
 }
 
 func TestCreateInventoryReport_MissingFields(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -275,7 +275,7 @@ func TestCreateInventoryReport_MissingFields(t *testing.T) {
 }
 
 func TestCreateInventoryReport_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -329,7 +329,7 @@ func TestCreateInventoryReport_AlreadyExists(t *testing.T) {
 }
 
 func TestCreateInventoryReport_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -361,7 +361,7 @@ func TestCreateInventoryReport_PropertyNotFound(t *testing.T) {
 }
 
 func TestGetInventoryReportsByProperty(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -407,7 +407,7 @@ func TestGetInventoryReportsByProperty(t *testing.T) {
 }
 
 func TestGetInventoryReportsByProperty_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -435,7 +435,7 @@ func TestGetInventoryReportsByProperty_PropertyNotFound(t *testing.T) {
 }
 
 func TestGetInventoryReportByID(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -475,7 +475,7 @@ func TestGetInventoryReportByID(t *testing.T) {
 }
 
 func TestGetInventoryReportByID_Latest(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -517,7 +517,7 @@ func TestGetInventoryReportByID_Latest(t *testing.T) {
 }
 
 func TestGetInventoryReportByID_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -556,7 +556,7 @@ func TestGetInventoryReportByID_NotFound(t *testing.T) {
 }
 
 func TestCreateInventoryReport_RoomNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -605,7 +605,7 @@ func TestCreateInventoryReport_RoomNotFound(t *testing.T) {
 }
 
 func TestCreateInventoryReport_FurnitureNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")

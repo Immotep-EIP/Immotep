@@ -1,4 +1,4 @@
-package brevoservice
+package brevo
 
 import (
 	"bytes"

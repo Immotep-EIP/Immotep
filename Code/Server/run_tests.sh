@@ -6,7 +6,7 @@ set -e
 ./run_linter.sh
 
 echo "Running tests..." >&2
-list=$(go list ./... | grep -ve prisma -ve docs -ve database -ve '^immotep/backend$')
+list=$(go list ./... | grep -ve prisma -ve docs -ve chatgpt -ve brevo -ve '^immotep/backend$' -ve '^immotep/backend/services$')
 
 # Run tests and generate coverage report for all packages except prisma
 if [[ $1 == "debug" ]]; then

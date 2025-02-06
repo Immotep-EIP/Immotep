@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
-	roomservice "immotep/backend/services/room"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -32,7 +32,7 @@ func CreateRoom(c *gin.Context) {
 		return
 	}
 
-	room := roomservice.Create(req.ToDbRoom(), c.Param("property_id"))
+	room := database.CreateRoom(req.ToDbRoom(), c.Param("property_id"))
 	if room == nil {
 		utils.SendError(c, http.StatusConflict, utils.RoomAlreadyExists, nil)
 		return
@@ -55,7 +55,7 @@ func CreateRoom(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/ [get]
 func GetRoomsByProperty(c *gin.Context) {
-	rooms := roomservice.GetByPropertyID(c.Param("property_id"))
+	rooms := database.GetRoomByPropertyID(c.Param("property_id"))
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 
@@ -75,7 +75,7 @@ func GetRoomsByProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [get]
 func GetRoomByID(c *gin.Context) {
-	room := roomservice.GetByID(c.Param("room_id"))
+	room := database.GetRoomByID(c.Param("room_id"))
 	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
 }
 
@@ -95,7 +95,7 @@ func GetRoomByID(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [delete]
 func DeleteRoom(c *gin.Context) {
-	ok := roomservice.Delete(c.Param("room_id"))
+	ok := database.DeleteRoom(c.Param("room_id"))
 	if !ok {
 		utils.SendError(c, http.StatusNotFound, utils.RoomNotFound, nil)
 		return

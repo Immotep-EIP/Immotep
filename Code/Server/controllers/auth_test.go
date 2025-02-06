@@ -13,9 +13,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"immotep/backend/controllers"
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
+	"immotep/backend/services"
 	"immotep/backend/utils"
 )
 
@@ -109,7 +109,7 @@ func TestRegisterTenantWrongPassword(t *testing.T) {
 }
 
 func TestRegisterTenantInviteNotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.PendingContract.Expect(
@@ -134,7 +134,7 @@ func TestRegisterTenantInviteNotFound(t *testing.T) {
 }
 
 func TestRegisterTenantWrongEmail(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	pendingContract := BuildTestPendingContract()

@@ -8,9 +8,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
 	"immotep/backend/router/middlewares"
+	"immotep/backend/services"
 	"immotep/backend/utils"
 )
 
@@ -40,7 +40,7 @@ func BuildTestProperty(id string) db.PropertyModel {
 func TestCheckPropertyOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -63,7 +63,7 @@ func TestCheckPropertyOwnership(t *testing.T) {
 func TestCheckPropertyOwnership_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
@@ -85,7 +85,7 @@ func TestCheckPropertyOwnership_NotFound(t *testing.T) {
 func TestCheckPropertyOwnership_NotYours(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -108,7 +108,7 @@ func TestCheckPropertyOwnership_NotYours(t *testing.T) {
 func TestCheckRoomOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	room := db.RoomModel{
@@ -135,7 +135,7 @@ func TestCheckRoomOwnership(t *testing.T) {
 func TestCheckRoomOwnership_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Room.Expect(
@@ -156,7 +156,7 @@ func TestCheckRoomOwnership_NotFound(t *testing.T) {
 func TestCheckRoomOwnership_NotYours(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	room := db.RoomModel{
@@ -183,7 +183,7 @@ func TestCheckRoomOwnership_NotYours(t *testing.T) {
 func TestCheckFurnitureOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furniture := db.FurnitureModel{
@@ -214,7 +214,7 @@ func TestCheckFurnitureOwnership(t *testing.T) {
 func TestCheckFurnitureOwnership_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Furniture.Expect(
@@ -239,7 +239,7 @@ func TestCheckFurnitureOwnership_NotFound(t *testing.T) {
 func TestCheckFurnitureOwnership_NotYours(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furniture := db.FurnitureModel{
@@ -270,7 +270,7 @@ func TestCheckFurnitureOwnership_NotYours(t *testing.T) {
 func TestCheckInventoryReportOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	invReport := db.InventoryReportModel{
@@ -317,7 +317,7 @@ func TestCheckInventoryReportOwnership_Latest(t *testing.T) {
 func TestCheckInventoryReportOwnership_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.InventoryReport.Expect(
@@ -344,7 +344,7 @@ func TestCheckInventoryReportOwnership_NotFound(t *testing.T) {
 func TestCheckInventoryReportOwnership_NotYours(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	invReport := db.InventoryReportModel{

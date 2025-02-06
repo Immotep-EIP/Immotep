@@ -1,4 +1,4 @@
-package userservice_test
+package database_test
 
 import (
 	"errors"
@@ -6,10 +6,10 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/database"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
-	userservice "immotep/backend/services/user"
+	"immotep/backend/services"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -25,17 +25,8 @@ func BuildTestUser(id string) db.UserModel {
 	}
 }
 
-func BuildTestImage(id string, base64data string) db.ImageModel {
-	ret := models.StringToDbImage(base64data)
-	if ret == nil {
-		panic("Invalid base64 string")
-	}
-	ret.ID = id
-	return *ret
-}
-
 func TestGetAllUsers(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -44,13 +35,13 @@ func TestGetAllUsers(t *testing.T) {
 		client.Client.User.FindMany(),
 	).ReturnsMany([]db.UserModel{user})
 
-	allUsers := userservice.GetAll()
+	allUsers := database.GetAllUsers()
 	assert.Len(t, allUsers, 1)
 	assert.Equal(t, user.ID, allUsers[0].ID)
 }
 
 func TestGetAllUsers_MultipleUsers(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user1 := BuildTestUser("1")
@@ -60,26 +51,26 @@ func TestGetAllUsers_MultipleUsers(t *testing.T) {
 		client.Client.User.FindMany(),
 	).ReturnsMany([]db.UserModel{user1, user2})
 
-	allUsers := userservice.GetAll()
+	allUsers := database.GetAllUsers()
 	assert.Len(t, allUsers, 2)
 	assert.Equal(t, user1.ID, allUsers[0].ID)
 	assert.Equal(t, user2.ID, allUsers[1].ID)
 }
 
 func TestGetAllUsers_NoUsers(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
 		client.Client.User.FindMany(),
 	).ReturnsMany([]db.UserModel{})
 
-	allUsers := userservice.GetAll()
+	allUsers := database.GetAllUsers()
 	assert.Empty(t, allUsers)
 }
 
 func TestGetAllUsers_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
@@ -87,12 +78,12 @@ func TestGetAllUsers_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		userservice.GetAll()
+		database.GetAllUsers()
 	})
 }
 
 func TestGetUserByID(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -101,25 +92,25 @@ func TestGetUserByID(t *testing.T) {
 		client.Client.User.FindUnique(db.User.ID.Equals("1")),
 	).Returns(user)
 
-	foundUser := userservice.GetByID("1")
+	foundUser := database.GetUserByID("1")
 	assert.NotNil(t, foundUser)
 	assert.Equal(t, user.ID, foundUser.ID)
 }
 
 func TestGetUserByID_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
 		client.Client.User.FindUnique(db.User.ID.Equals("1")),
 	).Errors(db.ErrNotFound)
 
-	foundUser := userservice.GetByID("1")
+	foundUser := database.GetUserByID("1")
 	assert.Nil(t, foundUser)
 }
 
 func TestGetUserByID_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.User.Expect(
@@ -127,12 +118,12 @@ func TestGetUserByID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		userservice.GetByID("1")
+		database.GetUserByID("1")
 	})
 }
 
 func TestCreateUser(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -147,13 +138,13 @@ func TestCreateUser(t *testing.T) {
 		),
 	).Returns(user)
 
-	newUser := userservice.Create(user, db.RoleOwner)
+	newUser := database.CreateUser(user, db.RoleOwner)
 	assert.NotNil(t, newUser)
 	assert.Equal(t, user.ID, newUser.ID)
 }
 
 func TestCreateUser_DuplicateEmail(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := db.UserModel{
@@ -182,12 +173,12 @@ func TestCreateUser_DuplicateEmail(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newUser := userservice.Create(user, db.RoleOwner)
+	newUser := database.CreateUser(user, db.RoleOwner)
 	assert.Nil(t, newUser)
 }
 
 func TestCreateUser_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -203,12 +194,12 @@ func TestCreateUser_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		userservice.Create(user, db.RoleOwner)
+		database.CreateUser(user, db.RoleOwner)
 	})
 }
 
 func TestUpdateUser(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -226,13 +217,13 @@ func TestUpdateUser(t *testing.T) {
 		),
 	).Returns(user)
 
-	updatedUser := userservice.Update(user.ID, updateRequest)
+	updatedUser := database.UpdateUser(user.ID, updateRequest)
 	assert.NotNil(t, updatedUser)
 	assert.Equal(t, user.ID, updatedUser.ID)
 }
 
 func TestUpdateUser_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	updateRequest := models.UserUpdateRequest{
@@ -249,12 +240,12 @@ func TestUpdateUser_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	updatedUser := userservice.Update("1", updateRequest)
+	updatedUser := database.UpdateUser("1", updateRequest)
 	assert.Nil(t, updatedUser)
 }
 
 func TestUpdateUser_DuplicateEmail(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -279,12 +270,12 @@ func TestUpdateUser_DuplicateEmail(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	updatedUser := userservice.Update(user.ID, updateRequest)
+	updatedUser := database.UpdateUser(user.ID, updateRequest)
 	assert.Nil(t, updatedUser)
 }
 
 func TestUpdateUser_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -303,12 +294,12 @@ func TestUpdateUser_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		userservice.Update(user.ID, updateRequest)
+		database.UpdateUser(user.ID, updateRequest)
 	})
 }
 
 func TestUpdatePicture(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -320,13 +311,13 @@ func TestUpdatePicture(t *testing.T) {
 		),
 	).Returns(user)
 
-	updatedUser := userservice.UpdatePicture(user, image)
+	updatedUser := database.UpdateUserPicture(user, image)
 	assert.NotNil(t, updatedUser)
 	assert.Equal(t, user.ID, updatedUser.ID)
 }
 
 func TestUpdatePicture_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -338,12 +329,12 @@ func TestUpdatePicture_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	updatedUser := userservice.UpdatePicture(user, image)
+	updatedUser := database.UpdateUserPicture(user, image)
 	assert.Nil(t, updatedUser)
 }
 
 func TestUpdatePicture_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
@@ -356,6 +347,6 @@ func TestUpdatePicture_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		userservice.UpdatePicture(user, image)
+		database.UpdateUserPicture(user, image)
 	})
 }

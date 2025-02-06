@@ -1,4 +1,4 @@
-package inventoryreportservice_test
+package database_test
 
 import (
 	"errors"
@@ -6,13 +6,13 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
-	inventoryreportservice "immotep/backend/services/inventoryreport"
+	"immotep/backend/services"
+	"immotep/backend/services/database"
 )
 
 func TestCreateInventoryReport(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	invReport := db.InventoryReportModel{
@@ -30,13 +30,13 @@ func TestCreateInventoryReport(t *testing.T) {
 		),
 	).Returns(invReport)
 
-	newInvReport := inventoryreportservice.Create(db.ReportTypeStart, "1")
+	newInvReport := database.CreateInvReport(db.ReportTypeStart, "1")
 	assert.NotNil(t, newInvReport)
 	assert.Equal(t, invReport.ID, newInvReport.ID)
 }
 
 func TestCreateInventoryReport_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.InventoryReport.Expect(
@@ -53,12 +53,12 @@ func TestCreateInventoryReport_AlreadyExists(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newInvReport := inventoryreportservice.Create(db.ReportTypeStart, "1")
+	newInvReport := database.CreateInvReport(db.ReportTypeStart, "1")
 	assert.Nil(t, newInvReport)
 }
 
 func TestCreateInventoryReport_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.InventoryReport.Expect(
@@ -69,12 +69,12 @@ func TestCreateInventoryReport_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		inventoryreportservice.Create(db.ReportTypeStart, "1")
+		database.CreateInvReport(db.ReportTypeStart, "1")
 	})
 }
 
 func TestCreateRoomState(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	roomState := db.RoomStateModel{
@@ -97,7 +97,7 @@ func TestCreateRoomState(t *testing.T) {
 		),
 	).Returns(roomState)
 
-	newRoomState := inventoryreportservice.CreateRoomState(roomState, []string{"1"}, "1")
+	newRoomState := database.CreateRoomState(roomState, []string{"1"}, "1")
 	assert.NotNil(t, newRoomState)
 	assert.Equal(t, roomState.Cleanliness, newRoomState.Cleanliness)
 	assert.Equal(t, roomState.State, newRoomState.State)
@@ -105,7 +105,7 @@ func TestCreateRoomState(t *testing.T) {
 }
 
 func TestCreateRoomState_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	roomState := db.RoomStateModel{
@@ -135,12 +135,12 @@ func TestCreateRoomState_AlreadyExists(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newRoomState := inventoryreportservice.CreateRoomState(roomState, []string{"1"}, "1")
+	newRoomState := database.CreateRoomState(roomState, []string{"1"}, "1")
 	assert.Nil(t, newRoomState)
 }
 
 func TestCreateRoomState_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	roomState := db.RoomStateModel{
@@ -164,12 +164,12 @@ func TestCreateRoomState_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		inventoryreportservice.CreateRoomState(roomState, []string{"1"}, "1")
+		database.CreateRoomState(roomState, []string{"1"}, "1")
 	})
 }
 
 func TestCreateFurnitureState(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furnitureState := db.FurnitureStateModel{
@@ -192,7 +192,7 @@ func TestCreateFurnitureState(t *testing.T) {
 		),
 	).Returns(furnitureState)
 
-	newFurnitureState := inventoryreportservice.CreateFurnitureState(furnitureState, []string{"1"}, "1")
+	newFurnitureState := database.CreateFurnitureState(furnitureState, []string{"1"}, "1")
 	assert.NotNil(t, newFurnitureState)
 	assert.Equal(t, furnitureState.Cleanliness, newFurnitureState.Cleanliness)
 	assert.Equal(t, furnitureState.State, newFurnitureState.State)
@@ -200,7 +200,7 @@ func TestCreateFurnitureState(t *testing.T) {
 }
 
 func TestCreateFurnitureState_AlreadyExists(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furnitureState := db.FurnitureStateModel{
@@ -230,12 +230,12 @@ func TestCreateFurnitureState_AlreadyExists(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newFurnitureState := inventoryreportservice.CreateFurnitureState(furnitureState, []string{"1"}, "1")
+	newFurnitureState := database.CreateFurnitureState(furnitureState, []string{"1"}, "1")
 	assert.Nil(t, newFurnitureState)
 }
 
 func TestCreateFurnitureState_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furnitureState := db.FurnitureStateModel{
@@ -259,12 +259,12 @@ func TestCreateFurnitureState_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		inventoryreportservice.CreateFurnitureState(furnitureState, []string{"1"}, "1")
+		database.CreateFurnitureState(furnitureState, []string{"1"}, "1")
 	})
 }
 
-func TestGetByPropertyID(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetInvReportByPropertyID(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	invReport := db.InventoryReportModel{
@@ -287,13 +287,13 @@ func TestGetByPropertyID(t *testing.T) {
 		),
 	).ReturnsMany([]db.InventoryReportModel{invReport})
 
-	invReports := inventoryreportservice.GetByPropertyID("1")
+	invReports := database.GetInvReportByPropertyID("1")
 	assert.Len(t, invReports, 1)
 	assert.Equal(t, invReport.ID, invReports[0].ID)
 }
 
-func TestGetByPropertyID_MultipleReports(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetInvReportByPropertyID_MultipleReports(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	invReport1 := db.InventoryReportModel{
@@ -324,14 +324,14 @@ func TestGetByPropertyID_MultipleReports(t *testing.T) {
 		),
 	).ReturnsMany([]db.InventoryReportModel{invReport1, invReport2})
 
-	invReports := inventoryreportservice.GetByPropertyID("1")
+	invReports := database.GetInvReportByPropertyID("1")
 	assert.Len(t, invReports, 2)
 	assert.Equal(t, invReport1.ID, invReports[0].ID)
 	assert.Equal(t, invReport2.ID, invReports[1].ID)
 }
 
-func TestGetByPropertyID_NoReports(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetInvReportByPropertyID_NoReports(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.InventoryReport.Expect(
@@ -346,12 +346,12 @@ func TestGetByPropertyID_NoReports(t *testing.T) {
 		),
 	).ReturnsMany([]db.InventoryReportModel{})
 
-	invReports := inventoryreportservice.GetByPropertyID("1")
+	invReports := database.GetInvReportByPropertyID("1")
 	assert.Empty(t, invReports)
 }
 
-func TestGetByPropertyID_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetInvReportByPropertyID_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.InventoryReport.Expect(
@@ -367,12 +367,12 @@ func TestGetByPropertyID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		inventoryreportservice.GetByPropertyID("1")
+		database.GetInvReportByPropertyID("1")
 	})
 }
 
-func TestGetByID(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetInvReportByID(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	invReport := db.InventoryReportModel{
@@ -393,13 +393,13 @@ func TestGetByID(t *testing.T) {
 		),
 	).Returns(invReport)
 
-	foundInvReport := inventoryreportservice.GetByID("1")
+	foundInvReport := database.GetInvReportByID("1")
 	assert.NotNil(t, foundInvReport)
 	assert.Equal(t, invReport.ID, foundInvReport.ID)
 }
 
-func TestGetByID_NotFound(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetInvReportByID_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.InventoryReport.Expect(
@@ -412,12 +412,12 @@ func TestGetByID_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	foundInvReport := inventoryreportservice.GetByID("1")
+	foundInvReport := database.GetInvReportByID("1")
 	assert.Nil(t, foundInvReport)
 }
 
-func TestGetByID_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetInvReportByID_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.InventoryReport.Expect(
@@ -431,12 +431,12 @@ func TestGetByID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		inventoryreportservice.GetByID("1")
+		database.GetInvReportByID("1")
 	})
 }
 
-func TestGetLatest(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetLatestInvReport(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	invReport := db.InventoryReportModel{
@@ -459,13 +459,13 @@ func TestGetLatest(t *testing.T) {
 		),
 	).Returns(invReport)
 
-	latestInvReport := inventoryreportservice.GetLatest("1")
+	latestInvReport := database.GetLatestInvReport("1")
 	assert.NotNil(t, latestInvReport)
 	assert.Equal(t, invReport.ID, latestInvReport.ID)
 }
 
-func TestGetLatest_NoReports(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetLatestInvReport_NoReports(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.InventoryReport.Expect(
@@ -480,12 +480,12 @@ func TestGetLatest_NoReports(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	latestInvReport := inventoryreportservice.GetLatest("1")
+	latestInvReport := database.GetLatestInvReport("1")
 	assert.Nil(t, latestInvReport)
 }
 
-func TestGetLatest_NoConnection(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+func TestGetLatestInvReport_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.InventoryReport.Expect(
@@ -501,6 +501,6 @@ func TestGetLatest_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		inventoryreportservice.GetLatest("1")
+		database.GetLatestInvReport("1")
 	})
 }

@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"immotep/backend/database"
 	_ "immotep/backend/docs"
 	"immotep/backend/router"
+	"immotep/backend/services"
 )
 
 //	@title			Immotep API
@@ -38,7 +38,7 @@ func mainFunc() int {
 		return 1
 	}
 
-	db, err := database.ConnectDB()
+	db, err := services.ConnectDB()
 	if err != nil {
 		log.Println(err)
 		return 1
