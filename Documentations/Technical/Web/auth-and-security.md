@@ -17,12 +17,16 @@
 
 The **Remember Me** option stores tokens in `localStorage` if checked, ensuring they persist across sessions. If unchecked, tokens are stored in `sessionStorage` for the current session only.
 
+---
+
 ## User Logout
 
 The **Logout Button** allows users to:
 
 - Clear all tokens from both `localStorage` and `sessionStorage`.
 - Be redirected to the login page.
+
+---
 
 ## Token Types and Expiration
 
@@ -33,12 +37,16 @@ We use two types of tokens:
 
 When the `access_token` expires, the app will attempt to use the `refresh_token` to request a new token from the API.
 
+---
+
 ## Axios Interceptors for Token Management
 
 - **Request Interceptor**: Each outgoing API request is intercepted to add the `access_token` to the `Authorization` header.
 - **Response Interceptor**: If a 401 `Unauthorized` error is received, the interceptor checks if a valid `refresh_token` exists and requests a new `access_token` from the API.
 
 If successful, the new token is saved, and the original request is retried with the updated credentials.
+
+---
 
 ## Token Expiry and User Session
 

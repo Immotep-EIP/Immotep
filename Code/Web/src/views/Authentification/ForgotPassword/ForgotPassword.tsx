@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Input, Form, message } from 'antd'
 import type { FormProps } from 'antd'
+
 import AuthentificationPage from '@/components/AuthentificationPage/AuthentificationPage'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
+import PageMeta from '@/components/PageMeta/PageMeta'
 import '@/App.css'
 
 type FieldType = {
@@ -33,65 +35,74 @@ const ForgotPassword: React.FC = () => {
   }
 
   return (
-    <AuthentificationPage
-      title={t('pages.forgot_password.title')}
-      subtitle={t('pages.forgot_password.description')}
-    >
-      <Form
-        name="basic"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-        layout="vertical"
-        style={{ width: '90%', maxWidth: '400px' }}
+    <>
+      <PageMeta
+        title={t('pages.forgot_password.document_title')}
+        description={t('pages.forgot_password.document_description')}
+        keywords="forgot password, reset, authentication, Immotep"
+      />
+      <AuthentificationPage
+        title={t('pages.forgot_password.title')}
+        subtitle={t('pages.forgot_password.description')}
       >
-        <Form.Item
-          label={t('components.input.email.label')}
-          name="email"
-          rules={[
-            { required: true, message: t('components.input.email.error') }
-          ]}
+        <Form
+          name="basic"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+          layout="vertical"
+          style={{ width: '90%', maxWidth: '400px' }}
         >
-          <Input
-            className="input"
-            size="large"
-            placeholder={t('components.input.email.placeholder')}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label={t('components.input.email_confirmation.label')}
-          name="emailConfirmation"
-          rules={[
-            {
-              required: true,
-              message: t('components.input.email_confirmation.error')
-            }
-          ]}
-        >
-          <Input
-            className="input"
-            size="large"
-            placeholder={t('components.input.email_confirmation.placeholder')}
-          />
-        </Form.Item>
-
-        <Form.Item>
-          <Button
-            className="submitButton"
-            htmlType="submit"
-            // onClick={goToLogin}
-            size="large"
-            color="default"
-            variant="solid"
-            loading={loading}
+          <Form.Item
+            label={t('components.input.email.label')}
+            name="email"
+            rules={[
+              { required: true, message: t('components.input.email.error') }
+            ]}
           >
-            {t('components.button.send_email')}
-          </Button>
-        </Form.Item>
-      </Form>
-    </AuthentificationPage>
+            <Input
+              className="input"
+              size="large"
+              placeholder={t('components.input.email.placeholder')}
+              aria-label={t('components.input.email.placeholder')}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={t('components.input.email_confirmation.label')}
+            name="emailConfirmation"
+            rules={[
+              {
+                required: true,
+                message: t('components.input.email_confirmation.error')
+              }
+            ]}
+          >
+            <Input
+              className="input"
+              size="large"
+              placeholder={t('components.input.email_confirmation.placeholder')}
+              aria-label={t('components.input.email_confirmation.placeholder')}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              className="submitButton"
+              htmlType="submit"
+              // onClick={goToLogin}
+              size="large"
+              color="default"
+              variant="solid"
+              loading={loading}
+            >
+              {t('components.button.send_email')}
+            </Button>
+          </Form.Item>
+        </Form>
+      </AuthentificationPage>
+    </>
   )
 }
 

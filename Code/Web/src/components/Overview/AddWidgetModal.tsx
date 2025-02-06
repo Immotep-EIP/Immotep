@@ -48,7 +48,10 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
             { required: true, message: t('components.input.widget_name.error') }
           ]}
         >
-          <Input placeholder={t('components.input.widget_name.placeholder')} />
+          <Input
+            placeholder={t('components.input.widget_name.placeholder')}
+            aria-label={t('components.input.widget_name.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item
@@ -60,6 +63,7 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
         >
           <Select
             placeholder={t('components.input.widget_type.placeholder')}
+            aria-label={t('components.input.widget_type.placeholder')}
             options={widgetTypes}
           />
         </Form.Item>
@@ -78,6 +82,7 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
           <InputNumber
             min={1}
             placeholder={t('components.input.widget_width.placeholder')}
+            aria-label={t('components.input.widget_width.placeholder')}
             style={{ width: '100%' }}
           />
         </Form.Item>
@@ -96,6 +101,7 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
           <InputNumber
             min={1}
             placeholder={t('components.input.widget_height.placeholder')}
+            aria-label={t('components.input.widget_height.placeholder')}
             style={{ width: '100%' }}
           />
         </Form.Item>

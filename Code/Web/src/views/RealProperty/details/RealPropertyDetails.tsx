@@ -18,6 +18,7 @@ import { PropertyIdProvider } from '@/context/propertyIdContext'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
 import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentContract'
 import useImageCache from '@/hooks/useEffect/useImageCache'
+import PageMeta from '@/components/PageMeta/PageMeta'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
 import InventoryTab from './tabs/3InventoryTab'
@@ -175,71 +176,78 @@ const RealPropertyDetails: React.FC = () => {
   }
 
   return (
-    <div className={style.pageContainer}>
-      <div className={style.buttonsContainer}>
-        <div
-          className={style.returnButtonContainer}
-          onClick={() => window.history.back()}
-          tabIndex={0}
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              window.history.back()
-            }
-          }}
-          role="button"
-        >
-          <img src={returnIcon} alt="Return" className={style.returnIcon} />
-          <span className={style.returnText}>
-            {t('components.button.return')}
-          </span>
-        </div>
-
-        <div className={style.actionButtonsContainer}>
-          <Button
-            type="primary"
-            onClick={showModal}
-            disabled={propertyData?.status !== 'available'}
-          >
-            {t('components.button.add_tenant')}
-          </Button>
-          <Button
-            type="primary"
-            danger
-            disabled={propertyData?.status !== 'unavailable'}
-            onClick={showModalRemoveTenant}
-          >
-            {t('components.button.end_contract')}
-          </Button>
-        </div>
-      </div>
-
-      <Modal
-        title={t('components.modal.end_contract.title')}
-        open={modalRemoveTenant}
-        onCancel={handleCancelRemoveTenant}
-        footer={[
-          <Button key="cancel" onClick={handleCancelRemoveTenant}>
-            {t('components.button.cancel')}
-          </Button>,
-          <Button key="ok" type="primary" onClick={handleRemoveTenant}>
-            {t('components.button.confirm')}
-          </Button>
-        ]}
-      >
-        {t('components.modal.end_contract.description')}
-      </Modal>
-
-      <InviteTenantModal
-        isOpen={isModalOpen}
-        onClose={handleCancel}
-        propertyId={id}
+    <>
+      <PageMeta
+        title={t('pages.real_property_details.document_title')}
+        description={t('pages.real_property_details.document_description')}
+        keywords="real property details, Property info, Immotep"
       />
+      <div className={style.pageContainer}>
+        <div className={style.buttonsContainer}>
+          <div
+            className={style.returnButtonContainer}
+            onClick={() => window.history.back()}
+            tabIndex={0}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                window.history.back()
+              }
+            }}
+            role="button"
+          >
+            <img src={returnIcon} alt="Return" className={style.returnIcon} />
+            <span className={style.returnText}>
+              {t('components.button.return')}
+            </span>
+          </div>
 
-      <HeaderPart propertyData={propertyData} />
-      <PropertyIdProvider id={id}>
-        <ChildrenComponent t={t} />
-      </PropertyIdProvider>
-    </div>
+          <div className={style.actionButtonsContainer}>
+            <Button
+              type="primary"
+              onClick={showModal}
+              disabled={propertyData?.status !== 'available'}
+            >
+              {t('components.button.add_tenant')}
+            </Button>
+            <Button
+              type="primary"
+              danger
+              disabled={propertyData?.status !== 'unavailable'}
+              onClick={showModalRemoveTenant}
+            >
+              {t('components.button.end_contract')}
+            </Button>
+          </div>
+        </div>
+
+        <Modal
+          title={t('components.modal.end_contract.title')}
+          open={modalRemoveTenant}
+          onCancel={handleCancelRemoveTenant}
+          footer={[
+            <Button key="cancel" onClick={handleCancelRemoveTenant}>
+              {t('components.button.cancel')}
+            </Button>,
+            <Button key="ok" type="primary" onClick={handleRemoveTenant}>
+              {t('components.button.confirm')}
+            </Button>
+          ]}
+        >
+          {t('components.modal.end_contract.description')}
+        </Modal>
+
+        <InviteTenantModal
+          isOpen={isModalOpen}
+          onClose={handleCancel}
+          propertyId={id}
+        />
+
+        <HeaderPart propertyData={propertyData} />
+        <PropertyIdProvider id={id}>
+          <ChildrenComponent t={t} />
+        </PropertyIdProvider>
+      </div>
+    </>
   )
 }
 

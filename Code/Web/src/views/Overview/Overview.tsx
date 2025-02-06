@@ -9,6 +9,7 @@ import AddWidgetModal from '@/components/Overview/AddWidgetModal.tsx'
 import UserInfoWidget from '@/components/Widgets/UserInfoWidget.tsx'
 import MaintenanceWidget from '@/components/Widgets/MaintenanceWidget.tsx'
 import { Layout, Widget, addWidgetType } from '@/interfaces/Widgets/Widgets.ts'
+import PageMeta from '@/components/PageMeta/PageMeta'
 import style from './Overview.module.css'
 import '@/../node_modules/react-grid-layout/css/styles.css'
 import '@/../node_modules/react-resizable/css/styles.css'
@@ -126,37 +127,44 @@ const Overview: React.FC = () => {
   }
 
   return (
-    <div className={style.pageContainer}>
-      <div className={style.pageHeader}>
-        <PageTitle title={t('pages.overview.title')} size="title" />
-        <Button type="primary" onClick={showModal}>
-          {t('components.button.add_widget')}
-        </Button>
-      </div>
-      <ResponsiveGridLayout
-        className={style.gridLayout}
-        layouts={{ lg: widgets }}
-        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={80}
-        isResizable
-        onResize={handleLayoutChange}
-        draggableHandle={`.${style.widgetHeader}`}
-      >
-        {widgets.map((widget: Widget) => (
-          <div key={widget.i} data-grid={widget}>
-            <WidgetTemplate logo={widget.logo}>
-              {widget.children}
-            </WidgetTemplate>
-          </div>
-        ))}
-      </ResponsiveGridLayout>
-      <AddWidgetModal
-        isOpen={isModalOpen}
-        onClose={handleCancel}
-        onAddWidget={handleAddWidget}
+    <>
+      <PageMeta
+        title={t('pages.overview.document_title')}
+        description={t('pages.overview.document_description')}
+        keywords="overview, dashboard, Immotep"
       />
-    </div>
+      <div className={style.pageContainer}>
+        <div className={style.pageHeader}>
+          <PageTitle title={t('pages.overview.title')} size="title" />
+          <Button type="primary" onClick={showModal}>
+            {t('components.button.add_widget')}
+          </Button>
+        </div>
+        <ResponsiveGridLayout
+          className={style.gridLayout}
+          layouts={{ lg: widgets }}
+          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+          cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+          rowHeight={80}
+          isResizable
+          onResize={handleLayoutChange}
+          draggableHandle={`.${style.widgetHeader}`}
+        >
+          {widgets.map((widget: Widget) => (
+            <div key={widget.i} data-grid={widget}>
+              <WidgetTemplate logo={widget.logo}>
+                {widget.children}
+              </WidgetTemplate>
+            </div>
+          ))}
+        </ResponsiveGridLayout>
+        <AddWidgetModal
+          isOpen={isModalOpen}
+          onClose={handleCancel}
+          onAddWidget={handleAddWidget}
+        />
+      </div>
+    </>
   )
 }
 

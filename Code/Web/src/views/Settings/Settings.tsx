@@ -24,6 +24,7 @@ import UpdateUserInfos from '@/services/api/User/UpdateUserInfos'
 import GetUserPicture from '@/services/api/User/GetUserPicture'
 import PutUserPicture from '@/services/api/User/PutUserPicture'
 import useImageCache from '@/hooks/useEffect/useImageCache'
+import PageMeta from '@/components/PageMeta/PageMeta'
 import style from './Settings.module.css'
 
 interface UserSettingsProps {
@@ -170,6 +171,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
                 type="link"
                 style={{ width: 35, height: 35, padding: 10 }}
                 onClick={cancelEdit}
+                aria-label={t('component.button.close')}
               >
                 <CloseCircleOutlined
                   style={{ fontSize: '20px', color: 'red' }}
@@ -182,6 +184,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
               onClick={() =>
                 editData ? saveNewData() : setEditData(!editData)
               }
+              aria-label={t('component.button.edit')}
             >
               {!editData ? (
                 <EditOutlined style={{ fontSize: '20px' }} />
@@ -205,6 +208,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
               onChange={e =>
                 setNewData({ ...newData, firstname: e.target.value })
               }
+              aria-label={t('component.input.first_name.label')}
             />
           )}
         </SubtitledElement>
@@ -220,6 +224,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
               onChange={e =>
                 setNewData({ ...newData, lastname: e.target.value })
               }
+              aria-label={t('component.input.last_name.label')}
             />
           )}
         </SubtitledElement>
@@ -258,34 +263,42 @@ const Settings: React.FC = () => {
   }
 
   return (
-    <div className={style.layoutContainer}>
-      <UserSettings t={t} />
+    <>
+      <PageMeta
+        title={t('pages.settings.document_title')}
+        description={t('pages.settings.document_description')}
+        keywords="settings, user, Immotep"
+      />
+      <div className={style.layoutContainer}>
+        <UserSettings t={t} />
 
-      <div className={style.settingsContainer}>
-        <div className={style.settingsItem}>
-          {t('pages.settings.language')}
-          <Segmented
-            options={[
-              { label: t('pages.settings.fr'), value: 'fr' },
-              { label: t('pages.settings.en'), value: 'en' }
-            ]}
-            value={i18n.language}
-            onChange={value => switchLanguage(value as string)}
-          />
-        </div>
+        <div id="main-content" className={style.settingsContainer}>
+          <div className={style.settingsItem}>
+            {t('pages.settings.language')}
+            <Segmented
+              options={[
+                { label: t('pages.settings.fr'), value: 'fr' },
+                { label: t('pages.settings.en'), value: 'en' }
+              ]}
+              value={i18n.language}
+              onChange={value => switchLanguage(value as string)}
+              tabIndex={0}
+            />
+          </div>
 
-        <div className={style.settingsItem}>
-          {t('pages.settings.logout')}
-          <Button
-            type="primary"
-            danger
-            shape="circle"
-            icon={<LogoutOutlined />}
-            onClick={() => logout()}
-          />
+          <div className={style.settingsItem}>
+            {t('pages.settings.logout')}
+            <Button
+              type="primary"
+              danger
+              shape="circle"
+              icon={<LogoutOutlined />}
+              onClick={() => logout()}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

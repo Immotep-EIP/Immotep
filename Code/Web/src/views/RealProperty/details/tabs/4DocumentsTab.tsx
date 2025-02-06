@@ -200,6 +200,7 @@ const DocumentsTab: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.document_name.placeholder')}
+              aria-label={t('components.input.document_name.placeholder')}
             />
           </Form.Item>
 

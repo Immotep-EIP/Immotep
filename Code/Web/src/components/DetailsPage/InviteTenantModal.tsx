@@ -70,7 +70,10 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
             { type: 'email', message: t('components.input.email.valid_email') }
           ]}
         >
-          <Input placeholder={t('components.input.email.placeholder')} />
+          <Input
+            placeholder={t('components.input.email.placeholder')}
+            aria-label={t('components.input.email.placeholder')}
+          />
         </Form.Item>
 
         <Form.Item
@@ -78,7 +81,10 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
           name="start_date"
           rules={[{ required: true, message: t('form.error.start_date') }]}
         >
-          <DatePicker style={{ width: '100%' }} />
+          <DatePicker
+            style={{ width: '100%' }}
+            aria-label={t('components.input.start_date.label')}
+          />
         </Form.Item>
 
         <Form.Item
@@ -86,7 +92,10 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
           name="end_date"
           rules={[{ required: false, message: t('form.error.end_date') }]}
         >
-          <DatePicker style={{ width: '100%' }} />
+          <DatePicker
+            style={{ width: '100%' }}
+            aria-label={t('components.input.end_date.label')}
+          />
         </Form.Item>
 
         <Form.Item>
