@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Button, message, Modal, Tabs, TabsProps, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
@@ -10,7 +10,6 @@ import tenantIcon from '@/assets/icons/tenant.png'
 import dateIcon from '@/assets/icons/date.png'
 
 import InviteTenantModal from '@/components/DetailsPage/InviteTenantModal'
-import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
 import { PropertyDetails } from '@/interfaces/Property/Property'
 import returnIcon from '@/assets/icons/retour.png'
 
@@ -19,6 +18,8 @@ import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPictu
 import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentContract'
 import useImageCache from '@/hooks/useEffect/useImageCache'
 import PageMeta from '@/components/PageMeta/PageMeta'
+import useProperties from '@/hooks/useEffect/useProperties'
+import { savePropertiesToDB } from '@/utils/cache/property/indexDB'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
 import InventoryTab from './tabs/3InventoryTab'
@@ -145,23 +146,24 @@ const RealPropertyDetails: React.FC = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const { id } = location.state || {}
-  const [propertyData, setPropertyData] = useState<PropertyDetails | null>(null)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalRemoveTenant, setModalRemoveTenant] = useState(false)
 
-  const fetchData = async () => {
-    const req = await GetPropertyDetails(id)
-    if (req) {
-      setPropertyData(req)
-    } else {
-      message.error(t('pages.real_property_details.error_fetching_data'))
-    }
+  const {
+    propertyDetails: propertyData,
+    loading,
+    error,
+    getPropertyDetails
+  } = useProperties(id)
+
+  if (loading) {
+    return <div>{t('components.loading')}</div>
   }
 
-  useEffect(() => {
-    fetchData()
-  }, [id])
+  if (error) {
+    return <div>{t('components.error', { message: error })}</div>
+  }
 
   const showModal = () => setIsModalOpen(true)
   const handleCancel = () => setIsModalOpen(false)
@@ -169,10 +171,22 @@ const RealPropertyDetails: React.FC = () => {
   const showModalRemoveTenant = () => setModalRemoveTenant(true)
   const handleCancelRemoveTenant = () => setModalRemoveTenant(false)
   const handleRemoveTenant = async () => {
-    await StopCurrentContract(id)
-    setModalRemoveTenant(false)
-    message.success(t('components.modal.end_contract.success'))
-    await fetchData()
+    try {
+      await StopCurrentContract(id)
+
+      if (propertyData) {
+        const updatedProperty = { ...propertyData, status: 'available' }
+        await savePropertiesToDB([updatedProperty])
+      }
+
+      setModalRemoveTenant(false)
+      message.success(t('components.modal.end_contract.success'))
+
+      await getPropertyDetails(id)
+    } catch (error) {
+      console.error('Error removing tenant:', error)
+      message.error(t('components.modal.end_contract.error'))
+    }
   }
 
   return (

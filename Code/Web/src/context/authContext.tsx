@@ -14,6 +14,7 @@ import { loginApi } from '@/services/api/Authentification/AuthApi'
 import getUserProfile from '@/services/api/User/GetUserProfile'
 import { saveData, deleteData } from '@/utils/localStorage'
 import NavigationEnum from '@/enums/NavigationEnum'
+import { getUserFromDB, saveUserToDB } from '@/utils/cache/user/indexDB'
 
 interface AuthContextType {
   isAuthenticated: boolean
@@ -35,34 +36,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const navigate = useNavigate()
 
-  const updateUser = (newUserData: Partial<User>) => {
+  const updateUser = async (newUserData: Partial<User>) => {
     if (user) {
-      setUser({ ...user, ...newUserData })
+      const updatedUser = { ...user, ...newUserData }
+      setUser(updatedUser)
+      await saveUserToDB(updatedUser)
     }
   }
 
   useEffect(() => {
-    const accessToken =
-      sessionStorage.getItem('access_token') ||
-      localStorage.getItem('access_token')
+    const initializeAuth = async () => {
+      const accessToken =
+        sessionStorage.getItem('access_token') ||
+        localStorage.getItem('access_token')
 
-    const refreshToken =
-      sessionStorage.getItem('refresh_token') ||
-      localStorage.getItem('refresh_token')
+      const refreshToken =
+        sessionStorage.getItem('refresh_token') ||
+        localStorage.getItem('refresh_token')
 
-    const userInfo = async () => {
-      const profile = await getUserProfile()
-      setUser(profile)
+      try {
+        if (accessToken && refreshToken) {
+          setIsAuthenticated(true)
+
+          const cachedUser = await getUserFromDB()
+          if (cachedUser) {
+            setUser(cachedUser)
+          } else {
+            const profile = await getUserProfile()
+            setUser(profile)
+            await saveUserToDB(profile)
+          }
+        } else {
+          setIsAuthenticated(false)
+          deleteData()
+        }
+      } catch (err) {
+        console.error('Error during auth initialization:', err)
+        setIsAuthenticated(false)
+        deleteData()
+      } finally {
+        setLoading(false)
+      }
     }
 
-    if (accessToken && refreshToken) {
-      setIsAuthenticated(true)
-      userInfo()
-    } else {
-      setIsAuthenticated(false)
-      deleteData()
-    }
-    setLoading(false)
+    initializeAuth()
   }, [])
 
   const login = async (userInfo: UserToken) => {
@@ -77,6 +94,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       )
       const profile = await getUserProfile()
       setUser(profile)
+      await saveUserToDB(profile)
       return response
     } catch (error) {
       console.error('login error:', error)
@@ -84,6 +102,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAuthenticated(false)
       throw error
     }
+  }
+
+  const deleteAllDatabases = async () => {
+    const databases = await window.indexedDB.databases()
+    databases.forEach(db => {
+      if (db.name) {
+        indexedDB.deleteDatabase(db.name)
+      }
+    })
   }
 
   const logout = () => {
@@ -98,6 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       })
     }
     deleteData()
+    deleteAllDatabases()
     navigate(NavigationEnum.LOGIN)
   }
 
