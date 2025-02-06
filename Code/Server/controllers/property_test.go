@@ -51,6 +51,18 @@ func BuildTestPendingContract() db.PendingContractModel {
 			StartDate:   time.Now(),
 			EndDate:     utils.Ptr(time.Now().Add(time.Hour)),
 		},
+		RelationsPendingContract: db.RelationsPendingContract{
+			Property: &db.PropertyModel{
+				RelationsProperty: db.RelationsProperty{
+					Owner: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Test",
+						},
+					},
+				},
+			},
+		},
 	}
 }
 
