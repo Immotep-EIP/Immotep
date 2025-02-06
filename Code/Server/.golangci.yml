@@ -151,6 +151,8 @@ linters-settings:
   tagliatelle:
     case:
       use-field-name: true
+      ignored-fields:
+        - TemplateId
       rules:
         # Any struct tag type can be used.
         # Support string case: `camel`, `pascal`, `kebab`, `snake`, `upperSnake`, `goCamel`, `goPascal`, `goKebab`, `goSnake`, `upper`, `lower`, `header`

@@ -132,7 +132,7 @@ func Routes() *gin.Engine {
 
 	var allowOrigins []string
 	if gin.Mode() == gin.ReleaseMode {
-		allowOrigins = []string{"https://immotep.mazettt.fr", "https://dev.immotep.mazettt.fr"}
+		allowOrigins = []string{os.Getenv("WEB_PUBLIC_URL")}
 		log.Println("Running in release mode")
 	} else {
 		allowOrigins = []string{"https://*", "http://*", "http://localhost:4242", "http://localhost:3002"}

@@ -89,6 +89,8 @@ func CreatePending(pendingContract db.PendingContractModel, propertyId string) *
 		db.PendingContract.StartDate.Set(pendingContract.StartDate),
 		db.PendingContract.Property.Link(db.Property.ID.Equals(propertyId)),
 		db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	).With(
+		db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
 	).Exec(pdb.Context)
 	if err != nil {
 		// https://www.prisma.io/docs/orm/reference/error-reference#p2014

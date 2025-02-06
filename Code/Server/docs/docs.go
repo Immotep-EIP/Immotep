@@ -2339,7 +2339,8 @@ const docTemplate = `{
                 "inventory-report-not-found",
                 "room-state-already-exists",
                 "furniture-state-already-exists",
-                "error-request-chatgpt-api"
+                "error-request-chatgpt-api",
+                "failed-send-email"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -2377,7 +2378,8 @@ const docTemplate = `{
                 "InventoryReportNotFound",
                 "RoomStateAlreadyExists",
                 "FurnitureStateAlreadyExists",
-                "ErrorRequestChatGPTAPI"
+                "ErrorRequestChatGPTAPI",
+                "FailedSendEmail"
             ]
         }
     },
