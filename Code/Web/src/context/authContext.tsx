@@ -7,8 +7,7 @@ import React, {
   useMemo
 } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LoadingOutlined } from '@ant-design/icons';
-
+import { LoadingOutlined } from '@ant-design/icons'
 
 import { UserToken, TokenResponse, User } from '@/interfaces/User/User'
 import { loginApi } from '@/services/api/Authentification/AuthApi'
@@ -89,6 +88,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        if (registration.active) {
+          registration.active.postMessage({
+            type: 'LOGOUT'
+          })
+        }
+      })
+    }
     deleteData()
     navigate(NavigationEnum.LOGIN)
   }
@@ -106,7 +114,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading ? children : <div><LoadingOutlined /></div>}{' '}
+      {!loading ? (
+        children
+      ) : (
+        <div>
+          <LoadingOutlined />
+        </div>
+      )}{' '}
     </AuthContext.Provider>
   )
 }
