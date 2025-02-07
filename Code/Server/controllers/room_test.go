@@ -17,6 +17,17 @@ import (
 	"immotep/backend/utils"
 )
 
+func BuildTestRoom(id string, propertyId string) db.RoomModel {
+	return db.RoomModel{
+		InnerRoom: db.InnerRoom{
+			ID:         id,
+			Name:       "Test",
+			PropertyID: propertyId,
+			Archived:   false,
+		},
+	}
+}
+
 func TestCreateRoom(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
@@ -51,7 +62,7 @@ func TestCreateRoom(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusCreated, w.Code)
-	var resp models.FurnitureResponse
+	var resp models.RoomResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, room.ID)
@@ -159,6 +170,7 @@ func TestGetRoomsByProperty(t *testing.T) {
 	mock.Room.Expect(
 		client.Client.Room.FindMany(
 			db.Room.PropertyID.Equals("1"),
+			db.Room.Archived.Equals(false),
 		),
 	).ReturnsMany(rooms)
 
@@ -233,7 +245,7 @@ func TestGetRoomByID(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusOK, w.Code)
-	var resp models.FurnitureResponse
+	var resp models.RoomResponse
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, room.ID)
@@ -333,4 +345,85 @@ func TestGetRoomByID_PropertyNotFound(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
 	assert.Equal(t, utils.PropertyNotFound, errorResponse.Code)
+}
+
+func TestArchiveRoom(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Returns(property)
+
+	room := BuildTestRoom("1", "1")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Returns(room)
+
+	updatedRoom := room
+	updatedRoom.Archived = true
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		).Update(
+			db.Room.Archived.Set(true),
+		),
+	).Returns(updatedRoom)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/rooms/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
+	var resp models.RoomResponse
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.JSONEq(t, resp.ID, room.ID)
+	assert.True(t, resp.Archived)
+}
+
+func TestArchiveRoom_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Returns(property)
+
+	room := BuildTestRoom("1", "1")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/rooms/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.RoomNotFound, resp.Code)
 }

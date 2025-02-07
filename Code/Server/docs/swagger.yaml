@@ -19,6 +19,8 @@ definitions:
     type: object
   models.FurnitureResponse:
     properties:
+      archived:
+        type: boolean
       id:
         type: string
       name:
@@ -188,6 +190,8 @@ definitions:
     properties:
       address:
         type: string
+      archived:
+        type: boolean
       area_sqm:
         type: number
       city:
@@ -231,6 +235,8 @@ definitions:
     type: object
   models.RoomResponse:
     properties:
+      archived:
+        type: boolean
       id:
         type: string
       name:
@@ -637,6 +643,38 @@ paths:
       tags:
       - owner
   /owner/properties/{property_id}/:
+    delete:
+      consumes:
+      - application/json
+      description: Archive a property by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Archived property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Archive property by ID
+      tags:
+      - owner
     get:
       consumes:
       - application/json
@@ -1076,7 +1114,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete a room by its ID
+      description: Archive a room by its ID
       parameters:
       - description: Property ID
         in: path
@@ -1091,8 +1129,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: Achieved room data
+          schema:
+            $ref: '#/definitions/models.RoomResponse'
         "403":
           description: Property not yours
           schema:
@@ -1105,7 +1145,7 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Delete room by ID
+      summary: Archive room by ID
       tags:
       - owner
     get:
@@ -1236,7 +1276,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete a furniture by its ID
+      description: Archive a furniture by its ID
       parameters:
       - description: Furniture ID
         in: path
@@ -1246,8 +1286,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: Archived furniture data
+          schema:
+            $ref: '#/definitions/models.FurnitureResponse'
         "404":
           description: Furniture not found
           schema:
@@ -1256,7 +1298,7 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Delete furniture by ID
+      summary: Archive furniture by ID
       tags:
       - owner
     get:

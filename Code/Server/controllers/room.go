@@ -79,26 +79,22 @@ func GetRoomByID(c *gin.Context) {
 	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
 }
 
-// DeleteRoom godoc
+// ArchiveRoom godoc
 //
-//	@Summary		Delete room by ID
-//	@Description	Delete a room by its ID
+//	@Summary		Archive room by ID
+//	@Description	Archive a room by its ID
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path	string	true	"Property ID"
-//	@Param			room_id		path	string	true	"Room ID"
-//	@Success		204
-//	@Failure		403	{object}	utils.Error	"Property not yours"
-//	@Failure		404	{object}	utils.Error	"Room not found"
+//	@Param			property_id	path		string				true	"Property ID"
+//	@Param			room_id		path		string				true	"Room ID"
+//	@Success		200			{object}	models.RoomResponse	"Achieved room data"
+//	@Failure		403			{object}	utils.Error			"Property not yours"
+//	@Failure		404			{object}	utils.Error			"Room not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [delete]
-func DeleteRoom(c *gin.Context) {
-	ok := database.DeleteRoom(c.Param("room_id"))
-	if !ok {
-		utils.SendError(c, http.StatusNotFound, utils.RoomNotFound, nil)
-		return
-	}
-	c.Status(http.StatusNoContent)
+func ArchiveRoom(c *gin.Context) {
+	room := database.ArchiveRoom(c.Param("room_id"))
+	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
 }

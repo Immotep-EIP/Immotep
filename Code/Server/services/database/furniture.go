@@ -27,6 +27,7 @@ func GetFurnitureByRoomID(roomID string) []db.FurnitureModel {
 	pdb := services.DBclient
 	furnitures, err := pdb.Client.Furniture.FindMany(
 		db.Furniture.RoomID.Equals(roomID),
+		db.Furniture.Archived.Equals(false),
 	).With(
 		db.Furniture.Room.Fetch(),
 	).Exec(pdb.Context)
@@ -52,16 +53,20 @@ func GetFurnitureByID(id string) *db.FurnitureModel {
 	return furniture
 }
 
-func DeleteFurniture(id string) bool {
+func ArchiveFurniture(furnitureId string) *db.FurnitureModel {
 	pdb := services.DBclient
-	_, err := pdb.Client.Furniture.FindUnique(
-		db.Furniture.ID.Equals(id),
-	).Delete().Exec(pdb.Context)
+	archivedFurniture, err := pdb.Client.Furniture.FindUnique(
+		db.Furniture.ID.Equals(furnitureId),
+	).With(
+		db.Furniture.Room.Fetch(),
+	).Update(
+		db.Furniture.Archived.Set(true),
+	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
-			return false
+			return nil
 		}
 		panic(err)
 	}
-	return true
+	return archivedFurniture
 }

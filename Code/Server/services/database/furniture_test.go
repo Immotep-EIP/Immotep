@@ -120,6 +120,7 @@ func TestGetFurnitureByRoomID(t *testing.T) {
 	mock.Furniture.Expect(
 		client.Client.Furniture.FindMany(
 			db.Furniture.RoomID.Equals("1"),
+			db.Furniture.Archived.Equals(false),
 		).With(
 			db.Furniture.Room.Fetch(),
 		),
@@ -138,6 +139,7 @@ func TestGetFurnitureByRoomID_NoFurnitures(t *testing.T) {
 	mock.Furniture.Expect(
 		client.Client.Furniture.FindMany(
 			db.Furniture.RoomID.Equals("1"),
+			db.Furniture.Archived.Equals(false),
 		).With(
 			db.Furniture.Room.Fetch(),
 		),
@@ -154,6 +156,7 @@ func TestGetFurnitureByRoomID_NoConnection(t *testing.T) {
 	mock.Furniture.Expect(
 		client.Client.Furniture.FindMany(
 			db.Furniture.RoomID.Equals("1"),
+			db.Furniture.Archived.Equals(false),
 		).With(
 			db.Furniture.Room.Fetch(),
 		),
@@ -219,5 +222,71 @@ func TestGetFurnitureByID_NoConnection(t *testing.T) {
 
 	assert.Panics(t, func() {
 		database.GetFurnitureByID("1")
+	})
+}
+
+func TestArchiveFurniture(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	furniture := db.FurnitureModel{
+		InnerFurniture: db.InnerFurniture{
+			ID:       "1",
+			Name:     "Test Furniture",
+			Quantity: 1,
+			Archived: true,
+		},
+	}
+
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindUnique(
+			db.Furniture.ID.Equals(furniture.ID),
+		).With(
+			db.Furniture.Room.Fetch(),
+		).Update(
+			db.Furniture.Archived.Set(true),
+		),
+	).Returns(furniture)
+
+	archivedFurniture := database.ArchiveFurniture("1")
+	assert.NotNil(t, archivedFurniture)
+	assert.Equal(t, furniture.ID, archivedFurniture.ID)
+	assert.True(t, archivedFurniture.Archived)
+}
+
+func TestArchiveFurniture_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindUnique(
+			db.Furniture.ID.Equals("1"),
+		).With(
+			db.Furniture.Room.Fetch(),
+		).Update(
+			db.Furniture.Archived.Set(true),
+		),
+	).Errors(db.ErrNotFound)
+
+	archivedFurniture := database.ArchiveFurniture("1")
+	assert.Nil(t, archivedFurniture)
+}
+
+func TestArchiveFurniture_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindUnique(
+			db.Furniture.ID.Equals("1"),
+		).With(
+			db.Furniture.Room.Fetch(),
+		).Update(
+			db.Furniture.Archived.Set(true),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.ArchiveFurniture("1")
 	})
 }

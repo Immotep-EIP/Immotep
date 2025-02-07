@@ -337,6 +337,56 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Archive a property by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Archive property by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Archived property data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
             }
         },
         "/owner/properties/{property_id}/end-contract": {
@@ -1024,7 +1074,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Delete a room by its ID",
+                "description": "Archive a room by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1034,7 +1084,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Delete room by ID",
+                "summary": "Archive room by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -1052,8 +1102,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "Achieved room data",
+                        "schema": {
+                            "$ref": "#/definitions/models.RoomResponse"
+                        }
                     },
                     "403": {
                         "description": "Property not yours",
@@ -1278,7 +1331,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Delete a furniture by its ID",
+                "description": "Archive a furniture by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1288,7 +1341,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Delete furniture by ID",
+                "summary": "Archive furniture by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -1299,8 +1352,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "Archived furniture data",
+                        "schema": {
+                            "$ref": "#/definitions/models.FurnitureResponse"
+                        }
                     },
                     "404": {
                         "description": "Furniture not found",
@@ -1776,6 +1832,9 @@ const docTemplate = `{
         "models.FurnitureResponse": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -2023,6 +2082,9 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "archived": {
+                    "type": "boolean"
+                },
                 "area_sqm": {
                     "type": "number"
                 },
@@ -2088,6 +2150,9 @@ const docTemplate = `{
         "models.RoomResponse": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },

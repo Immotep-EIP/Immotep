@@ -1,9 +1,6 @@
 package database
 
 import (
-	"errors"
-
-	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services"
 )
@@ -27,6 +24,7 @@ func GetRoomByPropertyID(propertyID string) []db.RoomModel {
 	pdb := services.DBclient
 	rooms, err := pdb.Client.Room.FindMany(
 		db.Room.PropertyID.Equals(propertyID),
+		db.Room.Archived.Equals(false),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -48,18 +46,18 @@ func GetRoomByID(id string) *db.RoomModel {
 	return room
 }
 
-func DeleteRoom(id string) bool {
+func ArchiveRoom(roomId string) *db.RoomModel {
 	pdb := services.DBclient
-	_, err := pdb.Client.Room.FindUnique(
-		db.Room.ID.Equals(id),
-	).Delete().Exec(pdb.Context)
+	archivedRoom, err := pdb.Client.Room.FindUnique(
+		db.Room.ID.Equals(roomId),
+	).Update(
+		db.Room.Archived.Set(true),
+	).Exec(pdb.Context)
 	if err != nil {
-		// https://www.prisma.io/docs/orm/reference/error-reference#p2025
-		var ufr *protocol.UserFacingError
-		if ok := errors.As(err, &ufr); ok && ufr.ErrorCode == "P2025" {
-			return false
+		if db.IsErrNotFound(err) {
+			return nil
 		}
 		panic(err)
 	}
-	return true
+	return archivedRoom
 }

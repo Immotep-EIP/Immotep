@@ -106,6 +106,7 @@ func TestGetRoomByPropertyID(t *testing.T) {
 	mock.Room.Expect(
 		client.Client.Room.FindMany(
 			db.Room.PropertyID.Equals("1"),
+			db.Room.Archived.Equals(false),
 		),
 	).ReturnsMany([]db.RoomModel{room1, room2})
 
@@ -122,6 +123,7 @@ func TestGetRoomByPropertyID_NoRooms(t *testing.T) {
 	mock.Room.Expect(
 		client.Client.Room.FindMany(
 			db.Room.PropertyID.Equals("1"),
+			db.Room.Archived.Equals(false),
 		),
 	).ReturnsMany([]db.RoomModel{})
 
@@ -136,6 +138,7 @@ func TestGetRoomByPropertyID_NoConnection(t *testing.T) {
 	mock.Room.Expect(
 		client.Client.Room.FindMany(
 			db.Room.PropertyID.Equals("1"),
+			db.Room.Archived.Equals(false),
 		),
 	).Errors(errors.New("connection failed"))
 
@@ -192,5 +195,64 @@ func TestGetRoomByID_NoConnection(t *testing.T) {
 
 	assert.Panics(t, func() {
 		database.GetRoomByID("1")
+	})
+}
+
+func TestArchiveRoom(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	room := db.RoomModel{
+		InnerRoom: db.InnerRoom{
+			ID:       "1",
+			Name:     "Test Room",
+			Archived: true,
+		},
+	}
+
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals("1"),
+		).Update(
+			db.Room.Archived.Set(true),
+		),
+	).Returns(room)
+
+	archivedRoom := database.ArchiveRoom("1")
+	assert.NotNil(t, archivedRoom)
+	assert.Equal(t, room.ID, archivedRoom.ID)
+	assert.True(t, archivedRoom.Archived)
+}
+
+func TestArchiveRoom_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals("1"),
+		).Update(
+			db.Room.Archived.Set(true),
+		),
+	).Errors(db.ErrNotFound)
+
+	archivedRoom := database.ArchiveRoom("1")
+	assert.Nil(t, archivedRoom)
+}
+
+func TestArchiveRoom_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals("1"),
+		).Update(
+			db.Room.Archived.Set(true),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.ArchiveRoom("1")
 	})
 }

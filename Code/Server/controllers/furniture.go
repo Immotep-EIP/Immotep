@@ -82,24 +82,20 @@ func GetFurnitureByID(c *gin.Context) {
 	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
 }
 
-// DeleteFurniture godoc
+// ArchiveFurniture godoc
 //
-//	@Summary		Delete furniture by ID
-//	@Description	Delete a furniture by its ID
+//	@Summary		Archive furniture by ID
+//	@Description	Archive a furniture by its ID
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path	string	true	"Furniture ID"
-//	@Success		204
-//	@Failure		404	{object}	utils.Error	"Furniture not found"
+//	@Param			id	path		string						true	"Furniture ID"
+//	@Success		200	{object}	models.FurnitureResponse	"Archived furniture data"
+//	@Failure		404	{object}	utils.Error					"Furniture not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [delete]
-func DeleteFurniture(c *gin.Context) {
-	ok := database.DeleteFurniture(c.Param("furniture_id"))
-	if !ok {
-		utils.SendError(c, http.StatusNotFound, utils.FurnitureNotFound, nil)
-		return
-	}
-	c.Status(http.StatusNoContent)
+func ArchiveFurniture(c *gin.Context) {
+	furniture := database.ArchiveFurniture(c.Param("furniture_id"))
+	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
 }

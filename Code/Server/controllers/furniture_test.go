@@ -17,16 +17,6 @@ import (
 	"immotep/backend/utils"
 )
 
-func BuildTestRoom(id string, propertyId string) db.RoomModel {
-	return db.RoomModel{
-		InnerRoom: db.InnerRoom{
-			ID:         id,
-			Name:       "Test",
-			PropertyID: propertyId,
-		},
-	}
-}
-
 func BuildTestFurniture(id string, roomId string) db.FurnitureModel {
 	return db.FurnitureModel{
 		InnerFurniture: db.InnerFurniture{
@@ -34,6 +24,7 @@ func BuildTestFurniture(id string, roomId string) db.FurnitureModel {
 			Name:     "Test",
 			Quantity: 1,
 			RoomID:   roomId,
+			Archived: false,
 		},
 		RelationsFurniture: db.RelationsFurniture{
 			Room: &db.RoomModel{},
@@ -217,6 +208,7 @@ func TestGetFurnituresByRoom(t *testing.T) {
 	mock.Furniture.Expect(
 		client.Client.Furniture.FindMany(
 			db.Furniture.RoomID.Equals(room.ID),
+			db.Furniture.Archived.Equals(false),
 		).With(
 			db.Furniture.Room.Fetch(),
 		),
@@ -558,4 +550,104 @@ func TestGetFurnitureById_PropertyNotFound(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.Equal(t, utils.PropertyNotFound, resp.Code)
+}
+
+func TestArchiveFurniture(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Returns(property)
+
+	room := BuildTestRoom("1", "1")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Returns(room)
+
+	furniture := BuildTestFurniture("1", "1")
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindUnique(
+			db.Furniture.ID.Equals(furniture.ID),
+		).With(
+			db.Furniture.Room.Fetch(),
+		),
+	).Returns(furniture)
+
+	updatedFurniture := furniture
+	updatedFurniture.Archived = true
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindUnique(
+			db.Furniture.ID.Equals(furniture.ID),
+		).With(
+			db.Furniture.Room.Fetch(),
+		).Update(
+			db.Furniture.Archived.Set(true),
+		),
+	).Returns(updatedFurniture)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
+	var resp models.FurnitureResponse
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.JSONEq(t, resp.ID, furniture.ID)
+	assert.True(t, resp.Archived)
+}
+
+func TestArchiveFurniture_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Returns(property)
+
+	room := BuildTestRoom("1", "1")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Returns(room)
+
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindUnique(
+			db.Furniture.ID.Equals("1"),
+		).With(
+			db.Furniture.Room.Fetch(),
+		),
+	).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.FurnitureNotFound, resp.Code)
 }
