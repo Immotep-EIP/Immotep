@@ -2,7 +2,7 @@ const version = 1
 const CACHE_NAME = `immotep-cache-v1`
 const ASSETS_TO_CACHE = ['/', '/index.html', '/vite.svg', '/assets/*']
 
-const sensitiveApiUrls = [
+const SENSITIVE_API_URLS = [
   '/owner/properties/',
   '/auth/token/',
   '/profile/',
@@ -34,31 +34,40 @@ self.addEventListener('activate', event => {
   )
 })
 
+const cacheFirst = async event => {
+  try {
+    const cachedResponse = await caches.match(event.request)
+    if (cachedResponse) {
+      return cachedResponse
+    }
+
+    const response = await fetch(event.request)
+    if (
+      response &&
+      response.status === 200 &&
+      !SENSITIVE_API_URLS.some(url => event.request.url.includes(url))
+    ) {
+      const clonedResponse = response.clone()
+      const cache = await caches.open(CACHE_NAME)
+      await cache.put(event.request, clonedResponse)
+    }
+
+    return response
+  } catch (error) {
+    console.error('Error in cacheFirst:', error)
+    return new Response('An error occurred while fetching the resource.', {
+      status: 500,
+      statusText: 'Internal Server Error'
+    })
+  }
+}
+
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener('fetch', event => {
-  if (sensitiveApiUrls.some(url => event.request.url.includes(url))) {
+  if (SENSITIVE_API_URLS.some(url => event.request.url.includes(url))) {
     event.respondWith(fetch(event.request))
   } else {
-    event.respondWith(
-      caches.match(event.request).then(cachedResponse => {
-        if (cachedResponse) {
-          return cachedResponse
-        }
-        return fetch(event.request).then(response => {
-          if (
-            response &&
-            response.status === 200 &&
-            !sensitiveApiUrls.some(url => event.request.url.includes(url))
-          ) {
-            const clonedResponse = response.clone()
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, clonedResponse)
-            })
-          }
-          return response
-        })
-      })
-    )
+    event.respondWith(cacheFirst(event))
   }
 })
 
