@@ -2,190 +2,95 @@
 
 ## Overview
 
-This document explains how the web application utilizes a Service Worker to manage caching efficiently. The Service Worker enables offline functionality, reduces network requests, and improves overall application performance by controlling the caching of assets and API responses.
+This application employs a robust caching strategy using a combination of Service Worker and IndexedDB to improve performance, reduce network dependency, and ensure a smooth user experience even in offline scenarios.
 
 ---
 
-## What is a Service Worker?
+## Service Worker
 
 A Service Worker is a script that runs in the background of a web browser, separate from the main browser thread. It is primarily used for features like background sync, push notifications, and intercepting network requests to cache resources.
 
----
+### Features of the Service Worker in Our Application
 
-## Features of the Service Worker in Our Application
-
-1. **Caching Static Assets**: The Service Worker pre-caches critical assets such as HTML, CSS, JavaScript, and image files to ensure the application loads quickly.
+1. **Caching Static Assets**: The Service Worker pre-caches critical assets such as HTML, CSS, TypeScript, and image files to ensure the application loads quickly.
 2. **Runtime Caching**: Dynamic content and API responses are cached on-the-fly to optimize data fetching.
 3. **Offline Support**: Users can access the application even without an internet connection by leveraging cached assets.
 4. **Cache Versioning**: The Service Worker uses versioned cache keys to manage updates and remove outdated resources automatically.
 
----
-
-## Implementation Details
-
-### Registering the Service Worker
-
-The Service Worker is registered in the `index.js` file:
-
-```javascript
-if ("serviceWorker" in navigator) {
-  (async () => {
-    try {
-      const registration = await navigator.serviceWorker.register("/sw.js", {
-        scope: "./",
-      });
-      if (registration.installing) {
-        console.log("Service worker installing");
-      } else if (registration.waiting) {
-        console.log("Service worker installed");
-      } else if (registration.active) {
-        console.log("Service worker active");
-      }
-    } catch (error) {
-      console.error(`Registration failed with ${error}`);
-    }
-  })();
-}
-```
-
-### Cache Name and Assets
-
-```javascript
-const CACHE_NAME = "immotep-cache-v1";
-const ASSETS_TO_CACHE = ["/", "/index.html"];
-```
-
-- CACHE_NAME: The name of the cache storage.
-
-- ASSETS_TO_CACHE: The list of assets to cache during the installation phase.
-
-### Helper Functions
-
-`putInCache`
-
-Stores a resource in the cache.
-
-```javascript
-const putInCache = async (request, response) => {
-  const cache = await caches.open(CACHE_NAME);
-  await cache.put(request, response);
-};
-```
-
-`cacheFirst`
-
-Implements the Cache First strategy:
-
-1. Check if the resource is available in the cache.
-2. If not, try to fetch it from the network.
-3. If the network fetch fails, return a fallback response.
-
-```javascript
-const cacheFirst = async ({ request, preloadResponsePromise, fallbackUrl }) => {
-  const responseFromCache = await caches.match(request);
-  if (responseFromCache) {
-    return responseFromCache;
-  }
-
-  const preloadResponse = await preloadResponsePromise;
-  if (preloadResponse) {
-    putInCache(request, preloadResponse.clone());
-    return preloadResponse;
-  }
-
-  try {
-    const responseFromNetwork = await fetch(request.clone());
-    putInCache(request, responseFromNetwork.clone());
-    return responseFromNetwork;
-  } catch (error) {
-    const fallbackResponse = await caches.match(fallbackUrl);
-    if (fallbackResponse) {
-      return fallbackResponse;
-    }
-    return new Response("Network error happened", {
-      status: 408,
-      headers: { "Content-Type": "text/plain" },
-    });
-  }
-};
-```
-
-### Service Worker Events
-
-`install`
-
-Caches specified assets during the installation phase.
-
-```javascript
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
-  );
-});
-```
-
-`activate`
-
-Activates the service worker and enables navigation preload. Also clears old caches.
-
-```javascript
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    Promise.all([
-      caches.keys().then((cacheNames) =>
-        Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
-              return caches.delete(cacheName);
-            }
-            return null;
-          })
-        )
-      ),
-      enableNavigationPreload(),
-    ])
-  );
-});
-
-const enableNavigationPreload = async () => {
-  if (self.registration.navigationPreload) {
-    await self.registration.navigationPreload.enable();
-  }
-};
-```
-
-#### `fetch`
-
-Intercepts network requests and serves responses based on the Cache First strategy.
-
-```javascript
-self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    cacheFirst({
-      request: event.request,
-      preloadResponsePromise: event.preloadResponse,
-      fallbackUrl: {
-        status: "offline",
-        message:
-          "Vous êtes hors ligne. Les données réelles seront affichées dès que vous serez reconnecté.",
-        properties: [],
-      },
-    })
-  );
-});
-```
+By intercepting network requests, the Service Worker checks for cached versions of these files before reaching out to the network. This approach significantly reduces loading times and ensures the application remains functional even without an active internet connection.
 
 ---
 
-## Key Features
+## IndexedDB
 
-- **Offline Support**: Ensures that essential assets are available offline.
-- **Fallback Response**: Provides a user-friendly message when the network is unavailable.
-- **Cache Management**: Handles cache updates and old cache cleanup.
-- **Navigation Preload**: Improves performance by preloading navigation requests during activation.
+IndexedDB is used for caching and managing more sensitive or dynamic data. This includes:
+
+- User information
+
+- Property details
+
+- Other application-specific data
+
+IndexedDB provides a secure and structured way to store and retrieve large amounts of data, making it ideal for managing application state and user data locally.
+
+### Implementation Highlights
+
+**Data Storage:**
+
+- User data and property details are stored in an IndexedDB database with well-defined object stores.
+
+- Data is indexed for efficient querying and retrieval.
+
+**Synchronization:**
+
+- Data is synchronized with the server when the user is online, ensuring consistency.
+
+- When the user is offline, they can still use the app thanks to the cached data.
+
+**Security Measures:** (To do)
+
+- Sensitive data is encrypted before storage.
+
+- Access to IndexedDB is restricted to the application domain.
+
+---
+
+## Workflow Diagram
+
+**User requests an asset:**
+
+- The Service Worker intercepts the request.
+
+- If the request is for a static asset, it checks the cache. If available, the cached version is returned; otherwise, it fetches from the network and updates the cache.
+
+**User requests sensitive or dynamic data:**
+
+- The application queries IndexedDB for the data.
+
+- If the data is available, it is served from the database. If not, a network request is made, and the response is cached in IndexedDB for future use.
+
+---
+
+## Advantages of This Approach
+
+**Performance:**
+
+- Static assets are served instantly from the cache, reducing load times.
+
+- Local storage of dynamic data reduces the need for frequent network requests.
+
+**Offline Support:**
+
+- The application remains functional even when the user is offline.
+
+- User data and application state are preserved locally.
+
+**Scalability:**
+
+- IndexedDB supports large datasets and complex queries, making it suitable for managing growing application data.
 
 ---
 
 ## Conclusion
 
-This implementation of a service worker with a Cache First strategy enhances user experience by ensuring faster load times and offline functionality. Regular updates to cached assets and efficient cache management are crucial to maintaining optimal performance.
+This caching strategy effectively combines the strengths of Service Worker and IndexedDB to create a robust and user-friendly application. By caching static assets with the Service Worker, the application ensures fast loading times and offline availability. Meanwhile, IndexedDB securely handles sensitive and dynamic data, allowing users to interact seamlessly with the application even when offline. Together, these tools provide a scalable and efficient solution, enhancing performance and reliability for end-users.
