@@ -33,6 +33,7 @@ func BuildTestProperty(id string) db.PropertyModel {
 			CreatedAt:           time.Now(),
 			OwnerID:             "1",
 			PictureID:           utils.Ptr("1"),
+			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
 			Damages:   []db.DamageModel{{}},
@@ -87,6 +88,7 @@ func TestGetAllProperties(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),
+			db.Property.Archived.Equals(false),
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
@@ -993,6 +995,76 @@ func TestEndContract_PropertyNotFound(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/wrong/end-contract/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.PropertyNotFound, resp.Code)
+}
+
+func TestArchiveProperty(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Returns(property)
+
+	updatedProperty := property
+	updatedProperty.Archived = true
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		).Update(
+			db.Property.Archived.Set(true),
+		),
+	).Returns(updatedProperty)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
+	var resp models.PropertyResponse
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.JSONEq(t, resp.ID, property.ID)
+	assert.True(t, resp.Archived)
+}
+
+func TestArchiveProperty_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

@@ -30,6 +30,7 @@ type FurnitureResponse struct {
 	RoomID     string `json:"room_id"`
 	Name       string `json:"name"`
 	Quantity   int    `json:"quantity"`
+	Archived   bool   `json:"archived"`
 }
 
 func (i *FurnitureResponse) FromDbFurniture(model db.FurnitureModel) {
@@ -38,6 +39,7 @@ func (i *FurnitureResponse) FromDbFurniture(model db.FurnitureModel) {
 	i.RoomID = model.RoomID
 	i.Name = model.Name
 	i.Quantity = model.Quantity
+	i.Archived = model.Archived
 }
 
 func DbFurnitureToResponse(pc db.FurnitureModel) FurnitureResponse {

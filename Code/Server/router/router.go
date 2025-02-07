@@ -72,6 +72,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 		{
 			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
 			propertyId.GET("/", controllers.GetPropertyById)
+			propertyId.DELETE("/", controllers.ArchiveProperty)
 			propertyId.GET("/picture/", controllers.GetPropertyPicture)
 			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
 
@@ -87,7 +88,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 				{
 					roomId.Use(middlewares.CheckRoomOwnership("property_id", "room_id"))
 					roomId.GET("/", controllers.GetRoomByID)
-					roomId.DELETE("/", controllers.DeleteRoom)
+					roomId.DELETE("/", controllers.ArchiveRoom)
 
 					furnitures := roomId.Group("/furnitures")
 					{
@@ -98,7 +99,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 						{
 							furnitureId.Use(middlewares.CheckFurnitureOwnership("room_id", "furniture_id"))
 							furnitureId.GET("/", controllers.GetFurnitureByID)
-							furnitureId.DELETE("/", controllers.DeleteFurniture)
+							furnitureId.DELETE("/", controllers.ArchiveFurniture)
 						}
 					}
 				}
@@ -161,10 +162,6 @@ func Routes() *gin.Engine {
 
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.GET("/sw/serviceWorker.ts", func(c *gin.Context) {
-		c.Header("Service-Worker-Allowed", "/")
-		c.File("./sw/serviceWorker.js")
-	})
 
 	registerAPIRoutes(r, false)
 	return r

@@ -9,6 +9,7 @@ func GetAllPropertyByOwnerId(ownerId string) []db.PropertyModel {
 	pdb := services.DBclient
 	allProperties, err := pdb.Client.Property.FindMany(
 		db.Property.OwnerID.Equals(ownerId),
+		db.Property.Archived.Equals(false),
 	).With(
 		db.Property.Damages.Fetch(),
 		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
@@ -78,4 +79,23 @@ func UpdatePropertyPicture(property db.PropertyModel, image db.ImageModel) *db.P
 		panic(err)
 	}
 	return newProperty
+}
+
+func ArchiveProperty(propertyId string) *db.PropertyModel {
+	pdb := services.DBclient
+	archivedProperty, err := pdb.Client.Property.FindUnique(
+		db.Property.ID.Equals(propertyId),
+	).With(
+		db.Property.Damages.Fetch(),
+		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+	).Update(
+		db.Property.Archived.Set(true),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return archivedProperty
 }

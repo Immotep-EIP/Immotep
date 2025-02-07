@@ -28,6 +28,7 @@ func BuildTestProperty(id string) db.PropertyModel {
 			CreatedAt:           time.Now(),
 			OwnerID:             "1",
 			PictureID:           utils.Ptr("1"),
+			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
 			Damages:   []db.DamageModel{{}},
@@ -45,6 +46,7 @@ func TestGetAllProperties(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),
+			db.Property.Archived.Equals(false),
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
@@ -60,22 +62,23 @@ func TestGetAllProperties_MultipleProperties(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	user1 := BuildTestProperty("1")
-	user2 := BuildTestProperty("2")
+	p1 := BuildTestProperty("1")
+	p2 := BuildTestProperty("2")
 
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),
+			db.Property.Archived.Equals(false),
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
 		),
-	).ReturnsMany([]db.PropertyModel{user1, user2})
+	).ReturnsMany([]db.PropertyModel{p1, p2})
 
 	allProperties := database.GetAllPropertyByOwnerId("1")
 	assert.Len(t, allProperties, 2)
-	assert.Equal(t, user1.ID, allProperties[0].ID)
-	assert.Equal(t, user2.ID, allProperties[1].ID)
+	assert.Equal(t, p1.ID, allProperties[0].ID)
+	assert.Equal(t, p2.ID, allProperties[1].ID)
 }
 
 func TestGetAllProperties_NoProperties(t *testing.T) {
@@ -85,6 +88,7 @@ func TestGetAllProperties_NoProperties(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),
+			db.Property.Archived.Equals(false),
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
@@ -102,6 +106,7 @@ func TestGetAllProperties_NoConnection(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),
+			db.Property.Archived.Equals(false),
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
@@ -311,5 +316,72 @@ func TestUpdatePropertyPicture_NoConnection(t *testing.T) {
 
 	assert.Panics(t, func() {
 		database.UpdatePropertyPicture(property, image)
+	})
+}
+
+func TestArchiveProperty(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	property.Archived = true
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		).Update(
+			db.Property.Archived.Set(true),
+		),
+	).Returns(property)
+
+	archivedProperty := database.ArchiveProperty(property.ID)
+	assert.NotNil(t, archivedProperty)
+	assert.Equal(t, property.ID, archivedProperty.ID)
+	assert.True(t, archivedProperty.Archived)
+}
+
+func TestArchiveProperty_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		).Update(
+			db.Property.Archived.Set(true),
+		),
+	).Errors(db.ErrNotFound)
+
+	archivedProperty := database.ArchiveProperty(property.ID)
+	assert.Nil(t, archivedProperty)
+}
+
+func TestArchiveProperty_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		).Update(
+			db.Property.Archived.Set(true),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.ArchiveProperty(property.ID)
 	})
 }

@@ -46,6 +46,7 @@ type PropertyResponse struct {
 	RentalPricePerMonth int         `json:"rental_price_per_month"`
 	DepositPrice        int         `json:"deposit_price"`
 	CreatedAt           db.DateTime `json:"created_at"`
+	Archived            bool        `json:"archived"`
 
 	// calculated fields
 	Status    string       `json:"status"`
@@ -68,6 +69,7 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	p.RentalPricePerMonth = model.RentalPricePerMonth
 	p.DepositPrice = model.DepositPrice
 	p.CreatedAt = model.CreatedAt
+	p.Archived = model.Archived
 
 	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
 
