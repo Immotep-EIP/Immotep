@@ -37,6 +37,24 @@ func GetPropertyByID(id string) *db.PropertyModel {
 	return property
 }
 
+func GetPropertyInventory(id string) *db.PropertyModel {
+	pdb := services.DBclient
+	property, err := pdb.Client.Property.FindUnique(
+		db.Property.ID.Equals(id),
+	).With(
+		db.Property.Damages.Fetch(),
+		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return property
+}
+
 func CreateProperty(property db.PropertyModel, ownerId string) *db.PropertyModel {
 	pdb := services.DBclient
 	newProperty, err := pdb.Client.Property.CreateOne(

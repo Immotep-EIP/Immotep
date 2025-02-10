@@ -758,6 +758,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/inventory/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get property information by its ID with inventory including rooms and furnitures",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get property inventory by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property inventory data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyInventoryResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/picture/": {
             "get": {
                 "security": [
@@ -2037,6 +2095,72 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PropertyInventoryResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "archived": {
+                    "type": "boolean"
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deposit_price": {
+                    "type": "integer"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nb_damage": {
+                    "type": "integer"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "picture_id": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "integer"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.roomResponse"
+                    }
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "calculated fields",
+                    "type": "string"
+                },
+                "tenant": {
+                    "type": "string"
+                }
+            }
+        },
         "models.PropertyRequest": {
             "type": "object",
             "required": [
@@ -2351,6 +2475,43 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "lastname": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.furnitureResponse": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.roomResponse": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "furnitures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.furnitureResponse"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

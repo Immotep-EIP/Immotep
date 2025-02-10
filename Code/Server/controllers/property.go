@@ -50,6 +50,26 @@ func GetPropertyById(c *gin.Context) {
 	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
 }
 
+// GetPropertyInventory godoc
+//
+//	@Summary		Get property inventory by ID
+//	@Description	Get property information by its ID with inventory including rooms and furnitures
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string								true	"Property ID"
+//	@Success		200			{object}	models.PropertyInventoryResponse	"Property inventory data"
+//	@Failure		401			{object}	utils.Error							"Unauthorized"
+//	@Failure		403			{object}	utils.Error							"Property not yours"
+//	@Failure		404			{object}	utils.Error							"Property not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/inventory/ [get]
+func GetPropertyInventory(c *gin.Context) {
+	property := database.GetPropertyInventory(c.Param("property_id"))
+	c.JSON(http.StatusOK, models.DbPropertyInventoryToResponse(*property))
+}
+
 // CreateProperty godoc
 //
 //	@Summary		Create a new property

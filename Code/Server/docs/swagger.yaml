@@ -158,6 +158,50 @@ definitions:
       tenant_email:
         type: string
     type: object
+  models.PropertyInventoryResponse:
+    properties:
+      address:
+        type: string
+      archived:
+        type: boolean
+      area_sqm:
+        type: number
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      deposit_price:
+        type: integer
+      end_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      nb_damage:
+        type: integer
+      owner_id:
+        type: string
+      picture_id:
+        type: string
+      postal_code:
+        type: string
+      rental_price_per_month:
+        type: integer
+      rooms:
+        items:
+          $ref: '#/definitions/models.roomResponse'
+        type: array
+      start_date:
+        type: string
+      status:
+        description: calculated fields
+        type: string
+      tenant:
+        type: string
+    type: object
   models.PropertyRequest:
     properties:
       address:
@@ -374,6 +418,30 @@ definitions:
       firstname:
         type: string
       lastname:
+        type: string
+    type: object
+  models.furnitureResponse:
+    properties:
+      archived:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  models.roomResponse:
+    properties:
+      archived:
+        type: boolean
+      furnitures:
+        items:
+          $ref: '#/definitions/models.furnitureResponse'
+        type: array
+      id:
+        type: string
+      name:
         type: string
     type: object
   utils.Error:
@@ -948,6 +1016,44 @@ paths:
       summary: Generate summary from photo
       tags:
       - ai
+  /owner/properties/{property_id}/inventory/:
+    get:
+      consumes:
+      - application/json
+      description: Get property information by its ID with inventory including rooms
+        and furnitures
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property inventory data
+          schema:
+            $ref: '#/definitions/models.PropertyInventoryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property inventory by ID
+      tags:
+      - owner
   /owner/properties/{property_id}/picture/:
     get:
       consumes:
