@@ -10,9 +10,8 @@ export default {
   },
   moduleNameMapper: {
     '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
-    '\\.svg$': '<rootDir>/__mocks__/svgMock.js',
+    '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/__mocks__/fileMock.js',
     '^@/(.*)$': '<rootDir>/src/$1'
   },
-  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
-  collectCoverage: true
+  setupFilesAfterEnv: ['<rootDir>/setupTests.ts']
 }

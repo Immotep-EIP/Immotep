@@ -23,7 +23,9 @@ export const savePropertiesToDB = async (properties: PropertyDetails[]) => {
 
 export const getPropertiesFromDB = async (): Promise<PropertyDetails[]> => {
   const db = await getDB()
-  return db.getAll(STORE_NAME)
+  const tx = db.transaction(STORE_NAME, 'readonly')
+  const store = tx.objectStore(STORE_NAME)
+  return store.getAll()
 }
 
 export const removePropertyFromDB = async (propertyId: string) => {

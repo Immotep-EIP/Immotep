@@ -12,9 +12,9 @@ import { LoadingOutlined } from '@ant-design/icons'
 import { UserToken, TokenResponse, User } from '@/interfaces/User/User'
 import { loginApi } from '@/services/api/Authentification/AuthApi'
 import getUserProfile from '@/services/api/User/GetUserProfile'
-import { saveData, deleteData } from '@/utils/localStorage'
+import { saveData, deleteData } from '@/utils/cache/localStorage'
 import NavigationEnum from '@/enums/NavigationEnum'
-import { getUserFromDB, saveUserToDB } from '@/utils/cache/user/indexDB'
+import { getUserFromDB, saveUserToDB } from '@/utils/cache/user/indexedDB'
 
 interface AuthContextType {
   isAuthenticated: boolean

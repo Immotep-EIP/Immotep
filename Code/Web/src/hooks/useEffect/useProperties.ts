@@ -7,7 +7,7 @@ import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetai
 import {
   savePropertiesToDB,
   getPropertiesFromDB
-} from '@/utils/cache/property/indexDB'
+} from '@/utils/cache/property/indexedDB'
 
 type CreatePropertyData = Omit<
   PropertyDetails,
@@ -60,25 +60,16 @@ const useProperties = (propertyId: string | null = null) => {
   const fetchProperties = async () => {
     try {
       setLoading(true)
-      let res: PropertyDetails[] = []
-
-      try {
-        const cachedProperties = await getPropertiesFromDB()
-
-        if (cachedProperties.length > 0) {
-          setProperties(cachedProperties)
-        } else {
-          res = await GetProperties()
-          setProperties(res)
-          await savePropertiesToDB(res)
-        }
-      } catch (apiError) {
-        res = await getPropertiesFromDB()
+      const cachedProperties = await getPropertiesFromDB()
+      if (cachedProperties.length > 0) {
+        setProperties(cachedProperties)
+      } else {
+        const res = await GetProperties()
+        setProperties(res)
+        await savePropertiesToDB(res)
       }
     } catch (err: any) {
-      console.error('Error fetching properties:', err.message)
       setError(err.message)
-      throw err
     } finally {
       setLoading(false)
     }
@@ -120,7 +111,7 @@ const useProperties = (propertyId: string | null = null) => {
     }
 
     fetchData()
-  }, [])
+  }, [propertyId])
 
   return {
     properties,

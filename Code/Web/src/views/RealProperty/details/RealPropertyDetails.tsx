@@ -19,7 +19,7 @@ import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentCont
 import useImageCache from '@/hooks/useEffect/useImageCache'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import useProperties from '@/hooks/useEffect/useProperties'
-import { savePropertiesToDB } from '@/utils/cache/property/indexDB'
+import { savePropertiesToDB } from '@/utils/cache/property/indexedDB'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
 import InventoryTab from './tabs/3InventoryTab'
