@@ -145,20 +145,19 @@ const RealPropertyPage: React.FC = () => {
 
         {loading && <CardPropertyLoader cards={9} />}
 
-        {properties.length === 0 && (
-          <div className={style.emptyContainer}>
-            <Empty
-              image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-              description={
-                <Typography.Text>
-                  {t('components.messages.no_properties')}
-                </Typography.Text>
-              }
-            />
-          </div>
-        )}
-
         <div className={style.cardsContainer}>
+          {properties.length === 0 && (
+            <div className={style.emptyContainer}>
+              <Empty
+                image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+                description={
+                  <Typography.Text>
+                    {t('components.messages.no_properties')}
+                  </Typography.Text>
+                }
+              />
+            </div>
+          )}
           {properties.map(realProperty => (
             <CardComponent
               key={realProperty.id}
