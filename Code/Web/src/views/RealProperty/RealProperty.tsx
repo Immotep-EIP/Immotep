@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Tag } from 'antd'
+import { Button, Empty, Tag, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import useNavigation from '@/hooks/useNavigation/useNavigation'
@@ -144,6 +144,19 @@ const RealPropertyPage: React.FC = () => {
         </div>
 
         {loading && <CardPropertyLoader cards={9} />}
+
+        {!loading && properties.length === 0 && (
+          <div className={style.emptyContainer}>
+            <Empty
+              image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+              description={
+                <Typography.Text>
+                  {t('pages.real_property.no_properties')}
+                </Typography.Text>
+              }
+            />
+          </div>
+        )}
 
         <div className={style.cardsContainer}>
           {properties.map(realProperty => (

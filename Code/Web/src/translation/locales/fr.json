@@ -263,6 +263,7 @@
       "document_title": "Propriété",
       "document_description": "Gérez vos propriétés facilement. Ajoutez, modifiez ou supprimez vos propriétés.",
       "title": "Propriété",
+      "no_properties": "Vous n'avez aucune propriété pour le moment",
       "add_real_property": {
         "document_title": "Ajouter une propriété",
         "document_description": "Ajoutez une propriété pour la gérer facilement. Remplissez les champs requis pour ajouter une propriété.",

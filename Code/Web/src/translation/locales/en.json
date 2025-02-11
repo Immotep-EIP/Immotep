@@ -263,6 +263,7 @@
       "document_title": "Real property",
       "document_description": "Manage your real properties easily. Add, edit or delete your properties.",
       "title": "Real property",
+      "no_properties": "You have no properties",
       "add_real_property": {
         "document_title": "Add a property",
         "document_description": "Add a property to manage it easily. Fill in the required fields to add a property.",
