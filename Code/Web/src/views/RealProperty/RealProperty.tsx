@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Button, Empty, Tag, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 
