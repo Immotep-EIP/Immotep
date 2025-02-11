@@ -288,6 +288,10 @@
       "error": {
         "error_fetching_data": "Erreur lors de la récupération des données"
       }
+    },
+    "messages": {
+      "document_title": "Messagerie",
+      "document_description": "Gérez vos messages facilement. Envoyez, recevez et supprimez vos messages."
     }
   },
   "widgets": {

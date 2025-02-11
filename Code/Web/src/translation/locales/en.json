@@ -288,6 +288,10 @@
       "error": {
         "error_fetching_data": "Error fetching data"
       }
+    },
+    "messages": {
+      "document_title": "Messages",
+      "document_description": "Manage your messages easily. Add, edit or delete your messages."
     }
   },
   "widgets": {

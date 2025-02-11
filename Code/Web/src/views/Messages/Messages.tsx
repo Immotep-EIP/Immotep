@@ -10,8 +10,8 @@ const Messages: React.FC = () => {
   return (
     <>
       <PageMeta
-        title={t('pages.message.document_title')}
-        description={t('pages.message.document_description')}
+        title={t('pages.messages.document_title')}
+        description={t('pages.messages.document_description')}
         keywords="messages, communication, Immotep"
       />
       <div className={style.layoutContainer}>
