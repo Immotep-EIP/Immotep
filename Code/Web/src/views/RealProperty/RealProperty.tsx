@@ -151,7 +151,7 @@ const RealPropertyPage: React.FC = () => {
               image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
               description={
                 <Typography.Text>
-                  {t('pages.real_property.no_properties')}
+                  {t('components.messages.no_properties')}
                 </Typography.Text>
               }
             />

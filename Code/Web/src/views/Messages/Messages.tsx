@@ -20,7 +20,7 @@ const Messages: React.FC = () => {
             image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
             description={
               <Typography.Text>
-                {t('pages.messages.no_properties_so_no_messages')}
+                {t('components.messages.no_properties_so_no_messages')}
               </Typography.Text>
             }
           />

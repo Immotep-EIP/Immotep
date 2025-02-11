@@ -52,7 +52,8 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
 
   const removeProperty = async () => {
     Modal.confirm({
-      title: t('pages.real_property.delete_confirmation'),
+      title: t('components.messages.delete_property_title'),
+      content: t('components.messages.delete_property_description'),
       okText: t('components.button.confirm'),
       cancelText: t('components.button.cancel'),
       okButtonProps: { danger: true },

@@ -134,7 +134,11 @@
       "modifications_saved": "Modifications sauvegardées",
       "no_modifications": "Aucune modification à sauvegarder",
       "picture_updated": "Image mise à jour",
-      "picture_not_updated": "Erreur lors de la mise à jour de l'image"
+      "picture_not_updated": "Erreur lors de la mise à jour de l'image",
+      "no_properties": "Vous n'avez aucune propriété pour le moment",
+      "no_properties_so_no_messages": "Vous n'avez aucune propriété pour le moment, vous n'avez donc aucun message.",
+      "delete_property_title": "Supprimer la propriété",
+      "delete_property_description": "Êtes-vous sûr de vouloir supprimer cette propriété ?"
     },
     "button": {
       "sign_in": "Se connecter",
@@ -163,7 +167,8 @@
       "cancel": "Annuler",
       "confirm": "Confirmer",
       "add": "Ajouter",
-      "close": "Close"
+      "close": "Close",
+      "delete": "Supprimer"
     },
     "modal": {
       "end_contract": {
@@ -263,7 +268,6 @@
       "document_title": "Propriété",
       "document_description": "Gérez vos propriétés facilement. Ajoutez, modifiez ou supprimez vos propriétés.",
       "title": "Propriété",
-      "no_properties": "Vous n'avez aucune propriété pour le moment",
       "add_real_property": {
         "document_title": "Ajouter une propriété",
         "document_description": "Ajoutez une propriété pour la gérer facilement. Remplissez les champs requis pour ajouter une propriété.",
@@ -282,9 +286,6 @@
       "error": {
         "error_fetching_data": "Erreur lors de la récupération des données"
       }
-    },
-    "messages": {
-      "no_properties_so_no_messages": "Vous n'avez aucune propriété pour le moment, vous n'avez donc aucun message."
     }
   },
   "widgets": {
