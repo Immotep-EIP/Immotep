@@ -138,7 +138,9 @@
       "no_properties": "Vous n'avez aucune propriété pour le moment",
       "no_properties_so_no_messages": "Vous n'avez aucune propriété pour le moment, vous n'avez donc aucun message.",
       "delete_property_title": "Supprimer la propriété",
-      "delete_property_description": "Êtes-vous sûr de vouloir supprimer cette propriété ?"
+      "delete_property_description": "Êtes-vous sûr de vouloir supprimer cette propriété ?",
+      "delete_property_success": "Propriété supprimée avec succès",
+      "delete_property_error": "Erreur lors de la suppression de la propriété"
     },
     "button": {
       "sign_in": "Se connecter",

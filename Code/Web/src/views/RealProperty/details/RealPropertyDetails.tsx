@@ -34,6 +34,7 @@ import {
   removePropertyFromDB
 } from '@/utils/cache/property/indexedDB'
 import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
+import useNavigation from '@/hooks/useNavigation/useNavigation'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
 import InventoryTab from './tabs/3InventoryTab'
@@ -44,6 +45,7 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
   propertyData
 }) => {
   const { t } = useTranslation()
+  const { goToRealProperty } = useNavigation()
 
   const { data: picture, isLoading } = useImageCache(
     propertyData?.id || '',
@@ -66,11 +68,11 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
         try {
           await ArchiveProperty(propertyData.id)
           await removePropertyFromDB(propertyData.id)
-          message.success(t('pages.real_property.delete_success'))
-          window.location.href = '/real-property'
+          message.success(t('components.messages.delete_property_success'))
+          goToRealProperty()
         } catch (error) {
           console.error('Error deleting property:', error)
-          message.error(t('pages.real_property.delete_error'))
+          message.error(t('components.messages.delete_property_error'))
         }
       }
     })
