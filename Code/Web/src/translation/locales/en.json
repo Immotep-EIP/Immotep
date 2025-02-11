@@ -282,6 +282,9 @@
       "error": {
         "error_fetching_data": "Error fetching data"
       }
+    },
+    "messages": {
+      "no_properties_so_no_messages": "You have no properties so no messages"
     }
   },
   "widgets": {

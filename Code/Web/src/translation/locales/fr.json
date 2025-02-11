@@ -282,6 +282,9 @@
       "error": {
         "error_fetching_data": "Erreur lors de la récupération des données"
       }
+    },
+    "messages": {
+      "no_properties_so_no_messages": "Vous n'avez aucune propriété pour le moment, vous n'avez donc aucun message."
     }
   },
   "widgets": {

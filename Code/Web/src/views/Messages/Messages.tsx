@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import PageMeta from '@/components/PageMeta/PageMeta'
+import { Empty, Typography } from 'antd'
 import style from './Messages.module.css'
 
 const Messages: React.FC = () => {
@@ -13,7 +14,18 @@ const Messages: React.FC = () => {
         description={t('pages.message.document_description')}
         keywords="messages, communication, Immotep"
       />
-      <div className={style.layoutContainer}>Messages</div>
+      <div className={style.layoutContainer}>
+        <div className={style.emptyContainer}>
+          <Empty
+            image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+            description={
+              <Typography.Text>
+                {t('pages.messages.no_properties_so_no_messages')}
+              </Typography.Text>
+            }
+          />
+        </div>
+      </div>
     </>
   )
 }
