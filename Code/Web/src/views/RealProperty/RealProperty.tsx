@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button, Empty, Tag, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 
@@ -145,7 +145,7 @@ const RealPropertyPage: React.FC = () => {
 
         {loading && <CardPropertyLoader cards={9} />}
 
-        {!loading && properties.length === 0 && (
+        {properties.length === 0 && (
           <div className={style.emptyContainer}>
             <Empty
               image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
