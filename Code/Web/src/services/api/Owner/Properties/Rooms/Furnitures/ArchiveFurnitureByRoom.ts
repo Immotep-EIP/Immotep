@@ -1,6 +1,6 @@
 import callApi from '@/services/api/apiCaller'
 
-const DeleteFurnitureByRoom = async (
+const ArchiveFurnitureByRoom = async (
   PropertyId: string,
   RoomId: string,
   FurnitureId: string
@@ -16,4 +16,4 @@ const DeleteFurnitureByRoom = async (
   }
 }
 
-export default DeleteFurnitureByRoom
+export default ArchiveFurnitureByRoom

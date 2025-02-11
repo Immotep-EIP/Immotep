@@ -9,8 +9,8 @@ import GetRoomsByProperty from '@/services/api/Owner/Properties/Rooms/GetRoomsBy
 import CreateRoomByProperty from '@/services/api/Owner/Properties/Rooms/CreateRoomByProperty'
 import GetFurnituresByRoom from '@/services/api/Owner/Properties/Rooms/Furnitures/GetFurnituresByRoom'
 import CreateFurnitureByRoom from '@/services/api/Owner/Properties/Rooms/Furnitures/CreateFurnitureByRoom'
-import DeleteFurnitureByRoom from '@/services/api/Owner/Properties/Rooms/Furnitures/DeleteFurnitureByRoom'
-import DeleteRoomByPropertyById from '@/services/api/Owner/Properties/Rooms/DeleteRoomByPropertyById'
+import ArchiveFurnitureByRoom from '@/services/api/Owner/Properties/Rooms/Furnitures/ArchiveFurnitureByRoom'
+import ArchiveRoomByPropertyById from '@/services/api/Owner/Properties/Rooms/ArchiveRoomByPropertyById'
 import style from './3InventoryTab.module.css'
 
 const InventoryTab: React.FC = () => {
@@ -177,6 +177,10 @@ const InventoryTab: React.FC = () => {
       title: t(
         'pages.real_property_details.tabs.inventory.remove_room_confirmation'
       ),
+      okText: t('components.button.confirm'),
+      cancelText: t('components.button.cancel'),
+      okButtonProps: { danger: true },
+
       onOk: async () => {
         if (!id) {
           message.error('Property ID is missing.')
@@ -184,7 +188,7 @@ const InventoryTab: React.FC = () => {
         }
 
         try {
-          await DeleteRoomByPropertyById(id, roomId)
+          await ArchiveRoomByPropertyById(id, roomId)
           setInventory(inventory.filter(r => r.roomName !== roomName))
           message.success(
             t('pages.real_property_details.tabs.inventory.remove_room_success')
@@ -213,7 +217,7 @@ const InventoryTab: React.FC = () => {
         }
 
         try {
-          await DeleteFurnitureByRoom(id, roomId, furnitureId)
+          await ArchiveFurnitureByRoom(id, roomId, furnitureId)
           setInventory(
             inventory.map(r =>
               r.roomName === roomName

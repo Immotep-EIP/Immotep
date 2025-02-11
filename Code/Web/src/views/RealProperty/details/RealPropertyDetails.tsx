@@ -1,6 +1,16 @@
 import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Button, message, Modal, Tabs, TabsProps, Tag } from 'antd'
+import {
+  Button,
+  MenuProps,
+  message,
+  Modal,
+  Tabs,
+  TabsProps,
+  Tag,
+  Dropdown
+} from 'antd'
+import { MoreOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
@@ -19,7 +29,11 @@ import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentCont
 import useImageCache from '@/hooks/useEffect/useImageCache'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import useProperties from '@/hooks/useEffect/useProperties'
-import { savePropertiesToDB } from '@/utils/cache/property/indexedDB'
+import {
+  savePropertiesToDB,
+  removePropertyFromDB
+} from '@/utils/cache/property/indexedDB'
+import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
 import InventoryTab from './tabs/3InventoryTab'
@@ -35,6 +49,46 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
     propertyData?.id || '',
     GetPropertyPicture
   )
+
+  const removeProperty = async () => {
+    Modal.confirm({
+      title: t('pages.real_property.delete_confirmation'),
+      okText: t('components.button.confirm'),
+      cancelText: t('components.button.cancel'),
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        if (!propertyData) {
+          message.error('Property ID is missing.')
+          return
+        }
+
+        try {
+          await ArchiveProperty(propertyData.id)
+          await removePropertyFromDB(propertyData.id)
+          message.success(t('pages.real_property.delete_success'))
+          window.location.href = '/real-property'
+        } catch (error) {
+          console.error('Error deleting property:', error)
+          message.error(t('pages.real_property.delete_error'))
+        }
+      }
+    })
+  }
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: t('components.button.edit'),
+      onClick: () => {}
+    },
+    {
+      key: '2',
+      label: t('components.button.delete'),
+      danger: true,
+      onClick: () => {
+        removeProperty()
+      }
+    }
+  ]
 
   if (!propertyData) {
     return null
@@ -89,6 +143,13 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
       </div>
 
       <div className={style.moreInfosContainer}>
+        <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
+          <Button
+            type="text"
+            icon={<MoreOutlined />}
+            className={style.actionButton}
+          />
+        </Dropdown>
         <Tag color={propertyData.nb_damage > 0 ? 'red' : 'green'}>
           {propertyData.nb_damage || 0}{' '}
           {t('pages.real_property.damage.waiting')}

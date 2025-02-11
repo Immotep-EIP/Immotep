@@ -1,6 +1,9 @@
 import callApi from '@/services/api/apiCaller'
 
-const DeleteRoomByPropertyById = async (PropertyId: string, RoomId: string) => {
+const ArchiveRoomByPropertyById = async (
+  PropertyId: string,
+  RoomId: string
+) => {
   try {
     return await callApi({
       method: 'DELETE',
@@ -12,4 +15,4 @@ const DeleteRoomByPropertyById = async (PropertyId: string, RoomId: string) => {
   }
 }
 
-export default DeleteRoomByPropertyById
+export default ArchiveRoomByPropertyById
