@@ -167,6 +167,58 @@ func TestGetPropertyByID_NoConnection(t *testing.T) {
 	})
 }
 
+func TestGetPropertyInventory(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
+		),
+	).Returns(property)
+
+	foundProperty := database.GetPropertyInventory("1")
+	assert.NotNil(t, foundProperty)
+	assert.Equal(t, property.ID, foundProperty.ID)
+}
+
+func TestGetPropertyInventory_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
+		),
+	).Errors(db.ErrNotFound)
+
+	foundProperty := database.GetPropertyInventory("1")
+	assert.Nil(t, foundProperty)
+}
+
+func TestGetPropertyInventory_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetPropertyInventory("1")
+	})
+}
+
 func TestCreateProperty(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)

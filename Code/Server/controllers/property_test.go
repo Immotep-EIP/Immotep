@@ -42,6 +42,43 @@ func BuildTestProperty(id string) db.PropertyModel {
 	}
 }
 
+func BuildTestPropertyWithInventory(id string) db.PropertyModel {
+	return db.PropertyModel{
+		InnerProperty: db.InnerProperty{
+			ID:                  id,
+			Name:                "Test",
+			Address:             "Test",
+			City:                "Test",
+			PostalCode:          "Test",
+			Country:             "Test",
+			AreaSqm:             20.0,
+			RentalPricePerMonth: 500,
+			DepositPrice:        1000,
+			CreatedAt:           time.Now(),
+			OwnerID:             "1",
+			PictureID:           utils.Ptr("1"),
+			Archived:            false,
+		},
+		RelationsProperty: db.RelationsProperty{
+			Damages:   []db.DamageModel{{}},
+			Contracts: []db.ContractModel{{}},
+			Rooms: []db.RoomModel{
+				{
+					InnerRoom: db.InnerRoom{
+						ID:         "1",
+						Name:       "Test",
+						Archived:   false,
+						PropertyID: id,
+					},
+					RelationsRoom: db.RelationsRoom{
+						Furnitures: []db.FurnitureModel{{}},
+					},
+				},
+			},
+		},
+	}
+}
+
 func BuildTestPendingContract() db.PendingContractModel {
 	return db.PendingContractModel{
 		InnerPendingContract: db.InnerPendingContract{
@@ -180,6 +217,103 @@ func TestGetPropertyById_NotYours(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/", nil)
+	req.Header.Set("Oauth.claims.id", "2")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusForbidden, w.Code)
+	var errorResponse utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.PropertyNotYours, errorResponse.Code)
+}
+
+func TestGetPropertyInventory(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Returns(property)
+
+	propertyInv := BuildTestPropertyWithInventory("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(propertyInv.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
+		),
+	).Returns(propertyInv)
+
+	r := router.TestRoutes()
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/inventory/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
+	var propertyInventoryResponse models.PropertyInventoryResponse
+	err := json.Unmarshal(w.Body.Bytes(), &propertyInventoryResponse)
+	require.NoError(t, err)
+	assert.Equal(t, propertyInv.ID, propertyInventoryResponse.ID)
+}
+
+func TestGetPropertyInventory_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals("wrong"),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/wrong/inventory/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var errorResponse utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.PropertyNotFound, errorResponse.Code)
+}
+
+func TestGetPropertyInventory_NotYours(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		),
+	).Returns(property)
+
+	r := router.TestRoutes()
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/inventory/", nil)
 	req.Header.Set("Oauth.claims.id", "2")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

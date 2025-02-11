@@ -112,6 +112,8 @@ linters:
 
 issues:
   fix: true
+  exclude-dirs:
+    - prisma
 
 linters-settings:
   revive:
