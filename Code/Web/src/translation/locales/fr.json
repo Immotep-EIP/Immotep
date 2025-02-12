@@ -140,7 +140,8 @@
       "delete_property_title": "Supprimer la propriété",
       "delete_property_description": "Êtes-vous sûr de vouloir supprimer cette propriété ?",
       "delete_property_success": "Propriété supprimée avec succès",
-      "delete_property_error": "Erreur lors de la suppression de la propriété"
+      "delete_property_error": "Erreur lors de la suppression de la propriété",
+      "no_rooms_in_inventory": "Vous n'avez aucune pièce dans votre inventaire pour le moment"
     },
     "button": {
       "sign_in": "Se connecter",

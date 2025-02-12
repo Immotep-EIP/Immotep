@@ -5,7 +5,7 @@ import { Empty, Typography } from 'antd'
 import style from './Messages.module.css'
 
 const Messages: React.FC = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <>

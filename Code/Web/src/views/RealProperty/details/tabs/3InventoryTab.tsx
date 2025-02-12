@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CloseOutlined } from '@ant-design/icons'
-import { Button, Form, Input, InputNumber, Modal, message } from 'antd'
+import { Button, Empty, Form, Input, InputNumber, Modal, Typography, message } from 'antd'
 
 import addIcon from '@/assets/icons/plus.png'
 import { usePropertyId } from '@/context/propertyIdContext'
@@ -61,6 +61,7 @@ const InventoryTab: React.FC = () => {
           })
         )
         setInventory(inventoryData)
+        console.log('inventoryData:', inventoryData)
       } catch (error) {
         console.error('Error fetching rooms:', error)
         message.error('Failed to load rooms.')
@@ -320,6 +321,18 @@ const InventoryTab: React.FC = () => {
             </div>
           </div>
         ))}
+        {inventory.length === 0 && (
+          <div className={style.emptyContainer}>
+            <Empty
+              image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+              description={
+                <Typography.Text>
+                  {t('components.messages.no_rooms_in_inventory')}
+                </Typography.Text>
+              }
+            />
+          </div>
+        )}
         <Modal
           title={t(
             'pages.real_property_details.tabs.inventory.add_stuff_modal_title'

@@ -140,7 +140,8 @@
       "delete_property_title": "Delete property",
       "delete_property_description": "Are you sure you want to delete this property?",
       "delete_property_success": "Property deleted successfully",
-      "delete_property_error": "Error while deleting the property"
+      "delete_property_error": "Error while deleting the property",
+      "no_rooms_in_inventory": "You have no rooms in your inventory for the moment"
     },
     "button": {
       "sign_in": "Sign in",
