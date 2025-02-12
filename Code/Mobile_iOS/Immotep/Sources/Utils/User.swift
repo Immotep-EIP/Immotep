@@ -27,7 +27,7 @@ struct User: Decodable, Encodable {
     }
 }
 
-actor UserService: Sendable, UserServiceProtocol {
+actor UserService: UserServiceProtocol {
     static let shared = UserService()
 
     private var currentUser: User?

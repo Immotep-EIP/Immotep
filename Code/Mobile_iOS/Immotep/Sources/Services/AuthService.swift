@@ -7,7 +7,7 @@
 
 import Foundation
 
-actor AuthService: Sendable, AuthServiceProtocol {
+actor AuthService: AuthServiceProtocol {
     static let shared = AuthService()
 
     func loginUser(email: String, password: String, keepMeSignedIn: Bool) async throws -> (String, String) {

@@ -41,7 +41,6 @@ struct CustomAlert: View {
                     .padding(.bottom, 10)
                     .foregroundStyle(Color("textColor"))
 
-                // TextField pour la saisie
                 TextField("".localized(), text: $textFieldInput)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)

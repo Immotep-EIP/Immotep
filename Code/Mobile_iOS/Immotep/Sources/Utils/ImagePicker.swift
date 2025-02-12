@@ -49,3 +49,12 @@ struct ImagePicker: UIViewControllerRepresentable {
 
     }
 }
+
+func convertUIImagesToBase64(_ images: [UIImage]) -> [String] {
+    return images.compactMap { image in
+        guard let jpegData = image.jpegData(compressionQuality: 0.8) else {
+            return nil
+        }
+        return jpegData.base64EncodedString()
+    }
+}

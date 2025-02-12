@@ -7,7 +7,7 @@
 
 import Foundation
 
-actor ApiService: Sendable, ApiServiceProtocol {
+actor ApiService: ApiServiceProtocol {
     static let shared = ApiService()
 
     func registerUser(with model: RegisterModel) async throws -> String {
