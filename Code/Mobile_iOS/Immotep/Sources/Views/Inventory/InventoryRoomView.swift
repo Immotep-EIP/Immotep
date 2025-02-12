@@ -18,19 +18,11 @@ struct InventoryRoomView: View {
                         Spacer()
                         List {
                             ForEach(inventoryViewModel.property.rooms) { room in
-                                ZStack(alignment: .leading) {
-                                    RoomCard(room: room, isEntryInventory: inventoryViewModel.isEntryInventory)
-                                        .onTapGesture {
-                                            inventoryViewModel.selectRoom(room)
-                                        }
-
-                                    NavigationLink(destination:
-                                                    InventoryStuffView(selectedRoom: room)
+                                NavigationLink(destination:
+                                    InventoryStuffView(selectedRoom: room)
                                         .environmentObject(inventoryViewModel)
-                                    ) {
-                                        EmptyView()
-                                    }
-                                    .opacity(0.0)
+                                ) {
+                                    RoomCard(room: room, isEntryInventory: inventoryViewModel.isEntryInventory)
                                 }
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button(role: .destructive) {
@@ -42,6 +34,13 @@ struct InventoryRoomView: View {
                                 }
                                 .listRowInsets(EdgeInsets())
                                 .listRowSeparator(.hidden)
+                                .padding()
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                )
+                                .padding(.horizontal)
+                                .padding(.vertical, 5)
                             }
                         }
                         .listStyle(.plain)
@@ -100,14 +99,14 @@ struct InventoryRoomView: View {
                                 do {
                                     try await inventoryViewModel.addRoom(name: newRoomName)
                                     print("New room name: \(newRoomName)")
-                                    newRoomName = "" // Réinitialiser après utilisation
+                                    newRoomName = ""
                                 } catch {
                                     print("Error adding room: \(error.localizedDescription)")
                                 }
                             }
                         },
                         secondaryAction: {
-                            newRoomName = "" // Réinitialiser en cas d'annulation
+                            newRoomName = ""
                         }
                     )
                 }
@@ -149,19 +148,7 @@ struct RoomCard: View {
             }
             Text(room.name)
                 .foregroundStyle(Color("textColor"))
-            Spacer()
-            Image(systemName: "chevron.right")
-                .font(.title2)
-                .foregroundStyle(Color("textColor"))
         }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-        )
-        .padding(.horizontal)
-        .padding(.vertical, 5)
     }
 }
 
@@ -173,44 +160,3 @@ struct InventoryRoomView_Previews: PreviewProvider {
             .environmentObject(viewModel)
     }
 }
-
-//extension View {
-//    func customAlert(
-//        isActive: Binding<Bool>,
-//        title: String,
-//        message: String,
-//        buttonTitle: String,
-//        secondaryButtonTitle: String?,
-//        showTextField: Bool,
-//        action: @escaping () -> Void,
-//        secondaryAction: (() -> Void)?
-//    ) -> some View {
-//        self.background(
-//            CustomAlert(
-//                isActive: isActive,
-//                title: title,
-//                message: message,
-//                buttonTitle: buttonTitle,
-//                secondaryButtonTitle: secondaryButtonTitle,
-//                showTextField: showTextField,
-//                action: action,
-//                secondaryAction: secondaryAction
-//            )
-//        )
-//    }
-//}
-
-//CustomAlert(
-//    isActive: .constant(true),
-//    textFieldInput: .constant(""), // Binding pour le TextField
-//    title: "Alerte avec Saisie",
-//    message: "Veuillez entrer quelque chose :",
-//    buttonTitle: "Valider",
-//    secondaryButtonTitle: "Annuler",
-//    action: {
-//        print("Validation action")
-//    },
-//    secondaryAction: {
-//        print("Annulation action")
-//    }
-//)

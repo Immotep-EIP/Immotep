@@ -55,3 +55,15 @@ struct FurnitureResponse: Codable, Identifiable {
         case quantity
     }
 }
+
+struct SummarizeRequest: Codable {
+    let id: String
+    let pictures: [String]
+    let type: String
+}
+
+struct SummarizeResponse: Codable {
+    let cleanliness: String
+    let note: String
+    let state: String
+}

@@ -42,6 +42,8 @@ class InventoryViewModel: ObservableObject {
         }
     }
 
+    // ROOM API CALLS
+
     func fetchRooms() async {
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/") else {
             errorMessage = "Invalid URL"
@@ -97,7 +99,6 @@ class InventoryViewModel: ObservableObject {
         guard let token = await getToken() else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve token"])
         }
-        print("name: \(name)")
 
         let body: [String: Any] = [
             "name": name
@@ -112,10 +113,7 @@ class InventoryViewModel: ObservableObject {
             let jsonData = try JSONSerialization.data(withJSONObject: body)
             urlRequest.httpBody = jsonData
 
-            print("URL: \(url)")
-            print("Headers: \(urlRequest.allHTTPHeaderFields ?? [:])")
-            if let httpBody = urlRequest.httpBody, let bodyString = String(data: httpBody, encoding: .utf8) {
-                print("Body: \(bodyString)")
+            if let httpBody = urlRequest.httpBody, let _ = String(data: httpBody, encoding: .utf8) {
             }
 
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
@@ -128,7 +126,8 @@ class InventoryViewModel: ObservableObject {
                 if let responseBody = String(data: data, encoding: .utf8) {
                     print("Response Body: \(responseBody)")
                 }
-                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
             }
 
             await fetchRooms()
@@ -136,7 +135,6 @@ class InventoryViewModel: ObservableObject {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Error creating room: \(error.localizedDescription)"])
         }
     }
-
 
     func deleteRoom(_ room: PropertyRooms) async {
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/\(room.id)/") else {
@@ -172,6 +170,12 @@ class InventoryViewModel: ObservableObject {
         }
     }
 
+    func selectRoom(_ room: PropertyRooms) {
+        print("room selected: \(room)")
+        selectedRoom = room
+        selectedInventory = room.inventory
+    }
+
     func isRoomCompleted(_ room: PropertyRooms) -> Bool {
         return room.inventory.allSatisfy { $0.checked }
     }
@@ -184,13 +188,12 @@ class InventoryViewModel: ObservableObject {
         guard let index = property.rooms.firstIndex(where: { $0.id == room.id }) else { return }
         property.rooms[index].checked = true
 
-        // Faites votre appel API ici
-        // Exemple : await callYourAPI(room)
-
         await MainActor.run {
             self.property.rooms[index].checked = true
         }
     }
+
+    // STUFF (FURNITURE) API CALLS
 
     func markStuffAsChecked(_ stuff: RoomInventory) async throws {
         guard let index = selectedInventory.firstIndex(where: { $0.id == stuff.id }) else {
@@ -331,11 +334,6 @@ class InventoryViewModel: ObservableObject {
         }
     }
 
-    func selectRoom(_ room: PropertyRooms) {
-        selectedRoom = room
-        selectedInventory = room.inventory
-    }
-
     func selectStuff(_ stuff: RoomInventory) {
         print("stuff selected: \(stuff)")
         selectedStuff = stuff
@@ -344,8 +342,59 @@ class InventoryViewModel: ObservableObject {
         selectedStatus = "Select your equipment status"
     }
 
+    func sendStuffReport() async throws {
+        guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/inventory-reports/summarize/") else {
+            throw URLError(.badURL)
+        }
+        guard let token = await getToken() else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        let base64Images = convertUIImagesToBase64(selectedImages)
+
+        guard let stuffID = selectedStuff?.id else {
+            print(selectedStuff?.id ?? "nil")
+            throw URLError(.badServerResponse)
+        }
+        let body = SummarizeRequest(
+            id: stuffID,
+            pictures: base64Images,
+            type: "furniture"
+        )
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let encoder = JSONEncoder()
+        request.httpBody = try encoder.encode(body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+            _ = String(data: data, encoding: .utf8) ?? "No response body"
+            throw URLError(.badServerResponse)
+        }
+
+        let decoder = JSONDecoder()
+        let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
+
+        let stateMapping: [String: String] = [
+            "not_set": "Select your equipment status",
+            "broken": "Broken",
+            "bad": "Bad",
+            "good": "Good",
+            "new": "New"
+        ]
+        let uiStatus = stateMapping[summarizeResponse.state] ?? "Select your equipment status"
+        await MainActor.run {
+            self.comment = summarizeResponse.note
+            self.selectedStatus = uiStatus
+        }
+
+        print("Report sent successfully: \(summarizeResponse)")
+    }
+
     func finalizeInventory() async {
-        // Faites votre appel API ici pour finaliser l'inventaire
-        // Exemple : await callYourAPI()
     }
 }
