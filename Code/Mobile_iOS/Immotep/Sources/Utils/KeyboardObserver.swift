@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 class KeyboardObserver: ObservableObject {
-    @Published var isKeyboardVisible = false
+    @State var isKeyboardVisible = false
     private var keyboardPublisher: AnyCancellable?
 
     init() {

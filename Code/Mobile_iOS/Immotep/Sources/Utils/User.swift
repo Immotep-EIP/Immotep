@@ -67,10 +67,11 @@ actor UserService: Sendable, UserServiceProtocol {
     }
 
     func fetchUserProfile(with token: String) async throws -> User {
-        let url = URL(string: "\(baseURL)/profile")!
+        let url = URL(string: "\(baseURL)/profile/")!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let (data, response) = try await URLSession.shared.data(for: request)
 

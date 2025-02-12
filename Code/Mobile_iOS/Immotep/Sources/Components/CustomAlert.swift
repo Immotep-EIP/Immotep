@@ -9,16 +9,16 @@ import SwiftUI
 
 struct CustomAlert: View {
     @Binding var isActive: Bool
+    @Binding var textFieldInput: String
 
     let title: String
     let message: String
     let buttonTitle: String
     let secondaryButtonTitle: String?
-    let showTextField: Bool
     let action: () -> Void
     let secondaryAction: (() -> Void)?
+
     @State private var offset: CGFloat = 1000
-    @State private var textFieldInput: String = ""
 
     var body: some View {
         ZStack {
@@ -38,14 +38,118 @@ struct CustomAlert: View {
                 Text(message)
                     .font(.body)
                     .multilineTextAlignment(.center)
-                    .padding(.bottom, showTextField ? 10 : 20)
+                    .padding(.bottom, 10)
                     .foregroundStyle(Color("textColor"))
 
-                if showTextField {
-                    TextField("".localized(), text: $textFieldInput)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
+                // TextField pour la saisie
+                TextField("".localized(), text: $textFieldInput)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+
+                HStack {
+                    if let secondaryButtonTitle = secondaryButtonTitle {
+                        Button {
+                            secondaryAction?()
+                            close()
+                        } label: {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 20)
+                                    .foregroundColor(.gray)
+
+                                Text(secondaryButtonTitle)
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding()
+                            }
+                            .frame(height: 50)
+                        }
+                    }
+
+                    Button {
+                        action()
+                        close()
+                    } label: {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 20)
+                                .foregroundColor(.red)
+
+                            Text(buttonTitle)
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding()
+                        }
+                        .frame(height: 50)
+                    }
                 }
+                .padding()
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .padding()
+            .background(Color("primaryBackgroundColor"))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    close()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                }
+                .tint(Color("textColor"))
+                .padding()
+            }
+            .shadow(radius: 20)
+            .padding(30)
+            .offset(x: 0, y: offset)
+            .onAppear {
+                withAnimation(.spring()) {
+                    offset = 0
+                }
+            }
+        }
+        .ignoresSafeArea()
+    }
+
+    func close() {
+        withAnimation(.spring()) {
+            offset = 1000
+            isActive = false
+        }
+    }
+}
+
+struct CustomAlertTwoButtons: View {
+    @Binding var isActive: Bool
+
+    let title: String
+    let message: String
+    let buttonTitle: String
+    let secondaryButtonTitle: String?
+    let action: () -> Void
+    let secondaryAction: (() -> Void)?
+
+    @State private var offset: CGFloat = 1000
+
+    var body: some View {
+        ZStack {
+            Color(.black)
+                .opacity(0.5)
+                .onTapGesture {
+                    close()
+                }
+
+            VStack {
+                Text(title)
+                    .font(.title2)
+                    .bold()
+                    .padding()
+                    .foregroundStyle(Color("textColor"))
+
+                Text(message)
+                    .font(.body)
+                    .multilineTextAlignment(.center)
+                    .padding(.bottom, 20)
+                    .foregroundStyle(Color("textColor"))
 
                 HStack {
                     if let secondaryButtonTitle = secondaryButtonTitle {
@@ -248,35 +352,31 @@ struct CustomAlert_Previews: PreviewProvider {
         VStack {
             CustomAlert(
                 isActive: .constant(true),
-                title: "Alerte Simple",
-                message: "Ceci est une alerte avec un seul bouton.",
-                buttonTitle: "Compris",
-                secondaryButtonTitle: nil,
-                showTextField: false,
-                action: {},
-                secondaryAction: nil
+                textFieldInput: .constant(""),
+                title: "Alerte avec Saisie",
+                message: "Veuillez entrer quelque chose :",
+                buttonTitle: "Valider",
+                secondaryButtonTitle: "Annuler",
+                action: {
+                    print("Validation action")
+                },
+                secondaryAction: {
+                    print("Annulation action")
+                }
             )
 
-            CustomAlert(
+            CustomAlertTwoButtons(
                 isActive: .constant(true),
                 title: "Alerte Double",
                 message: "Ceci est une alerte avec deux boutons.",
                 buttonTitle: "Confirmer",
                 secondaryButtonTitle: "Annuler",
-                showTextField: false,
-                action: {},
-                secondaryAction: {}
-            )
-
-            CustomAlert(
-                isActive: .constant(true),
-                title: "Alerte avec Saisie",
-                message: "Veuillez entrer quelque chose :",
-                buttonTitle: "Valider",
-                secondaryButtonTitle: "Annuler",
-                showTextField: true,
-                action: {},
-                secondaryAction: {}
+                action: {
+                    print("Confirmation action")
+                },
+                secondaryAction: {
+                    print("Annulation action")
+                }
             )
         }
     }
