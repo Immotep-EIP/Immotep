@@ -53,7 +53,7 @@ describe('Login Component', () => {
       screen.getByLabelText('components.input.password.label')
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'components.button.signIn' })
+      screen.getByRole('button', { name: 'components.button.sign_in' })
     ).toBeInTheDocument()
     expect(screen.getByText('pages.login.title')).toBeInTheDocument()
     expect(screen.getByText('pages.login.description')).toBeInTheDocument()
@@ -63,7 +63,7 @@ describe('Login Component', () => {
     render(<Login />)
 
     const forgotPasswordLink = screen.getByText(
-      'components.button.askForgotPassword'
+      'components.button.ask_forgot_password'
     )
 
     fireEvent.keyDown(forgotPasswordLink, {
@@ -77,20 +77,20 @@ describe('Login Component', () => {
 
   it('navigates to Signup page when "Sign Up" is clicked', () => {
     render(<Login />)
-    fireEvent.click(screen.getByText('components.button.signUp'))
+    fireEvent.click(screen.getByText('components.button.sign_up'))
     expect(mockGoToSignup).toHaveBeenCalledTimes(1)
   })
 
   it('navigates to Forgot Password page when the link is clicked', () => {
     render(<Login />)
-    fireEvent.click(screen.getByText('components.button.askForgotPassword'))
+    fireEvent.click(screen.getByText('components.button.ask_forgot_password'))
     expect(mockGoToForgotPassword).toHaveBeenCalledTimes(1)
   })
 
   it('shows an error message when fields are empty on form submission', async () => {
     render(<Login />)
     fireEvent.click(
-      screen.getByRole('button', { name: 'components.button.signIn' })
+      screen.getByRole('button', { name: 'components.button.sign_in' })
     )
 
     await waitFor(() => {
@@ -111,7 +111,7 @@ describe('Login Component', () => {
       'components.input.password.label'
     )
     const submitButton = screen.getByRole('button', {
-      name: 'components.button.signIn'
+      name: 'components.button.sign_in'
     })
 
     fireEvent.change(emailInput, { target: { value: 'user@example.com' } })
@@ -140,7 +140,7 @@ describe('Login Component', () => {
       'components.input.password.label'
     )
     const submitButton = screen.getByRole('button', {
-      name: 'components.button.signIn'
+      name: 'components.button.sign_in'
     })
 
     fireEvent.change(emailInput, { target: { value: 'wrong@example.com' } })
@@ -149,7 +149,7 @@ describe('Login Component', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('pages.login.connectionError')
+        screen.getByText('pages.login.connection_error')
       ).toBeInTheDocument()
     })
   })
@@ -178,7 +178,7 @@ describe('Login Component', () => {
 
   it('calls the goToForgotPassword when the forgot password link is clicked', () => {
     render(<Login />)
-    fireEvent.click(screen.getByText('components.button.askForgotPassword'))
+    fireEvent.click(screen.getByText('components.button.ask_forgot_password'))
     expect(mockGoToForgotPassword).toHaveBeenCalledTimes(1)
   })
 
@@ -190,10 +190,10 @@ describe('Login Component', () => {
       'components.input.password.label'
     )
     const rememberMeCheckbox = screen.getByLabelText(
-      'components.button.rememberMe'
+      'components.button.remember_me'
     )
     const submitButton = screen.getByRole('button', {
-      name: 'components.button.signIn'
+      name: 'components.button.sign_in'
     })
 
     fireEvent.change(emailInput, { target: { value: 'user@example.com' } })
@@ -214,7 +214,7 @@ describe('Login Component', () => {
   it('navigates to Signup page when "Sign Up" link is clicked', () => {
     render(<Login />)
 
-    const signUpLink = screen.getByText('components.button.signUp')
+    const signUpLink = screen.getByText('components.button.sign_up')
 
     fireEvent.click(signUpLink)
 
@@ -224,7 +224,7 @@ describe('Login Component', () => {
   it('navigates to Signup page when "Sign Up" link is pressed with Enter key', () => {
     render(<Login />)
 
-    const signUpLink = screen.getByText('components.button.signUp')
+    const signUpLink = screen.getByText('components.button.sign_up')
 
     fireEvent.keyDown(signUpLink, { key: 'Enter', code: 'Enter', charCode: 13 })
   })

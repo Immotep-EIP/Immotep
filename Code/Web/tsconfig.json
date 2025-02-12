@@ -11,7 +11,10 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "composite": true
   },
   "files": [],
   "references": [

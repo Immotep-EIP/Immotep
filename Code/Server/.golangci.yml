@@ -27,7 +27,7 @@ linters:
     - fatcontext
     - forbidigo
     - forcetypeassert
-    - funlen
+    # - funlen
     - gci
     - ginkgolinter
     - gocheckcompilerdirectives
@@ -112,6 +112,8 @@ linters:
 
 issues:
   fix: true
+  exclude-dirs:
+    - prisma
 
 linters-settings:
   revive:
@@ -125,6 +127,8 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#get-return
       - name: get-return
         disabled: true
+      - name: function-length
+        exclude: ["**/*_test.go"]
       - name: flag-parameter
         disabled: true
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#import-alias-naming
@@ -149,6 +153,8 @@ linters-settings:
   tagliatelle:
     case:
       use-field-name: true
+      ignored-fields:
+        - TemplateId
       rules:
         # Any struct tag type can be used.
         # Support string case: `camel`, `pascal`, `kebab`, `snake`, `upperSnake`, `goCamel`, `goPascal`, `goKebab`, `goSnake`, `upper`, `lower`, `header`

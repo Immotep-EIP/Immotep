@@ -7,15 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
-	furnitureservice "immotep/backend/services/furniture"
-	imageservice "immotep/backend/services/image"
-	inventoryreportservice "immotep/backend/services/inventoryreport"
-	roomservice "immotep/backend/services/room"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
 func checkRoom(roomId string, propertyId string) error {
-	room := roomservice.GetByID(roomId)
+	room := database.GetRoomByID(roomId)
 	if room == nil {
 		return errors.New(string(utils.RoomNotFound))
 	}
@@ -26,7 +23,7 @@ func checkRoom(roomId string, propertyId string) error {
 }
 
 func checkFurniture(furnitureId string, roomId string) error {
-	furniture := furnitureservice.GetByID(furnitureId)
+	furniture := database.GetFurnitureByID(furnitureId)
 	if furniture == nil {
 		return errors.New(string(utils.FurnitureNotFound))
 	}
@@ -45,7 +42,7 @@ func getFurnitureStatePictures(f models.FurnitureStateRequest) ([]string, []stri
 			errorList = append(errorList, string(utils.BadBase64String))
 			continue
 		}
-		newImage := imageservice.Create(*dbImage)
+		newImage := database.CreateImage(*dbImage)
 		picturesId = append(picturesId, newImage.ID)
 	}
 	return picturesId, errorList
@@ -71,11 +68,7 @@ func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomState
 		}
 		picturesId, el := getFurnitureStatePictures(f)
 		errorList = append(errorList, el...)
-		fState := inventoryreportservice.CreateFurnitureState(fModel, picturesId, invrep.ID)
-		if fState == nil {
-			errorList = append(errorList, string(utils.FurnitureStateAlreadyExists))
-			continue
-		}
+		database.CreateFurnitureState(fModel, picturesId, invrep.ID)
 	}
 
 	return errorList
@@ -90,7 +83,7 @@ func getRoomStatePictures(r models.RoomStateRequest) ([]string, []string) {
 			errorList = append(errorList, string(utils.BadBase64String))
 			continue
 		}
-		newImage := imageservice.Create(*dbImage)
+		newImage := database.CreateImage(*dbImage)
 		picturesId = append(picturesId, newImage.ID)
 	}
 	return picturesId, errorList
@@ -116,12 +109,7 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 		}
 		picturesId, el := getRoomStatePictures(r)
 		errorList = append(errorList, el...)
-		rState := inventoryreportservice.CreateRoomState(rModel, picturesId, invrep.ID)
-		if rState == nil {
-			errorList = append(errorList, string(utils.RoomStateAlreadyExists))
-			continue
-		}
-
+		database.CreateRoomState(rModel, picturesId, invrep.ID)
 		errorList = append(errorList, createFurnitureState(invrep, r)...)
 	}
 
@@ -151,7 +139,7 @@ func CreateInventoryReport(c *gin.Context) {
 		return
 	}
 
-	invrep := inventoryreportservice.Create(db.ReportType(req.Type), c.Param("property_id"))
+	invrep := database.CreateInvReport(db.ReportType(req.Type), c.Param("property_id"))
 	if invrep == nil {
 		utils.SendError(c, http.StatusConflict, utils.InventoryReportAlreadyExists, nil)
 		return
@@ -177,19 +165,19 @@ func CreateInventoryReport(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/ [get]
 func GetInventoryReportsByProperty(c *gin.Context) {
-	reports := inventoryreportservice.GetByPropertyID(c.Param("property_id"))
+	reports := database.GetInvReportByPropertyID(c.Param("property_id"))
 	c.JSON(http.StatusOK, utils.Map(reports, models.DbInventoryReportToResponse))
 }
 
 // GetInventoryReportByID godoc
 //
 //	@Summary		Get inventory report by ID
-//	@Description	Get inventory report information by its ID
+//	@Description	Get inventory report information by its ID or get the latest one
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string							true	"Property ID"
-//	@Param			report_id	path		string							true	"Report ID"
+//	@Param			report_id	path		string							true	"Report ID or 'latest' to get the latest one"
 //	@Success		200			{object}	models.InventoryReportResponse	"Inventory report data"
 //	@Failure		403			{object}	utils.Error						"Property not yours"
 //	@Failure		404			{object}	utils.Error						"Inventory report not found"
@@ -197,10 +185,11 @@ func GetInventoryReportsByProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/{report_id}/ [get]
 func GetInventoryReportByID(c *gin.Context) {
-	report := inventoryreportservice.GetByID(c.Param("report_id"))
-	if report == nil {
-		utils.SendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
-		return
+	var report *db.InventoryReportModel
+	if c.Param("report_id") == "latest" {
+		report = database.GetLatestInvReport(c.Param("property_id"))
+	} else {
+		report = database.GetInvReportByID(c.Param("report_id"))
 	}
 	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(*report))
 }

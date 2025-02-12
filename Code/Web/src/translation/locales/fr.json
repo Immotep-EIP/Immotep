@@ -1,265 +1,281 @@
-  {
-    "components": {
-      "input": {
-        "property_name": {
-          "label": "Nom de votre bien",
-          "placeholder": "Entrez le nom de votre bien",
-          "error": "Veuillez renseigner le nom de votre bien."
-        },
-        "email": {
-          "label": "Email",
-          "placeholder": "Entrez votre email",
-          "error": "Veuillez renseigner votre email."
-        },
-        "emailConfirmation": {
-          "label": "Confirmation de l'email",
-          "placeholder": "Confirmez votre email",
-          "error": "Veuillez renseigner la confirmation de votre email."
-        },
-        "password": {
-          "label": "Mot de passe",
-          "placeholder": "Entrez votre mot de passe",
-          "error": "Veuillez renseigner votre mot de passe."
-        },
-        "confirmPassword": {
-          "label": "Confirmation du mot de passe",
-          "placeholder": "Confirmez votre mot de passe",
-          "error": "Veuillez renseigner la confirmation de votre mot de passe."
-        },
-        "firstName": {
-          "label": "Prénom",
-          "placeholder": "Entrez votre prénom",
-          "error": "Veuillez renseigner votre prénom."
-        },
-        "lastName": {
-          "label": "Nom",
-          "placeholder": "Entrez votre nom",
-          "error": "Veuillez renseigner votre nom."
-        },
-        "address": {
-          "label": "Adresse",
-          "placeholder": "Entrez votre adresse",
-          "error": "Veuillez renseigner votre adresse."
-        },
-        "zip_code": {
-          "label": "Code postal",
-          "placeholder": "Entrez votre code postal",
-          "error": "Veuillez renseigner votre code postal."
-        },
-        "city": {
-          "label": "Ville",
-          "placeholder": "Entrez votre ville",
-          "error": "Veuillez renseigner votre ville."
-        },
-        "country": {
-          "label": "Pays",
-          "placeholder": "Entrez votre pays",
-          "error": "Veuillez renseigner votre pays."
-        },
-        "area": {
-          "label": "Surface",
-          "placeholder": "Entrez la surface",
-          "error": "Veuillez renseigner la surface."
-        },
-        "rental": {
-          "label": "Loyer",
-          "placeholder": "Entrez le loyer",
-          "error": "Veuillez renseigner le loyer."
-        },
-        "deposit": {
-          "label": "Dépôt de garantie",
-          "placeholder": "Entrez le dépôt de garantie",
-          "error": "Veuillez renseigner le dépôt de garantie."
-        },
-        "charges": {
-          "label": "Charges",
-          "placeholder": "Entrez les charges",
-          "error": "Veuillez renseigner les charges."
-        },
-        "picture": {
-          "label": "Photo",
-          "placeholder": "Choisissez une photo",
-          "error": "Veuillez renseigner une photo."
-        },
-        "startDate": {
-          "label": "Date de début"
-        },
-        "endDate": {
-          "label": "Date de fin"
-        },
-        "document": {
-          "label": "Document",
-          "placeholder": "Choisissez un document",
-          "error": "Veuillez renseigner un document."
-        },
-        "document_name": {
-          "label": "Nom du document",
-          "placeholder": "Entrez le nom du document",
-          "error": "Veuillez renseigner le nom du document."
-        },
-        "room_name": {
-          "label": "Nom de la pièce",
-          "placeholder": "Entrez le nom de la pièce",
-          "error": "Veuillez renseigner le nom de la pièce."
-        },
-        "stuff_name": {
-          "label": "Nom de l'objet",
-          "placeholder": "Entrez le nom de l'objet",
-          "error": "Veuillez renseigner le nom de l'objet."
-        },
-        "widgetName" : {
-          "label" : "Nom du widget",
-          "placeholder" : "Entrez le nom du widget",
-          "error" : "Veuillez renseigner le nom du widget"
-        },
-        "widgetType" : {
-          "label" : "Type de widget",
-          "placeholder" : "Choisissez le type de widget",
-          "error" : "Veuillez renseigner le type de widget"
-        },
-        "widgetWidth" : {
-          "label" : "Largeur du widget",
-          "placeholder" : "Entrez la largeur du widget",
-          "error" : "Veuillez renseigner la largeur du widget"
-        },
-        "widgetHeight" : {
-          "label" : "Hauteur du widget",
-          "placeholder" : "Entrez la hauteur du widget",
-          "error" : "Veuillez renseigner la hauteur du widget"
-        }
+{
+  "components": {
+    "input": {
+      "email": {
+        "label": "Email",
+        "placeholder": "Entrez votre email",
+        "error": "Veuillez remplir votre email.",
+        "valid_email": "Veuillez entrer un email valide."
       },
-      "button": {
-        "signIn": "Se connecter",
-        "signUp": "S'inscrire",
-        "rememberMe": "Se souvenir de moi",
-        "askForgotPassword": "Mot de passe oublié ?",
-        "sendEmail": "Envoyer l'email",
-        "overview": "Aperçu",
-        "realProperty": "Vos biens",
-        "messages": "Messagerie",
-        "settings": "Paramètres",
-        "myProfile": "Mon profil",
-        "edit": "Modifier",
-        "save": "Enregistrer",
-        "cancel": "Annuler",
-        "return": "Retour",
-        "add_real_property": "Ajouter un bien",
-        "add": "Ajouter",
-        "addTenant": "Ajouter un locataire",
-        "about": "À propos",
-        "damage": "Dommages",
-        "inventory": "État des lieux",
-        "documents": "Documents",
-        "add_document": "Ajouter un document",
-        "add_room": "Ajouter une pièce",
-        "addWidget": "Ajouter un widget"
+      "email_confirmation": {
+        "label": "Confirmation de l'email",
+        "placeholder": "Confirmez votre email",
+        "error": "Veuillez remplir la confirmation de l'email."
+      },
+      "password": {
+        "label": "Mot de passe",
+        "placeholder": "Entrez votre mot de passe",
+        "error": "Veuillez remplir votre mot de passe."
+      },
+      "confirm_password": {
+        "label": "Confirmer le mot de passe",
+        "placeholder": "Confirmez votre mot de passe",
+        "error": "Veuillez remplir la confirmation du mot de passe."
+      },
+      "first_name": {
+        "label": "Prénom",
+        "placeholder": "Entrez votre prénom",
+        "error": "Veuillez remplir votre prénom."
+      },
+      "last_name": {
+        "label": "Nom",
+        "placeholder": "Entrez votre nom",
+        "error": "Veuillez remplir votre nom."
+      },
+      "property_name": {
+        "label": "Nom de la propriété",
+        "placeholder": "Entrez le nom de la propriété",
+        "error": "Veuillez remplir le nom de la propriété."
+      },
+      "address": {
+        "label": "Adresse",
+        "placeholder": "Entrez votre adresse",
+        "error": "Veuillez remplir votre adresse."
+      },
+      "zip_code": {
+        "label": "Code postal",
+        "placeholder": "Entrez votre code postal",
+        "error": "Veuillez remplir votre code postal."
+      },
+      "city": {
+        "label": "Ville",
+        "placeholder": "Entrez votre ville",
+        "error": "Veuillez remplir votre ville."
+      },
+      "country": {
+        "label": "Pays",
+        "placeholder": "Entrez votre pays",
+        "error": "Veuillez remplir votre pays."
+      },
+      "area": {
+        "label": "Surface",
+        "placeholder": "Entrez la surface",
+        "error": "Veuillez remplir la surface."
+      },
+      "rental": {
+        "label": "Loyer",
+        "placeholder": "Entrez le loyer",
+        "error": "Veuillez remplir le loyer."
+      },
+      "deposit": {
+        "label": "Dépôt de garantie",
+        "placeholder": "Entrez le dépôt de garantie",
+        "error": "Veuillez remplir le dépôt de garantie."
+      },
+      "picture": {
+        "label": "Image",
+        "placeholder": "Choisissez une image",
+        "error": "Veuillez sélectionner une image."
+      },
+      "room_name": {
+        "label": "Nom de la pièce",
+        "placeholder": "Entrez le nom de la pièce",
+        "error": "Veuillez remplir le nom de la pièce."
+      },
+      "stuff_name": {
+        "label": "Nom de l'objet",
+        "placeholder": "Entrez le nom de l'objet",
+        "error": "Veuillez remplir le nom de l'objet."
+      },
+      "item_quantity": {
+        "label": "Quantité",
+        "placeholder": "Entrez la quantité",
+        "error": "Veuillez entrer une quantité valide.",
+        "validation_message": "La quantité doit être comprise entre 1 et 1000."
+      },
+      "widget_name": {
+        "label": "Nom du widget",
+        "placeholder": "Entrez le nom du widget",
+        "error": "Veuillez remplir le nom du widget."
+      },
+      "widget_type": {
+        "label": "Type de widget",
+        "placeholder": "Choisissez le type de widget",
+        "error": "Veuillez remplir le type de widget."
+      },
+      "widget_width": {
+        "label": "Largeur du widget",
+        "placeholder": "Entrez la largeur du widget",
+        "error": "Veuillez remplir la largeur du widget."
+      },
+      "widget_height": {
+        "label": "Hauteur du widget",
+        "placeholder": "Entrez la hauteur du widget",
+        "error": "Veuillez remplir la hauteur du widget."
+      },
+      "start_date": {
+        "label": "Date de début"
+      },
+      "end_date": {
+        "label": "Date de fin"
+      },
+      "document_name": {
+        "label": "Nom du document",
+        "placeholder": "Entrez le nom du document",
+        "error": "Veuillez remplir le nom du document."
+      },
+      "document": {
+        "label": "Document",
+        "placeholder": "Choisissez un document",
+        "error": "Veuillez sélectionner un document."
       }
     },
-    "generals": {
-      "loading": "Chargement..."
+    "messages": {
+      "modifications_saved": "Modifications sauvegardées",
+      "no_modifications": "Aucune modification à sauvegarder",
+      "picture_updated": "Image mise à jour",
+      "picture_not_updated": "Erreur lors de la mise à jour de l'image"
     },
-    "pages": {
-      "login": {
-        "title": "Bienvenue !",
-        "description": "Veuillez entrer vos identifiants pour vous connecter.",
-        "dontHaveAccount": "Vous n'avez pas de compte ?",
-        "connectionSuccess": "Vous êtes maintenant connecté.",
-        "connectionError": "Une erreur est survenue lors de la connexion, veuillez réessayer.",
-        "fillFields": "Veuillez remplir tous les champs."
-      },
-      "register": {
-        "title": "Créer un compte",
-        "description": "Rejoignez Immotep pour une tranquillité d'esprit !",
-        "agreeTerms": "J'accepte les Termes, la Politique de confidentialité et les Frais.",
-        "alreadyHaveAccount": "Vous avez déjà un compte ?",
-        "registerSuccess": "Vous êtes maintenant inscrit.",
-        "registerError": "Une erreur est survenue lors de l'inscription, veuillez réessayer.",
-        "emailAlreadyUsed": "Cet email est déjà utilisé.",
-        "confirmPasswordError": "Les mots de passe ne correspondent pas.",
-        "fillFields": "Veuillez remplir tous les champs."
-      },
-      "forgotPassword": {
-        "title": "Mot de passe oublié",
-        "description": "Veuillez entrer votre email pour réinitialiser votre mot de passe.",
-        "sendEmailSuccess": "Un email a été envoyé pour réinitialiser votre mot de passe.",
-        "sendEmailError": "Une erreur est survenue lors de l'envoi de l'email, veuillez réessayer.",
-        "emailsDontMatch": "Les emails ne correspondent pas.",
-        "fillFields": "Veuillez remplir tous les champs."
-      },
-      "settings": {
-        "title": "Paramètres",
-        "description": "Gérez les paramètres de votre compte.",
-        "language": "Langue",
-        "en": "Anglais",
-        "fr": "Français",
-        "userInfos": "Informations utilisateur",
-        "logout": "Déconnexion",
-        "logoutSuccess": "Vous êtes maintenant déconnecté."
-      },
-      "lost": {
-        "pageNotFound": "Page non trouvée",
-        "backHome": "Retour à l'accueil"
-      },
-      "real_property": {
-        "title": "Vos biens"
-      },
-      "realPropertyDetails": {
-        "inviteTenant": "Invitation envoyée avec succès",
-        "409Error": "Invitation déjà envoyée",
-        "fillFields": "Veuillez remplir les champs obligatoires",
-        "error_fetching_data": "Erreur lors de la récupération des données",
-        "tabs": {
-          "documents": {
-            "modal_title": "Ajouter un document"
-          },
-          "inventory": {
-            "add_room_modal_title": "Ajouter une pièce",
-            "add_stuff_modal_title": "Ajouter un objet",
-            "list_object_name": "Objets dans la pièce"
-          }
-        }
-      },
-        "overview": {
-        "title": "Aperçu",
-        "widgetCreation": {
-          "title": "Ajouter un widget",
-          "error": "Erreur lors de la création du widget",
-          "error_fetching_data": "Erreur lors de la récupération des données",
-          "fillFields": "Veuillez remplir tous les champs",
-          "widgetCreated": "Widget créé avec succès"
-        }
-      },
-      "property": {
-        "add_real_property": {
-          "title": "Ajouter un bien",
-          "property_created": "Bien créé avec succès",
-          "error_property_created": "Erreur lors de la création du bien",
-          "fill_all_fields": "Veuillez remplir tous les champs"
-        },
-        "status": {
-          "available": "Disponible",
-          "occupied": "Occupé"
-        },
-        "damage": {
-          "unread": "Dommage non lu"
-        },
-        "error" : {
-            "errorFetchingData": "Erreur lors de la récupération des données"
-        }
-      }
+    "button": {
+      "sign_in": "Se connecter",
+      "sign_up": "S'inscrire",
+      "remember_me": "Se souvenir de moi",
+      "ask_forgot_password": "Mot de passe oublié ?",
+      "send_email": "Envoyer l'email",
+      "overview": "Aperçu",
+      "real_property": "Propriété",
+      "messages": "Messages",
+      "settings": "Paramètres",
+      "my_profile": "Mon profil",
+      "add_real_property": "Ajouter une propriété",
+      "add_widget": "Ajouter un widget",
+      "about": "À propos",
+      "damage": "Dommage",
+      "inventory": "Inventaire",
+      "documents": "Documents",
+      "return": "Retour",
+      "add_tenant": "Ajouter un locataire",
+      "end_contract": "Mettre fin au bail",
+      "add_document": "Ajouter un document",
+      "add_room": "Ajouter une pièce",
+      "edit": "Modifier",
+      "save": "Sauvegarder",
+      "cancel": "Annuler",
+      "confirm": "Confirmer",
+      "add": "Ajouter"
     },
-    "widgets": {
-      "userInfo": {
-        "title": "Bienvenue",
-        "propertiesNumber": "Voici un aperçu de vos",
-        "realProperties": "biens",
-        "errorFetching": "Erreur lors de la récupération des données"
-      },
-      "maintenance": {
-        "title": "Maintenance",
-        "noMaintenance": "Aucune maintenance en cours",
-        "noMaintenanceDescription": "Vous n'avez aucune maintenance en cours pour le moment.",
-        "completeButton": "Confirmer"
+    "modal": {
+      "end_contract": {
+        "title": "Mettre fin au bail",
+        "description": "Êtes-vous sûr de vouloir mettre fin au bail de ce locataire ?",
+        "success": "Bail terminé avec succès"
       }
     }
+  },
+  "pages": {
+    "login": {
+      "title": "Bienvenue !",
+      "description": "Veuillez entrer vos informations pour vous connecter.",
+      "dont_have_account": "Vous n'avez pas de compte ?",
+      "connection_success": "Vous êtes maintenant connecté.",
+      "connection_error": "Une erreur est survenue lors de la connexion, veuillez réessayer.",
+      "fill_fields": "Veuillez remplir tous les champs."
+    },
+    "register": {
+      "title": "Créer un compte",
+      "description": "Rejoignez Immotep pour plus de sérénité !",
+      "agree_terms": "J'accepte les Termes et la Politique de confidentialité.",
+      "already_have_account": "Vous avez déjà un compte ?",
+      "register_success": "Vous êtes maintenant inscrit.",
+      "register_error": "Une erreur est survenue lors de l'inscription, veuillez réessayer.",
+      "email_already_used": "Cet email est déjà utilisé.",
+      "confirm_password_error": "Les mots de passe ne correspondent pas.",
+      "fill_fields": "Veuillez remplir tous les champs."
+    },
+    "forgot_password": {
+      "title": "Mot de passe oublié",
+      "description": "Veuillez entrer votre email pour réinitialiser votre mot de passe.",
+      "send_email_success": "Un email a été envoyé pour réinitialiser votre mot de passe.",
+      "send_email_error": "Une erreur est survenue lors de l'envoi de l'email, veuillez réessayer.",
+      "emails_dont_match": "Les emails ne correspondent pas.",
+      "fill_fields": "Veuillez remplir tous les champs."
+    },
+    "settings": {
+      "title": "Paramètres",
+      "description": "Gérez les paramètres de votre compte.",
+      "language": "Langue",
+      "en": "Anglais",
+      "fr": "Français",
+      "user_infos": "Informations utilisateur",
+      "logout": "Déconnexion",
+      "logout_success": "Vous êtes maintenant déconnecté."
+    },
+    "real_property_details": {
+      "invite_tenant": "Invitation envoyée avec succès",
+      "409_error": "Invitation déjà envoyée",
+      "fill_fields": "Veuillez remplir les champs requis",
+      "error_fetching_data": "Erreur lors de la récupération des données",
+      "tabs": {
+        "documents": {
+          "modal_title": "Ajouter un document"
+        },
+        "inventory": {
+          "add_room_modal_title": "Ajouter une pièce",
+          "add_stuff_modal_title": "Ajouter un objet",
+          "list_object_name": "Objets dans la pièce",
+          "remove_room_confirmation": "Êtes-vous sûr de vouloir supprimer cet pièce ?",
+          "remove_room_success": "Pièce supprimé avec succès",
+          "remove_stuff_confirmation": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+          "remove_stuff_success": "Élément supprimé avec succès"
+        }
+      }
+    },
+    "overview": {
+      "title": "Aperçu",
+      "widget_creation": {
+        "title": "Ajouter un widget",
+        "error": "Erreur lors de la création du widget",
+        "error_fetching_data": "Erreur lors de la récupération des données",
+        "fill_fields": "Veuillez remplir tous les champs",
+        "widget_created": "Widget créé avec succès"
+      }
+    },
+    "lost": {
+      "page_not_found": "Page non trouvée",
+      "back_home": "Retour à l'accueil"
+    },
+    "real_property": {
+      "title": "Propriété",
+      "add_real_property": {
+        "title": "Ajouter une propriété",
+        "property_created": "Propriété créée avec succès",
+        "error_property_created": "Erreur lors de la création de la propriété",
+        "fill_all_fields": "Veuillez remplir tous les champs"
+      },
+      "status": {
+        "available": "Disponible",
+        "unavailable": "Occupée"
+      },
+      "damage": {
+        "waiting": "Dommage(s) non résolu(s)"
+      },
+      "error": {
+        "error_fetching_data": "Erreur lors de la récupération des données"
+      }
+    }
+  },
+  "widgets": {
+    "user_info": {
+      "title": "Bienvenue",
+      "properties_number": "Voici un aperçu de vos",
+      "real_properties": "propriétés",
+      "error_fetching": "Erreur de récupération des données"
+    },
+    "maintenance": {
+      "title": "Maintenance",
+      "no_maintenance": "Aucune maintenance en cours",
+      "no_maintenance_description": "Vous n'avez aucune maintenance en cours pour le moment",
+      "complete_button": "Confirmer"
+    }
   }
+}

@@ -21,6 +21,7 @@ interface AuthContextType {
   login: (user: UserToken) => Promise<TokenResponse>
   logout: () => void
   user: User | null
+  updateUser: (newUserData: Partial<User>) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -34,6 +35,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<User | null>(null)
   const navigate = useNavigate()
+
+  const updateUser = (newUserData: Partial<User>) => {
+    if (user) {
+      setUser({ ...user, ...newUserData })
+    }
+  }
 
   useEffect(() => {
     const accessToken =
@@ -91,7 +98,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       isAuthenticated,
       login,
       logout,
-      user
+      user,
+      updateUser
     }),
     [isAuthenticated, user]
   )

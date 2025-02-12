@@ -1,6 +1,6 @@
 # Setup and Installation
 
-This section provides a step-by-step guide to setting up the development environment, running the application locally, and deploying it to various environments.
+This section provides a step-by-step guide to setting up the development environment and running the application locally.
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ Clone the project repository from your version control system (e.g., GitHub or G
 
 ```bash
 git clone https://github.com/Immotep-EIP/Immotep.git
-cd Immotep
+cd Immotep/Code/Server
 ```
 
 ### 2. Configure Environment Variables
@@ -32,14 +32,16 @@ Create a `.env` file in the root directory from the example file and configure t
 cp .env.example .env
 ```
 
-```plaintext
+```txt
 PORT='3001'
 DATABASE_URL='postgresql://user:password@localhost:5432/immotep'
 SECRET_KEY='MySecretKey'
+OPENAI_API_KEY='MyOpenAIKey'
 ```
 
 - Replace `user` and `password` with your actual PostgreSQL credentials.
 - Configure SecretKey settings with the appropriate values for your authentication setup.
+- Configure OpenAI API Key with the appropriate value for your OpenAI account.
 
 ### 3. Install Dependencies
 
@@ -47,6 +49,7 @@ Ensure Go modules are enabled and then download the project dependencies:
 
 ```bash
 go mod tidy
+go mod download
 ```
 
 ### 4. Set Up the Database
@@ -54,7 +57,9 @@ go mod tidy
 1. **Start PostgreSQL**: If PostgreSQL is not already running, start it using the native installation from your OS or using the Docker image.
 2. **Run Prisma Migrations**: Apply database migrations and set up the database schema:
    ```bash
+   cd ..
    ./update.sh
+   cd Server
    ```
 
 ### 5. Seed the Database (Optional)

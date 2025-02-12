@@ -2,8 +2,8 @@ package com.example.immotep.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.immotep.ApiClient.ApiClient
-import com.example.immotep.ApiClient.RegistrationInput
+import com.example.immotep.apiClient.ApiClient
+import com.example.immotep.apiClient.RegistrationInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

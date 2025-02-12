@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"immotep/backend/database"
-	_ "immotep/backend/docs"
+	"immotep/backend/docs"
 	"immotep/backend/router"
+	"immotep/backend/services"
 )
 
 //	@title			Immotep API
@@ -26,28 +26,47 @@ import (
 //	@name						Authorization
 //	@description				Enter the token with the `Bearer ` prefix, e.g. "Bearer abcde12345".
 
+func checkEnvVar(key string) bool {
+	value, check := os.LookupEnv(key)
+	if !check || value == "" {
+		log.Println("No " + key + " found in env")
+		return false
+	}
+	return true
+}
+
 func mainFunc() int {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("WARNING: failed loading .env file")
 	}
 
-	port, check := os.LookupEnv("PORT")
-	if !check {
-		log.Println("No PORT found in env")
-		return 1
+	envVars := []string{
+		"PORT",
+		"PUBLIC_URL",
+		"WEB_PUBLIC_URL",
+		"DATABASE_URL",
+		"SECRET_KEY",
+		"OPENAI_API_KEY",
+		"BREVO_API_KEY",
+	}
+	for _, key := range envVars {
+		if !checkEnvVar(key) {
+			return 1
+		}
 	}
 
-	db, err := database.ConnectDB()
+	docs.SwaggerInfo.Host = os.Getenv("PUBLIC_URL")
+
+	db, err := services.ConnectDB()
 	if err != nil {
 		log.Println(err)
 		return 1
 	}
+	log.Println("Connected to database, starting server...")
 	defer func() { _ = db.Client.Disconnect() }()
 
-	log.Println("Connected to database, starting server...")
-
-	err = router.Routes().Run(":" + port)
+	err = router.Routes().Run(":" + os.Getenv("PORT"))
 	if err != nil {
 		log.Println(err)
 		return 1

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
-	roomservice "immotep/backend/services/room"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -32,9 +32,9 @@ func CreateRoom(c *gin.Context) {
 		return
 	}
 
-	room := roomservice.Create(req.ToDbRoom(), c.Param("property_id"))
+	room := database.CreateRoom(req.ToDbRoom(), c.Param("property_id"))
 	if room == nil {
-		utils.SendError(c, http.StatusNotFound, utils.RoomAlreadyExists, nil)
+		utils.SendError(c, http.StatusConflict, utils.RoomAlreadyExists, nil)
 		return
 	}
 	c.JSON(http.StatusCreated, models.DbRoomToResponse(*room))
@@ -55,7 +55,7 @@ func CreateRoom(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/ [get]
 func GetRoomsByProperty(c *gin.Context) {
-	rooms := roomservice.GetByPropertyID(c.Param("property_id"))
+	rooms := database.GetRoomByPropertyID(c.Param("property_id"))
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 
@@ -75,30 +75,26 @@ func GetRoomsByProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [get]
 func GetRoomByID(c *gin.Context) {
-	room := roomservice.GetByID(c.Param("room_id"))
+	room := database.GetRoomByID(c.Param("room_id"))
 	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
 }
 
-// DeleteRoom godoc
+// ArchiveRoom godoc
 //
-//	@Summary		Delete room by ID
-//	@Description	Delete a room by its ID
+//	@Summary		Archive room by ID
+//	@Description	Archive a room by its ID
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path	string	true	"Property ID"
-//	@Param			room_id		path	string	true	"Room ID"
-//	@Success		204
-//	@Failure		403	{object}	utils.Error	"Property not yours"
-//	@Failure		404	{object}	utils.Error	"Room not found"
+//	@Param			property_id	path		string				true	"Property ID"
+//	@Param			room_id		path		string				true	"Room ID"
+//	@Success		200			{object}	models.RoomResponse	"Achieved room data"
+//	@Failure		403			{object}	utils.Error			"Property not yours"
+//	@Failure		404			{object}	utils.Error			"Room not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [delete]
-func DeleteRoom(c *gin.Context) {
-	ok := roomservice.Delete(c.Param("room_id"))
-	if !ok {
-		utils.SendError(c, http.StatusNotFound, utils.RoomNotFound, nil)
-		return
-	}
-	c.Status(http.StatusNoContent)
+func ArchiveRoom(c *gin.Context) {
+	room := database.ArchiveRoom(c.Param("room_id"))
+	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
 }

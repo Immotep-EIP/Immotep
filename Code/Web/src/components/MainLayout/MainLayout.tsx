@@ -20,7 +20,7 @@ const items = [
     icon: <img src={Overview} alt="Overview" className={style.menuIcon} />
   },
   {
-    label: 'components.button.realProperty',
+    label: 'components.button.real_property',
     key: NavigationEnum.REAL_PROPERTY,
     icon: <img src={Property} alt="Real Property" className={style.menuIcon} />
   },
@@ -32,7 +32,7 @@ const items = [
   {
     label: 'components.button.settings',
     key: NavigationEnum.SETTINGS,
-    icon: <img src={Settings} alt="Messages" className={style.menuIcon} />
+    icon: <img src={Settings} alt="Settings" className={style.menuIcon} />
   }
 ]
 
@@ -40,8 +40,8 @@ const MainLayout: React.FC = () => {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const location = useLocation();
-  const currentLocation = location.pathname;
+  const location = useLocation()
+  const currentLocation = location.pathname
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen)

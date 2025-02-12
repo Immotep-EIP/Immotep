@@ -337,6 +337,105 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Archive a property by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Archive property by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Archived property data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/end-contract": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "End active contract for a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "End contract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Contract ended"
+                    },
+                    "403": {
+                        "description": "Property is not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active contract",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
             }
         },
         "/owner/properties/{property_id}/inventory-reports/": {
@@ -460,7 +559,7 @@ const docTemplate = `{
             }
         },
         "/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "Bearer": []
@@ -534,7 +633,7 @@ const docTemplate = `{
             }
         },
         "/owner/properties/{property_id}/inventory-reports/summarize/": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "Bearer": []
@@ -607,7 +706,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get inventory report information by its ID",
+                "description": "Get inventory report information by its ID or get the latest one",
                 "consumes": [
                     "application/json"
                 ],
@@ -628,7 +727,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Report ID",
+                        "description": "Report ID or 'latest' to get the latest one",
                         "name": "report_id",
                         "in": "path",
                         "required": true
@@ -649,6 +748,64 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Inventory report not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/inventory/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get property information by its ID with inventory including rooms and furnitures",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get property inventory by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property inventory data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyInventoryResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -975,7 +1132,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Delete a room by its ID",
+                "description": "Archive a room by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -985,7 +1142,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Delete room by ID",
+                "summary": "Archive room by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -1003,8 +1160,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "Achieved room data",
+                        "schema": {
+                            "$ref": "#/definitions/models.RoomResponse"
+                        }
                     },
                     "403": {
                         "description": "Property not yours",
@@ -1229,7 +1389,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Delete a furniture by its ID",
+                "description": "Archive a furniture by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1239,7 +1399,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Delete furniture by ID",
+                "summary": "Archive furniture by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -1250,8 +1410,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "Archived furniture data",
+                        "schema": {
+                            "$ref": "#/definitions/models.FurnitureResponse"
+                        }
                     },
                     "404": {
                         "description": "Furniture not found",
@@ -1265,7 +1428,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/send-invite/{propertyId}/": {
+        "/owner/properties/{property_id}/send-invite": {
             "post": {
                 "security": [
                     {
@@ -1287,7 +1450,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Property ID",
-                        "name": "propertyId",
+                        "name": "property_id",
                         "in": "path",
                         "required": true
                     },
@@ -1727,6 +1890,9 @@ const docTemplate = `{
         "models.FurnitureResponse": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1929,6 +2095,72 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PropertyInventoryResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "archived": {
+                    "type": "boolean"
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deposit_price": {
+                    "type": "integer"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nb_damage": {
+                    "type": "integer"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "picture_id": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "integer"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.roomResponse"
+                    }
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "calculated fields",
+                    "type": "string"
+                },
+                "tenant": {
+                    "type": "string"
+                }
+            }
+        },
         "models.PropertyRequest": {
             "type": "object",
             "required": [
@@ -1973,6 +2205,9 @@ const docTemplate = `{
             "properties": {
                 "address": {
                     "type": "string"
+                },
+                "archived": {
+                    "type": "boolean"
                 },
                 "area_sqm": {
                     "type": "number"
@@ -2039,6 +2274,9 @@ const docTemplate = `{
         "models.RoomResponse": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -2241,6 +2479,43 @@ const docTemplate = `{
                 }
             }
         },
+        "models.furnitureResponse": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.roomResponse": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "furnitures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.furnitureResponse"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "utils.Error": {
             "type": "object",
             "properties": {
@@ -2276,6 +2551,7 @@ const docTemplate = `{
                 "not-a-tenant",
                 "property-already-exists",
                 "property-not-available",
+                "no-active-contract",
                 "failed-to-link-image",
                 "bad-base64-string",
                 "property-picture-not-found",
@@ -2289,7 +2565,8 @@ const docTemplate = `{
                 "inventory-report-not-found",
                 "room-state-already-exists",
                 "furniture-state-already-exists",
-                "error-request-chatgpt-api"
+                "error-request-chatgpt-api",
+                "failed-send-email"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -2313,6 +2590,7 @@ const docTemplate = `{
                 "NotATenant",
                 "PropertyAlreadyExists",
                 "PropertyNotAvailable",
+                "NoActiveContract",
                 "FailedLinkImage",
                 "BadBase64String",
                 "PropertyPictureNotFound",
@@ -2326,7 +2604,8 @@ const docTemplate = `{
                 "InventoryReportNotFound",
                 "RoomStateAlreadyExists",
                 "FurnitureStateAlreadyExists",
-                "ErrorRequestChatGPTAPI"
+                "ErrorRequestChatGPTAPI",
+                "FailedSendEmail"
             ]
         }
     },

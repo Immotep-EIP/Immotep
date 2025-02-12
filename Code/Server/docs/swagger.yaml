@@ -19,6 +19,8 @@ definitions:
     type: object
   models.FurnitureResponse:
     properties:
+      archived:
+        type: boolean
       id:
         type: string
       name:
@@ -156,6 +158,50 @@ definitions:
       tenant_email:
         type: string
     type: object
+  models.PropertyInventoryResponse:
+    properties:
+      address:
+        type: string
+      archived:
+        type: boolean
+      area_sqm:
+        type: number
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      deposit_price:
+        type: integer
+      end_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      nb_damage:
+        type: integer
+      owner_id:
+        type: string
+      picture_id:
+        type: string
+      postal_code:
+        type: string
+      rental_price_per_month:
+        type: integer
+      rooms:
+        items:
+          $ref: '#/definitions/models.roomResponse'
+        type: array
+      start_date:
+        type: string
+      status:
+        description: calculated fields
+        type: string
+      tenant:
+        type: string
+    type: object
   models.PropertyRequest:
     properties:
       address:
@@ -188,6 +234,8 @@ definitions:
     properties:
       address:
         type: string
+      archived:
+        type: boolean
       area_sqm:
         type: number
       city:
@@ -231,6 +279,8 @@ definitions:
     type: object
   models.RoomResponse:
     properties:
+      archived:
+        type: boolean
       id:
         type: string
       name:
@@ -370,6 +420,30 @@ definitions:
       lastname:
         type: string
     type: object
+  models.furnitureResponse:
+    properties:
+      archived:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  models.roomResponse:
+    properties:
+      archived:
+        type: boolean
+      furnitures:
+        items:
+          $ref: '#/definitions/models.furnitureResponse'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   utils.Error:
     properties:
       code:
@@ -400,6 +474,7 @@ definitions:
     - not-a-tenant
     - property-already-exists
     - property-not-available
+    - no-active-contract
     - failed-to-link-image
     - bad-base64-string
     - property-picture-not-found
@@ -414,6 +489,7 @@ definitions:
     - room-state-already-exists
     - furniture-state-already-exists
     - error-request-chatgpt-api
+    - failed-send-email
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -437,6 +513,7 @@ definitions:
     - NotATenant
     - PropertyAlreadyExists
     - PropertyNotAvailable
+    - NoActiveContract
     - FailedLinkImage
     - BadBase64String
     - PropertyPictureNotFound
@@ -451,6 +528,7 @@ definitions:
     - RoomStateAlreadyExists
     - FurnitureStateAlreadyExists
     - ErrorRequestChatGPTAPI
+    - FailedSendEmail
 host: localhost:3001
 info:
   contact:
@@ -633,6 +711,38 @@ paths:
       tags:
       - owner
   /owner/properties/{property_id}/:
+    delete:
+      consumes:
+      - application/json
+      description: Archive a property by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Archived property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Archive property by ID
+      tags:
+      - owner
     get:
       consumes:
       - application/json
@@ -667,6 +777,37 @@ paths:
       security:
       - Bearer: []
       summary: Get property by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/end-contract:
+    put:
+      consumes:
+      - application/json
+      description: End active contract for a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Contract ended
+        "403":
+          description: Property is not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: End contract
       tags:
       - owner
   /owner/properties/{property_id}/inventory-reports/:
@@ -750,14 +891,14 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get inventory report information by its ID
+      description: Get inventory report information by its ID or get the latest one
       parameters:
       - description: Property ID
         in: path
         name: property_id
         required: true
         type: string
-      - description: Report ID
+      - description: Report ID or 'latest' to get the latest one
         in: path
         name: report_id
         required: true
@@ -785,7 +926,7 @@ paths:
       tags:
       - owner
   /owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/:
-    get:
+    post:
       consumes:
       - application/json
       description: Generate comparison from photo for last inventory report
@@ -833,7 +974,7 @@ paths:
       tags:
       - ai
   /owner/properties/{property_id}/inventory-reports/summarize/:
-    get:
+    post:
       consumes:
       - application/json
       description: Generate summary from photo for first inventory report
@@ -875,6 +1016,44 @@ paths:
       summary: Generate summary from photo
       tags:
       - ai
+  /owner/properties/{property_id}/inventory/:
+    get:
+      consumes:
+      - application/json
+      description: Get property information by its ID with inventory including rooms
+        and furnitures
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property inventory data
+          schema:
+            $ref: '#/definitions/models.PropertyInventoryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property inventory by ID
+      tags:
+      - owner
   /owner/properties/{property_id}/picture/:
     get:
       consumes:
@@ -1041,7 +1220,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete a room by its ID
+      description: Archive a room by its ID
       parameters:
       - description: Property ID
         in: path
@@ -1056,8 +1235,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: Achieved room data
+          schema:
+            $ref: '#/definitions/models.RoomResponse'
         "403":
           description: Property not yours
           schema:
@@ -1070,7 +1251,7 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Delete room by ID
+      summary: Archive room by ID
       tags:
       - owner
     get:
@@ -1201,7 +1382,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete a furniture by its ID
+      description: Archive a furniture by its ID
       parameters:
       - description: Furniture ID
         in: path
@@ -1211,8 +1392,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: Archived furniture data
+          schema:
+            $ref: '#/definitions/models.FurnitureResponse'
         "404":
           description: Furniture not found
           schema:
@@ -1221,7 +1404,7 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Delete furniture by ID
+      summary: Archive furniture by ID
       tags:
       - owner
     get:
@@ -1266,7 +1449,7 @@ paths:
       summary: Get furniture by ID
       tags:
       - owner
-  /owner/send-invite/{propertyId}/:
+  /owner/properties/{property_id}/send-invite:
     post:
       consumes:
       - application/json
@@ -1274,7 +1457,7 @@ paths:
       parameters:
       - description: Property ID
         in: path
-        name: propertyId
+        name: property_id
         required: true
         type: string
       - description: Invite params

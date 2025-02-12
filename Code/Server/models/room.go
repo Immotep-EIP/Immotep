@@ -18,12 +18,14 @@ type RoomResponse struct {
 	ID         string `json:"id"`
 	PropertyID string `json:"property_id"`
 	Name       string `json:"name"`
+	Archived   bool   `json:"archived"`
 }
 
 func (i *RoomResponse) FromDbRoom(model db.RoomModel) {
 	i.ID = model.ID
 	i.PropertyID = model.PropertyID
 	i.Name = model.Name
+	i.Archived = model.Archived
 }
 
 func DbRoomToResponse(pc db.RoomModel) RoomResponse {

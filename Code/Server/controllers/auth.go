@@ -7,8 +7,7 @@ import (
 	"github.com/maxzerbini/oauth"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
-	contractservice "immotep/backend/services/contract"
-	userservice "immotep/backend/services/user"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -59,7 +58,7 @@ func RegisterOwner(c *gin.Context) {
 		return
 	}
 
-	user := userservice.Create(userReq.ToDbUser(), db.RoleOwner)
+	user := database.CreateUser(userReq.ToDbUser(), db.RoleOwner)
 	if user == nil {
 		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, nil)
 		return
@@ -90,7 +89,7 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	pendingContract := contractservice.GetPendingById(c.Param("id"))
+	pendingContract := database.GetPendingContractById(c.Param("id"))
 	if pendingContract == nil {
 		utils.SendError(c, http.StatusNotFound, utils.InviteNotFound, nil)
 		return
@@ -106,13 +105,13 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	user := userservice.Create(userReq.ToDbUser(), db.RoleTenant)
+	user := database.CreateUser(userReq.ToDbUser(), db.RoleTenant)
 	if user == nil {
 		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, nil)
 		return
 	}
 
-	contract := contractservice.Create(*pendingContract, *user)
+	contract := database.CreateContract(*pendingContract, *user)
 	if contract == nil {
 		utils.SendError(c, http.StatusConflict, utils.ContractAlreadyExist, nil)
 		return
