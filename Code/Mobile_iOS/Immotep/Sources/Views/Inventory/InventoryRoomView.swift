@@ -1,10 +1,3 @@
-//
-//  InventoryRoomView.swift
-//  Immotep
-//
-//  Created by Liebenguth Alessio on 25/12/2024.
-//
-
 import SwiftUI
 
 struct InventoryRoomView: View {
@@ -33,7 +26,7 @@ struct InventoryRoomView: View {
 
                                     NavigationLink(destination:
                                                     InventoryStuffView(selectedRoom: room)
-                                                        .environmentObject(inventoryViewModel)
+                                        .environmentObject(inventoryViewModel)
                                     ) {
                                         EmptyView()
                                     }
@@ -70,6 +63,16 @@ struct InventoryRoomView: View {
                             .padding(.horizontal)
                             .padding(.vertical, 5)
                         }
+
+                        if inventoryViewModel.areAllRoomsCompleted() {
+                            Button(action: {
+                                Task {
+                                    await inventoryViewModel.finalizeInventory()
+                                }
+                            }, label: {
+                                Text("Finalize Inventory")
+                            })
+                        }
                     }
                     Spacer()
 
@@ -87,35 +90,35 @@ struct InventoryRoomView: View {
                 if showAddRoomAlert {
                     CustomAlert(
                         isActive: $showAddRoomAlert,
+                        textFieldInput: $newRoomName,
                         title: "Add a Room",
                         message: "Choose a name for your new room:",
                         buttonTitle: "Add",
                         secondaryButtonTitle: "Cancel",
-                        showTextField: true,
                         action: {
                             Task {
                                 do {
                                     try await inventoryViewModel.addRoom(name: newRoomName)
-                                    newRoomName = ""
+                                    print("New room name: \(newRoomName)")
+                                    newRoomName = "" // Réinitialiser après utilisation
                                 } catch {
                                     print("Error adding room: \(error.localizedDescription)")
                                 }
                             }
                         },
                         secondaryAction: {
-                            newRoomName = ""
+                            newRoomName = "" // Réinitialiser en cas d'annulation
                         }
                     )
                 }
 
                 if showDeleteConfirmationAlert {
-                    CustomAlert(
+                    CustomAlertTwoButtons(
                         isActive: $showDeleteConfirmationAlert,
                         title: "Delete Room",
                         message: roomToDelete != nil ? "Are you sure you want to delete the room \(roomToDelete!.name)?" : "",
                         buttonTitle: "Delete",
                         secondaryButtonTitle: "Cancel",
-                        showTextField: false,
                         action: {
                             if let roomToDelete = roomToDelete {
                                 Task {
@@ -171,28 +174,43 @@ struct InventoryRoomView_Previews: PreviewProvider {
     }
 }
 
-extension View {
-    func customAlert(
-        isActive: Binding<Bool>,
-        title: String,
-        message: String,
-        buttonTitle: String,
-        secondaryButtonTitle: String?,
-        showTextField: Bool,
-        action: @escaping () -> Void,
-        secondaryAction: (() -> Void)?
-    ) -> some View {
-        self.background(
-            CustomAlert(
-                isActive: isActive,
-                title: title,
-                message: message,
-                buttonTitle: buttonTitle,
-                secondaryButtonTitle: secondaryButtonTitle,
-                showTextField: showTextField,
-                action: action,
-                secondaryAction: secondaryAction
-            )
-        )
-    }
-}
+//extension View {
+//    func customAlert(
+//        isActive: Binding<Bool>,
+//        title: String,
+//        message: String,
+//        buttonTitle: String,
+//        secondaryButtonTitle: String?,
+//        showTextField: Bool,
+//        action: @escaping () -> Void,
+//        secondaryAction: (() -> Void)?
+//    ) -> some View {
+//        self.background(
+//            CustomAlert(
+//                isActive: isActive,
+//                title: title,
+//                message: message,
+//                buttonTitle: buttonTitle,
+//                secondaryButtonTitle: secondaryButtonTitle,
+//                showTextField: showTextField,
+//                action: action,
+//                secondaryAction: secondaryAction
+//            )
+//        )
+//    }
+//}
+
+//CustomAlert(
+//    isActive: .constant(true),
+//    textFieldInput: .constant(""), // Binding pour le TextField
+//    title: "Alerte avec Saisie",
+//    message: "Veuillez entrer quelque chose :",
+//    buttonTitle: "Valider",
+//    secondaryButtonTitle: "Annuler",
+//    action: {
+//        print("Validation action")
+//    },
+//    secondaryAction: {
+//        print("Annulation action")
+//    }
+//)

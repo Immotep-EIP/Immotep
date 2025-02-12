@@ -43,7 +43,6 @@ class InventoryViewModel: ObservableObject {
     }
 
     func fetchRooms() async {
-
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/") else {
             errorMessage = "Invalid URL"
             return
@@ -98,6 +97,7 @@ class InventoryViewModel: ObservableObject {
         guard let token = await getToken() else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve token"])
         }
+        print("name: \(name)")
 
         let body: [String: Any] = [
             "name": name
@@ -108,30 +108,35 @@ class InventoryViewModel: ObservableObject {
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let jsonData = try JSONSerialization.data(withJSONObject: body)
-        urlRequest.httpBody = jsonData
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: body)
+            urlRequest.httpBody = jsonData
 
-        let (_, response) = try await URLSession.shared.data(for: urlRequest)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])
-        }
-
-        guard (200...299).contains(httpResponse.statusCode) else {
-            if httpResponse.statusCode == 400 {
-                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid room data"])
-            } else if httpResponse.statusCode == 403 {
-                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours"])
-            } else if httpResponse.statusCode == 404 {
-                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Property not found"])
-            } else {
-                throw NSError(domain: "", code: httpResponse.statusCode,
-                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
+            print("URL: \(url)")
+            print("Headers: \(urlRequest.allHTTPHeaderFields ?? [:])")
+            if let httpBody = urlRequest.httpBody, let bodyString = String(data: httpBody, encoding: .utf8) {
+                print("Body: \(bodyString)")
             }
-        }
 
-        await fetchRooms()
+            let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                if let responseBody = String(data: data, encoding: .utf8) {
+                    print("Response Body: \(responseBody)")
+                }
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
+            }
+
+            await fetchRooms()
+        } catch {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Error creating room: \(error.localizedDescription)"])
+        }
     }
+
 
     func deleteRoom(_ room: PropertyRooms) async {
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/\(room.id)/") else {
@@ -167,8 +172,39 @@ class InventoryViewModel: ObservableObject {
         }
     }
 
-    func fetchStuff(_ room: PropertyRooms) async {
+    func isRoomCompleted(_ room: PropertyRooms) -> Bool {
+        return room.inventory.allSatisfy { $0.checked }
+    }
 
+    func areAllRoomsCompleted() -> Bool {
+        return property.rooms.allSatisfy { $0.checked }
+    }
+
+    func markRoomAsChecked(_ room: PropertyRooms) async {
+        guard let index = property.rooms.firstIndex(where: { $0.id == room.id }) else { return }
+        property.rooms[index].checked = true
+
+        // Faites votre appel API ici
+        // Exemple : await callYourAPI(room)
+
+        await MainActor.run {
+            self.property.rooms[index].checked = true
+        }
+    }
+
+    func markStuffAsChecked(_ stuff: RoomInventory) async throws {
+        guard let index = selectedInventory.firstIndex(where: { $0.id == stuff.id }) else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Stuff not found in inventory"])
+        }
+
+        selectedInventory[index].checked = true
+
+        await MainActor.run {
+            self.selectedInventory[index].checked = true
+        }
+    }
+
+    func fetchStuff(_ room: PropertyRooms) async {
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/\(room.id)/furnitures/") else {
             errorMessage = "Invalid URL"
             return
@@ -206,16 +242,15 @@ class InventoryViewModel: ObservableObject {
                 property.rooms[index].inventory = furnitures.map { furniture in
                     RoomInventory(id: furniture.id, propertyId: furniture.propertyId,
                                   roomId: furniture.roomId, name: furniture.name, quantity: furniture.quantity)
-                    }
-                selectedInventory = property.rooms[index].inventory
                 }
+                selectedInventory = property.rooms[index].inventory
+            }
         } catch {
             errorMessage = "Error fetching furnitures: \(error.localizedDescription)"
         }
     }
 
     func addStuff(name: String, quantity: Int, to room: PropertyRooms) async throws {
-
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/\(room.id)/furnitures/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
@@ -302,9 +337,15 @@ class InventoryViewModel: ObservableObject {
     }
 
     func selectStuff(_ stuff: RoomInventory) {
+        print("stuff selected: \(stuff)")
         selectedStuff = stuff
         selectedImages = []
         comment = ""
         selectedStatus = "Select your equipment status"
+    }
+
+    func finalizeInventory() async {
+        // Faites votre appel API ici pour finaliser l'inventaire
+        // Exemple : await callYourAPI()
     }
 }

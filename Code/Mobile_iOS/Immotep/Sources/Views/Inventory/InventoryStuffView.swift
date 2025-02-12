@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+
 struct InventoryStuffView: View {
     @EnvironmentObject var inventoryViewModel: InventoryViewModel
     @State private var selectedRoom: PropertyRooms
@@ -36,7 +37,7 @@ struct InventoryStuffView: View {
                                     NavigationLink(
                                         destination: {
                                             if inventoryViewModel.isEntryInventory {
-                                                InventoryEntryEvaluationView()
+                                                InventoryEntryEvaluationView(selectedStuff: stuff)
                                                     .environmentObject(inventoryViewModel)
                                             } else {
                                                 InventoryExitEvaluationView()
@@ -81,17 +82,22 @@ struct InventoryStuffView: View {
                             .padding(.vertical, 5)
                         }
                     }
+                    .onAppear {
+                        Task {
+                            await inventoryViewModel.fetchStuff(selectedRoom)
+                            if inventoryViewModel.isRoomCompleted(selectedRoom) {
+                                await inventoryViewModel.markRoomAsChecked(selectedRoom)
+                                // Revenir à InventoryRoomView
+                                // Exemple : presentationMode.wrappedValue.dismiss()
+                            }
+                        }
+                    }
                     Spacer()
                     TaskBar()
                 }
                 .navigationTransition(
                     .fade(.in).animation(.easeInOut(duration: 0))
                 )
-                .onAppear {
-                    Task {
-                        await inventoryViewModel.fetchStuff(selectedRoom)
-                    }
-                }
 
                 if showAddStuffAlert {
                     CustomAlertWithTwoTextFields(
@@ -115,13 +121,12 @@ struct InventoryStuffView: View {
                 }
 
                 if showDeleteConfirmationAlert {
-                    CustomAlert(
+                    CustomAlertTwoButtons(
                         isActive: $showDeleteConfirmationAlert,
                         title: "Delete Stuff",
                         message: stuffToDelete != nil ? "Are you sure you want to delete the stuff \(stuffToDelete!.name)?" : "",
                         buttonTitle: "Delete",
                         secondaryButtonTitle: "Cancel",
-                        showTextField: false,
                         action: {
                             if let stuffToDelete = stuffToDelete {
                                 Task {
@@ -143,26 +148,26 @@ struct InventoryStuffView: View {
 struct StuffCard: View {
     let stuff: RoomInventory
     var body: some View {
-            HStack {
-//                if stuff.checked {
-//                    Image(systemName: "checkmark")
-//                        .foregroundStyle(Color.green)
-//                }
-                Text(stuff.name)
-                    .foregroundStyle(Color("textColor"))
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.title2)
-                    .foregroundStyle(Color("textColor"))
+        HStack {
+            if stuff.checked {
+                Image(systemName: "checkmark")
+                    .foregroundStyle(Color.green)
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-            )
-            .padding(.horizontal)
-            .padding(.vertical, 5)
+            Text(stuff.name)
+                .foregroundStyle(Color("textColor"))
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.title2)
+                .foregroundStyle(Color("textColor"))
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+        )
+        .padding(.horizontal)
+        .padding(.vertical, 5)
     }
 }
 

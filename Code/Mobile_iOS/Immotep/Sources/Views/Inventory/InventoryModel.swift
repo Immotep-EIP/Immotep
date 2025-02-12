@@ -25,10 +25,7 @@ struct RoomInventory: Identifiable {
     let roomId: String
     var name: String
     var quantity: Int?
-//    var state: String?
-//    var image: String?
-//    var description: String?
-//    var checked: Bool
+    var checked: Bool = false
 
     enum CodingKeys: String, CodingKey {
         case id
