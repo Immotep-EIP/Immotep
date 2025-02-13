@@ -3,11 +3,7 @@ import { Skeleton } from 'antd'
 
 import style from '@/views/RealProperty/RealProperty.module.css'
 
-interface CardPropertyLoaderProps {
-  cards: number
-}
-
-const CardPropertyLoader: React.FC<CardPropertyLoaderProps> = ({ cards }) => (
+const CardPropertyLoader: React.FC<{ cards: number }> = ({ cards }) => (
   <div className={style.cardsContainer}>
     {Array(cards)
       .fill(0)

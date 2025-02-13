@@ -245,7 +245,8 @@
           "remove_room_confirmation": "Are you sure you want to remove this room?",
           "remove_room_success": "Room deleted successfully",
           "remove_stuff_confirmation": "Are you sure you want to remove this item?",
-          "remove_stuff_success": "Item deleted successfully"
+          "remove_stuff_success": "Item deleted successfully",
+          "error_fetching_data": "Error while fetching data"
         }
       }
     },
