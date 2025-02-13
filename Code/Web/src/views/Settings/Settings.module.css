@@ -12,6 +12,8 @@
   width: 95%;
   max-width: 800px;
   border-radius: 10px;
+  background-color: white;
+  padding: 20px;
 }
 
 .settingsItem {
