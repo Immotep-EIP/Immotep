@@ -179,7 +179,8 @@
       "end_contract": {
         "title": "End the lease",
         "description": "Are you sure you want to end the lease of this tenant?",
-        "success": "The lease has been terminated successfully."
+        "success": "The lease has been terminated successfully.",
+        "error": "An error occurred while trying to end the lease, please try again."
       }
     }
   },

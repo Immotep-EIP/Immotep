@@ -105,7 +105,6 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
           await ArchiveProperty(propertyData.id)
           await removePropertyFromDB(propertyData.id)
           message.success(t('components.messages.delete_property_success'))
-          getPropertyDetails(propertyData.id)
           goToRealProperty()
         } catch (error) {
           console.error('Error deleting property:', error)
@@ -131,11 +130,11 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
           await StopCurrentContract(propertyData?.id || '')
           const updatedProperty = { ...propertyData, status: 'available' }
           await savePropertiesToDB([updatedProperty])
-          message.success(t('components.messages.end_contract_success'))
+          message.success(t('components.messages.end_contract.success'))
           getPropertyDetails(propertyData.id)
         } catch (error) {
           console.error('Error ending contract:', error)
-          message.error(t('components.messages.end_contract_error'))
+          message.error(t('components.messages.end_contract.error'))
         }
       }
     })

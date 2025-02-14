@@ -179,7 +179,8 @@
       "end_contract": {
         "title": "Mettre fin au bail",
         "description": "Êtes-vous sûr de vouloir mettre fin au bail de ce locataire ?",
-        "success": "Bail terminé avec succès"
+        "success": "Bail terminé avec succès",
+        "error": "Une erreur est survenue lors de la fin du bail, veuillez réessayer."
       }
     }
   },
