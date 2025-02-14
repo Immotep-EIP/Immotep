@@ -24,11 +24,21 @@ struct InventoryRoomView: View {
                         if inventoryViewModel.areAllRoomsCompleted() {
                             Button(action: {
                                 Task {
-                                    await inventoryViewModel.finalizeInventory()
+                                    do {
+                                        try await inventoryViewModel.finalizeInventory()
+                                    } catch {
+                                        print("Error finalizing inventory: \(error.localizedDescription)")
+                                    }
                                 }
                             }, label: {
                                 Text("Finalize Inventory")
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .background(Color.blue)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
                             })
+                            .padding()
                         }
                     }
                     Spacer()

@@ -48,7 +48,7 @@ class InventoryViewModel: ObservableObject {
 
     func fetchRooms() async {
         guard localRooms.isEmpty else {
-            print("localRooms is already populated, skipping fetch.")
+//            print("localRooms is already populated, skipping fetch.")
             return
         }
 
@@ -210,7 +210,7 @@ class InventoryViewModel: ObservableObject {
     }
 
     func selectRoom(_ room: LocalRoom) {
-        print("room selected: \(room)")
+//        print("room selected: \(room)")
         selectedRoom = room
         if let roomIndex = localRooms.firstIndex(where: { $0.id == room.id }) {
             selectedInventory = localRooms[roomIndex].inventory
@@ -238,10 +238,10 @@ class InventoryViewModel: ObservableObject {
         guard let selectedRoom = selectedRoom else { return }
 
         let allStuffChecked = selectedInventory.allSatisfy { $0.checked }
-        for stuff in selectedInventory {
-            print("\(stuff.name) checked ? : ", stuff.checked)
-        }
-        print("all checked ? : ", allStuffChecked)
+//        for stuff in selectedInventory {
+//            print("\(stuff.name) checked ? : ", stuff.checked)
+//        }
+//        print("all checked ? : ", allStuffChecked)
 
         if let roomIndex = localRooms.firstIndex(where: { $0.id == selectedRoom.id }) {
             localRooms[roomIndex].checked = allStuffChecked
@@ -276,7 +276,7 @@ class InventoryViewModel: ObservableObject {
         }
 
         guard localRooms[roomIndex].inventory.isEmpty else {
-            print("Inventory for room \(room.name) is already populated, skipping fetch.")
+//            print("Inventory for room \(room.name) is already populated, skipping fetch.")
             return
         }
 
@@ -321,8 +321,8 @@ class InventoryViewModel: ObservableObject {
 
                 selectedRoom = localRooms[index]
             }
-            print("fetch stuff: ")
-            dump(localRooms)
+//            print("fetch stuff: ")
+//            dump(localRooms)
         } catch {
             errorMessage = "Error fetching furnitures: \(error.localizedDescription)"
         }
@@ -410,7 +410,7 @@ class InventoryViewModel: ObservableObject {
     }
 
     func selectStuff(_ stuff: LocalInventory) {
-        print("stuff selected: \(stuff)")
+//        print("stuff selected: \(stuff)")
         selectedStuff = stuff
         selectedImages = stuff.images
         comment = stuff.comment
@@ -484,7 +484,68 @@ class InventoryViewModel: ObservableObject {
         print("Report sent successfully: \(summarizeResponse)")
     }
 
-    func finalizeInventory() async {
-        
+    func finalizeInventory() async throws {
+        guard areAllRoomsCompleted() else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Not all rooms and stuff are checked"])
+        }
+
+        let roomsData = localRooms.map { room in
+            RoomStateRequest(
+                id: room.id,
+                cleanliness: "clean",
+                state: "good",
+                note: "Inventory completed",
+                pictures: room.inventory.flatMap { $0.images.map { convertUIImageToBase64($0) } }, // Replace all datas by real datas when it will be implemented. Ask to the team.
+                furnitures: room.inventory.map { stuff in
+                    FurnitureStateRequest(
+                        id: stuff.id,
+                        cleanliness: "clean", // add cleanliness to local
+                        note: stuff.comment,
+                        pictures: stuff.images.map { convertUIImageToBase64($0) },
+                        state: stuff.status.lowercased()
+                    )
+                }
+            )
+        }
+
+        let requestBody = InventoryReportRequest(
+            type: "start",
+            rooms: roomsData
+        )
+
+        guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/inventory-reports/") else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+
+        guard let token = await getToken() else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve token"])
+        }
+
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let encoder = JSONEncoder()
+        urlRequest.httpBody = try encoder.encode(requestBody)
+
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            if let responseBody = String(data: data, encoding: .utf8) {
+                print("Response Body: \(responseBody)")
+            }
+            throw NSError(domain: "", code: httpResponse.statusCode,
+                          userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
+        }
+
+//        let decoder = JSONDecoder()
+//        let responseData = try decoder.decode(InventoryReportResponse.self, from: data)
+//        print("Inventory finalized successfully: \(responseData)")
+        print("report inventory successfully created")
     }
 }

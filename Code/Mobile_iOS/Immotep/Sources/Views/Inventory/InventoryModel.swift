@@ -91,3 +91,43 @@ struct LocalInventory: Identifiable {
     var status: String = "Select your equipment status"
     var comment: String = ""
 }
+
+// Modèle pour la requête
+struct InventoryReportRequest: Codable {
+    let type: String
+    let rooms: [RoomStateRequest]
+}
+
+struct RoomStateRequest: Codable {
+    let id: String
+    let cleanliness: String
+    let state: String
+    let note: String
+    let pictures: [String] // Images encodées en base64
+    let furnitures: [FurnitureStateRequest]
+}
+
+// Modèle pour la réponse
+struct InventoryReportResponse: Codable {
+    let date: String
+    let id: String
+    let propertyId: String
+    let rooms: [RoomStateResponse]
+    let type: String
+}
+
+struct RoomStateResponse: Codable {
+    let id: String
+    let cleanliness: String
+    let state: String
+    let note: String
+    let pictures: [String]
+}
+
+struct FurnitureStateRequest: Codable {
+    let id: String
+    let cleanliness: String
+    let note: String
+    let pictures: [String]
+    let state: String
+}

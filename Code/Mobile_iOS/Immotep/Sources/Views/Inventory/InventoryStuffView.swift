@@ -14,11 +14,6 @@ struct InventoryStuffView: View {
     @State private var showDeleteConfirmationAlert: Bool = false
     @State private var stuffToDelete: LocalInventory?
 
-//    init(selectedRoom: LocalRoom) {
-//        self._selectedRoom = State(initialValue: selectedRoom)
-//        print("selectedRoom initialized: \(selectedRoom)")
-//    }
-
     var body: some View {
         NavigationView {
             ZStack {
@@ -88,11 +83,6 @@ struct InventoryStuffView: View {
                                 await inventoryViewModel.markRoomAsChecked(selectedRoom)
                             }
                         }
-//                        if !selectedRoom.inventory.isEmpty {
-//                            print("selected room inventory 0: \(selectedRoom.inventory[0])")
-//                        } else {
-//                            print("selected room inventory is empty")
-//                        }
                     }
                     Spacer()
                     TaskBar()
