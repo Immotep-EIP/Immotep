@@ -1,20 +1,18 @@
 import React, { useState } from 'react'
 import {
-  FormProps,
   Form,
   Input,
   Button,
   Upload,
   UploadProps,
   message,
-  UploadFile
+  UploadFile,
+  Modal
 } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { UploadOutlined } from '@ant-design/icons'
-import closeIcon from '@/assets/icons/close.png'
 import fileToBase64 from '@/utils/base64/fileToBase'
 import useProperties from '@/hooks/useEffect/useProperties'
-import PageMeta from '@/components/PageMeta/PageMeta'
 import style from './RealPropertyCreate.module.css'
 
 type FieldType = {
@@ -29,13 +27,24 @@ type FieldType = {
   picture: string
 }
 
-const RealPropertyCreate: React.FC = () => {
+interface RealPropertyCreateProps {
+  showModalCreate: boolean
+  setShowModalCreate: (show: boolean) => void
+  setIsPropertyCreated: (isCreated: boolean) => void
+}
+
+const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
+  showModalCreate,
+  setShowModalCreate,
+  setIsPropertyCreated,
+}) => {
   const { t } = useTranslation()
   const { loading, createProperty } = useProperties()
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [imageBase64, setImageBase64] = useState<string | null>(null)
+  const [form] = Form.useForm()
 
-  const props: UploadProps = {
+  const uploadProps: UploadProps = {
     name: 'propertyPicture',
     maxCount: 1,
     fileList,
@@ -55,9 +64,7 @@ const RealPropertyCreate: React.FC = () => {
     }
   }
 
-  const onFinish: FormProps<FieldType>['onFinish'] = async (
-    values: FieldType
-  ) => {
+  const onFinish = async (values: FieldType) => {
     const propertyData = {
       name: values.name,
       address: values.address,
@@ -68,59 +75,56 @@ const RealPropertyCreate: React.FC = () => {
       rental_price_per_month: parseFloat(values.rental || '0'),
       deposit_price: parseFloat(values.deposit || '0'),
       picture: ''
-    }
-
+    };
     try {
-      await createProperty(propertyData, imageBase64)
-      message.success(
-        t('pages.real_property.add_real_property.property_created')
-      )
-      window.history.back()
+      await createProperty(propertyData, imageBase64);
+      setShowModalCreate(false);
+      message.success(t('pages.real_property.add_real_property.property_created'));
+      setIsPropertyCreated(true);
     } catch (err) {
-      message.error(
-        t('pages.real_property.add_real_property.error_property_created')
-      )
+      message.error(t('pages.real_property.add_real_property.error_property_created'));
     }
-  }
+  };
 
-  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
-    errorInfo: any
-  ) => {
+  const onFinishFailed = () => {
     message.error(
-      t('pages.real_property.add_real_property.fill_all_fields'),
-      errorInfo
+      t('pages.real_property.add_real_property.fill_all_fields')
     )
   }
 
   return (
-    <>
-      <PageMeta
-        title={t('pages.real_property.add_real_property.document_title')}
-        description={t(
-          'pages.real_property.add_real_property.document_description'
-        )}
-        keywords="add real property, Property info, Immotep"
-      />
+    <Modal
+      title={t('pages.real_property.add_real_property.document_title')}
+      open={showModalCreate}
+      onCancel={() => setShowModalCreate(false)}
+      footer={[
+        <Button key="back" onClick={() => setShowModalCreate(false)}>
+          {t('components.button.cancel')}
+        </Button>,
+        <Button
+          key="submit"
+          type="primary"
+          loading={loading}
+          onClick={() => form.submit()}
+        >
+          {t('components.button.add')}
+        </Button>
+      ]}
+      style={{
+        top: '10%',
+        overflow: 'hidden',
+      }}
+      styles={{
+        body: {
+          maxHeight: 'calc(70vh - 55px)',
+          overflowY: 'auto',
+        },
+      }}
+    >
       <div className={style.pageContainer}>
-        <div className={style.header}>
-          <span className={style.title}>
-            {t('pages.real_property.add_real_property.title')}
-          </span>
-          <Button
-            shape="circle"
-            style={{ margin: '20px', width: '40px', height: '40px' }}
-            onClick={() => window.history.back()}
-            aria-label={t('component.button.close')}
-          >
-            <img
-              src={closeIcon}
-              alt="close"
-              style={{ width: '30px', height: '30px' }}
-            />
-          </Button>
-        </div>
         <Form
-          name="basic"
+          form={form}
+          name="propertyForm"
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
@@ -139,7 +143,6 @@ const RealPropertyCreate: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.property_name.placeholder')}
-              aria-label={t('components.input.property_name.placeholder')}
             />
           </Form.Item>
 
@@ -152,7 +155,6 @@ const RealPropertyCreate: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.address.placeholder')}
-              aria-label={t('components.input.address.placeholder')}
             />
           </Form.Item>
 
@@ -165,7 +167,6 @@ const RealPropertyCreate: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.zip_code.placeholder')}
-              aria-label={t('components.input.zip_code.placeholder')}
             />
           </Form.Item>
 
@@ -178,7 +179,6 @@ const RealPropertyCreate: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.city.placeholder')}
-              aria-label={t('components.input.city.placeholder')}
             />
           </Form.Item>
 
@@ -191,7 +191,6 @@ const RealPropertyCreate: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.country.placeholder')}
-              aria-label={t('components.input.country.placeholder')}
             />
           </Form.Item>
 
@@ -204,7 +203,6 @@ const RealPropertyCreate: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.area.placeholder')}
-              aria-label={t('components.input.area.placeholder')}
             />
           </Form.Item>
 
@@ -217,7 +215,6 @@ const RealPropertyCreate: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.rental.placeholder')}
-              aria-label={t('components.input.rental.placeholder')}
             />
           </Form.Item>
 
@@ -230,35 +227,22 @@ const RealPropertyCreate: React.FC = () => {
           >
             <Input
               placeholder={t('components.input.deposit.placeholder')}
-              aria-label={t('components.input.deposit.placeholder')}
             />
           </Form.Item>
 
           <Form.Item<FieldType>
             label={t('components.input.picture.label')}
             name="picture"
-            rules={[{ required: false }]}
           >
-            <Upload {...props}>
+            <Upload {...uploadProps}>
               <Button icon={<UploadOutlined />}>
                 {t('components.input.picture.placeholder')}
               </Button>
             </Upload>
           </Form.Item>
-
-          <div className={style.footer}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ marginRight: '20px' }}
-              loading={loading}
-            >
-              {t('components.button.add')}
-            </Button>
-          </div>
         </Form>
       </div>
-    </>
+    </Modal>
   )
 }
 

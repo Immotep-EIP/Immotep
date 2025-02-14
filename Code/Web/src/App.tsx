@@ -16,7 +16,6 @@ import ForgotPassword from '@/views/Authentification/ForgotPassword/ForgotPasswo
 // ! MAIN LAYOUT - SIDEBAR
 import OverviewContent from '@/views/Overview/Overview'
 import RealPropertyContent from '@/views/RealProperty/RealProperty'
-import RealPropertyCreate from '@/views/RealProperty/create/RealPropertyCreate.tsx'
 import RealPropertyDetails from '@/views/RealProperty/details/RealPropertyDetails.tsx'
 import MessagesContent from '@/views/Messages/Messages'
 
@@ -59,11 +58,6 @@ const App: React.FC = () => (
             element={<ForgotPassword />}
           />
           <Route path="*" element={<Lost />} />
-
-          <Route
-            path={NavigationEnum.REAL_PROPERTY_CREATE}
-            element={<RealPropertyCreate />}
-          />
 
           <Route element={<MainLayout />}>
             <Route element={<ProtectedRoute />}>
