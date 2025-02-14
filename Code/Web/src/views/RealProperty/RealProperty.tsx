@@ -119,7 +119,7 @@ const RealPropertyPage: React.FC = () => {
           </Button>
         </div>
 
-        {loading && <CardPropertyLoader cards={9} />}
+        {!loading && <CardPropertyLoader cards={12} />}
 
         <div className={style.cardsContainer}>
           {properties.length === 0 && (

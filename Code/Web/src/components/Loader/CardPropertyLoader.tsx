@@ -10,30 +10,20 @@ const CardPropertyLoader: React.FC<{ cards: number }> = ({ cards }) => (
       .map((_, index) => (
         // eslint-disable-next-line react/no-array-index-key
         <div className={style.card} key={index}>
-          <div className={style.statusContainer}>
-            <Skeleton.Input size="small" active />
-            <Skeleton.Input size="small" active />
-          </div>
-          <div className={style.pictureContainer}>
-            <Skeleton.Avatar
-              active
-              shape="circle"
-              size={100}
-              className={style.picture}
-            />
-          </div>
-          <div className={style.informationsContainer}>
-            <div className={style.informations}>
-              <Skeleton.Input style={{ height: 20 }} active />
+          <div className={style.cardContentContainer}>
+            <div className={style.cardPictureContainer}>
+              <Skeleton.Image active className={style.cardPicture} />
             </div>
-            <div className={style.informations}>
-              <Skeleton.Input style={{ height: 20 }} active />
-            </div>
-            <div className={style.informations}>
-              <Skeleton.Input style={{ height: 20 }} active />
-            </div>
-            <div className={style.informations}>
-              <Skeleton.Input style={{ height: 20 }} active />
+            <div className={style.cardInfoContainer}>
+              <b className={style.cardText}>
+                <Skeleton.Input size="small" active />
+              </b>
+              <div className={style.cardAddressContainer}>
+                <Skeleton.Avatar size={20} active />
+                <span className={style.cardText}>
+                  <Skeleton.Input size="small" active />
+                </span>
+              </div>
             </div>
           </div>
         </div>
