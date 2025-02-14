@@ -171,7 +171,9 @@
       "confirm": "Confirmer",
       "add": "Ajouter",
       "close": "Close",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "edit_property": "Modifier la propriété",
+      "delete_property": "Supprimer la propriété"
     },
     "modal": {
       "end_contract": {
@@ -234,6 +236,16 @@
       "409_error": "Invitation déjà envoyée",
       "fill_fields": "Veuillez remplir les champs requis",
       "error_fetching_data": "Erreur lors de la récupération des données",
+      "title": "Détails de la propriété",
+      "informations": {
+        "name": "Nom",
+        "address": "Adresse",
+        "tenant": "Locataire(s)",
+        "dates": "Dates",
+        "area": "Surface",
+        "rental": "Loyer",
+        "deposit": "Dépôt de garantie"
+      },
       "tabs": {
         "documents": {
           "modal_title": "Ajouter un document"
@@ -271,7 +283,7 @@
     "real_property": {
       "document_title": "Propriété",
       "document_description": "Gérez vos propriétés facilement. Ajoutez, modifiez ou supprimez vos propriétés.",
-      "title": "Propriété",
+      "title": "Propriété(s)",
       "add_real_property": {
         "document_title": "Ajouter une propriété",
         "document_description": "Ajoutez une propriété pour la gérer facilement. Remplissez les champs requis pour ajouter une propriété.",

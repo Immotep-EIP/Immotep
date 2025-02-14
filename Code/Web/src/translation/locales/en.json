@@ -171,7 +171,9 @@
       "confirm": "Confirm",
       "add": "Add",
       "close": "Close",
-      "delete": "Delete"
+      "delete": "Delete",
+      "edit_property": "Edit property",
+      "delete_property": "Delete property"
     },
     "modal": {
       "end_contract": {
@@ -234,6 +236,16 @@
       "409_error": "Invitation already sent",
       "fill_fields": "Please fill in the required fields",
       "error_fetching_data": "Error while fetching data",
+      "title": "Real property details",
+      "informations": {
+        "name": "Name",
+        "address": "Address",
+        "tenant": "Tenant(s)",
+        "dates": "Dates",
+        "area": "Area",
+        "rental": "Rental",
+        "deposit": "Deposit"
+      },
       "tabs": {
         "documents": {
           "modal_title": "Add a document"

@@ -14,7 +14,7 @@ import addIcon from '@/assets/icons/plus.png'
 import { usePropertyId } from '@/context/propertyIdContext'
 import useInventory from '@/hooks/useInventory/useInventory'
 import CardInventoryLoader from '@/components/Loader/CardInventoryLoader'
-import style from './3InventoryTab.module.css'
+import style from './2InventoryTab.module.css'
 
 const InventoryTab: React.FC = () => {
   const { t } = useTranslation()

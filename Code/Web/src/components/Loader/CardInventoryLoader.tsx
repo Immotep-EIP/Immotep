@@ -1,7 +1,7 @@
 import React from 'react'
 import { Skeleton } from 'antd'
 
-import style from '@/views/RealProperty/details/tabs/3InventoryTab.module.css'
+import style from '@/views/RealProperty/details/tabs/2InventoryTab.module.css'
 
 const CardInventoryLoader: React.FC<{ cards: number }> = ({ cards }) => (
   <div className={style.roomsContainer}>
