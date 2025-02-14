@@ -58,3 +58,10 @@ func convertUIImagesToBase64(_ images: [UIImage]) -> [String] {
         return jpegData.base64EncodedString()
     }
 }
+
+func convertUIImageToBase64(_ image: UIImage) -> String {
+    guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+        return ""
+    }
+    return imageData.base64EncodedString()
+}
