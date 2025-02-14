@@ -26,6 +26,9 @@ struct RoomInventory: Identifiable {
     var name: String
     var quantity: Int?
     var checked: Bool = false
+    var images: [UIImage] = [] // Stocker les images
+    var status: String = "Select your equipment status" // Stocker le statut
+    var comment: String = "" // Stocker le commentaire
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -66,4 +69,25 @@ struct SummarizeResponse: Codable {
     let cleanliness: String
     let note: String
     let state: String
+}
+
+// Local datas, used in UI, to be used later to make the final report
+
+struct LocalRoom: Identifiable {
+    var id: String
+    var name: String
+    var checked: Bool
+    var inventory: [LocalInventory]
+}
+
+struct LocalInventory: Identifiable {
+    var id: String
+    let propertyId: String
+    let roomId: String
+    var name: String
+    var quantity: Int?
+    var checked: Bool = false
+    var images: [UIImage] = []
+    var status: String = "Select your equipment status"
+    var comment: String = ""
 }

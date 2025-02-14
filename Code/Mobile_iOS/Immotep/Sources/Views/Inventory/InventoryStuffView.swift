@@ -6,18 +6,18 @@
 //
 
 import SwiftUI
-
 struct InventoryStuffView: View {
     @EnvironmentObject var inventoryViewModel: InventoryViewModel
-    @State private var selectedRoom: PropertyRooms
+    @Binding var selectedRoom: LocalRoom // Utiliser un Binding
 
     @State private var showAddStuffAlert: Bool = false
     @State private var showDeleteConfirmationAlert: Bool = false
-    @State private var stuffToDelete: RoomInventory?
+    @State private var stuffToDelete: LocalInventory?
 
-    init(selectedRoom: PropertyRooms) {
-        self._selectedRoom = State(initialValue: selectedRoom)
-    }
+//    init(selectedRoom: LocalRoom) {
+//        self._selectedRoom = State(initialValue: selectedRoom)
+//        print("selectedRoom initialized: \(selectedRoom)")
+//    }
 
     var body: some View {
         NavigationView {
@@ -27,7 +27,7 @@ struct InventoryStuffView: View {
                     VStack {
                         Spacer()
                         List {
-                            ForEach(inventoryViewModel.selectedInventory) { stuff in
+                            ForEach(selectedRoom.inventory) { stuff in
                                 NavigationLink(
                                     destination: {
                                         if inventoryViewModel.isEntryInventory {
@@ -88,6 +88,11 @@ struct InventoryStuffView: View {
                                 await inventoryViewModel.markRoomAsChecked(selectedRoom)
                             }
                         }
+//                        if !selectedRoom.inventory.isEmpty {
+//                            print("selected room inventory 0: \(selectedRoom.inventory[0])")
+//                        } else {
+//                            print("selected room inventory is empty")
+//                        }
                     }
                     Spacer()
                     TaskBar()
@@ -146,15 +151,27 @@ struct InventoryStuffView: View {
 }
 
 struct StuffCard: View {
-    let stuff: RoomInventory
+    let stuff: LocalInventory
+    @EnvironmentObject var inventoryViewModel: InventoryViewModel
+
     var body: some View {
         HStack {
-            if stuff.checked {
+            if inventoryViewModel.checkedStuffStatus[stuff.id] == true {
                 Image(systemName: "checkmark")
                     .foregroundStyle(Color.green)
             }
             Text(stuff.name)
                 .foregroundStyle(Color("textColor"))
+
+            if !stuff.images.isEmpty {
+                Image(systemName: "photo")
+                    .foregroundStyle(Color.blue)
+            }
+
+            if !stuff.comment.isEmpty {
+                Image(systemName: "text.bubble")
+                    .foregroundStyle(Color.orange)
+            }
         }
     }
 }
@@ -162,9 +179,44 @@ struct StuffCard: View {
 struct InventoryStuffView_Previews: PreviewProvider {
     static var previews: some View {
         let fakeProperty = exampleDataProperty
-        let viewModel = InventoryViewModel(property: fakeProperty)
-        viewModel.selectRoom(fakeProperty.rooms[0])
-        return InventoryStuffView(selectedRoom: fakeProperty.rooms[0])
-            .environmentObject(viewModel)
+        _ = InventoryViewModel(property: fakeProperty)
+
+        // Créez une instance de LocalRoom pour l'aperçu
+        let exampleLocalRoom = LocalRoom(
+            id: fakeProperty.rooms[0].id,
+            name: fakeProperty.rooms[0].name,
+            checked: fakeProperty.rooms[0].checked,
+            inventory: fakeProperty.rooms[0].inventory.map { inventory in
+                LocalInventory(
+                    id: inventory.id,
+                    propertyId: inventory.propertyId,
+                    roomId: inventory.roomId,
+                    name: inventory.name,
+                    quantity: inventory.quantity,
+                    checked: inventory.checked,
+                    images: inventory.images,
+                    status: inventory.status,
+                    comment: inventory.comment
+                )
+            }
+        )
+
+        // Utilisez @State pour créer un Binding
+        struct PreviewWrapper: View {
+            @State private var selectedRoom: LocalRoom
+
+            init(selectedRoom: LocalRoom) {
+                self._selectedRoom = State(initialValue: selectedRoom)
+            }
+
+            var body: some View {
+                InventoryStuffView(selectedRoom: $selectedRoom)
+                    .environmentObject(InventoryViewModel(property: exampleDataProperty))
+            }
+        }
+
+        return PreviewWrapper(selectedRoom: exampleLocalRoom)
     }
 }
+
+// selectedRoom.inventory est vide, voir le remplissage des stuffs dans chaque room

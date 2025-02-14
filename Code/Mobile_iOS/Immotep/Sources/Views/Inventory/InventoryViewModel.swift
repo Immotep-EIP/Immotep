@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 @MainActor
 class InventoryViewModel: ObservableObject {
     @Published var property: Property
@@ -14,16 +13,19 @@ class InventoryViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
-    @Published var selectedRoom: PropertyRooms?
-    @Published var selectedInventory: [RoomInventory] = []
+    @Published var selectedRoom: LocalRoom?
+    @Published var selectedInventory: [LocalInventory] = []
 
-    @Published var selectedStuff: RoomInventory?
+    @Published var selectedStuff: LocalInventory?
     @Published var selectedImages: [UIImage] = []
     @Published var comment: String = ""
     @Published var selectedStatus: String = "Select your equipment status"
 
-    @Published var roomToDelete: PropertyRooms?
+    @Published var roomToDelete: LocalRoom?
     @Published var showDeleteConfirmation: Bool = false
+
+    @Published var checkedStuffStatus: [String: Bool] = [:]
+    @Published var localRooms: [LocalRoom] = []
 
     init(property: Property) {
         self.property = property
@@ -45,6 +47,11 @@ class InventoryViewModel: ObservableObject {
     // ROOM API CALLS
 
     func fetchRooms() async {
+        guard localRooms.isEmpty else {
+            print("localRooms is already populated, skipping fetch.")
+            return
+        }
+
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/") else {
             errorMessage = "Invalid URL"
             return
@@ -86,6 +93,30 @@ class InventoryViewModel: ObservableObject {
                     inventory: []
                 )
             }
+
+            if localRooms.isEmpty {
+                localRooms = property.rooms.map { room in
+                    LocalRoom(
+                        id: room.id,
+                        name: room.name,
+                        checked: room.checked,
+                        inventory: room.inventory.map { inventory in
+                            LocalInventory(
+                                id: inventory.id,
+                                propertyId: inventory.propertyId,
+                                roomId: inventory.roomId,
+                                name: inventory.name,
+                                quantity: inventory.quantity,
+                                checked: inventory.checked,
+                                images: inventory.images,
+                                status: inventory.status,
+                                comment: inventory.comment
+                            )
+                        }
+                    )
+                }
+            }
+            dump(localRooms)
         } catch {
             errorMessage = "Error fetching rooms: \(error.localizedDescription)"
         }
@@ -113,9 +144,6 @@ class InventoryViewModel: ObservableObject {
             let jsonData = try JSONSerialization.data(withJSONObject: body)
             urlRequest.httpBody = jsonData
 
-            if let httpBody = urlRequest.httpBody, let _ = String(data: httpBody, encoding: .utf8) {
-            }
-
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
             guard let httpResponse = response as? HTTPURLResponse else {
@@ -131,12 +159,21 @@ class InventoryViewModel: ObservableObject {
             }
 
             await fetchRooms()
+
+            if let newRoom = property.rooms.last {
+                localRooms.append(LocalRoom(
+                    id: newRoom.id,
+                    name: newRoom.name,
+                    checked: newRoom.checked,
+                    inventory: []
+                ))
+            }
         } catch {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Error creating room: \(error.localizedDescription)"])
         }
     }
 
-    func deleteRoom(_ room: PropertyRooms) async {
+    func deleteRoom(_ room: LocalRoom) async {
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/\(room.id)/") else {
             errorMessage = "Invalid URL"
             return
@@ -165,54 +202,88 @@ class InventoryViewModel: ObservableObject {
             }
 
             await fetchRooms()
+
+            localRooms.removeAll { $0.id == room.id }
         } catch {
             errorMessage = "Error deleting room: \(error.localizedDescription)"
         }
     }
 
-    func selectRoom(_ room: PropertyRooms) {
+    func selectRoom(_ room: LocalRoom) {
         print("room selected: \(room)")
         selectedRoom = room
-        selectedInventory = room.inventory
+        if let roomIndex = localRooms.firstIndex(where: { $0.id == room.id }) {
+            selectedInventory = localRooms[roomIndex].inventory
+        }
     }
 
-    func isRoomCompleted(_ room: PropertyRooms) -> Bool {
+    func isRoomCompleted(_ room: LocalRoom) -> Bool {
         return room.inventory.allSatisfy { $0.checked }
     }
 
     func areAllRoomsCompleted() -> Bool {
-        return property.rooms.allSatisfy { $0.checked }
+        return localRooms.allSatisfy { $0.checked }
     }
 
-    func markRoomAsChecked(_ room: PropertyRooms) async {
-        guard let index = property.rooms.firstIndex(where: { $0.id == room.id }) else { return }
-        property.rooms[index].checked = true
+    func markRoomAsChecked(_ room: LocalRoom) async {
+        guard let index = localRooms.firstIndex(where: { $0.id == room.id }) else { return }
+        localRooms[index].checked = true
 
         await MainActor.run {
-            self.property.rooms[index].checked = true
+            self.localRooms[index].checked = true
+        }
+    }
+
+    func updateRoomCheckedStatus() {
+        guard let selectedRoom = selectedRoom else { return }
+
+        let allStuffChecked = selectedInventory.allSatisfy { $0.checked }
+        for stuff in selectedInventory {
+            print("\(stuff.name) checked ? : ", stuff.checked)
+        }
+        print("all checked ? : ", allStuffChecked)
+
+        if let roomIndex = localRooms.firstIndex(where: { $0.id == selectedRoom.id }) {
+            localRooms[roomIndex].checked = allStuffChecked
         }
     }
 
     // STUFF (FURNITURE) API CALLS
 
-    func markStuffAsChecked(_ stuff: RoomInventory) async throws {
+    func markStuffAsChecked(_ stuff: LocalInventory) async throws {
         guard let index = selectedInventory.firstIndex(where: { $0.id == stuff.id }) else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Stuff not found in inventory"])
         }
 
         selectedInventory[index].checked = true
+        checkedStuffStatus[stuff.id] = true
+
+        if let roomIndex = localRooms.firstIndex(where: { $0.id == selectedRoom?.id }),
+           let stuffIndex = localRooms[roomIndex].inventory.firstIndex(where: { $0.id == stuff.id }) {
+            localRooms[roomIndex].inventory[stuffIndex].checked = true
+        }
 
         await MainActor.run {
             self.selectedInventory[index].checked = true
+            self.updateRoomCheckedStatus()
         }
     }
 
-    func fetchStuff(_ room: PropertyRooms) async {
+    func fetchStuff(_ room: LocalRoom) async {
+        guard let roomIndex = localRooms.firstIndex(where: { $0.id == room.id }) else {
+            errorMessage = "Room not found in localRooms"
+            return
+        }
+
+        guard localRooms[roomIndex].inventory.isEmpty else {
+            print("Inventory for room \(room.name) is already populated, skipping fetch.")
+            return
+        }
+
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/\(room.id)/furnitures/") else {
             errorMessage = "Invalid URL"
             return
         }
-
         guard let token = await getToken() else {
             errorMessage = "Failed to retrieve token"
             return
@@ -241,19 +312,23 @@ class InventoryViewModel: ObservableObject {
             let decoder = JSONDecoder()
             let furnitures = try decoder.decode([FurnitureResponse].self, from: data)
 
-            if let index = property.rooms.firstIndex(where: { $0.id == room.id }) {
-                property.rooms[index].inventory = furnitures.map { furniture in
-                    RoomInventory(id: furniture.id, propertyId: furniture.propertyId,
+            if let index = localRooms.firstIndex(where: { $0.id == room.id }) {
+                localRooms[index].inventory = furnitures.map { furniture in
+                    LocalInventory(id: furniture.id, propertyId: furniture.propertyId,
                                   roomId: furniture.roomId, name: furniture.name, quantity: furniture.quantity)
                 }
-                selectedInventory = property.rooms[index].inventory
+                selectedInventory = localRooms[index].inventory
+
+                selectedRoom = localRooms[index]
             }
+            print("fetch stuff: ")
+            dump(localRooms)
         } catch {
             errorMessage = "Error fetching furnitures: \(error.localizedDescription)"
         }
     }
 
-    func addStuff(name: String, quantity: Int, to room: PropertyRooms) async throws {
+    func addStuff(name: String, quantity: Int, to room: LocalRoom) async throws {
         guard let url = URL(string: "\(baseURL)/owner/properties/\(property.id)/rooms/\(room.id)/furnitures/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
@@ -297,7 +372,7 @@ class InventoryViewModel: ObservableObject {
         await fetchStuff(room)
     }
 
-    func deleteStuff(_ stuff: RoomInventory, from room: PropertyRooms) async {
+    func deleteStuff(_ stuff: LocalInventory, from room: LocalRoom) async {
         isLoading = true
         defer { isLoading = false }
 
@@ -334,12 +409,12 @@ class InventoryViewModel: ObservableObject {
         }
     }
 
-    func selectStuff(_ stuff: RoomInventory) {
+    func selectStuff(_ stuff: LocalInventory) {
         print("stuff selected: \(stuff)")
         selectedStuff = stuff
-        selectedImages = []
-        comment = ""
-        selectedStatus = "Select your equipment status"
+        selectedImages = stuff.images
+        comment = stuff.comment
+        selectedStatus = stuff.status
     }
 
     func sendStuffReport() async throws {
@@ -352,9 +427,9 @@ class InventoryViewModel: ObservableObject {
         let base64Images = convertUIImagesToBase64(selectedImages)
 
         guard let stuffID = selectedStuff?.id else {
-            print(selectedStuff?.id ?? "nil")
             throw URLError(.badServerResponse)
         }
+
         let body = SummarizeRequest(
             id: stuffID,
             pictures: base64Images,
@@ -387,6 +462,20 @@ class InventoryViewModel: ObservableObject {
             "new": "New"
         ]
         let uiStatus = stateMapping[summarizeResponse.state] ?? "Select your equipment status"
+
+        if let index = selectedInventory.firstIndex(where: { $0.id == stuffID }) {
+            selectedInventory[index].images = selectedImages
+            selectedInventory[index].status = uiStatus
+            selectedInventory[index].comment = summarizeResponse.note
+        }
+
+        if let roomIndex = localRooms.firstIndex(where: { $0.id == selectedRoom?.id }),
+           let stuffIndex = localRooms[roomIndex].inventory.firstIndex(where: { $0.id == stuffID }) {
+            localRooms[roomIndex].inventory[stuffIndex].images = selectedImages
+            localRooms[roomIndex].inventory[stuffIndex].status = uiStatus
+            localRooms[roomIndex].inventory[stuffIndex].comment = summarizeResponse.note
+        }
+
         await MainActor.run {
             self.comment = summarizeResponse.note
             self.selectedStatus = uiStatus
@@ -396,5 +485,6 @@ class InventoryViewModel: ObservableObject {
     }
 
     func finalizeInventory() async {
+        
     }
 }

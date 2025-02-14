@@ -11,13 +11,16 @@ import Foundation
 
 struct InventoryEntryEvaluationView: View {
     @EnvironmentObject var inventoryViewModel: InventoryViewModel
-    let selectedStuff: RoomInventory
+    @Environment(\.presentationMode) var presentationMode
+    let selectedStuff: LocalInventory
 
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
     @State private var replaceIndex: Int?
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
+    @State private var isReportSent: Bool = false
+
     let stateMapping: [String: String] = [
         "not_set": "Select your equipment status",
         "broken": "Broken",
@@ -80,16 +83,38 @@ struct InventoryEntryEvaluationView: View {
                     }
                     .padding()
 
-                    Button(action: {
-                        Task {
-                            isLoading = true
-                            await markStuffAsCheckedAndSendReport()
-                            isLoading = false
-                        }
-                    }, label: {
-                        Text("Validate")
-                    })
-                    .disabled(isLoading)
+                    if isReportSent {
+                        Button(action: {
+                            Task {
+                                await validateReport()
+                            }
+                        }, label: {
+                            Text("Validate")
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        })
+                        .padding()
+                    } else {
+                        Button(action: {
+                            Task {
+                                isLoading = true
+                                await markStuffAsCheckedAndSendReport()
+                                isLoading = false
+                            }
+                        }, label: {
+                            Text("Send Report")
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        })
+                        .disabled(isLoading)
+                        .padding()
+                    }
 
                     if let errorMessage = errorMessage {
                         Text(errorMessage)
@@ -151,9 +176,33 @@ struct InventoryEntryEvaluationView: View {
         do {
             try await inventoryViewModel.markStuffAsChecked(selectedStuff)
             try await inventoryViewModel.sendStuffReport()
+            isReportSent = true // Mettre à jour l'état pour indiquer que le rapport a été envoyé
         } catch {
             errorMessage = "Error: \(error.localizedDescription)"
         }
+    }
+
+    private func validateReport() async {
+        // Mettre à jour la variable `checked` du stuff sélectionné
+        if let index = inventoryViewModel.selectedInventory.firstIndex(where: { $0.id == selectedStuff.id }) {
+            inventoryViewModel.selectedInventory[index].checked = true
+            inventoryViewModel.selectedInventory[index].images = inventoryViewModel.selectedImages
+            inventoryViewModel.selectedInventory[index].status = inventoryViewModel.selectedStatus
+            inventoryViewModel.selectedInventory[index].comment = inventoryViewModel.comment
+            inventoryViewModel.updateRoomCheckedStatus()
+        }
+
+        // Mettre à jour localRooms
+        if let roomIndex = inventoryViewModel.localRooms.firstIndex(where: { $0.id == inventoryViewModel.selectedRoom?.id }),
+           let stuffIndex = inventoryViewModel.localRooms[roomIndex].inventory.firstIndex(where: { $0.id == selectedStuff.id }) {
+            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].checked = true
+            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].images = inventoryViewModel.selectedImages
+            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].status = inventoryViewModel.selectedStatus
+            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].comment = inventoryViewModel.comment
+        }
+
+        // Revenir à la vue précédente
+        presentationMode.wrappedValue.dismiss()
     }
 }
 
@@ -226,5 +275,28 @@ struct PicturesSegment: View {
             )
         }
         .navigationBarBackButtonHidden(true)
+    }
+}
+
+struct InventoryEntryEvaluationView_Previews: PreviewProvider {
+    static var previews: some View {
+        let fakeProperty = exampleDataProperty
+        let viewModel = InventoryViewModel(property: fakeProperty)
+
+        // Créez une instance de LocalInventory pour l'aperçu
+        let exampleLocalInventory = LocalInventory(
+            id: fakeProperty.rooms[0].inventory[0].id,
+            propertyId: fakeProperty.rooms[0].inventory[0].propertyId,
+            roomId: fakeProperty.rooms[0].inventory[0].roomId,
+            name: fakeProperty.rooms[0].inventory[0].name,
+            quantity: fakeProperty.rooms[0].inventory[0].quantity,
+            checked: fakeProperty.rooms[0].inventory[0].checked,
+            images: fakeProperty.rooms[0].inventory[0].images,
+            status: fakeProperty.rooms[0].inventory[0].status,
+            comment: fakeProperty.rooms[0].inventory[0].comment
+        )
+
+        return InventoryEntryEvaluationView(selectedStuff: exampleLocalInventory)
+            .environmentObject(viewModel)
     }
 }

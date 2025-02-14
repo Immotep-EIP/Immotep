@@ -7,7 +7,7 @@ struct InventoryRoomView: View {
     @State private var newRoomName: String = ""
     @State private var showAddRoomAlert: Bool = false
     @State private var showDeleteConfirmationAlert: Bool = false
-    @State private var roomToDelete: PropertyRooms?
+    @State private var roomToDelete: LocalRoom?
 
     var body: some View {
         NavigationView {
@@ -16,52 +16,10 @@ struct InventoryRoomView: View {
                     TopBar(title: inventoryViewModel.isEntryInventory ? "Entry Inventory" : "Exit Inventory")
                     VStack {
                         Spacer()
-                        List {
-                            ForEach(inventoryViewModel.property.rooms) { room in
-                                NavigationLink(destination:
-                                    InventoryStuffView(selectedRoom: room)
-                                        .environmentObject(inventoryViewModel)
-                                ) {
-                                    RoomCard(room: room, isEntryInventory: inventoryViewModel.isEntryInventory)
-                                }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive) {
-                                        roomToDelete = room
-                                        showDeleteConfirmationAlert = true
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
-                                .listRowInsets(EdgeInsets())
-                                .listRowSeparator(.hidden)
-                                .padding()
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                                )
-                                .padding(.horizontal)
-                                .padding(.vertical, 5)
-                            }
-                        }
-                        .listStyle(.plain)
+                        RoomListView(showDeleteConfirmationAlert: $showDeleteConfirmationAlert, roomToDelete: $roomToDelete)
+                            .environmentObject(inventoryViewModel)
 
-                        Button {
-                            showAddRoomAlert = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "plus.circle")
-                                    .font(.title)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .foregroundStyle(Color("textColor"))
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                            )
-                            .padding(.horizontal)
-                            .padding(.vertical, 5)
-                        }
+                        AddRoomButton(showAddRoomAlert: $showAddRoomAlert)
 
                         if inventoryViewModel.areAllRoomsCompleted() {
                             Button(action: {
@@ -136,8 +94,76 @@ struct InventoryRoomView: View {
     }
 }
 
+struct RoomListView: View {
+    @EnvironmentObject var inventoryViewModel: InventoryViewModel
+    @Binding var showDeleteConfirmationAlert: Bool
+    @Binding var roomToDelete: LocalRoom?
+
+    var body: some View {
+        List {
+            ForEach(inventoryViewModel.localRooms) { room in
+                NavigationLink(destination: {
+                    if let selectedRoom = inventoryViewModel.selectedRoom {
+                        InventoryStuffView(selectedRoom: .constant(selectedRoom))
+                            .environmentObject(inventoryViewModel)
+                    } else {
+                        Text("Aucune pièce sélectionnée.")
+                    }
+                }, label: {
+                    RoomCard(room: room, isEntryInventory: inventoryViewModel.isEntryInventory)
+                })
+                .onAppear {
+                    inventoryViewModel.selectRoom(room)
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        roomToDelete = room
+                        showDeleteConfirmationAlert = true
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .padding()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                )
+                .padding(.horizontal)
+                .padding(.vertical, 5)
+            }
+        }
+        .listStyle(.plain)
+    }
+}
+
+struct AddRoomButton: View {
+    @Binding var showAddRoomAlert: Bool
+
+    var body: some View {
+        Button {
+            showAddRoomAlert = true
+        } label: {
+            HStack {
+                Image(systemName: "plus.circle")
+                    .font(.title)
+            }
+            .frame(maxWidth: .infinity)
+            .foregroundStyle(Color("textColor"))
+            .padding()
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+            )
+            .padding(.horizontal)
+            .padding(.vertical, 5)
+        }
+    }
+}
+
 struct RoomCard: View {
-    let room: PropertyRooms
+    let room: LocalRoom
     let isEntryInventory: Bool
 
     var body: some View {
