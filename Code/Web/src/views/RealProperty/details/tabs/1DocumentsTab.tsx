@@ -2,140 +2,162 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Modal, Form, Input, Upload, message } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import style from './4DocumentsTab.module.css'
+import style from './1DocumentsTab.module.css'
 
 const documents = [
   {
     id: 1,
     name: 'Document 1',
     date: '01/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 2,
     name: 'Document 2',
     date: '02/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 3,
     name: 'Document 3',
     date: '03/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 4,
     name: 'Document 4',
     date: '04/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 5,
     name: 'Document 5',
     date: '05/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 6,
     name: 'Document 6',
     date: '06/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 7,
     name: 'Document 7',
     date: '07/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 8,
     name: 'Document 8',
     date: '08/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 9,
     name: 'Document 9',
     date: '09/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 10,
     name: 'Document 10',
     date: '10/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 11,
     name: 'Document 11',
     date: '11/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 12,
     name: 'Document 12',
     date: '12/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 13,
     name: 'Document 13',
     date: '13/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 14,
     name: 'Document 14',
     date: '14/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 15,
     name: 'Document 15',
     date: '15/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 16,
     name: 'Document 16',
     date: '16/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 17,
     name: 'Document 17',
     date: '17/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 18,
     name: 'Document 18',
     date: '18/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 19,
     name: 'Document 19',
     date: '19/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 20,
     name: 'Document 20',
     date: '20/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 21,
     name: 'Document 21',
     date: '21/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   },
   {
     id: 22,
     name: 'Document 22',
     date: '22/01/2021',
-    preview: 'https://via.placeholder.com/150'
+    preview:
+      'https://comarquesnord.cat/wp-content/uploads/placeholder-image-150x150.png'
   }
 ]
 
@@ -154,7 +176,7 @@ const DocumentsTab: React.FC = () => {
     form
       .validateFields()
       .then(values => {
-        console.log('Form values:', values)
+        // console.log('Form values:', values)
         message.success(t('components.documents.success_add'))
         form.resetFields()
         setIsModalOpen(false)
@@ -179,8 +201,14 @@ const DocumentsTab: React.FC = () => {
       <Modal
         title={t('pages.real_property_details.tabs.documents.modal_title')}
         open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            {t('components.button.cancel')}
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleOk}>
+            {t('components.button.add')}
+          </Button>
+        ]}
       >
         <Form
           form={form}

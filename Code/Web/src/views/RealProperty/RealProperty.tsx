@@ -1,35 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { Badge, Button, Empty, Typography } from 'antd';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from 'react'
+import { Badge, Button, Empty, Typography } from 'antd'
+import { useTranslation } from 'react-i18next'
 
-import useNavigation from '@/hooks/useNavigation/useNavigation';
-import useProperties from '@/hooks/useEffect/useProperties.ts';
+import useNavigation from '@/hooks/useNavigation/useNavigation'
+import useProperties from '@/hooks/useEffect/useProperties.ts'
 
-import locationIcon from '@/assets/icons/location.png';
+import locationIcon from '@/assets/icons/location.png'
 
-import PageTitle from '@/components/PageText/Title.tsx';
-import defaultHouse from '@/assets/images/DefaultHouse.jpg';
-import GetPropertyPicture
-  from '@/services/api/Owner/Properties/GetPropertyPicture';
-import useImageCache from '@/hooks/useEffect/useImageCache';
-import CardPropertyLoader from '@/components/Loader/CardPropertyLoader';
-import PageMeta from '@/components/PageMeta/PageMeta';
-import PropertyStatusEnum from '@/enums/PropertyEnum';
-import style from './RealProperty.module.css';
-import RealPropertyCreate from './create/RealPropertyCreate';
+import PageTitle from '@/components/PageText/Title.tsx'
+import defaultHouse from '@/assets/images/DefaultHouse.jpg'
+import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
+import useImageCache from '@/hooks/useEffect/useImageCache'
+import CardPropertyLoader from '@/components/Loader/CardPropertyLoader'
+import PageMeta from '@/components/PageMeta/PageMeta'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
+import style from './RealProperty.module.css'
+import RealPropertyCreate from './create/RealPropertyCreate'
 
 interface CardComponentProps {
-  realProperty: any;
-  t: (key: string) => string;
+  realProperty: any
+  t: (key: string) => string
 }
 
 const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
-  const { goToRealPropertyDetails } = useNavigation();
+  const { goToRealPropertyDetails } = useNavigation()
 
   const { data: picture, isLoading } = useImageCache(
     realProperty.id,
     GetPropertyPicture
-  );
+  )
 
   return (
     <div
@@ -40,7 +39,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
       onClick={() => goToRealPropertyDetails(realProperty.id)}
       onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
-          goToRealPropertyDetails(realProperty.id);
+          goToRealPropertyDetails(realProperty.id)
         }
       }}
     >
@@ -48,9 +47,14 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         <Badge.Ribbon
           text={
             realProperty.status === PropertyStatusEnum.AVAILABLE
-            ? t('pages.real_property.status.available')
-            : t('pages.real_property.status.unavailable')}
-          color={realProperty.status === PropertyStatusEnum.AVAILABLE ? 'green' : 'red'}
+              ? t('pages.real_property.status.available')
+              : t('pages.real_property.status.unavailable')
+          }
+          color={
+            realProperty.status === PropertyStatusEnum.AVAILABLE
+              ? 'green'
+              : 'red'
+          }
         >
           <div className={style.cardPictureContainer}>
             <img
@@ -69,10 +73,10 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
               realProperty.postal_code &&
               realProperty.city
                 ? (() => {
-                    const fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`;
+                    const fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
                     return fullAddress.length > 40
                       ? `${fullAddress.substring(0, 40)}...`
-                      : fullAddress;
+                      : fullAddress
                   })()
                 : '-----------'}
             </span>
@@ -80,24 +84,24 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const RealPropertyPage: React.FC = () => {
-  const { t } = useTranslation();
-  const { properties, loading, error, refreshProperties } = useProperties();
-  const [showModalCreate, setShowModalCreate] = useState(false);
-  const [isPropertyCreated, setIsPropertyCreated] = useState(false);
+  const { t } = useTranslation()
+  const { properties, loading, error, refreshProperties } = useProperties()
+  const [showModalCreate, setShowModalCreate] = useState(false)
+  const [isPropertyCreated, setIsPropertyCreated] = useState(false)
 
   useEffect(() => {
     if (isPropertyCreated) {
-      refreshProperties();
-      setIsPropertyCreated(false);
+      refreshProperties()
+      setIsPropertyCreated(false)
     }
-  }, [isPropertyCreated, refreshProperties]);
+  }, [isPropertyCreated, refreshProperties])
 
   if (error) {
-    return <p>{t('pages.real_property.error.error_fetching_data')}</p>;
+    return <p>{t('pages.real_property.error.error_fetching_data')}</p>
   }
 
   return (
@@ -145,7 +149,7 @@ const RealPropertyPage: React.FC = () => {
         />
       </div>
     </>
-  );
-};
+  )
+}
 
-export default RealPropertyPage;
+export default RealPropertyPage
