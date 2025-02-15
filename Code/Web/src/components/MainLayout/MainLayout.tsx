@@ -128,7 +128,11 @@ const MainLayout: React.FC = () => {
       >
         <Menu
           onClick={onClick}
-          style={{ width: 256, paddingTop: '70px' }}
+          style={{
+            width: 256,
+            paddingTop: '70px',
+            textAlign: 'left'
+          }}
           defaultSelectedKeys={[NavigationEnum.OVERVIEW]}
           selectedKeys={[currentLocation]}
           mode="inline"
