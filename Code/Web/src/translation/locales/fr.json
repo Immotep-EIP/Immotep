@@ -173,7 +173,8 @@
       "close": "Close",
       "delete": "Supprimer",
       "edit_property": "Modifier la propriété",
-      "delete_property": "Supprimer la propriété"
+      "delete_property": "Supprimer la propriété",
+      "download": "Télécharger"
     },
     "modal": {
       "end_contract": {
@@ -260,6 +261,24 @@
           "remove_stuff_confirmation": "Êtes-vous sûr de vouloir supprimer cet élément ?",
           "remove_stuff_success": "Élément supprimé avec succès",
           "error_fetching_data": "Erreur lors de la récupération des données"
+        },
+        "damage": {
+          "table": {
+            "date": "Date",
+            "comment": "Commentaire",
+            "intervention_date": "Date d'intervention",
+            "room": "Pièce",
+            "priority": "Priorité",
+            "pictures": "Images"
+          },
+          "priority": {
+            "low": "Basse",
+            "medium": "Moyenne",
+            "high": "Haute"
+          },
+          "modal": {
+            "title": "Image du dommage"
+          }
         }
       }
     },

@@ -173,7 +173,8 @@
       "close": "Close",
       "delete": "Delete",
       "edit_property": "Edit property",
-      "delete_property": "Delete property"
+      "delete_property": "Delete property",
+      "download": "Download"
     },
     "modal": {
       "end_contract": {
@@ -260,6 +261,24 @@
           "remove_stuff_confirmation": "Are you sure you want to remove this item?",
           "remove_stuff_success": "Item deleted successfully",
           "error_fetching_data": "Error while fetching data"
+        },
+        "damage": {
+          "table": {
+            "date": "Date",
+            "comment": "Comment",
+            "intervention_date": "Intervention date",
+            "room": "Room",
+            "priority": "Priority",
+            "pictures": "Pictures"
+          },
+          "priority": {
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High"
+          },
+          "modal": {
+            "title": "Image of the damage"
+          }
         }
       }
     },

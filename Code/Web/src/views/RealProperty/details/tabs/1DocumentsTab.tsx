@@ -201,6 +201,7 @@ const DocumentsTab: React.FC = () => {
       <Modal
         title={t('pages.real_property_details.tabs.documents.modal_title')}
         open={isModalOpen}
+        onCancel={handleCancel}
         footer={[
           <Button key="back" onClick={handleCancel}>
             {t('components.button.cancel')}
