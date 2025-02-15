@@ -18,7 +18,7 @@
 }
 
 .forgotPassword {
-  color: #00F;
+  color: #00f;
   font-size: 0.8rem;
   cursor: pointer;
 }
@@ -28,7 +28,7 @@
 }
 
 .forgotPassword:active {
-  color: #00B;
+  color: #00b;
 }
 
 .dontHaveAccountContainer {
@@ -47,7 +47,7 @@
 
 .footerLink {
   margin-left: 5px;
-  color: #00F;
+  color: #00f;
   font-size: 0.8rem;
   cursor: pointer;
 }
@@ -57,5 +57,5 @@
 }
 
 .footerLink:active {
-  color: #00B;
+  color: #00b;
 }

@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next'
 
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
-import AuthentificationPage from '@/components/AuthentificationPage/AuthentificationPage'
+import backgroundImg from '@/assets/images/buildingBackground.png'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 import '@/App.css'
 import { register } from '@/services/api/Authentification/AuthApi'
 import { UserRegister } from '@/interfaces/User/User'
 import PageMeta from '@/components/PageMeta/PageMeta'
+import DividedPage from '@/components/DividedPage/DividedPage'
+import PageTitle from '@/components/PageText/Title'
 import style from './Register.module.css'
 
 const Register: React.FC = () => {
@@ -54,145 +56,165 @@ const Register: React.FC = () => {
         description={t('pages.register.document_description')}
         keywords="sign up, authentication, Immotep"
       />
-      <AuthentificationPage
-        title={t('pages.register.title')}
-        subtitle={t('pages.register.description')}
-      >
-        <Form
-          form={form}
-          name="basic"
-          initialValues={{ termAgree: false }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
-          layout="vertical"
-          style={{ width: '90%', maxWidth: '400px' }}
-        >
-          <Form.Item
-            label={t('components.input.first_name.label')}
-            name="firstname"
-            rules={[
-              {
-                required: true,
-                message: t('components.input.first_name.error'),
-                pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
-              }
-            ]}
-          >
-            <Input
-              className="input"
-              size="middle"
-              placeholder={t('components.input.first_name.placeholder')}
-              aria-label={t('components.input.first_name.placeholder')}
+      <DividedPage
+        childrenLeft={
+          <img
+            src={backgroundImg}
+            alt="background"
+            className={style.backgroundImg}
+          />
+        }
+        childrenRight={
+          <>
+            <PageTitle title={t('pages.register.title')} size="title" />
+            <PageTitle
+              title={t('pages.register.description')}
+              size="subtitle"
             />
-          </Form.Item>
-
-          <Form.Item
-            label={t('components.input.last_name.label')}
-            name="lastname"
-            rules={[
-              {
-                required: true,
-                message: t('components.input.last_name.error'),
-                pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
-              }
-            ]}
-          >
-            <Input
-              className="input"
-              size="middle"
-              placeholder={t('components.input.last_name.placeholder')}
-              aria-label={t('components.input.last_name.placeholder')}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={t('components.input.email.label')}
-            name="email"
-            rules={[
-              {
-                required: true,
-                message: t('components.input.email.error'),
-                type: 'email'
-              }
-            ]}
-          >
-            <Input
-              className="input"
-              size="middle"
-              placeholder={t('components.input.email.placeholder')}
-              aria-label={t('components.input.email.placeholder')}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={t('components.input.password.label')}
-            name="password"
-            rules={[
-              { required: true, message: t('components.input.password.error') }
-            ]}
-          >
-            <Input.Password
-              className="input"
-              size="middle"
-              placeholder={t('components.input.password.placeholder')}
-              aria-label={t('components.input.password.placeholder')}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={t('components.input.confirm_password.label')}
-            name="confirmPassword"
-            rules={[
-              {
-                required: true,
-                message: t('components.input.confirm_password.error')
-              }
-            ]}
-          >
-            <Input.Password
-              className="input"
-              size="middle"
-              placeholder={t('components.input.confirm_password.placeholder')}
-              aria-label={t('components.input.confirm_password.placeholder')}
-            />
-          </Form.Item>
-          <Form.Item name="termAgree" valuePropName="checked">
-            <div className={style.optionsContainer}>
-              <Checkbox>{t('pages.register.agree_terms')}</Checkbox>
-            </div>
-          </Form.Item>
-          <Form.Item>
-            <Button
-              className="submitButton"
-              htmlType="submit"
-              size="large"
-              color="default"
-              variant="solid"
-              loading={loading}
+            <Form
+              form={form}
+              name="basic"
+              initialValues={{ termAgree: false }}
+              onFinish={onFinish}
+              onFinishFailed={onFinishFailed}
+              autoComplete="off"
+              layout="vertical"
+              style={{ width: '90%', maxWidth: '400px' }}
             >
-              {t('components.button.sign_up')}
-            </Button>
-          </Form.Item>
+              <Form.Item
+                label={t('components.input.first_name.label')}
+                name="firstname"
+                rules={[
+                  {
+                    required: true,
+                    message: t('components.input.first_name.error'),
+                    pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
+                  }
+                ]}
+              >
+                <Input
+                  className="input"
+                  size="middle"
+                  placeholder={t('components.input.first_name.placeholder')}
+                  aria-label={t('components.input.first_name.placeholder')}
+                />
+              </Form.Item>
 
-          <div className={style.dontHaveAccountContainer}>
-            <span className={style.footerText}>
-              {t('pages.register.already_have_account')}
-            </span>
-            <span
-              className={style.footerLink}
-              onClick={goToLogin}
-              role="link"
-              tabIndex={0}
-              onKeyDown={e => {
-                if (e.key === 'Enter') goToLogin()
-              }}
-            >
-              {t('components.button.sign_in')}
-            </span>
-          </div>
-        </Form>
-      </AuthentificationPage>
+              <Form.Item
+                label={t('components.input.last_name.label')}
+                name="lastname"
+                rules={[
+                  {
+                    required: true,
+                    message: t('components.input.last_name.error'),
+                    pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
+                  }
+                ]}
+              >
+                <Input
+                  className="input"
+                  size="middle"
+                  placeholder={t('components.input.last_name.placeholder')}
+                  aria-label={t('components.input.last_name.placeholder')}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={t('components.input.email.label')}
+                name="email"
+                rules={[
+                  {
+                    required: true,
+                    message: t('components.input.email.error'),
+                    type: 'email'
+                  }
+                ]}
+              >
+                <Input
+                  className="input"
+                  size="middle"
+                  placeholder={t('components.input.email.placeholder')}
+                  aria-label={t('components.input.email.placeholder')}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={t('components.input.password.label')}
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: t('components.input.password.error')
+                  }
+                ]}
+              >
+                <Input.Password
+                  className="input"
+                  size="middle"
+                  placeholder={t('components.input.password.placeholder')}
+                  aria-label={t('components.input.password.placeholder')}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={t('components.input.confirm_password.label')}
+                name="confirmPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: t('components.input.confirm_password.error')
+                  }
+                ]}
+              >
+                <Input.Password
+                  className="input"
+                  size="middle"
+                  placeholder={t(
+                    'components.input.confirm_password.placeholder'
+                  )}
+                  aria-label={t(
+                    'components.input.confirm_password.placeholder'
+                  )}
+                />
+              </Form.Item>
+              <Form.Item name="termAgree" valuePropName="checked">
+                <div className={style.optionsContainer}>
+                  <Checkbox>{t('pages.register.agree_terms')}</Checkbox>
+                </div>
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  className="submitButton"
+                  htmlType="submit"
+                  size="large"
+                  color="default"
+                  variant="solid"
+                  loading={loading}
+                >
+                  {t('components.button.sign_up')}
+                </Button>
+              </Form.Item>
+
+              <div className={style.dontHaveAccountContainer}>
+                <span className={style.footerText}>
+                  {t('pages.register.already_have_account')}
+                </span>
+                <span
+                  className={style.footerLink}
+                  onClick={goToLogin}
+                  role="link"
+                  tabIndex={0}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') goToLogin()
+                  }}
+                >
+                  {t('components.button.sign_in')}
+                </span>
+              </div>
+            </Form>
+          </>
+        }
+      />
     </>
   )
 }
