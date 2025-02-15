@@ -8,6 +8,7 @@ require (
 	github.com/getbrevo/brevo-go v1.1.2
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-pdf/fpdf v0.9.0
 	github.com/joho/godotenv v1.5.1
 	github.com/maxzerbini/oauth v0.0.0-20190809074857-12de74d43292
 	github.com/shopspring/decimal v1.4.0

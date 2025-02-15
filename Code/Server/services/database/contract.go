@@ -30,6 +30,31 @@ func GetCurrentActiveContract(propertyId string) *db.ContractModel {
 	return &c[0]
 }
 
+func GetCurrentActiveContractWithInfos(propertyId string) *db.ContractModel {
+	pdb := services.DBclient
+	c, err := pdb.Client.Contract.FindMany(
+		db.Contract.PropertyID.Equals(propertyId),
+		db.Contract.Active.Equals(true),
+	).With(
+		db.Contract.Tenant.Fetch(),
+		db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	l := len(c)
+	if l == 0 {
+		return nil
+	}
+	if l > 1 {
+		panic("Only one active contract must exist for a property")
+	}
+	return &c[0]
+}
+
 func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel) *db.ContractModel {
 	pdb := services.DBclient
 	newContract, err := pdb.Client.Contract.CreateOne(
