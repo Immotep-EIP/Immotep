@@ -324,8 +324,13 @@
       }
     },
     "messages": {
+      "title": "Messages",
       "document_title": "Messages",
-      "document_description": "Manage your messages easily. Add, edit or delete your messages."
+      "document_description": "Chat with your tenants",
+      "select_contact": "Select a contact to start messaging",
+      "no_messages": "No messages yet",
+      "search_contacts": "Search contacts...",
+      "type_message": "Type a message..."
     }
   },
   "widgets": {

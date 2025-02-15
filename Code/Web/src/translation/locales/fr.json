@@ -325,7 +325,12 @@
     },
     "messages": {
       "document_title": "Messagerie",
-      "document_description": "Gérez vos messages facilement. Envoyez, recevez et supprimez vos messages."
+      "document_description": "Gérez vos messages facilement. Envoyez, recevez et supprimez vos messages.",
+      "title": "Messagerie",
+      "select_contact": "Sélectionnez un contact pour commencer à discuter",
+      "no_messages": "Aucun message pour le moment",
+      "search_contacts": "Rechercher un contact...",
+      "type_message": "Taper un message..."
     }
   },
   "widgets": {
