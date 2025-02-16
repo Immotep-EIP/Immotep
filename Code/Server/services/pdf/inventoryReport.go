@@ -1,23 +1,25 @@
 package pdf
 
 import (
+	"errors"
 	"log"
 	"strconv"
 
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
+	"immotep/backend/utils"
 )
 
-func NewInventoryReportPDF(invReportId string) []byte {
+func NewInventoryReportPDF(invReportId string) ([]byte, error) {
 	invReport := database.GetInvReportByID(invReportId)
 	if invReport == nil {
 		log.Println("No invReport found with id: " + invReportId)
-		return nil
+		return nil, errors.New(string(utils.InventoryReportNotFound))
 	}
 	contract := database.GetCurrentActiveContractWithInfos(invReport.PropertyID)
 	if contract == nil {
 		log.Println("No active contract found for property with id: " + invReport.PropertyID)
-		return nil
+		return nil, errors.New(string(utils.NoActiveContract))
 	}
 
 	report := NewPDF()
@@ -45,9 +47,9 @@ func NewInventoryReportPDF(invReportId string) []byte {
 	bytes, err := report.Output()
 	if err != nil {
 		log.Println(err)
-		return nil
+		return nil, err
 	}
-	return bytes
+	return bytes, nil
 }
 
 func addRooms(report *PDF, invReport *db.InventoryReportModel) {

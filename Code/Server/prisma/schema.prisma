@@ -68,6 +68,8 @@ model contract {
     end_date    DateTime?
     created_at  DateTime  @default(now())
 
+    documents   document[]
+
     @@id([tenant_id, property_id])
 }
 
@@ -135,6 +137,17 @@ model image {
     properties      property[]
     roomstates      roomState[]
     furniturestates furnitureState[]
+}
+
+model document {
+    id         String    @id @default(cuid())
+    name       String
+    data       Bytes
+    created_at DateTime  @default(now())
+
+    contract             contract  @relation(fields: [contract_tenant_id, contract_property_id], references: [tenant_id, property_id])
+    contract_tenant_id   String
+    contract_property_id String
 }
 
 model room {
