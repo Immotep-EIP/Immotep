@@ -5,6 +5,23 @@ import (
 	"immotep/backend/services"
 )
 
+func GetCurrentActiveContractDocuments(propertyID string) []db.DocumentModel {
+	activeContract := GetCurrentActiveContract(propertyID)
+	if activeContract == nil {
+		panic("No active contract found for property: " + propertyID)
+	}
+
+	pdb := services.DBclient
+	documents, err := pdb.Client.Document.FindMany(
+		db.Document.ContractTenantID.Equals(activeContract.TenantID),
+		db.Document.ContractPropertyID.Equals(propertyID),
+	).Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
+	return documents
+}
+
 func GetDocumentByID(id string) *db.DocumentModel {
 	pdb := services.DBclient
 	doc, err := pdb.Client.Document.FindUnique(db.Document.ID.Equals(id)).Exec(pdb.Context)

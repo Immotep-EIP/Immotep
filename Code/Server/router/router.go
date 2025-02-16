@@ -78,7 +78,13 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
 
 			propertyId.POST("/send-invite/", controllers.InviteTenant)
-			propertyId.PUT("/end-contract/", controllers.EndContract)
+
+			contract := propertyId.Group("")
+			{
+				contract.Use(middlewares.CheckActiveContract("property_id"))
+				contract.PUT("/end-contract/", controllers.EndContract)
+				contract.GET("/documents/", controllers.GetPropertyDocuments)
+			}
 
 			rooms := propertyId.Group("/rooms")
 			{

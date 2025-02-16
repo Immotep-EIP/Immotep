@@ -8,6 +8,17 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  models.DocumentResponse:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   models.FurnitureRequest:
     properties:
       name:
@@ -777,6 +788,41 @@ paths:
       security:
       - Bearer: []
       summary: Get property by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/documents/:
+    get:
+      consumes:
+      - application/json
+      description: Get all documents of a contract related to a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of documents
+          schema:
+            items:
+              $ref: '#/definitions/models.DocumentResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property documents
       tags:
       - owner
   /owner/properties/{property_id}/end-contract:

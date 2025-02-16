@@ -236,11 +236,6 @@ func InviteTenant(c *gin.Context) {
 //	@Router			/owner/properties/{property_id}/end-contract [put]
 func EndContract(c *gin.Context) {
 	currentActive := database.GetCurrentActiveContract(c.Param("property_id"))
-	if currentActive == nil {
-		utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
-		return
-	}
-
 	_, ok := currentActive.EndDate()
 	if !ok {
 		now := time.Now().Truncate(time.Minute)

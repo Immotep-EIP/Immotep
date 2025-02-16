@@ -64,3 +64,15 @@ func CheckInventoryReportOwnership(propertyIdUrlParam string, reportIdUrlParam s
 		c.Next()
 	}
 }
+
+func CheckActiveContract(propertyIdUrlParam string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		contract := database.GetCurrentActiveContract(c.Param(propertyIdUrlParam))
+		if contract == nil {
+			utils.AbortSendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
+			return
+		}
+
+		c.Next()
+	}
+}
