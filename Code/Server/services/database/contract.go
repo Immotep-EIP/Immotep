@@ -58,9 +58,9 @@ func GetCurrentActiveContractWithInfos(propertyId string) *db.ContractModel {
 func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel) *db.ContractModel {
 	pdb := services.DBclient
 	newContract, err := pdb.Client.Contract.CreateOne(
+		db.Contract.StartDate.Set(pendingContract.StartDate),
 		db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
 		db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-		db.Contract.StartDate.Set(pendingContract.StartDate),
 		db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 	).Exec(pdb.Context)
 	if err != nil {
@@ -78,10 +78,10 @@ func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel
 	return newContract
 }
 
-func EndContract(propertyId string, tenantId string, endDate *db.DateTime) *db.ContractModel {
+func EndContract(id string, endDate *db.DateTime) *db.ContractModel {
 	pdb := services.DBclient
 	newContract, err := pdb.Client.Contract.FindUnique(
-		db.Contract.TenantIDPropertyID(db.Contract.TenantID.Equals(tenantId), db.Contract.PropertyID.Equals(propertyId)),
+		db.Contract.ID.Equals(id),
 	).Update(
 		db.Contract.Active.Set(false),
 		db.Contract.EndDate.SetIfPresent(endDate),

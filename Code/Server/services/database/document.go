@@ -13,8 +13,7 @@ func GetCurrentActiveContractDocuments(propertyID string) []db.DocumentModel {
 
 	pdb := services.DBclient
 	documents, err := pdb.Client.Document.FindMany(
-		db.Document.ContractTenantID.Equals(activeContract.TenantID),
-		db.Document.ContractPropertyID.Equals(propertyID),
+		db.Document.ContractID.Equals(activeContract.ID),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -39,10 +38,7 @@ func CreateDocument(doc db.DocumentModel) db.DocumentModel {
 	newDocument, err := pdb.Client.Document.CreateOne(
 		db.Document.Name.Set(doc.Name),
 		db.Document.Data.Set(doc.Data),
-		db.Document.Contract.Link(db.Contract.TenantIDPropertyID(
-			db.Contract.TenantID.Equals(doc.ContractTenantID),
-			db.Contract.PropertyID.Equals(doc.ContractPropertyID),
-		)),
+		db.Document.Contract.Link(db.Contract.ID.Equals(doc.ContractID)),
 	).Exec(pdb.Context)
 	if err != nil || newDocument == nil {
 		panic(err)

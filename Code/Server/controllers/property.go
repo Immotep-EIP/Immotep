@@ -210,7 +210,8 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
-	res, err := brevo.SendEmailInvite(*pendingContract)
+	user := database.GetUserByEmail(pendingContract.TenantEmail)
+	res, err := brevo.SendEmailInvite(*pendingContract, user != nil)
 	if err != nil {
 		log.Println(res, err.Error())
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedSendEmail, err)
@@ -239,10 +240,10 @@ func EndContract(c *gin.Context) {
 	_, ok := currentActive.EndDate()
 	if !ok {
 		now := time.Now().Truncate(time.Minute)
-		database.EndContract(currentActive.PropertyID, currentActive.TenantID, &now)
+		database.EndContract(currentActive.ID, &now)
 		c.Status(http.StatusNoContent)
 	} else {
-		database.EndContract(currentActive.PropertyID, currentActive.TenantID, nil)
+		database.EndContract(currentActive.PropertyID, nil)
 		c.Status(http.StatusNoContent)
 	}
 }

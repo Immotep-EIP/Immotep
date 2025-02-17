@@ -148,9 +148,9 @@ func main() {
 	}
 
 	_, err = c.Client.Contract.CreateOne(
+		db.Contract.StartDate.Set(time.Now()),
 		db.Contract.Tenant.Link(db.User.ID.Equals(t.ID)),
 		db.Contract.Property.Link(db.Property.ID.Equals(p.ID)),
-		db.Contract.StartDate.Set(time.Now()),
 		db.Contract.EndDate.Set(time.Now().AddDate(1, 0, 0)),
 	).Exec(c.Context)
 	if err != nil {

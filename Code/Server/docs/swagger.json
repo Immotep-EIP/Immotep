@@ -15,7 +15,7 @@
     "paths": {
         "/auth/invite/{id}/": {
             "post": {
-                "description": "Answer an invite from an owner with an invite link",
+                "description": "Answer an invite from an owner with an invite link by creating a new user with tenant role",
                 "consumes": [
                     "application/json"
                 ],
@@ -1761,6 +1761,50 @@
                     },
                     "404": {
                         "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/invite/{id}/accept/": {
+            "post": {
+                "description": "Answer an invite from an owner with an invite link by accepting the invite",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Accept an invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pending contract ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Accepted"
+                    },
+                    "403": {
+                        "description": "Not a tenant",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Pending contract not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }

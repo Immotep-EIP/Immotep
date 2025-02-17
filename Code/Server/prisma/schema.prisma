@@ -58,19 +58,18 @@ model user {
 }
 
 model contract {
-    tenant      user      @relation(fields: [tenant_id], references: [id])
-    tenant_id   String
-    property    property  @relation(fields: [property_id], references: [id])
-    property_id String
-
+    id          String    @id @default(cuid())
     active      Boolean   @default(true)
     start_date  DateTime
     end_date    DateTime?
     created_at  DateTime  @default(now())
 
-    documents   document[]
+    tenant      user      @relation(fields: [tenant_id], references: [id])
+    tenant_id   String
+    property    property  @relation(fields: [property_id], references: [id])
+    property_id String
 
-    @@id([tenant_id, property_id])
+    documents   document[]
 }
 
 model damage {
@@ -140,14 +139,13 @@ model image {
 }
 
 model document {
-    id         String    @id @default(cuid())
-    name       String
-    data       Bytes
-    created_at DateTime  @default(now())
+    id          String   @id @default(cuid())
+    name        String
+    data        Bytes
+    created_at  DateTime @default(now())
 
-    contract             contract  @relation(fields: [contract_tenant_id, contract_property_id], references: [tenant_id, property_id])
-    contract_tenant_id   String
-    contract_property_id String
+    contract    contract @relation(fields: [contract_id], references: [id])
+    contract_id String
 }
 
 model room {

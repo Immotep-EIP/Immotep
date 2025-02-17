@@ -76,11 +76,17 @@ func callBrevo(fromName string, toEmail string, templateId int64, subject string
 	return string(respBody), nil
 }
 
-func SendEmailInvite(invite db.PendingContractModel) (string, error) {
+func SendEmailInvite(invite db.PendingContractModel, userExists bool) (string, error) {
 	ownerName := invite.Property().Owner().Firstname + " " + invite.Property().Owner().Lastname
+	var inviteLink string
+	if userExists {
+		inviteLink = os.Getenv("WEB_PUBLIC_URL") + "/NOT-SET/invite/" + invite.ID
+	} else {
+		inviteLink = os.Getenv("WEB_PUBLIC_URL") + "/register/invite/" + invite.ID
+	}
 	params := map[string]any{
 		"ownerName":  ownerName,
-		"inviteLink": os.Getenv("WEB_PUBLIC_URL") + "/register/invite/" + invite.ID,
+		"inviteLink": inviteLink,
 	}
 	subject := "You've been invited to join a property on Immotep"
 

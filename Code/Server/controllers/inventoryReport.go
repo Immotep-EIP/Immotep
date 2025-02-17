@@ -124,7 +124,7 @@ func createInvReportPDF(c *gin.Context, invRepId string) error {
 		return err
 	}
 
-	contract := database.GetCurrentActiveContractWithInfos(c.Param("property_id"))
+	contract := database.GetCurrentActiveContract(c.Param("property_id"))
 	if contract == nil {
 		return errors.New(string(utils.NoActiveContract))
 	}
@@ -133,8 +133,7 @@ func createInvReportPDF(c *gin.Context, invRepId string) error {
 		InnerDocument: db.InnerDocument{
 			Name:               "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
 			Data:               docBytes,
-			ContractTenantID:   contract.TenantID,
-			ContractPropertyID: contract.PropertyID,
+			ContractID: 	   	contract.ID,
 		},
 	})
 	return nil

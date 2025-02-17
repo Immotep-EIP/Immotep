@@ -56,6 +56,9 @@ func registerAPIRoutes(r *gin.Engine, test bool) {
 
 			owner := root.Group("/owner")
 			registerOwnerRoutes(owner)
+
+			tenant := root.Group("/tenant")
+			registerTenantRoutes(tenant)
 		}
 	}
 }
@@ -116,6 +119,12 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			registerInvReportRoutes(invReports)
 		}
 	}
+}
+
+func registerTenantRoutes(tenant *gin.RouterGroup) {
+	tenant.Use(middlewares.AuthorizeTenant())
+
+	tenant.POST("/invite/:id/", controllers.AcceptInvite)
 }
 
 func registerInvReportRoutes(invReports *gin.RouterGroup) {
