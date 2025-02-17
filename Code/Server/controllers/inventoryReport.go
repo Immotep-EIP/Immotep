@@ -131,9 +131,9 @@ func createInvReportPDF(c *gin.Context, invRepId string) error {
 
 	database.CreateDocument(db.DocumentModel{
 		InnerDocument: db.InnerDocument{
-			Name:               "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
-			Data:               docBytes,
-			ContractID: 	   	contract.ID,
+			Name:       "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
+			Data:       docBytes,
+			ContractID: contract.ID,
 		},
 	})
 	return nil
