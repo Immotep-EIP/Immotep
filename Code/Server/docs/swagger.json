@@ -2273,6 +2273,9 @@
                 "address": {
                     "type": "string"
                 },
+                "apartment_number": {
+                    "type": "string"
+                },
                 "archived": {
                     "type": "boolean"
                 },
@@ -2289,7 +2292,7 @@
                     "type": "string"
                 },
                 "deposit_price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "end_date": {
                     "type": "string"
@@ -2313,7 +2316,7 @@
                     "type": "string"
                 },
                 "rental_price_per_month": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "rooms": {
                     "type": "array",
@@ -2348,6 +2351,9 @@
                 "address": {
                     "type": "string"
                 },
+                "apartment_number": {
+                    "type": "string"
+                },
                 "area_sqm": {
                     "type": "number"
                 },
@@ -2358,7 +2364,7 @@
                     "type": "string"
                 },
                 "deposit_price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"
@@ -2367,7 +2373,7 @@
                     "type": "string"
                 },
                 "rental_price_per_month": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -2375,6 +2381,9 @@
             "type": "object",
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "apartment_number": {
                     "type": "string"
                 },
                 "archived": {
@@ -2393,7 +2402,7 @@
                     "type": "string"
                 },
                 "deposit_price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "end_date": {
                     "type": "string"
@@ -2417,7 +2426,7 @@
                     "type": "string"
                 },
                 "rental_price_per_month": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "start_date": {
                     "type": "string"

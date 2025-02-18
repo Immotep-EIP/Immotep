@@ -8,14 +8,15 @@ import (
 )
 
 type PropertyRequest struct {
-	Name                string  `binding:"required" json:"name"`
-	Address             string  `binding:"required" json:"address"`
-	City                string  `binding:"required" json:"city"`
-	PostalCode          string  `binding:"required" json:"postal_code"`
-	Country             string  `binding:"required" json:"country"`
-	AreaSqm             float64 `binding:"required" json:"area_sqm"`
-	RentalPricePerMonth int     `binding:"required" json:"rental_price_per_month"`
-	DepositPrice        int     `binding:"required" json:"deposit_price"`
+	Name                string  `binding:"required"                json:"name"`
+	Address             string  `binding:"required"                json:"address"`
+	ApartmentNumber     *string `json:"apartment_number,omitempty"`
+	City                string  `binding:"required"                json:"city"`
+	PostalCode          string  `binding:"required"                json:"postal_code"`
+	Country             string  `binding:"required"                json:"country"`
+	AreaSqm             float64 `binding:"required"                json:"area_sqm"`
+	RentalPricePerMonth float64 `binding:"required"                json:"rental_price_per_month"`
+	DepositPrice        float64 `binding:"required"                json:"deposit_price"`
 }
 
 func (p *PropertyRequest) ToDbProperty() db.PropertyModel {
@@ -23,6 +24,7 @@ func (p *PropertyRequest) ToDbProperty() db.PropertyModel {
 		InnerProperty: db.InnerProperty{
 			Name:                p.Name,
 			Address:             p.Address,
+			ApartmentNumber:     p.ApartmentNumber,
 			City:                p.City,
 			PostalCode:          p.PostalCode,
 			Country:             p.Country,
@@ -36,12 +38,13 @@ func (p *PropertyRequest) ToDbProperty() db.PropertyModel {
 type PropertyUpdateRequest struct {
 	Name                *string  `json:"name,omitempty"`
 	Address             *string  `json:"address,omitempty"`
+	ApartmentNumber     *string  `json:"apartment_number,omitempty"`
 	City                *string  `json:"city,omitempty"`
 	PostalCode          *string  `json:"postal_code,omitempty"`
 	Country             *string  `json:"country,omitempty"`
 	AreaSqm             *float64 `json:"area_sqm,omitempty"`
-	RentalPricePerMonth *int     `json:"rental_price_per_month,omitempty"`
-	DepositPrice        *int     `json:"deposit_price,omitempty"`
+	RentalPricePerMonth *float64 `json:"rental_price_per_month,omitempty"`
+	DepositPrice        *float64 `json:"deposit_price,omitempty"`
 }
 
 type PropertyResponse struct {
@@ -50,12 +53,13 @@ type PropertyResponse struct {
 	PictureID           *string     `json:"picture_id,omitempty"`
 	Name                string      `json:"name"`
 	Address             string      `json:"address"`
+	ApartmentNumber     *string     `json:"apartment_number,omitempty"`
 	City                string      `json:"city"`
 	PostalCode          string      `json:"postal_code"`
 	Country             string      `json:"country"`
 	AreaSqm             float64     `json:"area_sqm"`
-	RentalPricePerMonth int         `json:"rental_price_per_month"`
-	DepositPrice        int         `json:"deposit_price"`
+	RentalPricePerMonth float64     `json:"rental_price_per_month"`
+	DepositPrice        float64     `json:"deposit_price"`
 	CreatedAt           db.DateTime `json:"created_at"`
 	Archived            bool        `json:"archived"`
 
@@ -74,6 +78,7 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	p.PictureID = model.InnerProperty.PictureID
 	p.Name = model.Name
 	p.Address = model.Address
+	p.ApartmentNumber = model.InnerProperty.ApartmentNumber
 	p.City = model.City
 	p.PostalCode = model.PostalCode
 	p.Country = model.Country
@@ -113,12 +118,13 @@ type PropertyInventoryResponse struct {
 	PictureID           *string     `json:"picture_id,omitempty"`
 	Name                string      `json:"name"`
 	Address             string      `json:"address"`
+	ApartmentNumber     *string     `json:"apartment_number,omitempty"`
 	City                string      `json:"city"`
 	PostalCode          string      `json:"postal_code"`
 	Country             string      `json:"country"`
 	AreaSqm             float64     `json:"area_sqm"`
-	RentalPricePerMonth int         `json:"rental_price_per_month"`
-	DepositPrice        int         `json:"deposit_price"`
+	RentalPricePerMonth float64     `json:"rental_price_per_month"`
+	DepositPrice        float64     `json:"deposit_price"`
 	CreatedAt           db.DateTime `json:"created_at"`
 	Archived            bool        `json:"archived"`
 
@@ -154,6 +160,7 @@ func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel) {
 	p.PictureID = model.InnerProperty.PictureID
 	p.Name = model.Name
 	p.Address = model.Address
+	p.ApartmentNumber = model.InnerProperty.ApartmentNumber
 	p.City = model.City
 	p.PostalCode = model.PostalCode
 	p.Country = model.Country

@@ -2279,6 +2279,9 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "apartment_number": {
+                    "type": "string"
+                },
                 "archived": {
                     "type": "boolean"
                 },
@@ -2295,7 +2298,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deposit_price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "end_date": {
                     "type": "string"
@@ -2319,7 +2322,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rental_price_per_month": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "rooms": {
                     "type": "array",
@@ -2354,6 +2357,9 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "apartment_number": {
+                    "type": "string"
+                },
                 "area_sqm": {
                     "type": "number"
                 },
@@ -2364,7 +2370,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deposit_price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"
@@ -2373,7 +2379,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rental_price_per_month": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -2381,6 +2387,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "apartment_number": {
                     "type": "string"
                 },
                 "archived": {
@@ -2399,7 +2408,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deposit_price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "end_date": {
                     "type": "string"
@@ -2423,7 +2432,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rental_price_per_month": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "start_date": {
                     "type": "string"

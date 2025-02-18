@@ -173,6 +173,8 @@ definitions:
     properties:
       address:
         type: string
+      apartment_number:
+        type: string
       archived:
         type: boolean
       area_sqm:
@@ -184,7 +186,7 @@ definitions:
       created_at:
         type: string
       deposit_price:
-        type: integer
+        type: number
       end_date:
         type: string
       id:
@@ -200,7 +202,7 @@ definitions:
       postal_code:
         type: string
       rental_price_per_month:
-        type: integer
+        type: number
       rooms:
         items:
           $ref: '#/definitions/models.roomResponse'
@@ -216,6 +218,8 @@ definitions:
     properties:
       address:
         type: string
+      apartment_number:
+        type: string
       area_sqm:
         type: number
       city:
@@ -223,13 +227,13 @@ definitions:
       country:
         type: string
       deposit_price:
-        type: integer
+        type: number
       name:
         type: string
       postal_code:
         type: string
       rental_price_per_month:
-        type: integer
+        type: number
     required:
     - address
     - area_sqm
@@ -244,6 +248,8 @@ definitions:
     properties:
       address:
         type: string
+      apartment_number:
+        type: string
       archived:
         type: boolean
       area_sqm:
@@ -255,7 +261,7 @@ definitions:
       created_at:
         type: string
       deposit_price:
-        type: integer
+        type: number
       end_date:
         type: string
       id:
@@ -271,7 +277,7 @@ definitions:
       postal_code:
         type: string
       rental_price_per_month:
-        type: integer
+        type: number
       start_date:
         type: string
       status:

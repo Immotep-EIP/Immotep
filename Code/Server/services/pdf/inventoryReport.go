@@ -40,7 +40,7 @@ func NewInventoryReportPDF(invReportId string) ([]byte, error) {
 	} else {
 		report.Add2Texts("Start date: "+contract.StartDate.Format("2006-01-02"), "End date: None")
 	}
-	report.AddText("Rent: " + strconv.Itoa(contract.Property().RentalPricePerMonth) + "€")
+	report.AddText("Rent: " + strconv.FormatFloat(contract.Property().RentalPricePerMonth, 'f', 2, 64) + "€")
 
 	addRooms(&report, invReport)
 

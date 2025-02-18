@@ -68,6 +68,7 @@ func CreateProperty(property db.PropertyModel, ownerId string) *db.PropertyModel
 		db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 		db.Property.DepositPrice.Set(property.DepositPrice),
 		db.Property.Owner.Link(db.User.ID.Equals(ownerId)),
+		db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
 	).With(
 		db.Property.Contracts.Fetch(),
 		db.Property.Damages.Fetch(),
@@ -89,6 +90,7 @@ func UpdateProperty(id string, property models.PropertyUpdateRequest) *db.Proper
 	).Update(
 		db.Property.Name.SetIfPresent(property.Name),
 		db.Property.Address.SetIfPresent(property.Address),
+		db.Property.ApartmentNumber.SetIfPresent(property.ApartmentNumber),
 		db.Property.City.SetIfPresent(property.City),
 		db.Property.PostalCode.SetIfPresent(property.PostalCode),
 		db.Property.Country.SetIfPresent(property.Country),

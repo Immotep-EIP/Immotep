@@ -88,15 +88,16 @@ model damage {
 }
 
 model property {
-    id          String   @id @default(cuid())
-    name        String
-    address     String
-    city        String
-    postal_code String
-    country     String
+    id               String   @id @default(cuid())
+    name             String
+    address          String
+    apartment_number String?
+    city             String
+    postal_code      String
+    country          String
     area_sqm               Float
-    rental_price_per_month Int
-    deposit_price          Int
+    rental_price_per_month Float
+    deposit_price          Float
     created_at  DateTime @default(now())
     archived    Boolean  @default(false)
 
