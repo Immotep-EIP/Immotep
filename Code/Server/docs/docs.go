@@ -1777,7 +1777,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tenant/invite/{id}/accept/": {
+        "/tenant/invite/{id}/": {
             "post": {
                 "description": "Answer an invite from an owner with an invite link by accepting the invite",
                 "consumes": [
@@ -1811,6 +1811,12 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Pending contract not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Property not available or tenant already has contract",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -2665,8 +2671,10 @@ const docTemplate = `{
                 "property-is-not-yours",
                 "not-an-owner",
                 "not-a-tenant",
+                "user-already-exists-as-owner",
                 "property-already-exists",
                 "property-not-available",
+                "tenant-already-has-contract",
                 "no-active-contract",
                 "failed-to-link-image",
                 "bad-base64-string",
@@ -2704,8 +2712,10 @@ const docTemplate = `{
                 "PropertyNotYours",
                 "NotAnOwner",
                 "NotATenant",
+                "UserAlreadyExistsAsOwner",
                 "PropertyAlreadyExists",
                 "PropertyNotAvailable",
+                "TenantAlreadyHasContract",
                 "NoActiveContract",
                 "FailedLinkImage",
                 "BadBase64String",

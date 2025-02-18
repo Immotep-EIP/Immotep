@@ -483,8 +483,10 @@ definitions:
     - property-is-not-yours
     - not-an-owner
     - not-a-tenant
+    - user-already-exists-as-owner
     - property-already-exists
     - property-not-available
+    - tenant-already-has-contract
     - no-active-contract
     - failed-to-link-image
     - bad-base64-string
@@ -522,8 +524,10 @@ definitions:
     - PropertyNotYours
     - NotAnOwner
     - NotATenant
+    - UserAlreadyExistsAsOwner
     - PropertyAlreadyExists
     - PropertyNotAvailable
+    - TenantAlreadyHasContract
     - NoActiveContract
     - FailedLinkImage
     - BadBase64String
@@ -1684,7 +1688,7 @@ paths:
       summary: Update current user's profile picture
       tags:
       - user
-  /tenant/invite/{id}/accept/:
+  /tenant/invite/{id}/:
     post:
       consumes:
       - application/json
@@ -1707,6 +1711,10 @@ paths:
             $ref: '#/definitions/utils.Error'
         "404":
           description: Pending contract not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Property not available or tenant already has contract
           schema:
             $ref: '#/definitions/utils.Error'
         "500":

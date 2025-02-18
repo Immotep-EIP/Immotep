@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
+	"immotep/backend/prisma/db"
 	"immotep/backend/services/brevo"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
@@ -204,13 +205,17 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
+	user := database.GetUserByEmail(inviteReq.TenantEmail)
+	if !checkInvitedTenant(c, user) {
+		return
+	}
+
 	pendingContract := database.CreatePendingContract(inviteReq.ToDbPendingContract(), c.Param("property_id"))
 	if pendingContract == nil {
 		utils.SendError(c, http.StatusConflict, utils.InviteAlreadyExists, nil)
 		return
 	}
 
-	user := database.GetUserByEmail(pendingContract.TenantEmail)
 	res, err := brevo.SendEmailInvite(*pendingContract, user != nil)
 	if err != nil {
 		log.Println(res, err.Error())
@@ -219,6 +224,20 @@ func InviteTenant(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.DbPendingContractToResponse(*pendingContract))
+}
+
+func checkInvitedTenant(c *gin.Context, user *db.UserModel) bool {
+	if user != nil {
+		if user.Role != db.RoleTenant {
+			utils.SendError(c, http.StatusConflict, utils.UserAlreadyExistsAsOwner, nil)
+			return false
+		}
+		if database.GetTenantCurrentActiveContract(user.ID) != nil {
+			utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasContract, nil)
+			return false
+		}
+	}
+	return true
 }
 
 // EndContract godoc
