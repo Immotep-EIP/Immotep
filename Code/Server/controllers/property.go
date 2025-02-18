@@ -103,6 +103,37 @@ func CreateProperty(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbPropertyToResponse(*property))
 }
 
+// UpdateProperty godoc
+//
+//	@Summary		Update property by ID
+//	@Description	Update property information by its ID
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Success		200			{object}	models.PropertyResponse	"Property data"
+//	@Failure		401			{object}	utils.Error				"Unauthorized"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"Property not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/ [put]
+func UpdateProperty(c *gin.Context) {
+	var req models.PropertyUpdateRequest
+	err := c.ShouldBindBodyWithJSON(&req)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	property := database.UpdateProperty(c.Param("property_id"), req)
+	if property == nil {
+		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
+		return
+	}
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
+}
+
 // GetPropertyPicture godoc
 //
 //	@Summary		Get property's picture

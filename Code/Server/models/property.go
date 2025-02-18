@@ -33,6 +33,17 @@ func (p *PropertyRequest) ToDbProperty() db.PropertyModel {
 	}
 }
 
+type PropertyUpdateRequest struct {
+	Name                *string  `json:"name,omitempty"`
+	Address             *string  `json:"address,omitempty"`
+	City                *string  `json:"city,omitempty"`
+	PostalCode          *string  `json:"postal_code,omitempty"`
+	Country             *string  `json:"country,omitempty"`
+	AreaSqm             *float64 `json:"area_sqm,omitempty"`
+	RentalPricePerMonth *int     `json:"rental_price_per_month,omitempty"`
+	DepositPrice        *int     `json:"deposit_price,omitempty"`
+}
+
 type PropertyResponse struct {
 	ID                  string      `json:"id"`
 	OwnerID             string      `json:"owner_id"`
@@ -49,11 +60,12 @@ type PropertyResponse struct {
 	Archived            bool        `json:"archived"`
 
 	// calculated fields
-	Status    string       `json:"status"`
+
 	NbDamage  int          `json:"nb_damage"`
-	Tenant    string       `json:"tenant"`
-	StartDate *db.DateTime `json:"start_date"`
-	EndDate   *db.DateTime `json:"end_date"`
+	Status    string       `json:"status"`
+	Tenant    string       `json:"tenant,omitempty"`
+	StartDate *db.DateTime `json:"start_date,omitempty"`
+	EndDate   *db.DateTime `json:"end_date,omitempty"`
 }
 
 func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
@@ -111,11 +123,12 @@ type PropertyInventoryResponse struct {
 	Archived            bool        `json:"archived"`
 
 	// calculated fields
-	Status    string       `json:"status"`
+
 	NbDamage  int          `json:"nb_damage"`
-	Tenant    string       `json:"tenant"`
-	StartDate *db.DateTime `json:"start_date"`
-	EndDate   *db.DateTime `json:"end_date"`
+	Status    string       `json:"status"`
+	Tenant    string       `json:"tenant,omitempty"`
+	StartDate *db.DateTime `json:"start_date,omitempty"`
+	EndDate   *db.DateTime `json:"end_date,omitempty"`
 
 	Rooms []roomResponse `json:"rooms"`
 }

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services"
 )
@@ -73,6 +74,30 @@ func CreateProperty(property db.PropertyModel, ownerId string) *db.PropertyModel
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {
+			return nil
+		}
+		panic(err)
+	}
+	return newProperty
+}
+
+func UpdateProperty(id string, property models.PropertyUpdateRequest) *db.PropertyModel {
+	pdb := services.DBclient
+	newProperty, err := pdb.Client.Property.FindUnique(db.Property.ID.Equals(id)).With(
+		db.Property.Damages.Fetch(),
+		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+	).Update(
+		db.Property.Name.SetIfPresent(property.Name),
+		db.Property.Address.SetIfPresent(property.Address),
+		db.Property.City.SetIfPresent(property.City),
+		db.Property.PostalCode.SetIfPresent(property.PostalCode),
+		db.Property.Country.SetIfPresent(property.Country),
+		db.Property.AreaSqm.SetIfPresent(property.AreaSqm),
+		db.Property.RentalPricePerMonth.SetIfPresent(property.RentalPricePerMonth),
+		db.Property.DepositPrice.SetIfPresent(property.DepositPrice),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
 			return nil
 		}
 		panic(err)

@@ -75,6 +75,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 		{
 			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
 			propertyId.GET("/", controllers.GetPropertyById)
+			propertyId.PUT("/", controllers.UpdateProperty)
 			propertyId.DELETE("/", controllers.ArchiveProperty)
 			propertyId.GET("/inventory/", controllers.GetPropertyInventory)
 			propertyId.GET("/picture/", controllers.GetPropertyPicture)
