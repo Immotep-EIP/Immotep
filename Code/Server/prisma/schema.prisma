@@ -108,7 +108,7 @@ model property {
     owner_id    String
 
     contracts          contract[]
-    pending_contracts  pendingContract?
+    pending_contract   pendingContract?
     damages            damage[]
     rooms              room[]
     reports            inventoryReport[]
