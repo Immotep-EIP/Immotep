@@ -13,7 +13,7 @@ import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPictu
 import useImageCache from '@/hooks/useEffect/useImageCache'
 import CardPropertyLoader from '@/components/Loader/CardPropertyLoader'
 import PageMeta from '@/components/PageMeta/PageMeta'
-import PropertyStatusEnum from '@/enums/PropertyEnum'
+import { TenantStatusEnum } from '@/enums/PropertyEnum'
 import style from './RealProperty.module.css'
 import RealPropertyCreate from './create/RealPropertyCreate'
 
@@ -45,15 +45,15 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
     >
       <div className={style.cardContentContainer}>
         <Badge.Ribbon
-          text={
-            realProperty.status === PropertyStatusEnum.AVAILABLE
-              ? t('pages.real_property.status.available')
-              : t('pages.real_property.status.unavailable')
-          }
+          text={t(
+            TenantStatusEnum[
+              realProperty!.status as keyof typeof TenantStatusEnum
+            ].text || ''
+          )}
           color={
-            realProperty.status === PropertyStatusEnum.AVAILABLE
-              ? 'green'
-              : 'red'
+            TenantStatusEnum[
+              realProperty!.status as keyof typeof TenantStatusEnum
+            ].color || 'default'
           }
         >
           <div className={style.cardPictureContainer}>

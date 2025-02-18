@@ -33,7 +33,7 @@ import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 import PageTitle from '@/components/PageText/Title'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
-import PropertyStatusEnum from '@/enums/PropertyEnum'
+import PropertyStatusEnum, { TenantStatusEnum } from '@/enums/PropertyEnum'
 import DocumentsTab from './tabs/1DocumentsTab'
 import DamageTab from './tabs/3DamageTab'
 import InventoryTab from './tabs/2InventoryTab'
@@ -147,7 +147,9 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
       onClick: () => {
         showModal()
       },
-      disabled: propertyData?.status !== PropertyStatusEnum.AVAILABLE
+      disabled:
+        propertyData?.status === PropertyStatusEnum.UNAVAILABLE ||
+        propertyData?.status === PropertyStatusEnum.INVITATION_SENT
     },
     {
       key: '2',
@@ -156,7 +158,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         endContract()
       },
       danger: true,
-      disabled: propertyData?.status !== PropertyStatusEnum.UNAVAILABLE
+      disabled: propertyData?.status === PropertyStatusEnum.AVAILABLE
     },
     {
       key: '3',
@@ -206,16 +208,8 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
       <div className={style.headerInformationContainer}>
         <div className={style.pictureContainer}>
           <Badge.Ribbon
-            text={
-              propertyData?.status === PropertyStatusEnum.AVAILABLE
-                ? t('pages.real_property.status.available')
-                : t('pages.real_property.status.unavailable')
-            }
-            color={
-              propertyData?.status === PropertyStatusEnum.AVAILABLE
-                ? 'green'
-                : 'red'
-            }
+            text={t(TenantStatusEnum[propertyData!.status as keyof typeof TenantStatusEnum].text || '')}
+            color={TenantStatusEnum[propertyData!.status as keyof typeof TenantStatusEnum].color || 'default'}
           >
             <img
               src={isLoading ? defaultHouse : picture || defaultHouse}

@@ -319,7 +319,8 @@
       },
       "status": {
         "available": "Disponible",
-        "unavailable": "Occupée"
+        "unavailable": "Occupée",
+        "invitation_sent": "Invitation envoyée"
       },
       "damage": {
         "waiting": "Dommage(s) non résolu(s)"
