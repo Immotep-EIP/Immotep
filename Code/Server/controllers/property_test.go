@@ -1023,7 +1023,7 @@ func TestEndContract1(t *testing.T) {
 
 	mock.Contract.Expect(
 		client.Client.Contract.FindUnique(
-			db.Contract.TenantIDPropertyID(db.Contract.TenantID.Equals(contract.TenantID), db.Contract.PropertyID.Equals(contract.PropertyID)),
+			db.Contract.ID.Equals(contract.ID),
 		).Update(
 			db.Contract.Active.Set(false),
 			db.Contract.EndDate.SetIfPresent(nil),
@@ -1063,7 +1063,7 @@ func TestEndContract2(t *testing.T) {
 
 	mock.Contract.Expect(
 		client.Client.Contract.FindUnique(
-			db.Contract.TenantIDPropertyID(db.Contract.TenantID.Equals(contract.TenantID), db.Contract.PropertyID.Equals(contract.PropertyID)),
+			db.Contract.ID.Equals(contract.ID),
 		).Update(
 			db.Contract.Active.Set(false),
 			db.Contract.EndDate.SetIfPresent(utils.Ptr(time.Now().Truncate(time.Minute))),

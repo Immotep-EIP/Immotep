@@ -3,11 +3,13 @@ package controllers
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
+	"immotep/backend/services/pdf"
 	"immotep/backend/utils"
 )
 
@@ -116,6 +118,27 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 	return errorList
 }
 
+func createInvReportPDF(c *gin.Context, invRepId string) error {
+	docBytes, err := pdf.NewInventoryReportPDF(invRepId)
+	if err != nil || docBytes == nil {
+		return err
+	}
+
+	contract := database.GetCurrentActiveContract(c.Param("property_id"))
+	if contract == nil {
+		return errors.New(string(utils.NoActiveContract))
+	}
+
+	database.CreateDocument(db.DocumentModel{
+		InnerDocument: db.InnerDocument{
+			Name:       "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
+			Data:       docBytes,
+			ContractID: contract.ID,
+		},
+	})
+	return nil
+}
+
 // CreateInventoryReport godoc
 //
 //	@Summary		Create a new inventory report
@@ -146,6 +169,10 @@ func CreateInventoryReport(c *gin.Context) {
 	}
 
 	errorsList := createRoomStates(c, invrep, req)
+
+	if err := createInvReportPDF(c, invrep.ID); err != nil {
+		errorsList = append(errorsList, err.Error())
+	}
 
 	c.JSON(http.StatusCreated, errorsList)
 }

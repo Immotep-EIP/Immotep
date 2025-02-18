@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
+	"immotep/backend/prisma/db"
 	"immotep/backend/services/brevo"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
@@ -100,6 +101,37 @@ func CreateProperty(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, models.DbPropertyToResponse(*property))
+}
+
+// UpdateProperty godoc
+//
+//	@Summary		Update property by ID
+//	@Description	Update property information by its ID
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Success		200			{object}	models.PropertyResponse	"Property data"
+//	@Failure		401			{object}	utils.Error				"Unauthorized"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"Property not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/ [put]
+func UpdateProperty(c *gin.Context) {
+	var req models.PropertyUpdateRequest
+	err := c.ShouldBindBodyWithJSON(&req)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	property := database.UpdateProperty(c.Param("property_id"), req)
+	if property == nil {
+		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
+		return
+	}
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
 }
 
 // GetPropertyPicture godoc
@@ -204,13 +236,18 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
+	user := database.GetUserByEmail(inviteReq.TenantEmail)
+	if !checkInvitedTenant(c, user) {
+		return
+	}
+
 	pendingContract := database.CreatePendingContract(inviteReq.ToDbPendingContract(), c.Param("property_id"))
 	if pendingContract == nil {
 		utils.SendError(c, http.StatusConflict, utils.InviteAlreadyExists, nil)
 		return
 	}
 
-	res, err := brevo.SendEmailInvite(*pendingContract)
+	res, err := brevo.SendEmailInvite(*pendingContract, user != nil)
 	if err != nil {
 		log.Println(res, err.Error())
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedSendEmail, err)
@@ -218,6 +255,20 @@ func InviteTenant(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.DbPendingContractToResponse(*pendingContract))
+}
+
+func checkInvitedTenant(c *gin.Context, user *db.UserModel) bool {
+	if user != nil {
+		if user.Role != db.RoleTenant {
+			utils.SendError(c, http.StatusConflict, utils.UserAlreadyExistsAsOwner, nil)
+			return false
+		}
+		if database.GetTenantCurrentActiveContract(user.ID) != nil {
+			utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasContract, nil)
+			return false
+		}
+	}
+	return true
 }
 
 // EndContract godoc
@@ -236,18 +287,13 @@ func InviteTenant(c *gin.Context) {
 //	@Router			/owner/properties/{property_id}/end-contract [put]
 func EndContract(c *gin.Context) {
 	currentActive := database.GetCurrentActiveContract(c.Param("property_id"))
-	if currentActive == nil {
-		utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
-		return
-	}
-
 	_, ok := currentActive.EndDate()
 	if !ok {
 		now := time.Now().Truncate(time.Minute)
-		database.EndContract(currentActive.PropertyID, currentActive.TenantID, &now)
+		database.EndContract(currentActive.ID, &now)
 		c.Status(http.StatusNoContent)
 	} else {
-		database.EndContract(currentActive.PropertyID, currentActive.TenantID, nil)
+		database.EndContract(currentActive.PropertyID, nil)
 		c.Status(http.StatusNoContent)
 	}
 }

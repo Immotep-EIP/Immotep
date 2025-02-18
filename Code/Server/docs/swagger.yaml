@@ -8,6 +8,17 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  models.DocumentResponse:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   models.FurnitureRequest:
     properties:
       name:
@@ -162,6 +173,8 @@ definitions:
     properties:
       address:
         type: string
+      apartment_number:
+        type: string
       archived:
         type: boolean
       area_sqm:
@@ -173,7 +186,7 @@ definitions:
       created_at:
         type: string
       deposit_price:
-        type: integer
+        type: number
       end_date:
         type: string
       id:
@@ -189,7 +202,7 @@ definitions:
       postal_code:
         type: string
       rental_price_per_month:
-        type: integer
+        type: number
       rooms:
         items:
           $ref: '#/definitions/models.roomResponse'
@@ -197,7 +210,6 @@ definitions:
       start_date:
         type: string
       status:
-        description: calculated fields
         type: string
       tenant:
         type: string
@@ -206,6 +218,8 @@ definitions:
     properties:
       address:
         type: string
+      apartment_number:
+        type: string
       area_sqm:
         type: number
       city:
@@ -213,13 +227,13 @@ definitions:
       country:
         type: string
       deposit_price:
-        type: integer
+        type: number
       name:
         type: string
       postal_code:
         type: string
       rental_price_per_month:
-        type: integer
+        type: number
     required:
     - address
     - area_sqm
@@ -234,6 +248,8 @@ definitions:
     properties:
       address:
         type: string
+      apartment_number:
+        type: string
       archived:
         type: boolean
       area_sqm:
@@ -245,7 +261,7 @@ definitions:
       created_at:
         type: string
       deposit_price:
-        type: integer
+        type: number
       end_date:
         type: string
       id:
@@ -261,11 +277,10 @@ definitions:
       postal_code:
         type: string
       rental_price_per_month:
-        type: integer
+        type: number
       start_date:
         type: string
       status:
-        description: calculated fields
         type: string
       tenant:
         type: string
@@ -472,8 +487,10 @@ definitions:
     - property-is-not-yours
     - not-an-owner
     - not-a-tenant
+    - user-already-exists-as-owner
     - property-already-exists
     - property-not-available
+    - tenant-already-has-contract
     - no-active-contract
     - failed-to-link-image
     - bad-base64-string
@@ -511,8 +528,10 @@ definitions:
     - PropertyNotYours
     - NotAnOwner
     - NotATenant
+    - UserAlreadyExistsAsOwner
     - PropertyAlreadyExists
     - PropertyNotAvailable
+    - TenantAlreadyHasContract
     - NoActiveContract
     - FailedLinkImage
     - BadBase64String
@@ -543,7 +562,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Answer an invite from an owner with an invite link
+      description: Answer an invite from an owner with an invite link by creating
+        a new user with tenant role
       parameters:
       - description: Pending contract ID
         in: path
@@ -777,6 +797,77 @@ paths:
       security:
       - Bearer: []
       summary: Get property by ID
+      tags:
+      - owner
+    put:
+      consumes:
+      - application/json
+      description: Update property information by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update property by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/documents/:
+    get:
+      consumes:
+      - application/json
+      description: Get all documents of a contract related to a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of documents
+          schema:
+            items:
+              $ref: '#/definitions/models.DocumentResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property documents
       tags:
       - owner
   /owner/properties/{property_id}/end-contract:
@@ -1637,6 +1728,40 @@ paths:
       summary: Update current user's profile picture
       tags:
       - user
+  /tenant/invite/{id}/:
+    post:
+      consumes:
+      - application/json
+      description: Answer an invite from an owner with an invite link by accepting
+        the invite
+      parameters:
+      - description: Pending contract ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Accepted
+        "403":
+          description: Not a tenant
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Pending contract not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Property not available or tenant already has contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Accept an invite
+      tags:
+      - auth
   /users/:
     get:
       description: Get all users information
