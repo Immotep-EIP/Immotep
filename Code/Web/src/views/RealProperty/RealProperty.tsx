@@ -69,11 +69,12 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
           <div className={style.cardAddressContainer}>
             <img src={locationIcon} alt="location" className={style.icon} />
             <span className={style.cardText}>
-              {realProperty.address &&
+              {realProperty.apartment_number &&
+              realProperty.address &&
               realProperty.postal_code &&
               realProperty.city
                 ? (() => {
-                    const fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
+                    const fullAddress = `${realProperty.apartment_number} - ${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
                     return fullAddress.length > 40
                       ? `${fullAddress.substring(0, 40)}...`
                       : fullAddress

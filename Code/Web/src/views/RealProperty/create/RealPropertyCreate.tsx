@@ -17,6 +17,7 @@ import style from './RealPropertyCreate.module.css'
 
 type FieldType = {
   name: string
+  apartment_number: string
   address: string
   zipCode: string
   city: string
@@ -36,7 +37,7 @@ interface RealPropertyCreateProps {
 const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
   showModalCreate,
   setShowModalCreate,
-  setIsPropertyCreated,
+  setIsPropertyCreated
 }) => {
   const { t } = useTranslation()
   const { loading, createProperty } = useProperties()
@@ -67,6 +68,7 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
   const onFinish = async (values: FieldType) => {
     const propertyData = {
       name: values.name,
+      apartment_number: values.apartment_number,
       address: values.address,
       city: values.city,
       postal_code: values.zipCode,
@@ -75,21 +77,23 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
       rental_price_per_month: parseFloat(values.rental || '0'),
       deposit_price: parseFloat(values.deposit || '0'),
       picture: ''
-    };
-    try {
-      await createProperty(propertyData, imageBase64);
-      setShowModalCreate(false);
-      message.success(t('pages.real_property.add_real_property.property_created'));
-      setIsPropertyCreated(true);
-    } catch (err) {
-      message.error(t('pages.real_property.add_real_property.error_property_created'));
     }
-  };
+    try {
+      await createProperty(propertyData, imageBase64)
+      setShowModalCreate(false)
+      message.success(
+        t('pages.real_property.add_real_property.property_created')
+      )
+      setIsPropertyCreated(true)
+    } catch (err) {
+      message.error(
+        t('pages.real_property.add_real_property.error_property_created')
+      )
+    }
+  }
 
   const onFinishFailed = () => {
-    message.error(
-      t('pages.real_property.add_real_property.fill_all_fields')
-    )
+    message.error(t('pages.real_property.add_real_property.fill_all_fields'))
   }
 
   return (
@@ -112,13 +116,13 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
       ]}
       style={{
         top: '10%',
-        overflow: 'hidden',
+        overflow: 'hidden'
       }}
       styles={{
         body: {
           maxHeight: 'calc(70vh - 55px)',
-          overflowY: 'auto',
-        },
+          overflowY: 'auto'
+        }
       }}
     >
       <div className={style.pageContainer}>
@@ -147,15 +151,28 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
           </Form.Item>
 
           <Form.Item<FieldType>
+            label={t('components.input.apartment_number.label')}
+            name="apartment_number"
+            rules={[
+              {
+                required: true,
+                message: t('components.input.apartment_number.error')
+              }
+            ]}
+          >
+            <Input
+              placeholder={t('components.input.apartment_number.placeholder')}
+            />
+          </Form.Item>
+
+          <Form.Item<FieldType>
             label={t('components.input.address.label')}
             name="address"
             rules={[
               { required: true, message: t('components.input.address.error') }
             ]}
           >
-            <Input
-              placeholder={t('components.input.address.placeholder')}
-            />
+            <Input placeholder={t('components.input.address.placeholder')} />
           </Form.Item>
 
           <Form.Item<FieldType>
@@ -165,9 +182,7 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
               { required: true, message: t('components.input.zip_code.error') }
             ]}
           >
-            <Input
-              placeholder={t('components.input.zip_code.placeholder')}
-            />
+            <Input placeholder={t('components.input.zip_code.placeholder')} />
           </Form.Item>
 
           <Form.Item<FieldType>
@@ -177,9 +192,7 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
               { required: true, message: t('components.input.city.error') }
             ]}
           >
-            <Input
-              placeholder={t('components.input.city.placeholder')}
-            />
+            <Input placeholder={t('components.input.city.placeholder')} />
           </Form.Item>
 
           <Form.Item<FieldType>
@@ -189,9 +202,7 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
               { required: true, message: t('components.input.country.error') }
             ]}
           >
-            <Input
-              placeholder={t('components.input.country.placeholder')}
-            />
+            <Input placeholder={t('components.input.country.placeholder')} />
           </Form.Item>
 
           <Form.Item<FieldType>
@@ -201,9 +212,7 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
               { required: true, message: t('components.input.area.error') }
             ]}
           >
-            <Input
-              placeholder={t('components.input.area.placeholder')}
-            />
+            <Input placeholder={t('components.input.area.placeholder')} />
           </Form.Item>
 
           <Form.Item<FieldType>
@@ -213,9 +222,7 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
               { required: true, message: t('components.input.rental.error') }
             ]}
           >
-            <Input
-              placeholder={t('components.input.rental.placeholder')}
-            />
+            <Input placeholder={t('components.input.rental.placeholder')} />
           </Form.Item>
 
           <Form.Item<FieldType>
@@ -225,9 +232,7 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
               { required: true, message: t('components.input.deposit.error') }
             ]}
           >
-            <Input
-              placeholder={t('components.input.deposit.placeholder')}
-            />
+            <Input placeholder={t('components.input.deposit.placeholder')} />
           </Form.Item>
 
           <Form.Item<FieldType>

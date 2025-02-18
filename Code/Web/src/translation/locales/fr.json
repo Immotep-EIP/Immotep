@@ -32,7 +32,12 @@
         "placeholder": "Entrez votre nom",
         "error": "Veuillez remplir votre nom."
       },
-      "property_name": {
+      "property_number": {
+        "label": "Numéro de la propriété",
+        "placeholder": "Entrez le numéro de la propriété",
+        "error": "Veuillez remplir le numéro de la propriété."
+      },
+      "apartment_number": {
         "label": "Nom de la propriété",
         "placeholder": "Entrez le nom de la propriété",
         "error": "Veuillez remplir le nom de la propriété."

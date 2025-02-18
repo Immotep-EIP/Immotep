@@ -1,5 +1,6 @@
 export interface CreateProperty {
   name: string
+  apartment_number: string
   address: string
   city: string
   postal_code: string
@@ -12,6 +13,7 @@ export interface CreateProperty {
 export interface PropertyDetails {
   id: string
   owner_id: string
+  apartment_number: string
   name: string
   address: string
   city: string
