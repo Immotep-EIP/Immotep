@@ -35,3 +35,16 @@ export const removePropertyFromDB = async (propertyId: string) => {
   store.delete(propertyId)
   await tx.done
 }
+
+export const updatePropertyInDB = async (property: PropertyDetails) => {
+  const db = await getDB()
+  const tx = db.transaction(STORE_NAME, 'readwrite')
+  const store = tx.objectStore(STORE_NAME)
+  const existingProperty = await store.get(property.id)
+  if (!existingProperty) {
+    throw new Error(`Property with id ${property.id} not found`)
+  }
+  const updatedProperty = { ...existingProperty, ...property }
+  await store.put(updatedProperty)
+  await tx.done
+}

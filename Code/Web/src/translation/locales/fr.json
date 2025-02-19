@@ -179,7 +179,8 @@
       "delete": "Supprimer",
       "edit_property": "Modifier la propriété",
       "delete_property": "Supprimer la propriété",
-      "download": "Télécharger"
+      "download": "Télécharger",
+      "update": "Mettre à jour"
     },
     "modal": {
       "end_contract": {
@@ -315,6 +316,14 @@
         "title": "Ajouter une propriété",
         "property_created": "Propriété créée avec succès",
         "error_property_created": "Erreur lors de la création de la propriété",
+        "fill_all_fields": "Veuillez remplir tous les champs"
+      },
+      "update_real_property": {
+        "document_title": "Modifier la propriété",
+        "document_description": "Modifiez votre propriété facilement. Remplissez les champs requis pour modifier votre propriété.",
+        "title": "Modifier la propriété",
+        "property_updated": "Propriété mise à jour avec succès",
+        "error_property_updated": "Erreur lors de la mise à jour de la propriété",
         "fill_all_fields": "Veuillez remplir tous les champs"
       },
       "status": {

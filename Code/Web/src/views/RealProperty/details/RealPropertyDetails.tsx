@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
   Button,
@@ -38,6 +38,7 @@ import DocumentsTab from './tabs/1DocumentsTab'
 import DamageTab from './tabs/3DamageTab'
 import InventoryTab from './tabs/2InventoryTab'
 import style from './RealPropertyDetails.module.css'
+import RealPropertyUpdate from '../update/RealPropertyUpdate'
 
 interface ChildrenComponentProps {
   t: (key: string) => string
@@ -74,13 +75,15 @@ interface DetailsPartProps {
   showModal: () => void
   propertyId: string
   getPropertyDetails: (id: string) => void
+  showModalUpdate: () => void
 }
 
 const DetailsPart: React.FC<DetailsPartProps> = ({
   propertyData,
   showModal,
   propertyId,
-  getPropertyDetails
+  getPropertyDetails,
+  showModalUpdate
 }) => {
   const { t } = useTranslation()
   const { goToRealProperty } = useNavigation()
@@ -163,8 +166,10 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
     {
       key: '3',
       label: t('components.button.edit_property'),
-      onClick: () => {},
-      disabled: true
+      onClick: () => {
+        showModalUpdate()
+      }
+      // disabled: true
     },
     {
       key: '4',
@@ -316,12 +321,20 @@ const RealPropertyDetails: React.FC = () => {
   const showModal = () => setIsModalOpen(true)
   const handleCancel = () => setIsModalOpen(false)
 
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false)
+  const showModalUpdate = () => setIsModalUpdateOpen(true)
+  const [isPropertyUpdated, setIsPropertyUpdated] = useState(false)
+
   const {
     propertyDetails: propertyData,
     loading,
     error,
     getPropertyDetails
   } = useProperties(id)
+
+  useEffect(() => {
+    getPropertyDetails(id)
+  }, [id, isPropertyUpdated])
 
   if (loading) {
     return <div>{t('components.loading')}</div>
@@ -344,11 +357,18 @@ const RealPropertyDetails: React.FC = () => {
           showModal={showModal}
           propertyId={id}
           getPropertyDetails={getPropertyDetails}
+          showModalUpdate={showModalUpdate}
         />
         <InviteTenantModal
           isOpen={isModalOpen}
           onClose={handleCancel}
           propertyId={id}
+        />
+        <RealPropertyUpdate
+          isModalUpdateOpen={isModalUpdateOpen}
+          setIsModalUpdateOpen={setIsModalUpdateOpen}
+          propertyData={propertyData}
+          setIsPropertyUpdated={setIsPropertyUpdated}
         />
       </div>
     </>

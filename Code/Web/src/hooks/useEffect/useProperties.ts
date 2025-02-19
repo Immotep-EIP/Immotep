@@ -6,8 +6,10 @@ import UpdatePropertyPicture from '@/services/api/Owner/Properties/UpdatePropert
 import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
 import {
   savePropertiesToDB,
-  getPropertiesFromDB
+  getPropertiesFromDB,
+  updatePropertyInDB
 } from '@/utils/cache/property/indexedDB'
+import UpdatePropertyFunction from '@/services/api/Owner/Properties/UpdateProperty'
 
 type CreatePropertyData = Omit<
   PropertyDetails,
@@ -46,6 +48,38 @@ const useProperties = (propertyId: string | null = null) => {
         }
         await savePropertiesToDB([createdProperty])
         setProperties(prevProperties => [...prevProperties, createdProperty])
+      } else {
+        throw new Error('Property creation failed.')
+      }
+    } catch (err: any) {
+      setError(err.message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateProperty = async (
+    propertyData: CreatePropertyData,
+    imageBase64: string | null,
+    propertyId: string
+  ) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const updatedProperty = await UpdatePropertyFunction(
+        propertyData,
+        propertyId
+      )
+      if (updatedProperty) {
+        if (imageBase64) {
+          await UpdatePropertyPicture(
+            updatedProperty.id,
+            imageBase64.split(',')[1]
+          )
+        }
+        await updatePropertyInDB(updatedProperty)
+        setProperties(prevProperties => [...prevProperties, updatedProperty])
       } else {
         throw new Error('Property creation failed.')
       }
@@ -123,6 +157,7 @@ const useProperties = (propertyId: string | null = null) => {
     loading,
     error,
     createProperty,
+    updateProperty,
     getPropertyDetails,
     refreshProperties
   }
