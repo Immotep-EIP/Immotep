@@ -158,7 +158,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         endContract()
       },
       danger: true,
-      disabled: propertyData?.status === PropertyStatusEnum.AVAILABLE
+      disabled: propertyData?.status !== PropertyStatusEnum.UNAVAILABLE
     },
     {
       key: '3',
@@ -208,8 +208,16 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
       <div className={style.headerInformationContainer}>
         <div className={style.pictureContainer}>
           <Badge.Ribbon
-            text={t(TenantStatusEnum[propertyData!.status as keyof typeof TenantStatusEnum].text || '')}
-            color={TenantStatusEnum[propertyData!.status as keyof typeof TenantStatusEnum].color || 'default'}
+            text={t(
+              TenantStatusEnum[
+                propertyData!.status as keyof typeof TenantStatusEnum
+              ].text || ''
+            )}
+            color={
+              TenantStatusEnum[
+                propertyData!.status as keyof typeof TenantStatusEnum
+              ].color || 'default'
+            }
           >
             <img
               src={isLoading ? defaultHouse : picture || defaultHouse}
