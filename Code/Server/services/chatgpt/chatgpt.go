@@ -1,4 +1,4 @@
-package chatgptservice
+package chatgpt
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"immotep/backend/prisma/db"
 )
 
-type ChatGPTResponse struct {
+type Response struct {
 	Choices []Choice `json:"choices"`
 }
 
@@ -96,7 +96,7 @@ func summarize(stuffType string, name string, pictures []string) (string, error)
 	}
 	log.Println(resp)
 
-	var result ChatGPTResponse
+	var result Response
 	if err := json.Unmarshal([]byte(resp), &result); err != nil {
 		return "", err
 	}
@@ -167,7 +167,7 @@ func compare(stuffType string, initialState string, initialCleanliness string, i
 	}
 	log.Println(resp)
 
-	var result ChatGPTResponse
+	var result Response
 	if err := json.Unmarshal([]byte(resp), &result); err != nil {
 		return "", err
 	}

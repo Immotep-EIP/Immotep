@@ -1,6 +1,7 @@
 package router
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -18,7 +19,7 @@ import (
 	"immotep/backend/router/middlewares"
 )
 
-func registerAPIRoutes(r *gin.Engine) {
+func registerAPIRoutes(r *gin.Engine, test bool) {
 	secretKey := os.Getenv("SECRET_KEY")
 	bServer := oauth.NewOAuthBearerServer(
 		secretKey,
@@ -30,25 +31,34 @@ func registerAPIRoutes(r *gin.Engine) {
 	{
 		auth := v1.Group("/auth")
 		{
-			auth.POST("/register", controllers.RegisterOwner)
-			auth.POST("/invite/:id", controllers.RegisterTenant)
-			auth.POST("/token", controllers.TokenAuth(bServer))
+			auth.POST("/register/", controllers.RegisterOwner)
+			auth.POST("/invite/:id/", controllers.RegisterTenant)
+			if !test {
+				auth.POST("/token/", controllers.TokenAuth(bServer))
+			}
 		}
 
 		root := v1.Group("/")
 		{
-			root.Use(oauth.Authorize(secretKey, nil))
+			if !test {
+				root.Use(oauth.Authorize(secretKey, nil))
+			} else {
+				root.Use(middlewares.MockClaims())
+			}
 			root.Use(middlewares.CheckClaims())
-			root.GET("/users", controllers.GetAllUsers)
-			root.GET("/user/:id", controllers.GetUserByID)
-			root.GET("/user/:id/picture", controllers.GetUserProfilePicture)
-			root.GET("/profile", controllers.GetCurrentUserProfile)
-			root.PUT("/profile", controllers.UpdateCurrentUserProfile)
-			root.GET("/profile/picture", controllers.GetCurrentUserProfilePicture)
-			root.PUT("/profile/picture", controllers.UpdateCurrentUserProfilePicture)
+			root.GET("/users/", controllers.GetAllUsers)
+			root.GET("/user/:id/", controllers.GetUserByID)
+			root.GET("/user/:id/picture/", controllers.GetUserProfilePicture)
+			root.GET("/profile/", controllers.GetCurrentUserProfile)
+			root.PUT("/profile/", controllers.UpdateCurrentUserProfile)
+			root.GET("/profile/picture/", controllers.GetCurrentUserProfilePicture)
+			root.PUT("/profile/picture/", controllers.UpdateCurrentUserProfilePicture)
 
 			owner := root.Group("/owner")
 			registerOwnerRoutes(owner)
+
+			tenant := root.Group("/tenant")
+			registerTenantRoutes(tenant)
 		}
 	}
 }
@@ -61,15 +71,24 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 		properties.POST("/", controllers.CreateProperty)
 		properties.GET("/", controllers.GetAllProperties)
 
-		propertyId := properties.Group("/:property_id")
+		propertyId := properties.Group("/:property_id/")
 		{
 			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
 			propertyId.GET("/", controllers.GetPropertyById)
-			propertyId.GET("/picture", controllers.GetPropertyPicture)
-			propertyId.PUT("/picture", controllers.UpdatePropertyPicture)
+			propertyId.PUT("/", controllers.UpdateProperty)
+			propertyId.DELETE("/", controllers.ArchiveProperty)
+			propertyId.GET("/inventory/", controllers.GetPropertyInventory)
+			propertyId.GET("/picture/", controllers.GetPropertyPicture)
+			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
 
-			propertyId.POST("/send-invite", controllers.InviteTenant)
-			propertyId.PUT("/end-contract", controllers.EndContract)
+			propertyId.POST("/send-invite/", controllers.InviteTenant)
+
+			contract := propertyId.Group("")
+			{
+				contract.Use(middlewares.CheckActiveContract("property_id"))
+				contract.PUT("/end-contract/", controllers.EndContract)
+				contract.GET("/documents/", controllers.GetPropertyDocuments)
+			}
 
 			rooms := propertyId.Group("/rooms")
 			{
@@ -80,7 +99,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 				{
 					roomId.Use(middlewares.CheckRoomOwnership("property_id", "room_id"))
 					roomId.GET("/", controllers.GetRoomByID)
-					roomId.DELETE("/", controllers.DeleteRoom)
+					roomId.DELETE("/", controllers.ArchiveRoom)
 
 					furnitures := roomId.Group("/furnitures")
 					{
@@ -91,7 +110,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 						{
 							furnitureId.Use(middlewares.CheckFurnitureOwnership("room_id", "furniture_id"))
 							furnitureId.GET("/", controllers.GetFurnitureByID)
-							furnitureId.DELETE("/", controllers.DeleteFurniture)
+							furnitureId.DELETE("/", controllers.ArchiveFurniture)
 						}
 					}
 				}
@@ -103,16 +122,22 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 	}
 }
 
+func registerTenantRoutes(tenant *gin.RouterGroup) {
+	tenant.Use(middlewares.AuthorizeTenant())
+
+	tenant.POST("/invite/:id/", controllers.AcceptInvite)
+}
+
 func registerInvReportRoutes(invReports *gin.RouterGroup) {
 	invReports.POST("/", controllers.CreateInventoryReport)
 	invReports.GET("/", controllers.GetInventoryReportsByProperty)
 
-	invReports.GET("/:report_id",
+	invReports.GET("/:report_id/",
 		middlewares.CheckInventoryReportOwnership("property_id", "report_id"),
 		controllers.GetInventoryReportByID)
 
-	invReports.POST("/summarize", controllers.GenerateSummary)
-	invReports.POST("/compare/:old_report_id",
+	invReports.POST("/summarize/", controllers.GenerateSummary)
+	invReports.POST("/compare/:old_report_id/",
 		middlewares.CheckInventoryReportOwnership("property_id", "old_report_id"),
 		controllers.GenerateComparison)
 }
@@ -123,9 +148,18 @@ func Routes() *gin.Engine {
 		Limit:  3000,
 	}
 
+	var allowOrigins []string
+	if gin.Mode() == gin.ReleaseMode {
+		allowOrigins = []string{os.Getenv("WEB_PUBLIC_URL")}
+		log.Println("Running in release mode")
+	} else {
+		allowOrigins = []string{"https://*", "http://*", "http://localhost:4242", "http://localhost:3002"}
+		log.Println("Running in debug mode")
+	}
+
 	r := gin.New()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://*", "http://*", "http://localhost:4242"},
+		AllowOrigins: allowOrigins,
 		// AllowOriginFunc:  func(origin string) bool { return origin == "https://github.com" },
 		AllowMethods: []string{
 			http.MethodGet,
@@ -146,6 +180,14 @@ func Routes() *gin.Engine {
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	registerAPIRoutes(r)
+	registerAPIRoutes(r, false)
+	return r
+}
+
+func TestRoutes() *gin.Engine {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
+	registerAPIRoutes(r, true)
 	return r
 }

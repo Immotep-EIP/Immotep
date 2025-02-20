@@ -2,7 +2,7 @@ import React from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
 
 import { useTranslation } from 'react-i18next'
-import useFetchProperties from '@/hooks/useEffect/useFetchProperties.ts'
+import useProperties from '@/hooks/useEffect/useProperties.ts'
 import { useAuth } from '@/context/authContext'
 import { WidgetProps } from '@/interfaces/Widgets/Widgets.ts'
 import style from './UserInfoWidget.module.css'
@@ -12,7 +12,7 @@ const UserInfoWidget: React.FC<WidgetProps> = ({ height }) => {
   const pixelHeight = height * rowHeight
   const { user } = useAuth()
   const { t } = useTranslation()
-  const { properties, loading, error } = useFetchProperties()
+  const { properties, loading, error } = useProperties()
 
   if (loading) {
     return (

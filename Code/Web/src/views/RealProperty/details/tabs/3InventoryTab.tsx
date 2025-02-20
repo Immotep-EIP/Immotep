@@ -174,7 +174,9 @@ const InventoryTab: React.FC = () => {
 
   const removeRoom = (roomName: string, roomId: string) => {
     Modal.confirm({
-      title: 'Are you sure you want to delete this room?',
+      title: t(
+        'pages.real_property_details.tabs.inventory.remove_room_confirmation'
+      ),
       onOk: async () => {
         if (!id) {
           message.error('Property ID is missing.')
@@ -184,7 +186,9 @@ const InventoryTab: React.FC = () => {
         try {
           await DeleteRoomByPropertyById(id, roomId)
           setInventory(inventory.filter(r => r.roomName !== roomName))
-          message.success('Room deleted successfully.')
+          message.success(
+            t('pages.real_property_details.tabs.inventory.remove_room_success')
+          )
         } catch (error) {
           console.error('Error deleting room:', error)
           message.error('Failed to delete room.')
@@ -199,7 +203,9 @@ const InventoryTab: React.FC = () => {
     furnitureId: string
   ) => {
     Modal.confirm({
-      title: 'Are you sure you want to delete this item?',
+      title: t(
+        'pages.real_property_details.tabs.inventory.remove_stuff_confirmation'
+      ),
       onOk: async () => {
         if (!id) {
           message.error('Property ID is missing.')
@@ -218,7 +224,9 @@ const InventoryTab: React.FC = () => {
                 : r
             )
           )
-          message.success('Item deleted successfully.')
+          message.success(
+            t('pages.real_property_details.tabs.inventory.remove_stuff_success')
+          )
         } catch (error) {
           console.error('Error deleting furniture:', error)
           message.error('Failed to delete item.')

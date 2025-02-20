@@ -17,11 +17,6 @@ struct ContentView: View {
                 .environmentObject(profileViewModel)
         } else {
             LoginView()
-                .onAppear {
-                    if TokenStorage.getAccessToken() != nil {
-                        isLoggedIn = true
-                    }
-                }
         }
     }
 }

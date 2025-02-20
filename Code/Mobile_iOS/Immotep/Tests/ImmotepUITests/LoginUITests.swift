@@ -6,67 +6,68 @@
 //
 
 import XCTest
+import SwiftUI
 
 final class LoginUITests: XCTestCase {
     let app = XCUIApplication()
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments.append("-UIPreferredContentSizeCategoryName")
+        app.launchArguments.append("-AppleLanguages")
+        app.launchArguments.append("en")
+        app.launchArguments += ["-UIViewAnimationDuration", "0"]
         app.launch()
-
-        if app.buttons["person.crop.circle.fill"].exists {
-            navigateToProfileView()
-            signOut()
-        }
-
-        navigateToLoginView()
-    }
-
-    func navigateToProfileView() {
-        app.buttons["person.crop.circle.fill"].tap()
-    }
-
-    func signOut() {
-        let logoutButton = app.buttons["Logout"].exists || app.buttons["Se déconnecter"].exists
-        XCTAssertTrue(logoutButton)
-
-        if app.buttons["Logout"].exists {
-            app.buttons["Logout"].tap()
-        } else if app.buttons["Se déconnecter"].exists {
-            app.buttons["Se déconnecter"].tap()
-        }
-    }
-
-    private func navigateToLoginView() {
-        let loginViewIsDisplayed = app.staticTexts["Welcome back!"].exists || app.staticTexts["Bienvenue à nouveau !"].exists
-        XCTAssertTrue(loginViewIsDisplayed, "Login view is displayed.")
     }
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
+    func navigateToLoginView() {
+        if app.buttons["person.crop.circle.fill"].exists {
+            app.buttons["person.crop.circle.fill"].tap()
+
+            let logoutButton = app.buttons["Logout"].exists || app.buttons["Se déconnecter"].exists
+            XCTAssertTrue(logoutButton)
+
+            if app.buttons["Logout"].exists {
+                app.buttons["Logout"].tap()
+            } else if app.buttons["Se déconnecter"].exists {
+                app.buttons["Se déconnecter"].tap()
+            }
+        } else {
+            return
+        }
+    }
+
     func testWelcomeTextExists() throws {
-        let welcomeText = app.staticTexts["Welcome back"].exists || app.staticTexts["Bienvenue à nouveau !"].exists
+        navigateToLoginView()
+        let welcomeText = app.staticTexts["Welcome back"].exists || app.staticTexts["Bienvenue !"].exists
         XCTAssertTrue(welcomeText)
     }
 
     func testEmailTextFieldExists() throws {
+        navigateToLoginView()
         let emailTextField = app.textFields["Enter your email"].exists || app.textFields["Entrez votre email"].exists
         XCTAssertTrue(emailTextField)
     }
 
     func testPasswordSecureFieldExists() throws {
+        navigateToLoginView()
         let passwordSecureField = app.secureTextFields["Enter your password"].exists || app.secureTextFields["Entrez votre mot de passe"].exists
         XCTAssertTrue(passwordSecureField)
     }
 
     func testSignInButtonExists() throws {
+        navigateToLoginView()
         let signInButton = app.buttons["Sign In"].exists || app.buttons["Se connecter"].exists
         XCTAssertTrue(signInButton)
     }
 
     func testSignInWithValidCredentials() throws {
+        navigateToLoginView()
         let emailTextField: XCUIElement
         let passwordSecureField: XCUIElement
         let signInButton: XCUIElement
@@ -104,11 +105,13 @@ final class LoginUITests: XCTestCase {
     }
 
         func testDontHaveAnAccountTextExists() throws {
+            navigateToLoginView()
             let dontHaveAnAccount = app.staticTexts["Don't have an account ?"].exists || app.staticTexts["Vous n’avez pas de compte ?"].exists
             XCTAssertTrue(dontHaveAnAccount)
         }
 
         func testSignUpLinkExists() throws {
+            navigateToLoginView()
             let linkExist = app.buttons["Sign Up"].exists || app.buttons["Se connecter"].exists
             XCTAssertTrue(linkExist)
 

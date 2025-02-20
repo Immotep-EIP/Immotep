@@ -8,13 +8,23 @@ The database for this application is implemented using PostgreSQL. It stores all
 
 The following diagram illustrates the structure of the database, including the tables and their relationships:
 
-[Include a diagram here if available, or describe the main entities and relationships.]
+![Entity-Relationship Diagram](prisma-erd.svg)
 
 ### Tables Overview
 
 The database schema consists of several tables, each representing a distinct entity in the system. Below is a brief description of each table:
 
 - **Users**: Stores user account information, including authentication details, roles, and profile data.
+- **Contracts**: Represents rental agreements between tenants and properties, including start and end dates.
+- **Damages**: Records information about damages reported in properties, including priority and status.
+- **Properties**: Contains details about properties, such as address, rental price, and owner information.
+- **Pending Contracts**: Holds information about contracts that are pending approval after an invitation from an owner to a tenant, including tenant email and property details.
+- **Images**: Stores image data used for user profiles, property pictures, and inventory report state documentation.
+- **Rooms**: Represents individual rooms within properties, including their names and associated property.
+- **Furnitures**: Contains information about furniture items in rooms, including quantity and associated room.
+- **Inventory Reports**: Records periodic reports on the state of rooms and furniture within properties.
+- **Room States**: Documents the state and cleanliness of rooms as part of inventory reports.
+- **Furniture States**: Documents the state and cleanliness of furniture items as part of inventory reports.
 
 Each table is designed with foreign key constraints where applicable to maintain referential integrity across the database.
 
@@ -30,7 +40,7 @@ Prisma provides a built-in migration tool to manage changes to the database sche
 
 ### Running Migrations
 
-To apply new migrations to the database, use the following Prisma command:
+To apply new migrations to the database, use the following command:
 
 ```bash
 cd Code/Server/

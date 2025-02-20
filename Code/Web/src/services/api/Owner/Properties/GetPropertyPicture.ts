@@ -5,7 +5,7 @@ const GetPropertyPicture = async (id: string) => {
   try {
     return await callApi<PropertyPictureResponse>({
       method: 'GET',
-      endpoint: `owner/properties/${id}/picture`
+      endpoint: `owner/properties/${id}/picture/`
     })
   } catch (error) {
     console.error('Error fetching data:', error)

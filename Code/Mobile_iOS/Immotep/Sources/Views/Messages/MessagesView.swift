@@ -11,12 +11,15 @@ struct MessagesView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                TopBar()
+                TopBar(title: "Messages".localized())
                 Spacer()
 
                 TaskBar()
             }
             .navigationBarBackButtonHidden(true)
+            .navigationTransition(
+                .fade(.in).animation(.easeInOut(duration: 0))
+            )
         }
     }
 }

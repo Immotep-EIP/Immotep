@@ -9,10 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
-	chatgptservice "immotep/backend/services/chatgpt"
-	furnitureservice "immotep/backend/services/furniture"
-	inventoryreportservice "immotep/backend/services/inventoryreport"
-	roomservice "immotep/backend/services/room"
+	"immotep/backend/services/chatgpt"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -24,7 +22,7 @@ func imagesToBase64Strings(images []db.ImageModel) []string {
 	return res
 }
 
-// GenerateRoomSummary godoc
+// GenerateSummary godoc
 //
 //	@Summary		Generate summary from photo
 //	@Description	Generate summary from photo for first inventory report
@@ -48,8 +46,8 @@ func GenerateSummary(c *gin.Context) {
 	}
 
 	if req.Type == "room" {
-		room := roomservice.GetByID(req.Id)
-		chatGPTres, err := chatgptservice.SummarizeRoom(room.Name, req.Pictures)
+		room := database.GetRoomByID(req.Id)
+		chatGPTres, err := chatgpt.SummarizeRoom(room.Name, req.Pictures)
 		if err != nil {
 			utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
 			return
@@ -62,8 +60,8 @@ func GenerateSummary(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, resp)
 	} else {
-		furniture := furnitureservice.GetByID(req.Id)
-		chatGPTres, err := chatgptservice.SummarizeFurniture(furniture.Name, req.Pictures)
+		furniture := database.GetFurnitureByID(req.Id)
+		chatGPTres, err := chatgpt.SummarizeFurniture(furniture.Name, req.Pictures)
 		if err != nil {
 			utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
 			return
@@ -78,7 +76,7 @@ func GenerateSummary(c *gin.Context) {
 	}
 }
 
-// GenerateRoomSummary godoc
+// GenerateComparison godoc
 //
 //	@Summary		Generate comparison from photo
 //	@Description	Generate comparison from photo for last inventory report
@@ -102,7 +100,7 @@ func GenerateComparison(c *gin.Context) {
 		return
 	}
 
-	oldReport := inventoryreportservice.GetByID(c.Param("old_report_id"))
+	oldReport := database.GetInvReportByID(c.Param("old_report_id"))
 	if oldReport == nil {
 		utils.SendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
 		return
@@ -118,8 +116,8 @@ func GenerateComparison(c *gin.Context) {
 func handleRoomComparison(c *gin.Context, req models.CompareRequest, oldReport *db.InventoryReportModel) {
 	for _, rs := range oldReport.RoomStates() {
 		if rs.RoomID == req.Id {
-			room := roomservice.GetByID(req.Id)
-			chatGPTres, err := chatgptservice.CompareRoom(room.Name, rs, imagesToBase64Strings(rs.Pictures()), req.Pictures)
+			room := database.GetRoomByID(req.Id)
+			chatGPTres, err := chatgpt.CompareRoom(room.Name, rs, imagesToBase64Strings(rs.Pictures()), req.Pictures)
 			if err != nil {
 				utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
 				return
@@ -141,8 +139,8 @@ func handleRoomComparison(c *gin.Context, req models.CompareRequest, oldReport *
 func handleFurnitureComparison(c *gin.Context, req models.CompareRequest, oldReport *db.InventoryReportModel) {
 	for _, fs := range oldReport.FurnitureStates() {
 		if fs.FurnitureID == req.Id {
-			furniture := furnitureservice.GetByID(req.Id)
-			chatGPTres, err := chatgptservice.CompareFurniture(furniture.Name, fs, imagesToBase64Strings(fs.Pictures()), req.Pictures)
+			furniture := database.GetFurnitureByID(req.Id)
+			chatGPTres, err := chatgpt.CompareFurniture(furniture.Name, fs, imagesToBase64Strings(fs.Pictures()), req.Pictures)
 			if err != nil {
 				utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
 				return

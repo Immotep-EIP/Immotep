@@ -5,7 +5,7 @@ export const getUserProfile = async () => {
   try {
     const response = await callApi<User>({
       method: 'GET',
-      endpoint: 'profile'
+      endpoint: 'profile/'
     })
     return response
   } catch (error) {

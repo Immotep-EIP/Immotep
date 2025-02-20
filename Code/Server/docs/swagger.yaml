@@ -8,6 +8,17 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  models.DocumentResponse:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   models.FurnitureRequest:
     properties:
       name:
@@ -19,6 +30,8 @@ definitions:
     type: object
   models.FurnitureResponse:
     properties:
+      archived:
+        type: boolean
       id:
         type: string
       name:
@@ -156,38 +169,14 @@ definitions:
       tenant_email:
         type: string
     type: object
-  models.PropertyRequest:
+  models.PropertyInventoryResponse:
     properties:
       address:
         type: string
-      area_sqm:
-        type: number
-      city:
+      apartment_number:
         type: string
-      country:
-        type: string
-      deposit_price:
-        type: integer
-      name:
-        type: string
-      postal_code:
-        type: string
-      rental_price_per_month:
-        type: integer
-    required:
-    - address
-    - area_sqm
-    - city
-    - country
-    - deposit_price
-    - name
-    - postal_code
-    - rental_price_per_month
-    type: object
-  models.PropertyResponse:
-    properties:
-      address:
-        type: string
+      archived:
+        type: boolean
       area_sqm:
         type: number
       city:
@@ -197,7 +186,7 @@ definitions:
       created_at:
         type: string
       deposit_price:
-        type: integer
+        type: number
       end_date:
         type: string
       id:
@@ -213,11 +202,85 @@ definitions:
       postal_code:
         type: string
       rental_price_per_month:
-        type: integer
+        type: number
+      rooms:
+        items:
+          $ref: '#/definitions/models.roomResponse'
+        type: array
       start_date:
         type: string
       status:
-        description: calculated fields
+        type: string
+      tenant:
+        type: string
+    type: object
+  models.PropertyRequest:
+    properties:
+      address:
+        type: string
+      apartment_number:
+        type: string
+      area_sqm:
+        type: number
+      city:
+        type: string
+      country:
+        type: string
+      deposit_price:
+        type: number
+      name:
+        type: string
+      postal_code:
+        type: string
+      rental_price_per_month:
+        type: number
+    required:
+    - address
+    - area_sqm
+    - city
+    - country
+    - deposit_price
+    - name
+    - postal_code
+    - rental_price_per_month
+    type: object
+  models.PropertyResponse:
+    properties:
+      address:
+        type: string
+      apartment_number:
+        type: string
+      archived:
+        type: boolean
+      area_sqm:
+        type: number
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      deposit_price:
+        type: number
+      end_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      nb_damage:
+        type: integer
+      owner_id:
+        type: string
+      picture_id:
+        type: string
+      postal_code:
+        type: string
+      rental_price_per_month:
+        type: number
+      start_date:
+        type: string
+      status:
         type: string
       tenant:
         type: string
@@ -231,6 +294,8 @@ definitions:
     type: object
   models.RoomResponse:
     properties:
+      archived:
+        type: boolean
       id:
         type: string
       name:
@@ -370,6 +435,30 @@ definitions:
       lastname:
         type: string
     type: object
+  models.furnitureResponse:
+    properties:
+      archived:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  models.roomResponse:
+    properties:
+      archived:
+        type: boolean
+      furnitures:
+        items:
+          $ref: '#/definitions/models.furnitureResponse'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   utils.Error:
     properties:
       code:
@@ -398,8 +487,10 @@ definitions:
     - property-is-not-yours
     - not-an-owner
     - not-a-tenant
+    - user-already-exists-as-owner
     - property-already-exists
     - property-not-available
+    - tenant-already-has-contract
     - no-active-contract
     - failed-to-link-image
     - bad-base64-string
@@ -415,6 +506,7 @@ definitions:
     - room-state-already-exists
     - furniture-state-already-exists
     - error-request-chatgpt-api
+    - failed-send-email
     type: string
     x-enum-varnames:
     - InvalidPassword
@@ -436,8 +528,10 @@ definitions:
     - PropertyNotYours
     - NotAnOwner
     - NotATenant
+    - UserAlreadyExistsAsOwner
     - PropertyAlreadyExists
     - PropertyNotAvailable
+    - TenantAlreadyHasContract
     - NoActiveContract
     - FailedLinkImage
     - BadBase64String
@@ -453,6 +547,7 @@ definitions:
     - RoomStateAlreadyExists
     - FurnitureStateAlreadyExists
     - ErrorRequestChatGPTAPI
+    - FailedSendEmail
 host: localhost:3001
 info:
   contact:
@@ -467,7 +562,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Answer an invite from an owner with an invite link
+      description: Answer an invite from an owner with an invite link by creating
+        a new user with tenant role
       parameters:
       - description: Pending contract ID
         in: path
@@ -635,6 +731,38 @@ paths:
       tags:
       - owner
   /owner/properties/{property_id}/:
+    delete:
+      consumes:
+      - application/json
+      description: Archive a property by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Archived property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Archive property by ID
+      tags:
+      - owner
     get:
       consumes:
       - application/json
@@ -669,6 +797,77 @@ paths:
       security:
       - Bearer: []
       summary: Get property by ID
+      tags:
+      - owner
+    put:
+      consumes:
+      - application/json
+      description: Update property information by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update property by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/documents/:
+    get:
+      consumes:
+      - application/json
+      description: Get all documents of a contract related to a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of documents
+          schema:
+            items:
+              $ref: '#/definitions/models.DocumentResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property documents
       tags:
       - owner
   /owner/properties/{property_id}/end-contract:
@@ -908,6 +1107,44 @@ paths:
       summary: Generate summary from photo
       tags:
       - ai
+  /owner/properties/{property_id}/inventory/:
+    get:
+      consumes:
+      - application/json
+      description: Get property information by its ID with inventory including rooms
+        and furnitures
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property inventory data
+          schema:
+            $ref: '#/definitions/models.PropertyInventoryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property inventory by ID
+      tags:
+      - owner
   /owner/properties/{property_id}/picture/:
     get:
       consumes:
@@ -1074,7 +1311,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete a room by its ID
+      description: Archive a room by its ID
       parameters:
       - description: Property ID
         in: path
@@ -1089,8 +1326,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: Achieved room data
+          schema:
+            $ref: '#/definitions/models.RoomResponse'
         "403":
           description: Property not yours
           schema:
@@ -1103,7 +1342,7 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Delete room by ID
+      summary: Archive room by ID
       tags:
       - owner
     get:
@@ -1234,7 +1473,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete a furniture by its ID
+      description: Archive a furniture by its ID
       parameters:
       - description: Furniture ID
         in: path
@@ -1244,8 +1483,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: Archived furniture data
+          schema:
+            $ref: '#/definitions/models.FurnitureResponse'
         "404":
           description: Furniture not found
           schema:
@@ -1254,7 +1495,7 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Delete furniture by ID
+      summary: Archive furniture by ID
       tags:
       - owner
     get:
@@ -1487,6 +1728,40 @@ paths:
       summary: Update current user's profile picture
       tags:
       - user
+  /tenant/invite/{id}/:
+    post:
+      consumes:
+      - application/json
+      description: Answer an invite from an owner with an invite link by accepting
+        the invite
+      parameters:
+      - description: Pending contract ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Accepted
+        "403":
+          description: Not a tenant
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Pending contract not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Property not available or tenant already has contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Accept an invite
+      tags:
+      - auth
   /users/:
     get:
       description: Get all users information

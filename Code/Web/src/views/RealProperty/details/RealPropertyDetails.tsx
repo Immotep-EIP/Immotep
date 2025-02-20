@@ -16,36 +16,23 @@ import returnIcon from '@/assets/icons/retour.png'
 
 import { PropertyIdProvider } from '@/context/propertyIdContext'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
-import base64ToFile from '@/utils/base64/baseToFile'
 import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentContract'
-import style from './RealPropertyDetails.module.css'
+import useImageCache from '@/hooks/useEffect/useImageCache'
 import AboutTab from './tabs/1AboutTab'
 import DamageTab from './tabs/2DamageTab'
 import InventoryTab from './tabs/3InventoryTab'
 import DocumentsTab from './tabs/4DocumentsTab'
+import style from './RealPropertyDetails.module.css'
 
 const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
   propertyData
 }) => {
   const { t } = useTranslation()
-  const [picture, setPicture] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!propertyData) {
-      return
-    }
-    const fetchPicture = async () => {
-      const picture = await GetPropertyPicture(propertyData.id)
-      if (!picture) {
-        setPicture(defaultHouse)
-      } else {
-        const file = base64ToFile(picture.data, 'property.jpg', 'image/jpeg')
-        const url = URL.createObjectURL(file)
-        setPicture(url)
-      }
-    }
-    fetchPicture()
-  }, [propertyData?.id])
+  const { data: picture, isLoading } = useImageCache(
+    propertyData?.id || '',
+    GetPropertyPicture
+  )
 
   if (!propertyData) {
     return null
@@ -55,7 +42,7 @@ const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
     <div className={style.headerPartContainer}>
       <div className={style.imageContainer}>
         <img
-          src={picture || defaultHouse}
+          src={isLoading ? defaultHouse : picture || defaultHouse}
           alt="Property"
           className={style.image}
         />
@@ -208,7 +195,11 @@ const RealPropertyDetails: React.FC = () => {
         </div>
 
         <div className={style.actionButtonsContainer}>
-          <Button type="primary" onClick={showModal} disabled={propertyData?.status !== 'available'}>
+          <Button
+            type="primary"
+            onClick={showModal}
+            disabled={propertyData?.status !== 'available'}
+          >
             {t('components.button.add_tenant')}
           </Button>
           <Button

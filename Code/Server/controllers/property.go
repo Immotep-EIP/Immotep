@@ -1,14 +1,15 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
-	contractservice "immotep/backend/services/contract"
-	imageservice "immotep/backend/services/image"
-	propertyservice "immotep/backend/services/property"
+	"immotep/backend/prisma/db"
+	"immotep/backend/services/brevo"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -26,7 +27,7 @@ import (
 //	@Router			/owner/properties/ [get]
 func GetAllProperties(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	allProperties := propertyservice.GetAllByOwnerId(claims["id"])
+	allProperties := database.GetAllPropertyByOwnerId(claims["id"])
 	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
 }
 
@@ -46,8 +47,28 @@ func GetAllProperties(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/ [get]
 func GetPropertyById(c *gin.Context) {
-	property := propertyservice.GetByID(c.Param("property_id"))
+	property := database.GetPropertyByID(c.Param("property_id"))
 	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
+}
+
+// GetPropertyInventory godoc
+//
+//	@Summary		Get property inventory by ID
+//	@Description	Get property information by its ID with inventory including rooms and furnitures
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string								true	"Property ID"
+//	@Success		200			{object}	models.PropertyInventoryResponse	"Property inventory data"
+//	@Failure		401			{object}	utils.Error							"Unauthorized"
+//	@Failure		403			{object}	utils.Error							"Property not yours"
+//	@Failure		404			{object}	utils.Error							"Property not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/inventory/ [get]
+func GetPropertyInventory(c *gin.Context) {
+	property := database.GetPropertyInventory(c.Param("property_id"))
+	c.JSON(http.StatusOK, models.DbPropertyInventoryToResponse(*property))
 }
 
 // CreateProperty godoc
@@ -74,12 +95,43 @@ func CreateProperty(c *gin.Context) {
 		return
 	}
 
-	property := propertyservice.Create(req.ToDbProperty(), claims["id"])
+	property := database.CreateProperty(req.ToDbProperty(), claims["id"])
 	if property == nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
 		return
 	}
 	c.JSON(http.StatusCreated, models.DbPropertyToResponse(*property))
+}
+
+// UpdateProperty godoc
+//
+//	@Summary		Update property by ID
+//	@Description	Update property information by its ID
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Success		200			{object}	models.PropertyResponse	"Property data"
+//	@Failure		401			{object}	utils.Error				"Unauthorized"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"Property not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/ [put]
+func UpdateProperty(c *gin.Context) {
+	var req models.PropertyUpdateRequest
+	err := c.ShouldBindBodyWithJSON(&req)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	property := database.UpdateProperty(c.Param("property_id"), req)
+	if property == nil {
+		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
+		return
+	}
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
 }
 
 // GetPropertyPicture godoc
@@ -99,13 +151,13 @@ func CreateProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/picture/ [get]
 func GetPropertyPicture(c *gin.Context) {
-	property := propertyservice.GetByID(c.Param("property_id"))
+	property := database.GetPropertyByID(c.Param("property_id"))
 	pictureId, ok := property.PictureID()
 	if !ok {
 		c.Status(http.StatusNoContent)
 		return
 	}
-	image := imageservice.GetByID(pictureId)
+	image := database.GetImageByID(pictureId)
 	if image == nil {
 		utils.SendError(c, http.StatusNotFound, utils.PropertyPictureNotFound, nil)
 		return
@@ -143,10 +195,10 @@ func UpdatePropertyPicture(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
 		return
 	}
-	newImage := imageservice.Create(*image)
+	newImage := database.CreateImage(*image)
 
-	property := propertyservice.GetByID(c.Param("property_id"))
-	newProperty := propertyservice.UpdatePicture(*property, newImage)
+	property := database.GetPropertyByID(c.Param("property_id"))
+	newProperty := database.UpdatePropertyPicture(*property, newImage)
 	if newProperty == nil {
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)
 		return
@@ -179,20 +231,44 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
-	if contractservice.GetCurrentActive(c.Param("property_id")) != nil {
+	if database.GetCurrentActiveContract(c.Param("property_id")) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
 
-	pendingContract := contractservice.CreatePending(inviteReq.ToDbPendingContract(), c.Param("property_id"))
+	user := database.GetUserByEmail(inviteReq.TenantEmail)
+	if !checkInvitedTenant(c, user) {
+		return
+	}
+
+	pendingContract := database.CreatePendingContract(inviteReq.ToDbPendingContract(), c.Param("property_id"))
 	if pendingContract == nil {
 		utils.SendError(c, http.StatusConflict, utils.InviteAlreadyExists, nil)
 		return
 	}
 
-	// TODO send email
+	res, err := brevo.SendEmailInvite(*pendingContract, user != nil)
+	if err != nil {
+		log.Println(res, err.Error())
+		utils.SendError(c, http.StatusInternalServerError, utils.FailedSendEmail, err)
+		return
+	}
 
 	c.JSON(http.StatusOK, models.DbPendingContractToResponse(*pendingContract))
+}
+
+func checkInvitedTenant(c *gin.Context, user *db.UserModel) bool {
+	if user != nil {
+		if user.Role != db.RoleTenant {
+			utils.SendError(c, http.StatusConflict, utils.UserAlreadyExistsAsOwner, nil)
+			return false
+		}
+		if database.GetTenantCurrentActiveContract(user.ID) != nil {
+			utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasContract, nil)
+			return false
+		}
+	}
+	return true
 }
 
 // EndContract godoc
@@ -210,23 +286,33 @@ func InviteTenant(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/end-contract [put]
 func EndContract(c *gin.Context) {
-	currentActive := contractservice.GetCurrentActive(c.Param("property_id"))
-	if currentActive == nil {
-		utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
-		return
-	}
-
+	currentActive := database.GetCurrentActiveContract(c.Param("property_id"))
 	_, ok := currentActive.EndDate()
 	if !ok {
-		now := time.Now()
-		newContract := contractservice.EndContract(currentActive.PropertyID, currentActive.TenantID, &now)
-		if newContract == nil {
-			utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
-			return
-		}
+		now := time.Now().Truncate(time.Minute)
+		database.EndContract(currentActive.ID, &now)
 		c.Status(http.StatusNoContent)
 	} else {
-		contractservice.EndContract(currentActive.PropertyID, currentActive.TenantID, nil)
+		database.EndContract(currentActive.PropertyID, nil)
 		c.Status(http.StatusNoContent)
 	}
+}
+
+// ArchiveProperty godoc
+//
+//	@Summary		Archive property by ID
+//	@Description	Archive a property by its ID
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Success		200			{object}	models.PropertyResponse	"Archived property data"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"Property not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/ [delete]
+func ArchiveProperty(c *gin.Context) {
+	property := database.ArchiveProperty(c.Param("property_id"))
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
 }

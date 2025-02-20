@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
+	"immotep/backend/services"
 	"immotep/backend/utils"
 )
 
@@ -13,7 +13,7 @@ type TestUserVerifier struct{}
 
 // Validates the username and password
 func (*TestUserVerifier) ValidateUser(email, password, _scope string, _r *http.Request) error {
-	pdb := database.DBclient
+	pdb := services.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
 	if err != nil {
 		return errors.New("wrong user")
@@ -27,7 +27,7 @@ func (*TestUserVerifier) ValidateUser(email, password, _scope string, _r *http.R
 
 // Adds claims to the token
 func (*TestUserVerifier) AddClaims(email, _tokenId, _tokenType, _scope string) (map[string]string, error) {
-	pdb := database.DBclient
+	pdb := services.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
 	if err != nil {
 		return nil, errors.New("wrong user")

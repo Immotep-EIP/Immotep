@@ -16,6 +16,9 @@ class LoginViewModel: ObservableObject {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @Published var user: User?
 
+    @AppStorage("user") private var storedUserData: String = ""
+    @Published var profileViewModel: ProfileViewModel?
+
     public var cancellables = Set<AnyCancellable>()
     public let userService: UserServiceProtocol
     public let authService: AuthServiceProtocol
@@ -38,14 +41,19 @@ class LoginViewModel: ObservableObject {
 
         Task {
             do {
-                let (accessToken, refreshToken) = try await authServiceCopy.loginUser(email: model.email, password: model.password)
-                TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken)
+                let (accessToken, refreshToken) =
+                    try await authServiceCopy.loginUser(email: model.email, password: model.password, keepMeSignedIn: model.keepMeSignedIn)
+                TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: nil, keepMeSignedIn: model.keepMeSignedIn )
                 user = try await userServiceCopy.fetchUserProfile(with: accessToken)
                 loginStatus = "Login successful!"
-                print(loginStatus)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    self.isLoggedIn = true
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+
+                if let user = user {
+                    saveUser(user)
+                    profileViewModel = ProfileViewModel()
                 }
+                    self.isLoggedIn = true
+//                }
             } catch {
                 loginStatus = "Error: \(error.localizedDescription)"
             }
@@ -54,8 +62,17 @@ class LoginViewModel: ObservableObject {
 
     func validateFields() -> String? {
         guard !model.email.isEmpty, !model.password.isEmpty else {
-            return "Please enter both email and password."
+            return "Please enter both email and password.".localized()
         }
         return nil
+    }
+
+    private func saveUser(_ user: User) {
+        let encoder = JSONEncoder()
+        if let encodedData = try? encoder.encode(user) {
+            if let jsonString = String(data: encodedData, encoding: .utf8) {
+                storedUserData = jsonString
+            }
+        }
     }
 }

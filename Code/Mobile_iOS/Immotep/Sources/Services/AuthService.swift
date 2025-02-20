@@ -9,14 +9,13 @@ import Foundation
 
 actor AuthService: Sendable, AuthServiceProtocol {
     static let shared = AuthService()
-    let apiUrl = "http://localhost:3001/api/v1"
 
-    func loginUser(email: String, password: String) async throws -> (String, String) {
-        return try await requestToken(grantType: "password", email: email, password: password)
+    func loginUser(email: String, password: String, keepMeSignedIn: Bool) async throws -> (String, String) {
+        return try await requestToken(grantType: "password", email: email, password: password, keepMeSignedIn: keepMeSignedIn)
     }
 
-    func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil) async throws -> (String, String) {
-        let url = URL(string: "\(apiUrl)/auth/token")!
+    func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil, keepMeSignedIn: Bool) async throws -> (String, String) {
+        let url = URL(string: "\(baseURL)/auth/token")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -55,19 +54,19 @@ actor AuthService: Sendable, AuthServiceProtocol {
 
         let (accessToken, refreshToken) = try TokenStorage.extractTokens(from: data)
         let expiresIn = try TokenStorage.extractExpiryDate(from: data)
-        TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: expiresIn)
+        TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: expiresIn, keepMeSignedIn: keepMeSignedIn)
 
         return (accessToken, refreshToken)
     }
 
     func authorizedRequest(for endpoint: String) async throws -> Data {
-        var accessToken = TokenStorage.getAccessToken()
+        var accessToken = await TokenStorage.getAccessToken()
 
         if accessToken == nil || TokenStorage.isTokenExpired() {
             accessToken = try await refreshAccessTokenIfNeeded()
         }
 
-        let url = URL(string: "\(apiUrl)/\(endpoint)")!
+        let url = URL(string: "\(baseURL)/\(endpoint)")!
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken!)", forHTTPHeaderField: "Authorization")
 
@@ -81,11 +80,13 @@ actor AuthService: Sendable, AuthServiceProtocol {
     }
 
     private func refreshAccessTokenIfNeeded() async throws -> String {
-        guard let refreshToken = TokenStorage.getRefreshToken() else {
+        print("refresh access token")
+        guard let refreshToken = await TokenStorage.getRefreshToken() else {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No refresh token found. Please log in again."])
         }
-
-        let (newAccessToken, _) = try await requestToken(grantType: "refresh_token", refreshToken: refreshToken)
+        print("refresh pending...")
+        let (newAccessToken, _) = try await requestToken(grantType: "refresh_token", refreshToken: refreshToken, keepMeSignedIn: true)
+        print("refresh complete.")
         return newAccessToken
     }
 
@@ -100,7 +101,7 @@ actor AuthService: Sendable, AuthServiceProtocol {
 }
 
 protocol AuthServiceProtocol {
-    func loginUser(email: String, password: String) async throws -> (String, String)
-    func requestToken(grantType: String, email: String?, password: String?, refreshToken: String?) async throws -> (String, String)
+    func loginUser(email: String, password: String, keepMeSignedIn: Bool) async throws -> (String, String)
+    func requestToken(grantType: String, email: String?, password: String?, refreshToken: String?, keepMeSignedIn: Bool) async throws -> (String, String)
     func authorizedRequest(for endpoint: String) async throws -> Data
 }

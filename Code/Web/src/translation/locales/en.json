@@ -4,7 +4,8 @@
       "email": {
         "label": "Email",
         "placeholder": "Enter your email",
-        "error": "Please fill your email."
+        "error": "Please fill your email.",
+        "valid_email": "Please enter a valid email."
       },
       "email_confirmation": {
         "label": "Email confirmation",
@@ -207,7 +208,7 @@
       "fr": "French",
       "user_infos": "User informations",
       "logout": "Logout",
-      "logout_success": "You are now disconnected."
+      "logout_success": "You are now disconnected"
     },
     "real_property_details": {
       "invite_tenant": "Invitation sent successfully",
@@ -221,7 +222,11 @@
         "inventory": {
           "add_room_modal_title": "Add a room",
           "add_stuff_modal_title": "Add an item",
-          "list_object_name": "Items in the room"
+          "list_object_name": "Items in the room",
+          "remove_room_confirmation": "Are you sure you want to remove this room?",
+          "remove_room_success": "Room deleted successfully",
+          "remove_stuff_confirmation": "Are you sure you want to remove this item?",
+          "remove_stuff_success": "Item deleted successfully"
         }
       }
     },

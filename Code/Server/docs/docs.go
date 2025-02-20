@@ -21,7 +21,7 @@ const docTemplate = `{
     "paths": {
         "/auth/invite/{id}/": {
             "post": {
-                "description": "Answer an invite from an owner with an invite link",
+                "description": "Answer an invite from an owner with an invite link by creating a new user with tenant role",
                 "consumes": [
                     "application/json"
                 ],
@@ -329,6 +329,167 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update property information by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Update property by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Archive a property by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Archive property by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Archived property data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/documents/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all documents of a contract related to a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get property documents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of documents",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DocumentResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active contract",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -708,6 +869,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/inventory/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get property information by its ID with inventory including rooms and furnitures",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get property inventory by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property inventory data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyInventoryResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/picture/": {
             "get": {
                 "security": [
@@ -1024,7 +1243,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Delete a room by its ID",
+                "description": "Archive a room by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1034,7 +1253,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Delete room by ID",
+                "summary": "Archive room by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -1052,8 +1271,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "Achieved room data",
+                        "schema": {
+                            "$ref": "#/definitions/models.RoomResponse"
+                        }
                     },
                     "403": {
                         "description": "Property not yours",
@@ -1278,7 +1500,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Delete a furniture by its ID",
+                "description": "Archive a furniture by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1288,7 +1510,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Delete furniture by ID",
+                "summary": "Archive furniture by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -1299,8 +1521,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "Archived furniture data",
+                        "schema": {
+                            "$ref": "#/definitions/models.FurnitureResponse"
+                        }
                     },
                     "404": {
                         "description": "Furniture not found",
@@ -1608,6 +1833,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/tenant/invite/{id}/": {
+            "post": {
+                "description": "Answer an invite from an owner with an invite link by accepting the invite",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Accept an invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pending contract ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Accepted"
+                    },
+                    "403": {
+                        "description": "Not a tenant",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Pending contract not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Property not available or tenant already has contract",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/users/": {
             "get": {
                 "security": [
@@ -1759,6 +2034,23 @@ const docTemplate = `{
                 "RoleTenant"
             ]
         },
+        "models.DocumentResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.FurnitureRequest": {
             "type": "object",
             "required": [
@@ -1776,6 +2068,9 @@ const docTemplate = `{
         "models.FurnitureResponse": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1978,50 +2273,17 @@ const docTemplate = `{
                 }
             }
         },
-        "models.PropertyRequest": {
-            "type": "object",
-            "required": [
-                "address",
-                "area_sqm",
-                "city",
-                "country",
-                "deposit_price",
-                "name",
-                "postal_code",
-                "rental_price_per_month"
-            ],
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "area_sqm": {
-                    "type": "number"
-                },
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "deposit_price": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "postal_code": {
-                    "type": "string"
-                },
-                "rental_price_per_month": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.PropertyResponse": {
+        "models.PropertyInventoryResponse": {
             "type": "object",
             "properties": {
                 "address": {
                     "type": "string"
+                },
+                "apartment_number": {
+                    "type": "string"
+                },
+                "archived": {
+                    "type": "boolean"
                 },
                 "area_sqm": {
                     "type": "number"
@@ -2036,7 +2298,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deposit_price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "end_date": {
                     "type": "string"
@@ -2060,13 +2322,122 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rental_price_per_month": {
-                    "type": "integer"
+                    "type": "number"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.roomResponse"
+                    }
                 },
                 "start_date": {
                     "type": "string"
                 },
                 "status": {
-                    "description": "calculated fields",
+                    "type": "string"
+                },
+                "tenant": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PropertyRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "area_sqm",
+                "city",
+                "country",
+                "deposit_price",
+                "name",
+                "postal_code",
+                "rental_price_per_month"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "apartment_number": {
+                    "type": "string"
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "deposit_price": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.PropertyResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "apartment_number": {
+                    "type": "string"
+                },
+                "archived": {
+                    "type": "boolean"
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deposit_price": {
+                    "type": "number"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nb_damage": {
+                    "type": "integer"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "picture_id": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "number"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "tenant": {
@@ -2088,6 +2459,9 @@ const docTemplate = `{
         "models.RoomResponse": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -2290,6 +2664,43 @@ const docTemplate = `{
                 }
             }
         },
+        "models.furnitureResponse": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.roomResponse": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "furnitures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.furnitureResponse"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "utils.Error": {
             "type": "object",
             "properties": {
@@ -2323,8 +2734,10 @@ const docTemplate = `{
                 "property-is-not-yours",
                 "not-an-owner",
                 "not-a-tenant",
+                "user-already-exists-as-owner",
                 "property-already-exists",
                 "property-not-available",
+                "tenant-already-has-contract",
                 "no-active-contract",
                 "failed-to-link-image",
                 "bad-base64-string",
@@ -2339,7 +2752,8 @@ const docTemplate = `{
                 "inventory-report-not-found",
                 "room-state-already-exists",
                 "furniture-state-already-exists",
-                "error-request-chatgpt-api"
+                "error-request-chatgpt-api",
+                "failed-send-email"
             ],
             "x-enum-varnames": [
                 "InvalidPassword",
@@ -2361,8 +2775,10 @@ const docTemplate = `{
                 "PropertyNotYours",
                 "NotAnOwner",
                 "NotATenant",
+                "UserAlreadyExistsAsOwner",
                 "PropertyAlreadyExists",
                 "PropertyNotAvailable",
+                "TenantAlreadyHasContract",
                 "NoActiveContract",
                 "FailedLinkImage",
                 "BadBase64String",
@@ -2377,7 +2793,8 @@ const docTemplate = `{
                 "InventoryReportNotFound",
                 "RoomStateAlreadyExists",
                 "FurnitureStateAlreadyExists",
-                "ErrorRequestChatGPTAPI"
+                "ErrorRequestChatGPTAPI",
+                "FailedSendEmail"
             ]
         }
     },

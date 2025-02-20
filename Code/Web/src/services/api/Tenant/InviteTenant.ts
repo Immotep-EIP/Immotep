@@ -5,7 +5,7 @@ export const InviteTenants = async (tenantInfo: InviteTenant) => {
     try {
         return await callApi<InviteTenant, InviteTenantResponse>({
             method: 'POST',
-            endpoint: `owner/send-invite/${tenantInfo.propertyId}`,
+            endpoint: `owner/send-invite/${tenantInfo.propertyId}/`,
             data: tenantInfo
         })
     } catch (error) {
