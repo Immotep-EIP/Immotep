@@ -48,7 +48,7 @@ const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({
   const [form] = Form.useForm()
 
   useEffect(() => {
-    if (propertyData) {
+    if (propertyData && isModalUpdateOpen) {
       form.setFieldsValue({
         name: propertyData.name,
         apartment_number: propertyData.apartment_number,
@@ -61,7 +61,7 @@ const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({
         deposit: propertyData.deposit_price
       })
     }
-  }, [propertyData, form])
+  }, [propertyData, form, isModalUpdateOpen])
 
   const uploadProps: UploadProps = {
     name: 'propertyPicture',
