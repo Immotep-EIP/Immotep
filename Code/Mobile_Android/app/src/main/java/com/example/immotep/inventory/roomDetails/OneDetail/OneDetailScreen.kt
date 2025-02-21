@@ -39,7 +39,8 @@ fun OneDetailScreen(
     baseDetail : RoomDetail,
     oldReportId : String?,
     navController : NavController,
-    propertyId : String
+    propertyId : String,
+    isRoom : Boolean = false
 ) {
     val viewModel : OneDetailViewModel = viewModel()
     val detailValue = viewModel.detail.collectAsState()
@@ -113,7 +114,8 @@ fun OneDetailScreen(
                         onClick = { viewModel.summarizeOrCompare(
                             oldReportId = oldReportId,
                             navController = navController,
-                            propertyId = propertyId
+                            propertyId = propertyId,
+                            isRoom = isRoom
                         ) },
                     ) {
                         Text(stringResource(if (isExit) R.string.compare_images else R.string.analyze_pictures))

@@ -68,7 +68,8 @@ data class RoomDetail(
             state = status,
             pictures = pictures,
             entryPictures = entryPictures,
-            details = arrayOf()
+            details = arrayOf(),
+            completed = completed
         )
     }
 }
@@ -107,7 +108,7 @@ data class Room (
         return RoomDetail(
             id = id,
             name = name,
-            completed = true,
+            completed = completed,
             comment = description,
             status = state,
             cleanliness = cleanliness,

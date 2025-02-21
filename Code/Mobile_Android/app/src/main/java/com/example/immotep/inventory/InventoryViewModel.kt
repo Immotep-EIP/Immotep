@@ -100,8 +100,8 @@ class InventoryViewModel(
         rooms.removeAt(roomIndex)
     }
 
-    fun editRoom(roomId: String, room: Room) {
-        val roomIndex = rooms.indexOf(rooms.find { it.id == roomId })
+    fun editRoom(room: Room) {
+        val roomIndex = rooms.indexOf(rooms.find { it.id == room.id })
         if (roomIndex < 0 || roomIndex >= rooms.size) return
         rooms[roomIndex] = room
     }

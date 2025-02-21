@@ -72,7 +72,7 @@ fun InventoryScreen(
             getRooms = { viewModel.getRooms() },
             addRoom = { viewModel.addRoom(it) },
             removeRoom = { viewModel.removeRoom(it) },
-            editRoom = { index, room -> viewModel.editRoom(index, room) },
+            editRoom = { room -> viewModel.editRoom(room) },
             closeInventory = {
                 viewModel.onClose()
                 viewModel.setInventoryOpen(InventoryOpenValues.CLOSED)

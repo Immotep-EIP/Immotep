@@ -33,27 +33,35 @@ import com.example.immotep.components.inventory.AddRoomOrDetailModal
 import com.example.immotep.components.inventory.NextInventoryButton
 import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.RoomDetail
+import com.example.immotep.inventory.roomDetails.EndRoomDetails.EndRoomDetailsScreen
 import com.example.immotep.inventory.roomDetails.OneDetail.OneDetailScreen
-import com.example.immotep.inventory.rooms.roomIsCompleted
 import com.example.immotep.layouts.InventoryLayout
+
+fun roomIsCompleted(room: Room): Boolean {
+    for (detail in room.details) {
+        if (!detail.completed) {
+            return false
+        }
+    }
+    return true
+}
 
 @Composable
 fun RoomDetailsScreen(
-    closeRoomPanel : (roomIndex: String, details: Array<RoomDetail>) -> Unit,
-    roomDetails: Array<RoomDetail>,
+    baseRoom: Room,
+    closeRoomPanel : (room : Room) -> Unit,
     addDetail: suspend (roomId : String, name : String) -> String?,
-    roomId: String,
-    roomName : String,
     oldReportId : String?,
     navController: NavController,
     propertyId: String
 ) {
-    val viewModel: RoomDetailsViewModel = viewModel(factory = RoomDetailsViewModelFactory(closeRoomPanel, addDetail, roomId))
+    val viewModel: RoomDetailsViewModel = viewModel(factory = RoomDetailsViewModelFactory(closeRoomPanel, addDetail, baseRoom.id))
 
     val currentlyOpenDetail = viewModel.currentlyOpenDetail.collectAsState()
     var addDetailModalOpen by rememberSaveable { mutableStateOf(false) }
+    var endRoomDetailsScreenOpen by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        viewModel.addBaseDetails(roomDetails)
+        viewModel.addBaseDetails(baseRoom.details)
     }
     AddRoomOrDetailModal(
         open = addDetailModalOpen,
@@ -61,8 +69,21 @@ fun RoomDetailsScreen(
         close = { addDetailModalOpen = false },
         isRoom = false
     )
+    if (endRoomDetailsScreenOpen) {
+        EndRoomDetailsScreen(
+            room = baseRoom,
+            closeRoomPanel = closeRoomPanel,
+            oldReportId = oldReportId,
+            propertyId = propertyId,
+            navController = navController,
+            isOpen = endRoomDetailsScreenOpen,
+            setOpen = { endRoomDetailsScreenOpen = it },
+            newDetails = viewModel.details.toTypedArray()
+        )
+        return
+    }
     if (currentlyOpenDetail.value == null) {
-        InventoryLayout(testTag = "roomsScreen", { viewModel.onClose(roomId) }) {
+        InventoryLayout(testTag = "roomsScreen", { viewModel.onClose(baseRoom) }) {
             InitialFadeIn {
                 Column {
                     Row(
@@ -95,7 +116,7 @@ fun RoomDetailsScreen(
                             testTag = "addDetailsButton"
                         )
                     }
-                    if (roomIsCompleted(Room(id = roomId, details = viewModel.details.toTypedArray(), name = roomName))) {
+                    if (roomIsCompleted(Room(id = baseRoom.id, details = viewModel.details.toTypedArray(), name = baseRoom.name))) {
                         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                             Button(
                                 shape = RoundedCornerShape(5.dp),
@@ -104,9 +125,9 @@ fun RoomDetailsScreen(
                                     backgroundColor = MaterialTheme.colorScheme.tertiary,
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ),
-                                onClick = { viewModel.onClose(roomId) },
+                                onClick = { endRoomDetailsScreenOpen = true },
                             ) {
-                                Text("${stringResource(R.string.complete_room)} $roomName")
+                                Text("${stringResource(R.string.complete_room)} ${baseRoom.name}")
                             }
                         }
                     }

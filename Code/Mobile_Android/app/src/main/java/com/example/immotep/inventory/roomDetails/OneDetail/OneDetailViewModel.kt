@@ -129,7 +129,7 @@ class OneDetailViewModel : ViewModel() {
         reset(null)
     }
 
-    private fun summarize(navController: NavController, propertyId: String) {
+    private fun summarize(navController: NavController, propertyId: String, isRoom : Boolean) {
         viewModelScope.launch {
             _aiLoading.value = true
             val authService = AuthService(navController.context.dataStore)
@@ -151,7 +151,7 @@ class OneDetailViewModel : ViewModel() {
                     summarizeInput = AiCallInput(
                         id = _detail.value.id,
                         pictures = picturesInput,
-                        type = InventoryLocationsTypes.furniture
+                        type = if (isRoom) InventoryLocationsTypes.room else InventoryLocationsTypes.furniture
                     )
                 )
                 _detail.value = _detail.value.copy(
@@ -168,7 +168,7 @@ class OneDetailViewModel : ViewModel() {
         }
     }
 
-    private fun compare(oldReportId : String, navController: NavController, propertyId: String) {
+    private fun compare(oldReportId : String, navController: NavController, propertyId: String, isRoom: Boolean) {
         viewModelScope.launch {
             _aiLoading.value = true
             val authService = AuthService(navController.context.dataStore)
@@ -191,7 +191,7 @@ class OneDetailViewModel : ViewModel() {
                     summarizeInput = AiCallInput(
                         id = _detail.value.id,
                         pictures = picturesInput,
-                        type = InventoryLocationsTypes.furniture
+                        type = if (isRoom) InventoryLocationsTypes.room else InventoryLocationsTypes.furniture
                     )
                 )
                 _detail.value = _detail.value.copy(
@@ -208,15 +208,15 @@ class OneDetailViewModel : ViewModel() {
         }
     }
 
-    fun summarizeOrCompare(oldReportId : String?, navController: NavController, propertyId: String) {
+    fun summarizeOrCompare(oldReportId : String?, navController: NavController, propertyId: String, isRoom: Boolean) {
         if (picture.isEmpty()) {
             _errors.value = _errors.value.copy(picture = true)
             println("picture is empty")
             return
         }
         if (oldReportId == null) {
-            return summarize(navController, propertyId)
+            return summarize(navController, propertyId, isRoom)
         }
-        return compare(oldReportId, navController, propertyId)
+        return compare(oldReportId, navController, propertyId, isRoom)
     }
 }

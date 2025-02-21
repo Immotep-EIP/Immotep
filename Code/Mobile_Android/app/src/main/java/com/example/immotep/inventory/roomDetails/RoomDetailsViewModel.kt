@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class RoomDetailsViewModel(
-    private val closeRoomPanel : (roomId: String, details: Array<RoomDetail>) -> Unit,
+    private val closeRoomPanel : (room : Room) -> Unit,
     private val addDetail : suspend (roomId : String, name : String) -> String?,
     private val roomId : String
 )  : ViewModel()  {
@@ -27,8 +27,9 @@ class RoomDetailsViewModel(
         details.addAll(bDetails)
     }
 
-    fun onClose(roomId : String) {
-        closeRoomPanel(roomId, details.toTypedArray())
+    fun onClose(room: Room) {
+        room.details = details.toTypedArray()
+        closeRoomPanel(room)
         details.clear()
     }
 
@@ -59,7 +60,7 @@ class RoomDetailsViewModel(
 }
 
 class RoomDetailsViewModelFactory(
-    private val closeRoomPanel : (roomIndex: String, details: Array<RoomDetail>) -> Unit,
+    private val closeRoomPanel : (room : Room) -> Unit,
     private val addDetail : suspend (roomId : String, name : String) -> String?,
     private val roomId : String
 ) :
