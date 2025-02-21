@@ -215,6 +215,10 @@
       "confirm_password_error": "Les mots de passe ne correspondent pas.",
       "fill_fields": "Veuillez remplir tous les champs."
     },
+    "register_tenant": {
+      "register_success": "Vous êtes maintenant inscrit.",
+      "register_success_description": "Vous êtes maintenant inscrit. Vous pouvez désormais accéder à votre compte depuis l'application mobile Immotep."
+    },
     "forgot_password": {
       "document_title": "Mot de passe oublié",
       "document_description": "Réinitialisez facilement votre mot de passe Immotep si vous l'avez oublié. Processus simple et rapide pour récupérer l'accès à votre compte.",

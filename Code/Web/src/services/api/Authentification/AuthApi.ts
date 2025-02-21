@@ -5,8 +5,8 @@ import { UserRegister, UserToken, TokenResponse } from '@/interfaces/User/User'
 
 export const register = async (userInfo: UserRegister) => {
   const endpoint = userInfo.contractId
-      ? `auth/invite/${userInfo.contractId}/`
-      : 'auth/register/';
+    ? `auth/invite/${userInfo.contractId}/`
+    : 'auth/register/'
 
   try {
     const response = await callApi({
@@ -23,7 +23,7 @@ export const register = async (userInfo: UserRegister) => {
 
 export const loginApi = async (userInfo: UserToken) => {
   try {
-    const response = await callApi< UserToken, TokenResponse>({
+    const response = await callApi<UserToken, TokenResponse>({
       method: 'POST',
       endpoint: 'auth/token/',
       data: qs.stringify(userInfo),

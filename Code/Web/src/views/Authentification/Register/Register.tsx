@@ -15,7 +15,7 @@ import PageTitle from '@/components/PageText/Title'
 import style from './Register.module.css'
 
 const Register: React.FC = () => {
-  const { goToLogin } = useNavigation()
+  const { goToLogin, goToSuccessRegisterTenant } = useNavigation()
   const [form] = Form.useForm()
   const { contractId } = useParams()
   const [loading, setLoading] = useState(false)
@@ -35,7 +35,11 @@ const Register: React.FC = () => {
         message.success(t('pages.register.register_success'))
         form.resetFields()
         setLoading(false)
-        goToLogin()
+        if (contractId) {
+          goToSuccessRegisterTenant()
+        } else {
+          goToLogin()
+        }
       } else message.error(t('pages.register.confirm_password_error'))
     } catch (err: any) {
       if (err.response.status === 409)
@@ -195,7 +199,10 @@ const Register: React.FC = () => {
                 </Button>
               </Form.Item>
 
-              <div className={style.dontHaveAccountContainer}>
+              <div
+                className={style.dontHaveAccountContainer}
+                style={{ display: contractId ? 'none' : 'flex' }}
+              >
                 <span className={style.footerText}>
                   {t('pages.register.already_have_account')}
                 </span>

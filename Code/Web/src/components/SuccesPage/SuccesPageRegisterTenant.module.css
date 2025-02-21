@@ -1,0 +1,41 @@
+.successPage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: 100vh;
+  width: 100%;
+  background-color: white;
+  overflow: scroll;
+}
+
+/*! HEADER */
+
+.headerContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 7vh;
+  width: 100%;
+}
+
+.headerLogo {
+  height: calc(7vh - 20px);
+  margin: 10px 20px;
+}
+
+.headerTitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #252525;
+}
+
+/*! CONTENT */
+
+.contentContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}

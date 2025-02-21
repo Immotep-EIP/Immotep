@@ -24,10 +24,6 @@ const useNavigation = () => {
     navigate(NavigationEnum.REAL_PROPERTY)
   }
 
-  const goToRealPropertyCreate = () => {
-    navigate(NavigationEnum.REAL_PROPERTY_CREATE)
-  }
-
   const goToRealPropertyDetails = (id: string) => {
     navigate(NavigationEnum.REAL_PROPERTY_DETAILS, {
       state: { id }
@@ -46,17 +42,21 @@ const useNavigation = () => {
     navigate(NavigationEnum.MY_PROFILE)
   }
 
+  const goToSuccessRegisterTenant = () => {
+    navigate(NavigationEnum.SUCCESS_REGISTER_TENANT)
+  }
+
   return {
     goToLogin,
     goToSignup,
     goToForgotPassword,
     goToOverview,
     goToRealProperty,
-    goToRealPropertyCreate,
     goToRealPropertyDetails,
     goToMessages,
     goToSettings,
-    goToMyProfile
+    goToMyProfile,
+    goToSuccessRegisterTenant
   }
 }
 

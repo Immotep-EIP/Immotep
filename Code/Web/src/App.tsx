@@ -25,6 +25,7 @@ import MyProfile from '@/views/MyProfile/MyProfile'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
 import Lost from './views/Lost/Lost.tsx'
+import SuccesPageRegisterTenant from './components/SuccesPage/SuccesPageRegisterTenant.tsx'
 
 if ('serviceWorker' in navigator) {
   ;(async () => {
@@ -53,6 +54,10 @@ const App: React.FC = () => (
           <Route path={NavigationEnum.LOGIN} element={<Login />} />
           <Route path={NavigationEnum.REGISTER} element={<Register />} />
           <Route path={NavigationEnum.REGISTER_TENANT} element={<Register />} />
+          <Route
+            path={NavigationEnum.SUCCESS_REGISTER_TENANT}
+            element={<SuccesPageRegisterTenant />}
+          />
           <Route
             path={NavigationEnum.FORGOT_PASSWORD}
             element={<ForgotPassword />}
