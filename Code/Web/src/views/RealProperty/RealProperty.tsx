@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 import useProperties from '@/hooks/useEffect/useProperties.ts'
 
-import locationIcon from '@/assets/icons/location.png'
+import locationIcon from '@/assets/icons/location.svg'
 
 import PageTitle from '@/components/PageText/Title.tsx'
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'

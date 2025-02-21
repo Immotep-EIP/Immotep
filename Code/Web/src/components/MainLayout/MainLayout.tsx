@@ -2,15 +2,15 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, Outlet, useLocation } from 'react-router-dom'
 import { Layout, Menu } from 'antd'
-
-import Property from '@/assets/icons/realProperty.png'
-import Overview from '@/assets/icons/overview.png'
-import Messages from '@/assets/icons/messages.png'
-import Immotep from '@/assets/icons/ImmotepLogo.svg'
-import Settings from '@/assets/icons/settings.png'
-import NavigationEnum from '@/enums/NavigationEnum'
-import type { MenuProps } from 'antd'
 import { t } from 'i18next'
+import type { MenuProps } from 'antd'
+
+import Property from '@/assets/icons/realProperty.svg'
+import Overview from '@/assets/icons/overview.svg'
+import Messages from '@/assets/icons/messages.svg'
+import Immotep from '@/assets/icons/ImmotepLogo.svg'
+import Settings from '@/assets/icons/settings.svg'
+import NavigationEnum from '@/enums/NavigationEnum'
 import style from './MainLayout.module.css'
 
 const { Content } = Layout

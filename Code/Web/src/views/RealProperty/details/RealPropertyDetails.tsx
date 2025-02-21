@@ -17,7 +17,7 @@ import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 
 import InviteTenantModal from '@/components/DetailsPage/InviteTenantModal'
 import { PropertyDetails } from '@/interfaces/Property/Property'
-import returnIcon from '@/assets/icons/retour.png'
+import returnIcon from '@/assets/icons/retour.svg'
 
 import { PropertyIdProvider } from '@/context/propertyIdContext'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
