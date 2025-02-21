@@ -155,7 +155,7 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
             name="apartment_number"
             rules={[
               {
-                required: true,
+                required: false,
                 message: t('components.input.apartment_number.error')
               }
             ]}
