@@ -149,12 +149,12 @@ data class InventoryReportRoom(
         val tmpRoom = Room(
             id = id,
             name = name,
-            description = note,
+            description = if (empty) "" else note,
             details = Array(furnitures.size) {
                 RoomDetail(id = "", name = "")
             },
-            cleanliness = cleanliness,
-            state = state,
+            cleanliness = if (empty) Cleanliness.not_set else cleanliness,
+            state = if (empty) State.not_set else state,
             entryPictures = if (pictures.isEmpty()) null else pictures.toTypedArray(),
         )
         furnitures.forEachIndexed {
