@@ -174,7 +174,7 @@ const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({
             name="apartment_number"
             rules={[
               {
-                required: true,
+                required: false,
                 message: t('components.input.apartment_number.error')
               }
             ]}

@@ -247,7 +247,9 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
               )}
             >
               <span className={style.detailsText}>
-                {`n°${propertyData?.apartment_number} - ${propertyData?.address}, ${propertyData?.postal_code} ${propertyData?.city}`}
+                {propertyData?.apartment_number
+                  ? `N°${propertyData?.apartment_number} - ${propertyData?.address}, ${propertyData?.postal_code} ${propertyData?.city}`
+                  : `${propertyData?.address}, ${propertyData?.postal_code} ${propertyData?.city}`}
               </span>
             </SubtitledElement>
           </div>
