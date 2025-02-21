@@ -47,6 +47,7 @@ import com.example.immotep.addPropertyModal.AddPropertyModal
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
+import com.example.immotep.utils.DateFormatter
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 
@@ -106,10 +107,9 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
                 PropertyBoxTextLine(property.address, Icons.Outlined.Place)
                 PropertyBoxTextLine(property.tenant?: "", Icons.Outlined.AccountCircle)
                 PropertyBoxTextLine(
-                    if (property.startDate == null)
-                        "---------------------"
-                    else
-                        property.startDate.format(DateTimeFormatter.ISO_LOCAL_DATE), Icons.Outlined.DateRange)
+                    DateFormatter.formatOffsetDateTime(property.startDate)?: "---------------------",
+                    Icons.Outlined.DateRange
+                )
             }
         }
         Box(

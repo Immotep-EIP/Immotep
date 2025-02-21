@@ -46,6 +46,7 @@ import com.example.immotep.R
 import com.example.immotep.realProperty.PropertyBox
 import com.example.immotep.realProperty.PropertyBoxTextLine
 import com.example.immotep.ui.components.BackButton
+import com.example.immotep.utils.DateFormatter
 import java.text.SimpleDateFormat
 
 @Composable
@@ -104,18 +105,14 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
             Column(modifier = Modifier.fillMaxWidth(0.5f)) {
                 PropertyBoxTextLine(property.value.tenant?: "", Icons.Outlined.AccountBox)
                 PropertyBoxTextLine(
-                    if (property.value.startDate != null)
-                        SimpleDateFormat("dd/MM/yyyy").format(property.value.startDate)
-                    else
+                        DateFormatter.formatOffsetDateTime(property.value.startDate) ?:
                         "---------------------",
                     Icons.Outlined.CalendarMonth
                 )
                 PropertyBoxTextLine(
                     (
-                            if (property.value.endDate != null)
-                                SimpleDateFormat("dd/MM/yyyy").format(property.value.endDate)
-                            else
-                                "---------------------"
+                            DateFormatter.formatOffsetDateTime(property.value.endDate) ?:
+                            "---------------------"
                     ),
                     Icons.Outlined.CalendarMonth
                 )
