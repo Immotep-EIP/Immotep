@@ -59,36 +59,61 @@ data class RoomDetail(
             quantity = 1
         )
     }
+    fun toRoom() : Room {
+        return Room(
+            id = id,
+            name = name,
+            description = comment,
+            cleanliness = cleanliness,
+            state = status,
+            pictures = pictures,
+            entryPictures = entryPictures,
+            details = arrayOf()
+        )
+    }
 }
 
 data class Room (
     var id : String,
     val name : String,
     val description : String = "",
+    val cleanliness: Cleanliness = Cleanliness.not_set,
+    val state: State = State.not_set,
+    val completed : Boolean = false,
+    val pictures: Array<Uri> = arrayOf(),
+    val entryPictures: Array<String>? = null,
     var details : Array<RoomDetail> = arrayOf()
 ) {
     fun toInventoryReportRoom(context: Context) : InventoryReportRoom {
         val tmpRoom = InventoryReportRoom(
             id = id,
             name = name,
-            state = details[0].status,
-            cleanliness = details[0].cleanliness,
-            note = details[0].comment,
+            state = state,
+            cleanliness = cleanliness,
+            note = description,
             pictures = Vector(),
             furnitures = Vector()
         )
-        var addedPicture = false
+        pictures.forEach {
+            val encodedPicture = Base64Utils.encodeImageToBase64(it, context)
+            tmpRoom.pictures.add(encodedPicture)
+        }
         details.forEach {
-            if (!addedPicture) {
-                val tmpRoomDetail = it.toInventoryReportFurniture(context)
-                tmpRoom.pictures.add(tmpRoomDetail.pictures[0])
-                addedPicture = true
-                tmpRoom.furnitures.add(tmpRoomDetail)
-            } else {
-                tmpRoom.furnitures.add(it.toInventoryReportFurniture(context))
-            }
+            tmpRoom.furnitures.add(it.toInventoryReportFurniture(context))
         }
         return tmpRoom
+    }
+    fun toRoomDetail() : RoomDetail {
+        return RoomDetail(
+            id = id,
+            name = name,
+            completed = true,
+            comment = description,
+            status = state,
+            cleanliness = cleanliness,
+            pictures = pictures,
+            entryPictures = entryPictures
+        )
     }
 }
 
@@ -101,13 +126,11 @@ data class InventoryReportOutput(
     val type: String
 ) {
     fun getRoomsAsRooms(empty : Boolean = false) : Array<Room> {
-        val castedRooms = Array(rooms.size) {
-            Room(id = "", name = "")
+        val castedRooms = Vector<Room>()
+        rooms.forEach { room ->
+            castedRooms.add(room.toRoom(empty = empty))
         }
-        rooms.forEachIndexed { index, room ->
-            castedRooms[index] = room.toRoom(empty = empty)
-        }
-        return castedRooms
+        return castedRooms.toTypedArray()
     }
 }
 
@@ -129,6 +152,9 @@ data class InventoryReportRoom(
             details = Array(furnitures.size) {
                 RoomDetail(id = "", name = "")
             },
+            cleanliness = cleanliness,
+            state = state,
+            entryPictures = if (pictures.isEmpty()) null else pictures.toTypedArray(),
         )
         furnitures.forEachIndexed {
             index, furniture ->

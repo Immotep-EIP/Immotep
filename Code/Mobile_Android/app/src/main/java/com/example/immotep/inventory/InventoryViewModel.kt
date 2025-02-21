@@ -169,10 +169,16 @@ class InventoryViewModel(
                 val newRooms = mutableListOf<Room>()
                 rooms.forEach {
                     val roomsDetails = ApiClient.apiService.getAllFurnitures(bearerToken, propertyId, it.id)
-                    val room = Room(it.id, it.name, "", roomsDetails.map { detail -> RoomDetail(
-                        id = detail.id,
-                        name = detail.name,
-                    )}.toTypedArray())
+                    val room = Room(
+                        id = it.id,
+                        name = it.name,
+                        description = "",
+                        details = roomsDetails.map {
+                            detail -> RoomDetail(
+                            id = detail.id,
+                            name = detail.name,
+                            )
+                        }.toTypedArray())
                     newRooms.add(room)
                 }
                 this@InventoryViewModel.rooms.addAll(newRooms)
