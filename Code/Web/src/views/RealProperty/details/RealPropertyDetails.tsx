@@ -26,8 +26,8 @@ import useImageCache from '@/hooks/useEffect/useImageCache'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import useProperties from '@/hooks/useEffect/useProperties'
 import {
-  savePropertiesToDB,
-  removePropertyFromDB
+  removePropertyFromDB,
+  updatePropertyInDB
 } from '@/utils/cache/property/indexedDB'
 import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
@@ -74,7 +74,6 @@ interface DetailsPartProps {
   propertyData: PropertyDetails | null
   showModal: () => void
   propertyId: string
-  getPropertyDetails: (id: string) => void
   showModalUpdate: () => void
 }
 
@@ -82,7 +81,6 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
   propertyData,
   showModal,
   propertyId,
-  getPropertyDetails,
   showModalUpdate
 }) => {
   const { t } = useTranslation()
@@ -91,6 +89,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
     propertyData?.id || '',
     GetPropertyPicture
   )
+  const { refreshPropertyDetails } = useProperties()
 
   const removeProperty = async () => {
     Modal.confirm({
@@ -131,10 +130,12 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
             return
           }
           await StopCurrentContract(propertyData?.id || '')
-          const updatedProperty = { ...propertyData, status: 'available' }
-          await savePropertiesToDB([updatedProperty])
+          await updatePropertyInDB({
+            ...propertyData,
+            status: PropertyStatusEnum.AVAILABLE
+          })
+          refreshPropertyDetails(propertyData.id)
           message.success(t('components.messages.end_contract.success'))
-          getPropertyDetails(propertyData.id)
         } catch (error) {
           console.error('Error ending contract:', error)
           message.error(t('components.messages.end_contract.error'))
@@ -316,10 +317,8 @@ const RealPropertyDetails: React.FC = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const { id } = location.state || {}
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => setIsModalOpen(true)
-  const handleCancel = () => setIsModalOpen(false)
 
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false)
   const showModalUpdate = () => setIsModalUpdateOpen(true)
@@ -327,14 +326,24 @@ const RealPropertyDetails: React.FC = () => {
 
   const {
     propertyDetails: propertyData,
+    refreshPropertyDetails,
     loading,
-    error,
-    getPropertyDetails
+    error
   } = useProperties(id)
 
+  const handleCancel = (invitationSent: boolean) => {
+    setIsModalOpen(false)
+    if (invitationSent) {
+      refreshPropertyDetails(id)
+    }
+  }
+
   useEffect(() => {
-    getPropertyDetails(id)
-  }, [id, isPropertyUpdated])
+    if (isPropertyUpdated) {
+      refreshPropertyDetails(id)
+      setIsPropertyUpdated(false)
+    }
+  }, [isPropertyUpdated, id, refreshPropertyDetails])
 
   if (loading) {
     return <div>{t('components.loading')}</div>
@@ -356,20 +365,23 @@ const RealPropertyDetails: React.FC = () => {
           propertyData={propertyData}
           showModal={showModal}
           propertyId={id}
-          getPropertyDetails={getPropertyDetails}
           showModalUpdate={showModalUpdate}
         />
-        <InviteTenantModal
-          isOpen={isModalOpen}
-          onClose={handleCancel}
-          propertyId={id}
-        />
-        <RealPropertyUpdate
-          isModalUpdateOpen={isModalUpdateOpen}
-          setIsModalUpdateOpen={setIsModalUpdateOpen}
-          propertyData={propertyData}
-          setIsPropertyUpdated={setIsPropertyUpdated}
-        />
+        {propertyData && (
+          <>
+            <InviteTenantModal
+              isOpen={isModalOpen}
+              onClose={handleCancel}
+              property={propertyData}
+            />
+            <RealPropertyUpdate
+              isModalUpdateOpen={isModalUpdateOpen}
+              setIsModalUpdateOpen={setIsModalUpdateOpen}
+              propertyData={propertyData}
+              setIsPropertyUpdated={setIsPropertyUpdated}
+            />
+          </>
+        )}
       </div>
     </>
   )
