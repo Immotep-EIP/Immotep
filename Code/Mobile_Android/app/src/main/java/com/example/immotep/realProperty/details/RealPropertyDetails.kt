@@ -102,7 +102,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
                 .padding(5.dp)
         ) {
             Column(modifier = Modifier.fillMaxWidth(0.5f)) {
-                PropertyBoxTextLine(property.value.tenant, Icons.Outlined.AccountBox)
+                PropertyBoxTextLine(property.value.tenant?: "", Icons.Outlined.AccountBox)
                 PropertyBoxTextLine(
                     if (property.value.startDate != null)
                         SimpleDateFormat("dd/MM/yyyy").format(property.value.startDate)

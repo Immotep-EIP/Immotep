@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.Date
 
 interface IDetailedProperty : IProperty {
@@ -28,10 +29,10 @@ data class DetailedProperty(
     override val id : String = "",
     override val image : String = "",
     override val address : String = "",
-    override val tenant : String = "",
+    override val tenant : String? = null,
     override val available : Boolean = true,
-    override val startDate : LocalDateTime? = null,
-    override val endDate : LocalDateTime? = null,
+    override val startDate : OffsetDateTime? = null,
+    override val endDate : OffsetDateTime? = null,
     override val area : Int = 0,
     override val rent : Int = 0,
     override val deposit : Int = 0,
@@ -72,8 +73,8 @@ class RealPropertyDetailsViewModel(private val propertyId: String, private val n
                     address = getPropertyRes.address,
                     tenant = getPropertyRes.tenant,
                     available = getPropertyRes.status == "available",
-                    startDate = if (getPropertyRes.start_date != null) LocalDateTime.parse(getPropertyRes.start_date) else null,
-                    endDate = if (getPropertyRes.end_date != null) LocalDateTime.parse(getPropertyRes.end_date) else null,
+                    startDate = if (getPropertyRes.start_date != null) OffsetDateTime.parse(getPropertyRes.start_date) else null,
+                    endDate = if (getPropertyRes.end_date != null) OffsetDateTime.parse(getPropertyRes.end_date) else null,
                     area = getPropertyRes.area_sqm.toInt(),
                     rent = getPropertyRes.rental_price_per_month,
                     deposit = getPropertyRes.deposit_price,

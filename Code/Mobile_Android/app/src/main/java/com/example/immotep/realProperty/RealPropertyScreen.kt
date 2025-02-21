@@ -48,6 +48,7 @@ import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun PropertyBoxTextLine(text: String, icon: ImageVector) {
@@ -103,12 +104,12 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
                 modifier = Modifier.padding(start = 10.dp)
             ) {
                 PropertyBoxTextLine(property.address, Icons.Outlined.Place)
-                PropertyBoxTextLine(property.tenant, Icons.Outlined.AccountCircle)
+                PropertyBoxTextLine(property.tenant?: "", Icons.Outlined.AccountCircle)
                 PropertyBoxTextLine(
                     if (property.startDate == null)
                         "---------------------"
                     else
-                        SimpleDateFormat("dd/MM/yyyy").format(property.startDate), Icons.Outlined.DateRange)
+                        property.startDate.format(DateTimeFormatter.ISO_LOCAL_DATE), Icons.Outlined.DateRange)
             }
         }
         Box(

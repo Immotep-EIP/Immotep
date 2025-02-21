@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 import java.util.Date
 import kotlin.collections.map
 import kotlin.collections.toTypedArray
@@ -23,20 +25,20 @@ interface IProperty {
     val id: String
     val image: String
     val address: String
-    val tenant: String
+    val tenant: String?
     val available: Boolean
-    val startDate: LocalDateTime?
-    val endDate: LocalDateTime?
+    val startDate: OffsetDateTime?
+    val endDate: OffsetDateTime?
 }
 
 data class Property(
     override val id: String = "",
     override val image: String = "",
     override val address: String = "",
-    override val tenant: String = "",
+    override val tenant: String? = null,
     override val available: Boolean = true,
-    override val startDate: LocalDateTime? = null,
-    override val endDate: LocalDateTime? = null
+    override val startDate: OffsetDateTime? = null,
+    override val endDate: OffsetDateTime? = null
 ) : IProperty
 
 class RealPropertyViewModel(private val navController: NavController) : ViewModel() {
@@ -57,18 +59,24 @@ class RealPropertyViewModel(private val navController: NavController) : ViewMode
             try {
                 val newProperties = ApiClient.apiService.getProperties(bearerToken)
                 newProperties.forEach {
-                    properties.add(Property(
-                        id = it.id,
-                        image = "",
-                        address = it.address,
-                        tenant = it.tenant,
-                        available = it.status == "available",
-                        startDate = if (it.start_date != null) LocalDateTime.parse(it.start_date) else null,
-                        endDate = if (it.end_date != null) LocalDateTime.parse(it.end_date) else null
-                    ))
+                    try {
+                        properties.add(
+                            Property(
+                                id = it.id,
+                                image = "",
+                                address = it.address,
+                                tenant = it.tenant,
+                                available = it.status == "available",
+                                startDate = if (it.start_date != null) OffsetDateTime.parse(it.start_date) else null,
+                                endDate = if (it.end_date != null) OffsetDateTime.parse(it.end_date) else null
+                            )
+                        )
+                    } catch (e : Exception) {
+                        println("error adding this property to the list ${e.message}")
+                    }
                 }
             } catch (e : Exception) {
-                println("error getting properties")
+                println("error getting properties ${e.message}")
                 e.printStackTrace()
             }
         }
