@@ -10,6 +10,8 @@ import SwiftUI
 struct InventoryTypeView: View {
     @Binding var property: Property
     @StateObject private var inventoryViewModel: InventoryViewModel
+    @State private var navigateToEntry: Bool = false
+    @State private var navigateToExit: Bool = false
 
     init(property: Binding<Property>) {
         self._property = property
@@ -21,10 +23,11 @@ struct InventoryTypeView: View {
             VStack(spacing: 0) {
                 TopBar(title: "Inventory")
                 VStack {
-                    NavigationLink {
-                        InventoryRoomView()
-                            .environmentObject(inventoryViewModel)
-                    } label: {
+                    Button(action: {
+                        inventoryViewModel.isEntryInventory = true
+                        print("Entry Inventory selected: \(inventoryViewModel.isEntryInventory)")
+                        navigateToEntry = true
+                    }, label: {
                         HStack {
                             Image(systemName: "figure.walk.arrival")
                                 .foregroundStyle(Color("textColor"))
@@ -38,22 +41,29 @@ struct InventoryTypeView: View {
                                 .fontWeight(.bold)
                                 .font(.title)
                         }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                    )
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
+                    })
                     .padding(.horizontal)
-                    .onTapGesture {
-                        inventoryViewModel.isEntryInventory = true
-                    }
 
-                    NavigationLink {
-                        InventoryRoomView()
-                            .environmentObject(inventoryViewModel)
-                    } label: {
+                    NavigationLink(
+                        destination: InventoryRoomView()
+                            .environmentObject(inventoryViewModel),
+                        isActive: $navigateToEntry
+                    ) {
+                        EmptyView()
+                    }
+                    .hidden()
+
+                    Button(action: {
+                        inventoryViewModel.isEntryInventory = false
+                        print("Exit Inventory selected: \(inventoryViewModel.isEntryInventory)")
+                        navigateToExit = true
+                    }, label: {
                         HStack {
                             Image(systemName: "figure.walk.departure")
                                 .foregroundStyle(Color("textColor"))
@@ -67,17 +77,23 @@ struct InventoryTypeView: View {
                                 .fontWeight(.bold)
                                 .font(.title)
                         }
-                    }
-                    .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
+                    })
                     .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                    )
-                    .padding()
-                    .onTapGesture {
-                        inventoryViewModel.isEntryInventory = false
+
+                    NavigationLink(
+                        destination: InventoryRoomView()
+                            .environmentObject(inventoryViewModel),
+                        isActive: $navigateToExit
+                    ) {
+                        EmptyView()
                     }
+                    .hidden()
                 }
                 .padding(.top, 20)
 

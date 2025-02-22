@@ -176,14 +176,13 @@ struct InventoryEntryEvaluationView: View {
         do {
             try await inventoryViewModel.markStuffAsChecked(selectedStuff)
             try await inventoryViewModel.sendStuffReport()
-            isReportSent = true // Mettre à jour l'état pour indiquer que le rapport a été envoyé
+            isReportSent = true
         } catch {
             errorMessage = "Error: \(error.localizedDescription)"
         }
     }
 
     private func validateReport() async {
-        // Mettre à jour la variable `checked` du stuff sélectionné
         if let index = inventoryViewModel.selectedInventory.firstIndex(where: { $0.id == selectedStuff.id }) {
             inventoryViewModel.selectedInventory[index].checked = true
             inventoryViewModel.selectedInventory[index].images = inventoryViewModel.selectedImages
@@ -192,7 +191,6 @@ struct InventoryEntryEvaluationView: View {
             inventoryViewModel.updateRoomCheckedStatus()
         }
 
-        // Mettre à jour localRooms
         if let roomIndex = inventoryViewModel.localRooms.firstIndex(where: { $0.id == inventoryViewModel.selectedRoom?.id }),
            let stuffIndex = inventoryViewModel.localRooms[roomIndex].inventory.firstIndex(where: { $0.id == selectedStuff.id }) {
             inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].checked = true
@@ -201,7 +199,6 @@ struct InventoryEntryEvaluationView: View {
             inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].comment = inventoryViewModel.comment
         }
 
-        // Revenir à la vue précédente
         presentationMode.wrappedValue.dismiss()
     }
 }
@@ -283,7 +280,6 @@ struct InventoryEntryEvaluationView_Previews: PreviewProvider {
         let fakeProperty = exampleDataProperty
         let viewModel = InventoryViewModel(property: fakeProperty)
 
-        // Créez une instance de LocalInventory pour l'aperçu
         let exampleLocalInventory = LocalInventory(
             id: fakeProperty.rooms[0].inventory[0].id,
             propertyId: fakeProperty.rooms[0].inventory[0].propertyId,

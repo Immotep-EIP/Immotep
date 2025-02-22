@@ -8,6 +8,7 @@ struct InventoryRoomView: View {
     @State private var showAddRoomAlert: Bool = false
     @State private var showDeleteConfirmationAlert: Bool = false
     @State private var roomToDelete: LocalRoom?
+    @State private var showCompletionMessage: Bool = false
 
     var body: some View {
         NavigationView {
@@ -26,7 +27,9 @@ struct InventoryRoomView: View {
                                 Task {
                                     do {
                                         try await inventoryViewModel.finalizeInventory()
+                                        showCompletionMessage = true
                                     } catch {
+                                        showCompletionMessage = true
                                         print("Error finalizing inventory: \(error.localizedDescription)")
                                     }
                                 }
@@ -98,6 +101,18 @@ struct InventoryRoomView: View {
                         }
                     )
                 }
+                if showCompletionMessage, let message = inventoryViewModel.completionMessage {
+                    CustomAlertTwoButtons(
+                        isActive: $showCompletionMessage,
+                        title: inventoryViewModel.isEntryInventory ? "Entry Inventory" : "Exit Inventory",
+                        message: message,
+                        buttonTitle: "OK",
+                        secondaryButtonTitle: nil,
+                        action: {
+                        },
+                        secondaryAction: nil
+                    )
+                }
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -113,18 +128,11 @@ struct RoomListView: View {
         List {
             ForEach(inventoryViewModel.localRooms) { room in
                 NavigationLink(destination: {
-                    if let selectedRoom = inventoryViewModel.selectedRoom {
-                        InventoryStuffView(selectedRoom: .constant(selectedRoom))
-                            .environmentObject(inventoryViewModel)
-                    } else {
-                        Text("Aucune pièce sélectionnée.")
-                    }
+                    InventoryStuffView(roomId: room.id)
+                        .environmentObject(inventoryViewModel)
                 }, label: {
                     RoomCard(room: room, isEntryInventory: inventoryViewModel.isEntryInventory)
                 })
-                .onAppear {
-                    inventoryViewModel.selectRoom(room)
-                }
                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                     Button(role: .destructive) {
                         roomToDelete = room
@@ -191,7 +199,7 @@ struct RoomCard: View {
 struct InventoryRoomView_Previews: PreviewProvider {
     static var previews: some View {
         let fakeProperty = exampleDataProperty
-        let viewModel = InventoryViewModel(property: fakeProperty)
+        let viewModel = InventoryViewModel(property: fakeProperty, isEntryInventory: false)
         InventoryRoomView()
             .environmentObject(viewModel)
     }
