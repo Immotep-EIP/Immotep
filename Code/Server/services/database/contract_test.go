@@ -16,10 +16,11 @@ func BuildTestContract() db.ContractModel {
 	end := time.Now().Add(time.Hour)
 	return db.ContractModel{
 		InnerContract: db.InnerContract{
-			TenantID:   "1",
+			ID:         "1",
 			Active:     true,
 			StartDate:  time.Now(),
 			EndDate:    &end,
+			TenantID:   "1",
 			PropertyID: "1",
 			CreatedAt:  time.Now(),
 		},
@@ -63,9 +64,9 @@ func TestCreateContract(t *testing.T) {
 
 	mock.Contract.Expect(
 		client.Client.Contract.CreateOne(
+			db.Contract.StartDate.Set(pendingContract.StartDate),
 			db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
 			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.StartDate.Set(pendingContract.StartDate),
 			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 		),
 	).Returns(contract)
@@ -91,9 +92,9 @@ func TestCreateContract_AlreadyExists(t *testing.T) {
 
 	mock.Contract.Expect(
 		client.Client.Contract.CreateOne(
+			db.Contract.StartDate.Set(pendingContract.StartDate),
 			db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
 			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.StartDate.Set(pendingContract.StartDate),
 			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 		),
 	).Errors(&protocol.UserFacingError{
@@ -118,9 +119,9 @@ func TestCreateContract_NoConnection1(t *testing.T) {
 
 	mock.Contract.Expect(
 		client.Client.Contract.CreateOne(
+			db.Contract.StartDate.Set(pendingContract.StartDate),
 			db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
 			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.StartDate.Set(pendingContract.StartDate),
 			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 		),
 	).Errors(errors.New("connection failed"))
@@ -140,9 +141,9 @@ func TestCreateContract_NoConnection2(t *testing.T) {
 
 	mock.Contract.Expect(
 		client.Client.Contract.CreateOne(
+			db.Contract.StartDate.Set(pendingContract.StartDate),
 			db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
 			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.StartDate.Set(pendingContract.StartDate),
 			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 		),
 	).Returns(contract)
@@ -400,14 +401,14 @@ func TestEndContract(t *testing.T) {
 
 	mock.Contract.Expect(
 		client.Client.Contract.FindUnique(
-			db.Contract.TenantIDPropertyID(db.Contract.TenantID.Equals("1"), db.Contract.PropertyID.Equals("1")),
+			db.Contract.ID.Equals(contract.ID),
 		).Update(
 			db.Contract.Active.Set(false),
 			db.Contract.EndDate.SetIfPresent(&endDate),
 		),
 	).Returns(contract)
 
-	endedContract := database.EndContract("1", "1", &endDate)
+	endedContract := database.EndContract(contract.ID, &endDate)
 	assert.NotNil(t, endedContract)
 	assert.Equal(t, "1", endedContract.TenantID)
 	assert.Equal(t, "1", endedContract.PropertyID)
@@ -423,14 +424,14 @@ func TestEndContract_NotFound(t *testing.T) {
 
 	mock.Contract.Expect(
 		client.Client.Contract.FindUnique(
-			db.Contract.TenantIDPropertyID(db.Contract.TenantID.Equals(contract.TenantID), db.Contract.PropertyID.Equals(contract.PropertyID)),
+			db.Contract.ID.Equals(contract.ID),
 		).Update(
 			db.Contract.Active.Set(false),
 			db.Contract.EndDate.SetIfPresent(&endDate),
 		),
 	).Errors(db.ErrNotFound)
 
-	endedContract := database.EndContract(contract.PropertyID, contract.TenantID, &endDate)
+	endedContract := database.EndContract(contract.ID, &endDate)
 	assert.Nil(t, endedContract)
 }
 
@@ -443,7 +444,7 @@ func TestEndContract_NoConnection(t *testing.T) {
 
 	mock.Contract.Expect(
 		client.Client.Contract.FindUnique(
-			db.Contract.TenantIDPropertyID(db.Contract.TenantID.Equals(contract.TenantID), db.Contract.PropertyID.Equals(contract.PropertyID)),
+			db.Contract.ID.Equals(contract.ID),
 		).Update(
 			db.Contract.Active.Set(false),
 			db.Contract.EndDate.SetIfPresent(&endDate),
@@ -451,6 +452,6 @@ func TestEndContract_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.EndContract(contract.PropertyID, contract.TenantID, &endDate)
+		database.EndContract(contract.ID, &endDate)
 	})
 }

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services"
 )
@@ -13,6 +14,7 @@ func GetAllPropertyByOwnerId(ownerId string) []db.PropertyModel {
 	).With(
 		db.Property.Damages.Fetch(),
 		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.PendingContract.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -27,6 +29,7 @@ func GetPropertyByID(id string) *db.PropertyModel {
 	).With(
 		db.Property.Damages.Fetch(),
 		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.PendingContract.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -44,6 +47,7 @@ func GetPropertyInventory(id string) *db.PropertyModel {
 	).With(
 		db.Property.Damages.Fetch(),
 		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.PendingContract.Fetch(),
 		db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
 	).Exec(pdb.Context)
 	if err != nil {
@@ -67,12 +71,40 @@ func CreateProperty(property db.PropertyModel, ownerId string) *db.PropertyModel
 		db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 		db.Property.DepositPrice.Set(property.DepositPrice),
 		db.Property.Owner.Link(db.User.ID.Equals(ownerId)),
+		db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
 	).With(
-		db.Property.Contracts.Fetch(),
 		db.Property.Damages.Fetch(),
+		db.Property.Contracts.Fetch(),
+		db.Property.PendingContract.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {
+			return nil
+		}
+		panic(err)
+	}
+	return newProperty
+}
+
+func UpdateProperty(id string, property models.PropertyUpdateRequest) *db.PropertyModel {
+	pdb := services.DBclient
+	newProperty, err := pdb.Client.Property.FindUnique(db.Property.ID.Equals(id)).With(
+		db.Property.Damages.Fetch(),
+		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.PendingContract.Fetch(),
+	).Update(
+		db.Property.Name.SetIfPresent(property.Name),
+		db.Property.Address.SetIfPresent(property.Address),
+		db.Property.ApartmentNumber.SetIfPresent(property.ApartmentNumber),
+		db.Property.City.SetIfPresent(property.City),
+		db.Property.PostalCode.SetIfPresent(property.PostalCode),
+		db.Property.Country.SetIfPresent(property.Country),
+		db.Property.AreaSqm.SetIfPresent(property.AreaSqm),
+		db.Property.RentalPricePerMonth.SetIfPresent(property.RentalPricePerMonth),
+		db.Property.DepositPrice.SetIfPresent(property.DepositPrice),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
 			return nil
 		}
 		panic(err)
@@ -87,6 +119,7 @@ func UpdatePropertyPicture(property db.PropertyModel, image db.ImageModel) *db.P
 	).With(
 		db.Property.Damages.Fetch(),
 		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.PendingContract.Fetch(),
 	).Update(
 		db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
 	).Exec(pdb.Context)
@@ -106,6 +139,7 @@ func ArchiveProperty(propertyId string) *db.PropertyModel {
 	).With(
 		db.Property.Damages.Fetch(),
 		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.PendingContract.Fetch(),
 	).Update(
 		db.Property.Archived.Set(true),
 	).Exec(pdb.Context)

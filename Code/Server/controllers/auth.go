@@ -69,7 +69,7 @@ func RegisterOwner(c *gin.Context) {
 // RegisterTenant godoc
 //
 //	@Summary		Create a new tenant
-//	@Description	Answer an invite from an owner with an invite link
+//	@Description	Answer an invite from an owner with an invite link by creating a new user with tenant role
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
@@ -99,6 +99,11 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
+	if database.GetCurrentActiveContract(pendingContract.PropertyID) != nil {
+		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
+		return
+	}
+
 	userReq.Password, err = utils.HashPassword(userReq.Password)
 	if err != nil {
 		utils.SendError(c, http.StatusInternalServerError, utils.CannotHashPassword, err)
@@ -117,4 +122,53 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, models.DbUserToResponse(*user))
+}
+
+// AcceptInvite godoc
+//
+//	@Summary		Accept an invite
+//	@Description	Answer an invite from an owner with an invite link by accepting the invite
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path	string	true	"Pending contract ID"
+//	@Success		204	"Accepted"
+//	@Failure		403	{object}	utils.Error	"Not a tenant"
+//	@Failure		404	{object}	utils.Error	"Pending contract not found"
+//	@Failure		409	{object}	utils.Error	"Property not available or tenant already has contract"
+//	@Failure		500
+//	@Router			/tenant/invite/{id}/ [post]
+func AcceptInvite(c *gin.Context) {
+	claims := utils.GetClaims(c)
+	user := database.GetUserByID(claims["id"])
+	if user == nil || user.Role != db.RoleTenant {
+		utils.SendError(c, http.StatusForbidden, utils.NotATenant, nil)
+		return
+	}
+
+	pendingContract := database.GetPendingContractById(c.Param("id"))
+	if pendingContract == nil {
+		utils.SendError(c, http.StatusNotFound, utils.InviteNotFound, nil)
+		return
+	}
+	if pendingContract.TenantEmail != user.Email {
+		utils.SendError(c, http.StatusForbidden, utils.UserSameEmailAsInvite, nil)
+		return
+	}
+
+	if database.GetCurrentActiveContract(pendingContract.PropertyID) != nil {
+		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
+		return
+	}
+	if database.GetTenantCurrentActiveContract(user.ID) != nil {
+		utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasContract, nil)
+		return
+	}
+
+	contract := database.CreateContract(*pendingContract, *user)
+	if contract == nil {
+		utils.SendError(c, http.StatusConflict, utils.ContractAlreadyExist, nil)
+		return
+	}
+	c.Status(http.StatusNoContent)
 }

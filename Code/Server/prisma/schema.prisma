@@ -58,17 +58,18 @@ model user {
 }
 
 model contract {
-    tenant      user      @relation(fields: [tenant_id], references: [id])
-    tenant_id   String
-    property    property  @relation(fields: [property_id], references: [id])
-    property_id String
-
+    id          String    @id @default(cuid())
     active      Boolean   @default(true)
     start_date  DateTime
     end_date    DateTime?
     created_at  DateTime  @default(now())
 
-    @@id([tenant_id, property_id])
+    tenant      user      @relation(fields: [tenant_id], references: [id])
+    tenant_id   String
+    property    property  @relation(fields: [property_id], references: [id])
+    property_id String
+
+    documents   document[]
 }
 
 model damage {
@@ -87,15 +88,16 @@ model damage {
 }
 
 model property {
-    id          String   @id @default(cuid())
-    name        String
-    address     String
-    city        String
-    postal_code String
-    country     String
+    id               String   @id @default(cuid())
+    name             String
+    address          String
+    apartment_number String?
+    city             String
+    postal_code      String
+    country          String
     area_sqm               Float
-    rental_price_per_month Int
-    deposit_price          Int
+    rental_price_per_month Float
+    deposit_price          Float
     created_at  DateTime @default(now())
     archived    Boolean  @default(false)
 
@@ -106,7 +108,7 @@ model property {
     owner_id    String
 
     contracts          contract[]
-    pending_contracts  pendingContract?
+    pending_contract   pendingContract?
     damages            damage[]
     rooms              room[]
     reports            inventoryReport[]
@@ -135,6 +137,16 @@ model image {
     properties      property[]
     roomstates      roomState[]
     furniturestates furnitureState[]
+}
+
+model document {
+    id          String   @id @default(cuid())
+    name        String
+    data        Bytes
+    created_at  DateTime @default(now())
+
+    contract    contract @relation(fields: [contract_id], references: [id])
+    contract_id String
 }
 
 model room {

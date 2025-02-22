@@ -27,6 +27,18 @@ func GetUserByID(id string) *db.UserModel {
 	return user
 }
 
+func GetUserByEmail(email string) *db.UserModel {
+	pdb := services.DBclient
+	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return user
+}
+
 func CreateUser(user db.UserModel, role db.Role) *db.UserModel {
 	pdb := services.DBclient
 	newUser, err := pdb.Client.User.CreateOne(

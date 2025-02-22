@@ -56,6 +56,9 @@ func registerAPIRoutes(r *gin.Engine, test bool) {
 
 			owner := root.Group("/owner")
 			registerOwnerRoutes(owner)
+
+			tenant := root.Group("/tenant")
+			registerTenantRoutes(tenant)
 		}
 	}
 }
@@ -72,13 +75,20 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 		{
 			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
 			propertyId.GET("/", controllers.GetPropertyById)
+			propertyId.PUT("/", controllers.UpdateProperty)
 			propertyId.DELETE("/", controllers.ArchiveProperty)
 			propertyId.GET("/inventory/", controllers.GetPropertyInventory)
 			propertyId.GET("/picture/", controllers.GetPropertyPicture)
 			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
 
 			propertyId.POST("/send-invite/", controllers.InviteTenant)
-			propertyId.PUT("/end-contract/", controllers.EndContract)
+
+			contract := propertyId.Group("")
+			{
+				contract.Use(middlewares.CheckActiveContract("property_id"))
+				contract.PUT("/end-contract/", controllers.EndContract)
+				contract.GET("/documents/", controllers.GetPropertyDocuments)
+			}
 
 			rooms := propertyId.Group("/rooms")
 			{
@@ -110,6 +120,12 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			registerInvReportRoutes(invReports)
 		}
 	}
+}
+
+func registerTenantRoutes(tenant *gin.RouterGroup) {
+	tenant.Use(middlewares.AuthorizeTenant())
+
+	tenant.POST("/invite/:id/", controllers.AcceptInvite)
 }
 
 func registerInvReportRoutes(invReports *gin.RouterGroup) {
