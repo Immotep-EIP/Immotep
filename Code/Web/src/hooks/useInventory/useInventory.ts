@@ -7,6 +7,7 @@ import CreateRoomByProperty from '@/services/api/Owner/Properties/Rooms/CreateRo
 import CreateFurnitureByRoom from '@/services/api/Owner/Properties/Rooms/Furnitures/CreateFurnitureByRoom'
 import DeleteRoomByPropertyById from '@/services/api/Owner/Properties/Rooms/ArchiveRoomByPropertyById'
 import DeleteFurnitureByRoom from '@/services/api/Owner/Properties/Rooms/Furnitures/ArchiveFurnitureByRoom'
+import { useTranslation } from 'react-i18next'
 
 interface Room {
   roomId: string
@@ -26,6 +27,7 @@ const useInventory = (propertyId: string) => {
   const [inventory, setInventory] = useState<Room[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { t } = useTranslation()
 
   const fetchInventory = async () => {
     if (!propertyId) {
@@ -75,10 +77,10 @@ const useInventory = (propertyId: string) => {
         ...prev,
         { roomId: newRoom.id, roomName: newRoom.name, stuffs: [] }
       ])
-      message.success('Room added successfully')
+      message.success(t('components.messages.room_added'))
       return true
     } catch (error) {
-      console.error('Error creating room:', error)
+      console.error(t('components.messages.room_added_error'))
       message.error('Failed to add room')
       return false
     }
@@ -111,10 +113,10 @@ const useInventory = (propertyId: string) => {
             : room
         )
       )
-      message.success('Item added successfully')
+      message.success(t('components.messages.furniture_added'))
       return true
     } catch (error) {
-      console.error('Error adding furniture:', error)
+      console.error(t('components.messages.furniture_added_error'))
       message.error('Failed to add item')
       return false
     }
@@ -124,10 +126,10 @@ const useInventory = (propertyId: string) => {
     try {
       await DeleteRoomByPropertyById(propertyId, roomId)
       setInventory(prev => prev.filter(room => room.roomId !== roomId))
-      message.success('Room deleted successfully')
+      message.success(t('components.messages.room_deleted'))
       return true
     } catch (error) {
-      console.error('Error deleting room:', error)
+      console.error(t('components.messages.room_deleted_error'))
       message.error('Failed to delete room')
       return false
     }
@@ -146,10 +148,10 @@ const useInventory = (propertyId: string) => {
             : room
         )
       )
-      message.success('Item deleted successfully')
+      message.success(t('components.messages.furniture_deleted'))
       return true
     } catch (error) {
-      console.error('Error deleting furniture:', error)
+      console.error(t('components.messages.furniture_deleted_error'))
       message.error('Failed to delete item')
       return false
     }

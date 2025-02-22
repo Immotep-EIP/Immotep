@@ -146,7 +146,15 @@
       "delete_property_description": "Êtes-vous sûr de vouloir supprimer cette propriété ?",
       "delete_property_success": "Propriété supprimée avec succès",
       "delete_property_error": "Erreur lors de la suppression de la propriété",
-      "no_rooms_in_inventory": "Vous n'avez aucune pièce dans votre inventaire pour le moment"
+      "no_rooms_in_inventory": "Vous n'avez aucune pièce dans votre inventaire pour le moment",
+      "room_added": "Pièce ajoutée avec succès",
+      "room_added_error": "Erreur lors de l'ajout de la pièce",
+      "furniture_added": "Objet ajouté avec succès",
+      "furniture_added_error": "Erreur lors de l'ajout de l'objet",
+      "room_deleted": "Pièce supprimée avec succès",
+      "room_deleted_error": "Erreur lors de la suppression de la pièce",
+      "furniture_deleted": "Objet supprimé avec succès",
+      "furniture_deleted_error": "Erreur lors de la suppression de l'objet"
     },
     "button": {
       "sign_in": "Se connecter",
