@@ -16,15 +16,18 @@ import {
   InviteTenantModalProps
 } from '@/interfaces/Tenant/InviteTenant.ts'
 import InviteTenants from '@/services/api/Tenant/InviteTenant.ts'
+import { updatePropertyInDB } from '@/utils/cache/property/indexedDB'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
   isOpen,
   onClose,
-  propertyId
+  property
 }) => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+
   const onFinish: FormProps<InviteTenant>['onFinish'] = async tenantInfo => {
     try {
       setLoading(true)
@@ -32,7 +35,7 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
       const { start_date, end_date } = tenantInfo
       const formattedTenantInfo = {
         ...tenantInfo,
-        propertyId
+        propertyId: property.id
       }
       if (dayjs(start_date).isAfter(dayjs(end_date))) {
         message.error(t('pages.real_property_details.dateError'))
@@ -40,9 +43,13 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
         return
       }
       await InviteTenants(formattedTenantInfo)
+      await updatePropertyInDB({
+        ...property,
+        status: PropertyStatusEnum.INVITATION_SENT
+      })
       message.success(t('pages.real_property_details.invite_tenant'))
       setLoading(false)
-      onClose()
+      onClose(true)
     } catch (error: any) {
       if (error.response.status === 409)
         message.error(t('pages.real_property_details.409_error'))
@@ -58,9 +65,9 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
     <Modal
       title={t('components.button.add_tenant')}
       open={isOpen}
-      onCancel={onClose}
+      onCancel={() => onClose(false)}
       footer={[
-        <Button key="back" onClick={() => onClose()}>
+        <Button key="back" onClick={() => onClose(false)}>
           {t('components.button.cancel')}
         </Button>,
         <Button
@@ -116,12 +123,6 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
             aria-label={t('components.input.end_date.label')}
           />
         </Form.Item>
-
-        {/* <Form.Item>
-          <Button type="primary" htmlType="submit">
-            {t('components.button.add')}
-          </Button>
-        </Form.Item> */}
       </Form>
     </Modal>
   )

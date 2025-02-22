@@ -10,7 +10,7 @@ import {
   Modal,
   Typography
 } from 'antd'
-import addIcon from '@/assets/icons/plus.png'
+import addIcon from '@/assets/icons/plus.svg'
 import { usePropertyId } from '@/context/propertyIdContext'
 import useInventory from '@/hooks/useInventory/useInventory'
 import CardInventoryLoader from '@/components/Loader/CardInventoryLoader'

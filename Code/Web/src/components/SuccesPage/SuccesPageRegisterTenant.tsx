@@ -1,7 +1,7 @@
-import { useTranslation } from 'react-i18next'
-import logo from '@/assets/icons/ImmotepLogo.svg'
 import { Result } from 'antd'
+import { useTranslation } from 'react-i18next'
 
+import logo from '@/assets/icons/ImmotepLogo.svg'
 import style from './SuccesPageRegisterTenant.module.css'
 
 const SuccessPage = () => {

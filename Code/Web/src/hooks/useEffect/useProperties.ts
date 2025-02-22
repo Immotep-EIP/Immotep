@@ -10,6 +10,7 @@ import {
   updatePropertyInDB
 } from '@/utils/cache/property/indexedDB'
 import UpdatePropertyFunction from '@/services/api/Owner/Properties/UpdateProperty'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 type CreatePropertyData = Omit<
   PropertyDetails,
@@ -120,7 +121,17 @@ const useProperties = (propertyId: string | null = null) => {
       const cachedProperty = cachedProperties.find(
         property => property.id === propertyId
       )
-      if (cachedProperty) {
+
+      /*
+        This is a temporary solution:
+        We only use cached property if its status is not 'invite sent'
+        because we need to fetch fresh data from the server when a tenant creates their account
+        to get the updated status
+       */
+      if (
+        cachedProperty &&
+        cachedProperty.status !== PropertyStatusEnum.INVITATION_SENT
+      ) {
         setPropertyDetails(cachedProperty)
       } else {
         const res = await GetPropertyDetails(propertyId)
@@ -134,6 +145,10 @@ const useProperties = (propertyId: string | null = null) => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const refreshPropertyDetails = async (propertyId: string) => {
+    await getPropertyDetails(propertyId)
   }
 
   useEffect(() => {
@@ -159,7 +174,8 @@ const useProperties = (propertyId: string | null = null) => {
     createProperty,
     updateProperty,
     getPropertyDetails,
-    refreshProperties
+    refreshProperties,
+    refreshPropertyDetails
   }
 }
 

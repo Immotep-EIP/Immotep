@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { UploadOutlined } from '@ant-design/icons'
 import fileToBase64 from '@/utils/base64/fileToBase'
 import useProperties from '@/hooks/useEffect/useProperties'
+import { PropertyDetails } from '@/interfaces/Property/Property'
 import style from './RealPropertyUpdate.module.css'
 
 type FieldType = {
@@ -29,7 +30,7 @@ type FieldType = {
 }
 
 interface RealPropertyUpdateProps {
-  propertyData: any
+  propertyData: PropertyDetails
   isModalUpdateOpen: boolean
   setIsModalUpdateOpen: (show: boolean) => void
   setIsPropertyUpdated: (isCreated: boolean) => void
