@@ -52,56 +52,137 @@ class PropertyViewModel: ObservableObject {
 
         return "Property successfully created!"
     }
-
     func fetchProperties() async {
-        let url = URL(string: "\(baseURL)/owner/properties/")!
+            let url = URL(string: "\(baseURL)/owner/properties/")!
 
-        do {
-            let token = try await TokenStorage.getValidAccessToken()
+            do {
+                let token = try await TokenStorage.getValidAccessToken()
+
+                var urlRequest = URLRequest(url: url)
+                urlRequest.httpMethod = "GET"
+                urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+                let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    print("Invalid response")
+                    return
+                }
+
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    print("Error: Status code \(httpResponse.statusCode)")
+                    return
+                }
+
+                let decoder = JSONDecoder()
+                let propertiesData = try decoder.decode([PropertyResponse].self, from: data)
+
+                self.properties = propertiesData.map { propertyResponse in
+                    Property(
+                        id: propertyResponse.id,
+                        ownerID: propertyResponse.ownerId,
+                        name: propertyResponse.name,
+                        address: propertyResponse.address,
+                        city: propertyResponse.city,
+                        postalCode: propertyResponse.postalCode,
+                        country: propertyResponse.country,
+                        photo: nil,
+                        monthlyRent: propertyResponse.rentalPricePerMonth,
+                        deposit: propertyResponse.depositPrice,
+                        surface: propertyResponse.areaSqm,
+                        isAvailable: true,
+                        tenantName: nil,
+                        leaseStartDate: nil,
+                        leaseEndDate: nil,
+                        documents: [],
+                        createdAt: propertyResponse.createdAt,
+                        rooms: []
+                    )
+                }
+                objectWillChange.send()
+            } catch {
+                print("Error fetching properties: \(error.localizedDescription)")
+            }
+        }
+
+        func updateProperty(request: Property, token: String) async throws -> PropertyResponse {
+            let body: [String: Any] = [
+                "name": request.name,
+                "address": request.address,
+                "city": request.city,
+                "postal_code": request.postalCode,
+                "country": request.country,
+                "area_sqm": request.surface,
+                "rental_price_per_month": request.monthlyRent,
+                "deposit_price": request.deposit
+            ]
+
+            guard let url = URL(string: "\(baseURL)/owner/properties/\(request.id)/") else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+            }
 
             var urlRequest = URLRequest(url: url)
-            urlRequest.httpMethod = "GET"
+            urlRequest.httpMethod = "PUT"
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+            let jsonData = try JSONSerialization.data(withJSONObject: body)
+            urlRequest.httpBody = jsonData
 
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("Invalid response")
-                return
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
             }
 
             guard (200...299).contains(httpResponse.statusCode) else {
-                print("Error: Status code \(httpResponse.statusCode)")
-                return
+                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+                print("Update Property failed with status \(httpResponse.statusCode): \(errorBody)")
+                switch httpResponse.statusCode {
+                case 400:
+                    throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid property data: \(errorBody)".localized()])
+                case 401:
+                    throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+                case 403:
+                    throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+                case 404:
+                    throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Property not found.".localized()])
+                default:
+                    throw NSError(domain: "", code: httpResponse.statusCode,
+                                  userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)"])
+                }
             }
 
             let decoder = JSONDecoder()
+            let updatedProperty = try decoder.decode(PropertyResponse.self, from: data)
+            await fetchProperties()
+            return updatedProperty
+        }
 
-            let propertiesData = try decoder.decode([PropertyResponse].self, from: data)
+    func deleteProperty(propertyId: String) async throws {
+        let url = URL(string: "\(baseURL)/owner/properties/\(propertyId)/")!
 
-            self.properties = propertiesData.map { propertyResponse in
-                Property(
-                    id: propertyResponse.id,
-                    ownerID: propertyResponse.ownerId,
-                    name: propertyResponse.name,
-                    address: propertyResponse.address,
-                    city: propertyResponse.city,
-                    postalCode: propertyResponse.postalCode,
-                    country: propertyResponse.country,
-                    photo: nil,
-                    monthlyRent: propertyResponse.rentalPricePerMonth,
-                    deposit: propertyResponse.depositPrice,
-                    surface: propertyResponse.areaSqm,
-                    isAvailable: true,
-                    tenantName: nil,
-                    leaseStartDate: nil,
-                    leaseEndDate: nil,
-                    documents: [],
-                    rooms: []
-                )
+        let token = try await TokenStorage.getValidAccessToken()
+
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "DELETE"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (_, response) = try await URLSession.shared.data(for: urlRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            if httpResponse.statusCode == 401 {
+                throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+            } else if httpResponse.statusCode == 404 {
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Property not found.".localized()])
+            } else {
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
             }
-        } catch {
-            print("Error fetching properties: \(error.localizedDescription)")
         }
     }
 }

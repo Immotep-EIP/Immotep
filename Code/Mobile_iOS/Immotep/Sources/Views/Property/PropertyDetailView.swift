@@ -31,7 +31,7 @@ struct PropertyDetailView: View {
             NavigationLink {
                 InventoryTypeView(property: $property)
             } label: {
-                Text("Start Inventory")
+                Text("Start Inventory".localized())
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)

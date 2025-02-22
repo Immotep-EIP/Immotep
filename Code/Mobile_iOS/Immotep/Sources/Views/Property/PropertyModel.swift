@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct Property: Identifiable {
+struct Property: Identifiable, Equatable {
     let id: String
     let ownerID: String
     var name: String
@@ -27,12 +27,55 @@ struct Property: Identifiable {
     var documents: [PropertyDocument]
     var createdAt: String?
     var rooms: [PropertyRooms]
+
+    static func == (lhs: Property, rhs: Property) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
-struct PropertyDocument: Identifiable {
+struct PropertyDocument: Identifiable, Equatable {
     let id: UUID
     var title: String
     var fileName: String
+
+    static func == (lhs: PropertyDocument, rhs: PropertyDocument) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+struct PropertyRooms: Identifiable, Equatable {
+    let id: String
+    var name: String
+    var checked: Bool
+    var inventory: [RoomInventory]
+
+    static func == (lhs: PropertyRooms, rhs: PropertyRooms) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+struct RoomInventory: Identifiable, Equatable {
+    let id: String
+    let propertyId: String
+    let roomId: String
+    var name: String
+    var quantity: Int?
+    var checked: Bool
+    var images: [UIImage]
+    var status: String
+    var comment: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case propertyId = "property_id"
+        case roomId = "room_id"
+        case name
+        case quantity
+    }
+
+    static func == (lhs: RoomInventory, rhs: RoomInventory) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 struct PropertyResponse: Codable {
