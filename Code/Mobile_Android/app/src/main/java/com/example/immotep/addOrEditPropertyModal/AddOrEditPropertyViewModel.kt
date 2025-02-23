@@ -26,12 +26,16 @@ data class PropertyFormError(
     var city: Boolean = false
 )
 
-class AddPropertyViewModelViewModel() : ViewModel() {
+class AddOrEditPropertyViewModel : ViewModel() {
     private val _propertyForm = MutableStateFlow(AddPropertyInput())
     private val _propertyFormError = MutableStateFlow(PropertyFormError())
     val pictures = mutableStateListOf<Uri>()
     val propertyForm: StateFlow<AddPropertyInput> = _propertyForm.asStateFlow()
     val propertyFormError: StateFlow<PropertyFormError> = _propertyFormError.asStateFlow()
+
+    fun setBaseValue(property: AddPropertyInput) {
+        _propertyForm.value = property
+    }
 
     fun setAddress(address: String) {
         _propertyForm.value = _propertyForm.value.copy(address = address)
@@ -68,7 +72,11 @@ class AddPropertyViewModelViewModel() : ViewModel() {
         pictures.add(picture)
     }
 
-    fun reset() {
+    fun reset(baseValue: AddPropertyInput? = null) {
+        if (baseValue != null) {
+            _propertyForm.value = baseValue
+            return
+        }
         _propertyForm.value = AddPropertyInput()
     }
 

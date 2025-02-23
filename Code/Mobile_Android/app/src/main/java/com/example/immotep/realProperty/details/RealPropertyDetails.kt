@@ -31,7 +31,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,10 +48,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.immotep.R
+import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.realProperty.PropertyBox
 import com.example.immotep.realProperty.PropertyBoxTextLine
 import com.example.immotep.ui.components.BackButton
 import com.example.immotep.utils.DateFormatter
+import kotlinx.coroutines.flow.StateFlow
 import java.text.SimpleDateFormat
 
 @Composable
@@ -72,15 +79,79 @@ fun OneDocument(name: String) {
     }
 }
 
+@Composable
+fun AboutThePropertyBox(property : State<DetailedProperty>, openEdit : () -> Unit) {
+    Text(text = stringResource(R.string.about_the_property))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, color = MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(5.dp))
+            .padding(5.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth(0.5f)) {
+            PropertyBoxTextLine(property.value.tenant?: "", Icons.Outlined.AccountBox)
+            PropertyBoxTextLine(
+                DateFormatter.formatOffsetDateTime(property.value.startDate) ?:
+                "---------------------",
+                Icons.Outlined.CalendarMonth
+            )
+            PropertyBoxTextLine(
+                (
+                        DateFormatter.formatOffsetDateTime(property.value.endDate) ?:
+                        "---------------------"
+                        ),
+                Icons.Outlined.CalendarMonth
+            )
+        }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            PropertyBoxTextLine("${stringResource(R.string.area)}: ${property.value.area} m²", Icons.Outlined.AllOut)
+            PropertyBoxTextLine(
+                "${stringResource(R.string.rentMonth)}: ${property.value.rent}€",
+                Icons.Outlined.CalendarViewMonth,
+            )
+            PropertyBoxTextLine(
+                "${stringResource(R.string.deposit)}: ${property.value.deposit}€",
+                Icons.Outlined.EditNote,
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+    Button(
+        onClick = { openEdit() },
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+        modifier = Modifier
+            .clip(RoundedCornerShape(5.dp))
+            .padding(5.dp)
+            .fillMaxWidth()
+            .testTag("editProperty")
+    ) {
+        Text(
+            stringResource(R.string.edit_property),
+            color = MaterialTheme.colorScheme.onTertiary
+        )
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, getBack: () -> Unit) {
     val viewModel: RealPropertyDetailsViewModel = viewModel(factory = RealPropertyDetailsViewModelFactory(propertyId, navController))
     val property = viewModel.property.collectAsState()
+    var editOpen by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadProperty()
     }
+    AddOrEditPropertyModal(
+        open = editOpen,
+        close = { editOpen = false },
+        onSubmit = { viewModel.editProperty(it) },
+        popupName = stringResource(R.string.edit_property),
+        baseValue = property.value.toAddPropertyInput(),
+        submitButtonText = stringResource(R.string.save),
+        submitButtonIcon = { Icon(Icons.Outlined.EditNote, contentDescription = "Edit property") }
+    )
     Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -95,41 +166,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
             }
         }
         PropertyBox(property.value.toProperty())
-        Text(text = stringResource(R.string.about_the_property))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, color = MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(5.dp))
-                .padding(5.dp)
-        ) {
-            Column(modifier = Modifier.fillMaxWidth(0.5f)) {
-                PropertyBoxTextLine(property.value.tenant?: "", Icons.Outlined.AccountBox)
-                PropertyBoxTextLine(
-                        DateFormatter.formatOffsetDateTime(property.value.startDate) ?:
-                        "---------------------",
-                    Icons.Outlined.CalendarMonth
-                )
-                PropertyBoxTextLine(
-                    (
-                            DateFormatter.formatOffsetDateTime(property.value.endDate) ?:
-                            "---------------------"
-                    ),
-                    Icons.Outlined.CalendarMonth
-                )
-            }
-            Column(modifier = Modifier.fillMaxWidth()) {
-                PropertyBoxTextLine("${stringResource(R.string.area)}: ${property.value.area} m²", Icons.Outlined.AllOut)
-                PropertyBoxTextLine(
-                    "${stringResource(R.string.rentMonth)}: ${property.value.rent}€",
-                    Icons.Outlined.CalendarViewMonth,
-                )
-                PropertyBoxTextLine(
-                    "${stringResource(R.string.deposit)}: ${property.value.deposit}€",
-                    Icons.Outlined.EditNote,
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
+        AboutThePropertyBox(property, openEdit = { editOpen = true })
         Text(text = stringResource(R.string.documents))
         Box(
             modifier = Modifier.fillMaxWidth()

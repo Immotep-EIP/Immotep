@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material3.Button
@@ -44,7 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.R
-import com.example.immotep.addOrEditPropertyModal.AddPropertyModal
+import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.components.DeletePopUp
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
@@ -197,10 +198,14 @@ fun RealPropertyScreen(navController: NavController) {
                 detailsOpen!!,
                 getBack = { detailsOpen = null })
         }
-        AddPropertyModal(
+        AddOrEditPropertyModal(
             open = addPropertyModalOpen,
             close = { addPropertyModalOpen = false },
-            onSubmit = { property -> viewModel.addProperty(property) }
+            onSubmit = { property -> viewModel.addProperty(property) },
+            popupName = stringResource(R.string.create_new_property),
+            submitButtonText = stringResource(R.string.add_prop),
+            submitButtonIcon = { Icon(Icons.Outlined.Add, contentDescription = "Add property") }
+
         )
     }
 }

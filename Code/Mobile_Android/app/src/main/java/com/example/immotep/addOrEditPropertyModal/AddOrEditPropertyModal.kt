@@ -1,5 +1,6 @@
 package com.example.immotep.addOrEditPropertyModal
 
+import android.graphics.drawable.Icon
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +32,7 @@ import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,11 +56,15 @@ import com.example.immotep.ui.components.OutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPropertyModal(
+fun AddOrEditPropertyModal(
     open : Boolean, close : () -> Unit,
-    onSubmit : suspend (property : AddPropertyInput) -> Unit
+    onSubmit : suspend (property : AddPropertyInput) -> Unit,
+    popupName : String,
+    submitButtonText : String,
+    submitButtonIcon : @Composable () -> Unit,
+    baseValue : AddPropertyInput? = null
 ) {
-    val viewModel: AddPropertyViewModelViewModel = viewModel()
+    val viewModel: AddOrEditPropertyViewModel = viewModel()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val surfaceColor = MaterialTheme.colors.onBackground
     val form = viewModel.propertyForm.collectAsState()
@@ -70,7 +76,13 @@ fun AddPropertyModal(
             }
         }
     )
-    val onClose : () -> Unit = { viewModel.reset(); close() }
+    val onClose : () -> Unit = { viewModel.reset(baseValue); close() }
+
+    LaunchedEffect(baseValue) {
+        if (baseValue != null) {
+            viewModel.setBaseValue(baseValue)
+        }
+    }
     if (open) {
         ModalBottomSheet (
             onDismissRequest = onClose,
@@ -106,7 +118,7 @@ fun AddPropertyModal(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(stringResource(R.string.create_new_property), fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text(popupName, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     IconButton(onClick = onClose) {
                         Icon(Icons.Filled.Close, contentDescription = "Close")
                     }
@@ -268,10 +280,9 @@ fun AddPropertyModal(
 
                             .clip(RectangleShape)
                     ) {
-                        Icon(Icons.Outlined.Add, contentDescription = "Add property")
-                        Text(stringResource(R.string.add_prop))
+                        submitButtonIcon()
+                        Text(submitButtonText)
                     }
-
                 }
 
             }

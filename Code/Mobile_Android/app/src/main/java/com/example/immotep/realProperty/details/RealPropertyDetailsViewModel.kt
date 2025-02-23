@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.immotep.apiClient.AddPropertyInput
 import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
@@ -23,6 +24,10 @@ interface IDetailedProperty : IProperty {
     val rent : Int
     val deposit : Int
     val documents : Array<String>
+    val zipCode : String
+    val city : String
+    val country : String
+    val name : String
 }
 
 data class DetailedProperty(
@@ -36,8 +41,25 @@ data class DetailedProperty(
     override val area : Int = 0,
     override val rent : Int = 0,
     override val deposit : Int = 0,
-    override val documents : Array<String> = arrayOf()
-) : IDetailedProperty
+    override val documents : Array<String> = arrayOf(),
+    override val zipCode : String = "",
+    override val city : String = "",
+    override val country : String = "",
+    override val name : String = ""
+) : IDetailedProperty {
+    fun toAddPropertyInput() : AddPropertyInput {
+        return AddPropertyInput(
+            address = this.address,
+            area_sqm = this.area.toDouble(),
+            deposit_price = this.deposit,
+            rental_price_per_month = this.rent,
+            city = this.city,
+            name = this.name,
+            country = this.country,
+            postal_code = this.zipCode
+        )
+    }
+}
 
 fun IDetailedProperty.toProperty() : Property {
     return Property(
@@ -70,6 +92,10 @@ class RealPropertyDetailsViewModel(private val propertyId: String, private val n
                 _property.value = _property.value.copy(
                     id = propertyId,
                     image = "",
+                    name = getPropertyRes.name,
+                    zipCode = getPropertyRes.postal_code,
+                    city = getPropertyRes.city,
+                    country = getPropertyRes.country,
                     address = getPropertyRes.address,
                     tenant = getPropertyRes.tenant,
                     available = getPropertyRes.status == "available",
@@ -84,6 +110,26 @@ class RealPropertyDetailsViewModel(private val propertyId: String, private val n
                 e.printStackTrace()
             }
         }
+    }
+
+    suspend fun editProperty(property: AddPropertyInput) {
+        val authServ = AuthService(navController.context.dataStore)
+        val bearerToken = try {
+            authServ.getBearerToken()
+        } catch (e : Exception) {
+            authServ.onLogout(navController)
+            println("error getting token")
+            return
+        }
+        val newProperty = ApiClient.apiService.updateProperty(bearerToken, property, propertyId)
+        this._property.value = this._property.value.copy(
+            address = newProperty.address,
+            tenant = newProperty.tenant,
+            available = newProperty.status == "available",
+            area = newProperty.area_sqm.toInt(),
+            rent = newProperty.rental_price_per_month,
+            deposit = newProperty.deposit_price,
+        )
     }
 }
 

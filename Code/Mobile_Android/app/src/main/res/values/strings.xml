@@ -130,4 +130,6 @@
     <string name="sure_to_delete">Are you sure to delete </string>
     <string name="delete">Delete</string>
     <string name="property">Property</string>
+    <string name="edit_property">Edit property</string>
+    <string name="save">Save modifications</string>
 </resources>
