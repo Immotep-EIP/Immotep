@@ -49,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
+import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.realProperty.PropertyBox
 import com.example.immotep.realProperty.PropertyBoxTextLine
 import com.example.immotep.ui.components.BackButton
@@ -136,64 +137,75 @@ fun AboutThePropertyBox(property : State<DetailedProperty>, openEdit : () -> Uni
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, getBack: () -> Unit) {
-    val viewModel: RealPropertyDetailsViewModel = viewModel(factory = RealPropertyDetailsViewModelFactory(propertyId, navController))
+    val viewModel: RealPropertyDetailsViewModel = viewModel(factory = RealPropertyDetailsViewModelFactory(navController))
     val property = viewModel.property.collectAsState()
     var editOpen by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadProperty()
+    LaunchedEffect(propertyId) {
+        viewModel.loadProperty(propertyId)
     }
     AddOrEditPropertyModal(
         open = editOpen,
         close = { editOpen = false },
-        onSubmit = { viewModel.editProperty(it) },
+        onSubmit = { viewModel.editProperty(it, propertyId) },
         popupName = stringResource(R.string.edit_property),
         baseValue = property.value.toAddPropertyInput(),
         submitButtonText = stringResource(R.string.save),
         submitButtonIcon = { Icon(Icons.Outlined.EditNote, contentDescription = "Edit property") }
     )
-    Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            BackButton(getBack)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                Button(onClick = { navController.navigate("messages") }) {
-                    Text(stringResource(R.string.open_in_messages), modifier = Modifier.padding(end = 5.dp))
-                    Icon(Icons.Outlined.MailOutline, contentDescription = stringResource(R.string.open_in_messages))
+    InitialFadeIn {
+        Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                BackButton(getBack)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    Button(onClick = { navController.navigate("messages") }) {
+                        Text(
+                            stringResource(R.string.open_in_messages),
+                            modifier = Modifier.padding(end = 5.dp)
+                        )
+                        Icon(
+                            Icons.Outlined.MailOutline,
+                            contentDescription = stringResource(R.string.open_in_messages)
+                        )
+                    }
                 }
             }
-        }
-        PropertyBox(property.value.toProperty())
-        AboutThePropertyBox(property, openEdit = { editOpen = true })
-        Text(text = stringResource(R.string.documents))
-        Box(
-            modifier = Modifier.fillMaxWidth()
-                .border(1.dp, color = MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(5.dp))
-                .background(MaterialTheme.colorScheme.tertiaryContainer)
-                .padding(5.dp)
-        ) {
-            FlowRow {
-                property.value.documents.forEach {
-                    item ->
-                    OneDocument(item)
+            PropertyBox(property.value.toProperty())
+            AboutThePropertyBox(property, openEdit = { editOpen = true })
+            Text(text = stringResource(R.string.documents))
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .border(
+                        1.dp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        shape = RoundedCornerShape(5.dp)
+                    )
+                    .background(MaterialTheme.colorScheme.tertiaryContainer)
+                    .padding(5.dp)
+            ) {
+                FlowRow {
+                    property.value.documents.forEach { item ->
+                        OneDocument(item)
+                    }
                 }
             }
-        }
-        Button(
-            onClick = { navController.navigate("inventory/$propertyId") },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
-            modifier = Modifier
-                .clip(RoundedCornerShape(5.dp))
-                .padding(5.dp)
-                .fillMaxWidth()
-                .testTag("startInventory")
-        ) {
-            Text(
-                stringResource(R.string.start_inventory),
-                color = MaterialTheme.colorScheme.onTertiary
-            )
+            Button(
+                onClick = { navController.navigate("inventory/$propertyId") },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                modifier = Modifier
+                    .clip(RoundedCornerShape(5.dp))
+                    .padding(5.dp)
+                    .fillMaxWidth()
+                    .testTag("startInventory")
+            ) {
+                Text(
+                    stringResource(R.string.start_inventory),
+                    color = MaterialTheme.colorScheme.onTertiary
+                )
+            }
         }
     }
 }

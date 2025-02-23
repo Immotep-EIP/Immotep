@@ -74,11 +74,11 @@ fun IDetailedProperty.toProperty() : Property {
 }
 
 
-class RealPropertyDetailsViewModel(private val propertyId: String, private val navController: NavController) : ViewModel() {
+class RealPropertyDetailsViewModel(private val navController: NavController) : ViewModel() {
     private var _property = MutableStateFlow(DetailedProperty())
     val property: StateFlow<DetailedProperty> = _property.asStateFlow()
 
-    fun loadProperty() {
+    fun loadProperty(propertyId: String) {
         viewModelScope.launch {
             var bearerToken = ""
             val authService = AuthService(navController.context.dataStore)
@@ -112,7 +112,7 @@ class RealPropertyDetailsViewModel(private val propertyId: String, private val n
         }
     }
 
-    suspend fun editProperty(property: AddPropertyInput) {
+    suspend fun editProperty(property: AddPropertyInput, propertyId: String) {
         val authServ = AuthService(navController.context.dataStore)
         val bearerToken = try {
             authServ.getBearerToken()
@@ -133,12 +133,12 @@ class RealPropertyDetailsViewModel(private val propertyId: String, private val n
     }
 }
 
-class RealPropertyDetailsViewModelFactory(private val propertyId: String, private val navController: NavController) :
+class RealPropertyDetailsViewModelFactory(private val navController: NavController) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RealPropertyDetailsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RealPropertyDetailsViewModel(propertyId, navController) as T
+            return RealPropertyDetailsViewModel(navController) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

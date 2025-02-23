@@ -155,6 +155,26 @@ data class AiCallOutput(
     val state: State?
 )
 
+//tenant input data classes
+
+data class InviteInput(
+    val email: String,
+    val start_date: String,
+    val end_date: String,
+)
+
+
+//tenant output data classes
+
+data class InviteOutput(
+    val id: String,
+    val property_id: String,
+    val tenant_email: String,
+    val start_date: String,
+    val end_date: String,
+    val created_at: String
+)
+
 const val API_PREFIX = "/api/v1"
 
 interface ApiService {
@@ -270,4 +290,12 @@ interface ApiService {
         @Path("old_report_id") oldReportId: String,
         @Body summarizeInput: AiCallInput
     ) : AiCallOutput
+
+    //tenant functions
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/send-invite")
+    suspend fun inviteTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Body invite: InviteInput
+    ) : InviteOutput
 }
