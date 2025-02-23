@@ -5,6 +5,7 @@ import com.example.immotep.inventory.InventoryLocationsTypes
 import com.example.immotep.inventory.InventoryReportOutput
 import com.example.immotep.inventory.InventoryReportRoom
 import com.example.immotep.inventory.State
+import com.example.immotep.realProperty.Property
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
@@ -12,6 +13,7 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import java.util.Vector
 
@@ -76,10 +78,22 @@ data class AddPropertyResponse(
     val deposit_price: Int,
     val picture: String?,
     val created_at: String,
-)
+) {
+    fun toProperty() = Property(
+        id = id,
+        image = picture ?: "",
+        address = address,
+        tenant = null,
+        available = true,
+        startDate = null,
+        endDate = null
+    )
+}
 
 data class GetPropertyResponse(
     val id: String,
+    val apartment_number: String,
+    val archived: Boolean,
     val owner_id: String,
     val name: String,
     val address: String,
@@ -179,6 +193,13 @@ interface ApiService {
 
     @POST("${API_PREFIX}/owner/properties")
     suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : AddPropertyResponse
+
+    @PUT("${API_PREFIX}/owner/properties/{propertyId}")
+    suspend fun updateProperty(
+        @Header("Authorization") authHeader : String,
+        @Body addPropertyInput: AddPropertyInput,
+        @Path("propertyId") propertyId: String
+    ) : GetPropertyResponse
 
     @DELETE("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun archiveProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String)

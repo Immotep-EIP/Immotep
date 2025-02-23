@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.immotep.apiClient.AddPropertyInput
 import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
@@ -82,8 +83,17 @@ class RealPropertyViewModel(private val navController: NavController) : ViewMode
         }
     }
 
-    fun addProperty(property: Property) {
-        properties.add(property)
+    suspend fun addProperty(propertyForm: AddPropertyInput) {
+        val authServ = AuthService(navController.context.dataStore)
+        val bearerToken = try {
+            authServ.getBearerToken()
+        } catch (e : Exception) {
+            authServ.onLogout(navController)
+            println("error getting token")
+            return
+        }
+        val newProperty = ApiClient.apiService.addProperty(bearerToken, propertyForm)
+        properties.add(newProperty.toProperty())
     }
 
     fun deleteProperty(propertyId: String) {

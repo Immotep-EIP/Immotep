@@ -1,4 +1,4 @@
-package com.example.immotep.addPropertyModal
+package com.example.immotep.addOrEditPropertyModal
 
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
@@ -72,8 +72,8 @@ class AddPropertyViewModelViewModel() : ViewModel() {
         _propertyForm.value = AddPropertyInput()
     }
 
-    fun onSubmit(onClose : () -> Unit, navController: NavController, addPropertyToList : (property : Property) -> Unit) {
-        val newPropertyErrors : PropertyFormError = PropertyFormError()
+    fun onSubmit(onClose : () -> Unit, sendFormFn : suspend (property : AddPropertyInput) -> Unit) {
+        val newPropertyErrors = PropertyFormError()
         if (_propertyForm.value.address.length < 3) {
             newPropertyErrors.address = true
         }
@@ -99,14 +99,7 @@ class AddPropertyViewModelViewModel() : ViewModel() {
         }
             viewModelScope.launch {
                 try {
-                    val authService = AuthService(navController.context.dataStore)
-                    val property = ApiClient.apiService.addProperty(authService.getBearerToken(), _propertyForm.value)
-                    addPropertyToList(
-                        Property(
-                            id = property.id,
-                            address = property.address,
-                        )
-                    )
+                    sendFormFn(propertyForm.value)
                     reset()
                     onClose()
                 } catch (e: Exception) {

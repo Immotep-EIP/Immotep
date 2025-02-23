@@ -1,4 +1,4 @@
-package com.example.immotep.addPropertyModal
+package com.example.immotep.addOrEditPropertyModal
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -48,12 +48,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.R
+import com.example.immotep.apiClient.AddPropertyInput
 import com.example.immotep.realProperty.Property
 import com.example.immotep.ui.components.OutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavController, addPropertyToList : (property : Property) -> Unit) {
+fun AddPropertyModal(
+    open : Boolean, close : () -> Unit,
+    onSubmit : suspend (property : AddPropertyInput) -> Unit
+) {
     val viewModel: AddPropertyViewModelViewModel = viewModel()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val surfaceColor = MaterialTheme.colors.onBackground
@@ -256,7 +260,7 @@ fun AddPropertyModal(open : Boolean, close : () -> Unit, navController: NavContr
                             )
                         }
                     Button(
-                        onClick = {  viewModel.onSubmit(onClose, navController, addPropertyToList) },
+                        onClick = {  viewModel.onSubmit(onClose, onSubmit) },
                         colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary),
                         modifier = Modifier
                             .fillMaxWidth()

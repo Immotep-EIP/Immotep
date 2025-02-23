@@ -27,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,14 +44,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.R
-import com.example.immotep.addPropertyModal.AddPropertyModal
+import com.example.immotep.addOrEditPropertyModal.AddPropertyModal
 import com.example.immotep.components.DeletePopUp
-import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
 import com.example.immotep.utils.DateFormatter
-import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun PropertyBoxTextLine(text: String, icon: ImageVector) {
@@ -202,10 +198,9 @@ fun RealPropertyScreen(navController: NavController) {
                 getBack = { detailsOpen = null })
         }
         AddPropertyModal(
-            addPropertyModalOpen,
+            open = addPropertyModalOpen,
             close = { addPropertyModalOpen = false },
-            navController,
-            { property -> viewModel.addProperty(property) }
+            onSubmit = { property -> viewModel.addProperty(property) }
         )
     }
 }
