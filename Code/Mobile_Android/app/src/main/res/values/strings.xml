@@ -127,4 +127,7 @@
     <string name="understand">Understand</string>
     <string name="cannot_make_exit_inventory">You cannot make an exit inventory</string>
     <string name="cannot_exit_inventory_text">You need to create at least on entry inventory before creating an exit inventory. The exit inventory will be based on the entry inventory.</string>
+    <string name="sure_to_delete">Are you sure to delete </string>
+    <string name="delete">Delete</string>
+    <string name="property">Property</string>
 </resources>

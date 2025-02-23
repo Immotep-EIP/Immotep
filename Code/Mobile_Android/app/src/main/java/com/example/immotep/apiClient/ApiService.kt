@@ -6,6 +6,7 @@ import com.example.immotep.inventory.InventoryReportOutput
 import com.example.immotep.inventory.InventoryReportRoom
 import com.example.immotep.inventory.State
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -179,6 +180,8 @@ interface ApiService {
     @POST("${API_PREFIX}/owner/properties")
     suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : AddPropertyResponse
 
+    @DELETE("${API_PREFIX}/owner/properties/{propertyId}")
+    suspend fun archiveProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String)
 
     //rooms functions
     @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms")

@@ -85,6 +85,31 @@ class RealPropertyViewModel(private val navController: NavController) : ViewMode
     fun addProperty(property: Property) {
         properties.add(property)
     }
+
+    fun deleteProperty(propertyId: String) {
+        val index = properties.indexOfFirst { it.id == propertyId }
+        if (index == -1) {
+            return
+        }
+        viewModelScope.launch {
+            val bearerToken: String
+            val authService = AuthService(navController.context.dataStore)
+            try {
+                bearerToken = authService.getBearerToken()
+            } catch (e : Exception) {
+                authService.onLogout(navController)
+                println("error getting token")
+                return@launch
+            }
+            try {
+                ApiClient.apiService.archiveProperty(bearerToken, propertyId)
+                properties.removeAt(index)
+            } catch (e : Exception) {
+                println("error deleting property ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
 }
 
 class RealPropertyViewModelFactory(private val navController: NavController) :

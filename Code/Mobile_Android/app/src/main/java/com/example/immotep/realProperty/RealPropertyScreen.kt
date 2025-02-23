@@ -3,6 +3,7 @@ package com.example.immotep.realProperty
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +46,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.R
 import com.example.immotep.addPropertyModal.AddPropertyModal
+import com.example.immotep.components.DeletePopUp
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
@@ -63,9 +66,24 @@ fun PropertyBoxTextLine(text: String, icon: ImageVector) {
 }
 
 @Composable
-fun PropertyBox(property: Property, onClick: (() -> Unit)? = null) {
-    val modifierRow = if (onClick != null) {
-        Modifier.clickable { onClick() }
+fun PropertyBox(property: Property, onClick: (() -> Unit)? = null, onDelete: (() -> Unit)? = null) {
+    val modifierRow = if (onClick != null && onDelete != null) {
+        Modifier.pointerInput(Unit) {
+            detectTapGestures(
+                onLongPress = {
+                    onDelete()
+                },
+                onPress = {
+                    val isReleased = tryAwaitRelease()
+                    if (isReleased) {
+                        onClick()
+                    }
+                }
+            )
+        }
+    }
+    else if (onClick != null) {
+       Modifier.clickable {  }
     } else {
         Modifier
     }
@@ -140,6 +158,7 @@ fun RealPropertyScreen(navController: NavController) {
     val viewModel: RealPropertyViewModel =
         viewModel(factory = RealPropertyViewModelFactory(navController))
     var detailsOpen by rememberSaveable { mutableStateOf<String?>(null) }
+    var deleteOpen by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
     var addPropertyModalOpen by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -163,12 +182,17 @@ fun RealPropertyScreen(navController: NavController) {
                     )
                 }
             }
-            InitialFadeIn {
+            DeletePopUp(
+                open = deleteOpen != null,
+                delete = { viewModel.deleteProperty(deleteOpen!!.first) },
+                close = { deleteOpen = null },
+                globalName = stringResource(R.string.property),
+                detailedName = deleteOpen?.second?: ""
+            )
                 LazyColumn {
                     items(viewModel.properties) { item ->
-                        PropertyBox(item, onClick = { detailsOpen = item.id })
+                        PropertyBox(item, onClick = { if (deleteOpen == null) detailsOpen = item.id }, onDelete = { deleteOpen = Pair(item.id, item.address) })
                     }
-                }
             }
 
         } else {
