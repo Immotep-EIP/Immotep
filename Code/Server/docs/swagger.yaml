@@ -511,6 +511,7 @@ definitions:
     - property-not-available
     - tenant-already-has-contract
     - no-active-contract
+    - no-pending-contract
     - failed-to-link-image
     - bad-base64-string
     - property-picture-not-found
@@ -552,6 +553,7 @@ definitions:
     - PropertyNotAvailable
     - TenantAlreadyHasContract
     - NoActiveContract
+    - NoPendingContract
     - FailedLinkImage
     - BadBase64String
     - PropertyPictureNotFound
@@ -852,6 +854,37 @@ paths:
       security:
       - Bearer: []
       summary: Update property by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/cancel-invite:
+    delete:
+      consumes:
+      - application/json
+      description: Cancel pending contract invite
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Invite canceled
+        "403":
+          description: Property is not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No pending contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Cancel invite
       tags:
       - owner
   /owner/properties/{property_id}/documents/:

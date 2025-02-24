@@ -445,6 +445,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/cancel-invite": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Cancel pending contract invite",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Cancel invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Invite canceled"
+                    },
+                    "403": {
+                        "description": "Property is not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No pending contract",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/documents/": {
             "get": {
                 "security": [
@@ -2768,6 +2817,7 @@ const docTemplate = `{
                 "property-not-available",
                 "tenant-already-has-contract",
                 "no-active-contract",
+                "no-pending-contract",
                 "failed-to-link-image",
                 "bad-base64-string",
                 "property-picture-not-found",
@@ -2809,6 +2859,7 @@ const docTemplate = `{
                 "PropertyNotAvailable",
                 "TenantAlreadyHasContract",
                 "NoActiveContract",
+                "NoPendingContract",
                 "FailedLinkImage",
                 "BadBase64String",
                 "PropertyPictureNotFound",

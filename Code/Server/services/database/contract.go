@@ -129,6 +129,18 @@ func GetPendingContractById(id string) *db.PendingContractModel {
 	return pc
 }
 
+func GetCurrentPendingContract(propertyId string) *db.PendingContractModel {
+	pdb := services.DBclient
+	pc, err := pdb.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals(propertyId)).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return pc
+}
+
 func CreatePendingContract(pendingContract db.PendingContractModel, propertyId string) *db.PendingContractModel {
 	pdb := services.DBclient
 	newContract, err := pdb.Client.PendingContract.CreateOne(
@@ -151,4 +163,14 @@ func CreatePendingContract(pendingContract db.PendingContractModel, propertyId s
 		panic(err)
 	}
 	return newContract
+}
+
+func DeleteCurrentPendingContract(propertyId string) {
+	pdb := services.DBclient
+	_, err := pdb.Client.PendingContract.FindUnique(
+		db.PendingContract.PropertyID.Equals(propertyId),
+	).Delete().Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
 }

@@ -298,6 +298,25 @@ func EndContract(c *gin.Context) {
 	}
 }
 
+// CancelInvite godoc
+//
+//	@Summary		Cancel invite
+//	@Description	Cancel pending contract invite
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path	string	true	"Property ID"
+//	@Success		204			"Invite canceled"
+//	@Failure		403			{object}	utils.Error	"Property is not yours"
+//	@Failure		404			{object}	utils.Error	"No pending contract"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/cancel-invite [delete]
+func CancelInvite(c *gin.Context) {
+	database.DeleteCurrentPendingContract(c.Param("property_id"))
+	c.Status(http.StatusNoContent)
+}
+
 // ArchiveProperty godoc
 //
 //	@Summary		Archive property by ID

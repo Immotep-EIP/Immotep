@@ -31,6 +31,7 @@ const (
 	PropertyNotAvailable         ErrorCode = "property-not-available"
 	TenantAlreadyHasContract     ErrorCode = "tenant-already-has-contract"
 	NoActiveContract             ErrorCode = "no-active-contract"
+	NoPendingContract            ErrorCode = "no-pending-contract"
 	FailedLinkImage              ErrorCode = "failed-to-link-image"
 	BadBase64String              ErrorCode = "bad-base64-string"
 	PropertyPictureNotFound      ErrorCode = "property-picture-not-found"
