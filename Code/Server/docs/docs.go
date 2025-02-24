@@ -642,7 +642,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created inventory report data",
                         "schema": {
-                            "$ref": "#/definitions/models.InventoryReportResponse"
+                            "$ref": "#/definitions/models.CreateInventoryReportResponse"
                         }
                     },
                     "400": {
@@ -2033,6 +2033,35 @@ const docTemplate = `{
                 "RoleOwner",
                 "RoleTenant"
             ]
+        },
+        "models.CreateInventoryReportResponse": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "pdf_data": {
+                    "type": "string"
+                },
+                "pdf_name": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
         },
         "models.DocumentResponse": {
             "type": "object",

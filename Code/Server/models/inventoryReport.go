@@ -1,6 +1,10 @@
 package models
 
-import "immotep/backend/prisma/db"
+import (
+	"encoding/base64"
+
+	"immotep/backend/prisma/db"
+)
 
 type FurnitureStateRequest struct {
 	ID          string   `binding:"required"                                              json:"id"`
@@ -94,5 +98,33 @@ func addFurnitureStatesToRoomState(model db.InventoryReportModel, room db.RoomSt
 func DbInventoryReportToResponse(pc db.InventoryReportModel) InventoryReportResponse {
 	var resp InventoryReportResponse
 	resp.FromDbInventoryReport(pc)
+	return resp
+}
+
+type CreateInventoryReportResponse struct {
+	ID         string      `json:"id"`
+	PropertyID string      `json:"property_id"`
+	Date       db.DateTime `json:"date"`
+	Type       string      `json:"type"`
+	PdfName    string      `json:"pdf_name"`
+	PdfData    string      `json:"pdf_data"`
+	Errors     []string    `json:"errors,omitempty"`
+}
+
+func (c *CreateInventoryReportResponse) FromDbInventoryReport(model db.InventoryReportModel, pdf *db.DocumentModel, errors []string) {
+	c.ID = model.ID
+	c.PropertyID = model.PropertyID
+	c.Date = model.Date
+	c.Type = string(model.Type)
+	if pdf != nil {
+		c.PdfName = pdf.Name
+		c.PdfData = "data:application/pdf;base64," + base64.StdEncoding.EncodeToString(pdf.Data)
+	}
+	c.Errors = errors
+}
+
+func DbInventoryReportToCreateResponse(pc db.InventoryReportModel, pdf *db.DocumentModel, errors []string) CreateInventoryReportResponse {
+	var resp CreateInventoryReportResponse
+	resp.FromDbInventoryReport(pc, pdf, errors)
 	return resp
 }

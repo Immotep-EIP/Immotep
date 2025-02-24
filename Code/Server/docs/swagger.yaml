@@ -8,6 +8,25 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  models.CreateInventoryReportResponse:
+    properties:
+      date:
+        type: string
+      errors:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      pdf_data:
+        type: string
+      pdf_name:
+        type: string
+      property_id:
+        type: string
+      type:
+        type: string
+    type: object
   models.DocumentResponse:
     properties:
       created_at:
@@ -958,7 +977,7 @@ paths:
         "201":
           description: Created inventory report data
           schema:
-            $ref: '#/definitions/models.InventoryReportResponse'
+            $ref: '#/definitions/models.CreateInventoryReportResponse'
         "400":
           description: Missing fields
           schema:
