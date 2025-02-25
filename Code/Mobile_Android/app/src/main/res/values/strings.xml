@@ -132,4 +132,5 @@
     <string name="property">Property</string>
     <string name="edit_property">Edit property</string>
     <string name="save">Save modifications</string>
+    <string name="invite_tenant">Invite tenant</string>
 </resources>

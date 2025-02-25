@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
@@ -40,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +53,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.R
 import com.example.immotep.apiClient.AddPropertyInput
+import com.example.immotep.layouts.BigModalLayout
 import com.example.immotep.realProperty.Property
 import com.example.immotep.ui.components.OutlinedTextField
 
@@ -68,6 +71,7 @@ fun AddOrEditPropertyModal(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val surfaceColor = MaterialTheme.colors.onBackground
     val form = viewModel.propertyForm.collectAsState()
+    val modalHeight = LocalConfiguration.current.screenHeightDp.dp * 0.8f
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
@@ -76,213 +80,199 @@ fun AddOrEditPropertyModal(
             }
         }
     )
-    val onClose : () -> Unit = { viewModel.reset(baseValue); close() }
+    val onClose: () -> Unit = { viewModel.reset(baseValue); close() }
 
     LaunchedEffect(baseValue) {
         if (baseValue != null) {
             viewModel.setBaseValue(baseValue)
         }
     }
-    if (open) {
-        ModalBottomSheet (
-            onDismissRequest = onClose,
-            sheetState = sheetState,
+    BigModalLayout(open = open, close = onClose, height = 0.95f) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(1f)
-                .testTag("addPropertyModal")
-
+                .fillMaxHeight(0.95f)
+                .verticalScroll(rememberScrollState())
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(3.dp)
+                    .drawBehind {
+                        val y = size.height - 2.dp.toPx() / 2
+                        drawLine(
+                            surfaceColor,
+                            Offset(0f, y),
+                            Offset(size.width, y),
+                            2.dp.toPx()
+                        )
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(popupName, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                IconButton(onClick = onClose) {
+                    Icon(Icons.Filled.Close, contentDescription = "Close")
+                }
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState())
-                    .weight(weight = 1f, fill = false)
-                    .background(color = MaterialTheme.colors.background),
+                    .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
+                Text(stringResource(R.string.fill_property_infos))
+                OutlinedTextField(
+                    value = form.value.name,
+                    onValueChange = { value -> viewModel.setName(value) },
+                    label = "${stringResource(R.string.name)}*",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(3.dp)
-                        .drawBehind {
-                            val y = size.height - 2.dp.toPx() / 2
-                            drawLine(
-                                surfaceColor,
-                                Offset(0f, y),
-                                Offset(size.width, y),
-                                2.dp.toPx()
-                            )
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(popupName, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.Filled.Close, contentDescription = "Close")
-                    }
-                }
-                Column(
+                        .padding(top = 10.dp)
+                )
+                OutlinedTextField(
+                    value = form.value.address,
+                    onValueChange = { value -> viewModel.setAddress(value) },
+                    label = "${stringResource(R.string.address)}*",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(stringResource(R.string.fill_property_infos))
-                    OutlinedTextField(
-                        value = form.value.name,
-                        onValueChange = { value -> viewModel.setName(value)},
-                        label = "${stringResource(R.string.name)}*",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
-                    OutlinedTextField(
-                        value = form.value.address,
-                        onValueChange = { value -> viewModel.setAddress(value)},
-                        label = "${stringResource(R.string.address)}*",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
-                    OutlinedTextField(
-                        value = form.value.city,
-                        onValueChange = { value -> viewModel.setCity(value)},
-                        label = "${stringResource(R.string.city)}*",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
-                    OutlinedTextField(
-                        value = form.value.postal_code,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        onValueChange =
-                        {
-                            value -> viewModel.setZipCode(value)
-                        },
-                        label = "${stringResource(R.string.zip_code)}*",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
-                    OutlinedTextField(
-                        value = form.value.country,
-                        onValueChange = { value -> viewModel.setCountry(value) },
-                        label = "${stringResource(R.string.country)}*",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
-                    OutlinedTextField(
-                        value = form.value.area_sqm.toString(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        onValueChange =
-                        {
-                            value ->
-                            run {
-                                if (value.isEmpty()) {
-                                    viewModel.setArea(0.0)
-                                    return@run
-                                }
-                                val area = value.toDoubleOrNull() ?: return@run
-                                viewModel.setArea(area)
+                        .padding(top = 10.dp)
+                )
+                OutlinedTextField(
+                    value = form.value.city,
+                    onValueChange = { value -> viewModel.setCity(value) },
+                    label = "${stringResource(R.string.city)}*",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
+                OutlinedTextField(
+                    value = form.value.postal_code,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    onValueChange =
+                    { value ->
+                        viewModel.setZipCode(value)
+                    },
+                    label = "${stringResource(R.string.zip_code)}*",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
+                OutlinedTextField(
+                    value = form.value.country,
+                    onValueChange = { value -> viewModel.setCountry(value) },
+                    label = "${stringResource(R.string.country)}*",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
+                OutlinedTextField(
+                    value = form.value.area_sqm.toString(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    onValueChange =
+                    { value ->
+                        run {
+                            if (value.isEmpty()) {
+                                viewModel.setArea(0.0)
+                                return@run
                             }
-                        },
-                        label = "${stringResource(R.string.area)}*",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
-                    OutlinedTextField(
-                        value = form.value.rental_price_per_month.toString(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        onValueChange =
-                        {
-                            value ->
-                            run {
-                                if (value.isEmpty()) {
-                                    viewModel.setRental(0)
-                                    return@run
-                                }
-                                val rental = value.toIntOrNull() ?: return@run
-                                viewModel.setRental(rental)
-                            }
-                        },
-                        label = "${stringResource(R.string.rental)}*",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
-                    OutlinedTextField(
-                        value = form.value.deposit_price.toString(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        onValueChange =
-                        {
-                            value -> run {
-                                if (value.isEmpty()) {
-                                    viewModel.setDeposit(0)
-                                    return@run
-                                }
-                                val deposit = value.toIntOrNull() ?: return@run
-                                viewModel.setDeposit(deposit)
-                            }
-                        },
-                        label = "${stringResource(R.string.deposit)}*",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
-                    Button(
-                        onClick =
-                        {
-                            photoPickerLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                            .clip(RectangleShape)
-                    ) {
-                        Icon(Icons.Outlined.Add, contentDescription = "Add picture")
-                        Text(stringResource(R.string.add_picture))
-                    }
-                    HorizontalUncontainedCarousel(
-                        state = rememberCarouselState {
-                            viewModel.pictures.size
-                        },
-                        itemWidth = 150.dp,
-                        itemSpacing = 12.dp,
-                        contentPadding = PaddingValues(start = 12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(top = 12.dp, bottom = 12.dp)
-                    )
-                        { index ->
-                            AsyncImage(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .aspectRatio(1f)
-                                    .padding(top = 10.dp),
-                                model = viewModel.pictures[index],
-                                contentDescription = "Preview of the added picture at index $index"
-                            )
+                            val area = value.toDoubleOrNull() ?: return@run
+                            viewModel.setArea(area)
                         }
-                    Button(
-                        onClick = {  viewModel.onSubmit(onClose, onSubmit) },
-                        colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary),
+                    },
+                    label = "${stringResource(R.string.area)}*",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
+                OutlinedTextField(
+                    value = form.value.rental_price_per_month.toString(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    onValueChange =
+                    { value ->
+                        run {
+                            if (value.isEmpty()) {
+                                viewModel.setRental(0)
+                                return@run
+                            }
+                            val rental = value.toIntOrNull() ?: return@run
+                            viewModel.setRental(rental)
+                        }
+                    },
+                    label = "${stringResource(R.string.rental)}*",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
+                OutlinedTextField(
+                    value = form.value.deposit_price.toString(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    onValueChange =
+                    { value ->
+                        run {
+                            if (value.isEmpty()) {
+                                viewModel.setDeposit(0)
+                                return@run
+                            }
+                            val deposit = value.toIntOrNull() ?: return@run
+                            viewModel.setDeposit(deposit)
+                        }
+                    },
+                    label = "${stringResource(R.string.deposit)}*",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
+
+                Button(
+                    onClick =
+                    {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                        .clip(RectangleShape)
+                ) {
+                    Icon(Icons.Outlined.Add, contentDescription = "Add picture")
+                    Text(stringResource(R.string.add_picture))
+                }
+                HorizontalUncontainedCarousel(
+                    state = rememberCarouselState {
+                        viewModel.pictures.size
+                    },
+                    itemWidth = 150.dp,
+                    itemSpacing = 12.dp,
+                    contentPadding = PaddingValues(start = 12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(top = 12.dp, bottom = 12.dp)
+                )
+                { index ->
+                    AsyncImage(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 10.dp)
+                            .aspectRatio(1f)
+                            .padding(top = 10.dp),
+                        model = viewModel.pictures[index],
+                        contentDescription = "Preview of the added picture at index $index"
+                    )
+                }
+                Button(
+                    onClick = { viewModel.onSubmit(onClose, onSubmit) },
+                    colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
 
-                            .clip(RectangleShape)
-                    ) {
-                        submitButtonIcon()
-                        Text(submitButtonText)
-                    }
+                        .clip(RectangleShape)
+                ) {
+                    submitButtonIcon()
+                    Text(submitButtonText)
                 }
 
             }

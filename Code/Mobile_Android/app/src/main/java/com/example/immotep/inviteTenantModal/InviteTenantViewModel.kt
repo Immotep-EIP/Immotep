@@ -1,4 +1,6 @@
 package com.example.immotep.inviteTenantModal
 
-class InviteTenantViewModel {
+import androidx.lifecycle.ViewModel
+
+class InviteTenantViewModel : ViewModel() {
 }

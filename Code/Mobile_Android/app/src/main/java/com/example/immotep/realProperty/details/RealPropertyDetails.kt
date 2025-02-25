@@ -50,6 +50,7 @@ import androidx.navigation.NavController
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.components.InitialFadeIn
+import com.example.immotep.inviteTenantModal.InviteTenantModal
 import com.example.immotep.realProperty.PropertyBox
 import com.example.immotep.realProperty.PropertyBoxTextLine
 import com.example.immotep.ui.components.BackButton
@@ -140,6 +141,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
     val viewModel: RealPropertyDetailsViewModel = viewModel(factory = RealPropertyDetailsViewModelFactory(navController))
     val property = viewModel.property.collectAsState()
     var editOpen by rememberSaveable { mutableStateOf(false) }
+    var inviteTenantOpen by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(propertyId) {
         viewModel.loadProperty(propertyId)
@@ -153,6 +155,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
         submitButtonText = stringResource(R.string.save),
         submitButtonIcon = { Icon(Icons.Outlined.EditNote, contentDescription = "Edit property") }
     )
+    InviteTenantModal(open = inviteTenantOpen, close = { inviteTenantOpen = false })
     InitialFadeIn {
         Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
             Row(
@@ -174,6 +177,22 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
                 }
             }
             PropertyBox(property.value.toProperty())
+            if (property.value.available) {
+                Button(
+                    onClick = { inviteTenantOpen = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .padding(5.dp)
+                        .fillMaxWidth()
+                        .testTag("startInventory")
+                ) {
+                    Text(
+                        stringResource(R.string.invite_tenant),
+                        color = MaterialTheme.colorScheme.onTertiary
+                    )
+                }
+            }
             AboutThePropertyBox(property, openEdit = { editOpen = true })
             Text(text = stringResource(R.string.documents))
             Box(

@@ -47,6 +47,7 @@ import coil.compose.AsyncImage
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.components.DeletePopUp
+import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
 import com.example.immotep.utils.DateFormatter
@@ -188,7 +189,9 @@ fun RealPropertyScreen(navController: NavController) {
             )
                 LazyColumn {
                     items(viewModel.properties) { item ->
-                        PropertyBox(item, onClick = { if (deleteOpen == null) detailsOpen = item.id }, onDelete = { deleteOpen = Pair(item.id, item.address) })
+                        InitialFadeIn {
+                            PropertyBox(item, onClick = { if (deleteOpen == null) detailsOpen = item.id }, onDelete = { deleteOpen = Pair(item.id, item.address) })
+                        }
                     }
             }
 
