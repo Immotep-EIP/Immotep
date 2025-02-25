@@ -27,7 +27,25 @@ import (
 //	@Router			/owner/properties/ [get]
 func GetAllProperties(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	allProperties := database.GetAllPropertyByOwnerId(claims["id"])
+	allProperties := database.GetAllPropertyByOwnerId(claims["id"], false)
+	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
+}
+
+// GetAllArchivedProperties godoc
+//
+//	@Summary		Get all archived properties of an owner
+//	@Description	Get all archived properties information of an owner
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{array}		models.PropertyResponse	"List of archived properties"
+//	@Failure		401	{object}	utils.Error				"Unauthorized"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/archived/ [get]
+func GetAllArchivedProperties(c *gin.Context) {
+	claims := utils.GetClaims(c)
+	allProperties := database.GetAllPropertyByOwnerId(claims["id"], true)
 	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
 }
 

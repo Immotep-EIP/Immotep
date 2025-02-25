@@ -110,7 +110,7 @@ func TestGetRoomByPropertyID(t *testing.T) {
 		),
 	).ReturnsMany([]db.RoomModel{room1, room2})
 
-	rooms := database.GetRoomByPropertyID("1")
+	rooms := database.GetRoomByPropertyID("1", false)
 	assert.Len(t, rooms, 2)
 	assert.Equal(t, room1.ID, rooms[0].ID)
 	assert.Equal(t, room2.ID, rooms[1].ID)
@@ -127,7 +127,7 @@ func TestGetRoomByPropertyID_NoRooms(t *testing.T) {
 		),
 	).ReturnsMany([]db.RoomModel{})
 
-	rooms := database.GetRoomByPropertyID("1")
+	rooms := database.GetRoomByPropertyID("1", false)
 	assert.Empty(t, rooms)
 }
 
@@ -143,7 +143,7 @@ func TestGetRoomByPropertyID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetRoomByPropertyID("1")
+		database.GetRoomByPropertyID("1", false)
 	})
 }
 

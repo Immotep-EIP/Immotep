@@ -23,11 +23,11 @@ func CreateFurniture(furniture db.FurnitureModel, roomId string) *db.FurnitureMo
 	return newFurniture
 }
 
-func GetFurnitureByRoomID(roomID string) []db.FurnitureModel {
+func GetFurnitureByRoomID(roomID string, archived bool) []db.FurnitureModel {
 	pdb := services.DBclient
 	furnitures, err := pdb.Client.Furniture.FindMany(
 		db.Furniture.RoomID.Equals(roomID),
-		db.Furniture.Archived.Equals(false),
+		db.Furniture.Archived.Equals(archived),
 	).With(
 		db.Furniture.Room.Fetch(),
 	).Exec(pdb.Context)

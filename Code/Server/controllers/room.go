@@ -55,7 +55,26 @@ func CreateRoom(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/ [get]
 func GetRoomsByProperty(c *gin.Context) {
-	rooms := database.GetRoomByPropertyID(c.Param("property_id"))
+	rooms := database.GetRoomByPropertyID(c.Param("property_id"), false)
+	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
+}
+
+// GetArchivedRoomsByProperty godoc
+//
+//	@Summary		Get archived rooms by property ID
+//	@Description	Get all archived rooms for a specific property
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string				true	"Property ID"
+//	@Success		200			{array}		models.RoomResponse	"List of archived rooms"
+//	@Failure		403			{object}	utils.Error			"Property not yours"
+//	@Failure		404			{object}	utils.Error			"Property not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/rooms/archived/ [get]
+func GetArchivedRoomsByProperty(c *gin.Context) {
+	rooms := database.GetRoomByPropertyID(c.Param("property_id"), true)
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 

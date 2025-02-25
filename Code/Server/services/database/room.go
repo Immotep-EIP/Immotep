@@ -20,11 +20,11 @@ func CreateRoom(room db.RoomModel, proppertyId string) *db.RoomModel {
 	return newRoom
 }
 
-func GetRoomByPropertyID(propertyID string) []db.RoomModel {
+func GetRoomByPropertyID(propertyID string, archived bool) []db.RoomModel {
 	pdb := services.DBclient
 	rooms, err := pdb.Client.Room.FindMany(
 		db.Room.PropertyID.Equals(propertyID),
-		db.Room.Archived.Equals(false),
+		db.Room.Archived.Equals(archived),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)

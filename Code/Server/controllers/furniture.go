@@ -57,7 +57,27 @@ func CreateFurniture(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/ [get]
 func GetFurnituresByRoom(c *gin.Context) {
-	furnitures := database.GetFurnitureByRoomID(c.Param("room_id"))
+	furnitures := database.GetFurnitureByRoomID(c.Param("room_id"), false)
+	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
+}
+
+// GetArchivedFurnituresByRoom godoc
+//
+//	@Summary		Get archived furnitures by room ID
+//	@Description	Get all archived furnitures for a specific room
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string						true	"Property ID"
+//	@Param			room_id		path		string						true	"Room ID"
+//	@Success		200			{array}		models.FurnitureResponse	"List of archived furnitures"
+//	@Failure		403			{object}	utils.Error					"Property not yours"
+//	@Failure		404			{object}	utils.Error					"Room not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/archived/ [get]
+func GetArchivedFurnituresByRoom(c *gin.Context) {
+	furnitures := database.GetFurnitureByRoomID(c.Param("room_id"), true)
 	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
 }
 

@@ -53,7 +53,7 @@ func TestGetAllProperties(t *testing.T) {
 		),
 	).ReturnsMany([]db.PropertyModel{property})
 
-	allProperties := database.GetAllPropertyByOwnerId("1")
+	allProperties := database.GetAllPropertyByOwnerId("1", false)
 	assert.Len(t, allProperties, 1)
 	assert.Equal(t, property.ID, allProperties[0].ID)
 }
@@ -75,7 +75,7 @@ func TestGetAllProperties_MultipleProperties(t *testing.T) {
 		),
 	).ReturnsMany([]db.PropertyModel{p1, p2})
 
-	allProperties := database.GetAllPropertyByOwnerId("1")
+	allProperties := database.GetAllPropertyByOwnerId("1", false)
 	assert.Len(t, allProperties, 2)
 	assert.Equal(t, p1.ID, allProperties[0].ID)
 	assert.Equal(t, p2.ID, allProperties[1].ID)
@@ -95,7 +95,7 @@ func TestGetAllProperties_NoProperties(t *testing.T) {
 		),
 	).ReturnsMany([]db.PropertyModel{})
 
-	allProperties := database.GetAllPropertyByOwnerId("1")
+	allProperties := database.GetAllPropertyByOwnerId("1", false)
 	assert.Empty(t, allProperties)
 }
 
@@ -114,7 +114,7 @@ func TestGetAllProperties_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetAllPropertyByOwnerId("1")
+		database.GetAllPropertyByOwnerId("1", false)
 	})
 }
 

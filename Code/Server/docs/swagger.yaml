@@ -1644,6 +1644,81 @@ paths:
       summary: Toggle archive furniture by ID
       tags:
       - owner
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures/archived/:
+    get:
+      consumes:
+      - application/json
+      description: Get all archived furnitures for a specific room
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of archived furnitures
+          schema:
+            items:
+              $ref: '#/definitions/models.FurnitureResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get archived furnitures by room ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/archived/:
+    get:
+      consumes:
+      - application/json
+      description: Get all archived rooms for a specific property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of archived rooms
+          schema:
+            items:
+              $ref: '#/definitions/models.RoomResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get archived rooms by property ID
+      tags:
+      - owner
   /owner/properties/{property_id}/send-invite:
     post:
       consumes:
@@ -1689,6 +1764,31 @@ paths:
       security:
       - Bearer: []
       summary: Invite tenant to owner's property
+      tags:
+      - owner
+  /owner/properties/archived/:
+    get:
+      consumes:
+      - application/json
+      description: Get all archived properties information of an owner
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of archived properties
+          schema:
+            items:
+              $ref: '#/definitions/models.PropertyResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get all archived properties of an owner
       tags:
       - owner
   /profile/:

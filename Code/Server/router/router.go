@@ -70,6 +70,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 	{
 		properties.POST("/", controllers.CreateProperty)
 		properties.GET("/", controllers.GetAllProperties)
+		properties.GET("/archived/", controllers.GetAllArchivedProperties)
 
 		propertyId := properties.Group("/:property_id/")
 		{
@@ -95,6 +96,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			{
 				rooms.POST("/", controllers.CreateRoom)
 				rooms.GET("/", controllers.GetRoomsByProperty)
+				rooms.GET("/archived/", controllers.GetArchivedRoomsByProperty)
 
 				roomId := rooms.Group("/:room_id")
 				{
@@ -106,6 +108,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 					{
 						furnitures.POST("/", controllers.CreateFurniture)
 						furnitures.GET("/", controllers.GetFurnituresByRoom)
+						furnitures.GET("/archived/", controllers.GetArchivedFurnituresByRoom)
 
 						furnitureId := furnitures.Group("/:furniture_id")
 						{

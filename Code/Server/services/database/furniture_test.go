@@ -126,7 +126,7 @@ func TestGetFurnitureByRoomID(t *testing.T) {
 		),
 	).ReturnsMany([]db.FurnitureModel{furniture1, furniture2})
 
-	furnitures := database.GetFurnitureByRoomID("1")
+	furnitures := database.GetFurnitureByRoomID("1", false)
 	assert.Len(t, furnitures, 2)
 	assert.Equal(t, furniture1.ID, furnitures[0].ID)
 	assert.Equal(t, furniture2.ID, furnitures[1].ID)
@@ -145,7 +145,7 @@ func TestGetFurnitureByRoomID_NoFurnitures(t *testing.T) {
 		),
 	).ReturnsMany([]db.FurnitureModel{})
 
-	furnitures := database.GetFurnitureByRoomID("1")
+	furnitures := database.GetFurnitureByRoomID("1", false)
 	assert.Empty(t, furnitures)
 }
 
@@ -163,7 +163,7 @@ func TestGetFurnitureByRoomID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetFurnitureByRoomID("1")
+		database.GetFurnitureByRoomID("1", false)
 	})
 }
 
