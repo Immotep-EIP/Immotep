@@ -389,7 +389,7 @@ func TestArchiveProperty(t *testing.T) {
 		),
 	).Returns(property)
 
-	archivedProperty := database.ArchiveProperty(property.ID)
+	archivedProperty := database.ToggleArchiveProperty(property.ID, true)
 	assert.NotNil(t, archivedProperty)
 	assert.Equal(t, property.ID, archivedProperty.ID)
 	assert.True(t, archivedProperty.Archived)
@@ -412,7 +412,7 @@ func TestArchiveProperty_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	archivedProperty := database.ArchiveProperty(property.ID)
+	archivedProperty := database.ToggleArchiveProperty(property.ID, true)
 	assert.Nil(t, archivedProperty)
 }
 
@@ -434,6 +434,6 @@ func TestArchiveProperty_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.ArchiveProperty(property.ID)
+		database.ToggleArchiveProperty(property.ID, true)
 	})
 }

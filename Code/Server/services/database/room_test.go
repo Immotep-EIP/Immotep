@@ -218,7 +218,7 @@ func TestArchiveRoom(t *testing.T) {
 		),
 	).Returns(room)
 
-	archivedRoom := database.ArchiveRoom("1")
+	archivedRoom := database.ToggleArchiveRoom("1", true)
 	assert.NotNil(t, archivedRoom)
 	assert.Equal(t, room.ID, archivedRoom.ID)
 	assert.True(t, archivedRoom.Archived)
@@ -236,7 +236,7 @@ func TestArchiveRoom_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	archivedRoom := database.ArchiveRoom("1")
+	archivedRoom := database.ToggleArchiveRoom("1", true)
 	assert.Nil(t, archivedRoom)
 }
 
@@ -253,6 +253,6 @@ func TestArchiveRoom_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.ArchiveRoom("1")
+		database.ToggleArchiveRoom("1", true)
 	})
 }

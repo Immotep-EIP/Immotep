@@ -248,7 +248,7 @@ func TestArchiveFurniture(t *testing.T) {
 		),
 	).Returns(furniture)
 
-	archivedFurniture := database.ArchiveFurniture("1")
+	archivedFurniture := database.ToggleArchiveFurniture("1", true)
 	assert.NotNil(t, archivedFurniture)
 	assert.Equal(t, furniture.ID, archivedFurniture.ID)
 	assert.True(t, archivedFurniture.Archived)
@@ -268,7 +268,7 @@ func TestArchiveFurniture_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	archivedFurniture := database.ArchiveFurniture("1")
+	archivedFurniture := database.ToggleArchiveFurniture("1", true)
 	assert.Nil(t, archivedFurniture)
 }
 
@@ -287,6 +287,6 @@ func TestArchiveFurniture_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.ArchiveFurniture("1")
+		database.ToggleArchiveFurniture("1", true)
 	})
 }

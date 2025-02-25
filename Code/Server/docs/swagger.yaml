@@ -8,6 +8,11 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  models.ArchiveRequest:
+    properties:
+      archive:
+        type: boolean
+    type: object
   models.CreateInventoryReportResponse:
     properties:
       date:
@@ -752,38 +757,6 @@ paths:
       tags:
       - owner
   /owner/properties/{property_id}/:
-    delete:
-      consumes:
-      - application/json
-      description: Archive a property by its ID
-      parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Archived property data
-          schema:
-            $ref: '#/definitions/models.PropertyResponse'
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Property not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Archive property by ID
-      tags:
-      - owner
     get:
       consumes:
       - application/json
@@ -854,6 +827,49 @@ paths:
       security:
       - Bearer: []
       summary: Update property by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/archive:
+    put:
+      consumes:
+      - application/json
+      description: Toggle archive status of a property by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Archive status
+        in: body
+        name: archive
+        required: true
+        schema:
+          $ref: '#/definitions/models.ArchiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Toggled archive property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Mising fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Toggle archive property by ID
       tags:
       - owner
   /owner/properties/{property_id}/cancel-invite:
@@ -1360,43 +1376,6 @@ paths:
       tags:
       - owner
   /owner/properties/{property_id}/rooms/{room_id}/:
-    delete:
-      consumes:
-      - application/json
-      description: Archive a room by its ID
-      parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
-      - description: Room ID
-        in: path
-        name: room_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Achieved room data
-          schema:
-            $ref: '#/definitions/models.RoomResponse'
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Room not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Archive room by ID
-      tags:
-      - owner
     get:
       consumes:
       - application/json
@@ -1432,6 +1411,54 @@ paths:
       security:
       - Bearer: []
       summary: Get room by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/archive:
+    put:
+      consumes:
+      - application/json
+      description: Toggle archive status of a room by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Archive status
+        in: body
+        name: archive
+        required: true
+        schema:
+          $ref: '#/definitions/models.ArchiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Toggled archive room data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Mising fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Toggle archive room by ID
       tags:
       - owner
   /owner/properties/{property_id}/rooms/{room_id}/furnitures/:
@@ -1522,34 +1549,6 @@ paths:
       tags:
       - owner
   /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/:
-    delete:
-      consumes:
-      - application/json
-      description: Archive a furniture by its ID
-      parameters:
-      - description: Furniture ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Archived furniture data
-          schema:
-            $ref: '#/definitions/models.FurnitureResponse'
-        "404":
-          description: Furniture not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Archive furniture by ID
-      tags:
-      - owner
     get:
       consumes:
       - application/json
@@ -1590,6 +1589,59 @@ paths:
       security:
       - Bearer: []
       summary: Get furniture by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/archive:
+    put:
+      consumes:
+      - application/json
+      description: Toggle archive status of a furniture by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Furniture ID
+        in: path
+        name: furniture_id
+        required: true
+        type: string
+      - description: Archive status
+        in: body
+        name: archive
+        required: true
+        schema:
+          $ref: '#/definitions/models.ArchiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Toggled archive furniture data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Mising fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Furniture not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Toggle archive furniture by ID
       tags:
       - owner
   /owner/properties/{property_id}/send-invite:

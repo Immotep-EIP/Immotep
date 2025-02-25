@@ -132,7 +132,7 @@ func UpdatePropertyPicture(property db.PropertyModel, image db.ImageModel) *db.P
 	return newProperty
 }
 
-func ArchiveProperty(propertyId string) *db.PropertyModel {
+func ToggleArchiveProperty(propertyId string, archive bool) *db.PropertyModel {
 	pdb := services.DBclient
 	archivedProperty, err := pdb.Client.Property.FindUnique(
 		db.Property.ID.Equals(propertyId),
@@ -141,7 +141,7 @@ func ArchiveProperty(propertyId string) *db.PropertyModel {
 		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
 		db.Property.PendingContract.Fetch(),
 	).Update(
-		db.Property.Archived.Set(true),
+		db.Property.Archived.Set(archive),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {

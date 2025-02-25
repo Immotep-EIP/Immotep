@@ -46,12 +46,12 @@ func GetRoomByID(id string) *db.RoomModel {
 	return room
 }
 
-func ArchiveRoom(roomId string) *db.RoomModel {
+func ToggleArchiveRoom(roomId string, archive bool) *db.RoomModel {
 	pdb := services.DBclient
 	archivedRoom, err := pdb.Client.Room.FindUnique(
 		db.Room.ID.Equals(roomId),
 	).Update(
-		db.Room.Archived.Set(true),
+		db.Room.Archived.Set(archive),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {

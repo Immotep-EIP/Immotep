@@ -319,19 +319,27 @@ func CancelInvite(c *gin.Context) {
 
 // ArchiveProperty godoc
 //
-//	@Summary		Archive property by ID
-//	@Description	Archive a property by its ID
+//	@Summary		Toggle archive property by ID
+//	@Description	Toggle archive status of a property by its ID
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
-//	@Success		200			{object}	models.PropertyResponse	"Archived property data"
+//	@Param			archive		body		models.ArchiveRequest	true	"Archive status"
+//	@Success		200			{object}	models.PropertyResponse	"Toggled archive property data"
+//	@Failure		400			{object}	utils.Error				"Mising fields"
 //	@Failure		403			{object}	utils.Error				"Property not yours"
 //	@Failure		404			{object}	utils.Error				"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/ [delete]
+//	@Router			/owner/properties/{property_id}/archive [put]
 func ArchiveProperty(c *gin.Context) {
-	property := database.ArchiveProperty(c.Param("property_id"))
+	var req models.ArchiveRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	property := database.ToggleArchiveProperty(c.Param("property_id"), req.Archive)
 	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
 }

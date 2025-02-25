@@ -84,18 +84,29 @@ func GetFurnitureByID(c *gin.Context) {
 
 // ArchiveFurniture godoc
 //
-//	@Summary		Archive furniture by ID
-//	@Description	Archive a furniture by its ID
+//	@Summary		Toggle archive furniture by ID
+//	@Description	Toggle archive status of a furniture by its ID
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		string						true	"Furniture ID"
-//	@Success		200	{object}	models.FurnitureResponse	"Archived furniture data"
-//	@Failure		404	{object}	utils.Error					"Furniture not found"
+//	@Param			property_id		path		string					true	"Property ID"
+//	@Param			room_id			path		string					true	"Room ID"
+//	@Param			furniture_id	path		string					true	"Furniture ID"
+//	@Param			archive			body		models.ArchiveRequest	true	"Archive status"
+//	@Success		200				{object}	models.PropertyResponse	"Toggled archive furniture data"
+//	@Failure		400				{object}	utils.Error				"Mising fields"
+//	@Failure		403				{object}	utils.Error				"Property not yours"
+//	@Failure		404				{object}	utils.Error				"Furniture not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [delete]
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/archive [put]
 func ArchiveFurniture(c *gin.Context) {
-	furniture := database.ArchiveFurniture(c.Param("furniture_id"))
+	var req models.ArchiveRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	furniture := database.ToggleArchiveFurniture(c.Param("furniture_id"), req.Archive)
 	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
 }

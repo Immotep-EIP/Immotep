@@ -393,14 +393,16 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/owner/properties/{property_id}/archive": {
+            "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Archive a property by its ID",
+                "description": "Toggle archive status of a property by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -410,7 +412,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Archive property by ID",
+                "summary": "Toggle archive property by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -418,13 +420,28 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Archive status",
+                        "name": "archive",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ArchiveRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Archived property data",
+                        "description": "Toggled archive property data",
                         "schema": {
                             "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Mising fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "403": {
@@ -1285,14 +1302,16 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/owner/properties/{property_id}/rooms/{room_id}/archive": {
+            "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Archive a room by its ID",
+                "description": "Toggle archive status of a room by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1302,7 +1321,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Archive room by ID",
+                "summary": "Toggle archive room by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -1317,13 +1336,28 @@ const docTemplate = `{
                         "name": "room_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Archive status",
+                        "name": "archive",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ArchiveRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Achieved room data",
+                        "description": "Toggled archive room data",
                         "schema": {
-                            "$ref": "#/definitions/models.RoomResponse"
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Mising fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "403": {
@@ -1542,14 +1576,16 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/archive": {
+            "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Archive a furniture by its ID",
+                "description": "Toggle archive status of a furniture by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1559,21 +1595,56 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Archive furniture by ID",
+                "summary": "Toggle archive furniture by ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Furniture ID",
-                        "name": "id",
+                        "description": "Property ID",
+                        "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "room_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Furniture ID",
+                        "name": "furniture_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Archive status",
+                        "name": "archive",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ArchiveRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Archived furniture data",
+                        "description": "Toggled archive furniture data",
                         "schema": {
-                            "$ref": "#/definitions/models.FurnitureResponse"
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Mising fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "404": {
@@ -2082,6 +2153,14 @@ const docTemplate = `{
                 "RoleOwner",
                 "RoleTenant"
             ]
+        },
+        "models.ArchiveRequest": {
+            "type": "object",
+            "properties": {
+                "archive": {
+                    "type": "boolean"
+                }
+            }
         },
         "models.CreateInventoryReportResponse": {
             "type": "object",
