@@ -158,7 +158,7 @@ data class AiCallOutput(
 //tenant input data classes
 
 data class InviteInput(
-    val email: String,
+    val tenant_email: String,
     val start_date: String,
     val end_date: String,
 )

@@ -155,7 +155,12 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
         submitButtonText = stringResource(R.string.save),
         submitButtonIcon = { Icon(Icons.Outlined.EditNote, contentDescription = "Edit property") }
     )
-    InviteTenantModal(open = inviteTenantOpen, close = { inviteTenantOpen = false })
+    InviteTenantModal(
+        open = inviteTenantOpen,
+        close = { inviteTenantOpen = false },
+        navController = navController,
+        propertyId = propertyId
+    )
     InitialFadeIn {
         Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
             Row(

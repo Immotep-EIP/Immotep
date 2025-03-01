@@ -8,6 +8,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
@@ -20,8 +21,14 @@ fun BigModalLayout(height: Float, open : Boolean, close : () -> Unit, content: @
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val modalHeight = screenHeight * height
-    if (open) {
-        ModalBottomSheet(
+    LaunchedEffect(open) {
+        if (!open) {
+            sheetState.hide()
+        } else {
+            sheetState.show()
+        }
+    }
+    ModalBottomSheet(
             onDismissRequest = {
                 close()
             },
@@ -36,5 +43,4 @@ fun BigModalLayout(height: Float, open : Boolean, close : () -> Unit, content: @
                 content()
             }
         }
-    }
 }
