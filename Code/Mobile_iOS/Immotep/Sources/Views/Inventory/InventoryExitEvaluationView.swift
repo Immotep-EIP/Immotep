@@ -130,7 +130,6 @@ struct InventoryExitEvaluationView: View {
         .navigationBarBackButtonHidden(true)
         .onAppear {
             inventoryViewModel.selectStuff(selectedStuff)
-            print("exit evaluation view appeared")
         }
     }
 
@@ -172,20 +171,17 @@ struct InventoryExitEvaluationView: View {
             try await inventoryViewModel.markStuffAsChecked(selectedStuff)
 
             await inventoryViewModel.fetchLastInventoryReport()
-            print("Fetched lastReportId: \(inventoryViewModel.lastReportId ?? "nil")")
 
             if let oldReportId = inventoryViewModel.lastReportId {
                 try await inventoryViewModel.compareStuffReport(oldReportId: oldReportId)
-                print("Comparison completed successfully")
+//                print("Comparison completed successfully")
             } else {
                 errorMessage = "No previous inventory report found for comparison."
-                print("No lastReportId available, skipping comparison")
             }
 
             isReportSent = true
         } catch {
             errorMessage = "Error: \(error.localizedDescription)"
-            print("Failed to send comparison report: \(error)")
         }
     }
 

@@ -25,7 +25,6 @@ struct InventoryTypeView: View {
                 VStack {
                     Button(action: {
                         inventoryViewModel.isEntryInventory = true
-                        print("Entry Inventory selected: \(inventoryViewModel.isEntryInventory)")
                         navigateToEntry = true
                     }, label: {
                         HStack {
@@ -61,7 +60,6 @@ struct InventoryTypeView: View {
 
                     Button(action: {
                         inventoryViewModel.isEntryInventory = false
-                        print("Exit Inventory selected: \(inventoryViewModel.isEntryInventory)")
                         navigateToExit = true
                     }, label: {
                         HStack {

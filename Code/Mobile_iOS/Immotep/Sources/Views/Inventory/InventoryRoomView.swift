@@ -30,7 +30,6 @@ struct InventoryRoomView: View {
                                         showCompletionMessage = true
                                     } catch {
                                         showCompletionMessage = true
-                                        print("Error finalizing inventory: \(error.localizedDescription)")
                                     }
                                 }
                             }, label: {
@@ -69,7 +68,6 @@ struct InventoryRoomView: View {
                             Task {
                                 do {
                                     try await inventoryViewModel.addRoom(name: newRoomName)
-                                    print("New room name: \(newRoomName)")
                                     newRoomName = ""
                                 } catch {
                                     print("Error adding room: \(error.localizedDescription)")

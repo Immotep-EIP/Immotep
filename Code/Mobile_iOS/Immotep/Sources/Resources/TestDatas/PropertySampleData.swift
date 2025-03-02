@@ -40,8 +40,8 @@ let exampleDataProperty = Property(
             name: "Entrance",
             checked: true,
             inventory: [
-                RoomInventory(id: "1.1", propertyId: "edddedzzdz", roomId: "ddeqzdadz", name: "Right Wall", quantity: 3),
-                RoomInventory(id: "1.2", propertyId: "edddedzzdz", roomId: "ddeqzdadz", name: "Left Wall", quantity: 2)
+//                RoomInventory(id: "1.1", propertyId: "edddedzzdz", roomId: "ddeqzdadz", name: "Right Wall", quantity: 3),
+//                RoomInventory(id: "1.2", propertyId: "edddedzzdz", roomId: "ddeqzdadz", name: "Left Wall", quantity: 2)
 //                RoomInventory(id: "1.1", name: "Right Wall", number: nil, state: "Good", image: nil, description: nil, checked: true),
 //                RoomInventory(id: "1.2", name: "Left Wall", number: nil, state: "Used", image: nil, description: nil, checked: true),
 //                RoomInventory(id: "1.3", name: "Back Wall", number: nil, state: "Used", image: nil, description: nil, checked: true),
