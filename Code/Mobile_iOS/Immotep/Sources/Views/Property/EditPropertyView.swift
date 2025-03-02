@@ -170,7 +170,7 @@ struct EditPropertyView: View {
         }
 
         do {
-            let _ = try await viewModel.updateProperty(request: updatedProperty, token: token)
+            _ = try await viewModel.updateProperty(request: updatedProperty, token: token)
             property = updatedProperty
             dismiss()
         } catch {

@@ -133,7 +133,7 @@ class InventoryReportManager {
         urlRequest.httpBody = try encoder.encode(requestBody)
 
         do {
-            let (data, response) = try await URLSession.shared.data(for: urlRequest)
+            let (_, response) = try await URLSession.shared.data(for: urlRequest)
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])
@@ -177,7 +177,7 @@ class InventoryReportManager {
                 return
             }
 
-            let rawResponse = String(data: data, encoding: .utf8) ?? "Unable to decode response"
+            _ = String(data: data, encoding: .utf8) ?? "Unable to decode response"
 
             guard (200...299).contains(httpResponse.statusCode) else {
                 viewModel.errorMessage = "Failed to fetch last report: \(httpResponse.statusCode)"

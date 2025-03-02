@@ -36,7 +36,7 @@ class InventoryViewModel: ObservableObject {
     init(property: Property, isEntryInventory: Bool = true) {
         self.property = property
         self.isEntryInventory = isEntryInventory
-        
+
         self.roomManager = RoomManager(viewModel: self)
         self.furnitureManager = FurnitureManager(viewModel: self)
         self.reportManager = InventoryReportManager(viewModel: self)

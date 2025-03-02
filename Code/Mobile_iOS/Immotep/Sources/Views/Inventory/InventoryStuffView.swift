@@ -38,8 +38,8 @@ struct InventoryStuffView: View {
                 }
             }
         }
-        .onChange(of: inventoryViewModel.localRooms) { newRooms in
-            if let updatedRoom = newRooms.first(where: { $0.id == roomId }) {
+        .onChange(of: inventoryViewModel.localRooms) {
+            if let updatedRoom = inventoryViewModel.localRooms.first(where: { $0.id == roomId }) {
                 selectedRoom = updatedRoom
             }
         }

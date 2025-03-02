@@ -19,7 +19,7 @@ struct InventoryTypeView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 TopBar(title: "Inventory")
                 VStack {
@@ -49,15 +49,6 @@ struct InventoryTypeView: View {
                     })
                     .padding(.horizontal)
 
-                    NavigationLink(
-                        destination: InventoryRoomView()
-                            .environmentObject(inventoryViewModel),
-                        isActive: $navigateToEntry
-                    ) {
-                        EmptyView()
-                    }
-                    .hidden()
-
                     Button(action: {
                         inventoryViewModel.isEntryInventory = false
                         navigateToExit = true
@@ -83,15 +74,6 @@ struct InventoryTypeView: View {
                         )
                     })
                     .padding()
-
-                    NavigationLink(
-                        destination: InventoryRoomView()
-                            .environmentObject(inventoryViewModel),
-                        isActive: $navigateToExit
-                    ) {
-                        EmptyView()
-                    }
-                    .hidden()
                 }
                 .padding(.top, 20)
 
@@ -102,6 +84,14 @@ struct InventoryTypeView: View {
             .navigationTransition(
                 .fade(.in).animation(.easeInOut(duration: 0))
             )
+            .navigationDestination(isPresented: $navigateToEntry) {
+                InventoryRoomView()
+                    .environmentObject(inventoryViewModel)
+            }
+            .navigationDestination(isPresented: $navigateToExit) {
+                InventoryRoomView()
+                    .environmentObject(inventoryViewModel)
+            }
         }
         .navigationBarBackButtonHidden(true)
     }

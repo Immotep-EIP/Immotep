@@ -16,7 +16,7 @@ struct PropertyView: View {
     @State private var listRefreshID = UUID()
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 VStack(spacing: 0) {
                     TopBar(title: "Property".localized())
@@ -46,6 +46,22 @@ struct PropertyView: View {
                     )
                 }
             }
+            .navigationDestination(isPresented: Binding(
+                get: { navigateToEditId != nil },
+                set: { if !$0 { navigateToEditId = nil } }
+            )) {
+                if let editId = navigateToEditId,
+                   let propertyToEdit = viewModel.properties.first(where: { $0.id == editId }) {
+                    EditPropertyView(viewModel: viewModel, property: Binding(
+                        get: { viewModel.properties.first(where: { $0.id == editId }) ?? propertyToEdit },
+                        set: { newValue in
+                            if let index = viewModel.properties.firstIndex(where: { $0.id == newValue.id }) {
+                                viewModel.properties[index] = newValue
+                            }
+                        }
+                    ))
+                }
+            }
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
@@ -54,11 +70,11 @@ struct PropertyView: View {
                 listRefreshID = UUID()
             }
         }
-        .onChange(of: viewModel.properties) { newProperties in
+        .onChange(of: viewModel.properties) {
             listRefreshID = UUID()
         }
-        .onChange(of: navigateToEditId) { newValue in
-            if newValue == nil {
+        .onChange(of: navigateToEditId) {
+            if navigateToEditId == nil {
                 Task {
                     await viewModel.fetchProperties()
                 }
@@ -114,24 +130,6 @@ struct PropertyView: View {
                     )
                     .padding(.horizontal)
                     .padding(.vertical, 15)
-                    .background(
-                        NavigationLink(
-                            destination: navigateToEditId == property.id ? EditPropertyView(viewModel: viewModel, property: Binding(
-                                get: { viewModel.properties.first(where: { $0.id == property.id }) ?? property },
-                                set: { newValue in
-                                    if let index = viewModel.properties.firstIndex(where: { $0.id == newValue.id }) {
-                                        viewModel.properties[index] = newValue
-                                    }
-                                }
-                            )) : nil,
-                            isActive: Binding(
-                                get: { navigateToEditId == property.id },
-                                set: { if !$0 { navigateToEditId = nil } }
-                            ),
-                            label: { EmptyView() }
-                        )
-                        .hidden()
-                    )
                 }
             } else {
                 Text("No properties available".localized())
@@ -251,6 +249,7 @@ struct PropertyView_Previews: PreviewProvider {
             }
     }
 }
+
 let exampleDataProperty2: [Property] = [
     Property(
         id: "cm7gijdee000ly7i82uq0qf35",
