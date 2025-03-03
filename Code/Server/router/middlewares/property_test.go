@@ -376,3 +376,130 @@ func TestCheckInventoryReportOwnership_NotYours(t *testing.T) {
 	middlewares.CheckInventoryReportOwnership("propertyId", "reportId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
+
+func TestCheckActiveContract(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	contract := db.ContractModel{
+		InnerContract: db.InnerContract{
+			ID:         "1",
+			PropertyID: "1",
+			Active:     true,
+		},
+	}
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals("1"),
+			db.Contract.Active.Equals(true),
+		),
+	).ReturnsMany([]db.ContractModel{contract})
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+
+	middlewares.CheckActiveContract("propertyId")(c)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestCheckActiveContract_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals("1"),
+			db.Contract.Active.Equals(true),
+		),
+	).ReturnsMany([]db.ContractModel{})
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+
+	middlewares.CheckActiveContract("propertyId")(c)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCheckActiveContract_MultipleActiveContracts(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	contract1 := db.ContractModel{
+		InnerContract: db.InnerContract{
+			ID:         "1",
+			PropertyID: "1",
+			Active:     true,
+		},
+	}
+	contract2 := db.ContractModel{
+		InnerContract: db.InnerContract{
+			ID:         "2",
+			PropertyID: "1",
+			Active:     true,
+		},
+	}
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals("1"),
+			db.Contract.Active.Equals(true),
+		),
+	).ReturnsMany([]db.ContractModel{contract1, contract2})
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+
+	assert.Panics(t, func() {
+		middlewares.CheckActiveContract("propertyId")(c)
+	})
+}
+
+func TestCheckPendingContract(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	pendingContract := db.PendingContractModel{
+		InnerPendingContract: db.InnerPendingContract{
+			ID:         "1",
+			PropertyID: "1",
+		},
+	}
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals("1")),
+	).Returns(pendingContract)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+
+	middlewares.CheckPendingContract("propertyId")(c)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestCheckPendingContract_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals("1")),
+	).Errors(db.ErrNotFound)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+
+	middlewares.CheckPendingContract("propertyId")(c)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}

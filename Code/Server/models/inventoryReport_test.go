@@ -1,6 +1,7 @@
 package models_test
 
 import (
+	"encoding/base64"
 	"testing"
 	"time"
 
@@ -161,5 +162,75 @@ func TestInventoryReport(t *testing.T) {
 		assert.Equal(t, "Furniture is in good condition", furniture.Note)
 		assert.Len(t, furniture.Pictures, 1)
 		assert.Equal(t, "YmFzZTY0aW1hZ2Uy", furniture.Pictures[0])
+	})
+}
+
+func TestCreateInventoryReportResponse(t *testing.T) {
+	model := db.InventoryReportModel{
+		InnerInventoryReport: db.InnerInventoryReport{
+			ID:         "1",
+			PropertyID: "1",
+			Date:       time.Now(),
+			Type:       db.ReportTypeStart,
+		},
+	}
+
+	pdf := &db.DocumentModel{
+		InnerDocument: db.InnerDocument{
+			Name: "report.pdf",
+			Data: []byte("pdfdata"),
+		},
+	}
+
+	errors := []string{"error1", "error2"}
+
+	t.Run("FromDbInventoryReport", func(t *testing.T) {
+		var resp models.CreateInventoryReportResponse
+		resp.FromDbInventoryReport(model, pdf, errors)
+
+		assert.Equal(t, model.ID, resp.ID)
+		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.Date, resp.Date)
+		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Equal(t, pdf.Name, resp.PdfName)
+		assert.Equal(t, "data:application/pdf;base64,"+base64.StdEncoding.EncodeToString(pdf.Data), resp.PdfData)
+		assert.Equal(t, errors, resp.Errors)
+	})
+
+	t.Run("FromDbInventoryReport with nil pdf", func(t *testing.T) {
+		var resp models.CreateInventoryReportResponse
+		resp.FromDbInventoryReport(model, nil, errors)
+
+		assert.Equal(t, model.ID, resp.ID)
+		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.Date, resp.Date)
+		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Empty(t, resp.PdfName)
+		assert.Empty(t, resp.PdfData)
+		assert.Equal(t, errors, resp.Errors)
+	})
+
+	t.Run("DbInventoryReportToCreateResponse", func(t *testing.T) {
+		resp := models.DbInventoryReportToCreateResponse(model, pdf, errors)
+
+		assert.Equal(t, model.ID, resp.ID)
+		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.Date, resp.Date)
+		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Equal(t, pdf.Name, resp.PdfName)
+		assert.Equal(t, "data:application/pdf;base64,"+base64.StdEncoding.EncodeToString(pdf.Data), resp.PdfData)
+		assert.Equal(t, errors, resp.Errors)
+	})
+
+	t.Run("DbInventoryReportToCreateResponse with nil pdf", func(t *testing.T) {
+		resp := models.DbInventoryReportToCreateResponse(model, nil, errors)
+
+		assert.Equal(t, model.ID, resp.ID)
+		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.Date, resp.Date)
+		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Empty(t, resp.PdfName)
+		assert.Empty(t, resp.PdfData)
+		assert.Equal(t, errors, resp.Errors)
 	})
 }

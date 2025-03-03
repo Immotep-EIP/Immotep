@@ -7,6 +7,7 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
+	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services"
 	"immotep/backend/services/database"
@@ -458,5 +459,122 @@ func TestArchiveProperty_NoConnection(t *testing.T) {
 
 	assert.Panics(t, func() {
 		database.ToggleArchiveProperty(property.ID, true)
+	})
+}
+
+func TestUpdateProperty(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	updateRequest := models.PropertyUpdateRequest{
+		Name:                utils.Ptr("Updated Name"),
+		Address:             utils.Ptr("Updated Address"),
+		ApartmentNumber:     utils.Ptr("Updated Apartment Number"),
+		City:                utils.Ptr("Updated City"),
+		PostalCode:          utils.Ptr("Updated Postal Code"),
+		Country:             utils.Ptr("Updated Country"),
+		AreaSqm:             utils.Ptr(30.0),
+		RentalPricePerMonth: utils.Ptr(600.0),
+		DepositPrice:        utils.Ptr(1200.0),
+	}
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		).Update(
+			db.Property.Name.SetIfPresent(updateRequest.Name),
+			db.Property.Address.SetIfPresent(updateRequest.Address),
+			db.Property.ApartmentNumber.SetIfPresent(updateRequest.ApartmentNumber),
+			db.Property.City.SetIfPresent(updateRequest.City),
+			db.Property.PostalCode.SetIfPresent(updateRequest.PostalCode),
+			db.Property.Country.SetIfPresent(updateRequest.Country),
+			db.Property.AreaSqm.SetIfPresent(updateRequest.AreaSqm),
+			db.Property.RentalPricePerMonth.SetIfPresent(updateRequest.RentalPricePerMonth),
+			db.Property.DepositPrice.SetIfPresent(updateRequest.DepositPrice),
+		),
+	).Returns(property)
+
+	updatedProperty := database.UpdateProperty(property.ID, updateRequest)
+	assert.NotNil(t, updatedProperty)
+	assert.Equal(t, property.ID, updatedProperty.ID)
+}
+
+func TestUpdateProperty_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	updateRequest := models.PropertyUpdateRequest{
+		Name:                utils.Ptr("Updated Name"),
+		Address:             utils.Ptr("Updated Address"),
+		ApartmentNumber:     utils.Ptr("Updated Apartment Number"),
+		City:                utils.Ptr("Updated City"),
+		PostalCode:          utils.Ptr("Updated Postal Code"),
+		Country:             utils.Ptr("Updated Country"),
+		AreaSqm:             utils.Ptr(30.0),
+		RentalPricePerMonth: utils.Ptr(600.0),
+		DepositPrice:        utils.Ptr(1200.0),
+	}
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		).Update(
+			db.Property.Name.SetIfPresent(updateRequest.Name),
+			db.Property.Address.SetIfPresent(updateRequest.Address),
+			db.Property.ApartmentNumber.SetIfPresent(updateRequest.ApartmentNumber),
+			db.Property.City.SetIfPresent(updateRequest.City),
+			db.Property.PostalCode.SetIfPresent(updateRequest.PostalCode),
+			db.Property.Country.SetIfPresent(updateRequest.Country),
+			db.Property.AreaSqm.SetIfPresent(updateRequest.AreaSqm),
+			db.Property.RentalPricePerMonth.SetIfPresent(updateRequest.RentalPricePerMonth),
+			db.Property.DepositPrice.SetIfPresent(updateRequest.DepositPrice),
+		),
+	).Errors(db.ErrNotFound)
+
+	updatedProperty := database.UpdateProperty("1", updateRequest)
+	assert.Nil(t, updatedProperty)
+}
+
+func TestUpdateProperty_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	updateRequest := models.PropertyUpdateRequest{
+		Name:                utils.Ptr("Updated Name"),
+		Address:             utils.Ptr("Updated Address"),
+		ApartmentNumber:     utils.Ptr("Updated Apartment Number"),
+		City:                utils.Ptr("Updated City"),
+		PostalCode:          utils.Ptr("Updated Postal Code"),
+		Country:             utils.Ptr("Updated Country"),
+		AreaSqm:             utils.Ptr(30.0),
+		RentalPricePerMonth: utils.Ptr(600.0),
+		DepositPrice:        utils.Ptr(1200.0),
+	}
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		).Update(
+			db.Property.Name.SetIfPresent(updateRequest.Name),
+			db.Property.Address.SetIfPresent(updateRequest.Address),
+			db.Property.ApartmentNumber.SetIfPresent(updateRequest.ApartmentNumber),
+			db.Property.City.SetIfPresent(updateRequest.City),
+			db.Property.PostalCode.SetIfPresent(updateRequest.PostalCode),
+			db.Property.Country.SetIfPresent(updateRequest.Country),
+			db.Property.AreaSqm.SetIfPresent(updateRequest.AreaSqm),
+			db.Property.RentalPricePerMonth.SetIfPresent(updateRequest.RentalPricePerMonth),
+			db.Property.DepositPrice.SetIfPresent(updateRequest.DepositPrice),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.UpdateProperty("1", updateRequest)
 	})
 }

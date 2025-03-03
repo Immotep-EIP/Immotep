@@ -77,7 +77,7 @@ func GetTenantCurrentActiveContract(tenantId string) *db.ContractModel {
 	return &c[0]
 }
 
-func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel) *db.ContractModel {
+func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel) db.ContractModel {
 	pdb := services.DBclient
 	newContract, err := pdb.Client.Contract.CreateOne(
 		db.Contract.StartDate.Set(pendingContract.StartDate),
@@ -86,9 +86,6 @@ func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel
 		db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 	).Exec(pdb.Context)
 	if err != nil {
-		if _, is := db.IsErrUniqueConstraint(err); is {
-			return nil
-		}
 		panic(err)
 	}
 	_, err = pdb.Client.PendingContract.FindUnique(
@@ -97,7 +94,7 @@ func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel
 	if err != nil {
 		panic(err)
 	}
-	return newContract
+	return *newContract
 }
 
 func EndContract(id string, endDate *db.DateTime) *db.ContractModel {

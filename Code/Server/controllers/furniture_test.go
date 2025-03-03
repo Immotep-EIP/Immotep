@@ -626,6 +626,51 @@ func TestArchiveFurniture(t *testing.T) {
 	assert.True(t, resp.Archived)
 }
 
+func TestArchiveFurniture_MissingFields(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		),
+	).Returns(property)
+
+	room := BuildTestRoom("1", "1")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Returns(room)
+
+	furniture := BuildTestFurniture("1", "1")
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindUnique(
+			db.Furniture.ID.Equals(furniture.ID),
+		).With(
+			db.Furniture.Room.Fetch(),
+		),
+	).Returns(furniture)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusBadRequest, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.MissingFields, resp.Code)
+}
+
 func TestArchiveFurniture_NotFound(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
@@ -668,4 +713,230 @@ func TestArchiveFurniture_NotFound(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.Equal(t, utils.FurnitureNotFound, resp.Code)
+}
+
+func TestArchiveFurniture_WrongRoom(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		),
+	).Returns(property)
+
+	room := BuildTestRoom("1", "1")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Returns(room)
+
+	furniture := BuildTestFurniture("1", "2")
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindUnique(
+			db.Furniture.ID.Equals(furniture.ID),
+		).With(
+			db.Furniture.Room.Fetch(),
+		),
+	).Returns(furniture)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.FurnitureNotFound, resp.Code)
+}
+
+func TestArchiveFurniture_PropertyNotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals("1"),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		),
+	).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.PropertyNotFound, resp.Code)
+}
+
+func TestGetArchivedFurnituresByRoom(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		),
+	).Returns(property)
+
+	room := BuildTestRoom("1", "1")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Returns(room)
+
+	furnitures := []db.FurnitureModel{
+		BuildTestFurniture("1", "1"),
+		BuildTestFurniture("2", "1"),
+	}
+	for i := range furnitures {
+		furnitures[i].Archived = true
+	}
+	mock.Furniture.Expect(
+		client.Client.Furniture.FindMany(
+			db.Furniture.RoomID.Equals(room.ID),
+			db.Furniture.Archived.Equals(true),
+		).With(
+			db.Furniture.Room.Fetch(),
+		),
+	).ReturnsMany(furnitures)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
+	var resp []models.FurnitureResponse
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Len(t, resp, 2)
+	assert.Equal(t, resp[0].ID, furnitures[0].ID)
+	assert.True(t, resp[0].Archived)
+}
+
+func TestGetArchivedFurnituresByRoom_RoomNotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		),
+	).Returns(property)
+
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals("1"),
+		),
+	).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.RoomNotFound, resp.Code)
+}
+
+func TestGetArchivedFurnituresByRoom_WrongProperty(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals(property.ID),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		),
+	).Returns(property)
+
+	room := BuildTestRoom("1", "2")
+	mock.Room.Expect(
+		client.Client.Room.FindUnique(
+			db.Room.ID.Equals(room.ID),
+		),
+	).Returns(room)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.RoomNotFound, resp.Code)
+}
+
+func TestGetArchivedFurnituresByRoom_PropertyNotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(
+			db.Property.ID.Equals("1"),
+		).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		),
+	).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.PropertyNotFound, resp.Code)
 }

@@ -6,7 +6,10 @@ import (
 
 	"github.com/go-pdf/fpdf"
 	"immotep/backend/prisma/db"
+	"immotep/backend/utils"
 )
+
+var Test = false
 
 type Header float64
 
@@ -38,10 +41,12 @@ func NewPDF() PDF {
 	res := PDF{
 		pdf: fpdf.New("P", "mm", "A4", ""),
 	}
-	res.pdf.AddUTF8Font("roboto", "", "services/pdf/Roboto-Regular.ttf")
-	res.pdf.AddUTF8Font("roboto", "B", "services/pdf/Roboto-Bold.ttf")
-	res.pdf.AddUTF8Font("roboto", "I", "services/pdf/Roboto-Italic.ttf")
-	res.pdf.AddUTF8Font("roboto", "BI", "services/pdf/Roboto-BoldItalic.ttf")
+
+	basePath := utils.Ternary(Test, "", "services/pdf/")
+	res.pdf.AddUTF8Font("roboto", "", basePath+"Roboto-Regular.ttf")
+	res.pdf.AddUTF8Font("roboto", "B", basePath+"Roboto-Bold.ttf")
+	res.pdf.AddUTF8Font("roboto", "I", basePath+"Roboto-Italic.ttf")
+	res.pdf.AddUTF8Font("roboto", "BI", basePath+"Roboto-BoldItalic.ttf")
 	res.pdf.SetFont("roboto", "", 12)
 	res.pdf.AddPage()
 	return res

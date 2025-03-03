@@ -118,15 +118,11 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 	return errorList
 }
 
-func createInvReportPDF(c *gin.Context, invRepId string) (*db.DocumentModel, error) {
-	docBytes, err := pdf.NewInventoryReportPDF(invRepId)
+func createInvReportPDF(invRepId string, contract db.ContractModel) (*db.DocumentModel, error) {
+	invReport := database.GetInvReportByID(invRepId)
+	docBytes, err := pdf.NewInventoryReportPDF(*invReport, contract)
 	if err != nil || docBytes == nil {
 		return nil, err
-	}
-
-	contract := database.GetCurrentActiveContract(c.Param("property_id"))
-	if contract == nil {
-		return nil, errors.New(string(utils.NoActiveContract))
 	}
 
 	res := database.CreateDocument(db.DocumentModel{
@@ -162,7 +158,15 @@ func CreateInventoryReport(c *gin.Context) {
 		return
 	}
 
-	invrep := database.CreateInvReport(db.ReportType(req.Type), c.Param("property_id"))
+	propertyId := c.Param("property_id")
+
+	contract := database.GetCurrentActiveContractWithInfos(propertyId)
+	if contract == nil {
+		utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
+		return
+	}
+
+	invrep := database.CreateInvReport(db.ReportType(req.Type), propertyId)
 	if invrep == nil {
 		utils.SendError(c, http.StatusConflict, utils.InventoryReportAlreadyExists, nil)
 		return
@@ -170,7 +174,7 @@ func CreateInventoryReport(c *gin.Context) {
 
 	errorsList := createRoomStates(c, invrep, req)
 
-	irPdf, err := createInvReportPDF(c, invrep.ID)
+	irPdf, err := createInvReportPDF(invrep.ID, *contract)
 	if err != nil {
 		errorsList = append(errorsList, err.Error())
 	}
