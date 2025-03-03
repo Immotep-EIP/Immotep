@@ -43,6 +43,7 @@ func TestCreateFurniture(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -93,6 +94,7 @@ func TestCreateFurniture_MissingFields(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -134,6 +136,7 @@ func TestCreateFurniture_AlreadyExists(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -191,6 +194,7 @@ func TestGetFurnituresByRoom(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -240,6 +244,7 @@ func TestGetFurnituresByRoom_RoomNotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -274,6 +279,7 @@ func TestGetFurnituresByRoom_WrongProperty(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -308,6 +314,7 @@ func TestGetFurnituresByRoom_PropertyNotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -336,6 +343,7 @@ func TestGetFurnitureById(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -380,6 +388,7 @@ func TestGetFurnitureById_NotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -423,6 +432,7 @@ func TestGetFurnitureById_WrongRoom(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -467,6 +477,7 @@ func TestGetFurnitureById_RoomNotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -501,6 +512,7 @@ func TestGetFurnitureById_WrongProperty(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -535,6 +547,7 @@ func TestGetFurnitureById_PropertyNotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -563,6 +576,7 @@ func TestArchiveFurniture(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -594,16 +608,19 @@ func TestArchiveFurniture(t *testing.T) {
 		),
 	).Returns(updatedFurniture)
 
+	b, err := json.Marshal(map[string]bool{"archive": true})
+	require.NoError(t, err)
+
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", bytes.NewReader(b))
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusOK, w.Code)
 	var resp models.FurnitureResponse
-	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, furniture.ID)
 	assert.True(t, resp.Archived)
@@ -620,6 +637,7 @@ func TestArchiveFurniture_NotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -640,7 +658,7 @@ func TestArchiveFurniture_NotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

@@ -77,7 +77,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
 			propertyId.GET("/", controllers.GetPropertyById)
 			propertyId.PUT("/", controllers.UpdateProperty)
-			propertyId.PUT("/archive", controllers.ArchiveProperty)
+			propertyId.PUT("/archive/", controllers.ArchiveProperty)
 			propertyId.GET("/inventory/", controllers.GetPropertyInventory)
 			propertyId.GET("/picture/", controllers.GetPropertyPicture)
 			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
@@ -102,7 +102,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 				{
 					roomId.Use(middlewares.CheckRoomOwnership("property_id", "room_id"))
 					roomId.GET("/", controllers.GetRoomByID)
-					roomId.PUT("/archive", controllers.ArchiveRoom)
+					roomId.PUT("/archive/", controllers.ArchiveRoom)
 
 					furnitures := roomId.Group("/furnitures")
 					{
@@ -114,7 +114,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 						{
 							furnitureId.Use(middlewares.CheckFurnitureOwnership("room_id", "furniture_id"))
 							furnitureId.GET("/", controllers.GetFurnitureByID)
-							furnitureId.PUT("/archive", controllers.ArchiveFurniture)
+							furnitureId.PUT("/archive/", controllers.ArchiveFurniture)
 						}
 					}
 				}
