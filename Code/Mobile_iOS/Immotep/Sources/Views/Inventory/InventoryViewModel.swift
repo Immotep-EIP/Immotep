@@ -26,16 +26,17 @@ class InventoryViewModel: ObservableObject {
     @Published var showDeleteConfirmation: Bool = false
 
     @Published var checkedStuffStatus: [String: Bool] = [:]
-    @Published var localRooms: [LocalRoom] = []
+    @Published var localRooms: [LocalRoom]
     @Published var lastReportId: String?
 
     private var roomManager: RoomManager?
     private var furnitureManager: FurnitureManager?
     private var reportManager: InventoryReportManager?
 
-    init(property: Property, isEntryInventory: Bool = true) {
+    init(property: Property, isEntryInventory: Bool = true, localRooms: [LocalRoom]? = nil) {
         self.property = property
         self.isEntryInventory = isEntryInventory
+        self.localRooms = localRooms ?? []
 
         self.roomManager = RoomManager(viewModel: self)
         self.furnitureManager = FurnitureManager(viewModel: self)

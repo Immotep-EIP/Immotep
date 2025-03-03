@@ -78,6 +78,7 @@ struct InventoryEntryEvaluationView: View {
                                 RoundedRectangle(cornerRadius: 10)
                                     .stroke(Color.gray, lineWidth: 1)
                             )
+                            .accessibilityIdentifier("StatusPicker")
                             Spacer()
                         }
                     }

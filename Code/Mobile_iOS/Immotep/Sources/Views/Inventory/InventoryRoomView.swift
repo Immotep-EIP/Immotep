@@ -78,6 +78,7 @@ struct InventoryRoomView: View {
                             newRoomName = ""
                         }
                     )
+                    .accessibilityIdentifier("AddRoomAlert")
                 }
 
                 if showDeleteConfirmationAlert {
@@ -98,6 +99,7 @@ struct InventoryRoomView: View {
                             roomToDelete = nil
                         }
                     )
+                    .accessibilityIdentifier("DeleteRoomAlert")
                 }
                 if showCompletionMessage, let message = inventoryViewModel.completionMessage {
                     CustomAlertTwoButtons(

@@ -147,6 +147,7 @@ struct InventoryStuffView: View {
                     },
                     secondaryAction: {}
                 )
+                .accessibilityIdentifier("AddStuffAlert")
             }
 
             if showDeleteConfirmationAlert {
@@ -170,6 +171,7 @@ struct InventoryStuffView: View {
                         stuffToDelete = nil
                     }
                 )
+                .accessibilityIdentifier("DeleteStuffAlert")
             }
         }
     }
