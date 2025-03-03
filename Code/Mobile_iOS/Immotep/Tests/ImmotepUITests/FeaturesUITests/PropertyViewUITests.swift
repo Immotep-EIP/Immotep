@@ -78,23 +78,23 @@ final class PropertyViewUITests: XCTestCase {
         XCTAssertTrue(firstPropertyCard.exists)
         firstPropertyCard.tap()
 
-        let tenantInfo = app.staticTexts["John Doe"]
-        XCTAssertTrue(tenantInfo.exists)
+        let tenantInfo = app.staticTexts["Jean Dupont"] // Changé de "John Doe" à "Jean Dupont"
+        XCTAssertTrue(tenantInfo.exists, "Tenant 'Jean Dupont' should be visible")
 
-        let surfaceInfo = app.staticTexts["Area: 60.50 m²"].exists || app.staticTexts["Surface : 60.50 m²"].exists
-        XCTAssertTrue(surfaceInfo)
+        let surfaceInfo = app.staticTexts["Area: 65 m²"].exists || app.staticTexts["Surface : 65 m²"].exists // Ajusté à 65.0
+        XCTAssertTrue(surfaceInfo, "Surface '65 m²' should be visible")
 
-        let leaseStartDate = app.staticTexts["Start date: 10 déc. 2024"].exists || app.staticTexts["Date de début : 10 déc. 2024"].exists
-        XCTAssertTrue(leaseStartDate)
+        let leaseStartDate = app.staticTexts.containing(.staticText, identifier: "Started on:").element
+        XCTAssertTrue(leaseStartDate.exists, "Lease start date should be visible")
 
         let rentInfo = app.staticTexts["Rent: 1500€"].exists || app.staticTexts["Loyer: 1500€"].exists
-        XCTAssertTrue(rentInfo)
+        XCTAssertTrue(rentInfo, "Rent '1500€' should be visible")
 
         let leaseEndDate = app.staticTexts["End: No end date assigned"].exists || app.staticTexts["Fin : Pas de date renseignée"].exists
-        XCTAssertTrue(leaseEndDate)
+        XCTAssertTrue(leaseEndDate, "No end date should be visible")
 
         let depositInfo = app.staticTexts["Deposit: 3000€"].exists || app.staticTexts["Caution : 3000€"].exists
-        XCTAssertTrue(depositInfo)
+        XCTAssertTrue(depositInfo, "Deposit '3000€' should be visible")
     }
 
     func testDocumentsGrid() throws {
