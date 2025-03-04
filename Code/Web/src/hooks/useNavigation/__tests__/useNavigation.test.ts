@@ -25,7 +25,9 @@ describe('useNavigation', () => {
   it('should navigate to signup page', () => {
     const { result } = renderHook(() => useNavigation())
     result.current.goToSignup()
-    expect(mockNavigate).toHaveBeenCalledWith(NavigationEnum.REGISTER)
+    expect(mockNavigate).toHaveBeenCalledWith(
+      NavigationEnum.REGISTER_WITHOUT_CONTRACT
+    )
   })
 
   it('should navigate to forgot password page', () => {
@@ -44,14 +46,6 @@ describe('useNavigation', () => {
     const { result } = renderHook(() => useNavigation())
     result.current.goToRealProperty()
     expect(mockNavigate).toHaveBeenCalledWith(NavigationEnum.REAL_PROPERTY)
-  })
-
-  it('should navigate to real property create page', () => {
-    const { result } = renderHook(() => useNavigation())
-    result.current.goToRealPropertyCreate()
-    expect(mockNavigate).toHaveBeenCalledWith(
-      NavigationEnum.REAL_PROPERTY_CREATE
-    )
   })
 
   it('should navigate to real property details page with id', () => {

@@ -4,17 +4,12 @@ import GetProperties from '@/services/api/Owner/Properties/GetProperties'
 import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
 import CreatePropertyFunction from '@/services/api/Owner/Properties/CreateProperty'
 import UpdatePropertyPicture from '@/services/api/Owner/Properties/UpdatePropertyPicture'
-import {
-  savePropertiesToDB,
-  getPropertiesFromDB
-} from '@/utils/cache/property/indexedDB'
 import callApi from '@/services/api/apiCaller'
 
 jest.mock('@/services/api/Owner/Properties/GetProperties')
 jest.mock('@/services/api/Owner/Properties/GetPropertyDetails')
 jest.mock('@/services/api/Owner/Properties/CreateProperty', () => jest.fn())
 jest.mock('@/services/api/Owner/Properties/UpdatePropertyPicture')
-jest.mock('@/utils/cache/property/indexedDB')
 jest.mock('@/services/api/apiCaller')
 
 describe('useProperties', () => {
@@ -29,8 +24,6 @@ describe('useProperties', () => {
 
   it('should fetch properties on mount', async () => {
     ;(GetProperties as jest.Mock).mockResolvedValue(mockProperties)
-    ;(getPropertiesFromDB as jest.Mock).mockResolvedValue([])
-    ;(savePropertiesToDB as jest.Mock).mockResolvedValue('mocked value')
 
     const { result } = renderHook(() => useProperties())
 
@@ -39,15 +32,12 @@ describe('useProperties', () => {
     })
 
     expect(GetProperties).toHaveBeenCalled()
-    expect(savePropertiesToDB).toHaveBeenCalledWith(mockProperties)
     expect(result.current.properties).toEqual(mockProperties)
   })
 
   it('should fetch property details if propertyId is provided', async () => {
     const mockPropertyDetails = { id: '1', name: 'Property 1' }
     ;(GetPropertyDetails as jest.Mock).mockResolvedValue(mockPropertyDetails)
-    ;(getPropertiesFromDB as jest.Mock).mockResolvedValue([])
-    ;(savePropertiesToDB as jest.Mock).mockResolvedValue('mocked value')
 
     const { result } = renderHook(() => useProperties('1'))
 
@@ -56,7 +46,6 @@ describe('useProperties', () => {
     })
 
     expect(GetPropertyDetails).toHaveBeenCalledWith('1')
-    expect(savePropertiesToDB).toHaveBeenCalledWith([mockPropertyDetails])
     expect(result.current.propertyDetails).toEqual(mockPropertyDetails)
   })
 
@@ -64,7 +53,6 @@ describe('useProperties', () => {
     const newProperty = { id: '3', name: 'New Property' }
     ;(CreatePropertyFunction as jest.Mock).mockResolvedValue(newProperty)
     ;(UpdatePropertyPicture as jest.Mock).mockResolvedValue('mocked value')
-    ;(savePropertiesToDB as jest.Mock).mockResolvedValue('mocked value')
 
     const { result } = renderHook(() => useProperties())
 
@@ -78,7 +66,8 @@ describe('useProperties', () => {
           country: 'Test',
           area_sqm: 40,
           rental_price_per_month: 1000,
-          deposit_price: 2000
+          deposit_price: 2000,
+          apartment_number: '640'
         },
         'data:image/jpeg;base64,...'
       )
@@ -92,24 +81,11 @@ describe('useProperties', () => {
       country: 'Test',
       area_sqm: 40,
       rental_price_per_month: 1000,
-      deposit_price: 2000
+      deposit_price: 2000,
+      apartment_number: '640'
     })
     expect(UpdatePropertyPicture).toHaveBeenCalledWith('3', '...')
-    expect(savePropertiesToDB).toHaveBeenCalledWith([newProperty])
     expect(result.current.properties).toContainEqual(newProperty)
-  })
-
-  it('should use cached properties if available', async () => {
-    ;(getPropertiesFromDB as jest.Mock).mockResolvedValue(mockProperties)
-
-    const { result } = renderHook(() => useProperties())
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false)
-    })
-
-    expect(GetProperties).not.toHaveBeenCalled()
-    expect(result.current.properties).toEqual(mockProperties)
   })
 
   it('should handle errors gracefully', async () => {
@@ -128,7 +104,6 @@ describe('useProperties', () => {
     const mockImageBase64 = 'data:image/jpeg;base64,...'
     ;(CreatePropertyFunction as jest.Mock).mockResolvedValue(mockCreateProperty)
     ;(UpdatePropertyPicture as jest.Mock).mockResolvedValue('mocked value')
-    ;(savePropertiesToDB as jest.Mock).mockResolvedValue('mocked value')
 
     const { result } = renderHook(() => useProperties())
 
@@ -142,7 +117,8 @@ describe('useProperties', () => {
           country: 'Test',
           area_sqm: 40,
           rental_price_per_month: 1000,
-          deposit_price: 2000
+          deposit_price: 2000,
+          apartment_number: '640'
         },
         mockImageBase64
       )
@@ -157,47 +133,21 @@ describe('useProperties', () => {
         country: 'Test',
         area_sqm: 40,
         rental_price_per_month: 1000,
-        deposit_price: 2000
+        deposit_price: 2000,
+        apartment_number: '640'
       })
     )
     expect(UpdatePropertyPicture).toHaveBeenCalledWith('3', '...')
   })
 
-  it('should fetch properties from cache or API', async () => {
-    const mockProperties = [{ id: '1', name: 'Property 1' }]
-    ;(getPropertiesFromDB as jest.Mock).mockResolvedValue(mockProperties)
-    ;(GetProperties as jest.Mock).mockResolvedValue(mockProperties)
-
-    const { result } = renderHook(() => useProperties())
-
-    await waitFor(() => {
-      expect(result.current.properties).toEqual(mockProperties)
-    })
-    expect(GetProperties).not.toHaveBeenCalled()
-  })
-
   it('should fetch and set property details', async () => {
     const mockProperty = { id: '1', name: 'Property 1' }
-    ;(getPropertiesFromDB as jest.Mock).mockResolvedValue([mockProperty])
     ;(GetPropertyDetails as jest.Mock).mockResolvedValue(mockProperty)
 
     const { result } = renderHook(() => useProperties('1'))
 
     await waitFor(() => {
       expect(result.current.propertyDetails).toEqual(mockProperty)
-    })
-  })
-
-  it('should save fetched properties to the database', async () => {
-    const mockProperties = [{ id: '1', name: 'Property 1' }]
-    ;(getPropertiesFromDB as jest.Mock).mockResolvedValue([])
-    ;(GetProperties as jest.Mock).mockResolvedValue(mockProperties)
-    ;(savePropertiesToDB as jest.Mock).mockResolvedValue('mocked value')
-
-    const { result } = renderHook(() => useProperties())
-
-    await waitFor(() => {
-      expect(savePropertiesToDB).toHaveBeenCalledWith(mockProperties)
     })
   })
 
@@ -218,7 +168,7 @@ describe('useProperties', () => {
     consoleErrorSpy.mockRestore()
   })
 
-  it('should create a property and update state and DB', async () => {
+  it('should create a property', async () => {
     const mockPropertyData = {
       name: 'New Property',
       address: 'St Test',
@@ -227,7 +177,8 @@ describe('useProperties', () => {
       country: 'Test',
       area_sqm: 40,
       rental_price_per_month: 1000,
-      deposit_price: 2000
+      deposit_price: 2000,
+      apartment_number: '640'
     }
     const mockImageBase64 = 'data:image/png;base64,...'
     const mockCreatedProperty = {}
@@ -236,7 +187,6 @@ describe('useProperties', () => {
       mockCreatedProperty
     )
     ;(UpdatePropertyPicture as jest.Mock).mockResolvedValue(null)
-    ;(savePropertiesToDB as jest.Mock).mockResolvedValue(undefined)
 
     const { result } = renderHook(() => useProperties())
 
@@ -244,9 +194,10 @@ describe('useProperties', () => {
       await result.current.createProperty(mockPropertyData, mockImageBase64)
     })
 
-    expect(result.current.properties).toContain(mockCreatedProperty)
-    expect(savePropertiesToDB).toHaveBeenCalledWith([mockCreatedProperty])
-    expect(result.current.error).toBeNull()
+    await waitFor(() => {
+      expect(result.current.properties).toContain(mockCreatedProperty)
+      expect(result.current.error).toBeNull()
+    })
   })
 
   it('should handle error if property creation fails', async () => {
@@ -258,7 +209,8 @@ describe('useProperties', () => {
       country: 'Test',
       area_sqm: 40,
       rental_price_per_month: 1000,
-      deposit_price: 2000
+      deposit_price: 2000,
+      apartment_number: '640'
     }
 
     const mockError = new Error('Property creation failed.')
@@ -304,12 +256,12 @@ describe('useProperties', () => {
       country: 'Test',
       area_sqm: 40,
       rental_price_per_month: 1000,
-      deposit_price: 2000
+      deposit_price: 2000,
+      apartment_number: '640'
     }
 
     ;(GetProperties as jest.Mock).mockResolvedValue([])
     ;(CreatePropertyFunction as jest.Mock).mockResolvedValue(null)
-    ;(getPropertiesFromDB as jest.Mock).mockResolvedValue([])
 
     const { result } = renderHook(() => useProperties())
 
