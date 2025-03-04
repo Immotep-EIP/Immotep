@@ -9,7 +9,7 @@ const useNavigation = () => {
   }
 
   const goToSignup = () => {
-    navigate(NavigationEnum.REGISTER)
+    navigate(NavigationEnum.REGISTER_WITHOUT_CONTRACT)
   }
 
   const goToForgotPassword = () => {

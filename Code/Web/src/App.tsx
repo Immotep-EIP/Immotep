@@ -52,7 +52,14 @@ const App: React.FC = () => (
       <AuthProvider>
         <Routes>
           <Route path={NavigationEnum.LOGIN} element={<Login />} />
-          <Route path={NavigationEnum.REGISTER} element={<Register />} />
+          <Route
+            path={NavigationEnum.REGISTER_WITHOUT_CONTRACT}
+            element={<Register />}
+          />
+          <Route
+            path={NavigationEnum.REGISTER_WITH_CONTRACT}
+            element={<Register />}
+          />
           <Route path={NavigationEnum.REGISTER_TENANT} element={<Register />} />
           <Route
             path={NavigationEnum.SUCCESS_REGISTER_TENANT}
