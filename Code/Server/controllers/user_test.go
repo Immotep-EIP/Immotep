@@ -25,6 +25,7 @@ func BuildTestUser(id string) db.UserModel {
 			Firstname: "Test",
 			Lastname:  "User",
 			Password:  "Password123",
+			Role:      db.RoleOwner,
 		},
 	}
 }

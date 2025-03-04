@@ -76,3 +76,15 @@ func CheckActiveContract(propertyIdUrlParam string) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func CheckPendingContract(propertyIdUrlParam string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		contract := database.GetCurrentPendingContract(c.Param(propertyIdUrlParam))
+		if contract == nil {
+			utils.AbortSendError(c, http.StatusNotFound, utils.NoPendingContract, nil)
+			return
+		}
+
+		c.Next()
+	}
+}

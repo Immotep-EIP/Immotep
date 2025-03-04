@@ -77,7 +77,7 @@ func GetTenantCurrentActiveContract(tenantId string) *db.ContractModel {
 	return &c[0]
 }
 
-func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel) *db.ContractModel {
+func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel) db.ContractModel {
 	pdb := services.DBclient
 	newContract, err := pdb.Client.Contract.CreateOne(
 		db.Contract.StartDate.Set(pendingContract.StartDate),
@@ -86,9 +86,6 @@ func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel
 		db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 	).Exec(pdb.Context)
 	if err != nil {
-		if _, is := db.IsErrUniqueConstraint(err); is {
-			return nil
-		}
 		panic(err)
 	}
 	_, err = pdb.Client.PendingContract.FindUnique(
@@ -97,7 +94,7 @@ func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel
 	if err != nil {
 		panic(err)
 	}
-	return newContract
+	return *newContract
 }
 
 func EndContract(id string, endDate *db.DateTime) *db.ContractModel {
@@ -129,6 +126,18 @@ func GetPendingContractById(id string) *db.PendingContractModel {
 	return pc
 }
 
+func GetCurrentPendingContract(propertyId string) *db.PendingContractModel {
+	pdb := services.DBclient
+	pc, err := pdb.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals(propertyId)).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return pc
+}
+
 func CreatePendingContract(pendingContract db.PendingContractModel, propertyId string) *db.PendingContractModel {
 	pdb := services.DBclient
 	newContract, err := pdb.Client.PendingContract.CreateOne(
@@ -151,4 +160,14 @@ func CreatePendingContract(pendingContract db.PendingContractModel, propertyId s
 		panic(err)
 	}
 	return newContract
+}
+
+func DeleteCurrentPendingContract(propertyId string) {
+	pdb := services.DBclient
+	_, err := pdb.Client.PendingContract.FindUnique(
+		db.PendingContract.PropertyID.Equals(propertyId),
+	).Delete().Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
 }

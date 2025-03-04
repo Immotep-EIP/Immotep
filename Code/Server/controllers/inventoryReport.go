@@ -118,25 +118,21 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 	return errorList
 }
 
-func createInvReportPDF(c *gin.Context, invRepId string) error {
-	docBytes, err := pdf.NewInventoryReportPDF(invRepId)
+func createInvReportPDF(invRepId string, contract db.ContractModel) (*db.DocumentModel, error) {
+	invReport := database.GetInvReportByID(invRepId)
+	docBytes, err := pdf.NewInventoryReportPDF(*invReport, contract)
 	if err != nil || docBytes == nil {
-		return err
+		return nil, err
 	}
 
-	contract := database.GetCurrentActiveContract(c.Param("property_id"))
-	if contract == nil {
-		return errors.New(string(utils.NoActiveContract))
-	}
-
-	database.CreateDocument(db.DocumentModel{
+	res := database.CreateDocument(db.DocumentModel{
 		InnerDocument: db.InnerDocument{
 			Name:       "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
 			Data:       docBytes,
 			ContractID: contract.ID,
 		},
 	})
-	return nil
+	return &res, nil
 }
 
 // CreateInventoryReport godoc
@@ -146,12 +142,12 @@ func createInvReportPDF(c *gin.Context, invRepId string) error {
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string							true	"Property ID"
-//	@Param			invReport	body		models.InventoryReportRequest	true	"Inventory report data"
-//	@Success		201			{object}	models.InventoryReportResponse	"Created inventory report data"
-//	@Failure		400			{object}	utils.Error						"Missing fields"
-//	@Failure		403			{object}	utils.Error						"Property not yours"
-//	@Failure		404			{object}	utils.Error						"Property or room not found"
+//	@Param			property_id	path		string									true	"Property ID"
+//	@Param			invReport	body		models.InventoryReportRequest			true	"Inventory report data"
+//	@Success		201			{object}	models.CreateInventoryReportResponse	"Created inventory report data"
+//	@Failure		400			{object}	utils.Error								"Missing fields"
+//	@Failure		403			{object}	utils.Error								"Property not yours"
+//	@Failure		404			{object}	utils.Error								"Property or room not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/ [post]
@@ -162,7 +158,15 @@ func CreateInventoryReport(c *gin.Context) {
 		return
 	}
 
-	invrep := database.CreateInvReport(db.ReportType(req.Type), c.Param("property_id"))
+	propertyId := c.Param("property_id")
+
+	contract := database.GetCurrentActiveContractWithInfos(propertyId)
+	if contract == nil {
+		utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
+		return
+	}
+
+	invrep := database.CreateInvReport(db.ReportType(req.Type), propertyId)
 	if invrep == nil {
 		utils.SendError(c, http.StatusConflict, utils.InventoryReportAlreadyExists, nil)
 		return
@@ -170,11 +174,12 @@ func CreateInventoryReport(c *gin.Context) {
 
 	errorsList := createRoomStates(c, invrep, req)
 
-	if err := createInvReportPDF(c, invrep.ID); err != nil {
+	irPdf, err := createInvReportPDF(invrep.ID, *contract)
+	if err != nil {
 		errorsList = append(errorsList, err.Error())
 	}
 
-	c.JSON(http.StatusCreated, errorsList)
+	c.JSON(http.StatusCreated, models.DbInventoryReportToCreateResponse(*invrep, irPdf, errorsList))
 }
 
 // GetInventoryReportsByProperty godoc

@@ -55,7 +55,26 @@ func CreateRoom(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/ [get]
 func GetRoomsByProperty(c *gin.Context) {
-	rooms := database.GetRoomByPropertyID(c.Param("property_id"))
+	rooms := database.GetRoomByPropertyID(c.Param("property_id"), false)
+	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
+}
+
+// GetArchivedRoomsByProperty godoc
+//
+//	@Summary		Get archived rooms by property ID
+//	@Description	Get all archived rooms for a specific property
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string				true	"Property ID"
+//	@Success		200			{array}		models.RoomResponse	"List of archived rooms"
+//	@Failure		403			{object}	utils.Error			"Property not yours"
+//	@Failure		404			{object}	utils.Error			"Property not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/rooms/archived/ [get]
+func GetArchivedRoomsByProperty(c *gin.Context) {
+	rooms := database.GetRoomByPropertyID(c.Param("property_id"), true)
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 
@@ -81,20 +100,28 @@ func GetRoomByID(c *gin.Context) {
 
 // ArchiveRoom godoc
 //
-//	@Summary		Archive room by ID
-//	@Description	Archive a room by its ID
+//	@Summary		Toggle archive room by ID
+//	@Description	Toggle archive status of a room by its ID
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string				true	"Property ID"
-//	@Param			room_id		path		string				true	"Room ID"
-//	@Success		200			{object}	models.RoomResponse	"Achieved room data"
-//	@Failure		403			{object}	utils.Error			"Property not yours"
-//	@Failure		404			{object}	utils.Error			"Room not found"
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Param			room_id		path		string					true	"Room ID"
+//	@Param			archive		body		models.ArchiveRequest	true	"Archive status"
+//	@Success		200			{object}	models.PropertyResponse	"Toggled archive room data"
+//	@Failure		400			{object}	utils.Error				"Mising fields"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"Room not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [delete]
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/archive [put]
 func ArchiveRoom(c *gin.Context) {
-	room := database.ArchiveRoom(c.Param("room_id"))
+	var req models.ArchiveRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	room := database.ToggleArchiveRoom(c.Param("room_id"), req.Archive)
 	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
+	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services"
 	"immotep/backend/services/database"
@@ -19,6 +20,7 @@ func BuildTestProperty(id string) db.PropertyModel {
 			ID:                  id,
 			Name:                "Test",
 			Address:             "Test",
+			ApartmentNumber:     utils.Ptr("Test"),
 			City:                "Test",
 			PostalCode:          "Test",
 			Country:             "Test",
@@ -50,10 +52,11 @@ func TestGetAllProperties(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).ReturnsMany([]db.PropertyModel{property})
 
-	allProperties := database.GetAllPropertyByOwnerId("1")
+	allProperties := database.GetAllPropertyByOwnerId("1", false)
 	assert.Len(t, allProperties, 1)
 	assert.Equal(t, property.ID, allProperties[0].ID)
 }
@@ -72,10 +75,11 @@ func TestGetAllProperties_MultipleProperties(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).ReturnsMany([]db.PropertyModel{p1, p2})
 
-	allProperties := database.GetAllPropertyByOwnerId("1")
+	allProperties := database.GetAllPropertyByOwnerId("1", false)
 	assert.Len(t, allProperties, 2)
 	assert.Equal(t, p1.ID, allProperties[0].ID)
 	assert.Equal(t, p2.ID, allProperties[1].ID)
@@ -92,10 +96,11 @@ func TestGetAllProperties_NoProperties(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).ReturnsMany([]db.PropertyModel{})
 
-	allProperties := database.GetAllPropertyByOwnerId("1")
+	allProperties := database.GetAllPropertyByOwnerId("1", false)
 	assert.Empty(t, allProperties)
 }
 
@@ -110,11 +115,12 @@ func TestGetAllProperties_NoConnection(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetAllPropertyByOwnerId("1")
+		database.GetAllPropertyByOwnerId("1", false)
 	})
 }
 
@@ -128,6 +134,7 @@ func TestGetPropertyByID(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -144,6 +151,7 @@ func TestGetPropertyByID_NotFound(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -159,6 +167,7 @@ func TestGetPropertyByID_NoConnection(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(errors.New("connection failed"))
 
@@ -177,6 +186,7 @@ func TestGetPropertyInventory(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
 		),
 	).Returns(property)
@@ -194,6 +204,7 @@ func TestGetPropertyInventory_NotFound(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
 		),
 	).Errors(db.ErrNotFound)
@@ -210,6 +221,7 @@ func TestGetPropertyInventory_NoConnection(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
 		),
 	).Errors(errors.New("connection failed"))
@@ -236,9 +248,11 @@ func TestCreateProperty(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
 		).With(
-			db.Property.Contracts.Fetch(),
 			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch(),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -264,9 +278,11 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
 		).With(
-			db.Property.Contracts.Fetch(),
 			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch(),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -298,9 +314,11 @@ func TestCreateProperty_NoConnection(t *testing.T) {
 			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
 			db.Property.DepositPrice.Set(property.DepositPrice),
 			db.Property.Owner.Link(db.User.ID.Equals("1")),
+			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
 		).With(
-			db.Property.Contracts.Fetch(),
 			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch(),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(errors.New("connection failed"))
 
@@ -320,6 +338,7 @@ func TestUpdatePropertyPicture(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
 		),
@@ -341,6 +360,7 @@ func TestUpdatePropertyPicture_NotFound(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
 		),
@@ -361,6 +381,7 @@ func TestUpdatePropertyPicture_NoConnection(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
 		),
@@ -384,12 +405,13 @@ func TestArchiveProperty(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Archived.Set(true),
 		),
 	).Returns(property)
 
-	archivedProperty := database.ArchiveProperty(property.ID)
+	archivedProperty := database.ToggleArchiveProperty(property.ID, true)
 	assert.NotNil(t, archivedProperty)
 	assert.Equal(t, property.ID, archivedProperty.ID)
 	assert.True(t, archivedProperty.Archived)
@@ -407,12 +429,13 @@ func TestArchiveProperty_NotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Archived.Set(true),
 		),
 	).Errors(db.ErrNotFound)
 
-	archivedProperty := database.ArchiveProperty(property.ID)
+	archivedProperty := database.ToggleArchiveProperty(property.ID, true)
 	assert.Nil(t, archivedProperty)
 }
 
@@ -428,12 +451,130 @@ func TestArchiveProperty_NoConnection(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Archived.Set(true),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.ArchiveProperty(property.ID)
+		database.ToggleArchiveProperty(property.ID, true)
+	})
+}
+
+func TestUpdateProperty(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	updateRequest := models.PropertyUpdateRequest{
+		Name:                utils.Ptr("Updated Name"),
+		Address:             utils.Ptr("Updated Address"),
+		ApartmentNumber:     utils.Ptr("Updated Apartment Number"),
+		City:                utils.Ptr("Updated City"),
+		PostalCode:          utils.Ptr("Updated Postal Code"),
+		Country:             utils.Ptr("Updated Country"),
+		AreaSqm:             utils.Ptr(30.0),
+		RentalPricePerMonth: utils.Ptr(600.0),
+		DepositPrice:        utils.Ptr(1200.0),
+	}
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		).Update(
+			db.Property.Name.SetIfPresent(updateRequest.Name),
+			db.Property.Address.SetIfPresent(updateRequest.Address),
+			db.Property.ApartmentNumber.SetIfPresent(updateRequest.ApartmentNumber),
+			db.Property.City.SetIfPresent(updateRequest.City),
+			db.Property.PostalCode.SetIfPresent(updateRequest.PostalCode),
+			db.Property.Country.SetIfPresent(updateRequest.Country),
+			db.Property.AreaSqm.SetIfPresent(updateRequest.AreaSqm),
+			db.Property.RentalPricePerMonth.SetIfPresent(updateRequest.RentalPricePerMonth),
+			db.Property.DepositPrice.SetIfPresent(updateRequest.DepositPrice),
+		),
+	).Returns(property)
+
+	updatedProperty := database.UpdateProperty(property.ID, updateRequest)
+	assert.NotNil(t, updatedProperty)
+	assert.Equal(t, property.ID, updatedProperty.ID)
+}
+
+func TestUpdateProperty_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	updateRequest := models.PropertyUpdateRequest{
+		Name:                utils.Ptr("Updated Name"),
+		Address:             utils.Ptr("Updated Address"),
+		ApartmentNumber:     utils.Ptr("Updated Apartment Number"),
+		City:                utils.Ptr("Updated City"),
+		PostalCode:          utils.Ptr("Updated Postal Code"),
+		Country:             utils.Ptr("Updated Country"),
+		AreaSqm:             utils.Ptr(30.0),
+		RentalPricePerMonth: utils.Ptr(600.0),
+		DepositPrice:        utils.Ptr(1200.0),
+	}
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		).Update(
+			db.Property.Name.SetIfPresent(updateRequest.Name),
+			db.Property.Address.SetIfPresent(updateRequest.Address),
+			db.Property.ApartmentNumber.SetIfPresent(updateRequest.ApartmentNumber),
+			db.Property.City.SetIfPresent(updateRequest.City),
+			db.Property.PostalCode.SetIfPresent(updateRequest.PostalCode),
+			db.Property.Country.SetIfPresent(updateRequest.Country),
+			db.Property.AreaSqm.SetIfPresent(updateRequest.AreaSqm),
+			db.Property.RentalPricePerMonth.SetIfPresent(updateRequest.RentalPricePerMonth),
+			db.Property.DepositPrice.SetIfPresent(updateRequest.DepositPrice),
+		),
+	).Errors(db.ErrNotFound)
+
+	updatedProperty := database.UpdateProperty("1", updateRequest)
+	assert.Nil(t, updatedProperty)
+}
+
+func TestUpdateProperty_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	updateRequest := models.PropertyUpdateRequest{
+		Name:                utils.Ptr("Updated Name"),
+		Address:             utils.Ptr("Updated Address"),
+		ApartmentNumber:     utils.Ptr("Updated Apartment Number"),
+		City:                utils.Ptr("Updated City"),
+		PostalCode:          utils.Ptr("Updated Postal Code"),
+		Country:             utils.Ptr("Updated Country"),
+		AreaSqm:             utils.Ptr(30.0),
+		RentalPricePerMonth: utils.Ptr(600.0),
+		DepositPrice:        utils.Ptr(1200.0),
+	}
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
+		).Update(
+			db.Property.Name.SetIfPresent(updateRequest.Name),
+			db.Property.Address.SetIfPresent(updateRequest.Address),
+			db.Property.ApartmentNumber.SetIfPresent(updateRequest.ApartmentNumber),
+			db.Property.City.SetIfPresent(updateRequest.City),
+			db.Property.PostalCode.SetIfPresent(updateRequest.PostalCode),
+			db.Property.Country.SetIfPresent(updateRequest.Country),
+			db.Property.AreaSqm.SetIfPresent(updateRequest.AreaSqm),
+			db.Property.RentalPricePerMonth.SetIfPresent(updateRequest.RentalPricePerMonth),
+			db.Property.DepositPrice.SetIfPresent(updateRequest.DepositPrice),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.UpdateProperty("1", updateRequest)
 	})
 }
