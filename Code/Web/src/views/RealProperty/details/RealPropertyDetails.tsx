@@ -25,10 +25,6 @@ import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentCont
 import useImageCache from '@/hooks/useEffect/useImageCache'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import useProperties from '@/hooks/useEffect/useProperties'
-import {
-  removePropertyFromDB,
-  updatePropertyInDB
-} from '@/utils/cache/property/indexedDB'
 import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 import PageTitle from '@/components/PageText/Title'
@@ -105,7 +101,6 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         }
         try {
           await ArchiveProperty(propertyData.id)
-          await removePropertyFromDB(propertyData.id)
           message.success(t('components.messages.delete_property_success'))
           goToRealProperty()
         } catch (error) {
@@ -130,10 +125,6 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
             return
           }
           await StopCurrentContract(propertyData?.id || '')
-          await updatePropertyInDB({
-            ...propertyData,
-            status: PropertyStatusEnum.AVAILABLE
-          })
           refreshPropertyDetails(propertyData.id)
           message.success(t('components.messages.end_contract.success'))
         } catch (error) {

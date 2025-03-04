@@ -14,7 +14,6 @@ import { loginApi } from '@/services/api/Authentification/AuthApi'
 import getUserProfile from '@/services/api/User/GetUserProfile'
 import { saveData, deleteData } from '@/utils/cache/localStorage'
 import NavigationEnum from '@/enums/NavigationEnum'
-import { getUserFromDB, saveUserToDB } from '@/utils/cache/user/indexedDB'
 
 interface AuthContextType {
   isAuthenticated: boolean
@@ -40,7 +39,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (user) {
       const updatedUser = { ...user, ...newUserData }
       setUser(updatedUser)
-      await saveUserToDB(updatedUser)
     }
   }
 
@@ -57,15 +55,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         if (accessToken && refreshToken) {
           setIsAuthenticated(true)
-
-          const cachedUser = await getUserFromDB()
-          if (cachedUser) {
-            setUser(cachedUser)
-          } else {
-            const profile = await getUserProfile()
-            setUser(profile)
-            await saveUserToDB(profile)
-          }
+          const profile = await getUserProfile()
+          setUser(profile)
         } else {
           setIsAuthenticated(false)
           deleteData()
@@ -94,7 +85,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       )
       const profile = await getUserProfile()
       setUser(profile)
-      await saveUserToDB(profile)
       return response
     } catch (error) {
       console.error('login error:', error)
@@ -102,15 +92,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAuthenticated(false)
       throw error
     }
-  }
-
-  const deleteAllDatabases = async () => {
-    const databases = await window.indexedDB.databases()
-    databases.forEach(db => {
-      if (db.name) {
-        indexedDB.deleteDatabase(db.name)
-      }
-    })
   }
 
   const logout = () => {
@@ -125,7 +106,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       })
     }
     deleteData()
-    deleteAllDatabases()
     navigate(NavigationEnum.LOGIN)
   }
 

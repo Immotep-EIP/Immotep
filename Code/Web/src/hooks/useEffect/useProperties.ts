@@ -4,13 +4,7 @@ import { PropertyDetails } from '@/interfaces/Property/Property.tsx'
 import CreatePropertyFunction from '@/services/api/Owner/Properties/CreateProperty'
 import UpdatePropertyPicture from '@/services/api/Owner/Properties/UpdatePropertyPicture'
 import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
-import {
-  savePropertiesToDB,
-  getPropertiesFromDB,
-  updatePropertyInDB
-} from '@/utils/cache/property/indexedDB'
 import UpdatePropertyFunction from '@/services/api/Owner/Properties/UpdateProperty'
-import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 type CreatePropertyData = Omit<
   PropertyDetails,
@@ -47,7 +41,6 @@ const useProperties = (propertyId: string | null = null) => {
             imageBase64.split(',')[1]
           )
         }
-        await savePropertiesToDB([createdProperty])
         setProperties(prevProperties => [...prevProperties, createdProperty])
       } else {
         throw new Error('Property creation failed.')
@@ -79,7 +72,6 @@ const useProperties = (propertyId: string | null = null) => {
             imageBase64.split(',')[1]
           )
         }
-        await updatePropertyInDB(updatedProperty)
         setProperties(prevProperties => [...prevProperties, updatedProperty])
       } else {
         throw new Error('Property creation failed.')
@@ -95,14 +87,8 @@ const useProperties = (propertyId: string | null = null) => {
   const fetchProperties = async () => {
     try {
       setLoading(true)
-      const cachedProperties = await getPropertiesFromDB()
-      if (cachedProperties.length > 0) {
-        setProperties(cachedProperties)
-      } else {
-        const res = await GetProperties()
-        setProperties(res)
-        await savePropertiesToDB(res)
-      }
+      const res = await GetProperties()
+      setProperties(res)
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -117,27 +103,8 @@ const useProperties = (propertyId: string | null = null) => {
   const getPropertyDetails = async (propertyId: string) => {
     try {
       setLoading(true)
-      const cachedProperties = await getPropertiesFromDB()
-      const cachedProperty = cachedProperties.find(
-        property => property.id === propertyId
-      )
-
-      /*
-        This is a temporary solution:
-        We only use cached property if its status is not 'invite sent'
-        because we need to fetch fresh data from the server when a tenant creates their account
-        to get the updated status
-       */
-      if (
-        cachedProperty &&
-        cachedProperty.status !== PropertyStatusEnum.INVITATION_SENT
-      ) {
-        setPropertyDetails(cachedProperty)
-      } else {
-        const res = await GetPropertyDetails(propertyId)
-        setPropertyDetails(res)
-        await savePropertiesToDB([res])
-      }
+      const res = await GetPropertyDetails(propertyId)
+      setPropertyDetails(res)
     } catch (err: any) {
       console.error('Error fetching property details:', err.message)
       setError(err.message)

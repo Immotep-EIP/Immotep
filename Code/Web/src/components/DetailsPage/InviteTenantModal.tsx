@@ -16,8 +16,6 @@ import {
   InviteTenantModalProps
 } from '@/interfaces/Tenant/InviteTenant.ts'
 import InviteTenants from '@/services/api/Tenant/InviteTenant.ts'
-import { updatePropertyInDB } from '@/utils/cache/property/indexedDB'
-import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
   isOpen,
@@ -43,10 +41,6 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
         return
       }
       await InviteTenants(formattedTenantInfo)
-      await updatePropertyInDB({
-        ...property,
-        status: PropertyStatusEnum.INVITATION_SENT
-      })
       message.success(t('pages.real_property_details.invite_tenant'))
       setLoading(false)
       onClose(true)
