@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CABE3B882CEB5C6D00BA983D /* NavigationTransitions in Frameworks */ = {isa = PBXBuildFile; productRef = CABE3B872CEB5C6D00BA983D /* NavigationTransitions */; };
+		CAC74F5C2D74F95A009E077B /* ViewInspector in Frameworks */ = {isa = PBXBuildFile; productRef = CAC74F5B2D74F95A009E077B /* ViewInspector */; };
 		CAE21F962CA9985400C21C36 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = CAE21F952CA9984E00C21C36 /* .swiftlint.yml */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,11 @@
 				Tests/ImmotepUITests/FeaturesUITests/PropertyViewUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITestsLaunchTests.swift,
+				Tests/ImmotepUITests/InventoryEntryEvaluationViewUITests.swift,
+				Tests/ImmotepUITests/InventoryExitEvaluationViewUITests.swift,
+				Tests/ImmotepUITests/InventoryRoomViewUITests.swift,
+				Tests/ImmotepUITests/InventoryStuffViewUITests.swift,
+				Tests/ImmotepUITests/InventoryTypeViewUITests.swift,
 				Tests/ImmotepUITests/LoginUITests.swift,
 				Tests/ImmotepUITests/RegisterUITests.swift,
 			);
@@ -73,6 +79,11 @@
 				Tests/ImmotepUITests/FeaturesUITests/PropertyViewUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITestsLaunchTests.swift,
+				Tests/ImmotepUITests/InventoryEntryEvaluationViewUITests.swift,
+				Tests/ImmotepUITests/InventoryExitEvaluationViewUITests.swift,
+				Tests/ImmotepUITests/InventoryRoomViewUITests.swift,
+				Tests/ImmotepUITests/InventoryStuffViewUITests.swift,
+				Tests/ImmotepUITests/InventoryTypeViewUITests.swift,
 				Tests/ImmotepUITests/LoginUITests.swift,
 				Tests/ImmotepUITests/RegisterUITests.swift,
 			);
@@ -113,6 +124,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CAC74F5C2D74F95A009E077B /* ViewInspector in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +137,7 @@
 				CA2579692CD2878D009EAB35 /* Immotep.xctestplan */,
 				CAE21F952CA9984E00C21C36 /* .swiftlint.yml */,
 				CA8527302CA06B1E009FE366 /* Immotep */,
+				CAC74F5D2D74FA68009E077B /* Frameworks */,
 				CA85272F2CA06B1E009FE366 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -137,6 +150,13 @@
 				CA8527482CA06B1F009FE366 /* ImmotepUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CAC74F5D2D74FA68009E077B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -201,6 +221,7 @@
 			);
 			name = ImmotepUITests;
 			packageProductDependencies = (
+				CAC74F5B2D74F95A009E077B /* ViewInspector */,
 			);
 			productName = ImmotepUITests;
 			productReference = CA8527482CA06B1F009FE366 /* ImmotepUITests.xctest */;
@@ -242,6 +263,7 @@
 			packageReferences = (
 				CAE21F972CA99DC900C21C36 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 				CABE3B862CEB5C6C00BA983D /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */,
+				CAC74F5A2D74F90F009E077B /* XCRemoteSwiftPackageReference "ViewInspector" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CA85272F2CA06B1E009FE366 /* Products */;
@@ -651,6 +673,14 @@
 				minimumVersion = 0.14.0;
 			};
 		};
+		CAC74F5A2D74F90F009E077B /* XCRemoteSwiftPackageReference "ViewInspector" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nalexn/ViewInspector";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.1;
+			};
+		};
 		CAE21F972CA99DC900C21C36 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
@@ -666,6 +696,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CABE3B862CEB5C6C00BA983D /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
 			productName = NavigationTransitions;
+		};
+		CAC74F5B2D74F95A009E077B /* ViewInspector */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAC74F5A2D74F90F009E077B /* XCRemoteSwiftPackageReference "ViewInspector" */;
+			productName = ViewInspector;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

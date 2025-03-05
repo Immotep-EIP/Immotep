@@ -33,10 +33,25 @@ struct Property: Identifiable, Equatable {
     }
 }
 
+struct PropertyDocumentResponse: Codable {
+    let id: String
+    let name: String
+    let data: String
+    let createdAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case data
+        case createdAt = "created_at"
+    }
+}
+
 struct PropertyDocument: Identifiable, Equatable {
-    let id: UUID
+    let id: String
     var title: String
     var fileName: String
+    let data: String
 
     static func == (lhs: PropertyDocument, rhs: PropertyDocument) -> Bool {
         return lhs.id == rhs.id

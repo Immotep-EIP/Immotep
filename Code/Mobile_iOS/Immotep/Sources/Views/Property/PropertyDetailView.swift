@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import PDFKit
 
 struct PropertyDetailView: View {
     @Binding var property: Property
     @StateObject private var keyboardObserver = KeyboardObserver()
+    @ObservedObject var viewModel: PropertyViewModel
 
     var body: some View {
         VStack(spacing: 0) {
@@ -49,6 +51,21 @@ struct PropertyDetailView: View {
         .navigationTransition(
             .fade(.in).animation(.easeInOut(duration: 0))
         )
+        .onAppear {
+            Task {
+                if !CommandLine.arguments.contains("-skipLogin") {
+                    do {
+                        try await viewModel.fetchPropertyDocuments(propertyId: property.id)
+                        // Synchroniser property avec viewModel.properties
+                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                            property = updatedProperty
+                        }
+                    } catch {
+                        print("Error fetching documents: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -125,56 +142,92 @@ struct DocumentsGrid: View {
             spacing: 15
         ) {
             ForEach(documents) { document in
-                VStack {
-                    Image(systemName: "text.document")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 50, height: 50)
+                NavigationLink(destination: PDFViewer(base64String: document.data)) {
+                    VStack {
+                        Image(systemName: "text.document")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
 
-                    Text(document.title)
-                        .font(.caption)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
+                        Text(document.title)
+                            .font(.caption)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
                 }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(8)
             }
         }
         .padding()
     }
 }
 
-struct PropertyDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        let property = Property(
-            id: "",
-            ownerID: "",
-            name: "Condo",
-            address: "4391 Hedge Street",
-            city: "New Jersey",
-            postalCode: "07102",
-            country: "USA",
-            photo: nil,
-            monthlyRent: 1200,
-            deposit: 2400,
-            surface: 80.0,
-            isAvailable: false,
-            tenantName: "John & Mary Doe",
-            leaseStartDate: Date(),
-            leaseEndDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
-            documents: [
-                PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),
-                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
+struct PDFViewer: View {
+    let base64String: String
 
-            ],
-            rooms: []
-        )
-        PropertyDetailView(property: .constant(property))
+    var body: some View {
+        if let pdfData = pdfData(from: base64String),
+           let pdfDocument = PDFDocument(data: pdfData) {
+            PDFKitView(pdfDocument: pdfDocument)
+        } else {
+            Text("Unable to load PDF")
+        }
+    }
+
+    private func pdfData(from base64String: String) -> Data? {
+        // Supprimer le préfixe "data:application/pdf;base64,"
+        let base64Content = base64String.replacingOccurrences(of: "data:application/pdf;base64,", with: "")
+        return Data(base64Encoded: base64Content)
     }
 }
+
+struct PDFKitView: UIViewRepresentable {
+    let pdfDocument: PDFDocument
+
+    func makeUIView(context: Context) -> PDFView {
+        let pdfView = PDFView()
+        pdfView.document = pdfDocument
+        pdfView.autoScales = true
+        return pdfView
+    }
+
+    func updateUIView(_ uiView: PDFView, context: Context) {
+        uiView.document = pdfDocument
+    }
+}
+
+// struct PropertyDetailView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let property = Property(
+//            id: "",
+//            ownerID: "",
+//            name: "Condo",
+//            address: "4391 Hedge Street",
+//            city: "New Jersey",
+//            postalCode: "07102",
+//            country: "USA",
+//            photo: nil,
+//            monthlyRent: 1200,
+//            deposit: 2400,
+//            surface: 80.0,
+//            isAvailable: false,
+//            tenantName: "John & Mary Doe",
+//            leaseStartDate: Date(),
+//            leaseEndDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
+//            documents: [
+//                PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),
+//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
+//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
+//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
+//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
+//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
+//
+//            ],
+//            rooms: []
+//        )
+//        PropertyDetailView(property: .constant(property), viewModel: viewModel)
+//    }
+// }

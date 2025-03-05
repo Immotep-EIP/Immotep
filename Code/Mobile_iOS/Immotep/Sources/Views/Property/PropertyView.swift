@@ -102,8 +102,8 @@ struct PropertyView: View {
     private var propertyListView: some View {
         List {
             if !viewModel.properties.isEmpty {
-                ForEach(viewModel.properties, id: \.id) { property in
-                    NavigationLink(destination: PropertyDetailView(property: .constant(property))) {
+                ForEach($viewModel.properties) { $property in
+                    NavigationLink(destination: PropertyDetailView(property: $property, viewModel: viewModel)) {
                         PropertyCardView(property: property)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -151,7 +151,6 @@ struct PropertyView: View {
         }
     }
 }
-
 struct PropertyCardView: View {
     let property: Property
 

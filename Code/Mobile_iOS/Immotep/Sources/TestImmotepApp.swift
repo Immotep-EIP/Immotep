@@ -45,7 +45,58 @@ struct TestImmotepView: View {
 
     private func propertyListView() -> some View {
         let viewModel = PropertyViewModel()
-        viewModel.properties = exampleDataProperty2
+        viewModel.properties = [
+            Property(
+                id: "cm7gijdee000ly7i82uq0qf35",
+                ownerID: "owner123",
+                name: "Maison de Campagne",
+                address: "123 Rue des Champs",
+                city: "Paris",
+                postalCode: "75001",
+                country: "France",
+                photo: UIImage(named: "DefaultImageProperty"),
+                monthlyRent: 1200,
+                deposit: 2400,
+                surface: 85.5,
+                isAvailable: true,
+                tenantName: nil,
+                leaseStartDate: nil,
+                leaseEndDate: nil,
+                documents: [
+//                    PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),
+//                    PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
+                ],
+                createdAt: "2023-10-26T10:00:00Z",
+                rooms: [
+                    PropertyRooms(id: "room1", name: "Salon", checked: false, inventory: [])
+                ]
+            ),
+            Property(
+                id: "cm7gijdee000ly7i82uq0qf36",
+                ownerID: "owner124",
+                name: "Appartement Moderne",
+                address: "456 Avenue des Lumières",
+                city: "Lyon",
+                postalCode: "69002",
+                country: "France",
+                photo: UIImage(named: "DefaultImageProperty"),
+                monthlyRent: 1500,
+                deposit: 3000,
+                surface: 65.0,
+                isAvailable: false,
+                tenantName: "Jean Dupont",
+                leaseStartDate: Date(),
+                leaseEndDate: nil,
+                documents: [
+//                    PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),
+//                    PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
+                ],
+                createdAt: "2023-11-15T14:30:00Z",
+                rooms: [
+                    PropertyRooms(id: "room2", name: "Chambre", checked: true, inventory: [])
+                ]
+            )
+        ]
         return PropertyView()
             .environmentObject(viewModel)
     }

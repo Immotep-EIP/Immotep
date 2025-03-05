@@ -31,12 +31,12 @@ let exampleDataProperty = Property(
     leaseStartDate: stringToDate("10/12/2024"),
     leaseEndDate: nil,
     documents: [
-        PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),
-        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
+//        PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),
+//        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
+//        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
+//        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
+//        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
+//        PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
     ],
     createdAt: "2024-12-10",
     rooms: [
