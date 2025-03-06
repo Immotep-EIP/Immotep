@@ -55,12 +55,10 @@ struct InventoryStuffView: View {
                     addStuffButton
                 }
                 Spacer()
-                TaskBar()
             } else {
                 Text("Room not found")
             }
         }
-        .navigationTransition(.fade(.in).animation(.easeInOut(duration: 0)))
     }
 
     private func stuffListView(room: LocalRoom) -> some View {

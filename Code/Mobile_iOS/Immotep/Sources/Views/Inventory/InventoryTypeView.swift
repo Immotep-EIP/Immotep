@@ -78,12 +78,7 @@ struct InventoryTypeView: View {
                 .padding(.top, 20)
 
                 Spacer()
-
-                TaskBar()
             }
-            .navigationTransition(
-                .fade(.in).animation(.easeInOut(duration: 0))
-            )
             .navigationDestination(isPresented: $navigateToEntry) {
                 InventoryRoomView()
                     .environmentObject(inventoryViewModel)

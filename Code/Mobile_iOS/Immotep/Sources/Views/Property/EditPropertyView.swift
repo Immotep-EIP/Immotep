@@ -11,7 +11,6 @@ struct EditPropertyView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: PropertyViewModel
     @Binding var property: Property
-    @StateObject private var keyboardObserver = KeyboardObserver()
 
     @State private var name: String
     @State private var address: String
@@ -112,10 +111,6 @@ struct EditPropertyView: View {
                 .accessibilityIdentifier("save_button")
 
                 Spacer()
-            }
-
-            if !keyboardObserver.isKeyboardVisible {
-                TaskBar()
             }
         }
         .navigationBarBackButtonHidden(true)

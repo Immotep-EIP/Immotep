@@ -120,8 +120,6 @@ struct InventoryExitEvaluationView: View {
                             .foregroundColor(.red)
                     }
                 }
-
-                TaskBar()
             }
             .fullScreenCover(isPresented: $showSheet) {
                 ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())

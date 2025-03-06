@@ -40,12 +40,8 @@ struct OverviewView: View {
                     }
                     .padding()
                 }
-                TaskBar()
             }
             .navigationBarBackButtonHidden(true)
-            .navigationTransition(
-                .fade(.in).animation(.easeInOut(duration: 0))
-            )
         }
     }
 }

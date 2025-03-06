@@ -10,7 +10,6 @@ import SwiftUI
 struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
 
-    @StateObject private var keyboardObserver = KeyboardObserver()
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     @State private var navigateToLogin = false
 
@@ -82,10 +81,6 @@ struct ProfileView: View {
                     .font(.headline)
                     .cornerRadius(10)
                     .padding([.bottom, .leading, .trailing], 20)
-                }
-
-                if !keyboardObserver.isKeyboardVisible {
-                    TaskBar()
                 }
             }
         }

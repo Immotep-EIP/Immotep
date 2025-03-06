@@ -10,7 +10,6 @@ import SwiftUI
 struct CreatePropertyView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: PropertyViewModel
-    @StateObject private var keyboardObserver = KeyboardObserver()
 
     @State private var name = ""
     @State private var address = ""
@@ -91,10 +90,6 @@ struct CreatePropertyView: View {
                 .accessibilityIdentifier("confirm_button")
 
                 Spacer()
-            }
-
-            if !keyboardObserver.isKeyboardVisible {
-                TaskBar()
             }
         }
         .navigationBarBackButtonHidden(true)

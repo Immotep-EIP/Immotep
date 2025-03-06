@@ -44,12 +44,7 @@ struct InventoryRoomView: View {
                         }
                     }
                     Spacer()
-
-                    TaskBar()
                 }
-                .navigationTransition(
-                    .fade(.in).animation(.easeInOut(duration: 0))
-                )
                 .onAppear {
                     Task {
                         await inventoryViewModel.fetchRooms()

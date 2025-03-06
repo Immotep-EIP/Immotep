@@ -16,7 +16,7 @@ struct SettingsView: View {
             TopBar(title: "Settings".localized())
 
             Form {
-                Section(header: Text("Language")) {
+                Section(header: Text("Language".localized())) {
                     Picker(selection: $lang, label: Text("Language")) {
                         Text("English").tag("en")
                         Text("Français").tag("fr")
@@ -28,7 +28,7 @@ struct SettingsView: View {
                         }
                     }
                 }
-                Section(header: Text("Theme")) {
+                Section(header: Text("Theme".localized())) {
                     Picker("Theme", selection: $selectedTheme) {
                         ForEach(ThemeOption.allCases, id: \.self) { theme in
                             Text(theme.rawValue.localized())
@@ -44,12 +44,8 @@ struct SettingsView: View {
                 }
             }
             Spacer()
-            TaskBar()
         }
         .navigationBarBackButtonHidden(true)
-        .navigationTransition(
-            .fade(.in).animation(.easeInOut(duration: 0))
-        )
     }
 }
 

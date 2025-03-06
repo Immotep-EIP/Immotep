@@ -13,13 +13,8 @@ struct MessagesView: View {
             VStack {
                 TopBar(title: "Messages".localized())
                 Spacer()
-
-                TaskBar()
             }
             .navigationBarBackButtonHidden(true)
-            .navigationTransition(
-                .fade(.in).animation(.easeInOut(duration: 0))
-            )
         }
     }
 }

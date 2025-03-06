@@ -10,7 +10,6 @@ import PDFKit
 
 struct PropertyDetailView: View {
     @Binding var property: Property
-    @StateObject private var keyboardObserver = KeyboardObserver()
     @ObservedObject var viewModel: PropertyViewModel
 
     var body: some View {
@@ -42,15 +41,8 @@ struct PropertyDetailView: View {
             .padding()
             .foregroundStyle(.white)
             .accessibilityLabel("inventory_btn_start")
-
-            if !keyboardObserver.isKeyboardVisible {
-                TaskBar()
-            }
         }
         .navigationBarBackButtonHidden(true)
-        .navigationTransition(
-            .fade(.in).animation(.easeInOut(duration: 0))
-        )
         .onAppear {
             Task {
                 if !CommandLine.arguments.contains("-skipLogin") {

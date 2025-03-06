@@ -22,9 +22,7 @@ struct PropertyView: View {
                     TopBar(title: "Property".localized())
                     headerView
                     propertyListView
-                    TaskBar()
                 }
-                .navigationTransition(.fade(.in).animation(.easeInOut(duration: 0)))
 
                 if showDeleteConfirmationAlert {
                     CustomAlertTwoButtons(
