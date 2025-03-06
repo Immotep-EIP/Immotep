@@ -5,6 +5,9 @@ import com.example.immotep.apiCallerServices.callers.AiCallOutput
 import com.example.immotep.apiCallerServices.callers.FurnitureInput
 import com.example.immotep.apiCallerServices.callers.FurnitureOutput
 import com.example.immotep.apiCallerServices.callers.InventoryReportInput
+import com.example.immotep.apiCallerServices.callers.InviteInput
+import com.example.immotep.apiCallerServices.callers.InviteOutput
+import com.example.immotep.apiCallerServices.callers.ProfileResponse
 import com.example.immotep.apiCallerServices.callers.RoomOutput
 import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.InventoryLocationsTypes
@@ -41,16 +44,6 @@ data class RegistrationInput(
 )
 
 data class RegistrationResponse(
-    val id: String,
-    val email: String,
-    val firstname: String,
-    val lastname: String,
-    val role: String,
-    val created_at: String,
-    val updated_at: String,
-)
-
-data class ProfileResponse(
     val id: String,
     val email: String,
     val firstname: String,

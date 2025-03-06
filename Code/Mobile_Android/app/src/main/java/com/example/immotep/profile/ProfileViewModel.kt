@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.immotep.apiCallerServices.callers.ProfileCallerService
 import com.example.immotep.apiClient.ApiClient
+import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,15 +21,22 @@ data class ProfileState(
     val role: String = "",
 )
 
-class ProfileViewModel(private val navController: NavController) : ViewModel() {
+class ProfileViewModel(
+    navController: NavController,
+    apiService: ApiService
+) : ViewModel() {
+    private val apiCaller = ProfileCallerService(apiService, navController)
     private val _infos = MutableStateFlow(ProfileState())
-    val infos: StateFlow<ProfileState> = _infos.asStateFlow()
+    private val _apiError = MutableStateFlow(false)
 
-    init {
+    val infos: StateFlow<ProfileState> = _infos.asStateFlow()
+    val apiError: StateFlow<Boolean> = _apiError.asStateFlow()
+
+    fun initProfile() {
         viewModelScope.launch {
+            _apiError.value = false
             try {
-                val authServ = AuthService(navController.context.dataStore)
-                val profile = ApiClient.apiService.getProfile(authServ.getBearerToken())
+                val profile = apiCaller.getProfile({ _apiError.value = true })
                 _infos.value = _infos.value.copy(
                     email = profile.email,
                     firstname = profile.firstname,
@@ -41,13 +50,3 @@ class ProfileViewModel(private val navController: NavController) : ViewModel() {
     }
 }
 
-class ProfileViewModelFactory(private val navController: NavController) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ProfileViewModel(navController) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

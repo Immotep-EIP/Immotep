@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +22,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.R
+import com.example.immotep.components.ErrorAlert
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.ui.components.OutlinedTextField
 
@@ -29,14 +32,22 @@ import com.example.immotep.ui.components.OutlinedTextField
 fun ProfileScreen(
     navController: NavController,
 ) {
-    val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(navController))
+    val apiService = LocalApiService.current
+    val viewModel: ProfileViewModel = viewModel {
+        ProfileViewModel(navController, apiService)
+    }
     val infos = viewModel.infos.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.initProfile()
+    }
     DashBoardLayout(navController, "profile") {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
+            ErrorAlert(null, null, if (viewModel.apiError.collectAsState().value) stringResource(R.string.profile_api_error) else null)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
