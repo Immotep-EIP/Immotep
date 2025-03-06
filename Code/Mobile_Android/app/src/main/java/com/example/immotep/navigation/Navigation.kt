@@ -7,9 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.immotep.LocalApiService
-import com.example.immotep.apiCallerServices.callers.FurnitureCallerService
-import com.example.immotep.apiCallerServices.callers.InventoryCallerService
-import com.example.immotep.apiCallerServices.callers.RoomCallerService
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.dashboard.DashBoardScreen

@@ -20,9 +20,6 @@ import androidx.navigation.NavController
 import com.example.immotep.LocalApiService
 import com.example.immotep.layouts.InventoryLayout
 import com.example.immotep.R
-import com.example.immotep.apiCallerServices.callers.FurnitureCallerService
-import com.example.immotep.apiCallerServices.callers.InventoryCallerService
-import com.example.immotep.apiCallerServices.callers.RoomCallerService
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.inventory.NextInventoryButton
 import com.example.immotep.inventory.rooms.RoomsScreen

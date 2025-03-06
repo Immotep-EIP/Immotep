@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.apiCallerServices.callers.FurnitureCallerService
-import com.example.immotep.apiCallerServices.callers.FurnitureInput
-import com.example.immotep.apiCallerServices.callers.InventoryCallerService
-import com.example.immotep.apiCallerServices.callers.InventoryReportInput
-import com.example.immotep.apiCallerServices.callers.RoomCallerService
+import com.example.immotep.apiCallerServices.FurnitureCallerService
+import com.example.immotep.apiCallerServices.FurnitureInput
+import com.example.immotep.apiCallerServices.InventoryCallerService
+import com.example.immotep.apiCallerServices.InventoryReportInput
+import com.example.immotep.apiCallerServices.RoomCallerService
 import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.apiCallerServices.callers.AICallerService
-import com.example.immotep.apiCallerServices.callers.AiCallInput
+import com.example.immotep.apiCallerServices.AICallerService
+import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.InventoryLocationsTypes

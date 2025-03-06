@@ -1,8 +1,6 @@
-package com.example.immotep.apiCallerServices.callers
+package com.example.immotep.apiCallerServices
 
 import androidx.navigation.NavController
-import com.example.immotep.apiCallerServices.ApiCallerService
-import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.apiClient.ApiService
 
 data class ProfileResponse(

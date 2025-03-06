@@ -3,8 +3,8 @@ package com.example.immotep.inviteTenantModal
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.apiCallerServices.callers.InviteInput
-import com.example.immotep.apiCallerServices.callers.TenantCallerService
+import com.example.immotep.apiCallerServices.InviteInput
+import com.example.immotep.apiCallerServices.TenantCallerService
 import com.example.immotep.apiClient.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

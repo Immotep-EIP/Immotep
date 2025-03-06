@@ -1,19 +1,15 @@
 package com.example.immotep.apiClient
 
-import com.example.immotep.apiCallerServices.callers.AiCallInput
-import com.example.immotep.apiCallerServices.callers.AiCallOutput
-import com.example.immotep.apiCallerServices.callers.FurnitureInput
-import com.example.immotep.apiCallerServices.callers.FurnitureOutput
-import com.example.immotep.apiCallerServices.callers.InventoryReportInput
-import com.example.immotep.apiCallerServices.callers.InviteInput
-import com.example.immotep.apiCallerServices.callers.InviteOutput
-import com.example.immotep.apiCallerServices.callers.ProfileResponse
-import com.example.immotep.apiCallerServices.callers.RoomOutput
-import com.example.immotep.inventory.Cleanliness
-import com.example.immotep.inventory.InventoryLocationsTypes
+import com.example.immotep.apiCallerServices.AiCallInput
+import com.example.immotep.apiCallerServices.AiCallOutput
+import com.example.immotep.apiCallerServices.FurnitureInput
+import com.example.immotep.apiCallerServices.FurnitureOutput
+import com.example.immotep.apiCallerServices.InventoryReportInput
+import com.example.immotep.apiCallerServices.InviteInput
+import com.example.immotep.apiCallerServices.InviteOutput
+import com.example.immotep.apiCallerServices.ProfileResponse
+import com.example.immotep.apiCallerServices.RoomOutput
 import com.example.immotep.inventory.InventoryReportOutput
-import com.example.immotep.inventory.InventoryReportRoom
-import com.example.immotep.inventory.State
 import com.example.immotep.realProperty.Property
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -24,7 +20,6 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
-import java.util.Vector
 
 //input and output classes
 
