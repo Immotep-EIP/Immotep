@@ -65,6 +65,7 @@ class LoginViewModel(private val navController: NavController) : ViewModel() {
                 navController.navigate("dashboard")
                 return@launch
             } catch (e: Exception) {
+                println("error: ${e.message}")
                 val messageAndCode = e.message?.split(",")
                 if (messageAndCode != null && messageAndCode.size == 2) {
                     val code = messageAndCode[1].toInt()

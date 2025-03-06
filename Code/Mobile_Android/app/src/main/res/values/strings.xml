@@ -135,8 +135,15 @@
     <string name="invite_tenant">Invite tenant</string>
     <string name="start_date">Start date</string>
     <string name="end_date">End date</string>
+    <string name="error_getting_rooms">Impossible to get the rooms, please retry later</string>
     <string name="invalid_email">Invalid email</string>
+    <string name="cannot_add_room">An error occurred during the creation of the room, please retry later</string>
+    <string name="cannot_add_detail">An error occurred during the creation of the detail, please retry later</string>
     <string name="tenant_email">Tenant email</string>
+    <string name="error_create_inventory_report">Error during the creation of the inventory report, please retry later</string>
+    <string name="error_get_last_inventory_report">Impossible to get the last inventory report, impossible to make an exit inventory report, please retry later</string>
+    <string name="error_get_all_rooms">Error during the room recuperation process, please retry later</string>
     <string name="send_invitation">Send invitation</string>
+    <string name="ai_call_error">There was on error on the ai call, please retry later</string>
     <string name="not_end_date_before_start">The end date cannot be before the starting date</string>
 </resources>

@@ -75,9 +75,13 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics:1.5.4")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
     implementation("androidx.compose.material3:material3:1.2.0-alpha10")
+
+    //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.navigation:navigation-compose:2.8.1")
+    implementation("com.squareup.okhttp3:logging-interceptor:3.12.1")
+
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
     implementation("androidx.compose.material:material:1.8.0-alpha01")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
@@ -91,6 +95,11 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.0.1")
     implementation("androidx.camera:camera-lifecycle:1.0.1")
     implementation("androidx.camera:camera-view:1.0.0-alpha27")
+
+    //MockWebserver
+    implementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    // Needed for unit testing API
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

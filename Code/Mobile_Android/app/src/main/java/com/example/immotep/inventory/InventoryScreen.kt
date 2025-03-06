@@ -1,6 +1,7 @@
 package com.example.immotep.inventory
 
 
+import android.widget.Toast
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
@@ -11,12 +12,18 @@ import androidx.compose.material.icons.outlined.TurnRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.layouts.InventoryLayout
 import com.example.immotep.R
+import com.example.immotep.apiCallerServices.callers.FurnitureCallerService
+import com.example.immotep.apiCallerServices.callers.InventoryCallerService
+import com.example.immotep.apiCallerServices.callers.RoomCallerService
+import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.inventory.NextInventoryButton
 import com.example.immotep.inventory.rooms.RoomsScreen
 
@@ -26,13 +33,37 @@ fun InventoryScreen(
     navController: NavController,
     propertyId: String,
 ) {
-    val viewModel: InventoryViewModel = viewModel(factory = InventoryViewModelFactory(navController, propertyId))
+    val viewModel: InventoryViewModel =
+        viewModel(
+            factory = InventoryViewModelFactory(
+                navController,
+                propertyId,
+                apiService = LocalApiService.current
+            )
+        )
+    val context = LocalContext.current
     val inventoryOpen = viewModel.inventoryOpen.collectAsState()
     val oldReportId = viewModel.oldReportId.collectAsState()
     val cannotMakeExitInventory = viewModel.cannotMakeExitInventory.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.getBaseRooms()
+    val inventoryErrors = viewModel.inventoryErrors.collectAsState()
+    val cannotAddRoomText = stringResource(R.string.cannot_add_room)
+    val cannotAddDetailText = stringResource(R.string.cannot_add_detail)
+    LaunchedEffect(propertyId) {
+        viewModel.getBaseRooms(
+            propertyId = propertyId
+        )
+    }
+    if (inventoryErrors.value.getAllRooms) {
+        ErrorAlert(null, null, stringResource(R.string.error_get_all_rooms))
+    }
+    if (inventoryErrors.value.getLastInventoryReport) {
+        ErrorAlert(null, null, stringResource(R.string.error_get_last_inventory_report))
+    }
+    if (inventoryErrors.value.createInventoryReport) {
+        ErrorAlert(null, null, stringResource(R.string.error_create_inventory_report))
+    }
+    if (inventoryErrors.value.errorRoomName != null) {
+        Toast.makeText(context, inventoryErrors.value.errorRoomName, Toast.LENGTH_LONG).show()
     }
     if (inventoryOpen.value == InventoryOpenValues.CLOSED) {
         InventoryLayout(testTag = "inventoryScreen", { navController.popBackStack() }) {
@@ -70,7 +101,11 @@ fun InventoryScreen(
     } else {
         RoomsScreen(
             getRooms = { viewModel.getRooms() },
-            addRoom = { viewModel.addRoom(it) },
+            addRoom = { viewModel.addRoom(
+                it,
+                {
+                    Toast.makeText(context, cannotAddRoomText, Toast.LENGTH_LONG).show()
+                }) },
             removeRoom = { viewModel.removeRoom(it) },
             editRoom = { room -> viewModel.editRoom(room) },
             closeInventory = {
@@ -79,7 +114,10 @@ fun InventoryScreen(
             },
             oldReportId = if (inventoryOpen.value == InventoryOpenValues.EXIT) oldReportId.value else null,
             confirmInventory = { viewModel.sendInventory() },
-            addDetail = { roomId, name -> viewModel.addFurniture(roomId, name) },
+            addDetail = { roomId, name -> viewModel.addFurniture(roomId, name,
+                {
+                    Toast.makeText(context, cannotAddDetailText, Toast.LENGTH_LONG).show()
+                }) },
             navController = navController,
             propertyId = propertyId
         )

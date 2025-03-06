@@ -1,5 +1,11 @@
 package com.example.immotep.apiClient
 
+import com.example.immotep.apiCallerServices.callers.AiCallInput
+import com.example.immotep.apiCallerServices.callers.AiCallOutput
+import com.example.immotep.apiCallerServices.callers.FurnitureInput
+import com.example.immotep.apiCallerServices.callers.FurnitureOutput
+import com.example.immotep.apiCallerServices.callers.InventoryReportInput
+import com.example.immotep.apiCallerServices.callers.RoomOutput
 import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.InventoryLocationsTypes
 import com.example.immotep.inventory.InventoryReportOutput
@@ -111,48 +117,8 @@ data class GetPropertyResponse(
     val end_date: String?
 )
 
-data class FurnitureOutput(
-    val id: String,
-    val property_id: String,
-    val room_id: String,
-    val name: String,
-    val quantity: Int
-)
-
-data class FurnitureInput(
-    val name: String,
-    val quantity: Int
-)
-
-data class InventoryReportInput(
-    val type: String,
-    val rooms: Vector<InventoryReportRoom>
-)
-
 data class AddRoomInput(
     val name : String,
-)
-
-data class RoomOutput(
-    val id : String,
-    val name : String,
-    val property_id : String,
-)
-
-//ai input data classes
-
-data class AiCallInput(
-    val id : String,
-    val pictures : Vector<String>,
-    val type : InventoryLocationsTypes
-)
-
-//ai output data classes
-
-data class AiCallOutput(
-    val cleanliness: Cleanliness?,
-    val note: String?,
-    val state: State?
 )
 
 //tenant input data classes

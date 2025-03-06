@@ -21,8 +21,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.R
+import com.example.immotep.apiClient.ApiService
 import com.example.immotep.components.AddingPicturesCarousel
+import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.LoadingDialog
 import com.example.immotep.inventory.Cleanliness
@@ -40,12 +43,13 @@ fun OneDetailScreen(
     oldReportId : String?,
     navController : NavController,
     propertyId : String,
-    isRoom : Boolean = false
+    isRoom : Boolean = false,
 ) {
-    val viewModel : OneDetailViewModel = viewModel()
+    val viewModel : OneDetailViewModel = viewModel(factory = OneDetailViewModelFactory(LocalApiService.current, navController))
     val detailValue = viewModel.detail.collectAsState()
     val detailError = viewModel.errors.collectAsState()
     val isLoading = viewModel.aiLoading.collectAsState()
+    val callError = viewModel.aiCallError.collectAsState()
     val isExit = oldReportId != null
     LaunchedEffect(Unit) {
         viewModel.reset(baseDetail)
@@ -56,6 +60,7 @@ fun OneDetailScreen(
     ) {
         InitialFadeIn {
             LoadingDialog(isOpen = isLoading.value)
+            ErrorAlert(null, null, if (callError.value) stringResource(R.string.ai_call_error) else null)
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (isExit) {
                     Text(stringResource(R.string.entry_pictures))
@@ -113,7 +118,6 @@ fun OneDetailScreen(
                         ),
                         onClick = { viewModel.summarizeOrCompare(
                             oldReportId = oldReportId,
-                            navController = navController,
                             propertyId = propertyId,
                             isRoom = isRoom
                         ) },

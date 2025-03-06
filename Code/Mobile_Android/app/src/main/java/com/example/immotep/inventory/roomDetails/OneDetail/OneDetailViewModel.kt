@@ -3,16 +3,16 @@ package com.example.immotep.inventory.roomDetails.OneDetail
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.apiClient.AiCallInput
-import com.example.immotep.apiClient.ApiClient
-import com.example.immotep.authService.AuthService
+import com.example.immotep.apiCallerServices.callers.AICallerService
+import com.example.immotep.apiCallerServices.callers.AiCallInput
+import com.example.immotep.apiClient.ApiService
 import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.InventoryLocationsTypes
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.State
-import com.example.immotep.login.dataStore
 import com.example.immotep.utils.Base64Utils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,10 +27,15 @@ data class RoomDetailsError(
     var cleanliness: Boolean = false
 )
 
-class OneDetailViewModel : ViewModel() {
+class OneDetailViewModel(
+    apiService: ApiService,
+    private val navController: NavController
+) : ViewModel() {
+    private val aiCaller = AICallerService(apiService, navController)
     private val _detail = MutableStateFlow(RoomDetail(name = "", id = ""))
     private val _aiLoading = MutableStateFlow(false)
     private val _errors = MutableStateFlow(RoomDetailsError())
+    private val _aiCallError = MutableStateFlow(false)
 
     val picture = mutableStateListOf<Uri>()
     val entryPictures = mutableStateListOf<String>()
@@ -38,6 +43,7 @@ class OneDetailViewModel : ViewModel() {
     val detail = _detail.asStateFlow()
     val errors = _errors.asStateFlow()
     val aiLoading = _aiLoading.asStateFlow()
+    val aiCallError = _aiLoading.asStateFlow()
 
     fun reset(newDetail : RoomDetail?) {
         picture.clear()
@@ -129,30 +135,22 @@ class OneDetailViewModel : ViewModel() {
         reset(null)
     }
 
-    private fun summarize(navController: NavController, propertyId: String, isRoom : Boolean) {
+    private fun summarize(propertyId: String, isRoom : Boolean, onError : () -> Unit) {
         viewModelScope.launch {
             _aiLoading.value = true
-            val authService = AuthService(navController.context.dataStore)
-            val bearerToken = try {
-                authService.getBearerToken()
-            } catch (e: Exception) {
-                _aiLoading.value = false
-                authService.onLogout(navController)
-                return@launch
-            }
             try {
                 val picturesInput = Vector<String>()
                 picture.forEach {
                     picturesInput.add(Base64Utils.encodeImageToBase64(it, navController.context))
                 }
-                val aiResponse = ApiClient.apiService.aiSummarize(
-                    authHeader = bearerToken,
+                val aiResponse = aiCaller.summarize(
                     propertyId = propertyId,
-                    summarizeInput = AiCallInput(
+                    input = AiCallInput(
                         id = _detail.value.id,
                         pictures = picturesInput,
                         type = if (isRoom) InventoryLocationsTypes.room else InventoryLocationsTypes.furniture
-                    )
+                    ),
+                    onError = onError
                 )
                 _detail.value = _detail.value.copy(
                     cleanliness = aiResponse.cleanliness ?: _detail.value.cleanliness,
@@ -163,36 +161,29 @@ class OneDetailViewModel : ViewModel() {
             } catch (e : Exception) {
                 println("impossible to analyze ${e.message}")
                 e.printStackTrace()
+            } finally {
+                _aiLoading.value = false
             }
-            _aiLoading.value = false
         }
     }
 
-    private fun compare(oldReportId : String, navController: NavController, propertyId: String, isRoom: Boolean) {
+    private fun compare(oldReportId : String, propertyId: String, isRoom: Boolean, onError: () -> Unit) {
         viewModelScope.launch {
             _aiLoading.value = true
-            val authService = AuthService(navController.context.dataStore)
-            val bearerToken = try {
-                authService.getBearerToken()
-            } catch (e: Exception) {
-                _aiLoading.value = false
-                authService.onLogout(navController)
-                return@launch
-            }
             try {
                 val picturesInput = Vector<String>()
                 picture.forEach {
                     picturesInput.add(Base64Utils.encodeImageToBase64(it, navController.context))
                 }
-                val aiResponse = ApiClient.apiService.aiCompare(
-                    authHeader = bearerToken,
+                val aiResponse = aiCaller.compare(
                     propertyId = propertyId,
                     oldReportId = oldReportId,
-                    summarizeInput = AiCallInput(
+                    input = AiCallInput(
                         id = _detail.value.id,
                         pictures = picturesInput,
                         type = if (isRoom) InventoryLocationsTypes.room else InventoryLocationsTypes.furniture
-                    )
+                    ),
+                    onError = onError
                 )
                 _detail.value = _detail.value.copy(
                     cleanliness = aiResponse.cleanliness ?: _detail.value.cleanliness,
@@ -203,20 +194,36 @@ class OneDetailViewModel : ViewModel() {
             } catch (e : Exception) {
                 println("impossible to analyze ${e.message}")
                 e.printStackTrace()
+            } finally {
+                _aiLoading.value = false
             }
-            _aiLoading.value = false
         }
     }
 
-    fun summarizeOrCompare(oldReportId : String?, navController: NavController, propertyId: String, isRoom: Boolean) {
+    fun summarizeOrCompare(oldReportId : String?, propertyId: String, isRoom: Boolean) {
+        _aiCallError.value = false
         if (picture.isEmpty()) {
             _errors.value = _errors.value.copy(picture = true)
             println("picture is empty")
             return
         }
         if (oldReportId == null) {
-            return summarize(navController, propertyId, isRoom)
+            return summarize(propertyId, isRoom, { _aiCallError.value = true })
         }
-        return compare(oldReportId, navController, propertyId, isRoom)
+        return compare(oldReportId, propertyId, isRoom, { _aiCallError.value = true })
+    }
+}
+
+class OneDetailViewModelFactory(
+    private val apiService: ApiService,
+    private val navController: NavController
+) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(OneDetailViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return OneDetailViewModel(apiService, navController) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
