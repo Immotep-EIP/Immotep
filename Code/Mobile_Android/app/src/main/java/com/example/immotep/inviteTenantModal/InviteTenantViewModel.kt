@@ -1,14 +1,11 @@
 package com.example.immotep.inviteTenantModal
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.apiClient.ApiClient
+import com.example.immotep.apiCallerServices.callers.InviteInput
+import com.example.immotep.apiCallerServices.callers.TenantCallerService
 import com.example.immotep.apiClient.ApiService
-import com.example.immotep.apiClient.InviteInput
-import com.example.immotep.authService.AuthService
-import com.example.immotep.login.dataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -35,7 +32,11 @@ data class InviteTenantInputFormError(
     var date: Boolean = false
 )
 
-class InviteTenantViewModel : ViewModel() {
+class InviteTenantViewModel(
+    private val apiService: ApiService,
+    private val navController: NavController
+) : ViewModel() {
+    private val callerService = TenantCallerService(apiService, navController)
     private val _invitationForm = MutableStateFlow(InviteTenantInputForm())
     private val _invitationFormError = MutableStateFlow(InviteTenantInputFormError())
 
@@ -72,29 +73,17 @@ class InviteTenantViewModel : ViewModel() {
         return true
     }
 
-    fun inviteTenant(navController: NavController, close : () -> Unit, propertyId : String) {
+    fun inviteTenant(close : () -> Unit, propertyId : String, onError : () -> Unit) {
         if (!inviteTenantValidator()) {
             return
         }
         viewModelScope.launch {
-            val authService = AuthService(navController.context.dataStore)
-            val bearerToken = try {
-                authService.getBearerToken()
-            } catch (e: Exception) {
-                authService.onLogout(navController)
-                return@launch
-            }
             try {
                 close()
-                ApiClient.apiService.inviteTenant(
-                    bearerToken,
-                    propertyId ,
-                    _invitationForm.value.toInviteInput()
-                )
+                callerService.invite(propertyId, _invitationForm.value.toInviteInput(), onError)
             } catch(e: Exception) {
                 println(e)
             }
         }
     }
-
 }

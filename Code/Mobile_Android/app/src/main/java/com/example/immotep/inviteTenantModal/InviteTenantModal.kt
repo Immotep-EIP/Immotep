@@ -1,43 +1,37 @@
 package com.example.immotep.inviteTenantModal
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DateRangePicker
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.layouts.BigModalLayout
 import com.example.immotep.ui.components.DateRangeInput
-import kotlinx.coroutines.launch
 import com.example.immotep.R
 import com.example.immotep.ui.components.OutlinedTextField
 
 @Composable
 fun InviteTenantModal(open: Boolean, close: () -> Unit, navController: NavController, propertyId : String) {
-    val viewModel: InviteTenantViewModel = viewModel()
+    val apiService = LocalApiService.current
+    val viewModel: InviteTenantViewModel = viewModel {
+        InviteTenantViewModel(apiService = apiService, navController = navController)
+    }
+    val inviteTenantApiError = stringResource(R.string.invite_tenant_api_error)
     val form = viewModel.invitationForm.collectAsState()
     val formError = viewModel.invitationFormError.collectAsState()
 
@@ -71,9 +65,9 @@ fun InviteTenantModal(open: Boolean, close: () -> Unit, navController: NavContro
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = { viewModel.inviteTenant(
-                navController = navController,
                 close = close,
-                propertyId = propertyId
+                propertyId = propertyId,
+                onError = { Toast.makeText(navController.context, inviteTenantApiError, Toast.LENGTH_LONG).show() }
             ) },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
             modifier = Modifier

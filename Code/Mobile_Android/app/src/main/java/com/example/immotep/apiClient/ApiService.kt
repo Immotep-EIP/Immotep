@@ -121,26 +121,6 @@ data class AddRoomInput(
     val name : String,
 )
 
-//tenant input data classes
-
-data class InviteInput(
-    val tenant_email: String,
-    val start_date: String,
-    val end_date: String,
-)
-
-
-//tenant output data classes
-
-data class InviteOutput(
-    val id: String,
-    val property_id: String,
-    val tenant_email: String,
-    val start_date: String,
-    val end_date: String,
-    val created_at: String
-)
-
 const val API_PREFIX = "/api/v1"
 
 interface ApiService {
