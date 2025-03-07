@@ -47,8 +47,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
+import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.inviteTenantModal.InviteTenantModal
 import com.example.immotep.realProperty.PropertyBox
@@ -138,11 +141,20 @@ fun AboutThePropertyBox(property : State<DetailedProperty>, openEdit : () -> Uni
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, getBack: () -> Unit) {
-    val viewModel: RealPropertyDetailsViewModel = viewModel(factory = RealPropertyDetailsViewModelFactory(navController))
+    val apiService = LocalApiService.current
+    val viewModel: RealPropertyDetailsViewModel = viewModel {
+        RealPropertyDetailsViewModel(navController, apiService)
+    }
     val property = viewModel.property.collectAsState()
     var editOpen by rememberSaveable { mutableStateOf(false) }
     var inviteTenantOpen by rememberSaveable { mutableStateOf(false) }
+    val apiErrors = viewModel.apiError.collectAsState()
 
+    val errorAlertVal = when (apiErrors.value) {
+        RealPropertyDetailsViewModel.ApiErrors.GET_PROPERTY -> stringResource(R.string.api_error_edit_property)
+        RealPropertyDetailsViewModel.ApiErrors.UPDATE_PROPERTY -> stringResource(R.string.api_error_edit_property)
+        else -> null
+    }
     LaunchedEffect(propertyId) {
         viewModel.loadProperty(propertyId)
     }
@@ -181,6 +193,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
                     }
                 }
             }
+            ErrorAlert(null, null, errorAlertVal)
             PropertyBox(property.value.toProperty())
             if (property.value.available) {
                 Button(

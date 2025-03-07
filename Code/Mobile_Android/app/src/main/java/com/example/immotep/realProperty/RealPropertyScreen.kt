@@ -1,5 +1,6 @@
 package com.example.immotep.realProperty
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,9 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
+import com.example.immotep.apiCallerServices.Property
 import com.example.immotep.components.DeletePopUp
+import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
@@ -153,17 +158,31 @@ fun PropertyBox(property: Property, onClick: (() -> Unit)? = null, onDelete: (()
 
 @Composable
 fun RealPropertyScreen(navController: NavController) {
+    val apiService = LocalApiService.current
     val viewModel: RealPropertyViewModel =
-        viewModel(factory = RealPropertyViewModelFactory(navController))
+        viewModel {
+            RealPropertyViewModel(
+                navController,
+                apiService
+            )
+        }
     var detailsOpen by rememberSaveable { mutableStateOf<String?>(null) }
     var deleteOpen by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
     var addPropertyModalOpen by rememberSaveable { mutableStateOf(false) }
+    val apiErrors = viewModel.apiError.collectAsState()
 
+    val errorAlertVal = when (apiErrors.value) {
+        RealPropertyViewModel.WhichApiError.GET_PROPERTIES -> stringResource(R.string.api_error_get_properties)
+        RealPropertyViewModel.WhichApiError.ADD_PROPERTY -> stringResource(R.string.api_error_add_property)
+        RealPropertyViewModel.WhichApiError.DELETE_PROPERTY -> stringResource(R.string.api_error_delete_property)
+        else -> null
+    }
     LaunchedEffect(Unit) {
         viewModel.getProperties()
     }
 
     DashBoardLayout(navController, "realPropertyScreen") {
+        ErrorAlert(null, null, errorAlertVal)
         if (detailsOpen == null) {
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Button(
@@ -207,8 +226,7 @@ fun RealPropertyScreen(navController: NavController) {
             onSubmit = { property -> viewModel.addProperty(property) },
             popupName = stringResource(R.string.create_new_property),
             submitButtonText = stringResource(R.string.add_prop),
-            submitButtonIcon = { Icon(Icons.Outlined.Add, contentDescription = "Add property") }
-
+            submitButtonIcon = { Icon(Icons.Outlined.Add, contentDescription = "add") }
         )
     }
 }

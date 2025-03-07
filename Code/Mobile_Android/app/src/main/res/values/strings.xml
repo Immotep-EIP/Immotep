@@ -140,7 +140,12 @@
     <string name="cannot_add_room">An error occurred during the creation of the room, please retry later</string>
     <string name="cannot_add_detail">An error occurred during the creation of the detail, please retry later</string>
     <string name="tenant_email">Tenant email</string>
+    <string name="api_error_get_properties">Impossible to get the properties, please retry later</string>
+    <string name="api_error_delete_property">Impossible to delete the property, please retry later</string>
+    <string name="api_error_edit_property">Impossible to delete the property, please retry later</string>
+    <string name="api_error_get_property">Impossible to get the property, please retry later</string>
     <string name="profile_api_error">Impossible to get the profile, please retry later</string>
+    <string name="api_error_add_property">The property could not be added, please retry later</string>
     <string name="invite_tenant_api_error">Impossible to invite the tenant, please retry later</string>
     <string name="error_create_inventory_report">Error during the creation of the inventory report, please retry later</string>
     <string name="error_get_last_inventory_report">Impossible to get the last inventory report, impossible to make an exit inventory report, please retry later</string>

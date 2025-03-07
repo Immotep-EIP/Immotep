@@ -1,16 +1,18 @@
 package com.example.immotep.apiClient
 
+import com.example.immotep.apiCallerServices.AddPropertyInput
+import com.example.immotep.apiCallerServices.AddPropertyResponse
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.FurnitureInput
 import com.example.immotep.apiCallerServices.FurnitureOutput
+import com.example.immotep.apiCallerServices.GetPropertyResponse
 import com.example.immotep.apiCallerServices.InventoryReportInput
 import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.InviteOutput
 import com.example.immotep.apiCallerServices.ProfileResponse
 import com.example.immotep.apiCallerServices.RoomOutput
 import com.example.immotep.inventory.InventoryReportOutput
-import com.example.immotep.realProperty.Property
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
@@ -46,63 +48,6 @@ data class RegistrationResponse(
     val role: String,
     val created_at: String,
     val updated_at: String,
-)
-
-data class AddPropertyInput(
-    val name: String = "",
-    val address: String = "",
-    val city: String = "",
-    val postal_code: String ="",
-    val country: String = "",
-    val area_sqm: Double = 0.0,
-    val rental_price_per_month: Int = 0,
-    val deposit_price: Int = 0,
-)
-
-data class AddPropertyResponse(
-    val id: String,
-    val owner_id: String,
-    val name: String,
-    val address: String,
-    val city: String,
-    val postal_code: String,
-    val country: String,
-    val area_sqm: Double,
-    val rental_price_per_month: Int,
-    val deposit_price: Int,
-    val picture: String?,
-    val created_at: String,
-) {
-    fun toProperty() = Property(
-        id = id,
-        image = picture ?: "",
-        address = address,
-        tenant = null,
-        available = true,
-        startDate = null,
-        endDate = null
-    )
-}
-
-data class GetPropertyResponse(
-    val id: String,
-    val apartment_number: String,
-    val archived: Boolean,
-    val owner_id: String,
-    val name: String,
-    val address: String,
-    val city: String,
-    val postal_code: String,
-    val country: String,
-    val area_sqm: Double,
-    val rental_price_per_month: Int,
-    val deposit_price: Int,
-    val created_at: String,
-    val status: String,
-    val nb_damage: Int,
-    val tenant: String,
-    val start_date: String?,
-    val end_date: String?
 )
 
 data class AddRoomInput(

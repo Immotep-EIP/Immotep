@@ -5,11 +5,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.apiClient.AddPropertyInput
+import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
-import com.example.immotep.realProperty.Property
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

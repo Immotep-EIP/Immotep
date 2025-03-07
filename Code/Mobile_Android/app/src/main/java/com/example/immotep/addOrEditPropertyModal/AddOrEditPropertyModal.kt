@@ -52,9 +52,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.R
-import com.example.immotep.apiClient.AddPropertyInput
+import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.layouts.BigModalLayout
-import com.example.immotep.realProperty.Property
 import com.example.immotep.ui.components.OutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,13 +64,11 @@ fun AddOrEditPropertyModal(
     popupName : String,
     submitButtonText : String,
     submitButtonIcon : @Composable () -> Unit,
-    baseValue : AddPropertyInput? = null
+    baseValue : AddPropertyInput? = null,
 ) {
     val viewModel: AddOrEditPropertyViewModel = viewModel()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val surfaceColor = MaterialTheme.colors.onBackground
     val form = viewModel.propertyForm.collectAsState()
-    val modalHeight = LocalConfiguration.current.screenHeightDp.dp * 0.8f
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
