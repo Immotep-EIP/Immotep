@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.R
 import com.example.immotep.login.dataStore
@@ -40,6 +41,7 @@ class LoggedTopBarViewModel : ViewModel()
 @Composable
 fun LoggedTopBar(navController: NavController) {
     val viewModel: LoggedTopBarViewModel = viewModel()
+    val apiService = LocalApiService.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -65,7 +67,7 @@ fun LoggedTopBar(navController: NavController) {
                 .testTag("loggedTopBarImage")
                 .clickable {
                     viewModel.viewModelScope.launch {
-                        AuthService(navController.context.dataStore).onLogout(navController)
+                        AuthService(navController.context.dataStore, apiService).onLogout(navController)
                     }
                 },
         )

@@ -12,6 +12,9 @@ import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.InviteOutput
 import com.example.immotep.apiCallerServices.ProfileResponse
 import com.example.immotep.apiCallerServices.RoomOutput
+import com.example.immotep.authService.LoginResponse
+import com.example.immotep.authService.RegistrationInput
+import com.example.immotep.authService.RegistrationResponse
 import com.example.immotep.inventory.InventoryReportOutput
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -23,32 +26,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-//input and output classes
 
-data class LoginResponse(
-    val access_token: String,
-    val refresh_token: String,
-    val token_type: String,
-    val expires_in: Int,
-    val properties: Map<String, Any>,
-)
-
-data class RegistrationInput(
-    val email: String,
-    val password: String,
-    val firstName: String,
-    val lastName: String,
-)
-
-data class RegistrationResponse(
-    val id: String,
-    val email: String,
-    val firstname: String,
-    val lastname: String,
-    val role: String,
-    val created_at: String,
-    val updated_at: String,
-)
 
 data class AddRoomInput(
     val name : String,

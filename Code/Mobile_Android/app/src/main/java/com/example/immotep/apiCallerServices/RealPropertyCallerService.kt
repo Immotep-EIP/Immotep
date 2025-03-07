@@ -163,15 +163,16 @@ data class DetailedProperty(
     }
 
     fun toProperty() : Property {
-    return Property(
-        this.id,
-        this.image,
-        this.address,
-        this.tenant,
-        this.available,
-        this.startDate,
-        this.endDate
-    )
+        return Property(
+            this.id,
+            this.image,
+            this.address,
+            this.tenant,
+            this.available,
+            this.startDate,
+            this.endDate
+        )
+    }
 }
 
 class RealPropertyCallerService (
@@ -179,47 +180,52 @@ class RealPropertyCallerService (
     navController: NavController,
 ) : ApiCallerService(apiService, navController) {
 
-    suspend fun getPropertiesAsProperties(onError : () -> Unit) : Array<Property> {
+    suspend fun getPropertiesAsProperties(onError: () -> Unit): Array<Property> {
         try {
             val properties = apiService.getProperties(getBearerToken())
             return properties.map { it.toProperty() }.toTypedArray()
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             onError()
             throw e
         }
     }
 
-    suspend fun addProperty(property: AddPropertyInput, onError : () -> Unit) : Property {
+    suspend fun addProperty(property: AddPropertyInput, onError: () -> Unit): Property {
         try {
             return apiService.addProperty(getBearerToken(), property).toProperty()
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             onError()
             throw e
         }
     }
 
-    suspend fun archiveProperty(propertyId: String, onError : () -> Unit) {
+    suspend fun archiveProperty(propertyId: String, onError: () -> Unit) {
         try {
             apiService.archiveProperty(getBearerToken(), propertyId)
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             onError()
             throw e
         }
     }
 
-    suspend fun getPropertyWithDetails(propertyId: String, onError : () -> Unit) : DetailedProperty {
+    suspend fun getPropertyWithDetails(propertyId: String, onError: () -> Unit): DetailedProperty {
         try {
             return apiService.getProperty(getBearerToken(), propertyId).toDetailedProperty()
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             onError()
             throw e
         }
     }
 
-    suspend fun updateProperty(property: AddPropertyInput, propertyId: String, onError : () -> Unit) : DetailedProperty {
+    suspend fun updateProperty(
+        property: AddPropertyInput,
+        propertyId: String,
+        onError: () -> Unit
+    ): DetailedProperty {
         try {
-            return apiService.updateProperty(getBearerToken(), property, propertyId).toDetailedProperty()
-        } catch (e : Exception) {
+            return apiService.updateProperty(getBearerToken(), property, propertyId)
+                .toDetailedProperty()
+        } catch (e: Exception) {
             onError()
             throw e
         }

@@ -24,7 +24,7 @@ class MainActivity(val apiService: ApiService = ApiClient.apiService) : Componen
             AppTheme {
                 CompositionLocalProvider(LocalApiService provides apiService) {
                     Box(Modifier.safeDrawingPadding()) {
-                        Navigation(apiService)
+                        Navigation()
                     }
                 }
             }

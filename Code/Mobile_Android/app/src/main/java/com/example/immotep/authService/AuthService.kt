@@ -12,6 +12,33 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+//input and output classes
+
+data class LoginResponse(
+    val access_token: String,
+    val refresh_token: String,
+    val token_type: String,
+    val expires_in: Int,
+    val properties: Map<String, Any>,
+)
+
+data class RegistrationInput(
+    val email: String,
+    val password: String,
+    val firstName: String,
+    val lastName: String,
+)
+
+data class RegistrationResponse(
+    val id: String,
+    val email: String,
+    val firstname: String,
+    val lastname: String,
+    val role: String,
+    val created_at: String,
+    val updated_at: String,
+)
+
 class AuthService(
     private val dataStore: DataStore<Preferences>,
     private val apiService : ApiService
@@ -98,6 +125,14 @@ class AuthService(
         return false
     }
 
+    suspend fun register(registrationInput: RegistrationInput) : RegistrationResponse {
+        try {
+            return apiService.register(registrationInput)
+        } catch (e: Exception) {
+            val code = decodeRetroFitMessagesToHttpCodes(e)
+            throw Exception("Failed to register,$code")
+        }
+    }
     companion object {
         val ACCESS_TOKEN = stringPreferencesKey("access_token")
         val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
