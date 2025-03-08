@@ -20,10 +20,10 @@ struct Property: Identifiable, Equatable {
     var monthlyRent: Int
     var deposit: Int
     var surface: Double
-    var isAvailable: Bool
+    var isAvailable: String
     var tenantName: String?
-    var leaseStartDate: Date?
-    var leaseEndDate: Date?
+    var leaseStartDate: String?
+    var leaseEndDate: String?
     var documents: [PropertyDocument]
     var createdAt: String?
     var rooms: [PropertyRooms]
@@ -106,6 +106,10 @@ struct PropertyResponse: Codable {
     let depositPrice: Int
     let picture: String?
     let createdAt: String
+    let isAvailable: String
+    let tenant: String
+    let startDate: String
+    let endDate: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -120,5 +124,9 @@ struct PropertyResponse: Codable {
         case depositPrice = "deposit_price"
         case picture
         case createdAt = "created_at"
+        case isAvailable = "status"
+        case tenant = "tenant"
+        case startDate = "start_date"
+        case endDate = "end_date"
     }
 }

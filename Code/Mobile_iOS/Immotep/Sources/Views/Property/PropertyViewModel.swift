@@ -90,10 +90,10 @@ class PropertyViewModel: ObservableObject {
                         monthlyRent: propertyResponse.rentalPricePerMonth,
                         deposit: propertyResponse.depositPrice,
                         surface: propertyResponse.areaSqm,
-                        isAvailable: true,
-                        tenantName: nil,
-                        leaseStartDate: nil,
-                        leaseEndDate: nil,
+                        isAvailable: propertyResponse.isAvailable,
+                        tenantName: propertyResponse.tenant,
+                        leaseStartDate: propertyResponse.startDate,
+                        leaseEndDate: nil, // Nil by default check later how to deal with this 
                         documents: [],
                         createdAt: propertyResponse.createdAt,
                         rooms: []

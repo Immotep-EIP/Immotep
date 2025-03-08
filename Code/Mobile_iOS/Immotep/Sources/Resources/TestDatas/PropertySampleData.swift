@@ -26,9 +26,9 @@ let exampleDataProperty = Property(
     monthlyRent: 1500,
     deposit: 3000,
     surface: 60.5,
-    isAvailable: true,
+    isAvailable: "unavailable",
     tenantName: "John Doe",
-    leaseStartDate: stringToDate("10/12/2024"),
+    leaseStartDate: "2024-12-01T00:00:00Z",
     leaseEndDate: nil,
     documents: [
 //        PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),

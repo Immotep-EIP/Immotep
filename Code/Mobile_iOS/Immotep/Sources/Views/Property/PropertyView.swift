@@ -194,7 +194,7 @@ struct PropertyCardView: View {
                             Text(
                                 String(
                                     format: "started_on".localized(),
-                                    dateFormatter.string(from: leaseStart)
+                                    formatDateString(leaseStart)
                                 ))
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
@@ -205,7 +205,7 @@ struct PropertyCardView: View {
                 .padding(.trailing, 16)
             }
 
-            if property.isAvailable {
+            if property.isAvailable == "available" {
                 Text("Available".localized())
                     .font(.caption)
                     .foregroundColor(.green)
@@ -260,7 +260,7 @@ let exampleDataProperty2: [Property] = [
         monthlyRent: 1200,
         deposit: 2400,
         surface: 85.5,
-        isAvailable: true,
+        isAvailable: "available",
         tenantName: nil,
         leaseStartDate: nil,
         leaseEndDate: nil,
@@ -287,9 +287,9 @@ let exampleDataProperty2: [Property] = [
         monthlyRent: 1500,
         deposit: 3000,
         surface: 65.0,
-        isAvailable: false,
+        isAvailable: "unavailable",
         tenantName: "Jean Dupont",
-        leaseStartDate: Date(),
+        leaseStartDate: "2024-12-01T00:00:00Z",
         leaseEndDate: nil,
         documents: [],
         createdAt: "2023-11-15T14:30:00Z",

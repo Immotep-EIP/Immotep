@@ -48,7 +48,6 @@ struct PropertyDetailView: View {
                 if !CommandLine.arguments.contains("-skipLogin") {
                     do {
                         try await viewModel.fetchPropertyDocuments(propertyId: property.id)
-                        // Synchroniser property avec viewModel.properties
                         if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
                             property = updatedProperty
                         }
@@ -76,8 +75,9 @@ struct AboutCardView: View {
             buildRow(
                 icon: "calendar",
                 leftText:
-                    String(format: "start_date".localized(),
-                           property.leaseStartDate?.formatted(.dateTime.day().month().year()) ?? "No start date assigned".localized()),
+                    String(
+                        format: "start_date".localized(),
+                           property.leaseStartDate != nil ? formatDateString(property.leaseStartDate!) : "No start date assigned".localized()),
                 rightIcon: "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90",
                 rightText:
                     String(
@@ -89,7 +89,8 @@ struct AboutCardView: View {
                 icon: "calendar",
                 leftText:
                     String(
-                        format: "end_date".localized(), property.leaseEndDate?.formatted(.dateTime.day().month().year()) ??
+                        format: "end_date".localized(),
+                        property.leaseEndDate != nil ? formatDateString(property.leaseEndDate!) :
                         "No end date assigned".localized()),
                 rightIcon: "eurosign.bank.building",
                 rightText:

@@ -132,7 +132,7 @@ struct CreatePropertyView: View {
             monthlyRent: monthlyRent?.intValue ?? 0,
             deposit: deposit?.intValue ?? 0,
             surface: surface?.doubleValue ?? 0.0,
-            isAvailable: true,
+            isAvailable: "available",
             tenantName: nil,
             leaseStartDate: nil,
             leaseEndDate: nil,
