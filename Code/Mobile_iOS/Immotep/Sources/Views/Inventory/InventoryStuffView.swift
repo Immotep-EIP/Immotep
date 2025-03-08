@@ -10,6 +10,7 @@ import SwiftUI
 struct InventoryStuffView: View {
     @EnvironmentObject var inventoryViewModel: InventoryViewModel
     let roomId: String
+    @Environment(\.dismiss) var dismiss
 
     @State private var selectedRoom: LocalRoom?
     @State private var showAddStuffAlert: Bool = false
@@ -31,9 +32,9 @@ struct InventoryStuffView: View {
                     if room.inventory.isEmpty {
                         await inventoryViewModel.fetchStuff(room)
                     }
-                    if inventoryViewModel.isRoomCompleted(room) {
-                        await inventoryViewModel.markRoomAsChecked(room)
-                    }
+//                    if inventoryViewModel.isRoomCompleted(room) {
+//                        await inventoryViewModel.markRoomAsChecked(room)
+//                    }
                     inventoryViewModel.selectRoom(room)
                 }
             }
@@ -53,6 +54,9 @@ struct InventoryStuffView: View {
                     Spacer()
                     stuffListView(room: selectedRoom)
                     addStuffButton
+                    if selectedRoom.inventory.allSatisfy({ $0.checked }) && !selectedRoom.inventory.isEmpty {
+                        confirmButton
+                    }
                 }
                 Spacer()
             } else {
@@ -119,6 +123,25 @@ struct InventoryStuffView: View {
             .padding(.vertical, 5)
         }
     }
+
+    private var confirmButton: some View {
+            Button {
+                Task {
+                    if let room = selectedRoom {
+                        await inventoryViewModel.markRoomAsChecked(room)
+                        dismiss()
+                    }
+                }
+            } label: {
+                Text("Confirm")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .padding()
+        }
 
     private var alertViews: some View {
         Group {

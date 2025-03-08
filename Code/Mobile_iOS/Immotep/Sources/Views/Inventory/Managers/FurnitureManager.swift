@@ -30,7 +30,7 @@ class FurnitureManager {
         }
 
         viewModel.selectedInventory[index].checked = true
-        updateRoomCheckedStatus()
+//        updateRoomCheckedStatus()
     }
 
     func fetchStuff(_ room: LocalRoom) async {
