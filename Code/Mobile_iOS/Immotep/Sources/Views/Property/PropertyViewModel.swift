@@ -188,10 +188,9 @@ class PropertyViewModel: ObservableObject {
 
     func fetchPropertyDocuments(propertyId: String) async throws {
         let url = URL(string: "\(baseURL)/owner/properties/\(propertyId)/documents/")!
-        print("Fetching documents from URL: \(url)")
 
         let token = try await TokenStorage.getValidAccessToken()
-        print("Token used: '\(token)' (length: \(token.count))")
+        print("Token used: \(token)")
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"
@@ -208,29 +207,20 @@ class PropertyViewModel: ObservableObject {
 
         do {
             let (data, response) = try await session.data(for: urlRequest)
-            print("Response data size: \(data.count) bytes")
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server".localized()])
             }
 
-            print("Response status code: \(httpResponse.statusCode)")
             guard (200...299).contains(httpResponse.statusCode) else {
                 let responseBody = String(data: data, encoding: .utf8) ?? "No response body"
-                print("Response body: \(responseBody)")
                 throw NSError(domain: "", code: httpResponse.statusCode,
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(responseBody)"])
             }
 
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("Raw JSON response: \(jsonString)")
-            } else {
-                print("Unable to convert response data to string")
-            }
-
             let decoder = JSONDecoder()
             let documentsData = try decoder.decode([PropertyDocumentResponse].self, from: data)
-            print("Documents fetched: \(documentsData.count)")
+//            print("Documents fetched: \(documentsData.count)")
 
             if let index = properties.firstIndex(where: { $0.id == propertyId }) {
                 var updatedProperty = properties[index]

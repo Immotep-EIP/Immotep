@@ -19,74 +19,72 @@ struct InventoryTypeView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                TopBar(title: "Inventory")
-                VStack {
-                    Button(action: {
-                        inventoryViewModel.isEntryInventory = true
-                        navigateToEntry = true
-                    }, label: {
-                        HStack {
-                            Image(systemName: "figure.walk.arrival")
-                                .foregroundStyle(Color("textColor"))
-                                .fontWeight(.bold)
-                                .font(.title2)
-                            Text("Entry Inventory")
-                                .foregroundStyle(Color("textColor"))
-                            Spacer()
-                            Image(systemName: "arrowshape.right.circle.fill")
-                                .foregroundStyle(Color("textColor"))
-                                .fontWeight(.bold)
-                                .font(.title)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                        )
-                    })
-                    .padding(.horizontal)
-
-                    Button(action: {
-                        inventoryViewModel.isEntryInventory = false
-                        navigateToExit = true
-                    }, label: {
-                        HStack {
-                            Image(systemName: "figure.walk.departure")
-                                .foregroundStyle(Color("textColor"))
-                                .fontWeight(.bold)
-                                .font(.title2)
-                            Text("Exit Inventory")
-                                .foregroundStyle(Color("textColor"))
-                            Spacer()
-                            Image(systemName: "arrowshape.right.circle.fill")
-                                .foregroundStyle(Color("textColor"))
-                                .fontWeight(.bold)
-                                .font(.title)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                        )
-                    })
+        VStack(spacing: 0) {
+            TopBar(title: "Inventory")
+            VStack {
+                Button(action: {
+                    inventoryViewModel.isEntryInventory = true
+                    navigateToEntry = true
+                }, label: {
+                    HStack {
+                        Image(systemName: "figure.walk.arrival")
+                            .foregroundStyle(Color("textColor"))
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        Text("Entry Inventory")
+                            .foregroundStyle(Color("textColor"))
+                        Spacer()
+                        Image(systemName: "arrowshape.right.circle.fill")
+                            .foregroundStyle(Color("textColor"))
+                            .fontWeight(.bold)
+                            .font(.title)
+                    }
+                    .frame(maxWidth: .infinity)
                     .padding()
-                }
-                .padding(.top, 20)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                    )
+                })
+                .padding(.horizontal)
 
-                Spacer()
+                Button(action: {
+                    inventoryViewModel.isEntryInventory = false
+                    navigateToExit = true
+                }, label: {
+                    HStack {
+                        Image(systemName: "figure.walk.departure")
+                            .foregroundStyle(Color("textColor"))
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        Text("Exit Inventory")
+                            .foregroundStyle(Color("textColor"))
+                        Spacer()
+                        Image(systemName: "arrowshape.right.circle.fill")
+                            .foregroundStyle(Color("textColor"))
+                            .fontWeight(.bold)
+                            .font(.title)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                    )
+                })
+                .padding()
             }
-            .navigationDestination(isPresented: $navigateToEntry) {
-                InventoryRoomView()
-                    .environmentObject(inventoryViewModel)
-            }
-            .navigationDestination(isPresented: $navigateToExit) {
-                InventoryRoomView()
-                    .environmentObject(inventoryViewModel)
-            }
+            .padding(.top, 20)
+
+            Spacer()
+        }
+        .navigationDestination(isPresented: $navigateToEntry) {
+            InventoryRoomView()
+                .environmentObject(inventoryViewModel)
+        }
+        .navigationDestination(isPresented: $navigateToExit) {
+            InventoryRoomView()
+                .environmentObject(inventoryViewModel)
         }
         .navigationBarBackButtonHidden(true)
     }

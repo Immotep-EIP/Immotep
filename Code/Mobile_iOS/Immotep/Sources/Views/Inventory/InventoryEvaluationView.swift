@@ -30,104 +30,102 @@ struct InventoryEntryEvaluationView: View {
     ]
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                TopBar(title: "Inventory")
+        VStack(spacing: 0) {
+            TopBar(title: "Inventory")
 
-                ScrollView {
-                    Section {
-                        PicturesSegment(selectedImages: $inventoryViewModel.selectedImages, showImagePickerOptions: showImagePickerOptions)
+            ScrollView {
+                Section {
+                    PicturesSegment(selectedImages: $inventoryViewModel.selectedImages, showImagePickerOptions: showImagePickerOptions)
+                }
+
+                VStack {
+                    HStack {
+                        Text("Comments")
+                            .font(.headline)
+                        Spacer()
                     }
-
-                    VStack {
-                        HStack {
-                            Text("Comments")
-                                .font(.headline)
-                            Spacer()
-                        }
-                        TextEditor(text: $inventoryViewModel.comment)
-                            .frame(height: 100)
-                            .padding()
-                            .cornerRadius(20)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.gray, lineWidth: 1)
-                            )
-                    }
-                    .padding()
-
-                    VStack {
-                        HStack {
-                            Text("Status")
-                                .font(.headline)
-                            Spacer()
-                        }
-                        HStack {
-                            Picker("Select Equipment Status", selection: $inventoryViewModel.selectedStatus) {
-                                Text("Select your equipment status").tag("Select your equipment status")
-                                ForEach(Array(stateMapping.values), id: \.self) { status in
-                                    Text(status).tag(status)
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .pickerStyle(MenuPickerStyle())
-                            .padding()
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(10)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.gray, lineWidth: 1)
-                            )
-                            .accessibilityIdentifier("StatusPicker")
-                            Spacer()
-                        }
-                    }
-                    .padding()
-
-                    if isReportSent {
-                        Button(action: {
-                            Task {
-                                await validateReport()
-                            }
-                        }, label: {
-                            Text("Validate")
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
-                        })
+                    TextEditor(text: $inventoryViewModel.comment)
+                        .frame(height: 100)
                         .padding()
-                    } else {
-                        Button(action: {
-                            Task {
-                                isLoading = true
-                                await markStuffAsCheckedAndSendReport()
-                                isLoading = false
-                            }
-                        }, label: {
-                            Text("Send Report")
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
-                        })
-                        .disabled(isLoading)
-                        .padding()
-                    }
+                        .cornerRadius(20)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.gray, lineWidth: 1)
+                        )
+                }
+                .padding()
 
-                    if let errorMessage = errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
+                VStack {
+                    HStack {
+                        Text("Status")
+                            .font(.headline)
+                        Spacer()
+                    }
+                    HStack {
+                        Picker("Select Equipment Status", selection: $inventoryViewModel.selectedStatus) {
+                            Text("Select your equipment status").tag("Select your equipment status")
+                            ForEach(Array(stateMapping.values), id: \.self) { status in
+                                Text(status).tag(status)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .pickerStyle(MenuPickerStyle())
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.gray, lineWidth: 1)
+                        )
+                        .accessibilityIdentifier("StatusPicker")
+                        Spacer()
                     }
                 }
-            }
-            .fullScreenCover(isPresented: $showSheet) {
-                ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
+                .padding()
+
+                if isReportSent {
+                    Button(action: {
+                        Task {
+                            await validateReport()
+                        }
+                    }, label: {
+                        Text("Validate")
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    })
+                    .padding()
+                } else {
+                    Button(action: {
+                        Task {
+                            isLoading = true
+                            await markStuffAsCheckedAndSendReport()
+                            isLoading = false
+                        }
+                    }, label: {
+                        Text("Send Report")
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    })
+                    .disabled(isLoading)
+                    .padding()
+                }
+
+                if let errorMessage = errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                }
             }
         }
-        .navigationBarBackButtonHidden(true)
+        .fullScreenCover(isPresented: $showSheet) {
+            ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
+        }
+//        .navigationBarBackButtonHidden(true)
         .onAppear {
             inventoryViewModel.selectStuff(selectedStuff)
         }

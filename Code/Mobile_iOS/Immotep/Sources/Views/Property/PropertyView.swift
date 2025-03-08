@@ -61,7 +61,6 @@ struct PropertyView: View {
                 }
             }
         }
-        .navigationBarBackButtonHidden(true)
         .onAppear {
             Task {
                 await viewModel.fetchProperties()

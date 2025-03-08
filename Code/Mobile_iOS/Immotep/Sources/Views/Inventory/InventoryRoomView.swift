@@ -11,103 +11,101 @@ struct InventoryRoomView: View {
     @State private var showCompletionMessage: Bool = false
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                VStack(spacing: 0) {
-                    TopBar(title: inventoryViewModel.isEntryInventory ? "Entry Inventory" : "Exit Inventory")
-                    VStack {
-                        Spacer()
-                        RoomListView(showDeleteConfirmationAlert: $showDeleteConfirmationAlert, roomToDelete: $roomToDelete)
-                            .environmentObject(inventoryViewModel)
-
-                        AddRoomButton(showAddRoomAlert: $showAddRoomAlert)
-
-                        if inventoryViewModel.areAllRoomsCompleted() {
-                            Button(action: {
-                                Task {
-                                    do {
-                                        try await inventoryViewModel.finalizeInventory()
-                                        showCompletionMessage = true
-                                    } catch {
-                                        showCompletionMessage = true
-                                    }
-                                }
-                            }, label: {
-                                Text("Finalize Inventory")
-                                    .padding()
-                                    .frame(maxWidth: .infinity)
-                                    .background(Color.blue)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
-                            })
-                            .padding()
-                        }
-                    }
+        ZStack {
+            VStack(spacing: 0) {
+                TopBar(title: inventoryViewModel.isEntryInventory ? "Entry Inventory" : "Exit Inventory")
+                VStack {
                     Spacer()
-                }
-                .onAppear {
-                    Task {
-                        await inventoryViewModel.fetchRooms()
-                    }
-                }
+                    RoomListView(showDeleteConfirmationAlert: $showDeleteConfirmationAlert, roomToDelete: $roomToDelete)
+                        .environmentObject(inventoryViewModel)
 
-                if showAddRoomAlert {
-                    CustomAlert(
-                        isActive: $showAddRoomAlert,
-                        textFieldInput: $newRoomName,
-                        title: "Add a Room",
-                        message: "Choose a name for your new room:",
-                        buttonTitle: "Add",
-                        secondaryButtonTitle: "Cancel",
-                        action: {
+                    AddRoomButton(showAddRoomAlert: $showAddRoomAlert)
+
+                    if inventoryViewModel.areAllRoomsCompleted() {
+                        Button(action: {
                             Task {
                                 do {
-                                    try await inventoryViewModel.addRoom(name: newRoomName)
-                                    newRoomName = ""
+                                    try await inventoryViewModel.finalizeInventory()
+                                    showCompletionMessage = true
                                 } catch {
-                                    print("Error adding room: \(error.localizedDescription)")
+                                    showCompletionMessage = true
                                 }
                             }
-                        },
-                        secondaryAction: {
-                            newRoomName = ""
-                        }
-                    )
-                    .accessibilityIdentifier("AddRoomAlert")
+                        }, label: {
+                            Text("Finalize Inventory")
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        })
+                        .padding()
+                    }
                 }
+                Spacer()
+            }
+            .onAppear {
+                Task {
+                    await inventoryViewModel.fetchRooms()
+                }
+            }
 
-                if showDeleteConfirmationAlert {
-                    CustomAlertTwoButtons(
-                        isActive: $showDeleteConfirmationAlert,
-                        title: "Delete Room",
-                        message: roomToDelete != nil ? "Are you sure you want to delete the room \(roomToDelete!.name)?" : "",
-                        buttonTitle: "Delete",
-                        secondaryButtonTitle: "Cancel",
-                        action: {
-                            if let roomToDelete = roomToDelete {
-                                Task {
-                                    await inventoryViewModel.deleteRoom(roomToDelete)
-                                }
+            if showAddRoomAlert {
+                CustomAlert(
+                    isActive: $showAddRoomAlert,
+                    textFieldInput: $newRoomName,
+                    title: "Add a Room",
+                    message: "Choose a name for your new room:",
+                    buttonTitle: "Add",
+                    secondaryButtonTitle: "Cancel",
+                    action: {
+                        Task {
+                            do {
+                                try await inventoryViewModel.addRoom(name: newRoomName)
+                                newRoomName = ""
+                            } catch {
+                                print("Error adding room: \(error.localizedDescription)")
                             }
-                        },
-                        secondaryAction: {
-                            roomToDelete = nil
                         }
-                    )
-                    .accessibilityIdentifier("DeleteRoomAlert")
-                }
-                if showCompletionMessage, let message = inventoryViewModel.completionMessage {
-                    CustomAlertTwoButtons(
-                        isActive: $showCompletionMessage,
-                        title: inventoryViewModel.isEntryInventory ? "Entry Inventory" : "Exit Inventory",
-                        message: message,
-                        buttonTitle: "OK",
-                        secondaryButtonTitle: nil,
-                        action: {
-                        },
-                        secondaryAction: nil
-                    )
-                }
+                    },
+                    secondaryAction: {
+                        newRoomName = ""
+                    }
+                )
+                .accessibilityIdentifier("AddRoomAlert")
+            }
+
+            if showDeleteConfirmationAlert {
+                CustomAlertTwoButtons(
+                    isActive: $showDeleteConfirmationAlert,
+                    title: "Delete Room",
+                    message: roomToDelete != nil ? "Are you sure you want to delete the room \(roomToDelete!.name)?" : "",
+                    buttonTitle: "Delete",
+                    secondaryButtonTitle: "Cancel",
+                    action: {
+                        if let roomToDelete = roomToDelete {
+                            Task {
+                                await inventoryViewModel.deleteRoom(roomToDelete)
+                            }
+                        }
+                    },
+                    secondaryAction: {
+                        roomToDelete = nil
+                    }
+                )
+                .accessibilityIdentifier("DeleteRoomAlert")
+            }
+            if showCompletionMessage, let message = inventoryViewModel.completionMessage {
+                CustomAlertTwoButtons(
+                    isActive: $showCompletionMessage,
+                    title: inventoryViewModel.isEntryInventory ? "Entry Inventory" : "Exit Inventory",
+                    message: message,
+                    buttonTitle: "OK",
+                    secondaryButtonTitle: nil,
+                    action: {
+                    },
+                    secondaryAction: nil
+                )
             }
         }
         .navigationBarBackButtonHidden(true)

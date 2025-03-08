@@ -18,11 +18,9 @@ struct InventoryStuffView: View {
     @State private var stuffToDelete: LocalInventory?
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                contentView
-                alertViews
-            }
+        ZStack {
+            contentView
+            alertViews
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
@@ -32,9 +30,6 @@ struct InventoryStuffView: View {
                     if room.inventory.isEmpty {
                         await inventoryViewModel.fetchStuff(room)
                     }
-//                    if inventoryViewModel.isRoomCompleted(room) {
-//                        await inventoryViewModel.markRoomAsChecked(room)
-//                    }
                     inventoryViewModel.selectRoom(room)
                 }
             }
