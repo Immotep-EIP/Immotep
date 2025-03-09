@@ -123,13 +123,13 @@ class MockedApiService : ApiService {
     //profile functions
     override suspend fun getProfile(authHeader : String): ProfileResponse {
         return ProfileResponse(
-            id = "test",
-            email = "test",
-            firstname = "test",
-            lastname = "test",
+            id = "test123",
+            email = "robin.denni@epitech.eu",
+            firstname = "Test",
+            lastname = "User",
             role = "test",
-            created_at = "test",
-            updated_at = "test"
+            created_at = "2025-03-09T13:52:54+0000",
+            updated_at = "2025-03-09T13:52:54+0000"
         )
     }
 
