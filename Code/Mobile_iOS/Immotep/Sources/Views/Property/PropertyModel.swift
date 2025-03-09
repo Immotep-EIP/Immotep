@@ -107,8 +107,8 @@ struct PropertyResponse: Codable {
     let picture: String?
     let createdAt: String
     let isAvailable: String
-    let tenant: String
-    let startDate: String
+    let tenant: String?
+    let startDate: String?
     let endDate: String?
 
     enum CodingKeys: String, CodingKey {

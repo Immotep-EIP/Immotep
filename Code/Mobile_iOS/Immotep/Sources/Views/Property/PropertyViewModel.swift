@@ -49,7 +49,7 @@ class PropertyViewModel: ObservableObject {
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
             }
         }
-
+        await fetchProperties()
         return "Property successfully created!"
     }
     func fetchProperties() async {
@@ -93,7 +93,7 @@ class PropertyViewModel: ObservableObject {
                         isAvailable: propertyResponse.isAvailable,
                         tenantName: propertyResponse.tenant,
                         leaseStartDate: propertyResponse.startDate,
-                        leaseEndDate: nil, // Nil by default check later how to deal with this 
+                        leaseEndDate: propertyResponse.endDate,
                         documents: [],
                         createdAt: propertyResponse.createdAt,
                         rooms: []
@@ -160,28 +160,48 @@ class PropertyViewModel: ObservableObject {
         }
 
     func deleteProperty(propertyId: String) async throws {
-        let url = URL(string: "\(baseURL)/owner/properties/\(propertyId)/")!
+        let url = URL(string: "\(baseURL)/owner/properties/\(propertyId)/archive/")!
 
         let token = try await TokenStorage.getValidAccessToken()
 
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "DELETE"
-        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        let body: [String: Any] = [
+                "archive": true
+            ]
 
-        let (_, response) = try await URLSession.shared.data(for: urlRequest)
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "PUT"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: body)
+            urlRequest.httpBody = jsonData
+            print("Request body: \(String(data: jsonData, encoding: .utf8) ?? "Invalid JSON")")
+        } catch {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to serialize request body: \(error.localizedDescription)".localized()])
+        }
+
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
         }
 
         guard (200...299).contains(httpResponse.statusCode) else {
-            if httpResponse.statusCode == 401 {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            print("Error response: \(errorBody)")
+            switch httpResponse.statusCode {
+            case 400:
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid fields: \(errorBody)".localized()])
+            case 401:
                 throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
-            } else if httpResponse.statusCode == 404 {
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+            case 404:
                 throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Property not found.".localized()])
-            } else {
+            default:
                 throw NSError(domain: "", code: httpResponse.statusCode,
-                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
             }
         }
     }

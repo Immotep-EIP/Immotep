@@ -132,7 +132,7 @@ class RoomManager {
 
     func deleteRoom(_ room: LocalRoom) async {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/") else {
+        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/archive/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }
@@ -142,9 +142,23 @@ class RoomManager {
             return
         }
 
+        let body: [String: Any] = [
+                "archive": true
+            ]
+
         var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "DELETE"
+        urlRequest.httpMethod = "PUT"
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: body)
+            urlRequest.httpBody = jsonData
+            print("Request body: \(String(data: jsonData, encoding: .utf8) ?? "Invalid JSON")")
+        } catch {
+            print("error: \(error.localizedDescription)")
+//            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to serialize request body: \(error.localizedDescription)".localized()])
+        }
 
         do {
             let (_, response) = try await URLSession.shared.data(for: urlRequest)

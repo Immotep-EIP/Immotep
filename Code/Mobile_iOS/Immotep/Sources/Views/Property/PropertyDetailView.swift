@@ -17,7 +17,7 @@ struct PropertyDetailView: View {
             TopBar(title: "Property Details".localized())
 
             Form {
-                PropertyCardView(property: property)
+                PropertyCardView(property: $property)
                     .padding(.vertical, 4)
 
                 Section(header: Text("About the property".localized())) {
@@ -171,7 +171,6 @@ struct PDFViewer: View {
     }
 
     private func pdfData(from base64String: String) -> Data? {
-        // Supprimer le préfixe "data:application/pdf;base64,"
         let base64Content = base64String.replacingOccurrences(of: "data:application/pdf;base64,", with: "")
         return Data(base64Encoded: base64Content)
     }

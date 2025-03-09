@@ -69,6 +69,7 @@ struct PropertyView: View {
         }
         .onChange(of: viewModel.properties) {
             listRefreshID = UUID()
+            print("Properties changed: \(viewModel.properties.map { $0.name })")
         }
         .onChange(of: navigateToEditId) {
             if navigateToEditId == nil {
@@ -101,7 +102,7 @@ struct PropertyView: View {
             if !viewModel.properties.isEmpty {
                 ForEach($viewModel.properties) { $property in
                     NavigationLink(destination: PropertyDetailView(property: $property, viewModel: viewModel)) {
-                        PropertyCardView(property: property)
+                        PropertyCardView(property: $property) // Passage du Binding
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(action: {
@@ -149,7 +150,7 @@ struct PropertyView: View {
     }
 }
 struct PropertyCardView: View {
-    let property: Property
+    @Binding var property: Property
 
     var body: some View {
         ZStack(alignment: .topLeading) {
