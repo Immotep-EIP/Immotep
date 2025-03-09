@@ -2,7 +2,7 @@
 
 ## Overview
 
-This application employs a robust caching strategy using a combination of Service Worker and IndexedDB to improve performance, reduce network dependency, and ensure a smooth user experience even in offline scenarios.
+This application employs a robust caching strategy using Service Worker to improve performance, reduce network dependency, and ensure a smooth user experience even in offline scenarios.
 
 ---
 
@@ -21,40 +21,6 @@ By intercepting network requests, the Service Worker checks for cached versions 
 
 ---
 
-## IndexedDB
-
-IndexedDB is used for caching and managing more sensitive or dynamic data. This includes:
-
-- User information
-
-- Property details
-
-- Other application-specific data
-
-IndexedDB provides a secure and structured way to store and retrieve large amounts of data, making it ideal for managing application state and user data locally.
-
-### Implementation Highlights
-
-**Data Storage:**
-
-- User data and property details are stored in an IndexedDB database with well-defined object stores.
-
-- Data is indexed for efficient querying and retrieval.
-
-**Synchronization:**
-
-- Data is synchronized with the server when the user is online, ensuring consistency.
-
-- When the user is offline, they can still use the app thanks to the cached data.
-
-**Security Measures:** (To do)
-
-- Sensitive data is encrypted before storage.
-
-- Access to IndexedDB is restricted to the application domain.
-
----
-
 ## Workflow Diagram
 
 **User requests an asset:**
@@ -62,12 +28,6 @@ IndexedDB provides a secure and structured way to store and retrieve large amoun
 - The Service Worker intercepts the request.
 
 - If the request is for a static asset, it checks the cache. If available, the cached version is returned; otherwise, it fetches from the network and updates the cache.
-
-**User requests sensitive or dynamic data:**
-
-- The application queries IndexedDB for the data.
-
-- If the data is available, it is served from the database. If not, a network request is made, and the response is cached in IndexedDB for future use.
 
 ---
 
@@ -83,14 +43,8 @@ IndexedDB provides a secure and structured way to store and retrieve large amoun
 
 - The application remains functional even when the user is offline.
 
-- User data and application state are preserved locally.
-
-**Scalability:**
-
-- IndexedDB supports large datasets and complex queries, making it suitable for managing growing application data.
-
 ---
 
 ## Conclusion
 
-This caching strategy effectively combines the strengths of Service Worker and IndexedDB to create a robust and user-friendly application. By caching static assets with the Service Worker, the application ensures fast loading times and offline availability. Meanwhile, IndexedDB securely handles sensitive and dynamic data, allowing users to interact seamlessly with the application even when offline. Together, these tools provide a scalable and efficient solution, enhancing performance and reliability for end-users.
+This caching strategy effectively combines the strengths of Service Worker to create a robust and user-friendly application. By caching static assets with the Service Worker, the application ensures fast loading times and offline availability. This approach significantly enhances the application's reliability and user experience, making it a robust solution for property document management.
