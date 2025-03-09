@@ -77,4 +77,12 @@ describe('useNavigation', () => {
     result.current.goToMyProfile()
     expect(mockNavigate).toHaveBeenCalledWith(NavigationEnum.MY_PROFILE)
   })
+
+  it('should navigate to success register tenant page', () => {
+    const { result } = renderHook(() => useNavigation())
+    result.current.goToSuccessRegisterTenant()
+    expect(mockNavigate).toHaveBeenCalledWith(
+      NavigationEnum.SUCCESS_REGISTER_TENANT
+    )
+  })
 })
