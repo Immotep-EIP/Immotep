@@ -20,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+
 @RunWith(AndroidJUnit4::class)
 class LoginInstrumentedTest {
     constructor() {
@@ -32,7 +33,7 @@ class LoginInstrumentedTest {
 
     private fun removeToken() {
         try {
-            composeTestRule.onNodeWithTag("loggedTopBarImage")
+            composeTestRule.onNodeWithTag("loggedTopBarImage").performClick()
         } catch (e: Throwable) {
             // Log the error or handle it as needed
             println("Node loggedTopBarImage not found. Skipping click.")
