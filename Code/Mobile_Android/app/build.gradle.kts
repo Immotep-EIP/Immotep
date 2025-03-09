@@ -96,13 +96,11 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.0.1")
     implementation("androidx.camera:camera-view:1.0.0-alpha27")
 
-    //MockWebserver
-    implementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     // Needed for unit testing API
     testImplementation("androidx.arch.core:core-testing:2.1.0")
     androidTestImplementation("io.github.aungthiha:compose-ui-test:1.0.1")
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)

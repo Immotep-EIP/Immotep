@@ -18,10 +18,12 @@ val LocalApiService = compositionLocalOf<ApiService> {
     error("ApiService not provided")
 }
 
-class MainActivity() : ComponentActivity() {
+var isTesting = false
+
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val apiService = if (intent?.getBooleanExtra("test_mode", false) == true) MockedApiService() else ApiClient.apiService
+        val apiService = if (isTesting == true) MockedApiService() else ApiClient.apiService
         setContent {
             AppTheme {
                 CompositionLocalProvider(LocalApiService provides apiService) {

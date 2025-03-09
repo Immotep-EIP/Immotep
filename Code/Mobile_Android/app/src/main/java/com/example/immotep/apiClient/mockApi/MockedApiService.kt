@@ -86,7 +86,9 @@ class MockedApiService : ApiService {
     // Example: Simulate a successful login
 
     override suspend fun login(grantType: String, username: String, password: String): LoginResponse {
-        println("fake login is called...")
+        if (username == "error@gmail.com" || password == "testError") {
+            throw Exception("Unknown user,401")
+        }
         return LoginResponse(
             access_token = "test",
             refresh_token = "test",
