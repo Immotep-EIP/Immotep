@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
 	"immotep/backend/services/pdf"
 	"immotep/backend/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 func checkRoom(roomId string, propertyId string) error {
@@ -35,9 +36,10 @@ func checkFurniture(furnitureId string, roomId string) error {
 	return nil
 }
 
-func getFurnitureStatePictures(f models.FurnitureStateRequest) ([]string, []string) {
-	picturesId := make([]string, 0, len(f.Pictures))
-	var errorList []string
+func getFurnitureStatePictures(f models.FurnitureStateRequest) (pictureIDs []string, errorList []string) {
+	pictureIDs = make([]string, 0, len(f.Pictures))
+	errorList = make([]string, 0)
+
 	for _, pic := range f.Pictures {
 		dbImage := models.StringToDbImage(pic)
 		if dbImage == nil {
@@ -45,9 +47,9 @@ func getFurnitureStatePictures(f models.FurnitureStateRequest) ([]string, []stri
 			continue
 		}
 		newImage := database.CreateImage(*dbImage)
-		picturesId = append(picturesId, newImage.ID)
+		pictureIDs = append(pictureIDs, newImage.ID)
 	}
-	return picturesId, errorList
+	return
 }
 
 func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomStateRequest) []string {
@@ -76,9 +78,10 @@ func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomState
 	return errorList
 }
 
-func getRoomStatePictures(r models.RoomStateRequest) ([]string, []string) {
-	picturesId := make([]string, 0, len(r.Pictures))
-	var errorList []string
+func getRoomStatePictures(r models.RoomStateRequest) (pictureIDs []string, errorList []string) {
+	pictureIDs = make([]string, 0, len(r.Pictures))
+	errorList = make([]string, 0)
+
 	for _, pic := range r.Pictures {
 		dbImage := models.StringToDbImage(pic)
 		if dbImage == nil {
@@ -86,9 +89,9 @@ func getRoomStatePictures(r models.RoomStateRequest) ([]string, []string) {
 			continue
 		}
 		newImage := database.CreateImage(*dbImage)
-		picturesId = append(picturesId, newImage.ID)
+		pictureIDs = append(pictureIDs, newImage.ID)
 	}
-	return picturesId, errorList
+	return
 }
 
 func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req models.InventoryReportRequest) []string {
