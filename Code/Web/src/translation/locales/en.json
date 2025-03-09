@@ -250,7 +250,8 @@
       },
       "tabs": {
         "documents": {
-          "modal_title": "Add a document"
+          "modal_title": "Add a document",
+          "no_documents": "No documents yet"
         },
         "inventory": {
           "add_room_modal_title": "Add a room",

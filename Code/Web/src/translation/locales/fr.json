@@ -268,7 +268,8 @@
       },
       "tabs": {
         "documents": {
-          "modal_title": "Ajouter un document"
+          "modal_title": "Ajouter un document",
+          "no_documents": "Aucun document pour le moment"
         },
         "inventory": {
           "add_room_modal_title": "Ajouter une pièce",
