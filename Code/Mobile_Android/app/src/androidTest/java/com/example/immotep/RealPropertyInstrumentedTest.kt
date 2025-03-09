@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.immotep.apiClient.mockApi.MockedApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.runBlocking
@@ -21,9 +22,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/*
+
 @RunWith(AndroidJUnit4::class)
 class RealPropertyInstrumentedTest {
+    constructor() {
+        isTesting = true
+    }
+
     @get:Rule
     val mainAct = createAndroidComposeRule<MainActivity>()
     private val res: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
@@ -31,7 +36,7 @@ class RealPropertyInstrumentedTest {
     @Before
     fun setup() {
         val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
-        val authServ = AuthService(dataStore)
+        val authServ = AuthService(dataStore, apiService = MockedApiService())
         try {
             runBlocking {
                 authServ.getToken()
@@ -49,7 +54,7 @@ class RealPropertyInstrumentedTest {
     }
 
     private fun goToDetails() {
-        mainAct.onNodeWithTag("propertyBox last").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("propertyBox parisFakeProperty").assertIsDisplayed().performClick()
     }
     @Test
     fun useAppContext() {
@@ -89,19 +94,19 @@ class RealPropertyInstrumentedTest {
 
     @Test
     fun allTheTestInfosArePresent() {
-        mainAct.onNodeWithText("19 rue de la paix, Paris 75000").assertIsDisplayed()
-        mainAct.onNodeWithText("John Doe").assertIsDisplayed()
-        mainAct.onNodeWithText("1 rue de la companie des indes, Marseille 13000").assertIsDisplayed()
-        mainAct.onNodeWithText("Crash Bandicoot").assertIsDisplayed()
-        mainAct.onNodeWithText("30 rue de la source, Lyon 69000").assertIsDisplayed()
-        mainAct.onNodeWithText("Tom Nook").assertIsDisplayed()
+        mainAct.onNodeWithText("19 rue de la paix").assertIsDisplayed()
+        mainAct.onNodeWithText("test@gmail.com").assertIsDisplayed()
+        mainAct.onNodeWithText("1 rue de la companie des indes").assertIsDisplayed()
+        mainAct.onNodeWithText("crashbandicoot@gmail.com").assertIsDisplayed()
+        mainAct.onNodeWithText("30 rue de la source").assertIsDisplayed()
+        mainAct.onNodeWithText("tomnook@gmail.com").assertIsDisplayed()
     }
 
     @Test
     fun asGoodCountOfTopLeftElementsAndGoodValues() {
         mainAct.onAllNodesWithTag("topRightPropertyBoxInfo").assertCountEquals(3)
-        mainAct.onAllNodesWithText(res.getString(R.string.available)).assertCountEquals(1)
-        mainAct.onAllNodesWithText(res.getString(R.string.busy)).assertCountEquals(2)
+        mainAct.onAllNodesWithText(res.getString(R.string.available)).assertCountEquals(0)
+        mainAct.onAllNodesWithText(res.getString(R.string.busy)).assertCountEquals(3)
     }
 
     @Test
@@ -120,9 +125,9 @@ class RealPropertyInstrumentedTest {
     @Test
     fun allTheInfosInDetailsBoxAreGoodAndDisplayed() {
         this.goToDetails()
-        mainAct.onNodeWithText("19 rue de la paix, Paris 75000").assertIsDisplayed()
-        mainAct.onAllNodesWithText("John Doe").assertCountEquals(2)
-        mainAct.onAllNodesWithText(res.getString(R.string.available)).assertCountEquals(1)
+        mainAct.onNodeWithText("19 rue de la paix").assertIsDisplayed()
+        mainAct.onAllNodesWithText("test@gmail.com").assertCountEquals(2)
+        mainAct.onAllNodesWithText(res.getString(R.string.busy)).assertCountEquals(1)
     }
 
     @Test
@@ -144,20 +149,11 @@ class RealPropertyInstrumentedTest {
     }
 
     @Test
-    fun aboutBoxContainsAvailable() {
+    fun aboutBoxNotContainsAvailable() {
         this.goToDetails()
-        mainAct.onAllNodesWithText(res.getString(R.string.available)).assertCountEquals(1)
+        mainAct.onAllNodesWithText(res.getString(R.string.available)).assertCountEquals(0)
     }
 
-    @Test
-    fun documentBoxIsPresentAndContainsGoodInfos() {
-        this.goToDetails()
-        mainAct.onAllNodesWithTag("OneDocument").assertCountEquals(4)
-        mainAct.onNodeWithText("july quittance").assertIsDisplayed()
-        mainAct.onNodeWithText("old inventory").assertIsDisplayed()
-        mainAct.onNodeWithText("oven invoice").assertIsDisplayed()
-        mainAct.onNodeWithText("august quittance").assertIsDisplayed()
-    }
 
     @Test
     fun startInventoryButtonIsPresent() {
@@ -165,4 +161,3 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithTag("startInventory").assertIsDisplayed()
     }
 }
-*/

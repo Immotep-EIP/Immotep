@@ -22,36 +22,71 @@ import com.example.immotep.authService.RegistrationResponse
 import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.InventoryReportOutput
 import com.example.immotep.inventory.State
-import kotlinx.coroutines.flow.flowOf
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
 
-val fakeProperty = GetPropertyResponse(
-    id = "test",
-    name = "test",
-    address = "test",
-    city = "test",
-    country = "test",
-    postal_code = "68100",
-    created_at = "test",
-    apartment_number = "test",
+
+
+
+val parisFakeProperty = GetPropertyResponse(
+    id = "parisFakeProperty",
+    name = "parisFake",
+    address = "19 rue de la paix",
+    city = "Paris",
+    country = "France",
+    postal_code = "75000",
+    created_at = "2025-03-09T13:52:54.823Z",
+    apartment_number = "",
+    archived = false,
+    area_sqm = 45.0,
+    owner_id = "test",
+    rental_price_per_month = 2000,
+    deposit_price = 2000,
+    status = "Busy",
+    nb_damage = 0,
+    tenant = "test@gmail.com",
+    start_date = "2025-03-09T13:52:54.823Z",
+    end_date = "2026-03-09T13:52:54.823Z",
+)
+
+val marseilleFakeProperty = GetPropertyResponse(
+    id = "marsFakeProperty",
+    name = "marsFake",
+    address = "1 rue de la companie des indes",
+    city = "Marseille",
+    country = "France",
+    postal_code = "13000",
+    created_at = "2025-03-09T13:52:54.823Z",
+    apartment_number = "10",
     archived = false,
     area_sqm = 100.0,
     owner_id = "test",
     rental_price_per_month = 1000,
     deposit_price = 1000,
-    status = "available",
+    status = "Busy",
     nb_damage = 0,
-    tenant = "",
-    start_date = null,
-    end_date = null
+    tenant = "crashbandicoot@gmail.com",
+    start_date = "2025-03-09T13:52:54.823Z",
+    end_date = "2026-03-09T13:52:54.823Z"
+)
+
+val lyonFakeProperty = GetPropertyResponse(
+    id = "lyonFakeProperty",
+    name = "lyonFake",
+    address = "30 rue de la source",
+    city = "Lyon",
+    country = "France",
+    postal_code = "69000",
+    created_at = "2025-03-09T13:52:54.823Z",
+    apartment_number = "3",
+    archived = false,
+    area_sqm = 100.0,
+    owner_id = "test",
+    rental_price_per_month = 1000,
+    deposit_price = 1000,
+    status = "Busy",
+    nb_damage = 0,
+    tenant = "tomnook@gmail.com",
+    start_date = "2025-03-09T13:52:54.823Z",
+    end_date = "2026-03-09T13:52:54.823Z"
 )
 
 val fakeRoom = RoomOutput(
@@ -128,18 +163,18 @@ class MockedApiService : ApiService {
             firstname = "Test",
             lastname = "User",
             role = "test",
-            created_at = "2025-03-09T13:52:54+0000",
-            updated_at = "2025-03-09T13:52:54+0000"
+            created_at = "2025-03-09T13:52:54Z+0000",
+            updated_at = "2025-03-09T13:52:54Z+0000"
         )
     }
 
     //property functions
     override suspend fun getProperties(authHeader : String): Array<GetPropertyResponse> {
-        return arrayOf(fakeProperty)
+        return arrayOf(parisFakeProperty, marseilleFakeProperty, lyonFakeProperty)
     }
 
     override suspend fun getProperty(authHeader : String, propertyId: String): GetPropertyResponse {
-        return fakeProperty
+        return parisFakeProperty
     }
 
     override suspend fun addProperty(authHeader : String, addPropertyInput: AddPropertyInput) : AddPropertyResponse {
@@ -164,7 +199,7 @@ class MockedApiService : ApiService {
         addPropertyInput: AddPropertyInput,
         propertyId: String
     ) : GetPropertyResponse {
-        return fakeProperty
+        return parisFakeProperty
     }
 
     override suspend fun archiveProperty(authHeader : String, propertyId: String, archive: ArchivePropertyInput) {
