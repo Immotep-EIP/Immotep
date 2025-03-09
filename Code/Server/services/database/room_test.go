@@ -110,7 +110,7 @@ func TestGetRoomByPropertyID(t *testing.T) {
 		),
 	).ReturnsMany([]db.RoomModel{room1, room2})
 
-	rooms := database.GetRoomByPropertyID("1")
+	rooms := database.GetRoomByPropertyID("1", false)
 	assert.Len(t, rooms, 2)
 	assert.Equal(t, room1.ID, rooms[0].ID)
 	assert.Equal(t, room2.ID, rooms[1].ID)
@@ -127,7 +127,7 @@ func TestGetRoomByPropertyID_NoRooms(t *testing.T) {
 		),
 	).ReturnsMany([]db.RoomModel{})
 
-	rooms := database.GetRoomByPropertyID("1")
+	rooms := database.GetRoomByPropertyID("1", false)
 	assert.Empty(t, rooms)
 }
 
@@ -143,7 +143,7 @@ func TestGetRoomByPropertyID_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetRoomByPropertyID("1")
+		database.GetRoomByPropertyID("1", false)
 	})
 }
 
@@ -218,7 +218,7 @@ func TestArchiveRoom(t *testing.T) {
 		),
 	).Returns(room)
 
-	archivedRoom := database.ArchiveRoom("1")
+	archivedRoom := database.ToggleArchiveRoom("1", true)
 	assert.NotNil(t, archivedRoom)
 	assert.Equal(t, room.ID, archivedRoom.ID)
 	assert.True(t, archivedRoom.Archived)
@@ -236,7 +236,7 @@ func TestArchiveRoom_NotFound(t *testing.T) {
 		),
 	).Errors(db.ErrNotFound)
 
-	archivedRoom := database.ArchiveRoom("1")
+	archivedRoom := database.ToggleArchiveRoom("1", true)
 	assert.Nil(t, archivedRoom)
 }
 
@@ -253,6 +253,6 @@ func TestArchiveRoom_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.ArchiveRoom("1")
+		database.ToggleArchiveRoom("1", true)
 	})
 }

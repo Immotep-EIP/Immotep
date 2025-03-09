@@ -1,27 +1,13 @@
 package pdf
 
 import (
-	"errors"
 	"log"
 	"strconv"
 
 	"immotep/backend/prisma/db"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
 )
 
-func NewInventoryReportPDF(invReportId string) ([]byte, error) {
-	invReport := database.GetInvReportByID(invReportId)
-	if invReport == nil {
-		log.Println("No invReport found with id: " + invReportId)
-		return nil, errors.New(string(utils.InventoryReportNotFound))
-	}
-	contract := database.GetCurrentActiveContractWithInfos(invReport.PropertyID)
-	if contract == nil {
-		log.Println("No active contract found for property with id: " + invReport.PropertyID)
-		return nil, errors.New(string(utils.NoActiveContract))
-	}
-
+func NewInventoryReportPDF(invReport db.InventoryReportModel, contract db.ContractModel) ([]byte, error) {
 	report := NewPDF()
 
 	report.AddCenteredTitle("Inventory Report", H1)
@@ -52,7 +38,7 @@ func NewInventoryReportPDF(invReportId string) ([]byte, error) {
 	return bytes, nil
 }
 
-func addRooms(report *PDF, invReport *db.InventoryReportModel) {
+func addRooms(report *PDF, invReport db.InventoryReportModel) {
 	report.Ln(5)
 	report.AddTitle("Rooms:", H2)
 	for _, roomState := range invReport.RoomStates() {

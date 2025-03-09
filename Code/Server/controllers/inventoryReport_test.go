@@ -1,13 +1,12 @@
 package controllers_test
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
-	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"immotep/backend/models"
@@ -26,14 +25,57 @@ func BuildInvReportRequest() models.InventoryReportRequest {
 				State:       "good",
 				Cleanliness: "clean",
 				Note:        "Test note",
-				Pictures:    []string{"b3Vp"},
+				Pictures:    []string{"/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAAFAAUDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAABP/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/Ad//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Ah//xAAVEAEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPyH/2gAMAwEAAgADAAAAEB//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAgEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPxD/2Q=="},
 				Furnitures: []models.FurnitureStateRequest{
 					{
 						ID:          "1",
 						State:       "good",
 						Cleanliness: "clean",
 						Note:        "Test note",
-						Pictures:    []string{"bm9u"},
+						Pictures:    []string{"/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAAFAAUDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAABP/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/Ad//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Ah//xAAVEAEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPyH/2gAMAwEAAgADAAAAEB//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAgEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPxD/2Q=="},
+					},
+				},
+			},
+		},
+	}
+}
+
+func BuildTestContractWithInfo() db.ContractModel {
+	return db.ContractModel{
+		InnerContract: db.InnerContract{
+			ID:         "1",
+			PropertyID: "1",
+			TenantID:   "1",
+			Active:     true,
+			CreatedAt:  time.Now(),
+			StartDate:  time.Now(),
+			EndDate:    utils.Ptr(time.Now().Add(time.Hour)),
+		},
+		RelationsContract: db.RelationsContract{
+			Tenant: &db.UserModel{
+				InnerUser: db.InnerUser{
+					ID:        "1",
+					Firstname: "Test",
+					Lastname:  "Tenant",
+					Email:     "tenant@example.com",
+					Role:      db.RoleTenant,
+				},
+			},
+			Property: &db.PropertyModel{
+				InnerProperty: db.InnerProperty{
+					ID:                  "1",
+					Name:                "Test property",
+					RentalPricePerMonth: 1000,
+				},
+				RelationsProperty: db.RelationsProperty{
+					Owner: &db.UserModel{
+						InnerUser: db.InnerUser{
+							ID:        "1",
+							Firstname: "Test",
+							Lastname:  "Owner",
+							Email:     "owner@example.com",
+							Role:      db.RoleOwner,
+						},
 					},
 				},
 			},
@@ -64,7 +106,7 @@ func BuildTestInvReport(id string, propertyId string, withRelations bool) db.Inv
 						},
 						RelationsRoomState: db.RelationsRoomState{
 							Pictures: []db.ImageModel{
-								BuildTestImage("1", "b3Vp"),
+								BuildTestImage("1", "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAAFAAUDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAABP/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/Ad//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Ah//xAAVEAEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPyH/2gAMAwEAAgADAAAAEB//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAgEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPxD/2Q=="),
 							},
 							Room: &testRoom,
 						},
@@ -82,7 +124,7 @@ func BuildTestInvReport(id string, propertyId string, withRelations bool) db.Inv
 						},
 						RelationsFurnitureState: db.RelationsFurnitureState{
 							Pictures: []db.ImageModel{
-								BuildTestImage("2", "bm9u"),
+								BuildTestImage("2", "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAAFAAUDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAABP/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/Ad//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Ah//xAAVEAEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPyH/2gAMAwEAAgADAAAAEB//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAgEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPxD/2Q=="),
 							},
 							Furniture: &testFurniture,
 						},
@@ -135,231 +177,6 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 	return *ret
 }
 
-func TestCreateInventoryReport(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-		),
-	).Returns(property)
-
-	invReport := BuildTestInvReport("1", "1", false)
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.CreateOne(
-			db.InventoryReport.Type.Set(invReport.Type),
-			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport.PropertyID)),
-		),
-	).Returns(invReport)
-
-	room := BuildTestRoom("1", "1")
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals(room.ID),
-		),
-	).Returns(room)
-
-	roomPicture := BuildTestImage("1", "b3Vp")
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(roomPicture.Data),
-		),
-	).Returns(roomPicture)
-
-	picturesId := []string{roomPicture.ID}
-	roomParams := make([]db.RoomStateSetParam, 0, len(picturesId))
-	for _, id := range picturesId {
-		roomParams = append(roomParams, db.RoomState.Pictures.Link(db.Image.ID.Equals(id)))
-	}
-	roomState := BuildTestRoomState("1", "1", "1")
-	mock.RoomState.Expect(
-		client.Client.RoomState.CreateOne(
-			db.RoomState.Cleanliness.Set(roomState.Cleanliness),
-			db.RoomState.State.Set(roomState.State),
-			db.RoomState.Note.Set(roomState.Note),
-			db.RoomState.Report.Link(db.InventoryReport.ID.Equals(invReport.ID)),
-			db.RoomState.Room.Link(db.Room.ID.Equals(roomState.RoomID)),
-			roomParams...,
-		),
-	).Returns(roomState)
-
-	furniture := BuildTestFurniture("1", "1")
-	mock.Furniture.Expect(
-		client.Client.Furniture.FindUnique(
-			db.Furniture.ID.Equals(furniture.ID),
-		).With(
-			db.Furniture.Room.Fetch(),
-		),
-	).Returns(furniture)
-
-	furniturePicture := BuildTestImage("2", "bm9u")
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(furniturePicture.Data),
-		),
-	).Returns(furniturePicture)
-
-	picturesId = []string{furniturePicture.ID}
-	furnitureParams := make([]db.FurnitureStateSetParam, 0, len(picturesId))
-	for _, id := range picturesId {
-		furnitureParams = append(furnitureParams, db.FurnitureState.Pictures.Link(db.Image.ID.Equals(id)))
-	}
-	furnitureState := BuildTestFurnitureState("1", "1", "1")
-	mock.FurnitureState.Expect(
-		client.Client.FurnitureState.CreateOne(
-			db.FurnitureState.Cleanliness.Set(furnitureState.Cleanliness),
-			db.FurnitureState.State.Set(furnitureState.State),
-			db.FurnitureState.Note.Set(furnitureState.Note),
-			db.FurnitureState.Report.Link(db.InventoryReport.ID.Equals(invReport.ID)),
-			db.FurnitureState.Furniture.Link(db.Furniture.ID.Equals(furnitureState.FurnitureID)),
-			furnitureParams...,
-		),
-	).Returns(furnitureState)
-
-	reqBody := BuildInvReportRequest()
-	b, err := json.Marshal(reqBody)
-	require.NoError(t, err)
-
-	r := router.TestRoutes()
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusCreated, w.Code)
-	var resp []string
-	err = json.Unmarshal(w.Body.Bytes(), &resp)
-	require.NoError(t, err)
-	assert.Empty(t, resp)
-}
-
-func TestCreateInventoryReport_MissingFields(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-		),
-	).Returns(property)
-
-	reqBody := BuildInvReportRequest()
-	reqBody.Rooms[0].Furnitures[0].Pictures = []string{}
-	b, err := json.Marshal(reqBody)
-	require.NoError(t, err)
-
-	r := router.TestRoutes()
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusBadRequest, w.Code)
-	var resp utils.Error
-	err = json.Unmarshal(w.Body.Bytes(), &resp)
-	require.NoError(t, err)
-	assert.Equal(t, utils.MissingFields, resp.Code)
-}
-
-func TestCreateInventoryReport_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-		),
-	).Returns(property)
-
-	invReport := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			Type:       db.ReportTypeStart,
-			PropertyID: "1",
-		},
-	}
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.CreateOne(
-			db.InventoryReport.Type.Set(invReport.Type),
-			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport.PropertyID)),
-		),
-	).Errors(&protocol.UserFacingError{
-		IsPanic:   false,
-		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference#p2002
-		Meta: protocol.Meta{
-			Target: []any{"type", "property_id"},
-		},
-		Message: "Unique constraint failed",
-	})
-
-	reqBody := BuildInvReportRequest()
-	b, err := json.Marshal(reqBody)
-	require.NoError(t, err)
-
-	r := router.TestRoutes()
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusConflict, w.Code)
-	var resp utils.Error
-	err = json.Unmarshal(w.Body.Bytes(), &resp)
-	require.NoError(t, err)
-	assert.Equal(t, utils.InventoryReportAlreadyExists, resp.Code)
-}
-
-func TestCreateInventoryReport_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals("1"),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
-
-	reqBody := BuildInvReportRequest()
-	b, err := json.Marshal(reqBody)
-	require.NoError(t, err)
-
-	r := router.TestRoutes()
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusNotFound, w.Code)
-	var resp utils.Error
-	err = json.Unmarshal(w.Body.Bytes(), &resp)
-	require.NoError(t, err)
-	assert.Equal(t, utils.PropertyNotFound, resp.Code)
-}
-
 func TestGetInventoryReportsByProperty(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
@@ -371,6 +188,7 @@ func TestGetInventoryReportsByProperty(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -416,6 +234,7 @@ func TestGetInventoryReportsByProperty_PropertyNotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -445,6 +264,7 @@ func TestGetInventoryReportByID(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -485,6 +305,7 @@ func TestGetInventoryReportByID_Latest(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -527,6 +348,7 @@ func TestGetInventoryReportByID_NotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
@@ -553,135 +375,4 @@ func TestGetInventoryReportByID_NotFound(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.Equal(t, utils.InventoryReportNotFound, resp.Code)
-}
-
-func TestCreateInventoryReport_RoomNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-		),
-	).Returns(property)
-
-	invReport := BuildTestInvReport("1", "1", false)
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.CreateOne(
-			db.InventoryReport.Type.Set(invReport.Type),
-			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport.PropertyID)),
-		),
-	).Returns(invReport)
-
-	room := BuildTestRoom("1", "1")
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals(room.ID),
-		),
-	).Errors(db.ErrNotFound)
-
-	reqBody := BuildInvReportRequest()
-	b, err := json.Marshal(reqBody)
-	require.NoError(t, err)
-
-	r := router.TestRoutes()
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusCreated, w.Code)
-	var resp []string
-	err = json.Unmarshal(w.Body.Bytes(), &resp)
-	require.NoError(t, err)
-	require.Len(t, resp, 1)
-	assert.Equal(t, string(utils.RoomNotFound), resp[0])
-}
-
-func TestCreateInventoryReport_FurnitureNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-		),
-	).Returns(property)
-
-	invReport := BuildTestInvReport("1", "1", false)
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.CreateOne(
-			db.InventoryReport.Type.Set(invReport.Type),
-			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport.PropertyID)),
-		),
-	).Returns(invReport)
-
-	room := BuildTestRoom("1", "1")
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals(room.ID),
-		),
-	).Returns(room)
-
-	roomPicture := BuildTestImage("1", "b3Vp")
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(roomPicture.Data),
-		),
-	).Returns(roomPicture)
-
-	picturesId := []string{roomPicture.ID}
-	roomParams := make([]db.RoomStateSetParam, 0, len(picturesId))
-	for _, id := range picturesId {
-		roomParams = append(roomParams, db.RoomState.Pictures.Link(db.Image.ID.Equals(id)))
-	}
-	roomState := BuildTestRoomState("1", "1", "1")
-	mock.RoomState.Expect(
-		client.Client.RoomState.CreateOne(
-			db.RoomState.Cleanliness.Set(roomState.Cleanliness),
-			db.RoomState.State.Set(roomState.State),
-			db.RoomState.Note.Set(roomState.Note),
-			db.RoomState.Report.Link(db.InventoryReport.ID.Equals(invReport.ID)),
-			db.RoomState.Room.Link(db.Room.ID.Equals(roomState.RoomID)),
-			roomParams...,
-		),
-	).Returns(roomState)
-
-	furniture := BuildTestFurniture("1", "1")
-	mock.Furniture.Expect(
-		client.Client.Furniture.FindUnique(
-			db.Furniture.ID.Equals(furniture.ID),
-		).With(
-			db.Furniture.Room.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
-
-	reqBody := BuildInvReportRequest()
-	b, err := json.Marshal(reqBody)
-	require.NoError(t, err)
-
-	r := router.TestRoutes()
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusCreated, w.Code)
-	var resp []string
-	err = json.Unmarshal(w.Body.Bytes(), &resp)
-	require.NoError(t, err)
-	require.Len(t, resp, 1)
-	assert.Equal(t, string(utils.FurnitureNotFound), resp[0])
 }

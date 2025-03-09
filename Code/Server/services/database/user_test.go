@@ -350,3 +350,43 @@ func TestUpdatePicture_NoConnection(t *testing.T) {
 		database.UpdateUserPicture(user, image)
 	})
 }
+
+func TestGetUserByEmail(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	user := BuildTestUser("1")
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.Email.Equals(user.Email)),
+	).Returns(user)
+
+	foundUser := database.GetUserByEmail(user.Email)
+	assert.NotNil(t, foundUser)
+	assert.Equal(t, user.ID, foundUser.ID)
+}
+
+func TestGetUserByEmail_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.Email.Equals("notfound@example.com")),
+	).Errors(db.ErrNotFound)
+
+	foundUser := database.GetUserByEmail("notfound@example.com")
+	assert.Nil(t, foundUser)
+}
+
+func TestGetUserByEmail_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.User.Expect(
+		client.Client.User.FindUnique(db.User.Email.Equals("test@example.com")),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetUserByEmail("test@example.com")
+	})
+}
