@@ -20,11 +20,10 @@ _This template serves as a structured example of what is expected for your Beta 
 
 [Define the different user roles that will be involved in testing, e.g., Admin, Regular User, Guest, External Partner.]
 
-| **Role Name** | **Description**     |
-| ------------- | ------------------- |
-| Role 1        | [Brief description] |
-| Role 2        | [Brief description] |
-| Role 3        | [Brief description] |
+| **Role Name**  | **Description**                                                                 |
+|----------------|---------------------------------------------------------------------------------|
+| Property Owner | User who owns and manages properties (create, edit, delete, invite tenants).    |
+| Tenant         | User invited to rent a property, with limited access to property details and contract-related features. |
 
 ### **2.2 Test Scenarios**
 
@@ -90,6 +89,52 @@ For each core functionality, provide detailed test scenarios.
   - The property badge changes to **invitation sent**.
   - The tenant receives an e-mail affiliated with the property to create an Immotep account.
 
+#### **Scenario 4: Property Modification**
+- **Role Involved:** Property Owner
+- **Objective:** Test the modification of an existing property
+- **Preconditions:**
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+- **Test Steps:**
+  1. Navigate to the property view
+  2. Swipe right on a property and click "Edit"
+  3. Update details (e.g., address, monthly rent, name, etc)
+  4. Click "Save Changes"
+- **Expected Outcome:**
+  - Modifications are saved successfully
+  - Updated details (address, rent) and image (if uploaded) appear immediately in the property list
+
+
+#### **Scenario 5: Property Archiving**
+- **Role Involved:** Property Owner
+- **Objective:** Test the archiving of a property
+- **Preconditions:**
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+- **Test Steps:**
+  1. Navigate to the property page
+  2. Swipe right on a property and click "Delete"
+  3. Confirm deletion in the alert dialog
+- **Expected Outcome:**
+  - Property is archived successfully
+  - Property disappears from the active property list
+  - No errors are displayed
+
+#### **Scenario 6: Consulting an Inventory Report**
+- **Role Involved:** Property Owner
+- **Objective:** Test the ability to view an existing inventory report for a property
+- **Preconditions:**
+  - User is logged in with appropriate permissions
+  - A property exists in the system with at least one inventory report made (entry or exit)
+- **Test Steps:**
+  1. Navigate to the property page
+  2. Select a property with an existing inventory report
+  3. Scroll down to the documents part
+  4. Click on the document we want to open
+- **Expected Outcome:**
+  - The inventory report is displayed correctly in the pdf viewer
+  - The interface is responsive and loads without errors
+
 ---
 
 ## **3. Success Criteria**
@@ -104,8 +149,10 @@ For each core functionality, provide detailed test scenarios.
 
 | **Issue** | **Description**     | **Impact** | **Planned Fix? (Yes/No)** |
 | --------- | ------------------- | ---------- | ------------------------- |
-| Issue 1   | [Brief description] | High       | Yes                       |
-| Issue 2   | [Brief description] | Medium     | No                        |
+| iOS Alert Display Bug             | On iOS, opening an alert too quickly after closing one grays out the background but the alert doesn’t appear | Medium     | Yes                       || Issue 2   | [Brief description] | Medium     | No                        |
+
+### **Limitations**
+- **Tenant Invitation Link Behavior:** If a tenant opens the invitation received by email on their phone, they will be directed to a web page rather than the Immotep application.
 
 ---
 
