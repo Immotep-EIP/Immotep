@@ -5,13 +5,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
 	"immotep/backend/services/pdf"
 	"immotep/backend/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func checkRoom(roomId string, propertyId string) error {
@@ -36,9 +35,9 @@ func checkFurniture(furnitureId string, roomId string) error {
 	return nil
 }
 
-func getFurnitureStatePictures(f models.FurnitureStateRequest) (pictureIDs []string, errorList []string) {
-	pictureIDs = make([]string, 0, len(f.Pictures))
-	errorList = make([]string, 0)
+func getFurnitureStatePictures(f models.FurnitureStateRequest) ([]string, []string) {
+	pictureIDs := make([]string, 0, len(f.Pictures))
+	errorList := make([]string, 0)
 
 	for _, pic := range f.Pictures {
 		dbImage := models.StringToDbImage(pic)
@@ -49,7 +48,7 @@ func getFurnitureStatePictures(f models.FurnitureStateRequest) (pictureIDs []str
 		newImage := database.CreateImage(*dbImage)
 		pictureIDs = append(pictureIDs, newImage.ID)
 	}
-	return
+	return pictureIDs, errorList
 }
 
 func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomStateRequest) []string {
@@ -78,9 +77,9 @@ func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomState
 	return errorList
 }
 
-func getRoomStatePictures(r models.RoomStateRequest) (pictureIDs []string, errorList []string) {
-	pictureIDs = make([]string, 0, len(r.Pictures))
-	errorList = make([]string, 0)
+func getRoomStatePictures(r models.RoomStateRequest) ([]string, []string) {
+	pictureIDs := make([]string, 0, len(r.Pictures))
+	errorList := make([]string, 0)
 
 	for _, pic := range r.Pictures {
 		dbImage := models.StringToDbImage(pic)
@@ -91,7 +90,7 @@ func getRoomStatePictures(r models.RoomStateRequest) (pictureIDs []string, error
 		newImage := database.CreateImage(*dbImage)
 		pictureIDs = append(pictureIDs, newImage.ID)
 	}
-	return
+	return pictureIDs, errorList
 }
 
 func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req models.InventoryReportRequest) []string {
