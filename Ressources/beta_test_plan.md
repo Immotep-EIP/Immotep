@@ -33,6 +33,8 @@ The following roles will be involved in beta testing.
 
 For each core functionality, provide detailed test scenarios.
 
+## Web scenarios
+
 #### **Scenario 1: Property Creation**
 
 - **Role Involved:** Property Owner
@@ -83,7 +85,7 @@ For each core functionality, provide detailed test scenarios.
 - **Test Steps:**
 
   1. Navigate to property page
-  2.
+  2. Choose a property to which a tenant will be invited
   3. Click on the drop-down menu at the top right of the property and add a tenant
   4. Fill in contract details (tenant email, start date of the contract, end date of the contract is optional)
 
@@ -94,6 +96,46 @@ For each core functionality, provide detailed test scenarios.
   - The tenant receives an e-mail affiliated with the property to create an Immotep account.
 
 #### **Scenario 4: Property Modification**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the modification of an existing property
+- **Preconditions:**
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+- **Test Steps:**
+
+  1. Navigate to the property page
+  2. Choose a property to updated
+  3. Click on the drop-down menu at the top right of the property and update the property
+  4. Update details (e.g., address, monthly rent, name, etc)
+  5. Click "Save Changes"
+
+- **Expected Outcome:**
+
+  - Modifications are saved successfully
+  - Updated details (address, rent) and image (if uploaded) appear immediately in the property list
+
+#### **Scenario 5: Property Archiving**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the archiving of a property
+- **Preconditions:**
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+- **Test Steps:**
+  1. Navigate to the property page
+  2. Choose a property to archived
+  3. Click on the drop-down menu at the top right of the property and delete the property
+  4. Confirm deletion in the alert dialog
+- **Expected Outcome:**
+  - Property is archived successfully
+  - Property disappears from the active property list
+  - No errors are displayed
+
+## Mobile scenarios
+
+#### **Scenario 1: Property Modification**
+
 - **Role Involved:** Property Owner
 - **Objective:** Test the modification of an existing property
 - **Preconditions:**
@@ -108,8 +150,8 @@ For each core functionality, provide detailed test scenarios.
   - Modifications are saved successfully
   - Updated details (address, rent) and image (if uploaded) appear immediately in the property list
 
+#### **Scenario 2: Property Archiving**
 
-#### **Scenario 5: Property Archiving**
 - **Role Involved:** Property Owner
 - **Objective:** Test the archiving of a property
 - **Preconditions:**
@@ -124,7 +166,8 @@ For each core functionality, provide detailed test scenarios.
   - Property disappears from the active property list
   - No errors are displayed
 
-#### **Scenario 6: Consulting an Inventory Report**
+#### **Scenario 3: Consulting an Inventory Report**
+
 - **Role Involved:** Property Owner
 - **Objective:** Test the ability to view an existing inventory report for a property
 - **Preconditions:**
@@ -154,6 +197,9 @@ For each core functionality, provide detailed test scenarios.
 | **Issue** | **Description**     | **Impact** | **Planned Fix? (Yes/No)** |
 | --------- | ------------------- | ---------- | ------------------------- |
 | iOS Alert Display Bug             | On iOS, opening an alert too quickly after closing one grays out the background but the alert doesn’t appear | Medium     | Yes                       || Issue 2   | [Brief description] | Medium     | No                        |
+Can't add document | Users unable to add new document in his property | Medium | Yes
+Handling the damage section | Users unable to handle damage for the moment | Medium | Yes
+
 
 ### **Limitations**
 - **Tenant Invitation Link Behavior:** If a tenant opens the invitation received by email on their phone, they will be directed to a web page rather than the Immotep application.
@@ -162,4 +208,14 @@ For each core functionality, provide detailed test scenarios.
 
 ## **5. Conclusion**
 
-[Summarize the importance of this Beta Test Plan and what the team expects to achieve with it.]
+This Beta Test Plan represents a crucial phase in the development of Immotep, focusing on validating core functionalities essential for property management and tenant interactions. Through structured testing scenarios across both web and mobile platforms, we aim to:
+
+1. **Validate Core Features:** Ensure robust functionality of critical features including property creation, inventory management, and tenant invitation systems.
+
+2. **Cross-Platform Consistency:** Verify seamless user experience across web and mobile interfaces, with special attention to platform-specific interactions.
+
+3. **User Role Verification:** Confirm that both Property Owner and Tenant roles function as intended with appropriate access controls and permissions.
+
+4. **Quality Assurance:** Identify and address potential issues before full release, with documented known limitations to guide future development priorities.
+
+The successful execution of this test plan will provide valuable insights for final refinements and ensure Immotep meets the high standards required for a professional property management solution. Feedback gathered during this beta phase will be instrumental in delivering a polished, user-friendly platform that effectively serves the needs of property owners and tenants alike.
