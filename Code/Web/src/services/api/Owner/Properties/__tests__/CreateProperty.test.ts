@@ -29,7 +29,8 @@ describe('CreatePropertyFunction', () => {
       status: 'available',
       tenant: 'tenant123',
       start_date: '2023-01-01',
-      end_date: '2023-12-31'
+      end_date: '2023-12-31',
+      apartment_number: '914'
     }
     mockedCallApi.mockResolvedValueOnce(mockResponse)
 
@@ -41,7 +42,8 @@ describe('CreatePropertyFunction', () => {
       country: 'Test Country',
       area_sqm: 100,
       rental_price_per_month: 1500,
-      deposit_price: 3000
+      deposit_price: 3000,
+      apartment_number: '914'
     }
 
     const result = await CreatePropertyFunction(propertyData)
@@ -67,7 +69,8 @@ describe('CreatePropertyFunction', () => {
       country: 'Test Country',
       area_sqm: 100,
       rental_price_per_month: 1500,
-      deposit_price: 3000
+      deposit_price: 3000,
+      apartment_number: '914'
     }
 
     const consoleErrorSpy = jest

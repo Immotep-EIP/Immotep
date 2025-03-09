@@ -23,6 +23,7 @@ const DocumentsTab: React.FC = () => {
     form
       .validateFields()
       .then(values => {
+        console.log('values', values)
         message.success(t('components.documents.success_add'))
         form.resetFields()
         setIsModalOpen(false)

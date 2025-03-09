@@ -12,7 +12,7 @@ import style from './Messages.module.css'
 
 const Messages: React.FC = () => {
   const { t } = useTranslation()
-  const { properties, loading } = useProperties()
+  const { loading } = useProperties()
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
 
   const mockTenants = [
