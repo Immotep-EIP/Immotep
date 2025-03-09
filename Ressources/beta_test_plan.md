@@ -1,16 +1,20 @@
 ### **BETA TEST PLAN**
 
-_This template serves as a structured example of what is expected for your Beta Test Plan._
-
 ## **1. Core Functionalities for Beta Version**
 
-[List and describe the core functionalities that must be available for beta testing. Explain any changes made since the original Tech3 Action Plan.]
+Below are the essential features that must be available for beta testing, along with any changes made since the initial Tech3 Action Plan.
 
 | **Feature Name** | **Description**     | **Priority (High/Medium/Low)** | **Changes Since Tech3**      |
 | ---------------- | ------------------- | ------------------------------ | ---------------------------- |
-| Feature 1        | [Brief description] | High                           | [Modifications or additions] |
-| Feature 2        | [Brief description] | Medium                         | [Modifications or additions] |
-| Feature 3        | [Brief description] | High                           | [Modifications or additions] |
+| Role-based access control | Allows access to core features based on user roles (Owner / Tenant).                                  | High   | - |
+| Property management       | Property creation, modification and archiving.                                                        | High   | - |
+| Property dashboard        | Invite a tenant and manage lease, manage inventory (rooms and furnitures), see documents and damages. | High   | - |
+| Inventory report          | Guided and assisted inventory report based on property inventory.                                     | High   | - |
+| Image analysis            | Analize images taken during inventory report to auto-generate summary.                                | High   | On server rather than on device |
+| Damage report             | Tenant can report damages in a property and a follow-up of the fix is done by the owner.              | Medium | - |
+| General dashboard         | Overview of all properties, leases, messages and damages.                                             | Medium | - |
+| Messaging system          | Chat between tenants and owners.                                                                      | Low    | - |
+| Settings                  | User settings (profile, notifications, accessibility, etc).                                           | Low    | - |
 
 ---
 
@@ -18,7 +22,7 @@ _This template serves as a structured example of what is expected for your Beta 
 
 ### **2.1 User Roles**
 
-[Define the different user roles that will be involved in testing, e.g., Admin, Regular User, Guest, External Partner.]
+The following roles will be involved in beta testing.
 
 | **Role Name**  | **Description**                                                                 |
 |----------------|---------------------------------------------------------------------------------|
