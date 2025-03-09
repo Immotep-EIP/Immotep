@@ -35,10 +35,13 @@ class RealPropertyViewModel(
     val apiError: StateFlow<WhichApiError> = _apiError.asStateFlow()
     val properties = mutableStateListOf<Property>()
 
+    fun closeError() {
+        _apiError.value = WhichApiError.NONE
+    }
 
     fun getProperties() {
         viewModelScope.launch {
-            _apiError.value = WhichApiError.NONE
+            closeError()
             _isLoading.value = true
             properties.clear()
             try {
@@ -55,7 +58,7 @@ class RealPropertyViewModel(
     suspend fun addProperty(propertyForm: AddPropertyInput) {
         val newProperty = apiCaller.addProperty(propertyForm) { _apiError.value = WhichApiError.ADD_PROPERTY }
         properties.add(newProperty)
-        _apiError.value = WhichApiError.NONE
+        closeError()
     }
 
     fun deleteProperty(propertyId: String) {
@@ -67,7 +70,7 @@ class RealPropertyViewModel(
             try {
                 apiCaller.archiveProperty(propertyId, { _apiError.value = WhichApiError.DELETE_PROPERTY })
                 properties.removeAt(index)
-                _apiError.value = WhichApiError.NONE
+                closeError()
             } catch (e : Exception) {
                 println("error deleting property ${e.message}")
                 e.printStackTrace()

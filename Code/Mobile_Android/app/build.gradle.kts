@@ -100,7 +100,7 @@ dependencies {
     implementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     // Needed for unit testing API
     testImplementation("androidx.arch.core:core-testing:2.1.0")
-
+    androidTestImplementation("io.github.aungthiha:compose-ui-test:1.0.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

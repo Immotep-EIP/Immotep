@@ -8,20 +8,19 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
-import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.mockApi.MockedApiService
 import com.example.immotep.navigation.Navigation
 import com.example.immotep.ui.theme.AppTheme
 
-val LocalApiService = compositionLocalOf<ApiService> {
-    error("ApiService not provided")
-}
 
-class MainActivity() : ComponentActivity() {
+
+class MockMainActivity(private val apiService: ApiService = MockedApiService()) : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val apiService = if (intent?.getBooleanExtra("test_mode", false) == true) MockedApiService() else ApiClient.apiService
+        val LocalApiService = compositionLocalOf<ApiService> {
+            error("ApiService not provided")
+        }
         setContent {
             AppTheme {
                 CompositionLocalProvider(LocalApiService provides apiService) {

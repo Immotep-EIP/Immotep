@@ -71,6 +71,10 @@ class AddOrEditPropertyViewModel : ViewModel() {
         pictures.add(picture)
     }
 
+    fun setAppartementNumber(appartementNumber: String) {
+        _propertyForm.value = _propertyForm.value.copy(apartment_number = appartementNumber)
+    }
+
     fun reset(baseValue: AddPropertyInput? = null) {
         if (baseValue != null) {
             _propertyForm.value = baseValue
@@ -110,6 +114,7 @@ class AddOrEditPropertyViewModel : ViewModel() {
                     reset()
                     onClose()
                 } catch (e: Exception) {
+                    println("Error during property creation: ${e.message}")
                     e.printStackTrace()
                 }
             }

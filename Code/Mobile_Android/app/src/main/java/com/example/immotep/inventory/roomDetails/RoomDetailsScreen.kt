@@ -32,7 +32,6 @@ import com.example.immotep.components.InventoryCenterAddButton
 import com.example.immotep.components.inventory.AddRoomOrDetailModal
 import com.example.immotep.components.inventory.NextInventoryButton
 import com.example.immotep.inventory.Room
-import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.roomDetails.EndRoomDetails.EndRoomDetailsScreen
 import com.example.immotep.inventory.roomDetails.OneDetail.OneDetailScreen
 import com.example.immotep.layouts.InventoryLayout
@@ -55,7 +54,9 @@ fun RoomDetailsScreen(
     navController: NavController,
     propertyId: String
 ) {
-    val viewModel: RoomDetailsViewModel = viewModel(factory = RoomDetailsViewModelFactory(closeRoomPanel, addDetail, baseRoom.id))
+    val viewModel: RoomDetailsViewModel = viewModel {
+        RoomDetailsViewModel(closeRoomPanel, addDetail)
+    }
 
     val currentlyOpenDetail = viewModel.currentlyOpenDetail.collectAsState()
     var addDetailModalOpen by rememberSaveable { mutableStateOf(false) }
@@ -65,7 +66,7 @@ fun RoomDetailsScreen(
     }
     AddRoomOrDetailModal(
         open = addDetailModalOpen,
-        addRoomOrDetail = { viewModel.addDetailToRoomDetailPage(it); addDetailModalOpen = false },
+        addRoomOrDetail = { viewModel.addDetailToRoomDetailPage(it, baseRoom.id); addDetailModalOpen = false },
         close = { addDetailModalOpen = false },
         isRoom = false
     )

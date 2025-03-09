@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 class RoomDetailsViewModel(
     private val closeRoomPanel : (room : Room) -> Unit,
     private val addDetail : suspend (roomId : String, name : String) -> String?,
-    private val roomId : String
 )  : ViewModel()  {
 
     val details = mutableStateListOf<RoomDetail>()
@@ -33,7 +32,7 @@ class RoomDetailsViewModel(
         details.clear()
     }
 
-    fun addDetailToRoomDetailPage(name : String) {
+    fun addDetailToRoomDetailPage(name : String, roomId: String) {
         viewModelScope.launch {
             val detailId = addDetail(roomId, name) ?: return@launch
             val newDetail = RoomDetail(id = detailId, name = name)
@@ -56,20 +55,5 @@ class RoomDetailsViewModel(
 
     fun onOpenDetail(detail: RoomDetail) {
         currentlyOpenDetail.value = detail
-    }
-}
-
-class RoomDetailsViewModelFactory(
-    private val closeRoomPanel : (room : Room) -> Unit,
-    private val addDetail : suspend (roomId : String, name : String) -> String?,
-    private val roomId : String
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RoomDetailsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return RoomDetailsViewModel(closeRoomPanel, addDetail, roomId) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

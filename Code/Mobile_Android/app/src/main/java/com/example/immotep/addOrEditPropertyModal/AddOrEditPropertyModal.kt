@@ -137,6 +137,14 @@ fun AddOrEditPropertyModal(
                         .padding(top = 10.dp)
                 )
                 OutlinedTextField(
+                    value = form.value.apartment_number,
+                    onValueChange = { value -> viewModel.setAppartementNumber(value) },
+                    label = "${stringResource(R.string.appartment_number)}*",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
+                OutlinedTextField(
                     value = form.value.city,
                     onValueChange = { value -> viewModel.setCity(value) },
                     label = "${stringResource(R.string.city)}*",
@@ -221,6 +229,7 @@ fun AddOrEditPropertyModal(
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 )
+
 
                 Button(
                     onClick =

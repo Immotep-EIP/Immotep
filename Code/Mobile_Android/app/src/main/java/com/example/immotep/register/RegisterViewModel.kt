@@ -2,12 +2,12 @@ package com.example.immotep.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.immotep.apiClient.ApiClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import androidx.navigation.NavController
+import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.authService.RegistrationInput
 import com.example.immotep.components.decodeRetroFitMessagesToHttpCodes
@@ -29,8 +29,8 @@ data class RegisterFormError(
     var apiError: Int? = null,
 )
 
-class RegisterViewModel(navController: NavController, apiClient: ApiClient) : ViewModel() {
-    private val authService = AuthService(navController.context.dataStore, apiClient.apiService)
+class RegisterViewModel(navController: NavController, apiService: ApiService) : ViewModel() {
+    private val authService = AuthService(navController.context.dataStore, apiService)
     private val _registerForm = MutableStateFlow(RegistrationInput(
         email = "",
         password = "",

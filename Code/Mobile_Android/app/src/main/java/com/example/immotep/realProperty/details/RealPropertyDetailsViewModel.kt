@@ -39,8 +39,11 @@ class RealPropertyDetailsViewModel(
         _apiError.value = ApiErrors.NONE
         viewModelScope.launch {
             try {
-                _property.value = apiCaller.getPropertyWithDetails(propertyId) { _apiError.value = ApiErrors.GET_PROPERTY }
+                val newProperty = apiCaller.getPropertyWithDetails(propertyId) { _apiError.value = ApiErrors.GET_PROPERTY }
+                println("Loading property ${newProperty.appartementNumber}")
+                _property.value = newProperty
             } catch (e : Exception) {
+                println("Error loading property ${e.message}")
                 e.printStackTrace()
             }
         }

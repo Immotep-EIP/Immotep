@@ -45,7 +45,10 @@ fun OneDetailScreen(
     propertyId : String,
     isRoom : Boolean = false,
 ) {
-    val viewModel : OneDetailViewModel = viewModel(factory = OneDetailViewModelFactory(LocalApiService.current, navController))
+    val apiService = LocalApiService.current
+    val viewModel : OneDetailViewModel = viewModel {
+        OneDetailViewModel(apiService, navController)
+    }
     val detailValue = viewModel.detail.collectAsState()
     val detailError = viewModel.errors.collectAsState()
     val isLoading = viewModel.aiLoading.collectAsState()

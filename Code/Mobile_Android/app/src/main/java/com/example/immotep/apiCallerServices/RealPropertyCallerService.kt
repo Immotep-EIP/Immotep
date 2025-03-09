@@ -18,13 +18,14 @@ data class AddPropertyInput(
     val area_sqm: Double = 0.0,
     val rental_price_per_month: Int = 0,
     val deposit_price: Int = 0,
+    val apartment_number: String = ""
 )
 
 //output api classes
 
 data class GetPropertyResponse(
     val id: String,
-    val apartment_number: String,
+    val apartment_number: String?,
     val archived: Boolean,
     val owner_id: String,
     val name: String,
@@ -60,6 +61,7 @@ data class GetPropertyResponse(
         city = this.city,
         country = this.country,
         address = this.address,
+        appartementNumber = this.apartment_number,
         tenant = this.tenant,
         available = this.status == "available",
         startDate = if (this.start_date != null) OffsetDateTime.parse(this.start_date) else null,
@@ -130,6 +132,7 @@ interface IDetailedProperty : IProperty {
     val city : String
     val country : String
     val name : String
+    val appartementNumber : String?
 }
 
 data class DetailedProperty(
@@ -140,6 +143,7 @@ data class DetailedProperty(
     override val available : Boolean = true,
     override val startDate : OffsetDateTime? = null,
     override val endDate : OffsetDateTime? = null,
+    override val appartementNumber : String? = "",
     override val area : Int = 0,
     override val rent : Int = 0,
     override val deposit : Int = 0,
@@ -158,7 +162,8 @@ data class DetailedProperty(
             city = this.city,
             name = this.name,
             country = this.country,
-            postal_code = this.zipCode
+            postal_code = this.zipCode,
+            apartment_number = this.appartementNumber ?: ""
         )
     }
 
@@ -174,6 +179,10 @@ data class DetailedProperty(
         )
     }
 }
+
+data class ArchivePropertyInput(
+    val archive: Boolean
+)
 
 class RealPropertyCallerService (
     apiService: ApiService,
@@ -201,7 +210,7 @@ class RealPropertyCallerService (
 
     suspend fun archiveProperty(propertyId: String, onError: () -> Unit) {
         try {
-            apiService.archiveProperty(getBearerToken(), propertyId)
+            apiService.archiveProperty(getBearerToken(), propertyId, ArchivePropertyInput(true))
         } catch (e: Exception) {
             onError()
             throw e
@@ -210,7 +219,8 @@ class RealPropertyCallerService (
 
     suspend fun getPropertyWithDetails(propertyId: String, onError: () -> Unit): DetailedProperty {
         try {
-            return apiService.getProperty(getBearerToken(), propertyId).toDetailedProperty()
+            val propertyWithDetails = apiService.getProperty(getBearerToken(), propertyId).toDetailedProperty()
+            return propertyWithDetails
         } catch (e: Exception) {
             onError()
             throw e

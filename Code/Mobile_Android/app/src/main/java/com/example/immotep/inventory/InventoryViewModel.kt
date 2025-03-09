@@ -160,7 +160,7 @@ class InventoryViewModel(
         try {
             val inventoryReport = inventoryApiCaller.getLastInventoryReport(
                 propertyId,
-                { _inventoryErrors.value = _inventoryErrors.value.copy(getLastInventoryReport = true) }
+                { }
             )
             val lastInventoryRoomsAsRooms = inventoryReport.getRoomsAsRooms(empty = true)
             _oldReportId.value = inventoryReport.id

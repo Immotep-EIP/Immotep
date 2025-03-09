@@ -151,7 +151,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
     val apiErrors = viewModel.apiError.collectAsState()
 
     val errorAlertVal = when (apiErrors.value) {
-        RealPropertyDetailsViewModel.ApiErrors.GET_PROPERTY -> stringResource(R.string.api_error_edit_property)
+        RealPropertyDetailsViewModel.ApiErrors.GET_PROPERTY -> stringResource(R.string.api_error_get_property)
         RealPropertyDetailsViewModel.ApiErrors.UPDATE_PROPERTY -> stringResource(R.string.api_error_edit_property)
         else -> null
     }

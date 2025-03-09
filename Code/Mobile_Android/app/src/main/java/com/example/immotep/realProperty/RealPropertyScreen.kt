@@ -182,7 +182,6 @@ fun RealPropertyScreen(navController: NavController) {
     }
 
     DashBoardLayout(navController, "realPropertyScreen") {
-        ErrorAlert(null, null, errorAlertVal)
         if (detailsOpen == null) {
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Button(
@@ -199,6 +198,7 @@ fun RealPropertyScreen(navController: NavController) {
                     )
                 }
             }
+            ErrorAlert(null, null, errorAlertVal)
             DeletePopUp(
                 open = deleteOpen != null,
                 delete = { viewModel.deleteProperty(deleteOpen!!.first) },
@@ -206,14 +206,19 @@ fun RealPropertyScreen(navController: NavController) {
                 globalName = stringResource(R.string.property),
                 detailedName = deleteOpen?.second?: ""
             )
-                LazyColumn {
-                    items(viewModel.properties) { item ->
-                        InitialFadeIn {
-                            PropertyBox(item, onClick = { if (deleteOpen == null) detailsOpen = item.id }, onDelete = { deleteOpen = Pair(item.id, item.address) })
-                        }
+            LazyColumn {
+                items(viewModel.properties) { item ->
+                    InitialFadeIn {
+                        PropertyBox(
+                            item,
+                            onClick = { if (deleteOpen == null) {
+                                detailsOpen = item.id
+                                viewModel.closeError()
+                            } },
+                            onDelete = { deleteOpen = Pair(item.id, item.address) })
                     }
+                }
             }
-
         } else {
             RealPropertyDetailsScreen(
                 navController,

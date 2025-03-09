@@ -1,37 +1,21 @@
 package com.example.immotep
 
+import android.content.Intent
 import android.content.res.Resources
-import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.immotep.RetrofitTestClient.BASE_URL
-import com.example.immotep.apiClient.ApiService
-import com.example.immotep.apiClient.LoginResponse
-import com.example.immotep.apiClient.RetrofitClient
-import com.example.immotep.authService.AuthService
-import com.example.immotep.login.dataStore
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import kotlinx.coroutines.runBlocking
-import okhttp3.OkHttpClient
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
-import org.junit.Assert.assertEquals
+import com.example.immotep.apiClient.mockApi.MockedApiService
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 
 object RetrofitTestClient {
@@ -42,57 +26,28 @@ object RetrofitTestClient {
 
 }
 
+
+
 @RunWith(AndroidJUnit4::class)
 class LoginInstrumentedTest {
+    companion object {
+        const val EXTRA_TEST_MODE = "test_mode"
+    }
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
-    private val res: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
-    private val server = MockWebServer()
-    private lateinit var api: Retrofit
 
+    private val res: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
+    /*
     private fun removeToken() {
         val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
-        val authServ = AuthService(dataStore)
+        val authServ = AuthService(dataStore, apiService)
         runBlocking {
             authServ.deleteToken()
         }
     }
+     */
 
-    @Before
-    fun setup() {
-        server.start(8080)
-        val okHttpClient: OkHttpClient = OkHttpClient().newBuilder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .build()
-        val retrofit: Retrofit by lazy {
-            Retrofit
-                .Builder()
-                .baseUrl(server.url("/"))
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-        }
-        retrofit.create(ApiService::class.java)
-        /*
-        val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
-        val authServ = AuthService(dataStore)
-        try {
-            runBlocking {
-                authServ.getToken()
-                composeTestRule.onNodeWithTag("loggedTopBarImage").assertIsDisplayed().performClick()
-                Thread.sleep(5000)
-            }
-        } catch (e: Exception) {
-            return
-        }
-        */
-    }
-    @After
-    fun after() {
-        server.shutdown()
-    }
     /*
     @Test
     fun useAppContext() {
@@ -168,14 +123,6 @@ class LoginInstrumentedTest {
     /* for this test you need to be connected to the internet, to have a server running and to register a user with the right email and password */
     @Test
     fun canGoToDashboard() {
-        val responseBody = LoginResponse(
-            access_token = "test",
-            refresh_token = "test",
-            token_type = "access",
-            expires_in = 100000,
-            properties = mapOf("test" to "test")
-        )
-        server.enqueue(MockResponse().setResponseCode(200).setBody(Gson().toJson(responseBody)))
         //this.removeToken()
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("Ttest99&")

@@ -50,20 +50,20 @@ fun InventoryScreen(
             propertyId = propertyId
         )
     }
-    if (inventoryErrors.value.getAllRooms) {
-        ErrorAlert(null, null, stringResource(R.string.error_get_all_rooms))
-    }
-    if (inventoryErrors.value.getLastInventoryReport) {
-        ErrorAlert(null, null, stringResource(R.string.error_get_last_inventory_report))
-    }
-    if (inventoryErrors.value.createInventoryReport) {
-        ErrorAlert(null, null, stringResource(R.string.error_create_inventory_report))
-    }
-    if (inventoryErrors.value.errorRoomName != null) {
-        Toast.makeText(context, inventoryErrors.value.errorRoomName, Toast.LENGTH_LONG).show()
-    }
     if (inventoryOpen.value == InventoryOpenValues.CLOSED) {
         InventoryLayout(testTag = "inventoryScreen", { navController.popBackStack() }) {
+            if (inventoryErrors.value.getAllRooms) {
+                ErrorAlert(null, null, stringResource(R.string.error_get_all_rooms))
+            }
+            if (inventoryErrors.value.getLastInventoryReport) {
+                ErrorAlert(null, null, stringResource(R.string.error_get_last_inventory_report))
+            }
+            if (inventoryErrors.value.createInventoryReport) {
+                ErrorAlert(null, null, stringResource(R.string.error_create_inventory_report))
+            }
+            if (inventoryErrors.value.errorRoomName != null) {
+                Toast.makeText(context, inventoryErrors.value.errorRoomName, Toast.LENGTH_LONG).show()
+            }
             if (cannotMakeExitInventory.value) {
                 AlertDialog(
                     shape = RoundedCornerShape(10.dp),
