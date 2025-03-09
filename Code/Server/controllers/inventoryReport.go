@@ -35,20 +35,20 @@ func checkFurniture(furnitureId string, roomId string) error {
 	return nil
 }
 
-func getFurnitureStatePictures(f models.FurnitureStateRequest) ([]string, []string) {
-	pictureIDs := make([]string, 0, len(f.Pictures))
-	errorList := make([]string, 0)
+func getFurnitureStatePictures(f models.FurnitureStateRequest) ([]string, error) {
+	picturesId := make([]string, 0, len(f.Pictures))
+	var err error
 
 	for _, pic := range f.Pictures {
 		dbImage := models.StringToDbImage(pic)
 		if dbImage == nil {
-			errorList = append(errorList, string(utils.BadBase64String))
+			err = errors.New(string(utils.BadBase64String))
 			continue
 		}
 		newImage := database.CreateImage(*dbImage)
-		pictureIDs = append(pictureIDs, newImage.ID)
+		picturesId = append(picturesId, newImage.ID)
 	}
-	return pictureIDs, errorList
+	return picturesId, err
 }
 
 func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomStateRequest) []string {
@@ -69,28 +69,30 @@ func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomState
 				Note:        f.Note,
 			},
 		}
-		picturesId, el := getFurnitureStatePictures(f)
-		errorList = append(errorList, el...)
+		picturesId, err := getFurnitureStatePictures(f)
+		if err != nil {
+			errorList = append(errorList, err.Error())
+		}
 		database.CreateFurnitureState(fModel, picturesId, invrep.ID)
 	}
 
 	return errorList
 }
 
-func getRoomStatePictures(r models.RoomStateRequest) ([]string, []string) {
-	pictureIDs := make([]string, 0, len(r.Pictures))
-	errorList := make([]string, 0)
+func getRoomStatePictures(r models.RoomStateRequest) ([]string, error) {
+	picturesId := make([]string, 0, len(r.Pictures))
+	var err error
 
 	for _, pic := range r.Pictures {
 		dbImage := models.StringToDbImage(pic)
 		if dbImage == nil {
-			errorList = append(errorList, string(utils.BadBase64String))
+			err = errors.New(string(utils.BadBase64String))
 			continue
 		}
 		newImage := database.CreateImage(*dbImage)
-		pictureIDs = append(pictureIDs, newImage.ID)
+		picturesId = append(picturesId, newImage.ID)
 	}
-	return pictureIDs, errorList
+	return picturesId, err
 }
 
 func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req models.InventoryReportRequest) []string {
@@ -111,8 +113,10 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 				Note:        r.Note,
 			},
 		}
-		picturesId, el := getRoomStatePictures(r)
-		errorList = append(errorList, el...)
+		picturesId, err := getRoomStatePictures(r)
+		if err != nil {
+			errorList = append(errorList, err.Error())
+		}
 		database.CreateRoomState(rModel, picturesId, invrep.ID)
 		errorList = append(errorList, createFurnitureState(invrep, r)...)
 	}
