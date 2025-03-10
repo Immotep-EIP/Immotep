@@ -212,16 +212,18 @@ The following criteria will be used to determine the success of the beta version
 
 ## **4. Known Issues & Limitations**
 
-[List any known bugs, incomplete features, or limitations that testers should be aware of.]
-
 | **Issue** | **Description**     | **Impact** | **Planned Fix? (Yes/No)** |
 | --------- | ------------------- | ---------- | ------------------------- |
-| iOS Alert Display Bug             | On iOS, opening an alert too quickly after closing one grays out the background but the alert doesn’t appear | Medium     | Yes                       || Issue 2   | [Brief description] | Medium     | No                        |
-Can't add document | Users unable to add new document in his property | Medium | Yes
-Handling the damage section | Users unable to handle damage for the moment | Medium | Yes
-Android background red | Little change to red background on the top of the detailsScreen when a call to the AI is made | Medium | Yes
-Android List of residency not update | When the details of a residency is edited, the list of residency is not updated | Medium | Yes
-
+| iOS Alert Display Bug             | On iOS, opening an alert too quickly after closing one grays out the background but the alert doesn’t appear      | Medium | Yes |
+| Android background red | Little change to red background on the top of the detailsScreen when a call to the AI is made                                | Medium | Yes |
+| Android List of residency not update | When the details of a residency is edited, the list of residency is not updated                                | Medium | Yes |
+| Web inventory item deletion | Deletion of an item (room or furniture) in the inventory is not working, has to be implemented with the archive system  | Medium | Yes |
+| Web end lease not updates page | When a lease is ended, the property page is not updated or refreshed to reflect the new state                        | High   | Yes |
+| Web no cancel invite | Owners unable to cancel an invitation to a tenant, has to be implemented with a button                                         | High   | Yes |
+| Can't add document | Owners unable to add new document in his property, has to be implemented                                                         | Medium | Yes |
+| Damage section not working | Damages has not been implemented yet                                                                                     | Medium | Yes |
+| Messaging system not working | Messaging system has not been implemented yet                                                                          | Low    | Yes |
+| General dashboard not displaying relevant info | General dashboard has not been implemented yet                                                       | Low    | Yes |
 
 ### **Limitations**
 - **Tenant Invitation Link Behavior:** If a tenant opens the invitation received by email on their phone, they will be directed to a web page rather than the Immotep application.
