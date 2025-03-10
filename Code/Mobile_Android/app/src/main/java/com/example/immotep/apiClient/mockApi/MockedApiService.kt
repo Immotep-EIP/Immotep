@@ -12,6 +12,7 @@ import com.example.immotep.apiCallerServices.InventoryReportInput
 import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.InviteOutput
 import com.example.immotep.apiCallerServices.ProfileResponse
+import com.example.immotep.apiCallerServices.ProfileUpdateInput
 import com.example.immotep.apiCallerServices.RoomOutput
 import com.example.immotep.apiClient.API_PREFIX
 import com.example.immotep.apiClient.AddRoomInput
@@ -296,6 +297,18 @@ class MockedApiService : ApiService {
             start_date = "test",
             end_date = "test",
             created_at = "test"
+        )
+    }
+
+    override suspend fun updateProfile(authHeader : String, profileUpdateInput: ProfileUpdateInput) : ProfileResponse {
+        return ProfileResponse(
+            id = "test123",
+            email = profileUpdateInput.email,
+            firstname = profileUpdateInput.firstname,
+            lastname = profileUpdateInput.lastname,
+            role = "test",
+            created_at = "2025-03-09T13:52:54.823Z",
+            updated_at = "2025-03-09T13:52:54.823Z"
         )
     }
 

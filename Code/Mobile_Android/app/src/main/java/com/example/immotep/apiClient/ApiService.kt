@@ -12,6 +12,7 @@ import com.example.immotep.apiCallerServices.InventoryReportInput
 import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.InviteOutput
 import com.example.immotep.apiCallerServices.ProfileResponse
+import com.example.immotep.apiCallerServices.ProfileUpdateInput
 import com.example.immotep.apiCallerServices.RoomOutput
 import com.example.immotep.authService.LoginResponse
 import com.example.immotep.authService.RegistrationInput
@@ -61,6 +62,9 @@ interface ApiService {
     //profile functions
     @GET("${API_PREFIX}/profile")
     suspend fun getProfile(@Header("Authorization") authHeader : String): ProfileResponse
+
+    @PUT("${API_PREFIX}/profile")
+    suspend fun updateProfile(@Header("Authorization") authHeader : String, @Body profileUpdateInput: ProfileUpdateInput): ProfileResponse
 
     //property functions
     @GET("${API_PREFIX}/owner/properties")
