@@ -186,7 +186,27 @@ For each core functionality, provide detailed test scenarios.
 
 ## **3. Success Criteria**
 
-[Define the metrics and conditions that determine if the beta version is successful.]
+The following criteria will be used to determine the success of the beta version.
+
+| **Criterion** | **Description** | **Threshold for Success** |
+|--------------|---------------|------------------------|
+| Stability    | No major crashes | No crash reported by the testers in any of the applications |
+| Stability    | No api crashs | No crash that make the api unreachable |
+| Stability    | No blocking state | No blocking state reported by the testers |
+| Stability    | Api always available | Ensure that the API is at least 90% of the time available |
+| Usability    | Understable UI/UX | 90% of tester does not get lost on the web and mobile |
+| Usability    | Pretty UI | >70% of tester say that the web and mobile application are okay or pretty in terms of design |
+| Usability    | distinguishable UI | No elements with bad accessibility on the web and mobile |
+| Usability    | Recognisable brand | Unique logo and color that >80% of testers find recognisable |
+| Performance  | IA accuracy | the AI give the right answer >80% of time |
+| Performance  | IA time frame | the AI responds in less than 60 seconds every time |
+| Performance  | Size of inventory report | the inventory report can take up to 30 rooms with 20 elements each |
+| Performance  | Apps performance  | >85% of testers must not say that they experiences freeze or performances issues with the web and mobile apps  |
+| Costs  | IA costs | an inventory report must cost less than 0.5€ on average |
+| Accuracy    | Units tests in all of the apps and api | >80% of all the project code lines must be tested |
+| Accuracy    | Units tests in all of the apps and api | every major features must have at least 2 tests |
+| Desire    | Desire within the testers | >20% of tester should say that if the app was on the market they will use it |
+
 
 ---
 
@@ -199,6 +219,8 @@ For each core functionality, provide detailed test scenarios.
 | iOS Alert Display Bug             | On iOS, opening an alert too quickly after closing one grays out the background but the alert doesn’t appear | Medium     | Yes                       || Issue 2   | [Brief description] | Medium     | No                        |
 Can't add document | Users unable to add new document in his property | Medium | Yes
 Handling the damage section | Users unable to handle damage for the moment | Medium | Yes
+Android background red | Little change to red background on the top of the detailsScreen when a call to the AI is made | Medium | Yes
+Android List of residency not update | When the details of a residency is edited, the list of residency is not updated | Medium | Yes
 
 
 ### **Limitations**
