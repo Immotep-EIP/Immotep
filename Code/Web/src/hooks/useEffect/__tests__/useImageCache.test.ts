@@ -66,7 +66,7 @@ describe('useImageCache', () => {
       'image/jpeg'
     )
 
-    expect(global.caches.open).toHaveBeenCalledWith('immotep-cache-v1')
+    expect(global.caches.open).toHaveBeenCalledWith('keyz-cache-v1')
 
     expect(mockCachePut).toHaveBeenCalledWith(
       `/images/${id}`,
@@ -97,7 +97,7 @@ describe('useImageCache', () => {
       'image/jpeg'
     )
 
-    expect(global.caches.open).toHaveBeenCalledWith('immotep-cache-v1')
+    expect(global.caches.open).toHaveBeenCalledWith('keyz-cache-v1')
 
     expect(result.current.data).toEqual(mockUrl)
 

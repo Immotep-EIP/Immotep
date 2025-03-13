@@ -58,7 +58,7 @@ const Register: React.FC = () => {
       <PageMeta
         title={t('pages.register.document_title')}
         description={t('pages.register.document_description')}
-        keywords="sign up, authentication, Immotep"
+        keywords="sign up, authentication, Keyz"
       />
       <DividedPage
         childrenLeft={

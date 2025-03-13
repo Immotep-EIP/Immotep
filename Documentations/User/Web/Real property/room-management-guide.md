@@ -1,6 +1,6 @@
 # Managing Rooms in Your Property
 
-This guide explains how to add and manage rooms in your Immotep property.
+This guide explains how to add and manage rooms in your Keyz property.
 
 ## Prerequisites
 

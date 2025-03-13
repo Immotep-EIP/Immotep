@@ -202,7 +202,7 @@
   "pages": {
     "login": {
       "document_title": "Se connecter",
-      "document_description": "Connectez-vous à votre compte Immotep. Gérer vos propriétés et vos locataires facilement.",
+      "document_description": "Connectez-vous à votre compte Keyz. Gérer vos propriétés et vos locataires facilement.",
       "title": "Bienvenue !",
       "description": "Veuillez entrer vos informations pour vous connecter.",
       "dont_have_account": "Vous n'avez pas de compte ?",
@@ -212,9 +212,9 @@
     },
     "register": {
       "document_title": "S'inscrire",
-      "document_description": "Créez un compte Immotep pour gérer vos propriétés et locataires facilement.",
+      "document_description": "Créez un compte Keyz pour gérer vos propriétés et locataires facilement.",
       "title": "Créer un compte",
-      "description": "Rejoignez Immotep pour plus de sérénité !",
+      "description": "Rejoignez Keyz pour plus de sérénité !",
       "agree_terms": "J'accepte les Termes et la Politique de confidentialité.",
       "already_have_account": "Vous avez déjà un compte ?",
       "register_success": "Vous êtes maintenant inscrit.",
@@ -225,11 +225,11 @@
     },
     "register_tenant": {
       "register_success": "Vous êtes maintenant inscrit.",
-      "register_success_description": "Vous êtes maintenant inscrit. Vous pouvez désormais accéder à votre compte depuis l'application mobile Immotep."
+      "register_success_description": "Vous êtes maintenant inscrit. Vous pouvez désormais accéder à votre compte depuis l'application mobile Keyz."
     },
     "forgot_password": {
       "document_title": "Mot de passe oublié",
-      "document_description": "Réinitialisez facilement votre mot de passe Immotep si vous l'avez oublié. Processus simple et rapide pour récupérer l'accès à votre compte.",
+      "document_description": "Réinitialisez facilement votre mot de passe Keyz si vous l'avez oublié. Processus simple et rapide pour récupérer l'accès à votre compte.",
       "title": "Mot de passe oublié",
       "description": "Veuillez entrer votre email pour réinitialiser votre mot de passe.",
       "send_email_success": "Un email a été envoyé pour réinitialiser votre mot de passe.",
