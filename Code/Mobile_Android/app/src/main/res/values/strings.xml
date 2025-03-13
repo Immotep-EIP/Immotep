@@ -95,7 +95,8 @@
     <string name="broken_state">Broken</string>
     <string name="select_an_element">Please, select an element</string>
     <string name="analyze_pictures">Analyze pictures to fill the information</string>
-    <string name="validate">Validate detail</string>
+    <string name="validate_detail">Validate detail</string>
+    <string name="validate_room">Validate room</string>
     <string name="comment_error">The comment must be at least 3 characters long</string>
     <string name="add_picture_error">You must add at least one picture</string>
     <string name="status_error">You must set a status</string>

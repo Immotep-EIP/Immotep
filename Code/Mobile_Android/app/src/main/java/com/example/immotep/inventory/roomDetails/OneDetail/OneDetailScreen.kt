@@ -4,12 +4,10 @@ package com.example.immotep.inventory.roomDetails.OneDetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.immotep.LocalApiService
 import com.example.immotep.R
-import com.example.immotep.apiClient.ApiService
 import com.example.immotep.components.AddingPicturesCarousel
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
@@ -63,8 +60,8 @@ fun OneDetailScreen(
     ) {
         InitialFadeIn {
             LoadingDialog(isOpen = isLoading.value)
-            ErrorAlert(null, null, if (callError.value) stringResource(R.string.ai_call_error) else null)
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                ErrorAlert(null, null, if (callError.value) stringResource(R.string.ai_call_error) else null)
                 if (isExit) {
                     Text(stringResource(R.string.entry_pictures))
                     AddingPicturesCarousel(stringPictures = viewModel.entryPictures)
@@ -136,7 +133,7 @@ fun OneDetailScreen(
                         ),
                         onClick = { viewModel.onConfirm(onModifyDetail, isExit) },
                     ) {
-                        Text(stringResource(R.string.validate))
+                        Text(stringResource(if (isRoom) R.string.validate_room else  R.string.validate_detail))
                     }
                 }
             }

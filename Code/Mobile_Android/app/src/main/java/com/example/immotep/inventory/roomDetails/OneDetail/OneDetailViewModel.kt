@@ -43,7 +43,7 @@ class OneDetailViewModel(
     val detail = _detail.asStateFlow()
     val errors = _errors.asStateFlow()
     val aiLoading = _aiLoading.asStateFlow()
-    val aiCallError = _aiLoading.asStateFlow()
+    val aiCallError = _aiCallError.asStateFlow()
 
     fun reset(newDetail : RoomDetail?) {
         picture.clear()
