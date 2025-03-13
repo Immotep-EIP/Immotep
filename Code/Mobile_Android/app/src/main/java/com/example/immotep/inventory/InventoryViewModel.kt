@@ -224,7 +224,7 @@ class InventoryViewModel(
     }
 
     fun sendInventory() : Boolean {
-        if (!checkIfAllAreCompleted()) return false
+        //if (!checkIfAllAreCompleted()) return false
         viewModelScope.launch {
             try {
                 val inventoryReport = roomsToInventoryReport(inventoryOpen.value)

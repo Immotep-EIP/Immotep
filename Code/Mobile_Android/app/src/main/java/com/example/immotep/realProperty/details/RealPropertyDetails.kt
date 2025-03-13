@@ -1,5 +1,6 @@
 package com.example.immotep.realProperty.details
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,35 +41,41 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.inviteTenantModal.InviteTenantModal
 import com.example.immotep.realProperty.PropertyBox
 import com.example.immotep.realProperty.PropertyBoxTextLine
 import com.example.immotep.ui.components.BackButton
+import com.example.immotep.utils.Base64Utils
 import com.example.immotep.utils.DateFormatter
-import kotlinx.coroutines.flow.StateFlow
-import java.text.SimpleDateFormat
+import com.example.immotep.utils.PdfsUtils
 
 @Composable
-fun OneDocument(name: String) {
+fun OneDocument(document: Document, openPdf: (String) -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth(0.33f)
             .padding(5.dp)
-            .clickable { }
+            .clickable {
+                openPdf(document.id)
+            }
             .wrapContentSize(Alignment.Center)
             .testTag("OneDocument")
     ) {
@@ -80,7 +87,7 @@ fun OneDocument(name: String) {
         ) {
             Icon(Icons.Outlined.AttachFile, contentDescription = "document icon", modifier = Modifier.size(50.dp))
         }
-        Text(text = name, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 10.dp, end = 10.dp).fillMaxWidth())
+        Text(text = document.name, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 10.dp, end = 10.dp).fillMaxWidth())
     }
 }
 
@@ -142,14 +149,16 @@ fun AboutThePropertyBox(property : State<DetailedProperty>, openEdit : () -> Uni
 @Composable
 fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, getBack: () -> Unit) {
     val apiService = LocalApiService.current
+    val context = LocalContext.current
+
     val viewModel: RealPropertyDetailsViewModel = viewModel {
         RealPropertyDetailsViewModel(navController, apiService)
     }
     val property = viewModel.property.collectAsState()
     var editOpen by rememberSaveable { mutableStateOf(false) }
     var inviteTenantOpen by rememberSaveable { mutableStateOf(false) }
-    val apiErrors = viewModel.apiError.collectAsState()
 
+    val apiErrors = viewModel.apiError.collectAsState()
     val errorAlertVal = when (apiErrors.value) {
         RealPropertyDetailsViewModel.ApiErrors.GET_PROPERTY -> stringResource(R.string.api_error_get_property)
         RealPropertyDetailsViewModel.ApiErrors.UPDATE_PROPERTY -> stringResource(R.string.api_error_edit_property)
@@ -225,7 +234,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
             ) {
                 FlowRow {
                     property.value.documents.forEach { item ->
-                        OneDocument(item)
+                        OneDocument(item, openPdf = { viewModel.openPdf(it, context)})
                     }
                 }
             }

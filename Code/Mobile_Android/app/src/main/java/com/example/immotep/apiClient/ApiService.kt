@@ -5,6 +5,7 @@ import com.example.immotep.apiCallerServices.AddPropertyResponse
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
+import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.FurnitureInput
 import com.example.immotep.apiCallerServices.FurnitureOutput
 import com.example.immotep.apiCallerServices.GetPropertyResponse
@@ -72,6 +73,9 @@ interface ApiService {
 
     @GET("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun getProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): GetPropertyResponse
+
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/documents")
+    suspend fun getPropertyDocuments(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): Array<Document>
 
     @POST("${API_PREFIX}/owner/properties")
     suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : AddPropertyResponse

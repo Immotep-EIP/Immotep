@@ -122,12 +122,18 @@ data class Property(
 ) : IProperty
 
 
+data class Document(
+    val id: String,
+    val name: String,
+    val data: String,
+    val created_at: String
+)
 
 interface IDetailedProperty : IProperty {
     val area : Int
     val rent : Int
     val deposit : Int
-    val documents : Array<String>
+    val documents : Array<Document>
     val zipCode : String
     val city : String
     val country : String
@@ -147,7 +153,7 @@ data class DetailedProperty(
     override val area : Int = 0,
     override val rent : Int = 0,
     override val deposit : Int = 0,
-    override val documents : Array<String> = arrayOf(),
+    override val documents : Array<Document> = arrayOf(),
     override val zipCode : String = "",
     override val city : String = "",
     override val country : String = "",
@@ -183,6 +189,7 @@ data class DetailedProperty(
 data class ArchivePropertyInput(
     val archive: Boolean
 )
+
 
 class RealPropertyCallerService (
     apiService: ApiService,
@@ -240,4 +247,16 @@ class RealPropertyCallerService (
             throw e
         }
     }
+
+    suspend fun getPropertyDocuments(propertyId: String, onError: () -> Unit): Array<Document> {
+        try {
+            val documents = apiService.getPropertyDocuments(getBearerToken(), propertyId)
+            return documents
+        } catch (e: Exception) {
+            onError()
+            throw e
+        }
+    }
+
+
 }

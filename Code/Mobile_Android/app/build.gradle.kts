@@ -76,6 +76,10 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
     implementation("androidx.compose.material3:material3:1.2.0-alpha10")
 
+    //pdf handler
+    implementation("io.github.grizzi91:bouquet:1.1.2")
+
+
     //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")

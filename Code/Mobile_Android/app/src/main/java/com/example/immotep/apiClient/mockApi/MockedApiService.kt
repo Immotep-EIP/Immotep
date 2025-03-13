@@ -5,6 +5,7 @@ import com.example.immotep.apiCallerServices.AddPropertyResponse
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
+import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.FurnitureInput
 import com.example.immotep.apiCallerServices.FurnitureOutput
 import com.example.immotep.apiCallerServices.GetPropertyResponse
@@ -195,6 +196,13 @@ class MockedApiService : ApiService {
         )
     }
 
+    override suspend fun getPropertyDocuments(
+        authHeader: String,
+        propertyId: String
+    ): Array<Document> {
+        TODO("Not yet implemented")
+        return arrayOf()
+    }
     override suspend fun updateProperty(
         authHeader : String,
         addPropertyInput: AddPropertyInput,

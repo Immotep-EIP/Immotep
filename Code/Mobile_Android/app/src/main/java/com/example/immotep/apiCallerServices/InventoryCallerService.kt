@@ -24,8 +24,10 @@ class InventoryCallerService(
         try {
             apiService.inventoryReport(getBearerToken(), propertyId, inventoryReportInput)
         } catch(e : Exception) {
+            println("Error during create inventory report ${e.message}")
+            e.printStackTrace()
             onError()
-            return
+            throw e
         }
     }
 
