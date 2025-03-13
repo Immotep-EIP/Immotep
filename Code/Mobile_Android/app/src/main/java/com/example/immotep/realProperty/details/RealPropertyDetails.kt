@@ -61,6 +61,8 @@ import com.example.immotep.apiCallerServices.DetailedProperty
 import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
+import com.example.immotep.components.InternalLoading
+import com.example.immotep.components.LoadingDialog
 import com.example.immotep.inviteTenantModal.InviteTenantModal
 import com.example.immotep.realProperty.PropertyBox
 import com.example.immotep.realProperty.PropertyBoxTextLine
@@ -200,6 +202,7 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
     var inviteTenantOpen by rememberSaveable { mutableStateOf(false) }
 
     val apiErrors = viewModel.apiError.collectAsState()
+    val isLoading = viewModel.isLoading.collectAsState()
     val errorAlertVal = when (apiErrors.value) {
         RealPropertyDetailsViewModel.ApiErrors.GET_PROPERTY -> stringResource(R.string.api_error_get_property)
         RealPropertyDetailsViewModel.ApiErrors.UPDATE_PROPERTY -> stringResource(R.string.api_error_edit_property)
@@ -223,7 +226,11 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
         navController = navController,
         propertyId = newProperty.id
     )
-    InitialFadeIn {
+    if (isLoading.value) {
+        InternalLoading()
+        return
+    }
+    InitialFadeIn(300) {
         Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

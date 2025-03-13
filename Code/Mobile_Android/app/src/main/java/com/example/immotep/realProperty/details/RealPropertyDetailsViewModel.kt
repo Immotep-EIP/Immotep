@@ -35,11 +35,14 @@ class RealPropertyDetailsViewModel(
     private val apiCaller = RealPropertyCallerService(apiService, navController)
     private var _property = MutableStateFlow(DetailedProperty())
     private val _apiError = MutableStateFlow(ApiErrors.NONE)
+    private val _isLoading = MutableStateFlow(false)
 
     val property: StateFlow<DetailedProperty> = _property.asStateFlow()
     val apiError = _apiError.asStateFlow()
+    val isLoading = _isLoading.asStateFlow()
 
     fun loadProperty(newProperty: DetailedProperty) {
+        _isLoading.value = true
         _apiError.value = ApiErrors.NONE
         viewModelScope.launch {
             try {
@@ -50,6 +53,8 @@ class RealPropertyDetailsViewModel(
             } catch (e : Exception) {
                 println("Error loading property ${e.message}")
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
         }
     }
