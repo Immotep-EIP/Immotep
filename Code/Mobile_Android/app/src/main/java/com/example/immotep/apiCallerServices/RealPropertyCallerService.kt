@@ -43,15 +43,6 @@ data class GetPropertyResponse(
     val start_date: String?,
     val end_date: String?
 ) {
-    fun toProperty() = Property(
-        id = this.id,
-        image = "",
-        address = this.address,
-        tenant = this.tenant,
-        available = this.status == "available",
-        startDate = if (this.start_date != null) OffsetDateTime.parse(this.start_date) else null,
-        endDate = if (this.end_date != null) OffsetDateTime.parse(this.end_date) else null
-    )
 
     fun toDetailedProperty() = DetailedProperty(
         id = this.id, 
@@ -73,54 +64,7 @@ data class GetPropertyResponse(
     )
 }
 
-
-data class AddPropertyResponse(
-    val id: String,
-    val owner_id: String,
-    val name: String,
-    val address: String,
-    val city: String,
-    val postal_code: String,
-    val country: String,
-    val area_sqm: Double,
-    val rental_price_per_month: Int,
-    val deposit_price: Int,
-    val picture: String?,
-    val created_at: String,
-) {
-    fun toProperty() = Property(
-        id = id,
-        image = picture ?: "",
-        address = address,
-        tenant = null,
-        available = true,
-        startDate = null,
-        endDate = null
-    )
-}
-
 //custom properties class
-
-interface IProperty {
-    val id: String
-    val image: String
-    val address: String
-    val tenant: String?
-    val available: Boolean
-    val startDate: OffsetDateTime?
-    val endDate: OffsetDateTime?
-}
-
-data class Property(
-    override val id: String = "",
-    override val image: String = "",
-    override val address: String = "",
-    override val tenant: String? = null,
-    override val available: Boolean = true,
-    override val startDate: OffsetDateTime? = null,
-    override val endDate: OffsetDateTime? = null
-) : IProperty
-
 
 data class Document(
     val id: String,
@@ -129,36 +73,24 @@ data class Document(
     val created_at: String
 )
 
-interface IDetailedProperty : IProperty {
-    val area : Int
-    val rent : Int
-    val deposit : Int
-    val documents : Array<Document>
-    val zipCode : String
-    val city : String
-    val country : String
-    val name : String
-    val appartementNumber : String?
-}
-
 data class DetailedProperty(
-    override val id : String = "",
-    override val image : String = "",
-    override val address : String = "",
-    override val tenant : String? = null,
-    override val available : Boolean = true,
-    override val startDate : OffsetDateTime? = null,
-    override val endDate : OffsetDateTime? = null,
-    override val appartementNumber : String? = "",
-    override val area : Int = 0,
-    override val rent : Int = 0,
-    override val deposit : Int = 0,
-    override val documents : Array<Document> = arrayOf(),
-    override val zipCode : String = "",
-    override val city : String = "",
-    override val country : String = "",
-    override val name : String = ""
-) : IDetailedProperty {
+     val id : String = "",
+     val image : String = "",
+     val address : String = "",
+     val tenant : String? = null,
+     val available : Boolean = true,
+     val startDate : OffsetDateTime? = null,
+     val endDate : OffsetDateTime? = null,
+     val appartementNumber : String? = "",
+     val area : Int = 0,
+     val rent : Int = 0,
+     val deposit : Int = 0,
+     val documents : Array<Document> = arrayOf(),
+     val zipCode : String = "",
+     val city : String = "",
+     val country : String = "",
+     val name : String = ""
+) {
     fun toAddPropertyInput() : AddPropertyInput {
         return AddPropertyInput(
             address = this.address,
@@ -173,17 +105,6 @@ data class DetailedProperty(
         )
     }
 
-    fun toProperty() : Property {
-        return Property(
-            this.id,
-            this.image,
-            this.address,
-            this.tenant,
-            this.available,
-            this.startDate,
-            this.endDate
-        )
-    }
 }
 
 data class ArchivePropertyInput(
@@ -196,19 +117,19 @@ class RealPropertyCallerService (
     navController: NavController,
 ) : ApiCallerService(apiService, navController) {
 
-    suspend fun getPropertiesAsProperties(onError: () -> Unit): Array<Property> {
+    suspend fun getPropertiesAsDetailedProperties(onError: () -> Unit):  Array<DetailedProperty> {
         try {
             val properties = apiService.getProperties(getBearerToken())
-            return properties.map { it.toProperty() }.toTypedArray()
+            return properties.map { it.toDetailedProperty() }.toTypedArray()
         } catch (e: Exception) {
             onError()
             throw e
         }
     }
 
-    suspend fun addProperty(property: AddPropertyInput, onError: () -> Unit): Property {
+    suspend fun addProperty(property: AddPropertyInput, onError: () -> Unit): DetailedProperty {
         try {
-            return apiService.addProperty(getBearerToken(), property).toProperty()
+            return apiService.addProperty(getBearerToken(), property).toDetailedProperty()
         } catch (e: Exception) {
             onError()
             throw e

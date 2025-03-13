@@ -1,7 +1,6 @@
 package com.example.immotep.apiClient
 
 import com.example.immotep.apiCallerServices.AddPropertyInput
-import com.example.immotep.apiCallerServices.AddPropertyResponse
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
@@ -20,7 +19,6 @@ import com.example.immotep.authService.RegistrationInput
 import com.example.immotep.authService.RegistrationResponse
 import com.example.immotep.inventory.InventoryReportOutput
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -78,7 +76,7 @@ interface ApiService {
     suspend fun getPropertyDocuments(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): Array<Document>
 
     @POST("${API_PREFIX}/owner/properties")
-    suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : AddPropertyResponse
+    suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : GetPropertyResponse
 
     @PUT("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun updateProperty(

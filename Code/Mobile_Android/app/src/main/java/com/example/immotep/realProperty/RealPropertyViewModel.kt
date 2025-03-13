@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.AddPropertyInput
-import com.example.immotep.apiCallerServices.Property
+import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.GetPropertyResponse
 import com.example.immotep.apiCallerServices.RealPropertyCallerService
 import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.apiClient.ApiService
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 
 
 class RealPropertyViewModel(
-    private val navController: NavController,
+    navController: NavController,
     apiService: ApiService
 ) : ViewModel() {
     enum class WhichApiError {
@@ -29,11 +30,13 @@ class RealPropertyViewModel(
     }
     private val apiCaller = RealPropertyCallerService(apiService, navController)
     private val _isLoading = MutableStateFlow(true)
+    private val _propertySelectedDetails = MutableStateFlow<DetailedProperty?>(null)
     private val _apiError = MutableStateFlow(WhichApiError.NONE)
 
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     val apiError: StateFlow<WhichApiError> = _apiError.asStateFlow()
-    val properties = mutableStateListOf<Property>()
+    val propertySelectedDetails = _propertySelectedDetails.asStateFlow()
+    val properties = mutableStateListOf<DetailedProperty>()
 
     fun closeError() {
         _apiError.value = WhichApiError.NONE
@@ -43,9 +46,10 @@ class RealPropertyViewModel(
         viewModelScope.launch {
             closeError()
             _isLoading.value = true
-            properties.clear()
             try {
-                properties.addAll(apiCaller.getPropertiesAsProperties({ _apiError.value = WhichApiError.GET_PROPERTIES }))
+                apiCaller.getPropertiesAsDetailedProperties { _apiError.value = WhichApiError.GET_PROPERTIES }
+                properties.clear()
+                properties.addAll(apiCaller.getPropertiesAsDetailedProperties { _apiError.value = WhichApiError.GET_PROPERTIES })
             } catch (e : Exception) {
                 println("error getting properties ${e.message}")
                 e.printStackTrace()
@@ -76,5 +80,22 @@ class RealPropertyViewModel(
                 e.printStackTrace()
             }
         }
+    }
+
+    fun setPropertySelectedDetails(propertyId: String) {
+        val index = properties.indexOfFirst { it.id == propertyId }
+        if (index == -1) {
+            return
+        }
+        _propertySelectedDetails.value = properties[index]
+    }
+
+    fun getBackFromDetails(modifiedProperty : DetailedProperty) {
+        val index = properties.indexOfFirst { it.id == modifiedProperty.id }
+        if (index == -1) {
+            return
+        }
+        properties[index] = modifiedProperty
+        _propertySelectedDetails.value = null
     }
 }

@@ -1,5 +1,6 @@
 package com.example.immotep.realProperty.details
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -68,26 +71,65 @@ import com.example.immotep.utils.PdfsUtils
 
 @Composable
 fun OneDocument(document: Document, openPdf: (String) -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth(0.33f)
-            .padding(5.dp)
-            .clickable {
-                openPdf(document.id)
-            }
-            .wrapContentSize(Alignment.Center)
-            .testTag("OneDocument")
-    ) {
-        Box(
+    InitialFadeIn(durationMs = 500) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .border(1.dp, color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(5.dp))
-                .padding(start = 25.dp, end = 25.dp, top = 10.dp, bottom = 10.dp)
+                .fillMaxWidth(0.33f)
+                .padding(5.dp)
+                .clickable {
+                    openPdf(document.id)
+                }
+                .wrapContentSize(Alignment.Center)
+                .testTag("OneDocument ${document.id}")
         ) {
-            Icon(Icons.Outlined.AttachFile, contentDescription = "document icon", modifier = Modifier.size(50.dp))
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .border(
+                        1.dp,
+                        color = MaterialTheme.colorScheme.background,
+                        shape = RoundedCornerShape(5.dp)
+                    )
+                    .padding(start = 25.dp, end = 25.dp, top = 10.dp, bottom = 10.dp)
+            ) {
+                Icon(
+                    Icons.Outlined.AttachFile,
+                    contentDescription = "document icon",
+                    modifier = Modifier.size(50.dp)
+                )
+            }
+            Text(
+                text = document.name,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 10.dp, end = 10.dp).fillMaxWidth(),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
         }
-        Text(text = document.name, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 10.dp, end = 10.dp).fillMaxWidth())
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun DocumentBox(property : State<DetailedProperty>, openPdf: (String) -> Unit) {
+    Text(text = stringResource(R.string.documents))
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .border(
+                1.dp,
+                color = MaterialTheme.colorScheme.onBackground,
+                shape = RoundedCornerShape(5.dp)
+            )
+            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .padding(5.dp)
+
+    ) {
+        FlowRow(modifier = Modifier.defaultMinSize(minHeight = 125.dp)) {
+            property.value.documents.forEach { item ->
+                OneDocument(item, openPdf = { openPdf(it)})
+            }
+        }
     }
 }
 
@@ -145,9 +187,8 @@ fun AboutThePropertyBox(property : State<DetailedProperty>, openEdit : () -> Uni
     Spacer(modifier = Modifier.height(10.dp))
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, getBack: () -> Unit) {
+fun RealPropertyDetailsScreen(navController: NavController, newProperty : DetailedProperty, getBack: (DetailedProperty) -> Unit) {
     val apiService = LocalApiService.current
     val context = LocalContext.current
 
@@ -164,13 +205,13 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
         RealPropertyDetailsViewModel.ApiErrors.UPDATE_PROPERTY -> stringResource(R.string.api_error_edit_property)
         else -> null
     }
-    LaunchedEffect(propertyId) {
-        viewModel.loadProperty(propertyId)
+    LaunchedEffect(newProperty) {
+        viewModel.loadProperty(newProperty)
     }
     AddOrEditPropertyModal(
         open = editOpen,
         close = { editOpen = false },
-        onSubmit = { viewModel.editProperty(it, propertyId) },
+        onSubmit = { viewModel.editProperty(it, newProperty.id) },
         popupName = stringResource(R.string.edit_property),
         baseValue = property.value.toAddPropertyInput(),
         submitButtonText = stringResource(R.string.save),
@@ -180,7 +221,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
         open = inviteTenantOpen,
         close = { inviteTenantOpen = false },
         navController = navController,
-        propertyId = propertyId
+        propertyId = newProperty.id
     )
     InitialFadeIn {
         Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
@@ -188,7 +229,9 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                BackButton(getBack)
+                BackButton {
+                    getBack(property.value)
+                }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     Button(onClick = { navController.navigate("messages") }) {
                         Text(
@@ -203,7 +246,7 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
                 }
             }
             ErrorAlert(null, null, errorAlertVal)
-            PropertyBox(property.value.toProperty())
+            PropertyBox(property.value)
             if (property.value.available) {
                 Button(
                     onClick = { inviteTenantOpen = true },
@@ -221,25 +264,12 @@ fun RealPropertyDetailsScreen(navController: NavController, propertyId: String, 
                 }
             }
             AboutThePropertyBox(property, openEdit = { editOpen = true })
-            Text(text = stringResource(R.string.documents))
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .border(
-                        1.dp,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        shape = RoundedCornerShape(5.dp)
-                    )
-                    .background(MaterialTheme.colorScheme.tertiaryContainer)
-                    .padding(5.dp)
-            ) {
-                FlowRow {
-                    property.value.documents.forEach { item ->
-                        OneDocument(item, openPdf = { viewModel.openPdf(it, context)})
-                    }
-                }
-            }
+            DocumentBox(
+                property = property,
+                openPdf = { viewModel.openPdf(it, context) }
+            )
             Button(
-                onClick = { navController.navigate("inventory/$propertyId") },
+                onClick = { navController.navigate("inventory/${newProperty.id}") },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                 modifier = Modifier
                     .clip(RoundedCornerShape(5.dp))

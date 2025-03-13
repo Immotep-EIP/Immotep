@@ -1,7 +1,6 @@
 package com.example.immotep.apiClient.mockApi
 
 import com.example.immotep.apiCallerServices.AddPropertyInput
-import com.example.immotep.apiCallerServices.AddPropertyResponse
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
@@ -15,7 +14,6 @@ import com.example.immotep.apiCallerServices.InviteOutput
 import com.example.immotep.apiCallerServices.ProfileResponse
 import com.example.immotep.apiCallerServices.ProfileUpdateInput
 import com.example.immotep.apiCallerServices.RoomOutput
-import com.example.immotep.apiClient.API_PREFIX
 import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.LoginResponse
@@ -179,21 +177,8 @@ class MockedApiService : ApiService {
         return parisFakeProperty
     }
 
-    override suspend fun addProperty(authHeader : String, addPropertyInput: AddPropertyInput) : AddPropertyResponse {
-        return AddPropertyResponse(
-            id = "test",
-            owner_id = "test",
-            name = "property2",
-            address = "test",
-            city = "testcity",
-            postal_code = "68100",
-            country = "testCountry",
-            area_sqm =54.0,
-            rental_price_per_month = 750,
-            deposit_price = 750,
-            picture = null,
-            created_at = "test",
-        )
+    override suspend fun addProperty(authHeader : String, addPropertyInput: AddPropertyInput) : GetPropertyResponse {
+        return parisFakeProperty
     }
 
     override suspend fun getPropertyDocuments(

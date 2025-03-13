@@ -1,6 +1,5 @@
 package com.example.immotep.realProperty
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -49,7 +48,7 @@ import coil.compose.AsyncImage
 import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
-import com.example.immotep.apiCallerServices.Property
+import com.example.immotep.apiCallerServices.DetailedProperty
 import com.example.immotep.components.DeletePopUp
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
@@ -69,7 +68,7 @@ fun PropertyBoxTextLine(text: String, icon: ImageVector) {
 }
 
 @Composable
-fun PropertyBox(property: Property, onClick: (() -> Unit)? = null, onDelete: (() -> Unit)? = null) {
+fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDelete: (() -> Unit)? = null) {
     val modifierRow = if (onClick != null && onDelete != null) {
         Modifier.pointerInput(Unit) {
             detectTapGestures(
@@ -166,10 +165,10 @@ fun RealPropertyScreen(navController: NavController) {
                 apiService
             )
         }
-    var detailsOpen by rememberSaveable { mutableStateOf<String?>(null) }
     var deleteOpen by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
     var addPropertyModalOpen by rememberSaveable { mutableStateOf(false) }
     val apiErrors = viewModel.apiError.collectAsState()
+    val propertySelectedDetails = viewModel.propertySelectedDetails.collectAsState()
 
     val errorAlertVal = when (apiErrors.value) {
         RealPropertyViewModel.WhichApiError.GET_PROPERTIES -> stringResource(R.string.api_error_get_properties)
@@ -182,7 +181,7 @@ fun RealPropertyScreen(navController: NavController) {
     }
 
     DashBoardLayout(navController, "realPropertyScreen") {
-        if (detailsOpen == null) {
+        if (propertySelectedDetails.value == null) {
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Button(
                     onClick = { addPropertyModalOpen = true },
@@ -212,7 +211,7 @@ fun RealPropertyScreen(navController: NavController) {
                         PropertyBox(
                             item,
                             onClick = { if (deleteOpen == null) {
-                                detailsOpen = item.id
+                                viewModel.setPropertySelectedDetails(item.id)
                                 viewModel.closeError()
                             } },
                             onDelete = { deleteOpen = Pair(item.id, item.address) })
@@ -222,8 +221,9 @@ fun RealPropertyScreen(navController: NavController) {
         } else {
             RealPropertyDetailsScreen(
                 navController,
-                detailsOpen!!,
-                getBack = { detailsOpen = null })
+                propertySelectedDetails.value!!,
+                getBack = { viewModel.getBackFromDetails(it) }
+            )
         }
         AddOrEditPropertyModal(
             open = addPropertyModalOpen,

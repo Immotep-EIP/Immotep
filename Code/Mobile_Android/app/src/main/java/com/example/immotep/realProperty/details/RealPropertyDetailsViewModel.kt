@@ -39,12 +39,11 @@ class RealPropertyDetailsViewModel(
     val property: StateFlow<DetailedProperty> = _property.asStateFlow()
     val apiError = _apiError.asStateFlow()
 
-    fun loadProperty(propertyId: String) {
+    fun loadProperty(newProperty: DetailedProperty) {
         _apiError.value = ApiErrors.NONE
         viewModelScope.launch {
             try {
-                val newProperty = apiCaller.getPropertyWithDetails(propertyId) { _apiError.value = ApiErrors.GET_PROPERTY }
-                val propertyDocuments = apiCaller.getPropertyDocuments(propertyId) { _apiError.value = ApiErrors.GET_PROPERTY }
+                val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id) { _apiError.value = ApiErrors.GET_PROPERTY }
                 _property.value = newProperty
                 _property.value = newProperty.copy(documents = propertyDocuments)
 
