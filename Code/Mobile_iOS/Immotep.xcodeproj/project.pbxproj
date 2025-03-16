@@ -47,6 +47,7 @@
 				Tests/ImmotepTests/LoginUnitTest.swift,
 				Tests/ImmotepTests/MockPropertyViewModel.swift,
 				Tests/ImmotepTests/RegisterUnitTest.swift,
+				Tests/ImmotepUITests/CreatePropertyUITests.swift,
 				Tests/ImmotepUITests/FeaturesUITests/ProfileUITests.swift,
 				Tests/ImmotepUITests/FeaturesUITests/PropertyViewUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,
@@ -75,6 +76,7 @@
 		CAF000072CB1AE36008D953F /* Exceptions for "Immotep" folder in "ImmotepUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Tests/ImmotepUITests/CreatePropertyUITests.swift,
 				Tests/ImmotepUITests/FeaturesUITests/ProfileUITests.swift,
 				Tests/ImmotepUITests/FeaturesUITests/PropertyViewUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,

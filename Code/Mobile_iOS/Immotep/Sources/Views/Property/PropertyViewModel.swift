@@ -178,7 +178,8 @@ class PropertyViewModel: ObservableObject {
             urlRequest.httpBody = jsonData
             print("Request body: \(String(data: jsonData, encoding: .utf8) ?? "Invalid JSON")")
         } catch {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to serialize request body: \(error.localizedDescription)".localized()])
+            throw NSError(domain: "", code: 0,
+                          userInfo: [NSLocalizedDescriptionKey: "Failed to serialize request body: \(error.localizedDescription)".localized()])
         }
 
         let (data, response) = try await URLSession.shared.data(for: urlRequest)

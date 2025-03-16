@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @StateObject private var profileViewModel = ProfileViewModel()
+    @StateObject private var propertyViewModel = PropertyViewModel()
     @AppStorage("lang") var lang: String = "en"
     @State private var selectedTab: Int = 0
 
@@ -25,6 +26,7 @@ struct ContentView: View {
                     .tag(0)
 
                 PropertyView()
+                    .environmentObject(propertyViewModel)
                     .tabItem {
                         Image(systemName: "building.2")
                         Text("Real Property".localized())

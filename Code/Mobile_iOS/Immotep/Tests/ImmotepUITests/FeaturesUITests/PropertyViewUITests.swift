@@ -6,86 +6,77 @@
 //
 
 import XCTest
-import Combine
-import Foundation
-import SwiftUI
-@testable import Immotep
 
 final class PropertyViewUITests: XCTestCase {
     let app = XCUIApplication()
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-        app.launchArguments = ["-skipLogin"]
-        app.launchArguments += ["-propertyList"]
+        app.launchArguments = ["-skipLogin", "-propertyList"]
         app.launch()
     }
 
-    // Property View Tests
-
     func testAddPropertyButton() throws {
         let addButton = app.buttons["add_property"]
-        XCTAssertTrue(addButton.exists)
+        XCTAssertTrue(addButton.waitForExistence(timeout: 2), "Add property button should exist")
     }
 
     func testPropertyCardDisplay() throws {
-        let propertyCard = app.scrollViews.children(matching: .other).element(boundBy: 0)
+        let firstPropertyCard = app.buttons["property_card_cm7gijdee000ly7i82uq0qf35"]
+        XCTAssertTrue(firstPropertyCard.waitForExistence(timeout: 5), "First property card should exist")
+        XCTAssertTrue(firstPropertyCard.isHittable, "First property card should be hittable")
 
-        XCTAssertTrue(propertyCard.exists)
+        let secondPropertyCard = app.buttons["property_card_cm7gijdee000ly7i82uq0qf36"]
+        XCTAssertTrue(secondPropertyCard.waitForExistence(timeout: 5), "Second property card should exist")
+        XCTAssertTrue(secondPropertyCard.isHittable, "Second property card should be hittable")
 
-        let addressLabel = propertyCard.staticTexts["text_address"]
-        XCTAssertTrue(addressLabel.exists)
+        let addressLabel = secondPropertyCard.staticTexts["text_address"]
+        XCTAssertTrue(addressLabel.exists, "Address should be visible")
 
-        let tenantLabel = propertyCard.staticTexts["text_tenant"]
-        XCTAssertTrue(tenantLabel.exists)
+        let tenantLabel = secondPropertyCard.staticTexts["text_tenant"]
+        XCTAssertTrue(tenantLabel.exists, "Tenant should be visible")
 
-        let leaseStartDateLabel = propertyCard.staticTexts["text_started_on"]
-        XCTAssertTrue(leaseStartDateLabel.exists)
+        let leaseStartDateLabel = secondPropertyCard.staticTexts["text_started_on"]
+        XCTAssertTrue(leaseStartDateLabel.exists, "Lease start date should be visible")
 
-        let availableLabel = propertyCard.staticTexts["text_available"]
-        XCTAssertTrue(availableLabel.exists)
+        let busyLabel = secondPropertyCard.staticTexts["text_busy"]
+        XCTAssertTrue(busyLabel.exists, "Busy status should be visible")
     }
 
     func testDetailsButton() throws {
-        let firstPropertyCard = app.scrollViews.children(matching: .other).element(boundBy: 0)
-
-        XCTAssertTrue(firstPropertyCard.exists)
+        let firstPropertyCard = app.buttons["property_card_cm7gijdee000ly7i82uq0qf35"]
+        XCTAssertTrue(firstPropertyCard.waitForExistence(timeout: 2), "First property card should exist")
         firstPropertyCard.tap()
 
-        let detailsTitle = app.staticTexts["Property Details"].exists || app.staticTexts["Details"].exists
-        XCTAssertTrue(detailsTitle)
+        let detailsTitle = app.staticTexts["Property Details"].exists || app.staticTexts["Détails du bien"].exists
+        XCTAssertTrue(detailsTitle, "Property Details title should be visible")
     }
 
-    // Property Details View Tests
-
     func testPropertyDetailsView() throws {
-        let firstPropertyCard = app.scrollViews.children(matching: .other).element(boundBy: 0)
-        XCTAssertTrue(firstPropertyCard.exists)
+        let firstPropertyCard = app.buttons["property_card_cm7gijdee000ly7i82uq0qf35"]
+        XCTAssertTrue(firstPropertyCard.waitForExistence(timeout: 2), "First property card should exist")
         firstPropertyCard.tap()
 
-        let aboutSectionHeader = app.staticTexts["About the property"].exists || app.staticTexts["À propos"].exists
-        XCTAssertTrue(aboutSectionHeader)
-
-        //        let documentsSectionHeader = app.staticTexts["documents_header"]
-        //        XCTAssertTrue(documentsSectionHeader.exists)
+        let aboutSectionHeader = app.staticTexts["About the property"].exists || app.staticTexts["À propos du bien"].exists
+        XCTAssertTrue(aboutSectionHeader, "About section should be visible")
 
         let startInventoryButton = app.buttons["inventory_btn_start"]
-        XCTAssertTrue(startInventoryButton.exists)
+        XCTAssertTrue(startInventoryButton.waitForExistence(timeout: 2), "Start inventory button should exist")
     }
 
     func testAboutCardView() throws {
-        let firstPropertyCard = app.scrollViews.children(matching: .other).element(boundBy: 0)
-        XCTAssertTrue(firstPropertyCard.exists)
-        firstPropertyCard.tap()
+        let secondPropertyCard = app.buttons["property_card_cm7gijdee000ly7i82uq0qf36"]
+        XCTAssertTrue(secondPropertyCard.waitForExistence(timeout: 2), "Second property card should exist")
+        secondPropertyCard.tap()
 
-        let tenantInfo = app.staticTexts["Jean Dupont"] // Changé de "John Doe" à "Jean Dupont"
-        XCTAssertTrue(tenantInfo.exists, "Tenant 'Jean Dupont' should be visible")
+        let tenantInfo = app.staticTexts["Jean Dupont"]
+        XCTAssertTrue(tenantInfo.waitForExistence(timeout: 2), "Tenant 'Jean Dupont' should be visible")
 
-        let surfaceInfo = app.staticTexts["Area: 65 m²"].exists || app.staticTexts["Surface : 65 m²"].exists // Ajusté à 65.0
+        let surfaceInfo = app.staticTexts["Area: 65 m²"].exists || app.staticTexts["Surface : 65 m²"].exists
         XCTAssertTrue(surfaceInfo, "Surface '65 m²' should be visible")
 
-        let leaseStartDate = app.staticTexts.containing(.staticText, identifier: "Started on:").element
-        XCTAssertTrue(leaseStartDate.exists, "Lease start date should be visible")
+        let leaseStartDate = app.staticTexts["lease_start_date"] // Changement ici
+        XCTAssertTrue(leaseStartDate.waitForExistence(timeout: 2), "Lease start date should be visible")
 
         let rentInfo = app.staticTexts["Rent: 1500€"].exists || app.staticTexts["Loyer: 1500€"].exists
         XCTAssertTrue(rentInfo, "Rent '1500€' should be visible")
@@ -95,95 +86,69 @@ final class PropertyViewUITests: XCTestCase {
 
         let depositInfo = app.staticTexts["Deposit: 3000€"].exists || app.staticTexts["Caution : 3000€"].exists
         XCTAssertTrue(depositInfo, "Deposit '3000€' should be visible")
+
+        if !tenantInfo.exists { print(app.debugDescription) }
     }
 
     func testDocumentsGrid() throws {
-        let firstPropertyCard = app.scrollViews.children(matching: .other).element(boundBy: 0)
-        XCTAssertTrue(firstPropertyCard.exists)
+        let firstPropertyCard = app.buttons["property_card_cm7gijdee000ly7i82uq0qf35"]
+        XCTAssertTrue(firstPropertyCard.waitForExistence(timeout: 2), "First property card should exist")
         firstPropertyCard.tap()
 
-        let document1 = app.staticTexts["Lease Agreement"]
-        XCTAssertTrue(document1.exists)
-
-        let document2 = app.staticTexts["Inspection Report"]
-        XCTAssertTrue(document2.exists)
+        let documentsSectionHeader = app.staticTexts["documents_header"]
+        XCTAssertTrue(documentsSectionHeader.waitForExistence(timeout: 2), "Documents section should exist")
     }
 
     func testStartInventoryButton() throws {
-        let firstPropertyCard = app.scrollViews.children(matching: .other).element(boundBy: 0)
-        XCTAssertTrue(firstPropertyCard.exists)
+        let firstPropertyCard = app.buttons["property_card_cm7gijdee000ly7i82uq0qf35"]
+        XCTAssertTrue(firstPropertyCard.waitForExistence(timeout: 2), "First property card should exist")
         firstPropertyCard.tap()
 
         let startInventoryButton = app.buttons["inventory_btn_start"]
-        XCTAssertTrue(startInventoryButton.exists)
-
+        XCTAssertTrue(startInventoryButton.waitForExistence(timeout: 2), "Start inventory button should exist")
         startInventoryButton.tap()
     }
 
-    // Property Create View Tests
-
     func testCreatePropertyViewElements() throws {
         let addButton = app.buttons["add_property"]
-        XCTAssertTrue(addButton.exists)
+        XCTAssertTrue(addButton.waitForExistence(timeout: 2), "Add property button should exist")
         addButton.tap()
 
-        let nameField = app.textFields["Name_textfield"].exists
-        XCTAssertTrue(nameField)
+        XCTAssertTrue(app.textFields["Name_textfield"].waitForExistence(timeout: 2), "Name field should exist")
+        XCTAssertTrue(app.textFields["Address_textfield"].exists, "Address field should exist")
+        XCTAssertTrue(app.textFields["City_textfield"].exists, "City field should exist")
+        XCTAssertTrue(app.textFields["Postal Code_textfield"].exists, "Postal Code field should exist")
+        XCTAssertTrue(app.textFields["Country_textfield"].exists, "Country field should exist")
 
-        let addressField = app.textFields["Address_textfield"].exists
-        XCTAssertTrue(addressField)
+        app.swipeUp()
 
-        let cityField = app.textFields["City_textfield"].exists
-        XCTAssertTrue(cityField)
-
-        let postalCodeField = app.textFields["Postal Code_textfield"].exists
-        XCTAssertTrue(postalCodeField)
-
-        let countryField = app.textFields["Country_textfield"].exists
-        XCTAssertTrue(countryField)
-
-        let rentField = app.textFields["Monthly Rent_textfield"]
-        if !rentField.exists {
-            app.swipeUp()
-        }
-
-        XCTAssertTrue(rentField.exists)
-
-        let depositField = app.textFields["Deposit_textfield"].exists
-        XCTAssertTrue(depositField)
-
-        let surfaceField = app.textFields["Surface (m²)_textfield"].exists
-        XCTAssertTrue(surfaceField)
-
-        let cancelButton = app.buttons["cancel_button"].exists
-        XCTAssertTrue(cancelButton)
-
-        let confirmButton = app.buttons["confirm_button"].exists
-        XCTAssertTrue(confirmButton)
+        XCTAssertTrue(app.textFields["Monthly Rent_textfield"].waitForExistence(timeout: 2), "Rent field should exist")
+        XCTAssertTrue(app.textFields["Deposit_textfield"].exists, "Deposit field should exist")
+        XCTAssertTrue(app.textFields["Surface (m²)_textfield"].exists, "Surface field should exist")
+        XCTAssertTrue(app.buttons["cancel_button"].exists, "Cancel button should exist")
+        XCTAssertTrue(app.buttons["confirm_button"].exists, "Confirm button should exist")
     }
 
     func testErrorAddProperty() throws {
         let addButton = app.buttons["add_property"]
-        XCTAssertTrue(addButton.exists)
+        XCTAssertTrue(addButton.waitForExistence(timeout: 2), "Add property button should exist")
         addButton.tap()
 
         let addPropertyButton = app.buttons["confirm_button"]
-        XCTAssert(addPropertyButton.exists)
-
+        XCTAssertTrue(addPropertyButton.waitForExistence(timeout: 2), "Confirm button should exist")
         addPropertyButton.tap()
     }
 
     func testCancelPropertyCreation() throws {
         let addButton = app.buttons["add_property"]
-        XCTAssertTrue(addButton.exists)
+        XCTAssertTrue(addButton.waitForExistence(timeout: 2), "Add property button should exist")
         addButton.tap()
 
         let cancelButton = app.buttons["cancel_button"]
-        XCTAssertTrue(cancelButton.exists)
+        XCTAssertTrue(cancelButton.waitForExistence(timeout: 2), "Cancel button should exist")
         cancelButton.tap()
 
-        let firstPropertyCard = app.scrollViews.children(matching: .other).element(boundBy: 0)
-        XCTAssertTrue(firstPropertyCard.exists)
+        let firstPropertyCard = app.buttons["property_card_cm7gijdee000ly7i82uq0qf35"]
+        XCTAssertTrue(firstPropertyCard.waitForExistence(timeout: 2), "First property card should exist after cancel")
     }
-
 }

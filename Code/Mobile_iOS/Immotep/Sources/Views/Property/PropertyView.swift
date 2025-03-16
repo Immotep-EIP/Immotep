@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PropertyView: View {
-    @StateObject private var viewModel = PropertyViewModel()
+    @EnvironmentObject var viewModel: PropertyViewModel
     @State private var isCreatingProperty = false
     @State private var showDeleteConfirmationAlert = false
     @State private var propertyToDelete: Property?
@@ -62,9 +62,11 @@ struct PropertyView: View {
             }
         }
         .onAppear {
-            Task {
-                await viewModel.fetchProperties()
-                listRefreshID = UUID()
+            if !CommandLine.arguments.contains("-skipLogin") {
+                Task {
+                    await viewModel.fetchProperties()
+                    listRefreshID = UUID()
+                }
             }
         }
         .onChange(of: viewModel.properties) {
@@ -102,8 +104,9 @@ struct PropertyView: View {
             if !viewModel.properties.isEmpty {
                 ForEach($viewModel.properties) { $property in
                     NavigationLink(destination: PropertyDetailView(property: $property, viewModel: viewModel)) {
-                        PropertyCardView(property: $property) // Passage du Binding
+                        PropertyCardView(property: $property)
                     }
+                    .accessibilityIdentifier("property_card_\(property.id)") // Déplacé ici
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(action: {
                             navigateToEditId = property.id
@@ -149,6 +152,7 @@ struct PropertyView: View {
         }
     }
 }
+
 struct PropertyCardView: View {
     @Binding var property: Property
 
@@ -191,11 +195,7 @@ struct PropertyCardView: View {
                         }
 
                         if let leaseStart = property.leaseStartDate {
-                            Text(
-                                String(
-                                    format: "started_on".localized(),
-                                    formatDateString(leaseStart)
-                                ))
+                            Text(String(format: "started_on".localized(), formatDateString(leaseStart)))
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                                 .accessibilityLabel("text_started_on")

@@ -24,7 +24,8 @@ struct PropertyDetailView: View {
                     AboutCardView(property: $property)
                 }
 
-                Section(header: Text("Documents").accessibilityLabel("documents_header")) {
+                Section(header: Text("Documents")
+                    .accessibilityIdentifier("documents_header")) {
                     DocumentsGrid(documents: $property.documents)
                 }
             }
@@ -74,29 +75,23 @@ struct AboutCardView: View {
 
             buildRow(
                 icon: "calendar",
-                leftText:
-                    String(
-                        format: "start_date".localized(),
-                           property.leaseStartDate != nil ? formatDateString(property.leaseStartDate!) : "No start date assigned".localized()),
+                leftText: String(
+                    format: "start_date".localized(),
+                    property.leaseStartDate != nil ? formatDateString(property.leaseStartDate!) : "No start date assigned".localized()
+                ),
                 rightIcon: "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90",
-                rightText:
-                    String(
-                        format: "rent_month".localized(),
-                        property.monthlyRent)
+                rightText: String(format: "rent_month".localized(), property.monthlyRent)
             )
+            .accessibilityIdentifier("lease_start_date") // Ajout ici
 
             buildRow(
                 icon: "calendar",
-                leftText:
-                    String(
-                        format: "end_date".localized(),
-                        property.leaseEndDate != nil ? formatDateString(property.leaseEndDate!) :
-                        "No end date assigned".localized()),
+                leftText: String(
+                    format: "end_date".localized(),
+                    property.leaseEndDate != nil ? formatDateString(property.leaseEndDate!) : "No end date assigned".localized()
+                ),
                 rightIcon: "eurosign.bank.building",
-                rightText:
-                    String(
-                        format: "deposit_value".localized(),
-                        property.deposit)
+                rightText: String(format: "deposit_value".localized(), property.deposit)
             )
         }
         .padding(.vertical, 10)

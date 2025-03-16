@@ -4,13 +4,34 @@
 //
 //  Created by Liebenguth Alessio on 09/12/2024.
 //
-
 import SwiftUI
 
 struct TestImmotepView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @StateObject private var profileViewModel = ProfileViewModel()
     @State private var propertyExample: Property = exampleDataProperty
+    @State private var mockProperty = Property( // Déplacé ici
+        id: "cm7gijdee000ly7i82uq0qf35",
+        ownerID: "owner123",
+        name: "Maison de Campagne",
+        address: "123 Rue des Champs",
+        city: "Paris",
+        postalCode: "75001",
+        country: "France",
+        photo: UIImage(named: "DefaultImageProperty"),
+        monthlyRent: 1200,
+        deposit: 2400,
+        surface: 85.5,
+        isAvailable: "available",
+        tenantName: nil,
+        leaseStartDate: nil,
+        leaseEndDate: nil,
+        documents: [],
+        createdAt: "2023-10-26T10:00:00Z",
+        rooms: [
+            PropertyRooms(id: "room1", name: "Salon", checked: false, inventory: [])
+        ]
+    )
 
     var body: some View {
         let isUITestMode = CommandLine.arguments.contains("-skipLogin")
@@ -28,6 +49,10 @@ struct TestImmotepView: View {
                     inventoryEntryEvaluationView()
                 } else if CommandLine.arguments.contains("-inventoryExitEvaluationView") {
                     inventoryExitEvaluationView()
+                } else if CommandLine.arguments.contains("-createPropertyView") {
+                    propertyCreateView()
+                } else if CommandLine.arguments.contains("-editPropertyView") {
+                    propertyEditView()
                 } else {
                     OverviewView()
                         .environmentObject(profileViewModel)
@@ -62,10 +87,7 @@ struct TestImmotepView: View {
                 tenantName: nil,
                 leaseStartDate: nil,
                 leaseEndDate: nil,
-                documents: [
-//                    PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),
-//                    PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
-                ],
+                documents: [],
                 createdAt: "2023-10-26T10:00:00Z",
                 rooms: [
                     PropertyRooms(id: "room1", name: "Salon", checked: false, inventory: [])
@@ -87,10 +109,7 @@ struct TestImmotepView: View {
                 tenantName: "Jean Dupont",
                 leaseStartDate: "2023-10-26T10:00:00Z",
                 leaseEndDate: nil,
-                documents: [
-//                    PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),
-//                    PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
-                ],
+                documents: [],
                 createdAt: "2023-11-15T14:30:00Z",
                 rooms: [
                     PropertyRooms(id: "room2", name: "Chambre", checked: true, inventory: [])
@@ -166,5 +185,27 @@ struct TestImmotepView: View {
             id: "1.1", propertyId: propertyExample.id, roomId: "1", name: "Sofa", quantity: 1
         ))
             .environmentObject(viewModel)
+    }
+
+    private func propertyCreateView() -> some View {
+        let viewModel = PropertyViewModel()
+        return NavigationStack {
+            PropertyView()
+                .environmentObject(viewModel)
+                .navigationDestination(isPresented: .constant(true)) {
+                    CreatePropertyView(viewModel: viewModel)
+                }
+        }
+    }
+
+    private func propertyEditView() -> some View {
+        let viewModel = PropertyViewModel()
+        return NavigationStack {
+            PropertyView()
+                .environmentObject(viewModel)
+                .navigationDestination(isPresented: .constant(true)) {
+                    EditPropertyView(viewModel: viewModel, property: $mockProperty)
+                }
+        }
     }
 }
