@@ -301,6 +301,9 @@ class MockedApiService : ApiService {
     }
 
     override suspend fun updateProfile(authHeader : String, profileUpdateInput: ProfileUpdateInput) : ProfileResponse {
+        if (profileUpdateInput.email == "error@gmail.com") {
+            throw Exception("Unknown user,401")
+        }
         return ProfileResponse(
             id = "test123",
             email = profileUpdateInput.email,

@@ -92,7 +92,7 @@ fun ProfileScreen(
                         .clip(RoundedCornerShape(5.dp))
                         .padding(5.dp)
                         .fillMaxWidth()
-                        .testTag("startInventory")
+                        .testTag("updateProfile")
                 ) {
                     Text(
                         stringResource(R.string.update_profile),

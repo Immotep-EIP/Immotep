@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -102,5 +103,27 @@ class ProfileInstrumentedTest {
     @Test
     fun emailTestFieldContainsGoodValue() {
         mainAct.onNodeWithTag("profileEmail").assert(hasText("robin.denni@epitech.eu"))
+    }
+
+    @Test
+    fun updateProfileButtonIsPresent() {
+        mainAct.onNodeWithTag("updateProfile").assertIsDisplayed()
+    }
+
+    @Test
+    fun canUpdateUserProfile() {
+        mainAct.onNodeWithTag("profileLastName").assertIsDisplayed().performClick().performTextInput("T")
+        mainAct.onNodeWithTag("profileFirstName").assertIsDisplayed().performClick().performTextInput("S")
+        mainAct.onNodeWithTag("updateProfile").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("profileLastName").assert(hasText("UserT"))
+        mainAct.onNodeWithTag("profileFirstName").assert(hasText("TestS"))
+    }
+
+    @Test
+    fun userProfileTriggersError() {
+        mainAct.onNodeWithTag("profileEmail").assertIsDisplayed().performTextClearance()
+        mainAct.onNodeWithTag("profileEmail").performClick().performTextInput("error@gmail.com")
+        mainAct.onNodeWithTag("updateProfile").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("errorAlert").assertIsDisplayed()
     }
 }
