@@ -18,35 +18,27 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.random.Random
 
-/*
+
 @RunWith(AndroidJUnit4::class)
 class RegisterInstrumentedTests {
+    constructor() {
+        isTesting = true
+    }
     @get:Rule
     val mainAct = createAndroidComposeRule<MainActivity>()
     private val res = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
     private fun removeToken() {
-        val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
-        val authServ = AuthService(dataStore)
-        runBlocking {
-            authServ.deleteToken()
+        try {
+            mainAct.onNodeWithTag("loggedTopBarImage").performClick()
+        } catch (e: Throwable) {
+            println("Node loggedTopBarImage not found. Skipping click.")
         }
     }
 
     @Before
-    fun setup() {
-        val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
-        val authServ = AuthService(dataStore)
-        try {
-            runBlocking {
-                authServ.getToken()
-                mainAct.onNodeWithTag("loggedTopBarImage").assertIsDisplayed()
-                    .performClick()
-                Thread.sleep(5000)
-            }
-        } catch (e: Exception) {
-            return
-        }
+    fun init() {
+        this.removeToken()
     }
 
     @Test
@@ -63,6 +55,7 @@ class RegisterInstrumentedTests {
 
     @Test
     fun canGoToRegisterScreen() {
+        this.removeToken()
         mainAct.onNodeWithTag("loginScreenToRegisterButton").assertIsDisplayed()
             .performClick()
         mainAct.onNodeWithText(res.getString(R.string.create_account)).assertIsDisplayed()
@@ -136,25 +129,21 @@ class RegisterInstrumentedTests {
         mainAct.onNodeWithText(res.getString(R.string.password_confirm_error)).assertIsDisplayed()
     }
 
-    /* for this test you need to have a server running */
     @Test
     fun canRegisterUser() {
         this.canGoToRegisterScreen()
         val email = "test${Random.nextInt(0, 10000)}@gmail.com"
-        println(email)
         mainAct.onNodeWithTag("registerLastName").performClick()
             .performTextInput("test")
         mainAct.onNodeWithTag("registerFirstName").performClick()
             .performTextInput("android")
         mainAct.onNodeWithTag("registerEmail").performClick().performTextInput(email)
         mainAct.onNodeWithTag("registerPassword").performClick()
-            .performTextInput("test123&")
+            .performTextInput("Ttest123&")
         mainAct.onNodeWithTag("registerPasswordConfirm").performClick()
-            .performTextInput("test123&")
+            .performTextInput("Ttest123&")
         mainAct.onNodeWithTag("registerAgreeToTerm").performClick()
         mainAct.onNodeWithTag("registerButton").performClick()
-        Thread.sleep(10000)
         mainAct.onNodeWithText(res.getString(R.string.login_hello)).assertIsDisplayed()
     }
 }
-*/

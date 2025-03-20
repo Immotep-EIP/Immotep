@@ -35,7 +35,6 @@ class LoginInstrumentedTest {
         try {
             composeTestRule.onNodeWithTag("loggedTopBarImage").performClick()
         } catch (e: Throwable) {
-            // Log the error or handle it as needed
             println("Node loggedTopBarImage not found. Skipping click.")
         }
     }
@@ -124,16 +123,14 @@ class LoginInstrumentedTest {
         composeTestRule.onNodeWithText(res.getString(R.string.password_error)).assertIsDisplayed()
     }
 
-    /* for this test you need to be connected to the internet, to have a server running and to register a user with the right email and password */
     @Test
     fun canGoToDashboard() {
         this.removeToken()
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("Ttest99&")
         composeTestRule.onNodeWithTag("loginButton").performClick()
-        Thread.sleep(10000)
+        Thread.sleep(2000)
         composeTestRule.onNodeWithTag("dashboardScreen").assertIsDisplayed()
-        //this.removeToken()
     }
 
     @Test
@@ -144,7 +141,6 @@ class LoginInstrumentedTest {
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick()
             .performTextInput("testError")
         composeTestRule.onNodeWithTag("loginButton").performClick()
-        Thread.sleep(4000)
         composeTestRule.onNodeWithTag("errorAlert").assertIsDisplayed()
     }
 
