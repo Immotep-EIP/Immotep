@@ -35,7 +35,7 @@ fun InviteTenantModal(open: Boolean, close: () -> Unit, navController: NavContro
     val form = viewModel.invitationForm.collectAsState()
     val formError = viewModel.invitationFormError.collectAsState()
 
-    BigModalLayout(height = 0.8f, open = open, close = close) {
+    BigModalLayout(height = 0.8f, open = open, close = close, testTag = "inviteTenantModal") {
         Text(
             text = stringResource(R.string.invite_tenant),
             style = MaterialTheme.typography.headlineMedium
@@ -53,14 +53,16 @@ fun InviteTenantModal(open: Boolean, close: () -> Unit, navController: NavContro
             currentDate = form.value.startDate,
             onDateSelected = { date -> if (date != null) viewModel.setStartDate(date) },
             label = stringResource(R.string.start_date),
-            errorMessage = if (formError.value.date) stringResource(R.string.not_end_date_before_start) else null
+            errorMessage = if (formError.value.date) stringResource(R.string.not_end_date_before_start) else null,
+            globalTestTag = "startDateInput"
         )
         Spacer(modifier = Modifier.height(16.dp))
         DateRangeInput(
             currentDate = form.value.endDate,
             onDateSelected = { date -> if (date != null) viewModel.setEndDate(date) },
             label = stringResource(R.string.end_date),
-            errorMessage = if (formError.value.date) stringResource(R.string.not_end_date_before_start) else null
+            errorMessage = if (formError.value.date) stringResource(R.string.not_end_date_before_start) else null,
+            globalTestTag = "endDateInput"
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(

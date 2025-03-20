@@ -4,6 +4,22 @@ import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiService
 import java.time.OffsetDateTime
 
+//enum classes
+
+enum class PropertyStatus {
+    unavailable,
+    available,
+    invite_sent
+}
+
+fun stringToPropertyState(str : String) : PropertyStatus {
+    return when(str) {
+        "available" -> PropertyStatus.available
+        "invite sent" -> PropertyStatus.invite_sent
+        else -> PropertyStatus.unavailable
+    }
+}
+
 //input and output api classes
 
 
@@ -54,7 +70,7 @@ data class GetPropertyResponse(
         address = this.address,
         appartementNumber = this.apartment_number,
         tenant = this.tenant,
-        available = this.status == "available",
+        status = stringToPropertyState(this.status),
         startDate = if (this.start_date != null) OffsetDateTime.parse(this.start_date) else null,
         endDate = if (this.end_date != null) OffsetDateTime.parse(this.end_date) else null,
         area = this.area_sqm.toInt(),
@@ -78,7 +94,7 @@ data class DetailedProperty(
      val image : String = "",
      val address : String = "",
      val tenant : String? = null,
-     val available : Boolean = true,
+     val status: PropertyStatus = PropertyStatus.unavailable,
      val startDate : OffsetDateTime? = null,
      val endDate : OffsetDateTime? = null,
      val appartementNumber : String? = "",

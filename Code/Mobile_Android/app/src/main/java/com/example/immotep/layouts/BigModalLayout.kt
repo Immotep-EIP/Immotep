@@ -17,12 +17,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BigModalLayout(height: Float, open : Boolean, close : () -> Unit, content: @Composable () -> Unit)
+fun BigModalLayout(height: Float, open : Boolean, close : () -> Unit, testTag : String = "bigModalLayout", content: @Composable () -> Unit)
 {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -53,7 +54,7 @@ fun BigModalLayout(height: Float, open : Boolean, close : () -> Unit, content: @
                 closeModal()
             },
             sheetState = sheetState,
-            modifier = Modifier.fillMaxWidth().heightIn(modalHeight),
+            modifier = Modifier.fillMaxWidth().heightIn(modalHeight).testTag(testTag),
         ) {
             Column(
                 modifier = Modifier

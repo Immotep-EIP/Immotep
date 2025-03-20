@@ -49,6 +49,7 @@ import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.PropertyStatus
 import com.example.immotep.components.DeletePopUp
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
@@ -139,13 +140,23 @@ fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDel
                 .width(100.dp)
                 .height(30.dp)
                 .clip(RoundedCornerShape(30.dp))
-                .background(if (property.available) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.error)
+                .background(
+                    when(property.status) {
+                        PropertyStatus.available -> MaterialTheme.colorScheme.surfaceVariant
+                        PropertyStatus.invite_sent -> MaterialTheme.colorScheme.inversePrimary
+                        else -> MaterialTheme.colorScheme.error
+                    }
+                )
                 .padding(3.dp)
                 .testTag("topRightPropertyBoxInfo")
         ) {
             Text(
                 color = MaterialTheme.colorScheme.onError,
-                text = if (property.available) stringResource(R.string.available) else stringResource(R.string.busy),
+                text = when(property.status) {
+                    PropertyStatus.available -> stringResource(R.string.available)
+                    PropertyStatus.invite_sent -> stringResource(R.string.pending)
+                    else -> stringResource(R.string.busy)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentSize(Alignment.Center)

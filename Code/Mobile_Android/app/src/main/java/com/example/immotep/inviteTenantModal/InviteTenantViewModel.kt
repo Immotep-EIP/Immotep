@@ -33,8 +33,8 @@ data class InviteTenantInputFormError(
 )
 
 class InviteTenantViewModel(
-    private val apiService: ApiService,
-    private val navController: NavController
+    apiService: ApiService,
+    navController: NavController
 ) : ViewModel() {
     private val callerService = TenantCallerService(apiService, navController)
     private val _invitationForm = MutableStateFlow(InviteTenantInputForm())
@@ -42,6 +42,11 @@ class InviteTenantViewModel(
 
     val invitationForm = _invitationForm.asStateFlow()
     val invitationFormError = _invitationFormError.asStateFlow()
+
+    fun reset() {
+        _invitationForm.value = InviteTenantInputForm()
+        _invitationFormError.value = InviteTenantInputFormError()
+    }
 
     fun setStartDate(startDate: Long) {
         println(startDate)
@@ -81,6 +86,7 @@ class InviteTenantViewModel(
             try {
                 close()
                 callerService.invite(propertyId, _invitationForm.value.toInviteInput(), onError)
+                reset()
             } catch(e: Exception) {
                 println(e)
             }

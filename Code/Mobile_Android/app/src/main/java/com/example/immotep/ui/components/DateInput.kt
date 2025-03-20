@@ -1,5 +1,6 @@
 package com.example.immotep.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -36,7 +41,8 @@ fun DateRangeInput(
     currentDate : Long,
     onDateSelected: (Long?) -> Unit,
     label: String = "Date",
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    globalTestTag: String = "dateRangeInput"
 ) {
     val datePickerState = rememberDatePickerState()
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -50,7 +56,12 @@ fun DateRangeInput(
             label = label,
             readOnly = true,
             trailingIcon = {
-                IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                IconButton(onClick = { showDatePicker = !showDatePicker },
+                    modifier = Modifier
+                        .clearAndSetSemantics {
+                            testTag = "iconButton $globalTestTag"
+                        }
+                    ) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
                         contentDescription = "Select date",
@@ -60,7 +71,8 @@ fun DateRangeInput(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp),
+                .height(64.dp)
+                .testTag("textField $globalTestTag"),
             errorMessage = errorMessage
         )
         if (showDatePicker) {

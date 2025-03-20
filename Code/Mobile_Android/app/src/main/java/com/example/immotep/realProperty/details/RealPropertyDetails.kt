@@ -59,6 +59,7 @@ import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.apiCallerServices.DetailedProperty
 import com.example.immotep.apiCallerServices.Document
+import com.example.immotep.apiCallerServices.PropertyStatus
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InternalLoading
@@ -254,7 +255,7 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
             }
             ErrorAlert(null, null, errorAlertVal)
             PropertyBox(property.value)
-            if (property.value.available) {
+            if (property.value.status == PropertyStatus.available) {
                 Button(
                     onClick = { inviteTenantOpen = true },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
@@ -262,7 +263,7 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
                         .clip(RoundedCornerShape(5.dp))
                         .padding(5.dp)
                         .fillMaxWidth()
-                        .testTag("startInventory")
+                        .testTag("inviteTenantBtn")
                 ) {
                     Text(
                         stringResource(R.string.invite_tenant),

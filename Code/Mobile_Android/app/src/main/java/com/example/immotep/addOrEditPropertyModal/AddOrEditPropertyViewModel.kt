@@ -105,14 +105,14 @@ class AddOrEditPropertyViewModel : ViewModel() {
             }
         if (newPropertyErrors.address || newPropertyErrors.zipCode || newPropertyErrors.country || newPropertyErrors.area || newPropertyErrors.rental || newPropertyErrors.deposit) {
             _propertyFormError.value = newPropertyErrors
-            println("ERRROR $newPropertyErrors")
+            println("ERROR $newPropertyErrors")
             return
         }
             viewModelScope.launch {
                 try {
                     sendFormFn(propertyForm.value)
-                    reset()
                     onClose()
+                    reset()
                 } catch (e: Exception) {
                     println("Error during property creation: ${e.message}")
                     e.printStackTrace()

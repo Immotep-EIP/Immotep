@@ -84,12 +84,13 @@ fun AddOrEditPropertyModal(
             viewModel.setBaseValue(baseValue)
         }
     }
-    BigModalLayout(open = open, close = onClose, height = 0.95f) {
+    BigModalLayout(open = open, close = onClose, height = 0.95f, testTag = "addOrEditPropertyModal") {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.95f)
                 .verticalScroll(rememberScrollState())
+                .testTag("addOrEditScrollContainer")
         ) {
             Row(
                 modifier = Modifier
@@ -127,6 +128,7 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
+                        .testTag("addOrEditName")
                 )
                 OutlinedTextField(
                     value = form.value.address,
@@ -135,6 +137,8 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
+                        .testTag("addOrEditAddress")
+
                 )
                 OutlinedTextField(
                     value = form.value.apartment_number,
@@ -143,6 +147,7 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
+                        .testTag("addOrEditNumber")
                 )
                 OutlinedTextField(
                     value = form.value.city,
@@ -151,6 +156,7 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
+                        .testTag("addOrEditCity")
                 )
                 OutlinedTextField(
                     value = form.value.postal_code,
@@ -163,6 +169,7 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
+                        .testTag("addOrEditPostalCode")
                 )
                 OutlinedTextField(
                     value = form.value.country,
@@ -171,6 +178,7 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
+                        .testTag("addOrEditCountry")
                 )
                 OutlinedTextField(
                     value = form.value.area_sqm.toString(),
@@ -190,6 +198,7 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
+                        .testTag("addOrEditArea")
                 )
                 OutlinedTextField(
                     value = form.value.rental_price_per_month.toString(),
@@ -209,6 +218,7 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
+                        .testTag("addOrEditRental")
                 )
                 OutlinedTextField(
                     value = form.value.deposit_price.toString(),
@@ -228,6 +238,7 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
+                        .testTag("addOrEditDeposit")
                 )
 
 
@@ -274,8 +285,8 @@ fun AddOrEditPropertyModal(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
-
                         .clip(RectangleShape)
+                        .testTag("addOrEditSubmit")
                 ) {
                     submitButtonIcon()
                     Text(submitButtonText)
