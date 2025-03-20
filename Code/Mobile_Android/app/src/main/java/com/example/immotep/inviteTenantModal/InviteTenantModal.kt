@@ -26,7 +26,13 @@ import com.example.immotep.R
 import com.example.immotep.ui.components.OutlinedTextField
 
 @Composable
-fun InviteTenantModal(open: Boolean, close: () -> Unit, navController: NavController, propertyId : String) {
+fun InviteTenantModal(
+    open: Boolean,
+    close: () -> Unit,
+    navController: NavController,
+    propertyId : String,
+    onSubmit: (email: String, startDate: Long, endDate: Long) -> Unit
+) {
     val apiService = LocalApiService.current
     val viewModel: InviteTenantViewModel = viewModel {
         InviteTenantViewModel(apiService = apiService, navController = navController)
@@ -69,7 +75,8 @@ fun InviteTenantModal(open: Boolean, close: () -> Unit, navController: NavContro
             onClick = { viewModel.inviteTenant(
                 close = close,
                 propertyId = propertyId,
-                onError = { Toast.makeText(navController.context, inviteTenantApiError, Toast.LENGTH_LONG).show() }
+                onError = { Toast.makeText(navController.context, inviteTenantApiError, Toast.LENGTH_LONG).show() },
+                onSubmit = onSubmit
             ) },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
             modifier = Modifier

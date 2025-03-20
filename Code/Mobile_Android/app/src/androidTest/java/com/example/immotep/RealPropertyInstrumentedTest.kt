@@ -238,9 +238,21 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithText("19 rue de la paixZZ").assertIsDisplayed()
     }
 
+    @ExperimentalTestApi
     @Test
     fun modifyPropertyIsGoodOnRealPropertyView() {
-
+        this.goToDetails()
+        mainAct.onNodeWithTag("editProperty").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("addOrEditAddress").assertIsDisplayed().performClick().performTextInput("ZZ")
+        mainAct.onNodeWithTag("addOrEditScrollContainer").assertIsDisplayed().performScrollToNode(
+            hasTestTag("addOrEditSubmit")
+        )
+        mainAct.onNodeWithTag("addOrEditSubmit").assertIsDisplayed().performClick()
+        mainAct.waitUntilDoesNotExist(hasTestTag("addOrEditPropertyModal"), timeoutMillis = 2000)
+        mainAct.onNodeWithTag("addOrEditPropertyModal").assertIsNotDisplayed()
+        mainAct.onNodeWithTag("backButton").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("realPropertyScreen"), timeoutMillis = 2000)
+        mainAct.onNodeWithText("19 rue de la paixZZ").assertIsDisplayed()
     }
 
     @Test
@@ -277,7 +289,7 @@ class RealPropertyInstrumentedTest {
         this.goToDetailsOfEmpty()
     }
     */
-    
+
     @Test
     fun startInventoryButtonIsPresent() {
         this.goToDetails()

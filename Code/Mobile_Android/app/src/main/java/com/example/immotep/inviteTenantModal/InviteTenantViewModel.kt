@@ -78,7 +78,11 @@ class InviteTenantViewModel(
         return true
     }
 
-    fun inviteTenant(close : () -> Unit, propertyId : String, onError : () -> Unit) {
+    fun inviteTenant(
+        close : () -> Unit,
+        propertyId : String, onError : () -> Unit,
+        onSubmit: (email: String, startDate: Long, endDate: Long) -> Unit
+    ) {
         if (!inviteTenantValidator()) {
             return
         }
@@ -86,6 +90,7 @@ class InviteTenantViewModel(
             try {
                 close()
                 callerService.invite(propertyId, _invitationForm.value.toInviteInput(), onError)
+                onSubmit(_invitationForm.value.email, _invitationForm.value.startDate, _invitationForm.value.endDate)
                 reset()
             } catch(e: Exception) {
                 println(e)

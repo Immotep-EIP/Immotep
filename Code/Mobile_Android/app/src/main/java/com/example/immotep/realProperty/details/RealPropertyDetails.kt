@@ -225,7 +225,8 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
         open = inviteTenantOpen,
         close = { inviteTenantOpen = false },
         navController = navController,
-        propertyId = newProperty.id
+        propertyId = newProperty.id,
+        onSubmit = {email, startDate, endDate -> viewModel.onSubmitInviteTenant(email, startDate, endDate) }
     )
     if (isLoading.value) {
         InternalLoading()
