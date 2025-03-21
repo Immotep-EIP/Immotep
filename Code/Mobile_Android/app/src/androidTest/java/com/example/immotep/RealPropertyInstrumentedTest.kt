@@ -267,7 +267,7 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithTag("inviteTenantBtn").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("inviteTenantModal").assertIsDisplayed()
     }
-    /*
+
     @Test
     fun inviteUserModalDoesContainsTheGoodInputsAndButton() {
         this.goToDetailsOfEmpty()
@@ -277,18 +277,31 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithTag("textField endDateInput").assertIsDisplayed()
     }
 
+    @ExperimentalTestApi
     @Test
     fun canInviteUser() {
         this.goToDetailsOfEmpty()
         mainAct.onNodeWithTag("inviteTenantBtn").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("tenantEmail").assertIsDisplayed().performClick().performTextInput("newTenant@gmail.com")
+        mainAct.onNodeWithTag("sendInvitation").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("realPropertyDetailsScreen"), timeoutMillis = 2000)
+        mainAct.onAllNodesWithText("newTenant@gmail.com").assertCountEquals(2)
 
     }
 
+    @ExperimentalTestApi
     @Test
     fun inviteUserIsGoodOnRealPropertyView() {
         this.goToDetailsOfEmpty()
+        mainAct.onNodeWithTag("inviteTenantBtn").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("tenantEmail").assertIsDisplayed().performClick().performTextInput("newTenant@gmail.com")
+        mainAct.onNodeWithTag("sendInvitation").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("backButton"), timeoutMillis = 2000)
+        mainAct.onNodeWithTag("backButton").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("realPropertyScreen"), timeoutMillis = 2000)
+        mainAct.onNodeWithText("newTenant@gmail.com").assertIsDisplayed()
     }
-    */
+
 
     @Test
     fun startInventoryButtonIsPresent() {
