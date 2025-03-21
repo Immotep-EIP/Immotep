@@ -3,6 +3,7 @@ package com.example.immotep
 import android.content.res.Resources
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -20,7 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class InventoryInstrumentedTests {
     constructor() {
@@ -83,14 +84,12 @@ class InventoryInstrumentedTests {
         mainAct.onNodeWithTag("inventoryLayout").assertIsDisplayed()
     }
 
-    @ExperimentalTestApi
     @Test
     fun canGoToEntryInventoryPage() {
         mainAct.onNodeWithTag("entryInventoryButton").assertIsDisplayed().performClick()
         mainAct.waitUntilAtLeastOneExists(hasTestTag("roomsScreen"), timeoutMillis = 2000)
     }
 
-    @ExperimentalTestApi
     @Test
     fun entryInventoryRoomPageContainsAllTheGoodInfos() {
         this.canGoToEntryInventoryPage()
@@ -102,7 +101,6 @@ class InventoryInstrumentedTests {
         mainAct.onNodeWithText("testRoomName").assertIsDisplayed()
     }
 
-    @ExperimentalTestApi
     @Test
     fun doesAddRoomModalOpens() {
         this.canGoToEntryInventoryPage()
@@ -110,7 +108,6 @@ class InventoryInstrumentedTests {
         mainAct.onNodeWithTag("addRoomModal").assertIsDisplayed()
     }
 
-    @ExperimentalTestApi
     @Test
     fun doesAddRoomModalContainsAllTheGoodInfos() {
         this.canGoToEntryInventoryPage()
@@ -121,7 +118,6 @@ class InventoryInstrumentedTests {
         mainAct.onNodeWithTag("addRoomModalConfirm").assertIsDisplayed()
     }
 
-    @ExperimentalTestApi
     @Test
     fun canCloseAddRoomModal() {
         this.canGoToEntryInventoryPage()
@@ -130,7 +126,6 @@ class InventoryInstrumentedTests {
         mainAct.onNodeWithTag("addRoomModal").assertDoesNotExist()
     }
 
-    @ExperimentalTestApi
     @Test
     fun canAddARoom() {
         this.canGoToEntryInventoryPage()
@@ -139,32 +134,48 @@ class InventoryInstrumentedTests {
         mainAct.onNodeWithTag("addRoomModalConfirm").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("addRoomModal").assertDoesNotExist()
         mainAct.onNodeWithText("new Test Room").assertIsDisplayed()
-
     }
 
     @Test
     fun canGoToDetailsPage() {
-
+        this.canGoToEntryInventoryPage()
+        mainAct.onNodeWithTag("roomButton testRoom").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("roomsDetailsScreen"), timeoutMillis = 2000)
     }
 
     @Test
     fun detailsPageContainsAllTheGoodInfos() {
+        this.canGoToDetailsPage()
+        mainAct.onNodeWithTag("editRoomsDetails").assertIsDisplayed()
+        mainAct.onNodeWithTag("detailButton testFurniture").assertIsDisplayed()
+        mainAct.onNodeWithTag("addDetailsButton").assertIsDisplayed()
 
     }
 
     @Test
     fun canAddANewDetail() {
-
+        this.canGoToDetailsPage()
+        mainAct.onNodeWithTag("addDetailsButton").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("roomNameTextField").assertIsDisplayed().performClick().performTextInput("new Test Detail")
+        mainAct.onNodeWithTag("addRoomModalConfirm").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("addRoomModal").assertDoesNotExist()
+        mainAct.onNodeWithText("new Test Detail").assertIsDisplayed()
     }
+
 
     @Test
     fun canExitDetailPage() {
-
+        this.canGoToDetailsPage()
+        mainAct.onNodeWithTag("inventoryTopBarCloseIcon").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("roomsDetailsScreen").assertIsNotDisplayed()
+        mainAct.onNodeWithTag("roomsScreen").assertIsDisplayed()
     }
 
     @Test
     fun canGoToOneDetailPage() {
-
+        this.canGoToDetailsPage()
+        mainAct.onNodeWithTag("detailButton testFurniture").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("oneDetailScreen").assertIsDisplayed()
     }
 
     @Test
