@@ -104,7 +104,7 @@ fun InventoryLayout(
 ) {
     Column(modifier = Modifier.testTag(testTag)) {
         InventoryTopBar(onExit)
-        Column(modifier = Modifier.weight(1f).padding(10.dp).testTag("dashboardLayout")) {
+        Column(modifier = Modifier.weight(1f).padding(10.dp).testTag("inventoryLayout")) {
             content()
         }
     }

@@ -112,14 +112,14 @@ val emptyFakeProperty = GetPropertyResponse(
 )
 
 val fakeRoom = RoomOutput(
-    id = "test",
-    name = "test",
+    id = "testRoom",
+    name = "testRoomName",
     property_id = "test",
 )
 
 val fakeFurniture = FurnitureOutput(
-    id = "test",
-    name = "test",
+    id = "testFurniture",
+    name = "testFurniture",
     room_id = "test",
     property_id = "test",
     quantity = 1
@@ -127,7 +127,7 @@ val fakeFurniture = FurnitureOutput(
 
 val fakeInventoryReport = InventoryReportOutput(
     date = "test",
-    id = "test",
+    id = "testInventory",
     property_id = "test",
     rooms = arrayOf(),
     type = "test",
@@ -135,7 +135,7 @@ val fakeInventoryReport = InventoryReportOutput(
 
 val fakeAiCallOutput = AiCallOutput(
     cleanliness = Cleanliness.clean,
-    note = "Test",
+    note = "TestAiCall",
     state = State.good
 )
 
