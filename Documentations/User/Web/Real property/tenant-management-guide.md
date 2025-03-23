@@ -41,5 +41,5 @@ Ending a contract is permanent and cannot be undone.
 
 1. Tenant receives invitation email
 2. They click the registration link
-3. They create their Immotep account
+3. They create their Keyz account
 4. They gain access to the property details

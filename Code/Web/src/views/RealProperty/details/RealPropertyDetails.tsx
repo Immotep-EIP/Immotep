@@ -385,7 +385,7 @@ const RealPropertyDetails: React.FC = () => {
       <PageMeta
         title={t('pages.real_property_details.document_title')}
         description={t('pages.real_property_details.document_description')}
-        keywords="real property details, Property info, Immotep"
+        keywords="real property details, Property info, Keyz"
       />
       <div className={style.pageContainer}>
         <DetailsPart

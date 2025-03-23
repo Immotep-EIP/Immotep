@@ -1,11 +1,11 @@
-# Creating a New Property in Immotep
+# Creating a New Property in Keyz
 
 This guide will walk you through the process of adding a new property to your
-Immotep portfolio.
+Keyz portfolio.
 
 ## Accessing the Property Creation Form
 
-1. Log into your Immotep account
+1. Log into your Keyz account
 2. Navigate to the "Real Property" section
 3. Click the "+ Add Property" button in the top right corner
 
@@ -100,5 +100,5 @@ If you encounter errors:
 If you need assistance:
 
 - Check our FAQ section
-- Contact support at support@immotep.com
+- Contact support at support@keyz.com
 - Use the help chat in the bottom right corner

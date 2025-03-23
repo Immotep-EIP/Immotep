@@ -268,7 +268,7 @@ const Settings: React.FC = () => {
       <PageMeta
         title={t('pages.settings.document_title')}
         description={t('pages.settings.document_description')}
-        keywords="settings, user, Immotep"
+        keywords="settings, user, Keyz"
       />
       <div className={style.pageContainer}>
         <div className={style.pageHeader}>

@@ -1,4 +1,4 @@
-# Immotep - Intelligent Rental Management
+# Keyz - Intelligent Rental Management
 
 Our application aims to revolutionize rental management by simplifying interactions between landlords and tenants through advanced integration of artificial intelligence. The goal is to make the rental management experience smooth, transparent, and secure for both parties, while centralizing all documents and information related to the rental.
 
@@ -39,7 +39,7 @@ To install and deploy our application, please follow the detailed instructions i
 
 ## Support
 
-For any questions or assistance, please contact our support team at (email immotep).
+For any questions or assistance, please contact our support team at (email keyz).
 
 ---
 

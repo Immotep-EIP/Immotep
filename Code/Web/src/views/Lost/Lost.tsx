@@ -17,7 +17,7 @@ const Lost: React.FC = () => {
       <PageMeta
         title={t('pages.lost.document_title')}
         description={t('pages.lost.document_description')}
-        keywords="404, not found, Immotep"
+        keywords="404, not found, Keyz"
       />
       <div className={styles.pageContainer}>
         <Title level={1} style={{ fontSize: '4rem', marginBottom: '1rem' }}>

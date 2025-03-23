@@ -84,7 +84,7 @@ const Messages: React.FC = () => {
         title={t('pages.messages.document_title')}
         description={t('pages.messages.document_description')}
         keywords="messages, communication,
-         Immotep"
+         Keyz"
       />
       <div className={style.pageContainer}>
         <div className={style.pageHeader}>

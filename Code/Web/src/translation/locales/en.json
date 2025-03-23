@@ -188,7 +188,7 @@
   "pages": {
     "login": {
       "document_title": "Sign in",
-      "document_description": "Sign in to your Immotep account. Manage your properties and tenants easily.",
+      "document_description": "Sign in to your Keyz account. Manage your properties and tenants easily.",
       "title": "Welcome back!",
       "description": "Please enter your details to sign in.",
       "dont_have_account": "Don't have an account ?",
@@ -198,9 +198,9 @@
     },
     "register": {
       "document_title": "Sign up",
-      "document_description": "Create an Immotep account to manage your properties and tenants easily.",
+      "document_description": "Create an Keyz account to manage your properties and tenants easily.",
       "title": "Create an account",
-      "description": "Join immotep for your peace of mind !",
+      "description": "Join Keyz for your peace of mind !",
       "agree_terms": "I agree to all Term and Privacy Policy",
       "already_have_account": "Already have an account?",
       "register_success": "You are now registered.",
@@ -211,7 +211,7 @@
     },
     "forgot_password": {
       "document_title": "Forgot password",
-      "document_description": "Easily reset your Immotep password if you have forgotten it. Simple and quick process to regain access to your account.",
+      "document_description": "Easily reset your Keyz password if you have forgotten it. Simple and quick process to regain access to your account.",
       "title": "Forgot password",
       "description": "Please enter your email to reset your password.",
       "send_email_success": "An email has been sent to reset your password.",

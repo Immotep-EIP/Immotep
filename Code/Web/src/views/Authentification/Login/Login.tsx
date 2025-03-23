@@ -84,7 +84,7 @@ const Login: React.FC = () => {
       <PageMeta
         title={t('pages.login.document_title')}
         description={t('pages.login.document_description')}
-        keywords="login, authentication, Immotep"
+        keywords="login, authentication, Keyz"
       />
       <DividedPage
         childrenLeft={
