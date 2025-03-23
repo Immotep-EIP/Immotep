@@ -2,7 +2,6 @@ const NavigationEnum = {
   // ! AUTHENTIFICATION
   LOGIN: '/',
   LOGIN_TENANT: '/login/invite/:contractId',
-  // REGISTER_WITH_CONTRACT: '/register/:contractId?',
   REGISTER_WITHOUT_CONTRACT: '/register',
   REGISTER_TENANT: '/register/invite/:contractId',
   FORGOT_PASSWORD: '/forgot-password',
