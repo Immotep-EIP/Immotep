@@ -127,10 +127,10 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
           }
           await StopCurrentContract(propertyData?.id || '')
           await refreshPropertyDetails(propertyData.id)
-          message.success(t('components.messages.end_contract.success'))
+          message.success(t('components.modal.end_contract.success'))
         } catch (error) {
           console.error('Error ending contract:', error)
-          message.error(t('components.messages.end_contract.error'))
+          message.error(t('components.modal.end_contract.error'))
         }
       }
     })
