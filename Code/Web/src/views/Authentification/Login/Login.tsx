@@ -1,23 +1,31 @@
 import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
 
-import backgroundImg from '@/assets/images/buildingBackground.png'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
 import '@/App.css'
 import { useAuth } from '@/context/authContext'
 import { UserToken } from '@/interfaces/User/User'
+import backgroundImg from '@/assets/images/buildingBackground.png'
+import useNavigation from '@/hooks/useNavigation/useNavigation'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import DividedPage from '@/components/DividedPage/DividedPage'
 import PageTitle from '@/components/PageText/Title'
 import style from './Login.module.css'
+import AcceptInvite from '@/services/api/Tenant/AcceptInvite'
 
 const Login: React.FC = () => {
-  const { goToSignup, goToOverview, goToForgotPassword } = useNavigation()
+  const {
+    goToSignup,
+    goToOverview,
+    goToForgotPassword,
+    goToSuccessLoginTenant
+  } = useNavigation()
   const { login } = useAuth()
   const [loading, setLoading] = useState(false)
+  const { contractId } = useParams()
 
   const { t } = useTranslation()
 
@@ -52,7 +60,12 @@ const Login: React.FC = () => {
       await login(loginValues)
       message.success(t('pages.login.connection_success'))
       setLoading(false)
-      goToOverview()
+      if (contractId) {
+        await AcceptInvite(contractId)
+        goToSuccessLoginTenant()
+      } else {
+        goToOverview()
+      }
     } catch (error: any) {
       if (error.response.status === 401) {
         message.error(t('pages.login.connection_error'))

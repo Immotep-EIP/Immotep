@@ -46,6 +46,10 @@ const useNavigation = () => {
     navigate(NavigationEnum.SUCCESS_REGISTER_TENANT)
   }
 
+  const goToSuccessLoginTenant = () => {
+    navigate(NavigationEnum.SUCCESS_LOGIN_TENANT)
+  }
+
   return {
     goToLogin,
     goToSignup,
@@ -56,7 +60,8 @@ const useNavigation = () => {
     goToMessages,
     goToSettings,
     goToMyProfile,
-    goToSuccessRegisterTenant
+    goToSuccessRegisterTenant,
+    goToSuccessLoginTenant
   }
 }
 

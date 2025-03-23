@@ -188,7 +188,8 @@
       "edit_property": "Modifier la propriété",
       "delete_property": "Supprimer la propriété",
       "download": "Télécharger",
-      "update": "Mettre à jour"
+      "update": "Mettre à jour",
+      "cancel_invitation": "Annuler l'invitation"
     },
     "modal": {
       "end_contract": {
@@ -196,6 +197,18 @@
         "description": "Êtes-vous sûr de vouloir mettre fin au bail de ce locataire ?",
         "success": "Bail terminé avec succès",
         "error": "Une erreur est survenue lors de la fin du bail, veuillez réessayer."
+      },
+      "delete_property": {
+        "title": "Supprimer la propriété",
+        "description": "Êtes-vous sûr de vouloir supprimer cette propriété ?",
+        "success": "Propriété supprimée avec succès",
+        "error": "Une erreur est survenue lors de la suppression de la propriété, veuillez réessayer."
+      },
+      "cancel_invitation": {
+        "title": "Annuler l'invitation",
+        "description": "Êtes-vous sûr de vouloir annuler l'invitation de ce locataire ?",
+        "success": "Invitation annulée avec succès",
+        "error": "Une erreur est survenue lors de l'annulation de l'invitation, veuillez réessayer."
       }
     }
   },
@@ -224,8 +237,12 @@
       "fill_fields": "Veuillez remplir tous les champs."
     },
     "register_tenant": {
-      "register_success": "Vous êtes maintenant inscrit.",
-      "register_success_description": "Vous êtes maintenant inscrit. Vous pouvez désormais accéder à votre compte depuis l'application mobile Immotep."
+      "register_success": "Vous êtes maintenant inscrit et votre contrat de location a commencé.",
+      "register_success_description": "Vous pouvez désormais accéder à votre compte depuis l'application mobile Immotep."
+    },
+    "login_tenant": {
+      "login_success": "Votre location à été acceptée.",
+      "login_success_description": "Vous pouvez désormais accéder à votre compte depuis l'application mobile Immotep."
     },
     "forgot_password": {
       "document_title": "Mot de passe oublié",
