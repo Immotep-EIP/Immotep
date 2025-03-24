@@ -12,10 +12,10 @@ import (
 	"immotep/backend/services/database"
 )
 
-func BuildTestContract() db.ContractModel {
+func BuildTestLease() db.LeaseModel {
 	end := time.Now().Add(time.Hour)
-	return db.ContractModel{
-		InnerContract: db.InnerContract{
+	return db.LeaseModel{
+		InnerLease: db.InnerLease{
 			ID:         "1",
 			Active:     true,
 			StartDate:  time.Now(),
@@ -54,22 +54,22 @@ func BuildTestTenant(id string) db.UserModel {
 	}
 }
 
-func TestCreateContract(t *testing.T) {
+func TestCreateLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
 	pendingContract := BuildTestPendingContract()
-	contract := BuildTestContract()
+	lease := BuildTestLease()
 
-	mock.Contract.Expect(
-		client.Client.Contract.CreateOne(
-			db.Contract.StartDate.Set(pendingContract.StartDate),
-			db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
-			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	mock.Lease.Expect(
+		client.Client.Lease.CreateOne(
+			db.Lease.StartDate.Set(pendingContract.StartDate),
+			db.Lease.Tenant.Link(db.User.ID.Equals(tenant.ID)),
+			db.Lease.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
+			db.Lease.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 		),
-	).Returns(contract)
+	).Returns(lease)
 
 	mock.PendingContract.Expect(
 		client.Client.PendingContract.FindUnique(
@@ -77,49 +77,49 @@ func TestCreateContract(t *testing.T) {
 		).Delete(),
 	).Returns(pendingContract)
 
-	newContract := database.CreateContract(pendingContract, tenant)
-	assert.NotNil(t, newContract)
-	assert.Equal(t, contract.TenantID, newContract.TenantID)
-	assert.Equal(t, contract.PropertyID, newContract.PropertyID)
+	newLease := database.CreateLease(pendingContract, tenant)
+	assert.NotNil(t, newLease)
+	assert.Equal(t, lease.TenantID, newLease.TenantID)
+	assert.Equal(t, lease.PropertyID, newLease.PropertyID)
 }
 
-func TestCreateContract_NoConnection1(t *testing.T) {
+func TestCreateLease_NoConnection1(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
 	pendingContract := BuildTestPendingContract()
 
-	mock.Contract.Expect(
-		client.Client.Contract.CreateOne(
-			db.Contract.StartDate.Set(pendingContract.StartDate),
-			db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
-			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	mock.Lease.Expect(
+		client.Client.Lease.CreateOne(
+			db.Lease.StartDate.Set(pendingContract.StartDate),
+			db.Lease.Tenant.Link(db.User.ID.Equals(tenant.ID)),
+			db.Lease.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
+			db.Lease.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.CreateContract(pendingContract, tenant)
+		database.CreateLease(pendingContract, tenant)
 	})
 }
 
-func TestCreateContract_NoConnection2(t *testing.T) {
+func TestCreateLease_NoConnection2(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
 	pendingContract := BuildTestPendingContract()
-	contract := BuildTestContract()
+	lease := BuildTestLease()
 
-	mock.Contract.Expect(
-		client.Client.Contract.CreateOne(
-			db.Contract.StartDate.Set(pendingContract.StartDate),
-			db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
-			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	mock.Lease.Expect(
+		client.Client.Lease.CreateOne(
+			db.Lease.StartDate.Set(pendingContract.StartDate),
+			db.Lease.Tenant.Link(db.User.ID.Equals(tenant.ID)),
+			db.Lease.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
+			db.Lease.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 		),
-	).Returns(contract)
+	).Returns(lease)
 
 	mock.PendingContract.Expect(
 		client.Client.PendingContract.FindUnique(
@@ -128,7 +128,7 @@ func TestCreateContract_NoConnection2(t *testing.T) {
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.CreateContract(pendingContract, tenant)
+		database.CreateLease(pendingContract, tenant)
 	})
 }
 
@@ -189,9 +189,9 @@ func TestCreatePendingContract(t *testing.T) {
 		),
 	).Returns(pendingContract)
 
-	newContract := database.CreatePendingContract(pendingContract, property.ID)
-	assert.NotNil(t, newContract)
-	assert.Equal(t, pendingContract.ID, newContract.ID)
+	newLease := database.CreatePendingContract(pendingContract, property.ID)
+	assert.NotNil(t, newLease)
+	assert.Equal(t, pendingContract.ID, newLease.ID)
 }
 
 func TestCreatePendingContract_AlreadyExists1(t *testing.T) {
@@ -218,8 +218,8 @@ func TestCreatePendingContract_AlreadyExists1(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newContract := database.CreatePendingContract(pendingContract, property.ID)
-	assert.Nil(t, newContract)
+	newLease := database.CreatePendingContract(pendingContract, property.ID)
+	assert.Nil(t, newLease)
 }
 
 func TestCreatePendingContract_AlreadyExists2(t *testing.T) {
@@ -246,8 +246,8 @@ func TestCreatePendingContract_AlreadyExists2(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newContract := database.CreatePendingContract(pendingContract, property.ID)
-	assert.Nil(t, newContract)
+	newLease := database.CreatePendingContract(pendingContract, property.ID)
+	assert.Nil(t, newLease)
 }
 
 func TestCreatePendingContract_NoConnection(t *testing.T) {
@@ -272,359 +272,359 @@ func TestCreatePendingContract_NoConnection(t *testing.T) {
 	})
 }
 
-func TestGetCurrentActiveContract(t *testing.T) {
+func TestGetCurrentActiveLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	contract := BuildTestContract()
+	lease := BuildTestLease()
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract})
+	).ReturnsMany([]db.LeaseModel{lease})
 
-	activeContract := database.GetCurrentActiveContract(property.ID)
-	assert.NotNil(t, activeContract)
-	assert.Equal(t, contract.PropertyID, activeContract.PropertyID)
-	assert.Equal(t, contract.TenantID, activeContract.TenantID)
+	activeLease := database.GetCurrentActiveLease(property.ID)
+	assert.NotNil(t, activeLease)
+	assert.Equal(t, lease.PropertyID, activeLease.PropertyID)
+	assert.Equal(t, lease.TenantID, activeLease.TenantID)
 }
 
-func TestGetCurrentActiveContract_NotFound(t *testing.T) {
+func TestGetCurrentActiveLease_NotFound(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(db.ErrNotFound)
 
-	activeContract := database.GetCurrentActiveContract(property.ID)
-	assert.Nil(t, activeContract)
+	activeLease := database.GetCurrentActiveLease(property.ID)
+	assert.Nil(t, activeLease)
 }
 
-func TestGetCurrentActiveContract_NoActiveContract(t *testing.T) {
+func TestGetCurrentActiveLease_NoActiveLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{})
+	).ReturnsMany([]db.LeaseModel{})
 
-	activeContract := database.GetCurrentActiveContract(property.ID)
-	assert.Nil(t, activeContract)
+	activeLease := database.GetCurrentActiveLease(property.ID)
+	assert.Nil(t, activeLease)
 }
 
-func TestGetCurrentActiveContract_MultipleActiveContracts(t *testing.T) {
+func TestGetCurrentActiveLease_MultipleActiveLeases(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	contract1 := BuildTestContract()
-	contract2 := BuildTestContract()
+	lease1 := BuildTestLease()
+	lease2 := BuildTestLease()
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract1, contract2})
+	).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
 	assert.Panics(t, func() {
-		database.GetCurrentActiveContract(property.ID)
+		database.GetCurrentActiveLease(property.ID)
 	})
 }
 
-func TestGetCurrentActiveContract_NoConnection(t *testing.T) {
+func TestGetCurrentActiveLease_NoConnection(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetCurrentActiveContract(property.ID)
+		database.GetCurrentActiveLease(property.ID)
 	})
 }
 
-func TestEndContract(t *testing.T) {
+func TestEndLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	contract := BuildTestContract()
-	contract.Active = false
+	lease := BuildTestLease()
+	lease.Active = false
 	endDate := time.Now()
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindUnique(
-			db.Contract.ID.Equals(contract.ID),
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals(lease.ID),
 		).Update(
-			db.Contract.Active.Set(false),
-			db.Contract.EndDate.SetIfPresent(&endDate),
+			db.Lease.Active.Set(false),
+			db.Lease.EndDate.SetIfPresent(&endDate),
 		),
-	).Returns(contract)
+	).Returns(lease)
 
-	endedContract := database.EndContract(contract.ID, &endDate)
-	assert.NotNil(t, endedContract)
-	assert.Equal(t, "1", endedContract.TenantID)
-	assert.Equal(t, "1", endedContract.PropertyID)
-	assert.False(t, endedContract.Active)
+	endedLease := database.EndLease(lease.ID, &endDate)
+	assert.NotNil(t, endedLease)
+	assert.Equal(t, "1", endedLease.TenantID)
+	assert.Equal(t, "1", endedLease.PropertyID)
+	assert.False(t, endedLease.Active)
 }
 
-func TestEndContract_NotFound(t *testing.T) {
+func TestEndLease_NotFound(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	contract := BuildTestContract()
+	lease := BuildTestLease()
 	endDate := time.Now()
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindUnique(
-			db.Contract.ID.Equals(contract.ID),
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals(lease.ID),
 		).Update(
-			db.Contract.Active.Set(false),
-			db.Contract.EndDate.SetIfPresent(&endDate),
+			db.Lease.Active.Set(false),
+			db.Lease.EndDate.SetIfPresent(&endDate),
 		),
 	).Errors(db.ErrNotFound)
 
-	endedContract := database.EndContract(contract.ID, &endDate)
-	assert.Nil(t, endedContract)
+	endedLease := database.EndLease(lease.ID, &endDate)
+	assert.Nil(t, endedLease)
 }
 
-func TestEndContract_NoConnection(t *testing.T) {
+func TestEndLease_NoConnection(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	contract := BuildTestContract()
+	lease := BuildTestLease()
 	endDate := time.Now()
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindUnique(
-			db.Contract.ID.Equals(contract.ID),
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals(lease.ID),
 		).Update(
-			db.Contract.Active.Set(false),
-			db.Contract.EndDate.SetIfPresent(&endDate),
+			db.Lease.Active.Set(false),
+			db.Lease.EndDate.SetIfPresent(&endDate),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.EndContract(contract.ID, &endDate)
+		database.EndLease(lease.ID, &endDate)
 	})
 }
 
-func TestGetCurrentActiveContractWithInfos(t *testing.T) {
+func TestGetCurrentActiveLeaseWithInfos(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	contract := BuildTestContract()
+	lease := BuildTestLease()
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		).With(
-			db.Contract.Tenant.Fetch(),
-			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
-	).ReturnsMany([]db.ContractModel{contract})
+	).ReturnsMany([]db.LeaseModel{lease})
 
-	activeContract := database.GetCurrentActiveContractWithInfos(property.ID)
-	assert.NotNil(t, activeContract)
-	assert.Equal(t, contract.PropertyID, activeContract.PropertyID)
-	assert.Equal(t, contract.TenantID, activeContract.TenantID)
+	activeLease := database.GetCurrentActiveLeaseWithInfos(property.ID)
+	assert.NotNil(t, activeLease)
+	assert.Equal(t, lease.PropertyID, activeLease.PropertyID)
+	assert.Equal(t, lease.TenantID, activeLease.TenantID)
 }
 
-func TestGetCurrentActiveContractWithInfos_NotFound(t *testing.T) {
+func TestGetCurrentActiveLeaseWithInfos_NotFound(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		).With(
-			db.Contract.Tenant.Fetch(),
-			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(db.ErrNotFound)
 
-	activeContract := database.GetCurrentActiveContractWithInfos(property.ID)
-	assert.Nil(t, activeContract)
+	activeLease := database.GetCurrentActiveLeaseWithInfos(property.ID)
+	assert.Nil(t, activeLease)
 }
 
-func TestGetCurrentActiveContractWithInfos_NoActiveContract(t *testing.T) {
+func TestGetCurrentActiveLeaseWithInfos_NoActiveLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		).With(
-			db.Contract.Tenant.Fetch(),
-			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
-	).ReturnsMany([]db.ContractModel{})
+	).ReturnsMany([]db.LeaseModel{})
 
-	activeContract := database.GetCurrentActiveContractWithInfos(property.ID)
-	assert.Nil(t, activeContract)
+	activeLease := database.GetCurrentActiveLeaseWithInfos(property.ID)
+	assert.Nil(t, activeLease)
 }
 
-func TestGetCurrentActiveContractWithInfos_MultipleActiveContracts(t *testing.T) {
+func TestGetCurrentActiveLeaseWithInfos_MultipleActiveLeases(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	contract1 := BuildTestContract()
-	contract2 := BuildTestContract()
+	lease1 := BuildTestLease()
+	lease2 := BuildTestLease()
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		).With(
-			db.Contract.Tenant.Fetch(),
-			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
-	).ReturnsMany([]db.ContractModel{contract1, contract2})
+	).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
 	assert.Panics(t, func() {
-		database.GetCurrentActiveContractWithInfos(property.ID)
+		database.GetCurrentActiveLeaseWithInfos(property.ID)
 	})
 }
 
-func TestGetCurrentActiveContractWithInfos_NoConnection(t *testing.T) {
+func TestGetCurrentActiveLeaseWithInfos_NoConnection(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		).With(
-			db.Contract.Tenant.Fetch(),
-			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetCurrentActiveContractWithInfos(property.ID)
+		database.GetCurrentActiveLeaseWithInfos(property.ID)
 	})
 }
 
-func TestGetTenantCurrentActiveContract(t *testing.T) {
+func TestGetTenantCurrentActiveLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
-	contract := BuildTestContract()
+	lease := BuildTestLease()
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals(tenant.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals(tenant.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract})
+	).ReturnsMany([]db.LeaseModel{lease})
 
-	activeContract := database.GetTenantCurrentActiveContract(tenant.ID)
-	assert.NotNil(t, activeContract)
-	assert.Equal(t, contract.TenantID, activeContract.TenantID)
-	assert.Equal(t, contract.PropertyID, activeContract.PropertyID)
+	activeLease := database.GetTenantCurrentActiveLease(tenant.ID)
+	assert.NotNil(t, activeLease)
+	assert.Equal(t, lease.TenantID, activeLease.TenantID)
+	assert.Equal(t, lease.PropertyID, activeLease.PropertyID)
 }
 
-func TestGetTenantCurrentActiveContract_NotFound(t *testing.T) {
+func TestGetTenantCurrentActiveLease_NotFound(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals(tenant.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals(tenant.ID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(db.ErrNotFound)
 
-	activeContract := database.GetTenantCurrentActiveContract(tenant.ID)
-	assert.Nil(t, activeContract)
+	activeLease := database.GetTenantCurrentActiveLease(tenant.ID)
+	assert.Nil(t, activeLease)
 }
 
-func TestGetTenantCurrentActiveContract_NoActiveContract(t *testing.T) {
+func TestGetTenantCurrentActiveLease_NoActiveLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals(tenant.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals(tenant.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{})
+	).ReturnsMany([]db.LeaseModel{})
 
-	activeContract := database.GetTenantCurrentActiveContract(tenant.ID)
-	assert.Nil(t, activeContract)
+	activeLease := database.GetTenantCurrentActiveLease(tenant.ID)
+	assert.Nil(t, activeLease)
 }
 
-func TestGetTenantCurrentActiveContract_MultipleActiveContracts(t *testing.T) {
+func TestGetTenantCurrentActiveLease_MultipleActiveLeases(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
-	contract1 := BuildTestContract()
-	contract2 := BuildTestContract()
+	lease1 := BuildTestLease()
+	lease2 := BuildTestLease()
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals(tenant.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals(tenant.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract1, contract2})
+	).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
 	assert.Panics(t, func() {
-		database.GetTenantCurrentActiveContract(tenant.ID)
+		database.GetTenantCurrentActiveLease(tenant.ID)
 	})
 }
 
-func TestGetTenantCurrentActiveContract_NoConnection(t *testing.T) {
+func TestGetTenantCurrentActiveLease_NoConnection(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals(tenant.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals(tenant.ID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetTenantCurrentActiveContract(tenant.ID)
+		database.GetTenantCurrentActiveLease(tenant.ID)
 	})
 }
 

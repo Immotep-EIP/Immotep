@@ -38,7 +38,7 @@ func BuildTestProperty(id string) db.PropertyModel {
 		},
 		RelationsProperty: db.RelationsProperty{
 			Damages:         []db.DamageModel{{}},
-			Contracts:       []db.ContractModel{{}},
+			Leases:          []db.LeaseModel{{}},
 			PendingContract: &db.PendingContractModel{},
 		},
 	}
@@ -62,8 +62,8 @@ func BuildTestPropertyWithInventory(id string) db.PropertyModel {
 			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages:   []db.DamageModel{{}},
-			Contracts: []db.ContractModel{{}},
+			Damages: []db.DamageModel{{}},
+			Leases:  []db.LeaseModel{{}},
 			Rooms: []db.RoomModel{
 				{
 					InnerRoom: db.InnerRoom{
@@ -106,9 +106,9 @@ func BuildTestPendingContract() db.PendingContractModel {
 	}
 }
 
-func BuildTestContract() db.ContractModel {
-	return db.ContractModel{
-		InnerContract: db.InnerContract{
+func BuildTestLease() db.LeaseModel {
+	return db.LeaseModel{
+		InnerLease: db.InnerLease{
 			ID:         "1",
 			PropertyID: "1",
 			TenantID:   "1",
@@ -131,7 +131,7 @@ func TestGetAllProperties(t *testing.T) {
 			db.Property.Archived.Equals(false),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).ReturnsMany([]db.PropertyModel{property})
@@ -159,7 +159,7 @@ func TestGetPropertyById(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -187,7 +187,7 @@ func TestGetPropertyById_NotFound(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -215,7 +215,7 @@ func TestGetPropertyById_NotYours(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -245,7 +245,7 @@ func TestGetPropertyInventory(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -256,7 +256,7 @@ func TestGetPropertyInventory(t *testing.T) {
 			db.Property.ID.Equals(propertyInv.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
 		),
@@ -286,7 +286,7 @@ func TestGetPropertyInventory_NotFound(t *testing.T) {
 			db.Property.ID.Equals("wrong"),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -316,7 +316,7 @@ func TestGetPropertyInventory_NotYours(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -355,7 +355,7 @@ func TestCreateProperty(t *testing.T) {
 			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch(),
+			db.Property.Leases.Fetch(),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -420,7 +420,7 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch(),
+			db.Property.Leases.Fetch(),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(&protocol.UserFacingError{
@@ -459,15 +459,15 @@ func TestInviteTenant(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -543,7 +543,7 @@ func TestInviteTenant_PropertyNotFound(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -582,7 +582,7 @@ func TestInviteTenant_PropertyNotYours(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -621,18 +621,18 @@ func TestInviteTenant_PropertyNotAvailable(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	contract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	lease := BuildTestLease()
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract})
+	).ReturnsMany([]db.LeaseModel{lease})
 
 	pendingContract := BuildTestPendingContract()
 	reqBody := models.InviteRequest{
@@ -667,15 +667,15 @@ func TestInviteTenant_AlreadyExists(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -734,15 +734,15 @@ func TestInviteTenant_AlreadyExistsAsOwner(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -776,7 +776,7 @@ func TestInviteTenant_AlreadyExistsAsOwner(t *testing.T) {
 	assert.Equal(t, utils.UserAlreadyExistsAsOwner, resp.Code)
 }
 
-func TestInviteTenant_AlreadyHasContract(t *testing.T) {
+func TestInviteTenant_AlreadyHasLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
@@ -784,16 +784,16 @@ func TestInviteTenant_AlreadyHasContract(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	contract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	lease := BuildTestLease()
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -804,12 +804,12 @@ func TestInviteTenant_AlreadyHasContract(t *testing.T) {
 		client.Client.User.FindUnique(db.User.Email.Equals(pendingContract.TenantEmail)),
 	).Returns(user)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals("1"),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals("1"),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract})
+	).ReturnsMany([]db.LeaseModel{lease})
 
 	reqBody := models.InviteRequest{
 		TenantEmail: pendingContract.TenantEmail,
@@ -832,7 +832,7 @@ func TestInviteTenant_AlreadyHasContract(t *testing.T) {
 	var resp utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
-	assert.Equal(t, utils.TenantAlreadyHasContract, resp.Code)
+	assert.Equal(t, utils.TenantAlreadyHasLease, resp.Code)
 }
 
 func TestGetPropertyPicture(t *testing.T) {
@@ -843,7 +843,7 @@ func TestGetPropertyPicture(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -876,7 +876,7 @@ func TestGetPropertyPicture_NoContent(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -899,7 +899,7 @@ func TestGetPropertyPicture_NotFound(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -929,7 +929,7 @@ func TestGetPropertyPicture_PropertyNotFound(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -956,7 +956,7 @@ func TestUpdatePropertyPicture(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -971,7 +971,7 @@ func TestUpdatePropertyPicture(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
@@ -1007,7 +1007,7 @@ func TestUpdatePropertyPicture_MissingFields(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -1039,7 +1039,7 @@ func TestUpdatePropertyPicture_BadBase64String(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -1072,7 +1072,7 @@ func TestUpdatePropertyPicture_PropertyNotFound(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -1106,7 +1106,7 @@ func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -1121,7 +1121,7 @@ func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
@@ -1149,7 +1149,7 @@ func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
 	assert.Equal(t, utils.FailedLinkImage, resp.Code)
 }
 
-func TestEndContract1(t *testing.T) {
+func TestEndLease1(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
@@ -1157,31 +1157,31 @@ func TestEndContract1(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	contract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	lease := BuildTestLease()
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract})
+	).ReturnsMany([]db.LeaseModel{lease})
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindUnique(
-			db.Contract.ID.Equals(contract.ID),
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals(lease.ID),
 		).Update(
-			db.Contract.Active.Set(false),
-			db.Contract.EndDate.SetIfPresent(nil),
+			db.Lease.Active.Set(false),
+			db.Lease.EndDate.SetIfPresent(nil),
 		),
-	).Returns(contract)
+	).Returns(lease)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/end-contract/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/end-lease/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1189,7 +1189,7 @@ func TestEndContract1(t *testing.T) {
 	require.Equal(t, http.StatusNoContent, w.Code)
 }
 
-func TestEndContract2(t *testing.T) {
+func TestEndLease2(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
@@ -1197,32 +1197,32 @@ func TestEndContract2(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	contract := BuildTestContract()
-	contract.InnerContract.EndDate = nil
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	lease := BuildTestLease()
+	lease.InnerLease.EndDate = nil
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract})
+	).ReturnsMany([]db.LeaseModel{lease})
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindUnique(
-			db.Contract.ID.Equals(contract.ID),
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals(lease.ID),
 		).Update(
-			db.Contract.Active.Set(false),
-			db.Contract.EndDate.SetIfPresent(utils.Ptr(time.Now().Truncate(time.Minute))),
+			db.Lease.Active.Set(false),
+			db.Lease.EndDate.SetIfPresent(utils.Ptr(time.Now().Truncate(time.Minute))),
 		),
-	).Returns(contract)
+	).Returns(lease)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/end-contract/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/end-lease/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1230,7 +1230,7 @@ func TestEndContract2(t *testing.T) {
 	require.Equal(t, http.StatusNoContent, w.Code)
 }
 
-func TestEndContract_NoActiveContract(t *testing.T) {
+func TestEndLease_NoActiveLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
@@ -1238,22 +1238,22 @@ func TestEndContract_NoActiveContract(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/end-contract/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/end-lease/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1262,17 +1262,17 @@ func TestEndContract_NoActiveContract(t *testing.T) {
 	var resp utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
-	assert.Equal(t, utils.NoActiveContract, resp.Code)
+	assert.Equal(t, utils.NoActiveLease, resp.Code)
 }
 
-func TestEndContract_PropertyNotFound(t *testing.T) {
+func TestEndLease_PropertyNotFound(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -1280,7 +1280,7 @@ func TestEndContract_PropertyNotFound(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/wrong/end-contract/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/wrong/end-lease/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1302,7 +1302,7 @@ func TestArchiveProperty(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -1314,7 +1314,7 @@ func TestArchiveProperty(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Archived.Set(true),
@@ -1349,7 +1349,7 @@ func TestArchiveProperty_NotFound(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -1380,7 +1380,7 @@ func TestGetAllArchivedProperties(t *testing.T) {
 			db.Property.Archived.Equals(true),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).ReturnsMany([]db.PropertyModel{property})
@@ -1408,7 +1408,7 @@ func TestUpdateProperty(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -1418,7 +1418,7 @@ func TestUpdateProperty(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		).Update(
 			db.Property.Name.SetIfPresent(&updatedProperty.Name),
@@ -1470,7 +1470,7 @@ func TestUpdateProperty_NotFound(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -1504,7 +1504,7 @@ func TestUpdateProperty_NotYours(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -1538,7 +1538,7 @@ func TestCancelInvite(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -1570,7 +1570,7 @@ func TestCancelInvite_PropertyNotYours(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -1598,7 +1598,7 @@ func TestCancelInvite_NoPendingContract(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)

@@ -54,10 +54,10 @@ model user {
     profile_picture_id String?
 
     owned_properties   property[]
-    rented_properties  contract[]
+    rented_properties  lease[]
 }
 
-model contract {
+model lease {
     id          String    @id @default(cuid())
     active      Boolean   @default(true)
     start_date  DateTime
@@ -107,7 +107,7 @@ model property {
     owner       user     @relation(fields: [owner_id], references: [id])
     owner_id    String
 
-    contracts          contract[]
+    leases          lease[]
     pending_contract   pendingContract?
     damages            damage[]
     rooms              room[]
@@ -145,8 +145,8 @@ model document {
     data        Bytes
     created_at  DateTime @default(now())
 
-    contract    contract @relation(fields: [contract_id], references: [id])
-    contract_id String
+    lease    lease @relation(fields: [lease_id], references: [id])
+    lease_id String
 }
 
 model room {

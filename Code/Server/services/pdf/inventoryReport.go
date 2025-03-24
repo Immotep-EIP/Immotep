@@ -7,26 +7,26 @@ import (
 	"immotep/backend/prisma/db"
 )
 
-func NewInventoryReportPDF(invReport db.InventoryReportModel, contract db.ContractModel) ([]byte, error) {
+func NewInventoryReportPDF(invReport db.InventoryReportModel, lease db.LeaseModel) ([]byte, error) {
 	report := NewPDF()
 
 	report.AddCenteredTitle("Inventory Report", H1)
 	report.AddText("ID: " + invReport.ID)
 	report.AddText("Date: " + invReport.Date.Format("2006-01-02 15:04:05"))
-	report.AddText("Property: " + contract.Property().Name)
+	report.AddText("Property: " + lease.Property().Name)
 	report.AddText("Type: " + string(invReport.Type))
 
 	report.Ln(5)
 	report.AddTitle("Lease", H2)
-	report.Add2Texts("Owner: "+contract.Property().Owner().Firstname+" "+contract.Property().Owner().Lastname, "Email: "+contract.Property().Owner().Email)
-	report.Add2Texts("Tenant: "+contract.Tenant().Firstname+" "+contract.Tenant().Lastname, "Email: "+contract.Tenant().Email)
-	contractEndDate, ok := contract.EndDate()
+	report.Add2Texts("Owner: "+lease.Property().Owner().Firstname+" "+lease.Property().Owner().Lastname, "Email: "+lease.Property().Owner().Email)
+	report.Add2Texts("Tenant: "+lease.Tenant().Firstname+" "+lease.Tenant().Lastname, "Email: "+lease.Tenant().Email)
+	leaseEndDate, ok := lease.EndDate()
 	if ok {
-		report.Add2Texts("Start date: "+contract.StartDate.Format("2006-01-02"), "End date: "+contractEndDate.Format("2006-01-02"))
+		report.Add2Texts("Start date: "+lease.StartDate.Format("2006-01-02"), "End date: "+leaseEndDate.Format("2006-01-02"))
 	} else {
-		report.Add2Texts("Start date: "+contract.StartDate.Format("2006-01-02"), "End date: None")
+		report.Add2Texts("Start date: "+lease.StartDate.Format("2006-01-02"), "End date: None")
 	}
-	report.AddText("Rent: " + strconv.FormatFloat(contract.Property().RentalPricePerMonth, 'f', 2, 64) + "€")
+	report.AddText("Rent: " + strconv.FormatFloat(lease.Property().RentalPricePerMonth, 'f', 2, 64) + "€")
 
 	addRooms(&report, invReport)
 

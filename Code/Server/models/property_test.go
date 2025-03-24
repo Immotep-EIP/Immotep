@@ -46,8 +46,8 @@ func BuildTestProperty(id string) db.PropertyModel {
 			OwnerID:             "1",
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages:   []db.DamageModel{{}},
-			Contracts: []db.ContractModel{},
+			Damages: []db.DamageModel{{}},
+			Leases:  []db.LeaseModel{},
 		},
 	}
 }
@@ -70,8 +70,8 @@ func BuildTestPropertyWithInventory(id string) db.PropertyModel {
 			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages:   []db.DamageModel{{}},
-			Contracts: []db.ContractModel{{}},
+			Damages: []db.DamageModel{{}},
+			Leases:  []db.LeaseModel{{}},
 			Rooms: []db.RoomModel{
 				{
 					InnerRoom: db.InnerRoom{
@@ -114,14 +114,14 @@ func TestPropertyResponse(t *testing.T) {
 	t.Run("FromProperty2", func(t *testing.T) {
 		date := time.Now()
 		newPc := BuildTestProperty("2")
-		newPc.RelationsProperty.Contracts = []db.ContractModel{
+		newPc.RelationsProperty.Leases = []db.LeaseModel{
 			{
-				InnerContract: db.InnerContract{
+				InnerLease: db.InnerLease{
 					Active:    true,
 					StartDate: date,
 					EndDate:   nil,
 				},
-				RelationsContract: db.RelationsContract{
+				RelationsLease: db.RelationsLease{
 					Tenant: &db.UserModel{
 						InnerUser: db.InnerUser{
 							Firstname: "Test",
@@ -227,14 +227,14 @@ func TestPropertyInventoryResponse(t *testing.T) {
 	t.Run("FromProperty2", func(t *testing.T) {
 		date := time.Now()
 		newPc := BuildTestPropertyWithInventory("2")
-		newPc.RelationsProperty.Contracts = []db.ContractModel{
+		newPc.RelationsProperty.Leases = []db.LeaseModel{
 			{
-				InnerContract: db.InnerContract{
+				InnerLease: db.InnerLease{
 					Active:    true,
 					StartDate: date,
 					EndDate:   nil,
 				},
-				RelationsContract: db.RelationsContract{
+				RelationsLease: db.RelationsLease{
 					Tenant: &db.UserModel{
 						InnerUser: db.InnerUser{
 							Firstname: "Test",

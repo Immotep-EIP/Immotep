@@ -90,15 +90,15 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 
 	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
 
-	activeIndex := slices.IndexFunc(model.Contracts(), func(x db.ContractModel) bool { return x.Active })
+	activeIndex := slices.IndexFunc(model.Leases(), func(x db.LeaseModel) bool { return x.Active })
 	invite, inviteOk := model.PendingContract()
 	switch {
 	case activeIndex != -1:
-		active := model.Contracts()[activeIndex]
+		active := model.Leases()[activeIndex]
 		p.Status = "unavailable"
 		p.Tenant = active.Tenant().Firstname + " " + active.Tenant().Lastname
 		p.StartDate = &active.StartDate
-		p.EndDate = active.InnerContract.EndDate
+		p.EndDate = active.InnerLease.EndDate
 	case inviteOk:
 		p.Status = "invite sent"
 		p.Tenant = invite.TenantEmail
@@ -178,15 +178,15 @@ func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel) {
 
 	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
 
-	activeIndex := slices.IndexFunc(model.Contracts(), func(x db.ContractModel) bool { return x.Active })
+	activeIndex := slices.IndexFunc(model.Leases(), func(x db.LeaseModel) bool { return x.Active })
 	invite, inviteOk := model.PendingContract()
 	switch {
 	case activeIndex != -1:
-		active := model.Contracts()[activeIndex]
+		active := model.Leases()[activeIndex]
 		p.Status = "unavailable"
 		p.Tenant = active.Tenant().Firstname + " " + active.Tenant().Lastname
 		p.StartDate = &active.StartDate
-		p.EndDate = active.InnerContract.EndDate
+		p.EndDate = active.InnerLease.EndDate
 	case inviteOk:
 		p.Status = "invite sent"
 		p.Tenant = invite.TenantEmail

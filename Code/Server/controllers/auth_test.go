@@ -178,12 +178,12 @@ func TestRegisterTenantPropertyNotAvailable(t *testing.T) {
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals("1"),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{BuildTestContract()})
+	).ReturnsMany([]db.LeaseModel{BuildTestLease()})
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -214,28 +214,28 @@ func TestAcceptInvite(t *testing.T) {
 		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
 	).Returns(pendingContract)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(pendingContract.PropertyID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(pendingContract.PropertyID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{})
+	).ReturnsMany([]db.LeaseModel{})
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals(user.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals(user.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{})
+	).ReturnsMany([]db.LeaseModel{})
 
-	mock.Contract.Expect(
-		client.Client.Contract.CreateOne(
-			db.Contract.StartDate.Set(pendingContract.StartDate),
-			db.Contract.Tenant.Link(db.User.ID.Equals(user.ID)),
-			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	mock.Lease.Expect(
+		client.Client.Lease.CreateOne(
+			db.Lease.StartDate.Set(pendingContract.StartDate),
+			db.Lease.Tenant.Link(db.User.ID.Equals(user.ID)),
+			db.Lease.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
+			db.Lease.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 		),
-	).Returns(BuildTestContract())
+	).Returns(BuildTestLease())
 
 	mock.PendingContract.Expect(
 		client.Client.PendingContract.FindUnique(
@@ -351,13 +351,13 @@ func TestAcceptInvitePropertyNotAvailable(t *testing.T) {
 		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
 	).Returns(pendingContract)
 
-	activeContract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(pendingContract.PropertyID),
-			db.Contract.Active.Equals(true),
+	activeLease := BuildTestLease()
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(pendingContract.PropertyID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{activeContract})
+	).ReturnsMany([]db.LeaseModel{activeLease})
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -373,7 +373,7 @@ func TestAcceptInvitePropertyNotAvailable(t *testing.T) {
 	assert.Equal(t, utils.PropertyNotAvailable, errorResponse.Code)
 }
 
-func TestAcceptInviteTenantAlreadyHasContract(t *testing.T) {
+func TestAcceptInviteTenantAlreadyHasLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
@@ -389,20 +389,20 @@ func TestAcceptInviteTenantAlreadyHasContract(t *testing.T) {
 		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
 	).Returns(pendingContract)
 
-	activeContract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(pendingContract.PropertyID),
-			db.Contract.Active.Equals(true),
+	activeLease := BuildTestLease()
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(pendingContract.PropertyID),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(db.ErrNotFound)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals(user.ID),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals(user.ID),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{activeContract})
+	).ReturnsMany([]db.LeaseModel{activeLease})
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -415,5 +415,5 @@ func TestAcceptInviteTenantAlreadyHasContract(t *testing.T) {
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
-	assert.Equal(t, utils.TenantAlreadyHasContract, errorResponse.Code)
+	assert.Equal(t, utils.TenantAlreadyHasLease, errorResponse.Code)
 }

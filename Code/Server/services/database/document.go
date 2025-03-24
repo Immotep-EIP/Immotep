@@ -5,15 +5,15 @@ import (
 	"immotep/backend/services"
 )
 
-func GetCurrentActiveContractDocuments(propertyID string) []db.DocumentModel {
-	activeContract := GetCurrentActiveContract(propertyID)
-	if activeContract == nil {
-		panic("No active contract found for property: " + propertyID)
+func GetCurrentActiveLeaseDocuments(propertyID string) []db.DocumentModel {
+	activeLease := GetCurrentActiveLease(propertyID)
+	if activeLease == nil {
+		panic("No active lease found for property: " + propertyID)
 	}
 
 	pdb := services.DBclient
 	documents, err := pdb.Client.Document.FindMany(
-		db.Document.ContractID.Equals(activeContract.ID),
+		db.Document.LeaseID.Equals(activeLease.ID),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -38,7 +38,7 @@ func CreateDocument(doc db.DocumentModel) db.DocumentModel {
 	newDocument, err := pdb.Client.Document.CreateOne(
 		db.Document.Name.Set(doc.Name),
 		db.Document.Data.Set(doc.Data),
-		db.Document.Contract.Link(db.Contract.ID.Equals(doc.ContractID)),
+		db.Document.Lease.Link(db.Lease.ID.Equals(doc.LeaseID)),
 	).Exec(pdb.Context)
 	if err != nil || newDocument == nil {
 		panic(err)

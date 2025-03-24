@@ -147,11 +147,11 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	_, err = c.Client.Contract.CreateOne(
-		db.Contract.StartDate.Set(time.Now()),
-		db.Contract.Tenant.Link(db.User.ID.Equals(t.ID)),
-		db.Contract.Property.Link(db.Property.ID.Equals(p.ID)),
-		db.Contract.EndDate.Set(time.Now().AddDate(1, 0, 0)),
+	_, err = c.Client.Lease.CreateOne(
+		db.Lease.StartDate.Set(time.Now()),
+		db.Lease.Tenant.Link(db.User.ID.Equals(t.ID)),
+		db.Lease.Property.Link(db.Property.ID.Equals(p.ID)),
+		db.Lease.EndDate.Set(time.Now().AddDate(1, 0, 0)),
 	).Exec(c.Context)
 	if err != nil {
 		log.Fatalln(err)

@@ -8,11 +8,11 @@ import (
 	"immotep/backend/services"
 )
 
-func GetCurrentActiveContract(propertyId string) *db.ContractModel {
+func GetCurrentActiveLease(propertyId string) *db.LeaseModel {
 	pdb := services.DBclient
-	c, err := pdb.Client.Contract.FindMany(
-		db.Contract.PropertyID.Equals(propertyId),
-		db.Contract.Active.Equals(true),
+	c, err := pdb.Client.Lease.FindMany(
+		db.Lease.PropertyID.Equals(propertyId),
+		db.Lease.Active.Equals(true),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -25,19 +25,19 @@ func GetCurrentActiveContract(propertyId string) *db.ContractModel {
 		return nil
 	}
 	if l > 1 {
-		panic("Only one active contract must exist for a property")
+		panic("Only one active lease must exist for a property")
 	}
 	return &c[0]
 }
 
-func GetCurrentActiveContractWithInfos(propertyId string) *db.ContractModel {
+func GetCurrentActiveLeaseWithInfos(propertyId string) *db.LeaseModel {
 	pdb := services.DBclient
-	c, err := pdb.Client.Contract.FindMany(
-		db.Contract.PropertyID.Equals(propertyId),
-		db.Contract.Active.Equals(true),
+	c, err := pdb.Client.Lease.FindMany(
+		db.Lease.PropertyID.Equals(propertyId),
+		db.Lease.Active.Equals(true),
 	).With(
-		db.Contract.Tenant.Fetch(),
-		db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+		db.Lease.Tenant.Fetch(),
+		db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -50,16 +50,16 @@ func GetCurrentActiveContractWithInfos(propertyId string) *db.ContractModel {
 		return nil
 	}
 	if l > 1 {
-		panic("Only one active contract must exist for a property")
+		panic("Only one active lease must exist for a property")
 	}
 	return &c[0]
 }
 
-func GetTenantCurrentActiveContract(tenantId string) *db.ContractModel {
+func GetTenantCurrentActiveLease(tenantId string) *db.LeaseModel {
 	pdb := services.DBclient
-	c, err := pdb.Client.Contract.FindMany(
-		db.Contract.TenantID.Equals(tenantId),
-		db.Contract.Active.Equals(true),
+	c, err := pdb.Client.Lease.FindMany(
+		db.Lease.TenantID.Equals(tenantId),
+		db.Lease.Active.Equals(true),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -72,18 +72,18 @@ func GetTenantCurrentActiveContract(tenantId string) *db.ContractModel {
 		return nil
 	}
 	if l > 1 {
-		panic("Only one active contract must exist for a tenant")
+		panic("Only one active lease must exist for a tenant")
 	}
 	return &c[0]
 }
 
-func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel) db.ContractModel {
+func CreateLease(pendingContract db.PendingContractModel, tenant db.UserModel) db.LeaseModel {
 	pdb := services.DBclient
-	newContract, err := pdb.Client.Contract.CreateOne(
-		db.Contract.StartDate.Set(pendingContract.StartDate),
-		db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
-		db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-		db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	newLease, err := pdb.Client.Lease.CreateOne(
+		db.Lease.StartDate.Set(pendingContract.StartDate),
+		db.Lease.Tenant.Link(db.User.ID.Equals(tenant.ID)),
+		db.Lease.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
+		db.Lease.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -94,16 +94,16 @@ func CreateContract(pendingContract db.PendingContractModel, tenant db.UserModel
 	if err != nil {
 		panic(err)
 	}
-	return *newContract
+	return *newLease
 }
 
-func EndContract(id string, endDate *db.DateTime) *db.ContractModel {
+func EndLease(id string, endDate *db.DateTime) *db.LeaseModel {
 	pdb := services.DBclient
-	newContract, err := pdb.Client.Contract.FindUnique(
-		db.Contract.ID.Equals(id),
+	newLease, err := pdb.Client.Lease.FindUnique(
+		db.Lease.ID.Equals(id),
 	).Update(
-		db.Contract.Active.Set(false),
-		db.Contract.EndDate.SetIfPresent(endDate),
+		db.Lease.Active.Set(false),
+		db.Lease.EndDate.SetIfPresent(endDate),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -111,7 +111,7 @@ func EndContract(id string, endDate *db.DateTime) *db.ContractModel {
 		}
 		panic(err)
 	}
-	return newContract
+	return newLease
 }
 
 func GetPendingContractById(id string) *db.PendingContractModel {
@@ -140,7 +140,7 @@ func GetCurrentPendingContract(propertyId string) *db.PendingContractModel {
 
 func CreatePendingContract(pendingContract db.PendingContractModel, propertyId string) *db.PendingContractModel {
 	pdb := services.DBclient
-	newContract, err := pdb.Client.PendingContract.CreateOne(
+	newLease, err := pdb.Client.PendingContract.CreateOne(
 		db.PendingContract.TenantEmail.Set(pendingContract.TenantEmail),
 		db.PendingContract.StartDate.Set(pendingContract.StartDate),
 		db.PendingContract.Property.Link(db.Property.ID.Equals(propertyId)),
@@ -159,7 +159,7 @@ func CreatePendingContract(pendingContract db.PendingContractModel, propertyId s
 		}
 		panic(err)
 	}
-	return newContract
+	return newLease
 }
 
 func DeleteCurrentPendingContract(propertyId string) {

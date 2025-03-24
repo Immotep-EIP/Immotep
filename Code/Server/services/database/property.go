@@ -13,7 +13,7 @@ func GetAllPropertyByOwnerId(ownerId string, archived bool) []db.PropertyModel {
 		db.Property.Archived.Equals(archived),
 	).With(
 		db.Property.Damages.Fetch(),
-		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Property.PendingContract.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
@@ -28,7 +28,7 @@ func GetPropertyByID(id string) *db.PropertyModel {
 		db.Property.ID.Equals(id),
 	).With(
 		db.Property.Damages.Fetch(),
-		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Property.PendingContract.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
@@ -46,7 +46,7 @@ func GetPropertyInventory(id string) *db.PropertyModel {
 		db.Property.ID.Equals(id),
 	).With(
 		db.Property.Damages.Fetch(),
-		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Property.PendingContract.Fetch(),
 		db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
 	).Exec(pdb.Context)
@@ -74,7 +74,7 @@ func CreateProperty(property db.PropertyModel, ownerId string) *db.PropertyModel
 		db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
 	).With(
 		db.Property.Damages.Fetch(),
-		db.Property.Contracts.Fetch(),
+		db.Property.Leases.Fetch(),
 		db.Property.PendingContract.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
@@ -90,7 +90,7 @@ func UpdateProperty(id string, property models.PropertyUpdateRequest) *db.Proper
 	pdb := services.DBclient
 	newProperty, err := pdb.Client.Property.FindUnique(db.Property.ID.Equals(id)).With(
 		db.Property.Damages.Fetch(),
-		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Property.PendingContract.Fetch(),
 	).Update(
 		db.Property.Name.SetIfPresent(property.Name),
@@ -118,7 +118,7 @@ func UpdatePropertyPicture(property db.PropertyModel, image db.ImageModel) *db.P
 		db.Property.ID.Equals(property.ID),
 	).With(
 		db.Property.Damages.Fetch(),
-		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Property.PendingContract.Fetch(),
 	).Update(
 		db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
@@ -138,7 +138,7 @@ func ToggleArchiveProperty(propertyId string, archive bool) *db.PropertyModel {
 		db.Property.ID.Equals(propertyId),
 	).With(
 		db.Property.Damages.Fetch(),
-		db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+		db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Property.PendingContract.Fetch(),
 	).Update(
 		db.Property.Archived.Set(archive),

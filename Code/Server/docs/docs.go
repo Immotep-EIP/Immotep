@@ -35,7 +35,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Pending contract ID",
+                        "description": "Pending lease ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -64,7 +64,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Pending contract not found",
+                        "description": "Pending lease not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -509,7 +509,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Cancel pending contract invite",
+                "description": "Cancel pending lease invite",
                 "consumes": [
                     "application/json"
                 ],
@@ -540,7 +540,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "No pending contract",
+                        "description": "No pending lease",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -558,7 +558,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get all documents of a contract related to a property",
+                "description": "Get all documents of a lease related to a property",
                 "consumes": [
                     "application/json"
                 ],
@@ -595,7 +595,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "No active contract",
+                        "description": "No active lease",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -606,14 +606,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/end-contract": {
+        "/owner/properties/{property_id}/end-lease": {
             "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "End active contract for a property",
+                "description": "End active lease for a property",
                 "consumes": [
                     "application/json"
                 ],
@@ -623,7 +623,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "End contract",
+                "summary": "End lease",
                 "parameters": [
                     {
                         "type": "string",
@@ -635,7 +635,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "Contract ended"
+                        "description": "Lease ended"
                     },
                     "403": {
                         "description": "Property is not yours",
@@ -644,7 +644,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "No active contract",
+                        "description": "No active lease",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -2126,7 +2126,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Pending contract ID",
+                        "description": "Pending lease ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2143,13 +2143,13 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Pending contract not found",
+                        "description": "Pending lease not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "409": {
-                        "description": "Property not available or tenant already has contract",
+                        "description": "Property not available or tenant already has lease",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -3043,7 +3043,7 @@ const docTemplate = `{
                 "invite-not-found",
                 "user-must-have-same-email-as-invite",
                 "invite-already-exists-for-email-or-property",
-                "contract-already-exists-for-tenant-and-property",
+                "lease-already-exists-for-tenant-and-property",
                 "property-not-found",
                 "property-is-not-yours",
                 "not-an-owner",
@@ -3051,9 +3051,9 @@ const docTemplate = `{
                 "user-already-exists-as-owner",
                 "property-already-exists",
                 "property-not-available",
-                "tenant-already-has-contract",
-                "no-active-contract",
-                "no-pending-contract",
+                "tenant-already-has-lease",
+                "no-active-lease",
+                "no-pending-lease",
                 "failed-to-link-image",
                 "bad-base64-string",
                 "property-picture-not-found",
@@ -3085,7 +3085,7 @@ const docTemplate = `{
                 "InviteNotFound",
                 "UserSameEmailAsInvite",
                 "InviteAlreadyExists",
-                "ContractAlreadyExist",
+                "LeaseAlreadyExist",
                 "PropertyNotFound",
                 "PropertyNotYours",
                 "NotAnOwner",
@@ -3093,8 +3093,8 @@ const docTemplate = `{
                 "UserAlreadyExistsAsOwner",
                 "PropertyAlreadyExists",
                 "PropertyNotAvailable",
-                "TenantAlreadyHasContract",
-                "NoActiveContract",
+                "TenantAlreadyHasLease",
+                "NoActiveLease",
                 "NoPendingContract",
                 "FailedLinkImage",
                 "BadBase64String",

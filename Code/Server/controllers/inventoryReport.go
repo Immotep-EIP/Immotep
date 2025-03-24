@@ -124,18 +124,18 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 	return errorList
 }
 
-func createInvReportPDF(invRepId string, contract db.ContractModel) (*db.DocumentModel, error) {
+func createInvReportPDF(invRepId string, lease db.LeaseModel) (*db.DocumentModel, error) {
 	invReport := database.GetInvReportByID(invRepId)
-	docBytes, err := pdf.NewInventoryReportPDF(*invReport, contract)
+	docBytes, err := pdf.NewInventoryReportPDF(*invReport, lease)
 	if err != nil || docBytes == nil {
 		return nil, err
 	}
 
 	res := database.CreateDocument(db.DocumentModel{
 		InnerDocument: db.InnerDocument{
-			Name:       "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
-			Data:       docBytes,
-			ContractID: contract.ID,
+			Name:    "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
+			Data:    docBytes,
+			LeaseID: lease.ID,
 		},
 	})
 	return &res, nil
@@ -166,9 +166,9 @@ func CreateInventoryReport(c *gin.Context) {
 
 	propertyId := c.Param("property_id")
 
-	contract := database.GetCurrentActiveContractWithInfos(propertyId)
-	if contract == nil {
-		utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
+	lease := database.GetCurrentActiveLeaseWithInfos(propertyId)
+	if lease == nil {
+		utils.SendError(c, http.StatusNotFound, utils.NoActiveLease, nil)
 		return
 	}
 
@@ -180,7 +180,7 @@ func CreateInventoryReport(c *gin.Context) {
 
 	errorsList := createRoomStates(c, invrep, req)
 
-	irPdf, err := createInvReportPDF(invrep.ID, *contract)
+	irPdf, err := createInvReportPDF(invrep.ID, *lease)
 	if err != nil {
 		errorsList = append(errorsList, err.Error())
 	}

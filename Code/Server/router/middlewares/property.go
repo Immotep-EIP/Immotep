@@ -65,11 +65,11 @@ func CheckInventoryReportOwnership(propertyIdUrlParam string, reportIdUrlParam s
 	}
 }
 
-func CheckActiveContract(propertyIdUrlParam string) gin.HandlerFunc {
+func CheckActiveLease(propertyIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		contract := database.GetCurrentActiveContract(c.Param(propertyIdUrlParam))
-		if contract == nil {
-			utils.AbortSendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
+		lease := database.GetCurrentActiveLease(c.Param(propertyIdUrlParam))
+		if lease == nil {
+			utils.AbortSendError(c, http.StatusNotFound, utils.NoActiveLease, nil)
 			return
 		}
 
@@ -79,8 +79,8 @@ func CheckActiveContract(propertyIdUrlParam string) gin.HandlerFunc {
 
 func CheckPendingContract(propertyIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		contract := database.GetCurrentPendingContract(c.Param(propertyIdUrlParam))
-		if contract == nil {
+		lease := database.GetCurrentPendingContract(c.Param(propertyIdUrlParam))
+		if lease == nil {
 			utils.AbortSendError(c, http.StatusNotFound, utils.NoPendingContract, nil)
 			return
 		}

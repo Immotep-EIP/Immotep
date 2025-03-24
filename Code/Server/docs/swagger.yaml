@@ -506,7 +506,7 @@ definitions:
     - invite-not-found
     - user-must-have-same-email-as-invite
     - invite-already-exists-for-email-or-property
-    - contract-already-exists-for-tenant-and-property
+    - lease-already-exists-for-tenant-and-property
     - property-not-found
     - property-is-not-yours
     - not-an-owner
@@ -514,9 +514,9 @@ definitions:
     - user-already-exists-as-owner
     - property-already-exists
     - property-not-available
-    - tenant-already-has-contract
-    - no-active-contract
-    - no-pending-contract
+    - tenant-already-has-lease
+    - no-active-lease
+    - no-pending-lease
     - failed-to-link-image
     - bad-base64-string
     - property-picture-not-found
@@ -548,7 +548,7 @@ definitions:
     - InviteNotFound
     - UserSameEmailAsInvite
     - InviteAlreadyExists
-    - ContractAlreadyExist
+    - LeaseAlreadyExist
     - PropertyNotFound
     - PropertyNotYours
     - NotAnOwner
@@ -556,8 +556,8 @@ definitions:
     - UserAlreadyExistsAsOwner
     - PropertyAlreadyExists
     - PropertyNotAvailable
-    - TenantAlreadyHasContract
-    - NoActiveContract
+    - TenantAlreadyHasLease
+    - NoActiveLease
     - NoPendingContract
     - FailedLinkImage
     - BadBase64String
@@ -591,7 +591,7 @@ paths:
       description: Answer an invite from an owner with an invite link by creating
         a new user with tenant role
       parameters:
-      - description: Pending contract ID
+      - description: Pending lease ID
         in: path
         name: id
         required: true
@@ -614,7 +614,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: Pending contract not found
+          description: Pending lease not found
           schema:
             $ref: '#/definitions/utils.Error'
         "409":
@@ -876,7 +876,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Cancel pending contract invite
+      description: Cancel pending lease invite
       parameters:
       - description: Property ID
         in: path
@@ -893,7 +893,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: No pending contract
+          description: No pending lease
           schema:
             $ref: '#/definitions/utils.Error'
         "500":
@@ -907,7 +907,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get all documents of a contract related to a property
+      description: Get all documents of a lease related to a property
       parameters:
       - description: Property ID
         in: path
@@ -928,7 +928,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: No active contract
+          description: No active lease
           schema:
             $ref: '#/definitions/utils.Error'
         "500":
@@ -938,11 +938,11 @@ paths:
       summary: Get property documents
       tags:
       - owner
-  /owner/properties/{property_id}/end-contract:
+  /owner/properties/{property_id}/end-lease:
     put:
       consumes:
       - application/json
-      description: End active contract for a property
+      description: End active lease for a property
       parameters:
       - description: Property ID
         in: path
@@ -953,20 +953,20 @@ paths:
       - application/json
       responses:
         "204":
-          description: Contract ended
+          description: Lease ended
         "403":
           description: Property is not yours
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: No active contract
+          description: No active lease
           schema:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: End contract
+      summary: End lease
       tags:
       - owner
   /owner/properties/{property_id}/inventory-reports/:
@@ -1939,7 +1939,7 @@ paths:
       description: Answer an invite from an owner with an invite link by accepting
         the invite
       parameters:
-      - description: Pending contract ID
+      - description: Pending lease ID
         in: path
         name: id
         required: true
@@ -1954,11 +1954,11 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: Pending contract not found
+          description: Pending lease not found
           schema:
             $ref: '#/definitions/utils.Error'
         "409":
-          description: Property not available or tenant already has contract
+          description: Property not available or tenant already has lease
           schema:
             $ref: '#/definitions/utils.Error'
         "500":

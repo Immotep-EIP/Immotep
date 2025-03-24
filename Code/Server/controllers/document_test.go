@@ -19,11 +19,11 @@ import (
 func BuildTestDocument() db.DocumentModel {
 	return db.DocumentModel{
 		InnerDocument: db.InnerDocument{
-			ID:         "1",
-			Name:       "Test Document",
-			Data:       []byte("Test Data"),
-			ContractID: "1",
-			CreatedAt:  time.Now(),
+			ID:        "1",
+			Name:      "Test Document",
+			Data:      []byte("Test Data"),
+			LeaseID:   "1",
+			CreatedAt: time.Now(),
 		},
 	}
 }
@@ -36,23 +36,23 @@ func TestGetPropertyDocuments(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	activeContract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
+	activeLease := BuildTestLease()
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals("1"),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{activeContract})
+	).ReturnsMany([]db.LeaseModel{activeLease})
 
 	documents := []db.DocumentModel{BuildTestDocument()}
 	mock.Document.Expect(
 		client.Client.Document.FindMany(
-			db.Document.ContractID.Equals(activeContract.ID),
+			db.Document.LeaseID.Equals(activeLease.ID),
 		),
 	).ReturnsMany(documents)
 
@@ -79,7 +79,7 @@ func TestGetPropertyDocuments_NotYours(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -99,7 +99,7 @@ func TestGetPropertyDocuments_NotYours(t *testing.T) {
 	assert.Equal(t, utils.PropertyNotYours, errorResponse.Code)
 }
 
-func TestGetPropertyDocuments_NoActiveContract(t *testing.T) {
+func TestGetPropertyDocuments_NoActiveLease(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
@@ -107,15 +107,15 @@ func TestGetPropertyDocuments_NoActiveContract(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals("1"),
+			db.Lease.Active.Equals(true),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -131,5 +131,5 @@ func TestGetPropertyDocuments_NoActiveContract(t *testing.T) {
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
-	assert.Equal(t, utils.NoActiveContract, errorResponse.Code)
+	assert.Equal(t, utils.NoActiveLease, errorResponse.Code)
 }

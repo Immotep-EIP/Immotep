@@ -31,8 +31,8 @@ func BuildTestProperty(id string) db.PropertyModel {
 			PictureID:           utils.Ptr("1"),
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages:   []db.DamageModel{{}},
-			Contracts: []db.ContractModel{{}},
+			Damages: []db.DamageModel{{}},
+			Leases:  []db.LeaseModel{{}},
 		},
 	}
 }
@@ -47,7 +47,7 @@ func TestCheckPropertyOwnership(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -70,7 +70,7 @@ func TestCheckPropertyOwnership_NotFound(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -94,7 +94,7 @@ func TestCheckPropertyOwnership_NotYours(t *testing.T) {
 	mock.Property.Expect(
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -377,88 +377,88 @@ func TestCheckInventoryReportOwnership_NotYours(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCheckActiveContract(t *testing.T) {
+func TestCheckActiveLease(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	contract := db.ContractModel{
-		InnerContract: db.InnerContract{
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
 			ID:         "1",
 			PropertyID: "1",
 			Active:     true,
 		},
 	}
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals("1"),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract})
+	).ReturnsMany([]db.LeaseModel{lease})
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckActiveContract("propertyId")(c)
+	middlewares.CheckActiveLease("propertyId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestCheckActiveContract_NotFound(t *testing.T) {
+func TestCheckActiveLease_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals("1"),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{})
+	).ReturnsMany([]db.LeaseModel{})
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckActiveContract("propertyId")(c)
+	middlewares.CheckActiveLease("propertyId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCheckActiveContract_MultipleActiveContracts(t *testing.T) {
+func TestCheckActiveLease_MultipleActiveLeases(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	contract1 := db.ContractModel{
-		InnerContract: db.InnerContract{
+	lease1 := db.LeaseModel{
+		InnerLease: db.InnerLease{
 			ID:         "1",
 			PropertyID: "1",
 			Active:     true,
 		},
 	}
-	contract2 := db.ContractModel{
-		InnerContract: db.InnerContract{
+	lease2 := db.LeaseModel{
+		InnerLease: db.InnerLease{
 			ID:         "2",
 			PropertyID: "1",
 			Active:     true,
 		},
 	}
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals("1"),
+			db.Lease.Active.Equals(true),
 		),
-	).ReturnsMany([]db.ContractModel{contract1, contract2})
+	).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
 	assert.Panics(t, func() {
-		middlewares.CheckActiveContract("propertyId")(c)
+		middlewares.CheckActiveLease("propertyId")(c)
 	})
 }
 

@@ -42,7 +42,7 @@ func TestCreateFurniture(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -93,7 +93,7 @@ func TestCreateFurniture_MissingFields(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -135,7 +135,7 @@ func TestCreateFurniture_AlreadyExists(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -193,7 +193,7 @@ func TestGetFurnituresByRoom(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -243,7 +243,7 @@ func TestGetFurnituresByRoom_RoomNotFound(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -278,7 +278,7 @@ func TestGetFurnituresByRoom_WrongProperty(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -313,7 +313,7 @@ func TestGetFurnituresByRoom_PropertyNotFound(t *testing.T) {
 			db.Property.ID.Equals("1"),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -342,7 +342,7 @@ func TestGetFurnitureById(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -387,7 +387,7 @@ func TestGetFurnitureById_NotFound(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -431,7 +431,7 @@ func TestGetFurnitureById_WrongRoom(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -476,7 +476,7 @@ func TestGetFurnitureById_RoomNotFound(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -511,7 +511,7 @@ func TestGetFurnitureById_WrongProperty(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -546,7 +546,7 @@ func TestGetFurnitureById_PropertyNotFound(t *testing.T) {
 			db.Property.ID.Equals("1"),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -575,7 +575,7 @@ func TestArchiveFurniture(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -636,7 +636,7 @@ func TestArchiveFurniture_MissingFields(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -681,7 +681,7 @@ func TestArchiveFurniture_NotFound(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -725,7 +725,7 @@ func TestArchiveFurniture_WrongRoom(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -769,7 +769,7 @@ func TestArchiveFurniture_PropertyNotFound(t *testing.T) {
 			db.Property.ID.Equals("1"),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
@@ -798,7 +798,7 @@ func TestGetArchivedFurnituresByRoom(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -852,7 +852,7 @@ func TestGetArchivedFurnituresByRoom_RoomNotFound(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -887,7 +887,7 @@ func TestGetArchivedFurnituresByRoom_WrongProperty(t *testing.T) {
 			db.Property.ID.Equals(property.ID),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Returns(property)
@@ -922,7 +922,7 @@ func TestGetArchivedFurnituresByRoom_PropertyNotFound(t *testing.T) {
 			db.Property.ID.Equals("1"),
 		).With(
 			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 			db.Property.PendingContract.Fetch(),
 		),
 	).Errors(db.ErrNotFound)

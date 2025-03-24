@@ -249,7 +249,7 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
-	if database.GetCurrentActiveContract(c.Param("property_id")) != nil {
+	if database.GetCurrentActiveLease(c.Param("property_id")) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
@@ -281,37 +281,37 @@ func checkInvitedTenant(c *gin.Context, user *db.UserModel) bool {
 			utils.SendError(c, http.StatusConflict, utils.UserAlreadyExistsAsOwner, nil)
 			return false
 		}
-		if database.GetTenantCurrentActiveContract(user.ID) != nil {
-			utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasContract, nil)
+		if database.GetTenantCurrentActiveLease(user.ID) != nil {
+			utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasLease, nil)
 			return false
 		}
 	}
 	return true
 }
 
-// EndContract godoc
+// EndLease godoc
 //
-//	@Summary		End contract
-//	@Description	End active contract for a property
+//	@Summary		End lease
+//	@Description	End active lease for a property
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path	string	true	"Property ID"
-//	@Success		204			"Contract ended"
+//	@Success		204			"Lease ended"
 //	@Failure		403			{object}	utils.Error	"Property is not yours"
-//	@Failure		404			{object}	utils.Error	"No active contract"
+//	@Failure		404			{object}	utils.Error	"No active lease"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/end-contract [put]
-func EndContract(c *gin.Context) {
-	currentActive := database.GetCurrentActiveContract(c.Param("property_id"))
+//	@Router			/owner/properties/{property_id}/end-lease [put]
+func EndLease(c *gin.Context) {
+	currentActive := database.GetCurrentActiveLease(c.Param("property_id"))
 	_, ok := currentActive.EndDate()
 	if !ok {
 		now := time.Now().Truncate(time.Minute)
-		database.EndContract(currentActive.ID, &now)
+		database.EndLease(currentActive.ID, &now)
 		c.Status(http.StatusNoContent)
 	} else {
-		database.EndContract(currentActive.PropertyID, nil)
+		database.EndLease(currentActive.PropertyID, nil)
 		c.Status(http.StatusNoContent)
 	}
 }
@@ -319,14 +319,14 @@ func EndContract(c *gin.Context) {
 // CancelInvite godoc
 //
 //	@Summary		Cancel invite
-//	@Description	Cancel pending contract invite
+//	@Description	Cancel pending lease invite
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path	string	true	"Property ID"
 //	@Success		204			"Invite canceled"
 //	@Failure		403			{object}	utils.Error	"Property is not yours"
-//	@Failure		404			{object}	utils.Error	"No pending contract"
+//	@Failure		404			{object}	utils.Error	"No pending lease"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/cancel-invite [delete]
