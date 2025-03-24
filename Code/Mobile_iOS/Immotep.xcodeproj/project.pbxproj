@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CABE3B882CEB5C6D00BA983D /* NavigationTransitions in Frameworks */ = {isa = PBXBuildFile; productRef = CABE3B872CEB5C6D00BA983D /* NavigationTransitions */; };
 		CAC74F5C2D74F95A009E077B /* ViewInspector in Frameworks */ = {isa = PBXBuildFile; productRef = CAC74F5B2D74F95A009E077B /* ViewInspector */; };
 		CAE21F962CA9985400C21C36 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = CAE21F952CA9984E00C21C36 /* .swiftlint.yml */; };
 /* End PBXBuildFile section */
@@ -31,7 +30,7 @@
 
 /* Begin PBXFileReference section */
 		CA2579692CD2878D009EAB35 /* Immotep.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Immotep.xctestplan; path = ../../../../Downloads/Immotep.xctestplan; sourceTree = "<group>"; };
-		CA85272E2CA06B1E009FE366 /* Immotep.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Immotep.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA85272E2CA06B1E009FE366 /* KeyzApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyzApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA85273E2CA06B1F009FE366 /* ImmotepTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImmotepTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA8527482CA06B1F009FE366 /* ImmotepUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImmotepUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAE21F952CA9984E00C21C36 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
@@ -111,7 +110,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CABE3B882CEB5C6D00BA983D /* NavigationTransitions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,7 +145,7 @@
 		CA85272F2CA06B1E009FE366 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CA85272E2CA06B1E009FE366 /* Immotep.app */,
+				CA85272E2CA06B1E009FE366 /* KeyzApp.app */,
 				CA85273E2CA06B1F009FE366 /* ImmotepTests.xctest */,
 				CA8527482CA06B1F009FE366 /* ImmotepUITests.xctest */,
 			);
@@ -182,10 +180,9 @@
 			);
 			name = Immotep;
 			packageProductDependencies = (
-				CABE3B872CEB5C6D00BA983D /* NavigationTransitions */,
 			);
 			productName = Immotep;
-			productReference = CA85272E2CA06B1E009FE366 /* Immotep.app */;
+			productReference = CA85272E2CA06B1E009FE366 /* KeyzApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 		CA85273D2CA06B1F009FE366 /* ImmotepTests */ = {
@@ -264,7 +261,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				CAE21F972CA99DC900C21C36 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
-				CABE3B862CEB5C6C00BA983D /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */,
 				CAC74F5A2D74F90F009E077B /* XCRemoteSwiftPackageReference "ViewInspector" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -368,7 +364,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -433,7 +431,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -510,7 +510,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dd.Immotep;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = KeyzApp;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -543,7 +543,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dd.Immotep;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = KeyzApp;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -568,7 +568,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Immotep.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Immotep";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KeyzApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/KeyzApp";
 			};
 			name = Debug;
 		};
@@ -667,14 +667,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		CABE3B862CEB5C6C00BA983D /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/davdroman/swiftui-navigation-transitions";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.14.0;
-			};
-		};
 		CAC74F5A2D74F90F009E077B /* XCRemoteSwiftPackageReference "ViewInspector" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nalexn/ViewInspector";
@@ -694,11 +686,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CABE3B872CEB5C6D00BA983D /* NavigationTransitions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CABE3B862CEB5C6C00BA983D /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
-			productName = NavigationTransitions;
-		};
 		CAC74F5B2D74F95A009E077B /* ViewInspector */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CAC74F5A2D74F90F009E077B /* XCRemoteSwiftPackageReference "ViewInspector" */;
