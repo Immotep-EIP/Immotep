@@ -27,10 +27,10 @@ func BuildTestLease() db.LeaseModel {
 	}
 }
 
-func BuildTestPendingContract() db.PendingContractModel {
+func BuildTestLeaseInvite() db.LeaseInviteModel {
 	end := time.Now().Add(time.Hour)
-	return db.PendingContractModel{
-		InnerPendingContract: db.InnerPendingContract{
+	return db.LeaseInviteModel{
+		InnerLeaseInvite: db.InnerLeaseInvite{
 			ID:          "1",
 			TenantEmail: "test.test@example.com",
 			StartDate:   time.Now(),
@@ -59,25 +59,25 @@ func TestCreateLease(t *testing.T) {
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
-	pendingContract := BuildTestPendingContract()
+	leaseInvite := BuildTestLeaseInvite()
 	lease := BuildTestLease()
 
 	mock.Lease.Expect(
 		client.Client.Lease.CreateOne(
-			db.Lease.StartDate.Set(pendingContract.StartDate),
+			db.Lease.StartDate.Set(leaseInvite.StartDate),
 			db.Lease.Tenant.Link(db.User.ID.Equals(tenant.ID)),
-			db.Lease.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Lease.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+			db.Lease.Property.Link(db.Property.ID.Equals(leaseInvite.PropertyID)),
+			db.Lease.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
 		),
 	).Returns(lease)
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(
-			db.PendingContract.ID.Equals(pendingContract.ID),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(
+			db.LeaseInvite.ID.Equals(leaseInvite.ID),
 		).Delete(),
-	).Returns(pendingContract)
+	).Returns(leaseInvite)
 
-	newLease := database.CreateLease(pendingContract, tenant)
+	newLease := database.CreateLease(leaseInvite, tenant)
 	assert.NotNil(t, newLease)
 	assert.Equal(t, lease.TenantID, newLease.TenantID)
 	assert.Equal(t, lease.PropertyID, newLease.PropertyID)
@@ -88,19 +88,19 @@ func TestCreateLease_NoConnection1(t *testing.T) {
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
-	pendingContract := BuildTestPendingContract()
+	leaseInvite := BuildTestLeaseInvite()
 
 	mock.Lease.Expect(
 		client.Client.Lease.CreateOne(
-			db.Lease.StartDate.Set(pendingContract.StartDate),
+			db.Lease.StartDate.Set(leaseInvite.StartDate),
 			db.Lease.Tenant.Link(db.User.ID.Equals(tenant.ID)),
-			db.Lease.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Lease.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+			db.Lease.Property.Link(db.Property.ID.Equals(leaseInvite.PropertyID)),
+			db.Lease.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.CreateLease(pendingContract, tenant)
+		database.CreateLease(leaseInvite, tenant)
 	})
 }
 
@@ -109,105 +109,105 @@ func TestCreateLease_NoConnection2(t *testing.T) {
 	defer ensure(t)
 
 	tenant := BuildTestTenant("1")
-	pendingContract := BuildTestPendingContract()
+	leaseInvite := BuildTestLeaseInvite()
 	lease := BuildTestLease()
 
 	mock.Lease.Expect(
 		client.Client.Lease.CreateOne(
-			db.Lease.StartDate.Set(pendingContract.StartDate),
+			db.Lease.StartDate.Set(leaseInvite.StartDate),
 			db.Lease.Tenant.Link(db.User.ID.Equals(tenant.ID)),
-			db.Lease.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Lease.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+			db.Lease.Property.Link(db.Property.ID.Equals(leaseInvite.PropertyID)),
+			db.Lease.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
 		),
 	).Returns(lease)
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(
-			db.PendingContract.ID.Equals(pendingContract.ID),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(
+			db.LeaseInvite.ID.Equals(leaseInvite.ID),
 		).Delete(),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.CreateLease(pendingContract, tenant)
+		database.CreateLease(leaseInvite, tenant)
 	})
 }
 
-func TestGetPendingContractByID(t *testing.T) {
+func TestGetLeaseInviteByID(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	user := BuildTestPendingContract()
+	user := BuildTestLeaseInvite()
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals("1")),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.ID.Equals("1")),
 	).Returns(user)
 
-	foundPending := database.GetPendingContractById("1")
+	foundPending := database.GetLeaseInviteById("1")
 	assert.NotNil(t, foundPending)
 	assert.Equal(t, user.ID, foundPending.ID)
 }
 
-func TestGetPendingContractByID_NotFound(t *testing.T) {
+func TestGetLeaseInviteByID_NotFound(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals("1")),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.ID.Equals("1")),
 	).Errors(db.ErrNotFound)
 
-	foundPending := database.GetPendingContractById("1")
+	foundPending := database.GetLeaseInviteById("1")
 	assert.Nil(t, foundPending)
 }
 
-func TestGetPendingContractByID_NoConnection(t *testing.T) {
+func TestGetLeaseInviteByID_NoConnection(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals("1")),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.ID.Equals("1")),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetPendingContractById("1")
+		database.GetLeaseInviteById("1")
 	})
 }
 
-func TestCreatePendingContract(t *testing.T) {
+func TestCreateLeaseInvite(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	pendingContract := BuildTestPendingContract()
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.CreateOne(
-			db.PendingContract.TenantEmail.Set(pendingContract.TenantEmail),
-			db.PendingContract.StartDate.Set(pendingContract.StartDate),
-			db.PendingContract.Property.Link(db.Property.ID.Equals("1")),
-			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	leaseInvite := BuildTestLeaseInvite()
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.CreateOne(
+			db.LeaseInvite.TenantEmail.Set(leaseInvite.TenantEmail),
+			db.LeaseInvite.StartDate.Set(leaseInvite.StartDate),
+			db.LeaseInvite.Property.Link(db.Property.ID.Equals("1")),
+			db.LeaseInvite.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
 		).With(
-			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
+			db.LeaseInvite.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
-	).Returns(pendingContract)
+	).Returns(leaseInvite)
 
-	newLease := database.CreatePendingContract(pendingContract, property.ID)
+	newLease := database.CreateLeaseInvite(leaseInvite, property.ID)
 	assert.NotNil(t, newLease)
-	assert.Equal(t, pendingContract.ID, newLease.ID)
+	assert.Equal(t, leaseInvite.ID, newLease.ID)
 }
 
-func TestCreatePendingContract_AlreadyExists1(t *testing.T) {
+func TestCreateLeaseInvite_AlreadyExists1(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	pendingContract := BuildTestPendingContract()
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.CreateOne(
-			db.PendingContract.TenantEmail.Set(pendingContract.TenantEmail),
-			db.PendingContract.StartDate.Set(pendingContract.StartDate),
-			db.PendingContract.Property.Link(db.Property.ID.Equals("1")),
-			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	leaseInvite := BuildTestLeaseInvite()
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.CreateOne(
+			db.LeaseInvite.TenantEmail.Set(leaseInvite.TenantEmail),
+			db.LeaseInvite.StartDate.Set(leaseInvite.StartDate),
+			db.LeaseInvite.Property.Link(db.Property.ID.Equals("1")),
+			db.LeaseInvite.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
 		).With(
-			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
+			db.LeaseInvite.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -218,24 +218,24 @@ func TestCreatePendingContract_AlreadyExists1(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newLease := database.CreatePendingContract(pendingContract, property.ID)
+	newLease := database.CreateLeaseInvite(leaseInvite, property.ID)
 	assert.Nil(t, newLease)
 }
 
-func TestCreatePendingContract_AlreadyExists2(t *testing.T) {
+func TestCreateLeaseInvite_AlreadyExists2(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	pendingContract := BuildTestPendingContract()
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.CreateOne(
-			db.PendingContract.TenantEmail.Set(pendingContract.TenantEmail),
-			db.PendingContract.StartDate.Set(pendingContract.StartDate),
-			db.PendingContract.Property.Link(db.Property.ID.Equals("1")),
-			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	leaseInvite := BuildTestLeaseInvite()
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.CreateOne(
+			db.LeaseInvite.TenantEmail.Set(leaseInvite.TenantEmail),
+			db.LeaseInvite.StartDate.Set(leaseInvite.StartDate),
+			db.LeaseInvite.Property.Link(db.Property.ID.Equals("1")),
+			db.LeaseInvite.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
 		).With(
-			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
+			db.LeaseInvite.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -246,29 +246,29 @@ func TestCreatePendingContract_AlreadyExists2(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newLease := database.CreatePendingContract(pendingContract, property.ID)
+	newLease := database.CreateLeaseInvite(leaseInvite, property.ID)
 	assert.Nil(t, newLease)
 }
 
-func TestCreatePendingContract_NoConnection(t *testing.T) {
+func TestCreateLeaseInvite_NoConnection(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	pendingContract := BuildTestPendingContract()
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.CreateOne(
-			db.PendingContract.TenantEmail.Set(pendingContract.TenantEmail),
-			db.PendingContract.StartDate.Set(pendingContract.StartDate),
-			db.PendingContract.Property.Link(db.Property.ID.Equals("1")),
-			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
+	leaseInvite := BuildTestLeaseInvite()
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.CreateOne(
+			db.LeaseInvite.TenantEmail.Set(leaseInvite.TenantEmail),
+			db.LeaseInvite.StartDate.Set(leaseInvite.StartDate),
+			db.LeaseInvite.Property.Link(db.Property.ID.Equals("1")),
+			db.LeaseInvite.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
 		).With(
-			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
+			db.LeaseInvite.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.CreatePendingContract(pendingContract, property.ID)
+		database.CreateLeaseInvite(leaseInvite, property.ID)
 	})
 }
 
@@ -628,105 +628,105 @@ func TestGetTenantCurrentActiveLease_NoConnection(t *testing.T) {
 	})
 }
 
-func TestGetCurrentPendingContract(t *testing.T) {
+func TestGetCurrentLeaseInvite(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	pendingContract := BuildTestPendingContract()
+	leaseInvite := BuildTestLeaseInvite()
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(
-			db.PendingContract.PropertyID.Equals(property.ID),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(
+			db.LeaseInvite.PropertyID.Equals(property.ID),
 		),
-	).Returns(pendingContract)
+	).Returns(leaseInvite)
 
-	foundPending := database.GetCurrentPendingContract(property.ID)
+	foundPending := database.GetCurrentLeaseInvite(property.ID)
 	assert.NotNil(t, foundPending)
-	assert.Equal(t, pendingContract.ID, foundPending.ID)
+	assert.Equal(t, leaseInvite.ID, foundPending.ID)
 }
 
-func TestGetCurrentPendingContract_NotFound(t *testing.T) {
+func TestGetCurrentLeaseInvite_NotFound(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(
-			db.PendingContract.PropertyID.Equals(property.ID),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(
+			db.LeaseInvite.PropertyID.Equals(property.ID),
 		),
 	).Errors(db.ErrNotFound)
 
-	foundPending := database.GetCurrentPendingContract(property.ID)
+	foundPending := database.GetCurrentLeaseInvite(property.ID)
 	assert.Nil(t, foundPending)
 }
 
-func TestGetCurrentPendingContract_NoConnection(t *testing.T) {
+func TestGetCurrentLeaseInvite_NoConnection(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(
-			db.PendingContract.PropertyID.Equals(property.ID),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(
+			db.LeaseInvite.PropertyID.Equals(property.ID),
 		),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetCurrentPendingContract(property.ID)
+		database.GetCurrentLeaseInvite(property.ID)
 	})
 }
 
-func TestDeleteCurrentPendingContract(t *testing.T) {
+func TestDeleteCurrentLeaseInvite(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	pendingContract := BuildTestPendingContract()
+	leaseInvite := BuildTestLeaseInvite()
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(
-			db.PendingContract.PropertyID.Equals(property.ID),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(
+			db.LeaseInvite.PropertyID.Equals(property.ID),
 		).Delete(),
-	).Returns(pendingContract)
+	).Returns(leaseInvite)
 
 	assert.NotPanics(t, func() {
-		database.DeleteCurrentPendingContract(property.ID)
+		database.DeleteCurrentLeaseInvite(property.ID)
 	})
 }
 
-func TestDeleteCurrentPendingContract_NotFound(t *testing.T) {
+func TestDeleteCurrentLeaseInvite_NotFound(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(
-			db.PendingContract.PropertyID.Equals(property.ID),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(
+			db.LeaseInvite.PropertyID.Equals(property.ID),
 		).Delete(),
 	).Errors(db.ErrNotFound)
 
 	assert.Panics(t, func() {
-		database.DeleteCurrentPendingContract(property.ID)
+		database.DeleteCurrentLeaseInvite(property.ID)
 	})
 }
 
-func TestDeleteCurrentPendingContract_NoConnection(t *testing.T) {
+func TestDeleteCurrentLeaseInvite_NoConnection(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(
-			db.PendingContract.PropertyID.Equals(property.ID),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(
+			db.LeaseInvite.PropertyID.Equals(property.ID),
 		).Delete(),
 	).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.DeleteCurrentPendingContract(property.ID)
+		database.DeleteCurrentLeaseInvite(property.ID)
 	})
 }

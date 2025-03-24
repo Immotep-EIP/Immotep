@@ -16,7 +16,7 @@ func TestInviteRequest(t *testing.T) {
 	}
 
 	t.Run("ToInvite", func(t *testing.T) {
-		pc := req.ToDbPendingContract()
+		pc := req.ToDbLeaseInvite()
 
 		assert.Equal(t, req.TenantEmail, pc.TenantEmail)
 		assert.Equal(t, req.StartDate, pc.StartDate)
@@ -24,8 +24,8 @@ func TestInviteRequest(t *testing.T) {
 }
 
 func TestInviteResponse(t *testing.T) {
-	pc := db.PendingContractModel{
-		InnerPendingContract: db.InnerPendingContract{
+	pc := db.LeaseInviteModel{
+		InnerLeaseInvite: db.InnerLeaseInvite{
 			ID:          "1",
 			TenantEmail: "test1@example.com",
 			StartDate:   time.Now(),
@@ -35,7 +35,7 @@ func TestInviteResponse(t *testing.T) {
 
 	t.Run("FromInvite", func(t *testing.T) {
 		resp := models.InviteResponse{}
-		resp.FromDbPendingContract(pc)
+		resp.FromDbLeaseInvite(pc)
 
 		assert.Equal(t, pc.ID, resp.ID)
 		assert.Equal(t, pc.TenantEmail, resp.TenantEmail)
@@ -44,7 +44,7 @@ func TestInviteResponse(t *testing.T) {
 	})
 
 	t.Run("InviteToResponse", func(t *testing.T) {
-		resp := models.DbPendingContractToResponse(pc)
+		resp := models.DbLeaseInviteToResponse(pc)
 
 		assert.Equal(t, pc.ID, resp.ID)
 		assert.Equal(t, pc.StartDate, resp.StartDate)

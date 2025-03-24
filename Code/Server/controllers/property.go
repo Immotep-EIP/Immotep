@@ -259,20 +259,20 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
-	pendingContract := database.CreatePendingContract(inviteReq.ToDbPendingContract(), c.Param("property_id"))
-	if pendingContract == nil {
+	leaseInvite := database.CreateLeaseInvite(inviteReq.ToDbLeaseInvite(), c.Param("property_id"))
+	if leaseInvite == nil {
 		utils.SendError(c, http.StatusConflict, utils.InviteAlreadyExists, nil)
 		return
 	}
 
-	res, err := brevo.SendEmailInvite(*pendingContract, user != nil)
+	res, err := brevo.SendEmailInvite(*leaseInvite, user != nil)
 	if err != nil {
 		log.Println(res, err.Error())
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedSendEmail, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, models.DbPendingContractToResponse(*pendingContract))
+	c.JSON(http.StatusOK, models.DbLeaseInviteToResponse(*leaseInvite))
 }
 
 func checkInvitedTenant(c *gin.Context, user *db.UserModel) bool {
@@ -331,7 +331,7 @@ func EndLease(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/cancel-invite [delete]
 func CancelInvite(c *gin.Context) {
-	database.DeleteCurrentPendingContract(c.Param("property_id"))
+	database.DeleteCurrentLeaseInvite(c.Param("property_id"))
 	c.Status(http.StatusNoContent)
 }
 

@@ -188,7 +188,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 		).With(
 // 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-// 			db.Property.PendingContract.Fetch(),
+// 			db.Property.LeaseInvite.Fetch(),
 // 		),
 // 	).Returns(property)
 
@@ -335,7 +335,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 		).With(
 // 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-// 			db.Property.PendingContract.Fetch(),
+// 			db.Property.LeaseInvite.Fetch(),
 // 		),
 // 	).Returns(property)
 
@@ -370,7 +370,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 		).With(
 // 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-// 			db.Property.PendingContract.Fetch(),
+// 			db.Property.LeaseInvite.Fetch(),
 // 		),
 // 	).Returns(property)
 
@@ -424,7 +424,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 		).With(
 // 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-// 			db.Property.PendingContract.Fetch(),
+// 			db.Property.LeaseInvite.Fetch(),
 // 		),
 // 	).Errors(db.ErrNotFound)
 
@@ -458,7 +458,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 		).With(
 // 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-// 			db.Property.PendingContract.Fetch(),
+// 			db.Property.LeaseInvite.Fetch(),
 // 		),
 // 	).Returns(property)
 
@@ -508,7 +508,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 		).With(
 // 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-// 			db.Property.PendingContract.Fetch(),
+// 			db.Property.LeaseInvite.Fetch(),
 // 		),
 // 	).Returns(property)
 
@@ -591,7 +591,7 @@ func TestGetInventoryReportsByProperty(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 
@@ -637,7 +637,7 @@ func TestGetInventoryReportsByProperty_PropertyNotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -667,7 +667,7 @@ func TestGetInventoryReportByID(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 
@@ -708,7 +708,7 @@ func TestGetInventoryReportByID_Latest(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 
@@ -751,7 +751,7 @@ func TestGetInventoryReportByID_NotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 

@@ -10,9 +10,9 @@ type InviteRequest struct {
 	EndDate     *db.DateTime `binding:"-"              json:"end_date,omitempty"`
 }
 
-func (i *InviteRequest) ToDbPendingContract() db.PendingContractModel {
-	return db.PendingContractModel{
-		InnerPendingContract: db.InnerPendingContract{
+func (i *InviteRequest) ToDbLeaseInvite() db.LeaseInviteModel {
+	return db.LeaseInviteModel{
+		InnerLeaseInvite: db.InnerLeaseInvite{
 			TenantEmail: i.TenantEmail,
 			StartDate:   i.StartDate,
 			EndDate:     i.EndDate,
@@ -29,17 +29,17 @@ type InviteResponse struct {
 	CreatedAt   db.DateTime  `json:"created_at"`
 }
 
-func (i *InviteResponse) FromDbPendingContract(model db.PendingContractModel) {
+func (i *InviteResponse) FromDbLeaseInvite(model db.LeaseInviteModel) {
 	i.ID = model.ID
 	i.TenantEmail = model.TenantEmail
 	i.StartDate = model.StartDate
-	i.EndDate = model.InnerPendingContract.EndDate
+	i.EndDate = model.InnerLeaseInvite.EndDate
 	i.PropertyID = model.PropertyID
 	i.CreatedAt = model.CreatedAt
 }
 
-func DbPendingContractToResponse(pc db.PendingContractModel) InviteResponse {
+func DbLeaseInviteToResponse(pc db.LeaseInviteModel) InviteResponse {
 	var resp InviteResponse
-	resp.FromDbPendingContract(pc)
+	resp.FromDbLeaseInvite(pc)
 	return resp
 }

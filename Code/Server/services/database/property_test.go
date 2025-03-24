@@ -52,7 +52,7 @@ func TestGetAllProperties(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).ReturnsMany([]db.PropertyModel{property})
 
@@ -75,7 +75,7 @@ func TestGetAllProperties_MultipleProperties(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).ReturnsMany([]db.PropertyModel{p1, p2})
 
@@ -96,7 +96,7 @@ func TestGetAllProperties_NoProperties(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).ReturnsMany([]db.PropertyModel{})
 
@@ -115,7 +115,7 @@ func TestGetAllProperties_NoConnection(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Errors(errors.New("connection failed"))
 
@@ -134,7 +134,7 @@ func TestGetPropertyByID(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 
@@ -151,7 +151,7 @@ func TestGetPropertyByID_NotFound(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -167,7 +167,7 @@ func TestGetPropertyByID_NoConnection(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Errors(errors.New("connection failed"))
 
@@ -186,7 +186,7 @@ func TestGetPropertyInventory(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
 		),
 	).Returns(property)
@@ -204,7 +204,7 @@ func TestGetPropertyInventory_NotFound(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
 		),
 	).Errors(db.ErrNotFound)
@@ -221,7 +221,7 @@ func TestGetPropertyInventory_NoConnection(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
 		),
 	).Errors(errors.New("connection failed"))
@@ -252,7 +252,7 @@ func TestCreateProperty(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch(),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 
@@ -282,7 +282,7 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch(),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
@@ -318,7 +318,7 @@ func TestCreateProperty_NoConnection(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch(),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Errors(errors.New("connection failed"))
 
@@ -338,7 +338,7 @@ func TestUpdatePropertyPicture(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		).Update(
 			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
 		),
@@ -360,7 +360,7 @@ func TestUpdatePropertyPicture_NotFound(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		).Update(
 			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
 		),
@@ -381,7 +381,7 @@ func TestUpdatePropertyPicture_NoConnection(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		).Update(
 			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
 		),
@@ -405,7 +405,7 @@ func TestArchiveProperty(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		).Update(
 			db.Property.Archived.Set(true),
 		),
@@ -429,7 +429,7 @@ func TestArchiveProperty_NotFound(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		).Update(
 			db.Property.Archived.Set(true),
 		),
@@ -451,7 +451,7 @@ func TestArchiveProperty_NoConnection(t *testing.T) {
 		).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		).Update(
 			db.Property.Archived.Set(true),
 		),
@@ -483,7 +483,7 @@ func TestUpdateProperty(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		).Update(
 			db.Property.Name.SetIfPresent(updateRequest.Name),
 			db.Property.Address.SetIfPresent(updateRequest.Address),
@@ -522,7 +522,7 @@ func TestUpdateProperty_NotFound(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		).Update(
 			db.Property.Name.SetIfPresent(updateRequest.Name),
 			db.Property.Address.SetIfPresent(updateRequest.Address),
@@ -560,7 +560,7 @@ func TestUpdateProperty_NoConnection(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		).Update(
 			db.Property.Name.SetIfPresent(updateRequest.Name),
 			db.Property.Address.SetIfPresent(updateRequest.Address),

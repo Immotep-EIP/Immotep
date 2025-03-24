@@ -76,7 +76,7 @@ func callBrevo(fromName string, toEmail string, templateId int64, subject string
 	return string(respBody), nil
 }
 
-func SendEmailInvite(invite db.PendingContractModel, userExists bool) (string, error) {
+func SendEmailInvite(invite db.LeaseInviteModel, userExists bool) (string, error) {
 	ownerName := invite.Property().Owner().Firstname + " " + invite.Property().Owner().Lastname
 	var inviteLink string
 	if userExists {

@@ -37,7 +37,7 @@ func TestGetPropertyDocuments(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 
@@ -80,7 +80,7 @@ func TestGetPropertyDocuments_NotYours(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 
@@ -108,7 +108,7 @@ func TestGetPropertyDocuments_NoActiveLease(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 

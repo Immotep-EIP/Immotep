@@ -89,17 +89,17 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	pendingContract := database.GetPendingContractById(c.Param("id"))
-	if pendingContract == nil {
+	leaseInvite := database.GetLeaseInviteById(c.Param("id"))
+	if leaseInvite == nil {
 		utils.SendError(c, http.StatusNotFound, utils.InviteNotFound, nil)
 		return
 	}
-	if pendingContract.TenantEmail != userReq.Email {
+	if leaseInvite.TenantEmail != userReq.Email {
 		utils.SendError(c, http.StatusBadRequest, utils.UserSameEmailAsInvite, nil)
 		return
 	}
 
-	if database.GetCurrentActiveLease(pendingContract.PropertyID) != nil {
+	if database.GetCurrentActiveLease(leaseInvite.PropertyID) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
@@ -116,7 +116,7 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	_ = database.CreateLease(*pendingContract, *user)
+	_ = database.CreateLease(*leaseInvite, *user)
 	c.JSON(http.StatusCreated, models.DbUserToResponse(*user))
 }
 
@@ -142,17 +142,17 @@ func AcceptInvite(c *gin.Context) {
 		return
 	}
 
-	pendingContract := database.GetPendingContractById(c.Param("id"))
-	if pendingContract == nil {
+	leaseInvite := database.GetLeaseInviteById(c.Param("id"))
+	if leaseInvite == nil {
 		utils.SendError(c, http.StatusNotFound, utils.InviteNotFound, nil)
 		return
 	}
-	if pendingContract.TenantEmail != user.Email {
+	if leaseInvite.TenantEmail != user.Email {
 		utils.SendError(c, http.StatusForbidden, utils.UserSameEmailAsInvite, nil)
 		return
 	}
 
-	if database.GetCurrentActiveLease(pendingContract.PropertyID) != nil {
+	if database.GetCurrentActiveLease(leaseInvite.PropertyID) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
@@ -161,6 +161,6 @@ func AcceptInvite(c *gin.Context) {
 		return
 	}
 
-	_ = database.CreateLease(*pendingContract, *user)
+	_ = database.CreateLease(*leaseInvite, *user)
 	c.Status(http.StatusNoContent)
 }

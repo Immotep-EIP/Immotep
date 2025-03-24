@@ -48,7 +48,7 @@ func TestCheckPropertyOwnership(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 
@@ -71,7 +71,7 @@ func TestCheckPropertyOwnership_NotFound(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -95,7 +95,7 @@ func TestCheckPropertyOwnership_NotYours(t *testing.T) {
 		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
 			db.Property.Damages.Fetch(),
 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
+			db.Property.LeaseInvite.Fetch(),
 		),
 	).Returns(property)
 
@@ -462,44 +462,44 @@ func TestCheckActiveLease_MultipleActiveLeases(t *testing.T) {
 	})
 }
 
-func TestCheckPendingContract(t *testing.T) {
+func TestCheckLeaseInvite(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	pendingContract := db.PendingContractModel{
-		InnerPendingContract: db.InnerPendingContract{
+	leaseInvite := db.LeaseInviteModel{
+		InnerLeaseInvite: db.InnerLeaseInvite{
 			ID:         "1",
 			PropertyID: "1",
 		},
 	}
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals("1")),
-	).Returns(pendingContract)
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.PropertyID.Equals("1")),
+	).Returns(leaseInvite)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckPendingContract("propertyId")(c)
+	middlewares.CheckLeaseInvite("propertyId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestCheckPendingContract_NotFound(t *testing.T) {
+func TestCheckLeaseInvite_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals("1")),
+	mock.LeaseInvite.Expect(
+		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.PropertyID.Equals("1")),
 	).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckPendingContract("propertyId")(c)
+	middlewares.CheckLeaseInvite("propertyId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }

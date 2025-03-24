@@ -152,8 +152,8 @@ func TestPropertyResponse(t *testing.T) {
 
 	t.Run("FromProperty3", func(t *testing.T) {
 		newPc := BuildTestProperty("3")
-		newPc.RelationsProperty.PendingContract = &db.PendingContractModel{
-			InnerPendingContract: db.InnerPendingContract{
+		newPc.RelationsProperty.LeaseInvite = &db.LeaseInviteModel{
+			InnerLeaseInvite: db.InnerLeaseInvite{
 				TenantEmail: "test@example.com",
 				StartDate:   time.Now(),
 				EndDate:     nil,
@@ -270,8 +270,8 @@ func TestPropertyInventoryResponse(t *testing.T) {
 
 	t.Run("FromProperty3", func(t *testing.T) {
 		newPc := BuildTestPropertyWithInventory("3")
-		newPc.RelationsProperty.PendingContract = &db.PendingContractModel{
-			InnerPendingContract: db.InnerPendingContract{
+		newPc.RelationsProperty.LeaseInvite = &db.LeaseInviteModel{
+			InnerLeaseInvite: db.InnerLeaseInvite{
 				TenantEmail: "test@example.com",
 				StartDate:   time.Now(),
 				EndDate:     nil,

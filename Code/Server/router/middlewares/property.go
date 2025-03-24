@@ -77,11 +77,11 @@ func CheckActiveLease(propertyIdUrlParam string) gin.HandlerFunc {
 	}
 }
 
-func CheckPendingContract(propertyIdUrlParam string) gin.HandlerFunc {
+func CheckLeaseInvite(propertyIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		lease := database.GetCurrentPendingContract(c.Param(propertyIdUrlParam))
+		lease := database.GetCurrentLeaseInvite(c.Param(propertyIdUrlParam))
 		if lease == nil {
-			utils.AbortSendError(c, http.StatusNotFound, utils.NoPendingContract, nil)
+			utils.AbortSendError(c, http.StatusNotFound, utils.NoLeaseInvite, nil)
 			return
 		}
 

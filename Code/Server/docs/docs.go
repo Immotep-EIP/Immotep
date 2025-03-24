@@ -3095,7 +3095,7 @@ const docTemplate = `{
                 "PropertyNotAvailable",
                 "TenantAlreadyHasLease",
                 "NoActiveLease",
-                "NoPendingContract",
+                "NoLeaseInvite",
                 "FailedLinkImage",
                 "BadBase64String",
                 "PropertyPictureNotFound",

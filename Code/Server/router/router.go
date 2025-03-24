@@ -83,7 +83,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
 
 			propertyId.POST("/send-invite/", controllers.InviteTenant)
-			propertyId.DELETE("/cancel-invite/", middlewares.CheckPendingContract("property_id"), controllers.CancelInvite)
+			propertyId.DELETE("/cancel-invite/", middlewares.CheckLeaseInvite("property_id"), controllers.CancelInvite)
 
 			lease := propertyId.Group("")
 			{

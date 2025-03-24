@@ -107,16 +107,16 @@ model property {
     owner       user     @relation(fields: [owner_id], references: [id])
     owner_id    String
 
-    leases          lease[]
-    pending_contract   pendingContract?
-    damages            damage[]
-    rooms              room[]
-    reports            inventoryReport[]
+    leases        lease[]
+    lease_invite  leaseInvite?
+    damages       damage[]
+    rooms         room[]
+    reports       inventoryReport[]
 
     @@unique([name, owner_id])
 }
 
-model pendingContract {
+model leaseInvite {
     id           String    @id @default(cuid())
     tenant_email String    @unique @db.VarChar(255)
 
