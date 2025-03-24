@@ -11,7 +11,7 @@ actor ApiService: ApiServiceProtocol {
     static let shared = ApiService()
 
     func registerUser(with model: RegisterModel) async throws -> String {
-        let url = URL(string: "\(baseURL)/auth/register")!
+        let url = URL(string: "\(APIConfig.baseURL)/auth/register")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

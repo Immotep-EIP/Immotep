@@ -17,7 +17,7 @@ class RoomManager {
 
     func fetchRooms() async {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/rooms/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }
@@ -86,7 +86,7 @@ class RoomManager {
 
     func addRoom(name: String) async throws {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/rooms/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
@@ -132,7 +132,7 @@ class RoomManager {
 
     func deleteRoom(_ room: LocalRoom) async {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/archive/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/archive/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }

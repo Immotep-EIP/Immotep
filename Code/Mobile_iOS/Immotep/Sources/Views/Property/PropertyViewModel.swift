@@ -23,7 +23,7 @@ class PropertyViewModel: ObservableObject {
             "rental_price_per_month": request.monthlyRent
         ]
 
-        let url = URL(string: "\(baseURL)/owner/properties/")!
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/")!
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
@@ -53,7 +53,7 @@ class PropertyViewModel: ObservableObject {
         return "Property successfully created!"
     }
     func fetchProperties() async {
-            let url = URL(string: "\(baseURL)/owner/properties/")!
+            let url = URL(string: "\(APIConfig.baseURL)/owner/properties/")!
 
             do {
                 let token = try await TokenStorage.getValidAccessToken()
@@ -117,7 +117,7 @@ class PropertyViewModel: ObservableObject {
                 "deposit_price": request.deposit
             ]
 
-            guard let url = URL(string: "\(baseURL)/owner/properties/\(request.id)/") else {
+            guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(request.id)/") else {
                 throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
             }
 
@@ -160,7 +160,7 @@ class PropertyViewModel: ObservableObject {
         }
 
     func deleteProperty(propertyId: String) async throws {
-        let url = URL(string: "\(baseURL)/owner/properties/\(propertyId)/archive/")!
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/archive/")!
 
         let token = try await TokenStorage.getValidAccessToken()
 
@@ -208,7 +208,7 @@ class PropertyViewModel: ObservableObject {
     }
 
     func fetchPropertyDocuments(propertyId: String) async throws {
-        let url = URL(string: "\(baseURL)/owner/properties/\(propertyId)/documents/")!
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/documents/")!
 
         let token = try await TokenStorage.getValidAccessToken()
         print("Token used: \(token)")

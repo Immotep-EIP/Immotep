@@ -15,7 +15,7 @@ actor AuthService: AuthServiceProtocol {
     }
 
     func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil, keepMeSignedIn: Bool) async throws -> (String, String) {
-        let url = URL(string: "\(baseURL)/auth/token")!
+        let url = URL(string: "\(APIConfig.baseURL)/auth/token")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -66,7 +66,7 @@ actor AuthService: AuthServiceProtocol {
             accessToken = try await refreshAccessTokenIfNeeded()
         }
 
-        let url = URL(string: "\(baseURL)/\(endpoint)")!
+        let url = URL(string: "\(APIConfig.baseURL)/\(endpoint)")!
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken!)", forHTTPHeaderField: "Authorization")
 

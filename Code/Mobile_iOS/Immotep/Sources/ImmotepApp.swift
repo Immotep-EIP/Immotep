@@ -9,7 +9,7 @@ import SwiftUI
 import Foundation
 
 // only for local test purpose
- let baseURL = URL(string: "http://localhost:3001/api/v1")!
+// let baseURL = URL(string: "http://localhost:3001/api/v1")!
 // only for online test purpose
 // let baseURL = URL(string: "https://dev.backend.immotep.mazettt.fr/api/v1")!
 

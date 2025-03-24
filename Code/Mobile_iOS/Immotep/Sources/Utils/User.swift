@@ -67,7 +67,7 @@ actor UserService: UserServiceProtocol {
     }
 
     func fetchUserProfile(with token: String) async throws -> User {
-        let url = URL(string: "\(baseURL)/profile/")!
+        let url = URL(string: "\(APIConfig.baseURL)/profile/")!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")

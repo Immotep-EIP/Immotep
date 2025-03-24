@@ -17,7 +17,7 @@ class InventoryReportManager {
 
     func sendStuffReport() async throws {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/summarize/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/summarize/") else {
             throw URLError(.badURL)
         }
         guard let token = await viewModel.getToken() else {
@@ -116,7 +116,7 @@ class InventoryReportManager {
 
         let requestBody = InventoryReportRequest(type: viewModel.isEntryInventory ? "start" : "end", rooms: roomsData)
 
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
@@ -156,7 +156,7 @@ class InventoryReportManager {
 
     func fetchLastInventoryReport() async {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/latest/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/latest/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }
@@ -200,7 +200,7 @@ class InventoryReportManager {
 
     func compareStuffReport(oldReportId: String) async throws {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/compare/\(oldReportId)/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/compare/\(oldReportId)/") else {
             throw URLError(.badURL)
         }
         guard let token = await viewModel.getToken() else {

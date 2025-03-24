@@ -40,7 +40,7 @@ class FurnitureManager {
             return
         }
 
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/furnitures/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/furnitures/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }
@@ -109,7 +109,7 @@ class FurnitureManager {
 
     func addStuff(name: String, quantity: Int, to room: LocalRoom) async throws {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/furnitures/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/furnitures/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
@@ -153,7 +153,7 @@ class FurnitureManager {
         viewModel.isLoading = true
         defer { viewModel.isLoading = false }
 
-        guard let url = URL(string: "\(baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/furnitures/\(stuff.id)/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/furnitures/\(stuff.id)/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }
