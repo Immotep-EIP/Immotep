@@ -96,7 +96,7 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	case activeIndex != -1:
 		active := model.Leases()[activeIndex]
 		p.Status = "unavailable"
-		p.Tenant = active.Tenant().Firstname + " " + active.Tenant().Lastname
+		p.Tenant = active.Tenant().Name()
 		p.StartDate = &active.StartDate
 		p.EndDate = active.InnerLease.EndDate
 	case inviteOk:
@@ -184,7 +184,7 @@ func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel) {
 	case activeIndex != -1:
 		active := model.Leases()[activeIndex]
 		p.Status = "unavailable"
-		p.Tenant = active.Tenant().Firstname + " " + active.Tenant().Lastname
+		p.Tenant = active.Tenant().Name()
 		p.StartDate = &active.StartDate
 		p.EndDate = active.InnerLease.EndDate
 	case inviteOk:

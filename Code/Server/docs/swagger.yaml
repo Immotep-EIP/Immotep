@@ -193,6 +193,27 @@ definitions:
       tenant_email:
         type: string
     type: object
+  models.LeaseResponse:
+    properties:
+      active:
+        type: boolean
+      created_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      property_id:
+        type: string
+      start_date:
+        type: string
+      tenant_email:
+        type: string
+      tenant_id:
+        type: string
+      tenant_name:
+        type: string
+    type: object
   models.PropertyInventoryResponse:
     properties:
       address:
@@ -516,6 +537,8 @@ definitions:
     - property-not-available
     - tenant-already-has-lease
     - no-active-lease
+    - lease-not-found
+    - cannot-end-non-current-lease
     - no-pending-lease
     - failed-to-link-image
     - bad-base64-string
@@ -558,6 +581,8 @@ definitions:
     - PropertyNotAvailable
     - TenantAlreadyHasLease
     - NoActiveLease
+    - LeaseNotFound
+    - CannotEndNonCurrentLease
     - NoLeaseInvite
     - FailedLinkImage
     - BadBase64String
@@ -903,72 +928,6 @@ paths:
       summary: Cancel invite
       tags:
       - owner
-  /owner/properties/{property_id}/documents/:
-    get:
-      consumes:
-      - application/json
-      description: Get all documents of a lease related to a property
-      parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of documents
-          schema:
-            items:
-              $ref: '#/definitions/models.DocumentResponse'
-            type: array
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: No active lease
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Get property documents
-      tags:
-      - owner
-  /owner/properties/{property_id}/end-lease:
-    put:
-      consumes:
-      - application/json
-      description: End active lease for a property
-      parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: Lease ended
-        "403":
-          description: Property is not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: No active lease
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: End lease
-      tags:
-      - owner
   /owner/properties/{property_id}/inventory-reports/:
     get:
       consumes:
@@ -1211,6 +1170,151 @@ paths:
       security:
       - Bearer: []
       summary: Get property inventory by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/leases/:
+    get:
+      consumes:
+      - application/json
+      description: Get all leases (active and inactive) for a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of leases
+          schema:
+            items:
+              $ref: '#/definitions/models.LeaseResponse'
+            type: array
+        "404":
+          description: No leases found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get leases by property
+      tags:
+      - owner
+  /owner/properties/{property_id}/leases/{lease_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get lease by ID or current active lease
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lease
+          schema:
+            $ref: '#/definitions/models.LeaseResponse'
+        "404":
+          description: Lease not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get lease by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/leases/{lease_id}/documents/:
+    get:
+      consumes:
+      - application/json
+      description: Get all documents of a lease related to a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of documents
+          schema:
+            items:
+              $ref: '#/definitions/models.DocumentResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property documents
+      tags:
+      - owner
+  /owner/properties/{property_id}/leases/{lease_id}/end/:
+    put:
+      consumes:
+      - application/json
+      description: End active lease for a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: 'Mandatory: `current`'
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Lease ended
+        "400":
+          description: Cannot end non current lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property is not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: End lease
       tags:
       - owner
   /owner/properties/{property_id}/picture/:

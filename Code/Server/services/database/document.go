@@ -5,15 +5,10 @@ import (
 	"immotep/backend/services"
 )
 
-func GetCurrentActiveLeaseDocuments(propertyID string) []db.DocumentModel {
-	activeLease := GetCurrentActiveLease(propertyID)
-	if activeLease == nil {
-		panic("No active lease found for property: " + propertyID)
-	}
-
+func GetLeaseDocuments(leaseID string) []db.DocumentModel {
 	pdb := services.DBclient
 	documents, err := pdb.Client.Document.FindMany(
-		db.Document.LeaseID.Equals(activeLease.ID),
+		db.Document.LeaseID.Equals(leaseID),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)

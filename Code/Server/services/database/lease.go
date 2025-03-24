@@ -13,6 +13,8 @@ func GetCurrentActiveLease(propertyId string) *db.LeaseModel {
 	c, err := pdb.Client.Lease.FindMany(
 		db.Lease.PropertyID.Equals(propertyId),
 		db.Lease.Active.Equals(true),
+	).With(
+		db.Lease.Tenant.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -60,6 +62,8 @@ func GetTenantCurrentActiveLease(tenantId string) *db.LeaseModel {
 	c, err := pdb.Client.Lease.FindMany(
 		db.Lease.TenantID.Equals(tenantId),
 		db.Lease.Active.Equals(true),
+	).With(
+		db.Lease.Tenant.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -75,6 +79,38 @@ func GetTenantCurrentActiveLease(tenantId string) *db.LeaseModel {
 		panic("Only one active lease must exist for a tenant")
 	}
 	return &c[0]
+}
+
+func GetLeaseByID(id string) *db.LeaseModel {
+	pdb := services.DBclient
+	pc, err := pdb.Client.Lease.FindUnique(
+		db.Lease.ID.Equals(id),
+	).With(
+		db.Lease.Tenant.Fetch(),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return pc
+}
+
+func GetLeasesByProperty(propertyId string) []db.LeaseModel {
+	pdb := services.DBclient
+	pc, err := pdb.Client.Lease.FindMany(
+		db.Lease.PropertyID.Equals(propertyId),
+	).With(
+		db.Lease.Tenant.Fetch(),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return pc
 }
 
 func CreateLease(leaseInvite db.LeaseInviteModel, tenant db.UserModel) db.LeaseModel {

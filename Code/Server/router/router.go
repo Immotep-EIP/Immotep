@@ -85,11 +85,21 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			propertyId.POST("/send-invite/", controllers.InviteTenant)
 			propertyId.DELETE("/cancel-invite/", middlewares.CheckLeaseInvite("property_id"), controllers.CancelInvite)
 
-			lease := propertyId.Group("")
+			lease := propertyId.Group("/leases/")
 			{
-				lease.Use(middlewares.CheckActiveLease("property_id"))
-				lease.PUT("/end-lease/", controllers.EndLease)
-				lease.GET("/documents/", controllers.GetPropertyDocuments)
+				lease.GET("/", controllers.GetLeasesByProperty)
+
+				leaseId := lease.Group("/:lease_id/")
+				{
+					leaseId.Use(middlewares.CheckLeaseOwnership("property_id", "lease_id"))
+					leaseId.GET("/", controllers.GetLeaseByID)
+					leaseId.PUT("/end/", controllers.EndLease)
+					leaseId.GET("/documents/", controllers.GetLeaseDocuments)
+					// TODO:
+					// leaseId.POST("/documents/", controllers.UploadDocument)
+					// leaseId.GET("/document/:doc_id/", controllers.GetDocument)
+					// leaseId.DELETE("/document/:doc_id/", controllers.DeleteDocument)
+				}
 			}
 
 			rooms := propertyId.Group("/rooms")

@@ -3,7 +3,6 @@ package controllers
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
@@ -287,33 +286,6 @@ func checkInvitedTenant(c *gin.Context, user *db.UserModel) bool {
 		}
 	}
 	return true
-}
-
-// EndLease godoc
-//
-//	@Summary		End lease
-//	@Description	End active lease for a property
-//	@Tags			owner
-//	@Accept			json
-//	@Produce		json
-//	@Param			property_id	path	string	true	"Property ID"
-//	@Success		204			"Lease ended"
-//	@Failure		403			{object}	utils.Error	"Property is not yours"
-//	@Failure		404			{object}	utils.Error	"No active lease"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/end-lease [put]
-func EndLease(c *gin.Context) {
-	currentActive := database.GetCurrentActiveLease(c.Param("property_id"))
-	_, ok := currentActive.EndDate()
-	if !ok {
-		now := time.Now().Truncate(time.Minute)
-		database.EndLease(currentActive.ID, &now)
-		c.Status(http.StatusNoContent)
-	} else {
-		database.EndLease(currentActive.PropertyID, nil)
-		c.Status(http.StatusNoContent)
-	}
 }
 
 // CancelInvite godoc

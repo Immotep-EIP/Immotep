@@ -19,7 +19,7 @@ func NewInventoryReportPDF(invReport db.InventoryReportModel, lease db.LeaseMode
 	report.Ln(5)
 	report.AddTitle("Lease", H2)
 	report.Add2Texts("Owner: "+lease.Property().Owner().Firstname+" "+lease.Property().Owner().Lastname, "Email: "+lease.Property().Owner().Email)
-	report.Add2Texts("Tenant: "+lease.Tenant().Firstname+" "+lease.Tenant().Lastname, "Email: "+lease.Tenant().Email)
+	report.Add2Texts("Tenant: "+lease.Tenant().Name(), "Email: "+lease.Tenant().Email)
 	leaseEndDate, ok := lease.EndDate()
 	if ok {
 		report.Add2Texts("Start date: "+lease.StartDate.Format("2006-01-02"), "End date: "+leaseEndDate.Format("2006-01-02"))

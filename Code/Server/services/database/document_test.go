@@ -23,73 +23,55 @@ func BuildTestDocument(id string) db.DocumentModel {
 	}
 }
 
-func TestGetCurrentActiveLeaseDocuments(t *testing.T) {
+func TestGetLeaseDocuments(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	lease := BuildTestLease()
 	documents := []db.DocumentModel{
 		BuildTestDocument("1"),
 		BuildTestDocument("2"),
 	}
 
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		),
-	).ReturnsMany([]db.LeaseModel{lease})
-
 	mock.Document.Expect(
 		client.Client.Document.FindMany(
-			db.Document.LeaseID.Equals(lease.ID),
+			db.Document.LeaseID.Equals("1"),
 		),
 	).ReturnsMany(documents)
 
-	foundDocuments := database.GetCurrentActiveLeaseDocuments("1")
+	foundDocuments := database.GetLeaseDocuments("1")
 	assert.NotNil(t, foundDocuments)
 	assert.Equal(t, len(documents), len(foundDocuments))
 	assert.Equal(t, documents[0].ID, foundDocuments[0].ID)
 	assert.Equal(t, documents[1].ID, foundDocuments[1].ID)
 }
 
-func TestGetCurrentActiveLeaseDocuments_NoActiveLease(t *testing.T) {
+func TestGetLeaseDocuments_NoDocuments(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
-
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		),
-	).ReturnsMany([]db.LeaseModel{})
-
-	assert.Panics(t, func() {
-		database.GetCurrentActiveLeaseDocuments("1")
-	})
-}
-
-func TestGetCurrentActiveLeaseDocuments_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	lease := BuildTestLease()
-
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		),
-	).ReturnsMany([]db.LeaseModel{lease})
 
 	mock.Document.Expect(
 		client.Client.Document.FindMany(
-			db.Document.LeaseID.Equals(lease.ID),
+			db.Document.LeaseID.Equals("1"),
+		),
+	).ReturnsMany([]db.DocumentModel{})
+
+	foundDocuments := database.GetLeaseDocuments("1")
+	assert.NotNil(t, foundDocuments)
+	assert.Empty(t, foundDocuments)
+}
+
+func TestGetLeaseDocuments_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Document.Expect(
+		client.Client.Document.FindMany(
+			db.Document.LeaseID.Equals("1"),
 		),
 	).Errors(errors.New("connection error"))
 
 	assert.Panics(t, func() {
-		database.GetCurrentActiveLeaseDocuments("1")
+		database.GetLeaseDocuments("1")
 	})
 }
 

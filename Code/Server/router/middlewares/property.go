@@ -64,27 +64,3 @@ func CheckInventoryReportOwnership(propertyIdUrlParam string, reportIdUrlParam s
 		c.Next()
 	}
 }
-
-func CheckActiveLease(propertyIdUrlParam string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		lease := database.GetCurrentActiveLease(c.Param(propertyIdUrlParam))
-		if lease == nil {
-			utils.AbortSendError(c, http.StatusNotFound, utils.NoActiveLease, nil)
-			return
-		}
-
-		c.Next()
-	}
-}
-
-func CheckLeaseInvite(propertyIdUrlParam string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		lease := database.GetCurrentLeaseInvite(c.Param(propertyIdUrlParam))
-		if lease == nil {
-			utils.AbortSendError(c, http.StatusNotFound, utils.NoLeaseInvite, nil)
-			return
-		}
-
-		c.Next()
-	}
-}

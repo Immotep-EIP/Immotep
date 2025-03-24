@@ -4,6 +4,36 @@ import (
 	"immotep/backend/prisma/db"
 )
 
+type LeaseResponse struct {
+	ID          string       `json:"id"`
+	PropertyID  string       `json:"property_id"`
+	TenantID    string       `json:"tenant_id"`
+	TenantName  string       `json:"tenant_name"`
+	TenantEmail string       `json:"tenant_email"`
+	Active      bool         `json:"active"`
+	StartDate   db.DateTime  `json:"start_date"`
+	EndDate     *db.DateTime `json:"end_date"`
+	CreatedAt   db.DateTime  `json:"created_at"`
+}
+
+func (l *LeaseResponse) FromDbLease(model db.LeaseModel) {
+	l.ID = model.ID
+	l.PropertyID = model.PropertyID
+	l.TenantID = model.TenantID
+	l.TenantName = model.Tenant().Name()
+	l.TenantEmail = model.Tenant().Email
+	l.StartDate = model.StartDate
+	l.EndDate = model.InnerLease.EndDate
+	l.Active = model.Active
+	l.CreatedAt = model.CreatedAt
+}
+
+func DbLeaseToResponse(model db.LeaseModel) LeaseResponse {
+	var resp LeaseResponse
+	resp.FromDbLease(model)
+	return resp
+}
+
 type InviteRequest struct {
 	TenantEmail string       `binding:"required,email" json:"tenant_email"`
 	StartDate   db.DateTime  `binding:"required"       json:"start_date"`

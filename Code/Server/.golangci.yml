@@ -142,6 +142,9 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
       - name: max-public-structs
         disabled: true
+      - name: unchecked-type-assertion
+        arguments:
+          - acceptIgnoredAssertionResult: true
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unused-parameter
       - name: unused-parameter
         exclude: [""]

@@ -31,6 +31,8 @@ const (
 	PropertyNotAvailable         ErrorCode = "property-not-available"
 	TenantAlreadyHasLease        ErrorCode = "tenant-already-has-lease"
 	NoActiveLease                ErrorCode = "no-active-lease"
+	LeaseNotFound                ErrorCode = "lease-not-found"
+	CannotEndNonCurrentLease     ErrorCode = "cannot-end-non-current-lease"
 	NoLeaseInvite                ErrorCode = "no-pending-lease"
 	FailedLinkImage              ErrorCode = "failed-to-link-image"
 	BadBase64String              ErrorCode = "bad-base64-string"
