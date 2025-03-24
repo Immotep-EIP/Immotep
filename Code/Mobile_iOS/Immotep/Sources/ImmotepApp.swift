@@ -13,7 +13,7 @@ import Foundation
 // only for online test purpose
 // let baseURL = URL(string: "https://dev.backend.immotep.mazettt.fr/api/v1")!
 
-@main
+//@main
 struct ImmotepApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appdelegate
     @AppStorage("theme") private var selectedTheme: String = ThemeOption.system.rawValue
