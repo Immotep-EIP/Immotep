@@ -41,11 +41,13 @@ func TestGetPropertyDocuments(t *testing.T) {
 		),
 	).Returns(property)
 
-	activeLease := BuildTestLease()
+	activeLease := BuildTestLease("1")
 	mock.Lease.Expect(
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals("1"),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 
@@ -59,7 +61,7 @@ func TestGetPropertyDocuments(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/documents/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/current/documents/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -87,7 +89,7 @@ func TestGetPropertyDocuments_NotYours(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/documents/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/current/documents/", nil)
 	req.Header.Set("Oauth.claims.id", "2")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -116,13 +118,15 @@ func TestGetPropertyDocuments_NoActiveLease(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals("1"),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/documents/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/current/documents/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

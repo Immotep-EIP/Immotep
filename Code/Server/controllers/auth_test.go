@@ -182,8 +182,10 @@ func TestRegisterTenantPropertyNotAvailable(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals("1"),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
-	).ReturnsMany([]db.LeaseModel{BuildTestLease()})
+	).ReturnsMany([]db.LeaseModel{BuildTestLease("1")})
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -218,6 +220,8 @@ func TestAcceptInvite(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals(leaseInvite.PropertyID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{})
 
@@ -225,6 +229,8 @@ func TestAcceptInvite(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.TenantID.Equals(user.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{})
 
@@ -235,7 +241,7 @@ func TestAcceptInvite(t *testing.T) {
 			db.Lease.Property.Link(db.Property.ID.Equals(leaseInvite.PropertyID)),
 			db.Lease.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
 		),
-	).Returns(BuildTestLease())
+	).Returns(BuildTestLease("1"))
 
 	mock.LeaseInvite.Expect(
 		client.Client.LeaseInvite.FindUnique(
@@ -351,11 +357,13 @@ func TestAcceptInvitePropertyNotAvailable(t *testing.T) {
 		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.ID.Equals(leaseInvite.ID)),
 	).Returns(leaseInvite)
 
-	activeLease := BuildTestLease()
+	activeLease := BuildTestLease("1")
 	mock.Lease.Expect(
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals(leaseInvite.PropertyID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 
@@ -389,11 +397,13 @@ func TestAcceptInviteTenantAlreadyHasLease(t *testing.T) {
 		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.ID.Equals(leaseInvite.ID)),
 	).Returns(leaseInvite)
 
-	activeLease := BuildTestLease()
+	activeLease := BuildTestLease("1")
 	mock.Lease.Expect(
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals(leaseInvite.PropertyID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -401,6 +411,8 @@ func TestAcceptInviteTenantAlreadyHasLease(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.TenantID.Equals(user.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 

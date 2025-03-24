@@ -283,6 +283,8 @@ func TestGetCurrentActiveLease(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals(property.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{lease})
 
@@ -302,6 +304,8 @@ func TestGetCurrentActiveLease_NotFound(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals(property.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -319,6 +323,8 @@ func TestGetCurrentActiveLease_NoActiveLease(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals(property.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{})
 
@@ -338,6 +344,8 @@ func TestGetCurrentActiveLease_MultipleActiveLeases(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals(property.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
@@ -356,6 +364,8 @@ func TestGetCurrentActiveLease_NoConnection(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.PropertyID.Equals(property.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).Errors(errors.New("connection failed"))
 
@@ -547,6 +557,8 @@ func TestGetTenantCurrentActiveLease(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.TenantID.Equals(tenant.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{lease})
 
@@ -566,6 +578,8 @@ func TestGetTenantCurrentActiveLease_NotFound(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.TenantID.Equals(tenant.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -583,6 +597,8 @@ func TestGetTenantCurrentActiveLease_NoActiveLease(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.TenantID.Equals(tenant.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{})
 
@@ -602,6 +618,8 @@ func TestGetTenantCurrentActiveLease_MultipleActiveLeases(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.TenantID.Equals(tenant.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
@@ -620,6 +638,8 @@ func TestGetTenantCurrentActiveLease_NoConnection(t *testing.T) {
 		client.Client.Lease.FindMany(
 			db.Lease.TenantID.Equals(tenant.ID),
 			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
 		),
 	).Errors(errors.New("connection failed"))
 
@@ -728,5 +748,119 @@ func TestDeleteCurrentLeaseInvite_NoConnection(t *testing.T) {
 
 	assert.Panics(t, func() {
 		database.DeleteCurrentLeaseInvite(property.ID)
+	})
+}
+
+func TestGetLeaseByID(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := BuildTestLease()
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals(lease.ID),
+		).With(
+			db.Lease.Tenant.Fetch(),
+		),
+	).Returns(lease)
+
+	foundLease := database.GetLeaseByID(lease.ID)
+	assert.NotNil(t, foundLease)
+	assert.Equal(t, lease.ID, foundLease.ID)
+	assert.Equal(t, lease.TenantID, foundLease.TenantID)
+	assert.Equal(t, lease.PropertyID, foundLease.PropertyID)
+}
+
+func TestGetLeaseByID_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals("non-existent-id"),
+		).With(
+			db.Lease.Tenant.Fetch(),
+		),
+	).Errors(db.ErrNotFound)
+
+	foundLease := database.GetLeaseByID("non-existent-id")
+	assert.Nil(t, foundLease)
+}
+
+func TestGetLeaseByID_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals("1"),
+		).With(
+			db.Lease.Tenant.Fetch(),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetLeaseByID("1")
+	})
+}
+
+func TestGetLeasesByProperty(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	lease1 := BuildTestLease()
+	lease2 := BuildTestLease()
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+		).With(
+			db.Lease.Tenant.Fetch(),
+		),
+	).ReturnsMany([]db.LeaseModel{lease1, lease2})
+
+	leases := database.GetLeasesByProperty(property.ID)
+	assert.NotNil(t, leases)
+	assert.Len(t, leases, 2)
+	assert.Equal(t, lease1.ID, leases[0].ID)
+	assert.Equal(t, lease2.ID, leases[1].ID)
+}
+
+func TestGetLeasesByProperty_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+		).With(
+			db.Lease.Tenant.Fetch(),
+		),
+	).Errors(db.ErrNotFound)
+
+	leases := database.GetLeasesByProperty(property.ID)
+	assert.Nil(t, leases)
+}
+
+func TestGetLeasesByProperty_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.PropertyID.Equals(property.ID),
+		).With(
+			db.Lease.Tenant.Fetch(),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetLeasesByProperty(property.ID)
 	})
 }
