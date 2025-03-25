@@ -2,90 +2,100 @@ package com.example.immotep.realProperty
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.immotep.apiCallerServices.AddPropertyInput
+import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.GetPropertyResponse
+import com.example.immotep.apiCallerServices.RealPropertyCallerService
 import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
-import com.example.immotep.realProperty.details.toProperty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.util.Date
-import kotlin.collections.map
-import kotlin.collections.toTypedArray
 
-interface IProperty {
-    val id: String
-    val image: String
-    val address: String
-    val tenant: String
-    val available: Boolean
-    val startDate: LocalDateTime?
-    val endDate: LocalDateTime?
-}
 
-data class Property(
-    override val id: String = "",
-    override val image: String = "",
-    override val address: String = "",
-    override val tenant: String = "",
-    override val available: Boolean = true,
-    override val startDate: LocalDateTime? = null,
-    override val endDate: LocalDateTime? = null
-) : IProperty
+class RealPropertyViewModel(
+    navController: NavController,
+    apiService: ApiService
+) : ViewModel() {
+    enum class WhichApiError {
+         NONE,
+        GET_PROPERTIES,
+        ADD_PROPERTY,
+        DELETE_PROPERTY
+    }
+    private val apiCaller = RealPropertyCallerService(apiService, navController)
+    private val _isLoading = MutableStateFlow(true)
+    private val _propertySelectedDetails = MutableStateFlow<DetailedProperty?>(null)
+    private val _apiError = MutableStateFlow(WhichApiError.NONE)
 
-class RealPropertyViewModel(private val navController: NavController) : ViewModel() {
-    val properties = mutableStateListOf<Property>()
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    val apiError: StateFlow<WhichApiError> = _apiError.asStateFlow()
+    val propertySelectedDetails = _propertySelectedDetails.asStateFlow()
+    val properties = mutableStateListOf<DetailedProperty>()
+
+    fun closeError() {
+        _apiError.value = WhichApiError.NONE
+    }
 
     fun getProperties() {
         viewModelScope.launch {
-            val bearerToken: String
-            val authService = AuthService(navController.context.dataStore)
+            closeError()
+            _isLoading.value = true
             try {
-                bearerToken = authService.getBearerToken()
+                apiCaller.getPropertiesAsDetailedProperties { _apiError.value = WhichApiError.GET_PROPERTIES }
+                properties.clear()
+                properties.addAll(apiCaller.getPropertiesAsDetailedProperties { _apiError.value = WhichApiError.GET_PROPERTIES })
             } catch (e : Exception) {
-                authService.onLogout(navController)
-                println("error getting token")
-                return@launch
+                println("error getting properties ${e.message}")
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
-            properties.clear()
+        }
+    }
+
+    suspend fun addProperty(propertyForm: AddPropertyInput) {
+        val newProperty = apiCaller.addProperty(propertyForm) { _apiError.value = WhichApiError.ADD_PROPERTY }
+        properties.add(newProperty)
+        closeError()
+    }
+
+    fun deleteProperty(propertyId: String) {
+        val index = properties.indexOfFirst { it.id == propertyId }
+        if (index == -1) {
+            return
+        }
+        viewModelScope.launch {
             try {
-                val newProperties = ApiClient.apiService.getProperties(bearerToken)
-                newProperties.forEach {
-                    properties.add(Property(
-                        id = it.id,
-                        image = "",
-                        address = it.address,
-                        tenant = it.tenant,
-                        available = it.status == "available",
-                        startDate = if (it.start_date != null) LocalDateTime.parse(it.start_date) else null,
-                        endDate = if (it.end_date != null) LocalDateTime.parse(it.end_date) else null
-                    ))
-                }
+                apiCaller.archiveProperty(propertyId, { _apiError.value = WhichApiError.DELETE_PROPERTY })
+                properties.removeAt(index)
+                closeError()
             } catch (e : Exception) {
-                println("error getting properties")
+                println("error deleting property ${e.message}")
                 e.printStackTrace()
             }
         }
     }
 
-    fun addProperty(property: Property) {
-        properties.add(property)
-    }
-}
-
-class RealPropertyViewModelFactory(private val navController: NavController) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RealPropertyViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return RealPropertyViewModel(navController) as T
+    fun setPropertySelectedDetails(propertyId: String) {
+        val index = properties.indexOfFirst { it.id == propertyId }
+        if (index == -1) {
+            return
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        _propertySelectedDetails.value = properties[index]
+    }
+
+    fun getBackFromDetails(modifiedProperty : DetailedProperty) {
+        val index = properties.indexOfFirst { it.id == modifiedProperty.id }
+        if (index == -1) {
+            return
+        }
+        properties[index] = modifiedProperty
+        _propertySelectedDetails.value = null
     }
 }

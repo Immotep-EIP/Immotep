@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.components.CheckBoxWithLabel
 import com.example.immotep.components.ErrorAlert
@@ -38,7 +39,10 @@ import com.example.immotep.ui.components.PasswordInput
 fun LoginScreen(
     navController: NavController,
 ) {
-    val viewModel: LoginViewModel = viewModel(factory = LoginViewModelFactory(navController))
+    val apiService = LocalApiService.current
+    val viewModel: LoginViewModel = viewModel {
+        LoginViewModel(navController, apiService)
+    }
     val emailAndPassword = viewModel.emailAndPassword.collectAsState()
     val errors = viewModel.errors.collectAsState()
     val columnPaddingApiError = if (errors.value.apiError == null) 40.dp else 20.dp

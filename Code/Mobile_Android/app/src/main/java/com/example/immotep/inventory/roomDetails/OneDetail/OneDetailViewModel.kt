@@ -3,16 +3,16 @@ package com.example.immotep.inventory.roomDetails.OneDetail
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.apiClient.ApiClient
-import com.example.immotep.apiClient.SummarizeInput
-import com.example.immotep.authService.AuthService
+import com.example.immotep.apiCallerServices.AICallerService
+import com.example.immotep.apiCallerServices.AiCallInput
+import com.example.immotep.apiClient.ApiService
 import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.InventoryLocationsTypes
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.State
-import com.example.immotep.login.dataStore
 import com.example.immotep.utils.Base64Utils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,26 +24,35 @@ data class RoomDetailsError(
     var comment: Boolean = false,
     var status: Boolean = false,
     var picture: Boolean = false,
-    var exitPicture: Boolean = false,
     var cleanliness: Boolean = false
 )
 
-class OneDetailViewModel : ViewModel() {
+class OneDetailViewModel(
+    apiService: ApiService,
+    private val navController: NavController
+) : ViewModel() {
+    private val aiCaller = AICallerService(apiService, navController)
     private val _detail = MutableStateFlow(RoomDetail(name = "", id = ""))
-    val detail = _detail.asStateFlow()
-    val picture = mutableStateListOf<Uri>()
-    val exitPicture = mutableStateListOf<String>()
+    private val _aiLoading = MutableStateFlow(false)
     private val _errors = MutableStateFlow(RoomDetailsError())
+    private val _aiCallError = MutableStateFlow(false)
+
+    val picture = mutableStateListOf<Uri>()
+    val entryPictures = mutableStateListOf<String>()
+
+    val detail = _detail.asStateFlow()
     val errors = _errors.asStateFlow()
+    val aiLoading = _aiLoading.asStateFlow()
+    val aiCallError = _aiCallError.asStateFlow()
 
     fun reset(newDetail : RoomDetail?) {
         picture.clear()
-        exitPicture.clear()
+        entryPictures.clear()
         if (newDetail != null) {
             _detail.value = newDetail
             picture.addAll(newDetail.pictures)
-            if (newDetail.exitPictures != null) {
-                exitPicture.addAll(newDetail.exitPictures)
+            if (newDetail.entryPictures != null) {
+                entryPictures.addAll(newDetail.entryPictures)
             }
         } else {
             _detail.value = RoomDetail(name = "", id = "")
@@ -104,17 +113,14 @@ class OneDetailViewModel : ViewModel() {
         if (picture.isEmpty()) {
             error.picture = true
         }
-        if (isExit && exitPicture.isEmpty()) {
-            error.exitPicture = true
-        }
-        if (error.name || error.comment || error.status || error.picture || error.exitPicture || error.cleanliness) {
+        if (error.name || error.comment || error.status || error.picture || error.cleanliness) {
             _errors.value = error
             return
         }
         _detail.value = _detail.value.copy(
             pictures = picture.toTypedArray(),
             completed = true,
-            exitPictures = if (isExit) exitPicture.toTypedArray() else null
+            entryPictures = if (isExit) entryPictures.toTypedArray() else null
         )
         onModifyDetail(detail.value)
         reset(null)
@@ -123,56 +129,87 @@ class OneDetailViewModel : ViewModel() {
     fun onClose(onModifyDetail : (detail : RoomDetail) -> Unit, isExit: Boolean) {
         _detail.value = _detail.value.copy(
             pictures = picture.toTypedArray(),
-            exitPictures = if (isExit) exitPicture.toTypedArray() else null
+            entryPictures = if (isExit) entryPictures.toTypedArray() else null
         )
         onModifyDetail(_detail.value)
         reset(null)
     }
 
-    private fun summarize(navController: NavController, propertyId: String) {
+    private fun summarize(propertyId: String, isRoom : Boolean, onError : () -> Unit) {
         viewModelScope.launch {
-            val authService = AuthService(navController.context.dataStore)
-            val bearerToken = try {
-                authService.getBearerToken()
-            } catch (e: Exception) {
-                authService.onLogout(navController)
-                return@launch
-            }
+            _aiLoading.value = true
             try {
                 val picturesInput = Vector<String>()
                 picture.forEach {
                     picturesInput.add(Base64Utils.encodeImageToBase64(it, navController.context))
                 }
-                val aiResponse = ApiClient.apiService.aiSummarize(
-                    authHeader = bearerToken,
+                val aiResponse = aiCaller.summarize(
                     propertyId = propertyId,
-                    summarizeInput = SummarizeInput(
+                    input = AiCallInput(
                         id = _detail.value.id,
                         pictures = picturesInput,
-                        type = InventoryLocationsTypes.furniture
-                    )
+                        type = if (isRoom) InventoryLocationsTypes.room else InventoryLocationsTypes.furniture
+                    ),
+                    onError = onError
                 )
-                println("AI response : ${aiResponse.note}")
                 _detail.value = _detail.value.copy(
-                    cleanliness = aiResponse.cleanliness,
-                    status = aiResponse.state,
-                    comment = aiResponse.note
+                    cleanliness = aiResponse.cleanliness ?: _detail.value.cleanliness,
+                    status = aiResponse.state ?: _detail.value.status,
+                    comment = aiResponse.note ?: _detail.value.comment
                 )
+                _errors.value = RoomDetailsError()
             } catch (e : Exception) {
                 println("impossible to analyze ${e.message}")
                 e.printStackTrace()
+            } finally {
+                _aiLoading.value = false
             }
         }
     }
 
-    fun summarizeOrCompare(isExit: Boolean, navController: NavController, propertyId: String) {
+    private fun compare(oldReportId : String, propertyId: String, isRoom: Boolean, onError: () -> Unit) {
+        viewModelScope.launch {
+            _aiLoading.value = true
+            try {
+                val picturesInput = Vector<String>()
+                picture.forEach {
+                    picturesInput.add(Base64Utils.encodeImageToBase64(it, navController.context))
+                }
+                val aiResponse = aiCaller.compare(
+                    propertyId = propertyId,
+                    oldReportId = oldReportId,
+                    input = AiCallInput(
+                        id = _detail.value.id,
+                        pictures = picturesInput,
+                        type = if (isRoom) InventoryLocationsTypes.room else InventoryLocationsTypes.furniture
+                    ),
+                    onError = onError
+                )
+                _detail.value = _detail.value.copy(
+                    cleanliness = aiResponse.cleanliness ?: _detail.value.cleanliness,
+                    status = aiResponse.state ?: _detail.value.status,
+                    comment = aiResponse.note ?: _detail.value.comment
+                )
+
+            } catch (e : Exception) {
+                println("impossible to analyze ${e.message}")
+                e.printStackTrace()
+            } finally {
+                _aiLoading.value = false
+            }
+        }
+    }
+
+    fun summarizeOrCompare(oldReportId : String?, propertyId: String, isRoom: Boolean) {
+        _aiCallError.value = false
         if (picture.isEmpty()) {
             _errors.value = _errors.value.copy(picture = true)
             println("picture is empty")
             return
         }
-        if (!isExit) {
-            return summarize(navController, propertyId)
+        if (oldReportId == null) {
+            return summarize(propertyId, isRoom, { _aiCallError.value = true })
         }
+        return compare(oldReportId, propertyId, isRoom, { _aiCallError.value = true })
     }
 }

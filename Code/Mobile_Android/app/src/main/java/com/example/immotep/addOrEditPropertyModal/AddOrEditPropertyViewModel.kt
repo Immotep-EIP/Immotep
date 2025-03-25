@@ -1,15 +1,14 @@
-package com.example.immotep.addPropertyModal
+package com.example.immotep.addOrEditPropertyModal
 
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.apiClient.AddPropertyInput
+import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
-import com.example.immotep.realProperty.Property
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,12 +25,16 @@ data class PropertyFormError(
     var city: Boolean = false
 )
 
-class AddPropertyViewModelViewModel() : ViewModel() {
+class AddOrEditPropertyViewModel : ViewModel() {
     private val _propertyForm = MutableStateFlow(AddPropertyInput())
     private val _propertyFormError = MutableStateFlow(PropertyFormError())
     val pictures = mutableStateListOf<Uri>()
     val propertyForm: StateFlow<AddPropertyInput> = _propertyForm.asStateFlow()
     val propertyFormError: StateFlow<PropertyFormError> = _propertyFormError.asStateFlow()
+
+    fun setBaseValue(property: AddPropertyInput) {
+        _propertyForm.value = property
+    }
 
     fun setAddress(address: String) {
         _propertyForm.value = _propertyForm.value.copy(address = address)
@@ -68,12 +71,20 @@ class AddPropertyViewModelViewModel() : ViewModel() {
         pictures.add(picture)
     }
 
-    fun reset() {
+    fun setAppartementNumber(appartementNumber: String) {
+        _propertyForm.value = _propertyForm.value.copy(apartment_number = appartementNumber)
+    }
+
+    fun reset(baseValue: AddPropertyInput? = null) {
+        if (baseValue != null) {
+            _propertyForm.value = baseValue
+            return
+        }
         _propertyForm.value = AddPropertyInput()
     }
 
-    fun onSubmit(onClose : () -> Unit, navController: NavController, addPropertyToList : (property : Property) -> Unit) {
-        val newPropertyErrors : PropertyFormError = PropertyFormError()
+    fun onSubmit(onClose : () -> Unit, sendFormFn : suspend (property : AddPropertyInput) -> Unit) {
+        val newPropertyErrors = PropertyFormError()
         if (_propertyForm.value.address.length < 3) {
             newPropertyErrors.address = true
         }
@@ -94,22 +105,16 @@ class AddPropertyViewModelViewModel() : ViewModel() {
             }
         if (newPropertyErrors.address || newPropertyErrors.zipCode || newPropertyErrors.country || newPropertyErrors.area || newPropertyErrors.rental || newPropertyErrors.deposit) {
             _propertyFormError.value = newPropertyErrors
-            println("ERRROR $newPropertyErrors")
+            println("ERROR $newPropertyErrors")
             return
         }
             viewModelScope.launch {
                 try {
-                    val authService = AuthService(navController.context.dataStore)
-                    val property = ApiClient.apiService.addProperty(authService.getBearerToken(), _propertyForm.value)
-                    addPropertyToList(
-                        Property(
-                            id = property.id,
-                            address = property.address,
-                        )
-                    )
-                    reset()
+                    sendFormFn(propertyForm.value)
                     onClose()
+                    reset()
                 } catch (e: Exception) {
+                    println("Error during property creation: ${e.message}")
                     e.printStackTrace()
                 }
             }

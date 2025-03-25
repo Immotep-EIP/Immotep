@@ -2,21 +2,17 @@ package com.example.immotep.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.immotep.apiClient.ApiClient
-import com.example.immotep.apiClient.RegistrationInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import androidx.navigation.NavController
+import com.example.immotep.apiClient.ApiService
+import com.example.immotep.authService.AuthService
+import com.example.immotep.authService.RegistrationInput
 import com.example.immotep.components.decodeRetroFitMessagesToHttpCodes
+import com.example.immotep.login.dataStore
 
-data class RegisterForm(
-    val lastName: String = "",
-    val firstName: String = "",
-    val email: String = "",
-    val password: String = "",
-)
 
 data class RegisterConfirm(
     val password: String = "",
@@ -33,11 +29,17 @@ data class RegisterFormError(
     var apiError: Int? = null,
 )
 
-class RegisterViewModel : ViewModel() {
-    private val _registerForm = MutableStateFlow(RegisterForm())
+class RegisterViewModel(navController: NavController, apiService: ApiService) : ViewModel() {
+    private val authService = AuthService(navController.context.dataStore, apiService)
+    private val _registerForm = MutableStateFlow(RegistrationInput(
+        email = "",
+        password = "",
+        firstName = "",
+        lastName = ""
+    ))
     private val _registerConfirm = MutableStateFlow(RegisterConfirm())
     private val _registerFormError = MutableStateFlow(RegisterFormError())
-    val regForm: StateFlow<RegisterForm> = _registerForm.asStateFlow()
+    val regForm = _registerForm.asStateFlow()
     val regConfirm: StateFlow<RegisterConfirm> = _registerConfirm.asStateFlow()
     val regFormError: StateFlow<RegisterFormError> = _registerFormError.asStateFlow()
 
@@ -107,15 +109,18 @@ class RegisterViewModel : ViewModel() {
     }
 
     private fun registerToApi(navController: NavController) {
+        _registerFormError.value = RegisterFormError()
         viewModelScope.launch {
             try {
-                ApiClient.apiService.register(RegistrationInput(
-                    email = _registerForm.value.email,
-                    password = _registerForm.value.password,
-                    firstName = _registerForm.value.firstName,
-                    lastName = _registerForm.value.lastName)
-                )
+                authService.register(_registerForm.value)
                 navController.navigate("login")
+                _registerForm.value = _registerForm.value.copy(
+                    email = "",
+                    password = "",
+                    firstName = "",
+                    lastName = ""
+                )
+                _registerConfirm.value = RegisterConfirm()
                 return@launch
             } catch (err: Exception) {
                 _registerFormError.value = _registerFormError.value.copy(apiError = decodeRetroFitMessagesToHttpCodes(err))

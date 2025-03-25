@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.components.CheckBoxWithLabel
 import com.example.immotep.components.ErrorAlert
@@ -36,8 +37,11 @@ import com.example.immotep.ui.components.PasswordInput
 @Composable
 fun RegisterScreen(
     navController: NavController,
-    viewModel: RegisterViewModel = viewModel(),
 ) {
+    val apiService = LocalApiService.current
+    val viewModel = viewModel{
+        RegisterViewModel(navController, apiService)
+    }
     val registerForm = viewModel.regForm.collectAsState()
     val registerConfirm = viewModel.regConfirm.collectAsState()
     val errors = viewModel.regFormError.collectAsState()

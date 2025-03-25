@@ -24,8 +24,9 @@ import com.example.immotep.ui.icons.ReleaseAlert
 fun ErrorAlert(
     code: Int?,
     login: Boolean?,
+    customMessage: String? = null
 ) {
-    if (code == null) {
+    if (code == null && customMessage == null) {
         return
     }
     val errorText =
@@ -46,7 +47,7 @@ fun ErrorAlert(
             502 -> stringResource(R.string.bad_gateway)
             503 -> stringResource(R.string.service_unavailable)
             504 -> stringResource(R.string.gateway_timeout)
-            else -> stringResource(R.string.unknown_error)
+            else -> customMessage?: stringResource(R.string.unknown_error)
         }
 
     Row(

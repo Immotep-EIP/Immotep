@@ -1,7 +1,6 @@
 package com.example.immotep.inventory.roomDetails.OneDetail
 
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,14 +15,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.components.AddingPicturesCarousel
+import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
+import com.example.immotep.components.LoadingDialog
 import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.State
@@ -38,11 +40,17 @@ fun OneDetailScreen(
     baseDetail : RoomDetail,
     oldReportId : String?,
     navController : NavController,
-    propertyId : String
+    propertyId : String,
+    isRoom : Boolean = false,
 ) {
-    val viewModel : OneDetailViewModel = viewModel()
+    val apiService = LocalApiService.current
+    val viewModel : OneDetailViewModel = viewModel {
+        OneDetailViewModel(apiService, navController)
+    }
     val detailValue = viewModel.detail.collectAsState()
     val detailError = viewModel.errors.collectAsState()
+    val isLoading = viewModel.aiLoading.collectAsState()
+    val callError = viewModel.aiCallError.collectAsState()
     val isExit = oldReportId != null
     LaunchedEffect(Unit) {
         viewModel.reset(baseDetail)
@@ -52,24 +60,19 @@ fun OneDetailScreen(
         { viewModel.onClose(onModifyDetail, isExit) }
     ) {
         InitialFadeIn {
+            LoadingDialog(isOpen = isLoading.value)
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Text(if (isExit) stringResource(R.string.entry_pictures) else stringResource(R.string.pictures))
+                ErrorAlert(null, null, if (callError.value) stringResource(R.string.ai_call_error) else null)
+                if (isExit) {
+                    Text(stringResource(R.string.entry_pictures))
+                    AddingPicturesCarousel(stringPictures = viewModel.entryPictures)
+                }
+                Text(if (isExit) stringResource(R.string.exit_pictures) else stringResource(R.string.pictures))
                 AddingPicturesCarousel(
                     uriPictures = viewModel.picture,
                     addPicture = { uri -> viewModel.addPicture(uri) },
                     error = if (detailError.value.picture) stringResource(R.string.add_picture_error) else null
                 )
-                if (isExit) {
-                    Text(stringResource(R.string.exit_pictures))
-                    AddingPicturesCarousel(stringPictures = viewModel.exitPicture)
-                    if (detailError.value.exitPicture) {
-                        Text(
-                            stringResource(R.string.add_picture_error),
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(top = 10.dp)
-                        )
-                    }
-                }
                 OutlinedTextField(
                     value = detailValue.value.comment,
                     onValueChange = { newVal -> viewModel.setComment(newVal) },
@@ -77,7 +80,8 @@ fun OneDetailScreen(
                     minLines = 4,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 10.dp),
+                        .padding(top = 10.dp)
+                        .testTag("oneDetailComment"),
                     errorMessage = if (detailError.value.comment) stringResource(R.string.comment_error) else null
                 )
                 Text(stringResource(R.string.status), modifier = Modifier.padding(top = 10.dp))
@@ -85,12 +89,15 @@ fun OneDetailScreen(
                     items = listOf(
                         DropDownItem(stringResource(R.string.new_state), State.new),
                         DropDownItem(stringResource(R.string.good_state), State.good),
+                        DropDownItem(stringResource(R.string.medium_state), State.medium),
                         DropDownItem(stringResource(R.string.bad_state), State.bad),
-                        DropDownItem(stringResource(R.string.broken_state), State.broken),
+                        DropDownItem(stringResource(R.string.needs_repair), State.needsRepair),
+                        DropDownItem(stringResource(R.string.broken_state), State.broken)
                     ),
                     selectedItem = detailValue.value.status,
                     onItemSelected = { newVal -> viewModel.setStatus(newVal) },
-                    error = if (detailError.value.status) stringResource(R.string.status_error) else null
+                    error = if (detailError.value.status) stringResource(R.string.status_error) else null,
+                    testTag = "dropDownState"
                 )
                 Text(stringResource(R.string.cleaniness), modifier = Modifier.padding(top = 10.dp))
                 DropDown(
@@ -101,30 +108,36 @@ fun OneDetailScreen(
                     ),
                     selectedItem = detailValue.value.cleanliness,
                     onItemSelected = { newVal -> viewModel.setCleanliness(newVal) },
-                    error = if (detailError.value.cleanliness) stringResource(R.string.cleaniness_error) else null
+                    error = if (detailError.value.cleanliness) stringResource(R.string.cleaniness_error) else null,
+                    testTag = "dropDownCleanliness"
                 )
+
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                     Button(
                         shape = RoundedCornerShape(5.dp),
-                        modifier = Modifier.padding(top = 10.dp),
+                        modifier = Modifier.padding(top = 10.dp).testTag("aiCallButton"),
                         colors = androidx.compose.material.ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        onClick = { viewModel.summarizeOrCompare(isExit = isExit, navController = navController, propertyId = propertyId) },
+                        onClick = { viewModel.summarizeOrCompare(
+                            oldReportId = oldReportId,
+                            propertyId = propertyId,
+                            isRoom = isRoom
+                        ) },
                     ) {
                         Text(stringResource(if (isExit) R.string.compare_images else R.string.analyze_pictures))
                     }
                     Button(
                         shape = RoundedCornerShape(5.dp),
-                        modifier = Modifier.padding(top = 10.dp),
+                        modifier = Modifier.padding(top = 10.dp).testTag("validateButton"),
                         colors = androidx.compose.material.ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         onClick = { viewModel.onConfirm(onModifyDetail, isExit) },
                     ) {
-                        Text(stringResource(R.string.validate))
+                        Text(stringResource(if (isRoom) R.string.validate_room else  R.string.validate_detail))
                     }
                 }
             }

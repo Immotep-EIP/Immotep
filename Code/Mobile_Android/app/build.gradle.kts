@@ -75,9 +75,17 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics:1.5.4")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
     implementation("androidx.compose.material3:material3:1.2.0-alpha10")
+
+    //pdf handler
+    implementation("io.github.grizzi91:bouquet:1.1.2")
+
+
+    //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.navigation:navigation-compose:2.8.1")
+    implementation("com.squareup.okhttp3:logging-interceptor:3.12.1")
+
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
     implementation("androidx.compose.material:material:1.8.0-alpha01")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
@@ -92,8 +100,12 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.0.1")
     implementation("androidx.camera:camera-view:1.0.0-alpha27")
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
+    // Needed for unit testing API
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
+    androidTestImplementation("io.github.aungthiha:compose-ui-test:1.0.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)

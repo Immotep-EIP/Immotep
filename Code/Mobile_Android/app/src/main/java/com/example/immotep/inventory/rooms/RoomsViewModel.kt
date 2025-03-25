@@ -17,7 +17,7 @@ class RoomsViewModel(
     private val addRoom: suspend (String) -> String?,
     private val removeRoom: (String) -> Unit,
     private val closeInventory: () -> Unit,
-    private val editRoom: (String, Room) -> Unit,
+    private val editRoom: (Room) -> Unit,
     private val confirmInventory: () -> Boolean
     ) : ViewModel() {
 
@@ -57,13 +57,11 @@ class RoomsViewModel(
         _currentlyOpenRoom.value = room
     }
 
-    fun closeRoomPanel(roomId: String, details: Array<RoomDetail>) {
-        val roomIndex = allRooms.indexOf(allRooms.find { it.id == roomId })
+    fun closeRoomPanel(updatedRoom: Room) {
+        val roomIndex = allRooms.indexOf(allRooms.find { it.id == updatedRoom.id })
         if (roomIndex < 0 || roomIndex >= allRooms.size) return
-        val roomSelected = allRooms[roomIndex]
-        roomSelected.details = details
-        editRoom(roomId, roomSelected)
-        allRooms[roomIndex] = roomSelected
+        editRoom(updatedRoom)
+        allRooms[roomIndex] = updatedRoom
         _currentlyOpenRoom.value = null
     }
 }
@@ -72,7 +70,7 @@ class RoomsViewModelFactory(
     private val getRooms: () -> Array<Room>,
     private val addRoom: suspend (String) -> String?,
     private val removeRoom: (String) -> Unit,
-    private val editRoom: (String, Room) -> Unit,
+    private val editRoom: (Room) -> Unit,
     private val closeInventory: () -> Unit,
     private val confirmInventory: () -> Boolean
     ) :

@@ -17,7 +17,9 @@ enum class Cleanliness {
 enum class State {
     not_set,
     broken,
+    needsRepair,
     bad,
+    medium,
     good,
     new
 }
@@ -39,7 +41,7 @@ data class RoomDetail(
     var status : State = State.not_set,
     var cleanliness : Cleanliness = Cleanliness.not_set,
     val pictures : Array<Uri> = arrayOf(),
-    val exitPictures : Array<String>? = null,
+    val entryPictures : Array<String>? = null,
 ) {
     fun toInventoryReportFurniture(context: Context) : InventoryReportFurniture {
         val tmpFurniturePictures = Vector<String>()
@@ -57,35 +59,62 @@ data class RoomDetail(
             quantity = 1
         )
     }
+    fun toRoom() : Room {
+        return Room(
+            id = id,
+            name = name,
+            description = comment,
+            cleanliness = cleanliness,
+            state = status,
+            pictures = pictures,
+            entryPictures = entryPictures,
+            details = arrayOf(),
+            completed = completed
+        )
+    }
 }
 
 data class Room (
     var id : String,
     val name : String,
     val description : String = "",
+    val cleanliness: Cleanliness = Cleanliness.not_set,
+    val state: State = State.not_set,
+    val completed : Boolean = false,
+    val pictures: Array<Uri> = arrayOf(),
+    val entryPictures: Array<String>? = null,
     var details : Array<RoomDetail> = arrayOf()
 ) {
     fun toInventoryReportRoom(context: Context) : InventoryReportRoom {
         val tmpRoom = InventoryReportRoom(
             id = id,
             name = name,
-            state = details[0].status,
-            cleanliness = details[0].cleanliness,
-            note = details[0].comment,
+            state = state,
+            cleanliness = cleanliness,
+            note = description,
             pictures = Vector(),
             furnitures = Vector()
         )
-        var addedPicture = false
+        pictures.forEach {
+            val encodedPicture = Base64Utils.encodeImageToBase64(it, context)
+            tmpRoom.pictures.add(encodedPicture)
+        }
         details.forEach {
-            if (!addedPicture) {
-                val tmpRoomDetail = it.toInventoryReportFurniture(context)
-                tmpRoom.pictures.add(tmpRoomDetail.pictures[0])
-                addedPicture = true
-            } else {
-                tmpRoom.furnitures.add(it.toInventoryReportFurniture(context))
-            }
+            tmpRoom.furnitures.add(it.toInventoryReportFurniture(context))
         }
         return tmpRoom
+    }
+    fun toRoomDetail() : RoomDetail {
+        return RoomDetail(
+            id = id,
+            name = name,
+            completed = completed,
+            comment = description,
+            status = state,
+            cleanliness = cleanliness,
+            pictures = pictures,
+            entryPictures = entryPictures
+        )
     }
 }
 
@@ -98,13 +127,11 @@ data class InventoryReportOutput(
     val type: String
 ) {
     fun getRoomsAsRooms(empty : Boolean = false) : Array<Room> {
-        val castedRooms = Array(rooms.size) {
-            Room(id = "", name = "")
+        val castedRooms = Vector<Room>()
+        rooms.forEach { room ->
+            castedRooms.add(room.toRoom(empty = empty))
         }
-        rooms.forEachIndexed { index, room ->
-            castedRooms[index] = room.toRoom(empty = empty)
-        }
-        return castedRooms
+        return castedRooms.toTypedArray()
     }
 }
 
@@ -122,10 +149,13 @@ data class InventoryReportRoom(
         val tmpRoom = Room(
             id = id,
             name = name,
-            description = note,
+            description = if (empty) "" else note,
             details = Array(furnitures.size) {
                 RoomDetail(id = "", name = "")
             },
+            cleanliness = if (empty) Cleanliness.not_set else cleanliness,
+            state = if (empty) State.not_set else state,
+            entryPictures = if (pictures.isEmpty()) null else pictures.toTypedArray(),
         )
         furnitures.forEachIndexed {
             index, furniture ->
@@ -153,7 +183,7 @@ data class InventoryReportFurniture(
             status = if (empty) State.not_set else state,
             cleanliness = if (empty) Cleanliness.not_set else cleanliness,
             pictures = arrayOf(),
-            exitPictures = pictures.toTypedArray()
+            entryPictures = pictures.toTypedArray()
         )
         return tmpRoomDetail
     }
