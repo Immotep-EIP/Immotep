@@ -9,7 +9,7 @@ import XCTest
 import Foundation
 import Combine
 
-@testable import Immotep
+@testable import Keyz
 
 class MockRegisterViewModel: RegisterViewModel {
     var shouldReturnError: Bool = false

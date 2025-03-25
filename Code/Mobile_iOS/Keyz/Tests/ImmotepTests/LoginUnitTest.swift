@@ -9,7 +9,7 @@ import XCTest
 import Foundation
 import Combine
 
-@testable import Immotep
+@testable import Keyz
 
 enum UserServiceError: Error {
     case tokenExpired

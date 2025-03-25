@@ -7,7 +7,7 @@
 
 import XCTest
 import SwiftUI
-@testable import Immotep
+@testable import Keyz
 
 final class MockPropertyViewModelTests: XCTestCase {
     private var viewModel: MockPropertyViewModel!

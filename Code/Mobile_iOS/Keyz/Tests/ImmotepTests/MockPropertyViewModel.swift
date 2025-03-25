@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@testable import Immotep
+@testable import Keyz
 
 @MainActor
 class MockPropertyViewModel: ObservableObject {

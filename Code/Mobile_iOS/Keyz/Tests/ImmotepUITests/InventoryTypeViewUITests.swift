@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import Immotep
+@testable import Keyz
 
 final class InventoryTypeViewUITests: XCTestCase {
     let app = XCUIApplication()

@@ -6,7 +6,7 @@
 //
 
 import Testing
-@testable import Immotep
+@testable import Keyz
 
 struct ImmotepTests {
 
