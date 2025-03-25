@@ -5,7 +5,6 @@ import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetai
 import CreatePropertyFunction from '@/services/api/Owner/Properties/CreateProperty'
 import UpdatePropertyFunction from '@/services/api/Owner/Properties/UpdateProperty'
 import UpdatePropertyPicture from '@/services/api/Owner/Properties/UpdatePropertyPicture'
-import callApi from '@/services/api/apiCaller'
 
 jest.mock('@/services/api/Owner/Properties/GetProperties')
 jest.mock('@/services/api/Owner/Properties/GetPropertyDetails')
