@@ -1,6 +1,8 @@
 package com.example.immotep
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -129,6 +131,7 @@ class RegisterInstrumentedTests {
         mainAct.onNodeWithText(res.getString(R.string.password_confirm_error)).assertIsDisplayed()
     }
 
+    @ExperimentalTestApi
     @Test
     fun canRegisterUser() {
         this.canGoToRegisterScreen()
@@ -144,6 +147,8 @@ class RegisterInstrumentedTests {
             .performTextInput("Ttest123&")
         mainAct.onNodeWithTag("registerAgreeToTerm").performClick()
         mainAct.onNodeWithTag("registerButton").performClick()
-        mainAct.onNodeWithText(res.getString(R.string.login_hello)).assertIsDisplayed()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("loginScreen"), timeoutMillis = 5000)
+        mainAct.onNodeWithTag("registerScreen").assertDoesNotExist()
+        mainAct.onNodeWithTag("loginScreen").assertIsDisplayed()
     }
 }
