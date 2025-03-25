@@ -2,12 +2,418 @@ basePath: /api/v1
 definitions:
   db.Role:
     enum:
-    - admin
-    - member
+    - owner
+    - tenant
     type: string
     x-enum-varnames:
-    - RoleAdmin
-    - RoleMember
+    - RoleOwner
+    - RoleTenant
+  models.ArchiveRequest:
+    properties:
+      archive:
+        type: boolean
+    type: object
+  models.CreateInventoryReportResponse:
+    properties:
+      date:
+        type: string
+      errors:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      pdf_data:
+        type: string
+      pdf_name:
+        type: string
+      property_id:
+        type: string
+      type:
+        type: string
+    type: object
+  models.DocumentResponse:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  models.FurnitureRequest:
+    properties:
+      name:
+        type: string
+      quantity:
+        type: integer
+    required:
+    - name
+    type: object
+  models.FurnitureResponse:
+    properties:
+      archived:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      property_id:
+        type: string
+      quantity:
+        type: integer
+      room_id:
+        type: string
+    type: object
+  models.FurnitureStateRequest:
+    properties:
+      cleanliness:
+        enum:
+        - dirty
+        - medium
+        - clean
+        type: string
+      id:
+        type: string
+      note:
+        type: string
+      pictures:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      state:
+        enum:
+        - broken
+        - needsRepair
+        - bad
+        - medium
+        - good
+        - new
+        type: string
+    required:
+    - cleanliness
+    - id
+    - note
+    - pictures
+    - state
+    type: object
+  models.FurnitureStateResponse:
+    properties:
+      cleanliness:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      note:
+        type: string
+      pictures:
+        items:
+          type: string
+        type: array
+      quantity:
+        type: integer
+      state:
+        type: string
+    type: object
+  models.ImageRequest:
+    properties:
+      data:
+        type: string
+    required:
+    - data
+    type: object
+  models.ImageResponse:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      id:
+        type: string
+    type: object
+  models.InventoryReportRequest:
+    properties:
+      rooms:
+        items:
+          $ref: '#/definitions/models.RoomStateRequest'
+        type: array
+      type:
+        enum:
+        - start
+        - middle
+        - end
+        type: string
+    required:
+    - rooms
+    - type
+    type: object
+  models.InventoryReportResponse:
+    properties:
+      date:
+        type: string
+      id:
+        type: string
+      property_id:
+        type: string
+      rooms:
+        items:
+          $ref: '#/definitions/models.RoomStateResponse'
+        type: array
+      type:
+        type: string
+    type: object
+  models.InviteRequest:
+    properties:
+      end_date:
+        type: string
+      start_date:
+        type: string
+      tenant_email:
+        type: string
+    required:
+    - start_date
+    - tenant_email
+    type: object
+  models.InviteResponse:
+    properties:
+      created_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      property_id:
+        type: string
+      start_date:
+        type: string
+      tenant_email:
+        type: string
+    type: object
+  models.PropertyInventoryResponse:
+    properties:
+      address:
+        type: string
+      apartment_number:
+        type: string
+      archived:
+        type: boolean
+      area_sqm:
+        type: number
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      deposit_price:
+        type: number
+      end_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      nb_damage:
+        type: integer
+      owner_id:
+        type: string
+      picture_id:
+        type: string
+      postal_code:
+        type: string
+      rental_price_per_month:
+        type: number
+      rooms:
+        items:
+          $ref: '#/definitions/models.roomResponse'
+        type: array
+      start_date:
+        type: string
+      status:
+        type: string
+      tenant:
+        type: string
+    type: object
+  models.PropertyRequest:
+    properties:
+      address:
+        type: string
+      apartment_number:
+        type: string
+      area_sqm:
+        type: number
+      city:
+        type: string
+      country:
+        type: string
+      deposit_price:
+        type: number
+      name:
+        type: string
+      postal_code:
+        type: string
+      rental_price_per_month:
+        type: number
+    required:
+    - address
+    - area_sqm
+    - city
+    - country
+    - deposit_price
+    - name
+    - postal_code
+    - rental_price_per_month
+    type: object
+  models.PropertyResponse:
+    properties:
+      address:
+        type: string
+      apartment_number:
+        type: string
+      archived:
+        type: boolean
+      area_sqm:
+        type: number
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      deposit_price:
+        type: number
+      end_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      nb_damage:
+        type: integer
+      owner_id:
+        type: string
+      picture_id:
+        type: string
+      postal_code:
+        type: string
+      rental_price_per_month:
+        type: number
+      start_date:
+        type: string
+      status:
+        type: string
+      tenant:
+        type: string
+    type: object
+  models.RoomRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  models.RoomResponse:
+    properties:
+      archived:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      property_id:
+        type: string
+    type: object
+  models.RoomStateRequest:
+    properties:
+      cleanliness:
+        enum:
+        - dirty
+        - medium
+        - clean
+        type: string
+      furnitures:
+        items:
+          $ref: '#/definitions/models.FurnitureStateRequest'
+        type: array
+      id:
+        type: string
+      note:
+        type: string
+      pictures:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      state:
+        enum:
+        - broken
+        - needsRepair
+        - bad
+        - medium
+        - good
+        - new
+        type: string
+    required:
+    - cleanliness
+    - furnitures
+    - id
+    - note
+    - pictures
+    - state
+    type: object
+  models.RoomStateResponse:
+    properties:
+      cleanliness:
+        type: string
+      furnitures:
+        items:
+          $ref: '#/definitions/models.FurnitureStateResponse'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      note:
+        type: string
+      pictures:
+        items:
+          type: string
+        type: array
+      state:
+        type: string
+    type: object
+  models.SummarizeRequest:
+    properties:
+      id:
+        type: string
+      pictures:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      type:
+        enum:
+        - room
+        - furniture
+        type: string
+    required:
+    - id
+    - pictures
+    - type
+    type: object
+  models.SummarizeResponse:
+    properties:
+      cleanliness:
+        type: string
+      note:
+        type: string
+      state:
+        type: string
+    type: object
   models.UserRequest:
     properties:
       email:
@@ -37,9 +443,44 @@ definitions:
         type: string
       lastname:
         type: string
+      profile_picture_id:
+        type: string
       role:
         $ref: '#/definitions/db.Role'
       updated_at:
+        type: string
+    type: object
+  models.UserUpdateRequest:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+    type: object
+  models.furnitureResponse:
+    properties:
+      archived:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  models.roomResponse:
+    properties:
+      archived:
+        type: boolean
+      furnitures:
+        items:
+          $ref: '#/definitions/models.furnitureResponse'
+        type: array
+      id:
+        type: string
+      name:
         type: string
     type: object
   utils.Error:
@@ -53,7 +494,7 @@ definitions:
     enum:
     - invalid-password
     - cannot-fetch-user
-    - cannot-find-user
+    - user-not-found
     - cannot-create-user
     - no-claims
     - cannot-decode-user
@@ -62,11 +503,40 @@ definitions:
     - email-already-exists
     - test-error
     - too-many-requests
+    - invite-not-found
+    - user-must-have-same-email-as-invite
+    - invite-already-exists-for-email-or-property
+    - contract-already-exists-for-tenant-and-property
+    - property-not-found
+    - property-is-not-yours
+    - not-an-owner
+    - not-a-tenant
+    - user-already-exists-as-owner
+    - property-already-exists
+    - property-not-available
+    - tenant-already-has-contract
+    - no-active-contract
+    - no-pending-contract
+    - failed-to-link-image
+    - bad-base64-string
+    - property-picture-not-found
+    - user-profile-picture-not-found
+    - room-already-exists
+    - room-not-found
+    - furniture-not-found
+    - furniture-already-exists
+    - furniture-not-in-this-room
+    - inventory-report-already-exists
+    - inventory-report-not-found
+    - room-state-already-exists
+    - furniture-state-already-exists
+    - error-request-chatgpt-api
+    - failed-send-email
     type: string
     x-enum-varnames:
     - InvalidPassword
     - CannotFetchUser
-    - CannotFindUser
+    - UserNotFound
     - CannotCreateUser
     - NoClaims
     - CannotDecodeUser
@@ -75,6 +545,35 @@ definitions:
     - EmailAlreadyExists
     - TestError
     - TooManyRequests
+    - InviteNotFound
+    - UserSameEmailAsInvite
+    - InviteAlreadyExists
+    - ContractAlreadyExist
+    - PropertyNotFound
+    - PropertyNotYours
+    - NotAnOwner
+    - NotATenant
+    - UserAlreadyExistsAsOwner
+    - PropertyAlreadyExists
+    - PropertyNotAvailable
+    - TenantAlreadyHasContract
+    - NoActiveContract
+    - NoPendingContract
+    - FailedLinkImage
+    - BadBase64String
+    - PropertyPictureNotFound
+    - UserProfilePictureNotFound
+    - RoomAlreadyExists
+    - RoomNotFound
+    - FurnitureNotFound
+    - FurnitureAlreadyExists
+    - FurnitureNotInThisRoom
+    - InventoryReportAlreadyExists
+    - InventoryReportNotFound
+    - RoomStateAlreadyExists
+    - FurnitureStateAlreadyExists
+    - ErrorRequestChatGPTAPI
+    - FailedSendEmail
 host: localhost:3001
 info:
   contact:
@@ -85,13 +584,55 @@ info:
   title: Immotep API
   version: "1.0"
 paths:
-  /auth/register:
+  /auth/invite/{id}/:
     post:
       consumes:
       - application/json
-      description: Create a new user
+      description: Answer an invite from an owner with an invite link by creating
+        a new user with tenant role
       parameters:
-      - description: User data
+      - description: Pending contract ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Tenant user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created user data
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Pending contract not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Email already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Create a new tenant
+      tags:
+      - auth
+  /auth/register/:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with owner role
+      parameters:
+      - description: Owner user data
         in: body
         name: user
         required: true
@@ -114,10 +655,10 @@ paths:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
-      summary: Create a new user
+      summary: Create a new owner
       tags:
       - auth
-  /auth/token:
+  /auth/token/:
     post:
       consumes:
       - application/x-www-form-urlencoded
@@ -157,11 +698,1104 @@ paths:
       summary: Authenticate user
       tags:
       - auth
-  /profile:
+  /owner/properties/:
     get:
       consumes:
       - application/json
-      description: Get user profile information
+      description: Get all properties information of an owner
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of properties
+          schema:
+            items:
+              $ref: '#/definitions/models.PropertyResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get all properties of an owner
+      tags:
+      - owner
+    post:
+      consumes:
+      - application/json
+      description: Create a new property for an owner
+      parameters:
+      - description: Property data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.PropertyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Property already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create a new property
+      tags:
+      - owner
+  /owner/properties/{property_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get property information by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property by ID
+      tags:
+      - owner
+    put:
+      consumes:
+      - application/json
+      description: Update property information by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update property by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/archive:
+    put:
+      consumes:
+      - application/json
+      description: Toggle archive status of a property by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Archive status
+        in: body
+        name: archive
+        required: true
+        schema:
+          $ref: '#/definitions/models.ArchiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Toggled archive property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Mising fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Toggle archive property by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/cancel-invite:
+    delete:
+      consumes:
+      - application/json
+      description: Cancel pending contract invite
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Invite canceled
+        "403":
+          description: Property is not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No pending contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Cancel invite
+      tags:
+      - owner
+  /owner/properties/{property_id}/documents/:
+    get:
+      consumes:
+      - application/json
+      description: Get all documents of a contract related to a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of documents
+          schema:
+            items:
+              $ref: '#/definitions/models.DocumentResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property documents
+      tags:
+      - owner
+  /owner/properties/{property_id}/end-contract:
+    put:
+      consumes:
+      - application/json
+      description: End active contract for a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Contract ended
+        "403":
+          description: Property is not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: End contract
+      tags:
+      - owner
+  /owner/properties/{property_id}/inventory-reports/:
+    get:
+      consumes:
+      - application/json
+      description: Get all inventory reports for a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of inventory reports
+          schema:
+            items:
+              $ref: '#/definitions/models.InventoryReportResponse'
+            type: array
+        "403":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get all inventory reports for a property
+      tags:
+      - owner
+    post:
+      consumes:
+      - application/json
+      description: Create a new inventory report for a room
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Inventory report data
+        in: body
+        name: invReport
+        required: true
+        schema:
+          $ref: '#/definitions/models.InventoryReportRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created inventory report data
+          schema:
+            $ref: '#/definitions/models.CreateInventoryReportResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property or room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create a new inventory report
+      tags:
+      - owner
+  /owner/properties/{property_id}/inventory-reports/{report_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get inventory report information by its ID or get the latest one
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Report ID or 'latest' to get the latest one
+        in: path
+        name: report_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Inventory report data
+          schema:
+            $ref: '#/definitions/models.InventoryReportResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Inventory report not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get inventory report by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/:
+    post:
+      consumes:
+      - application/json
+      description: Generate comparison from photo for last inventory report
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Previous report ID to compare with
+        in: path
+        name: old_report_id
+        required: true
+        type: string
+      - description: Compare data
+        in: body
+        name: aiData
+        required: true
+        schema:
+          $ref: '#/definitions/models.SummarizeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created inventory report data
+          schema:
+            $ref: '#/definitions/models.InventoryReportResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property or old report not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Generate comparison from photo
+      tags:
+      - ai
+  /owner/properties/{property_id}/inventory-reports/summarize/:
+    post:
+      consumes:
+      - application/json
+      description: Generate summary from photo for first inventory report
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Summarize data
+        in: body
+        name: aiData
+        required: true
+        schema:
+          $ref: '#/definitions/models.SummarizeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Summarize data
+          schema:
+            $ref: '#/definitions/models.SummarizeResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Generate summary from photo
+      tags:
+      - ai
+  /owner/properties/{property_id}/inventory/:
+    get:
+      consumes:
+      - application/json
+      description: Get property information by its ID with inventory including rooms
+        and furnitures
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property inventory data
+          schema:
+            $ref: '#/definitions/models.PropertyInventoryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property inventory by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/picture/:
+    get:
+      consumes:
+      - application/json
+      description: Get property's picture
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Image data
+          schema:
+            $ref: '#/definitions/models.ImageResponse'
+        "204":
+          description: No picture associated
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property's picture
+      tags:
+      - owner
+    put:
+      consumes:
+      - application/json
+      description: Update property's picture
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Picture data as a Base64 string
+        in: body
+        name: picture
+        required: true
+        schema:
+          $ref: '#/definitions/models.ImageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Updated property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Missing fields or bad base64 string
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update property's picture
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/:
+    get:
+      consumes:
+      - application/json
+      description: Get all rooms for a specific property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of rooms
+          schema:
+            items:
+              $ref: '#/definitions/models.RoomResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get rooms by property ID
+      tags:
+      - owner
+    post:
+      consumes:
+      - application/json
+      description: Create a new room for a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room data
+        in: body
+        name: room
+        required: true
+        schema:
+          $ref: '#/definitions/models.RoomRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created room data
+          schema:
+            $ref: '#/definitions/models.RoomResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create a new room
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get room information by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Room data
+          schema:
+            $ref: '#/definitions/models.RoomResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get room by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/archive:
+    put:
+      consumes:
+      - application/json
+      description: Toggle archive status of a room by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Archive status
+        in: body
+        name: archive
+        required: true
+        schema:
+          $ref: '#/definitions/models.ArchiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Toggled archive room data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Mising fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Toggle archive room by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures/:
+    get:
+      consumes:
+      - application/json
+      description: Get all furnitures for a specific room
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of furnitures
+          schema:
+            items:
+              $ref: '#/definitions/models.FurnitureResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get furnitures by room ID
+      tags:
+      - owner
+    post:
+      consumes:
+      - application/json
+      description: Create a new furniture for a room
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Furniture data
+        in: body
+        name: furniture
+        required: true
+        schema:
+          $ref: '#/definitions/models.FurnitureRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created furniture data
+          schema:
+            $ref: '#/definitions/models.FurnitureResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Furniture already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create a new furniture
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get furniture information by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Furniture ID
+        in: path
+        name: furniture_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Furniture data
+          schema:
+            $ref: '#/definitions/models.FurnitureResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Furniture not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get furniture by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/archive:
+    put:
+      consumes:
+      - application/json
+      description: Toggle archive status of a furniture by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Furniture ID
+        in: path
+        name: furniture_id
+        required: true
+        type: string
+      - description: Archive status
+        in: body
+        name: archive
+        required: true
+        schema:
+          $ref: '#/definitions/models.ArchiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Toggled archive furniture data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "400":
+          description: Mising fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Furniture not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Toggle archive furniture by ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/{room_id}/furnitures/archived/:
+    get:
+      consumes:
+      - application/json
+      description: Get all archived furnitures for a specific room
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of archived furnitures
+          schema:
+            items:
+              $ref: '#/definitions/models.FurnitureResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get archived furnitures by room ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/rooms/archived/:
+    get:
+      consumes:
+      - application/json
+      description: Get all archived rooms for a specific property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of archived rooms
+          schema:
+            items:
+              $ref: '#/definitions/models.RoomResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get archived rooms by property ID
+      tags:
+      - owner
+  /owner/properties/{property_id}/send-invite:
+    post:
+      consumes:
+      - application/json
+      description: Invite tenant to owner's property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Invite params
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.InviteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created invite
+          schema:
+            $ref: '#/definitions/models.InviteResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property is not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Invite already exists for this email
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Invite tenant to owner's property
+      tags:
+      - owner
+  /owner/properties/archived/:
+    get:
+      consumes:
+      - application/json
+      description: Get all archived properties information of an owner
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of archived properties
+          schema:
+            items:
+              $ref: '#/definitions/models.PropertyResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get all archived properties of an owner
+      tags:
+      - owner
+  /profile/:
+    get:
+      consumes:
+      - application/json
+      description: Get current user profile
       produces:
       - application/json
       responses:
@@ -174,17 +1808,165 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: Cannot find user
+          description: User not found
           schema:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Get user profile
+      summary: Get current user profile
       tags:
-      - users
-  /users:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update current user profile
+      parameters:
+      - description: User update info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Email already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update current user profile
+      tags:
+      - user
+  /profile/picture/:
+    get:
+      consumes:
+      - application/json
+      description: Get current user's profile picture
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Image data
+          schema:
+            $ref: '#/definitions/models.ImageResponse'
+        "204":
+          description: No picture associated
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get current user's profile picture
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update current user's profile picture
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Picture data as a Base64 string
+        in: body
+        name: picture
+        required: true
+        schema:
+          $ref: '#/definitions/models.ImageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Updated user data
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+        "400":
+          description: Missing fields or bad base64 string
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update current user's profile picture
+      tags:
+      - user
+  /tenant/invite/{id}/:
+    post:
+      consumes:
+      - application/json
+      description: Answer an invite from an owner with an invite link by accepting
+        the invite
+      parameters:
+      - description: Pending contract ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Accepted
+        "403":
+          description: Not a tenant
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Pending contract not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Property not available or tenant already has contract
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Accept an invite
+      tags:
+      - auth
+  /users/:
     get:
       description: Get all users information
       produces:
@@ -202,8 +1984,8 @@ paths:
       - Bearer: []
       summary: Get all users
       tags:
-      - users
-  /users/{id}:
+      - user
+  /users/{id}/:
     get:
       consumes:
       - application/json
@@ -226,7 +2008,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
         "404":
-          description: Cannot find user
+          description: User not found
           schema:
             $ref: '#/definitions/utils.Error'
         "500":
@@ -235,10 +2017,45 @@ paths:
       - Bearer: []
       summary: Get user by ID
       tags:
-      - users
+      - user
+  /users/{id}/picture/:
+    get:
+      consumes:
+      - application/json
+      description: Get user's picture
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Image data
+          schema:
+            $ref: '#/definitions/models.ImageResponse'
+        "204":
+          description: No picture associated
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get user's picture
+      tags:
+      - user
 securityDefinitions:
   Bearer:
-    description: 'Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".'
+    description: Enter the token with the `Bearer ` prefix, e.g. "Bearer abcde12345".
     in: header
     name: Authorization
     type: apiKey

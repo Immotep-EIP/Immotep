@@ -18,14 +18,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.immotep.R
-import com.example.immotep.ui.icons.Release_alert
+import com.example.immotep.ui.icons.ReleaseAlert
 
 @Composable
 fun ErrorAlert(
     code: Int?,
     login: Boolean?,
+    customMessage: String? = null
 ) {
-    if (code == null) {
+    if (code == null && customMessage == null) {
         return
     }
     val errorText =
@@ -46,22 +47,21 @@ fun ErrorAlert(
             502 -> stringResource(R.string.bad_gateway)
             503 -> stringResource(R.string.service_unavailable)
             504 -> stringResource(R.string.gateway_timeout)
-            else -> stringResource(R.string.unknown_error)
+            else -> customMessage?: stringResource(R.string.unknown_error)
         }
 
     Row(
-        modifier =
-        Modifier
-            .fillMaxWidth()
-            .background(
-                MaterialTheme.colorScheme.errorContainer,
-                shape = RoundedCornerShape(10.dp),
-            )
-            .padding(10.dp)
-            .testTag("errorAlert"),
+        modifier = Modifier
+        .fillMaxWidth()
+        .background(
+            MaterialTheme.colorScheme.errorContainer,
+            shape = RoundedCornerShape(10.dp),
+        )
+        .padding(10.dp)
+        .testTag("errorAlert"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(Release_alert, contentDescription = "Error alert")
+        Image(ReleaseAlert, contentDescription = "Error alert")
         Spacer(modifier = Modifier.width(10.dp))
         Text(errorText, color = Color.White)
     }

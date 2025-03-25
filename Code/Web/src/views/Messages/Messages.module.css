@@ -1,0 +1,65 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: calc(100vh - 70px);
+  padding: 0 20px 20px 20px;
+}
+
+.pageHeader {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  margin-bottom: 10px;
+}
+
+.contentContainer {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  background-color: white;
+  height: calc(100vh - 180px);
+}
+
+.chatContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.noChatSelected {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #8c8c8c;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #f5f5f5;
+}
+
+.emptyContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 180px);
+}
+
+@media screen and (max-width: 768px) {
+  .contentContainer {
+    flex-direction: column;
+    height: auto;
+  }
+}

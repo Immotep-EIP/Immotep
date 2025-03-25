@@ -11,7 +11,7 @@ type UserRequest struct {
 	Password  string `binding:"required,min=8" json:"password"`
 }
 
-func (u *UserRequest) ToUser() db.UserModel {
+func (u *UserRequest) ToDbUser() db.UserModel {
 	return db.UserModel{
 		InnerUser: db.InnerUser{
 			Email:     u.Email,
@@ -22,28 +22,37 @@ func (u *UserRequest) ToUser() db.UserModel {
 	}
 }
 
+type UserUpdateRequest struct {
+	Email     *string `binding:"omitempty,email"  json:"email,omitempty"`
+	Firstname *string `json:"firstname,omitempty"`
+	Lastname  *string `json:"lastname,omitempty"`
+	// Password  *string `binding:"min=8" json:"password,omitempty"`
+}
+
 type UserResponse struct {
-	ID        string      `json:"id"`
-	Email     string      `json:"email"`
-	Firstname string      `json:"firstname"`
-	Lastname  string      `json:"lastname"`
-	Role      db.Role     `json:"role"`
-	CreatedAt db.DateTime `json:"created_at"`
-	UpdatedAt db.DateTime `json:"updated_at"`
+	ID               string      `json:"id"`
+	ProfilePictureID *string     `json:"profile_picture_id,omitempty"`
+	Email            string      `json:"email"`
+	Firstname        string      `json:"firstname"`
+	Lastname         string      `json:"lastname"`
+	Role             db.Role     `json:"role"`
+	CreatedAt        db.DateTime `json:"created_at"`
+	UpdatedAt        db.DateTime `json:"updated_at"`
 }
 
-func (u *UserResponse) FromUser(user db.UserModel) {
-	u.ID = user.ID
-	u.Email = user.Email
-	u.Firstname = user.Firstname
-	u.Lastname = user.Lastname
-	u.Role = user.Role
-	u.CreatedAt = user.CreatedAt
-	u.UpdatedAt = user.UpdatedAt
+func (u *UserResponse) FromDbUser(model db.UserModel) {
+	u.ID = model.ID
+	u.ProfilePictureID = model.InnerUser.ProfilePictureID
+	u.Email = model.Email
+	u.Firstname = model.Firstname
+	u.Lastname = model.Lastname
+	u.Role = model.Role
+	u.CreatedAt = model.CreatedAt
+	u.UpdatedAt = model.UpdatedAt
 }
 
-func UserToResponse(user db.UserModel) UserResponse {
-	var userResp UserResponse
-	userResp.FromUser(user)
-	return userResp
+func DbUserToResponse(user db.UserModel) UserResponse {
+	var resp UserResponse
+	resp.FromDbUser(user)
+	return resp
 }

@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/database"
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
+	"immotep/backend/services"
 )
 
 func BuildTestUser(id string) db.UserModel {
@@ -18,13 +18,13 @@ func BuildTestUser(id string) db.UserModel {
 			Firstname: "Test",
 			Lastname:  "User",
 			Password:  "$2a$14$BBhItuuxFbqV0rr0.r/reODEI78NEBnFIIK5W19qdybIYBvqNyyw.",
-			Role:      db.RoleMember,
+			Role:      db.RoleOwner,
 		},
 	}
 }
 
 func TestValidateUser(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	testOauth := router.TestUserVerifier{}
@@ -54,7 +54,7 @@ func TestValidateUser(t *testing.T) {
 }
 
 func TestAddClaims(t *testing.T) {
-	client, mock, ensure := database.ConnectDBTest()
+	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	testOauth := router.TestUserVerifier{}
@@ -68,7 +68,7 @@ func TestAddClaims(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotNil(t, claims)
 		assert.Equal(t, "1", claims["id"])
-		assert.Equal(t, "member", claims["role"])
+		assert.Equal(t, "owner", claims["role"])
 	})
 
 	mock.User.Expect(

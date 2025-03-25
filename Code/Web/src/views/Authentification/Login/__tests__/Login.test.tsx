@@ -1,5 +1,7 @@
+import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { HelmetProvider } from 'react-helmet-async'
 import Login from '@/views/Authentification/Login/Login'
 import { useAuth } from '@/context/authContext'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
@@ -17,105 +19,218 @@ jest.mock('@/hooks/useNavigation/useNavigation', () => ({
   }))
 }))
 
-describe('Login Page', () => {
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children
+}))
+
+describe('Login Component', () => {
   const mockLogin = jest.fn()
+  const mockGoToSignup = jest.fn()
+  const mockGoToOverview = jest.fn()
+  const mockGoToForgotPassword = jest.fn()
 
   beforeEach(() => {
     ;(useAuth as jest.Mock).mockReturnValue({
       login: mockLogin
     })
-  })
-
-  afterEach(() => {
+    ;(useNavigation as jest.Mock).mockReturnValue({
+      goToSignup: mockGoToSignup,
+      goToOverview: mockGoToOverview,
+      goToForgotPassword: mockGoToForgotPassword
+    })
     jest.clearAllMocks()
   })
 
-  it('renders login form', () => {
-    render(<Login />)
+  // eslint-disable-next-line no-undef
+  const renderWithHelmet = (component: React.ReactNode) =>
+    render(<HelmetProvider>{component}</HelmetProvider>)
 
-    // Vérifier les éléments du formulaire
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Password/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Sign in/i })).toBeInTheDocument()
-    expect(screen.getByText(/Don't have an account\?/i)).toBeInTheDocument()
-  })
-
-  it('shows error message if fields are empty', async () => {
-    render(<Login />)
-
-    fireEvent.click(screen.getByRole('button', { name: /Sign in/i }))
+  it('renders the Login component with form fields', () => {
+    renderWithHelmet(<Login />)
 
     expect(
-      await screen.findByText(/Please input your email!/i)
+      screen.getByLabelText('components.input.email.label')
     ).toBeInTheDocument()
     expect(
-      await screen.findByText(/Please input your password!/i)
+      screen.getByLabelText('components.input.password.label')
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'components.button.sign_in' })
+    ).toBeInTheDocument()
+    expect(screen.getByText('pages.login.title')).toBeInTheDocument()
+    expect(screen.getByText('pages.login.description')).toBeInTheDocument()
   })
 
-  it('submits form with correct values', async () => {
-    render(<Login />)
+  it('navigates to Forgot Password page when "Enter" key is pressed on "Forgot Password" link', () => {
+    renderWithHelmet(<Login />)
 
-    fireEvent.input(screen.getByLabelText(/Email/i), {
-      target: { value: 'test@example.com' }
-    })
-    fireEvent.input(screen.getByLabelText(/Password/i), {
-      target: { value: 'password' }
+    const forgotPasswordLink = screen.getByText(
+      'components.button.ask_forgot_password'
+    )
+
+    fireEvent.keyDown(forgotPasswordLink, {
+      key: 'Enter',
+      code: 'Enter',
+      charCode: 13
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /Sign in/i }))
+    expect(mockGoToForgotPassword).toHaveBeenCalledTimes(1)
+  })
+
+  it('navigates to Signup page when "Sign Up" is clicked', () => {
+    renderWithHelmet(<Login />)
+    fireEvent.click(screen.getByText('components.button.sign_up'))
+    expect(mockGoToSignup).toHaveBeenCalledTimes(1)
+  })
+
+  it('navigates to Forgot Password page when the link is clicked', () => {
+    renderWithHelmet(<Login />)
+    fireEvent.click(screen.getByText('components.button.ask_forgot_password'))
+    expect(mockGoToForgotPassword).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows an error message when fields are empty on form submission', async () => {
+    renderWithHelmet(<Login />)
+    fireEvent.click(
+      screen.getByRole('button', { name: 'components.button.sign_in' })
+    )
 
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith(
-        expect.objectContaining({
-          username: 'test@example.com',
-          password: 'password',
-          grant_type: 'password'
-        })
-      )
+      expect(
+        screen.getByText('components.input.email.error')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('components.input.password.error')
+      ).toBeInTheDocument()
     })
   })
 
-  it('displays error message when login fails', async () => {
-    mockLogin.mockRejectedValueOnce({
-      response: { status: 401 }
+  it('submits the form successfully with valid inputs', async () => {
+    renderWithHelmet(<Login />)
+
+    const emailInput = screen.getByLabelText('components.input.email.label')
+    const passwordInput = screen.getByLabelText(
+      'components.input.password.label'
+    )
+    const submitButton = screen.getByRole('button', {
+      name: 'components.button.sign_in'
     })
 
-    render(<Login />)
+    fireEvent.change(emailInput, { target: { value: 'user@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.click(submitButton)
 
-    fireEvent.input(screen.getByLabelText(/Email/i), {
-      target: { value: 'test@example.com' }
+    await waitFor(() => {
+      expect(mockLogin).toHaveBeenCalledWith({
+        username: 'user@example.com',
+        password: 'password123',
+        grant_type: 'password',
+        rememberMe: false
+      })
     })
-    fireEvent.input(screen.getByLabelText(/Password/i), {
-      target: { value: 'password' }
-    })
 
-    fireEvent.click(screen.getByRole('button', { name: /Sign in/i }))
-
-    expect(
-      await screen.findByText(/Login failed, please try again !/i)
-    ).toBeInTheDocument()
+    expect(mockGoToOverview).toHaveBeenCalledTimes(1)
   })
 
-  // Dont't found a solution
-  it.skip('navigates to signup when clicking "Sign up"', () => {
-    const { goToSignup } = useNavigation()
+  it('shows an error message when login fails with 401', async () => {
+    mockLogin.mockRejectedValueOnce({ response: { status: 401 } })
 
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
-    fireEvent.click(screen.getByText(/Sign up/i))
+    const emailInput = screen.getByLabelText('components.input.email.label')
+    const passwordInput = screen.getByLabelText(
+      'components.input.password.label'
+    )
+    const submitButton = screen.getByRole('button', {
+      name: 'components.button.sign_in'
+    })
 
-    expect(goToSignup).toHaveBeenCalled()
+    fireEvent.change(emailInput, { target: { value: 'wrong@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('pages.login.connection_error')
+      ).toBeInTheDocument()
+    })
   })
 
-  // Dont't found a solution
-  it.skip('navigates to forgot password when clicking "Forgot password"', () => {
-    const { goToForgotPassword } = useNavigation()
+  it('removes tokens from sessionStorage on mount', () => {
+    sessionStorage.setItem('access_token', 'dummy_access')
+    sessionStorage.setItem('refresh_token', 'dummy_refresh')
+    sessionStorage.setItem('expires_in', '12345')
 
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
-    fireEvent.click(screen.getByText(/Forgot password/i))
+    expect(sessionStorage.getItem('access_token')).toBeNull()
+    expect(sessionStorage.getItem('refresh_token')).toBeNull()
+    expect(sessionStorage.getItem('expires_in')).toBeNull()
+  })
 
-    expect(goToForgotPassword).toHaveBeenCalled()
+  it('navigates to overview if tokens exist in localStorage', () => {
+    localStorage.setItem('access_token', 'dummy_access')
+    localStorage.setItem('refresh_token', 'dummy_refresh')
+    localStorage.setItem('expires_in', '12345')
+
+    renderWithHelmet(<Login />)
+
+    expect(mockGoToOverview).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls the goToForgotPassword when the forgot password link is clicked', () => {
+    renderWithHelmet(<Login />)
+    fireEvent.click(screen.getByText('components.button.ask_forgot_password'))
+    expect(mockGoToForgotPassword).toHaveBeenCalledTimes(1)
+  })
+
+  it('checks rememberMe functionality', async () => {
+    renderWithHelmet(<Login />)
+
+    const emailInput = screen.getByLabelText('components.input.email.label')
+    const passwordInput = screen.getByLabelText(
+      'components.input.password.label'
+    )
+    const rememberMeCheckbox = screen.getByLabelText(
+      'components.button.remember_me'
+    )
+    const submitButton = screen.getByRole('button', {
+      name: 'components.button.sign_in'
+    })
+
+    fireEvent.change(emailInput, { target: { value: 'user@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.click(rememberMeCheckbox)
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(mockLogin).toHaveBeenCalledWith({
+        username: 'user@example.com',
+        password: 'password123',
+        grant_type: 'password',
+        rememberMe: true
+      })
+    })
+  })
+
+  it('navigates to Signup page when "Sign Up" link is clicked', () => {
+    renderWithHelmet(<Login />)
+
+    const signUpLink = screen.getByText('components.button.sign_up')
+
+    fireEvent.click(signUpLink)
+
+    expect(mockGoToSignup).toHaveBeenCalledTimes(1)
+  })
+
+  it('navigates to Signup page when "Sign Up" link is pressed with Enter key', () => {
+    renderWithHelmet(<Login />)
+
+    const signUpLink = screen.getByText('components.button.sign_up')
+
+    fireEvent.keyDown(signUpLink, { key: 'Enter', code: 'Enter', charCode: 13 })
   })
 })

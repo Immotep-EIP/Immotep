@@ -1,0 +1,72 @@
+.dividedPageContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: 100vh;
+  width: 100%;
+  background-color: white;
+  overflow: scroll;
+}
+
+.dividedPageLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  height: 100%;
+  color: black;
+  background-color: rgb(236, 236, 236);
+  overflow: hidden;
+}
+
+.dividedPageRight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 50%;
+  height: 100%;
+  color: black;
+}
+
+.childrenRightContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: calc(100% - 7vh);
+}
+
+/*! HEADER */
+
+.headerContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 7vh;
+  width: 100%;
+  top: 0;
+}
+
+.headerLogo {
+  height: calc(7vh - 20px);
+  margin: 10px 20px;
+}
+
+.headerTitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #252525;
+}
+
+@media screen and (max-width: 900px) {
+  .dividedPageLeft {
+    display: none;
+  }
+  .dividedPageRight {
+    width: 100%;
+  }
+}

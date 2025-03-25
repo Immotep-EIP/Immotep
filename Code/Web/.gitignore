@@ -10,3 +10,5 @@ tmp/
 build/
 coverage/
 .env
+.idea/
+dist/

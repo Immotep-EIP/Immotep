@@ -4,6 +4,7 @@ export interface UserRegister {
   email: string
   password: string
   confirmPassword: string
+  contractId?: string
 }
 
 export interface UserToken {
@@ -28,4 +29,10 @@ export interface User {
   role: string
   created_at: Date
   updated_at: Date
+}
+
+export interface UserPictureResponse {
+  id: string
+  created_at: string
+  data: string
 }

@@ -1,10 +1,7 @@
 .pageContainer {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
   min-height: 100vh;
-  min-width: 100vw;
   background-color: white;
 }
 
@@ -12,20 +9,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 7vh;
+  height: 60px;
   width: 100%;
   border-bottom: 0.2px solid #e0e0e0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
 }
 
 .leftPartHeader {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
 }
 
 .headerLogo {
-  height: calc(7vh - 30px);
+  height: calc(70px - 30px);
   margin: 10px 20px;
 }
 
@@ -36,13 +37,141 @@
 }
 
 .rightPartHeader {
-  display: flex;
+  display: none;
   align-items: center;
-  justify-content: flex-end;
   margin-right: 20px;
 }
 
 .menuIcon {
   width: 20px;
   height: 20px;
+}
+
+.menuToggleButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.burgerLine {
+  width: 100%;
+  height: 3px;
+  background-color: #252525;
+  border-radius: 2px;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform-origin: center;
+}
+
+.menuToggleButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  position: relative;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.burgerLine:nth-child(1) {
+  transform: translateY(-8px);
+}
+
+.burgerLine:nth-child(2) {
+  transform: translateY(0);
+}
+
+.burgerLine:nth-child(3) {
+  transform: translateY(8px);
+}
+
+.menuToggleButton.open .burgerLine:nth-child(1) {
+  transform: rotate(45deg);
+}
+
+.menuToggleButton.open .burgerLine:nth-child(2) {
+  opacity: 0;
+}
+
+.menuToggleButton.open .burgerLine:nth-child(3) {
+  transform: rotate(-45deg);
+}
+
+.menuDropdown {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 5px;
+}
+
+.menuItem,
+.menuItemActive {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 10px;
+}
+
+.menuItemActive {
+  background-color: rgb(230 244 255);
+}
+
+.menuItem:hover,
+.menuItemActive:hover {
+  background-color: #f5f5f5;
+}
+
+.menuItem span,
+.menuItemActive span {
+  margin-left: 10px;
+  color: #252525;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .rightPartHeader {
+    display: flex;
+  }
+
+  .menu {
+    display: none;
+  }
+
+  .headerContainer {
+    height: 50px;
+  }
+
+  .headerLogo {
+    height: calc(50px - 20px);
+    margin: 5px 10px;
+  }
+
+  .headerTitle {
+    font-size: 1.2rem;
+  }
+
+  .menuToggleButton {
+    display: flex;
+  }
 }

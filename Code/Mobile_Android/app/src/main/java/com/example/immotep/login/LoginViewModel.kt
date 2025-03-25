@@ -5,9 +5,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.immotep.AuthService.AuthService
+import com.example.immotep.apiClient.ApiService
+import com.example.immotep.authService.AuthService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,17 +29,16 @@ data class LoginErrorState(
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tokens")
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val navController: NavController,
+    private val apiService: ApiService
+) : ViewModel() {
     private val _emailAndPassword = MutableStateFlow(LoginState())
     private val _errors = MutableStateFlow(LoginErrorState())
     val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
     val errors: StateFlow<LoginErrorState> = _errors.asStateFlow()
 
-    fun updateEmailAndPassword(
-        email: String?,
-        password: String?,
-        keepSigned: Boolean?,
-    ) {
+    fun updateEmailAndPassword(email: String?, password: String?, keepSigned: Boolean?) {
         _emailAndPassword.value =
             _emailAndPassword.value.copy(
                 email = email ?: _emailAndPassword.value.email,
@@ -45,8 +46,7 @@ class LoginViewModel : ViewModel() {
                 keepSigned = keepSigned ?: _emailAndPassword.value.keepSigned,
             )
     }
-
-    fun login(navController: NavController) {
+    fun login() {
         var noError = true
         _errors.value = _errors.value.copy(email = false, password = false, apiError = null)
         if (!android.util.Patterns.EMAIL_ADDRESS
@@ -65,10 +65,14 @@ class LoginViewModel : ViewModel() {
         }
         viewModelScope.launch {
             try {
-                AuthService(navController.context.dataStore).onLogin(_emailAndPassword.value.email, _emailAndPassword.value.password)
+                AuthService(
+                    dataStore = navController.context.dataStore,
+                    apiService = apiService
+                ).onLogin(_emailAndPassword.value.email, _emailAndPassword.value.password)
                 navController.navigate("dashboard")
                 return@launch
             } catch (e: Exception) {
+                println("error: ${e.message}")
                 val messageAndCode = e.message?.split(",")
                 if (messageAndCode != null && messageAndCode.size == 2) {
                     val code = messageAndCode[1].toInt()
@@ -79,3 +83,4 @@ class LoginViewModel : ViewModel() {
         }
     }
 }
+

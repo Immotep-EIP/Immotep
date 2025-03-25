@@ -9,12 +9,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-public val Release_alert: ImageVector
+public val ReleaseAlert: ImageVector
     get() {
-        if (_Release_alert != null) {
-            return _Release_alert!!
+        if (_releaseAlert != null) {
+            return _releaseAlert!!
         }
-        _Release_alert =
+        _releaseAlert =
             ImageVector
                 .Builder(
                     name = "Release_alert",
@@ -92,7 +92,8 @@ public val Release_alert: ImageVector
                         close()
                     }
                 }.build()
-        return _Release_alert!!
+        return _releaseAlert!!
     }
 
-private var _Release_alert: ImageVector? = null
+private var _releaseAlert: ImageVector? = null
+

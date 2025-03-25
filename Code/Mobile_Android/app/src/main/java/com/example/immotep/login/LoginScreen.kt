@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.components.CheckBoxWithLabel
 import com.example.immotep.components.ErrorAlert
@@ -37,13 +38,22 @@ import com.example.immotep.ui.components.PasswordInput
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel = viewModel(),
 ) {
+    val apiService = LocalApiService.current
+    val viewModel: LoginViewModel = viewModel {
+        LoginViewModel(navController, apiService)
+    }
     val emailAndPassword = viewModel.emailAndPassword.collectAsState()
     val errors = viewModel.errors.collectAsState()
     val columnPaddingApiError = if (errors.value.apiError == null) 40.dp else 20.dp
 
-    Column(modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize().padding(10.dp)) {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+            .padding(10.dp)
+            .testTag("loginScreen")
+    ) {
         Header()
         TopText(stringResource(R.string.login_hello), stringResource(R.string.login_details))
         Column(
@@ -58,7 +68,7 @@ fun LoginScreen(
             ErrorAlert(errors.value.apiError, true)
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedTextField(
-                label = { Text(stringResource(R.string.your_email)) },
+                label = stringResource(R.string.your_email),
                 value = emailAndPassword.value.email,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 onValueChange = { value ->
@@ -68,7 +78,7 @@ fun LoginScreen(
                 errorMessage = if (errors.value.email) stringResource(R.string.email_error) else null,
             )
             PasswordInput(
-                label = { Text(stringResource(R.string.your_password)) },
+                label = stringResource(R.string.your_password),
                 value = emailAndPassword.value.password,
                 onValueChange = { value ->
                     viewModel.updateEmailAndPassword(null, value, null)
@@ -102,7 +112,7 @@ fun LoginScreen(
                 )
             }
             Button(
-                onClick = { viewModel.login(navController) },
+                onClick = { viewModel.login() },
                 modifier = Modifier.testTag("loginButton"),
             ) { Text(stringResource(R.string.login_button)) }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {

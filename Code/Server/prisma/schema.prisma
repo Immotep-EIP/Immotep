@@ -7,32 +7,216 @@ generator db {
     provider = "go run github.com/steebchen/prisma-client-go"
 }
 
-enum Role {
-    admin
-    member
+enum role {
+    owner
+    tenant
 }
 
-model User {
-    id         String   @id @default(cuid())
-    email      String   @unique @db.VarChar(255)
-    password   String   @db.VarChar(255)
-    firstname  String
-    lastname   String
-    role       Role     @default(member)
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    posts      Post[]
+enum priority {
+    low
+    medium
+    high
+    urgent
 }
 
-model Post {
-    id         String   @id @default(cuid())
-    title      String   @unique
-    content    String
-    likes      Int
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+enum reportType {
+    start
+    middle
+    end
+}
 
-    author       User     @relation(fields: [authorId], references: [id])
-    authorId     String
+enum state {
+    broken
+    needsRepair
+    bad
+    medium
+    good
+    new
+}
+
+enum cleanliness {
+    dirty
+    medium
+    clean
+}
+
+model user {
+    id          String   @id @default(cuid())
+    email       String   @unique @db.VarChar(255)
+    password    String
+    firstname   String
+    lastname    String
+    role        role
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
+
+    profile_picture    image?   @relation(fields: [profile_picture_id], references: [id])
+    profile_picture_id String?
+
+    owned_properties   property[]
+    rented_properties  contract[]
+}
+
+model contract {
+    id          String    @id @default(cuid())
+    active      Boolean   @default(true)
+    start_date  DateTime
+    end_date    DateTime?
+    created_at  DateTime  @default(now())
+
+    tenant      user      @relation(fields: [tenant_id], references: [id])
+    tenant_id   String
+    property    property  @relation(fields: [property_id], references: [id])
+    property_id String
+
+    documents   document[]
+}
+
+model damage {
+    id          String   @id @default(cuid())
+    comment     String
+    room        String
+    priority    priority
+    read        Boolean  @default(false)
+
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
+    fixed_at    DateTime?
+
+    property    property @relation(fields: [property_id], references: [id])
+    property_id String
+}
+
+model property {
+    id               String   @id @default(cuid())
+    name             String
+    address          String
+    apartment_number String?
+    city             String
+    postal_code      String
+    country          String
+    area_sqm               Float
+    rental_price_per_month Float
+    deposit_price          Float
+    created_at  DateTime @default(now())
+    archived    Boolean  @default(false)
+
+    picture    image?   @relation(fields: [picture_id], references: [id])
+    picture_id String?
+
+    owner       user     @relation(fields: [owner_id], references: [id])
+    owner_id    String
+
+    contracts          contract[]
+    pending_contract   pendingContract?
+    damages            damage[]
+    rooms              room[]
+    reports            inventoryReport[]
+
+    @@unique([name, owner_id])
+}
+
+model pendingContract {
+    id           String    @id @default(cuid())
+    tenant_email String    @unique @db.VarChar(255)
+
+    start_date   DateTime
+    end_date     DateTime?
+    created_at   DateTime  @default(now())
+
+    property     property  @relation(fields: [property_id], references: [id])
+    property_id  String    @unique
+}
+
+model image {
+    id         String    @id @default(cuid())
+    data       Bytes
+    created_at DateTime  @default(now())
+
+    users           user[]
+    properties      property[]
+    roomstates      roomState[]
+    furniturestates furnitureState[]
+}
+
+model document {
+    id          String   @id @default(cuid())
+    name        String
+    data        Bytes
+    created_at  DateTime @default(now())
+
+    contract    contract @relation(fields: [contract_id], references: [id])
+    contract_id String
+}
+
+model room {
+    id          String   @id @default(cuid())
+    name        String
+    archived    Boolean  @default(false)
+
+    property    property @relation(fields: [property_id], references: [id])
+    property_id String
+
+    furnitures  furniture[]
+    roomStates  roomState[]
+
+    @@unique([name, property_id])
+}
+
+model furniture {
+    id        String @id @default(cuid())
+    name      String
+    quantity  Int    @default(1)
+    archived  Boolean  @default(false)
+
+    room      room   @relation(fields: [room_id], references: [id])
+    room_id   String
+
+    furnitureStates furnitureState[]
+
+    @@unique([name, room_id])
+}
+
+model inventoryReport {
+    id      String     @id @default(cuid())
+    date    DateTime   @default(now())
+    type    reportType
+
+    property    property @relation(fields: [property_id], references: [id])
+    property_id String
+
+    roomStates      roomState[]
+    furnitureStates furnitureState[]
+}
+
+model roomState {
+    id          String        @id @default(cuid())
+    cleanliness cleanliness
+    state       state
+    note        String
+
+    report    inventoryReport @relation(fields: [report_id], references: [id])
+    report_id String
+    room      room            @relation(fields: [room_id], references: [id])
+    room_id   String
+
+    pictures image[]
+
+    @@unique([report_id, room_id])
+}
+
+model furnitureState {
+    id          String             @id @default(cuid())
+    cleanliness cleanliness
+    state       state
+    note        String
+
+    report         inventoryReport @relation(fields: [report_id], references: [id])
+    report_id      String
+    furniture      furniture       @relation(fields: [furniture_id], references: [id])
+    furniture_id   String
+
+    pictures image[]
+
+    @@unique([report_id, furniture_id])
 }
