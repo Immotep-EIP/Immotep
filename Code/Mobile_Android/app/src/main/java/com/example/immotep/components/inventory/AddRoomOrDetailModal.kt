@@ -35,7 +35,11 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
         val focusRequester = remember { FocusRequester() }
         var roomName by rememberSaveable { mutableStateOf("") }
         LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+            try {
+                focusRequester.requestFocus()
+            } catch (e : Exception) {
+                println("Impossible to request focus")
+            }
         }
         ModalBottomSheet(
             onDismissRequest = close,
@@ -49,7 +53,7 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
                     onValueChange = { roomName = it },
                     label = { Text(stringResource(if (isRoom) R.string.room_name else R.string.detail_name)) },
                     modifier = Modifier
-                        .fillMaxWidth().focusRequester(focusRequester)
+                        .fillMaxWidth().focusRequester(focusRequester).testTag("roomNameTextField")
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -61,7 +65,9 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
                             backgroundColor = MaterialTheme.colorScheme.errorContainer,
                             contentColor = MaterialTheme.colorScheme.onError
                         ),
-                        onClick = { close() }) {
+                        onClick = { close() },
+                        modifier = Modifier.testTag("addRoomModalCancel")
+                    ) {
                         Text(stringResource(R.string.cancel))
                     }
                     Button(
@@ -70,7 +76,9 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        onClick = { addRoomOrDetail(roomName) }) {
+                        onClick = { addRoomOrDetail(roomName) },
+                        modifier = Modifier.testTag("addRoomModalConfirm")
+                    ) {
                         Text(stringResource(if (isRoom) R.string.add_room else R.string.add_detail))
                     }
                 }

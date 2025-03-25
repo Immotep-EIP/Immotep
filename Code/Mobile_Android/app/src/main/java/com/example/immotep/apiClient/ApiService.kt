@@ -1,143 +1,36 @@
 package com.example.immotep.apiClient
 
-import com.example.immotep.inventory.Cleanliness
-import com.example.immotep.inventory.InventoryLocationsTypes
+import com.example.immotep.apiCallerServices.AddPropertyInput
+import com.example.immotep.apiCallerServices.AiCallInput
+import com.example.immotep.apiCallerServices.AiCallOutput
+import com.example.immotep.apiCallerServices.ArchivePropertyInput
+import com.example.immotep.apiCallerServices.Document
+import com.example.immotep.apiCallerServices.FurnitureInput
+import com.example.immotep.apiCallerServices.FurnitureOutput
+import com.example.immotep.apiCallerServices.GetPropertyResponse
+import com.example.immotep.apiCallerServices.InventoryReportInput
+import com.example.immotep.apiCallerServices.InviteInput
+import com.example.immotep.apiCallerServices.InviteOutput
+import com.example.immotep.apiCallerServices.ProfileResponse
+import com.example.immotep.apiCallerServices.ProfileUpdateInput
+import com.example.immotep.apiCallerServices.RoomOutput
+import com.example.immotep.authService.LoginResponse
+import com.example.immotep.authService.RegistrationInput
+import com.example.immotep.authService.RegistrationResponse
 import com.example.immotep.inventory.InventoryReportOutput
-import com.example.immotep.inventory.InventoryReportRoom
-import com.example.immotep.inventory.State
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
-import java.util.Vector
 
-//input and output classes
 
-data class LoginResponse(
-    val access_token: String,
-    val refresh_token: String,
-    val token_type: String,
-    val expires_in: Int,
-    val properties: Map<String, Any>,
-)
-
-data class RegistrationInput(
-    val email: String,
-    val password: String,
-    val firstName: String,
-    val lastName: String,
-)
-
-data class RegistrationResponse(
-    val id: String,
-    val email: String,
-    val firstname: String,
-    val lastname: String,
-    val role: String,
-    val created_at: String,
-    val updated_at: String,
-)
-
-data class ProfileResponse(
-    val id: String,
-    val email: String,
-    val firstname: String,
-    val lastname: String,
-    val role: String,
-    val created_at: String,
-    val updated_at: String,
-)
-
-data class AddPropertyInput(
-    val name: String = "",
-    val address: String = "",
-    val city: String = "",
-    val postal_code: String ="",
-    val country: String = "",
-    val area_sqm: Double = 0.0,
-    val rental_price_per_month: Int = 0,
-    val deposit_price: Int = 0,
-)
-
-data class AddPropertyResponse(
-    val id: String,
-    val owner_id: String,
-    val name: String,
-    val address: String,
-    val city: String,
-    val postal_code: String,
-    val country: String,
-    val area_sqm: Double,
-    val rental_price_per_month: Int,
-    val deposit_price: Int,
-    val picture: String?,
-    val created_at: String,
-)
-
-data class GetPropertyResponse(
-    val id: String,
-    val owner_id: String,
-    val name: String,
-    val address: String,
-    val city: String,
-    val postal_code: String,
-    val country: String,
-    val area_sqm: Double,
-    val rental_price_per_month: Int,
-    val deposit_price: Int,
-    val created_at: String,
-    val status: String,
-    val nb_damage: Int,
-    val tenant: String,
-    val start_date: String?,
-    val end_date: String?
-)
-
-data class FurnitureOutput(
-    val id: String,
-    val property_id: String,
-    val room_id: String,
-    val name: String,
-    val quantity: Int
-)
-
-data class FurnitureInput(
-    val name: String,
-    val quantity: Int
-)
-
-data class InventoryReportInput(
-    val type: String,
-    val rooms: Vector<InventoryReportRoom>
-)
 
 data class AddRoomInput(
     val name : String,
-)
-
-data class RoomOutput(
-    val id : String,
-    val name : String,
-    val property_id : String,
-)
-
-//ai input data classes
-
-data class SummarizeInput(
-    val id : String,
-    val pictures : Vector<String>,
-    val type : InventoryLocationsTypes
-)
-
-//ai output data classes
-
-data class SummarizeOutput(
-    val cleanliness: Cleanliness,
-    val note: String,
-    val state: State
 )
 
 const val API_PREFIX = "/api/v1"
@@ -169,6 +62,9 @@ interface ApiService {
     @GET("${API_PREFIX}/profile")
     suspend fun getProfile(@Header("Authorization") authHeader : String): ProfileResponse
 
+    @PUT("${API_PREFIX}/profile")
+    suspend fun updateProfile(@Header("Authorization") authHeader : String, @Body profileUpdateInput: ProfileUpdateInput): ProfileResponse
+
     //property functions
     @GET("${API_PREFIX}/owner/properties")
     suspend fun getProperties(@Header("Authorization") authHeader : String): Array<GetPropertyResponse>
@@ -176,9 +72,25 @@ interface ApiService {
     @GET("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun getProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): GetPropertyResponse
 
-    @POST("${API_PREFIX}/owner/properties")
-    suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : AddPropertyResponse
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/documents")
+    suspend fun getPropertyDocuments(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): Array<Document>
 
+    @POST("${API_PREFIX}/owner/properties")
+    suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : GetPropertyResponse
+
+    @PUT("${API_PREFIX}/owner/properties/{propertyId}")
+    suspend fun updateProperty(
+        @Header("Authorization") authHeader : String,
+        @Body addPropertyInput: AddPropertyInput,
+        @Path("propertyId") propertyId: String
+    ) : GetPropertyResponse
+
+    @PUT("${API_PREFIX}/owner/properties/{propertyId}/archive")
+    suspend fun archiveProperty(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Body archive : ArchivePropertyInput
+    )
 
     //rooms functions
     @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms")
@@ -216,7 +128,7 @@ interface ApiService {
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Body inventoryReportInput: InventoryReportInput
-    ) : InventoryReportOutput
+    )
 
     @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")
     suspend fun getAllInventoryReports(
@@ -236,6 +148,22 @@ interface ApiService {
     suspend fun aiSummarize(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
-        @Body summarizeInput: SummarizeInput
-    ) : SummarizeOutput
+        @Body summarizeInput: AiCallInput
+    ) : AiCallOutput
+
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/compare/{old_report_id}")
+    suspend fun aiCompare(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("old_report_id") oldReportId: String,
+        @Body summarizeInput: AiCallInput
+    ) : AiCallOutput
+
+    //tenant functions
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/send-invite")
+    suspend fun inviteTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Body invite: InviteInput
+    ) : InviteOutput
 }

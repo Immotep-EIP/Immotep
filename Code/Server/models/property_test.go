@@ -106,7 +106,7 @@ func TestPropertyResponse(t *testing.T) {
 
 		assert.Equal(t, "available", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "", propertyResponse.Tenant)
+		assert.Empty(t, propertyResponse.Tenant)
 		assert.Nil(t, propertyResponse.StartDate)
 		assert.Nil(t, propertyResponse.EndDate)
 	})
@@ -191,7 +191,7 @@ func TestPropertyResponse(t *testing.T) {
 
 		assert.Equal(t, "available", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "", propertyResponse.Tenant)
+		assert.Empty(t, propertyResponse.Tenant)
 		assert.Nil(t, propertyResponse.StartDate)
 		assert.Nil(t, propertyResponse.EndDate)
 	})
@@ -214,12 +214,12 @@ func TestPropertyInventoryResponse(t *testing.T) {
 
 		assert.Equal(t, "available", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "", propertyResponse.Tenant)
+		assert.Empty(t, propertyResponse.Tenant)
 		assert.Nil(t, propertyResponse.StartDate)
 		assert.Nil(t, propertyResponse.EndDate)
 
 		assert.Equal(t, pc.InnerProperty.PictureID, propertyResponse.PictureID)
-		assert.Equal(t, pc.InnerProperty.Archived, propertyResponse.Archived)
+		assert.Equal(t, pc.Archived, propertyResponse.Archived)
 		assert.Len(t, propertyResponse.Rooms, 1)
 		assert.Len(t, propertyResponse.Rooms[0].Furnitures, 1)
 	})
@@ -263,7 +263,7 @@ func TestPropertyInventoryResponse(t *testing.T) {
 		assert.Nil(t, propertyResponse.EndDate)
 
 		assert.Equal(t, newPc.InnerProperty.PictureID, propertyResponse.PictureID)
-		assert.Equal(t, newPc.InnerProperty.Archived, propertyResponse.Archived)
+		assert.Equal(t, newPc.Archived, propertyResponse.Archived)
 		assert.Len(t, propertyResponse.Rooms, 1)
 		assert.Len(t, propertyResponse.Rooms[0].Furnitures, 1)
 	})
@@ -296,7 +296,7 @@ func TestPropertyInventoryResponse(t *testing.T) {
 		assert.Nil(t, propertyResponse.EndDate)
 
 		assert.Equal(t, newPc.InnerProperty.PictureID, propertyResponse.PictureID)
-		assert.Equal(t, newPc.InnerProperty.Archived, propertyResponse.Archived)
+		assert.Equal(t, newPc.Archived, propertyResponse.Archived)
 		assert.Len(t, propertyResponse.Rooms, 1)
 		assert.Len(t, propertyResponse.Rooms[0].Furnitures, 1)
 	})
@@ -314,12 +314,12 @@ func TestPropertyInventoryResponse(t *testing.T) {
 
 		assert.Equal(t, "available", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "", propertyResponse.Tenant)
+		assert.Empty(t, propertyResponse.Tenant)
 		assert.Nil(t, propertyResponse.StartDate)
 		assert.Nil(t, propertyResponse.EndDate)
 
 		assert.Equal(t, pc.InnerProperty.PictureID, propertyResponse.PictureID)
-		assert.Equal(t, pc.InnerProperty.Archived, propertyResponse.Archived)
+		assert.Equal(t, pc.Archived, propertyResponse.Archived)
 		assert.Len(t, propertyResponse.Rooms, 1)
 		assert.Len(t, propertyResponse.Rooms[0].Furnitures, 1)
 	})

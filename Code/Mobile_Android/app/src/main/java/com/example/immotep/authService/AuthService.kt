@@ -5,17 +5,43 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavController
-import com.example.immotep.apiClient.ApiClient
+import com.example.immotep.apiClient.ApiService
 import com.example.immotep.components.decodeRetroFitMessagesToHttpCodes
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
+
+//input and output classes
+
+data class LoginResponse(
+    val access_token: String,
+    val refresh_token: String,
+    val token_type: String,
+    val expires_in: Int,
+    val properties: Map<String, Any>,
+)
+
+data class RegistrationInput(
+    val email: String,
+    val password: String,
+    val firstName: String,
+    val lastName: String,
+)
+
+data class RegistrationResponse(
+    val id: String,
+    val email: String,
+    val firstname: String,
+    val lastname: String,
+    val role: String,
+    val created_at: String,
+    val updated_at: String,
+)
 
 class AuthService(
     private val dataStore: DataStore<Preferences>,
+    private val apiService : ApiService
 ) {
     suspend fun onLogin(
         username: String,
@@ -23,31 +49,14 @@ class AuthService(
     ) {
         val response =
             try {
-                ApiClient.apiService.login(username = username, password = password)
+                apiService.login(username = username, password = password)
             } catch (e: Exception) {
                 val code = decodeRetroFitMessagesToHttpCodes(e)
                 throw Exception("Failed to login,$code")
             }
         this.store(response.access_token, response.refresh_token, response.expires_in)
     }
-
-    /*
-    suspend fun refreshToken(): String {
-        val refreshToken = dataStore.data.map { it[REFRESH_TOKEN] }.firstOrNull()
-        if (refreshToken == null) {
-            throw IllegalArgumentException("no refresh token stored")
-        }
-        try {
-            val res = ApiClient.apiService.refreshToken(refreshToken = refreshToken)
-            this.store(res.access_token, res.refresh_token)
-            return res.access_token
-        } catch (e: Exception) {
-            val code = decodeRetroFitMessagesToHttpCodes(e)
-            throw Exception("Failed to refresh,$code")
-        }
-    }
-    */
-
+    
     private suspend fun store(
         accessToken: String,
         refreshToken: String?,
@@ -98,7 +107,7 @@ class AuthService(
         }
         val response =
             try {
-                ApiClient.apiService.refreshToken(refreshToken = refreshToken)
+                apiService.refreshToken(refreshToken = refreshToken)
             } catch (e: Exception) {
                 val code = decodeRetroFitMessagesToHttpCodes(e)
                 throw Exception("Failed to refresh token,$code")
@@ -116,6 +125,14 @@ class AuthService(
         return false
     }
 
+    suspend fun register(registrationInput: RegistrationInput) : RegistrationResponse {
+        try {
+            return apiService.register(registrationInput)
+        } catch (e: Exception) {
+            val code = decodeRetroFitMessagesToHttpCodes(e)
+            throw Exception("Failed to register,$code")
+        }
+    }
     companion object {
         val ACCESS_TOKEN = stringPreferencesKey("access_token")
         val REFRESH_TOKEN = stringPreferencesKey("refresh_token")

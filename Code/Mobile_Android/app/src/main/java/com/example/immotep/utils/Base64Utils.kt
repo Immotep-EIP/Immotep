@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import java.io.File
+import java.io.FileOutputStream
 import java.util.Base64
 
 
@@ -139,6 +140,23 @@ class Base64Utils {
                 println("error : ${e.message}")
             }
             return null
+        }
+
+        fun saveBase64PdfToCache(context: Context, base64String: String, name : String? = null): File? {
+            return try {
+                val pdfName = if (name != null) "$name.pdf" else "temp_pdf.pdf"
+                val newBase64String = base64String.replace("data:application/pdf;base64,", "")
+                val pdfAsBytes = Base64.getDecoder().decode(newBase64String)
+
+                val pdfFile = File(context.cacheDir, pdfName)
+                FileOutputStream(pdfFile).use { it.write(pdfAsBytes) }
+
+                pdfFile
+            } catch (e: Exception) {
+                println("Impossible to save pdf file ${e.message}")
+                e.printStackTrace()
+                null
+            }
         }
     }
 }

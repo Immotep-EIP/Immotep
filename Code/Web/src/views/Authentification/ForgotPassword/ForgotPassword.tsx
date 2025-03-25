@@ -39,7 +39,7 @@ const ForgotPassword: React.FC = () => {
       <PageMeta
         title={t('pages.forgot_password.document_title')}
         description={t('pages.forgot_password.document_description')}
-        keywords="forgot password, reset, authentication, Immotep"
+        keywords="forgot password, reset, authentication, Keyz"
       />
       <AuthentificationPage
         title={t('pages.forgot_password.title')}

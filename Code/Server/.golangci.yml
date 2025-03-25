@@ -1,6 +1,6 @@
-# https://golangci-lint.run/usage/linters
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
     - asasalint
     - asciicheck
@@ -28,7 +28,6 @@ linters:
     - forbidigo
     - forcetypeassert
     # - funlen
-    - gci
     - ginkgolinter
     - gocheckcompilerdirectives
     # - gochecknoglobals
@@ -40,7 +39,6 @@ linters:
     - gocyclo
     # - godot
     # - godox
-    - gofmt
     # - gofumpt
     - goheader
     # - goimports
@@ -48,7 +46,6 @@ linters:
     - gomodguard
     - goprintffuncname
     - gosec
-    - gosimple
     - gosmopolitan
     - govet
     - grouper
@@ -91,7 +88,6 @@ linters:
     # - stylecheck
     - tagalign
     - tagliatelle
-    - tenv
     - testableexamples
     - testifylint
     - testpackage
@@ -107,58 +103,76 @@ linters:
     # - wrapcheck
     # - wsl
     - zerologlint
-
-  fast: false
-
+  settings:
+    revive:
+      severity: error
+      enable-all-rules: true
+      rules:
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#add-constant
+        - name: add-constant
+          disabled: true
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#get-return
+        - name: get-return
+          disabled: true
+        - name: function-length
+          exclude:
+            - '**/*_test.go'
+        - name: flag-parameter
+          disabled: true
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#import-alias-naming
+        - name: import-alias-naming
+          disabled: true
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#line-length-limit
+        - name: line-length-limit
+          arguments:
+            - 120
+          disabled: true
+          exclude:
+            - ""
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
+        - name: max-public-structs
+          disabled: true
+        - name: unchecked-type-assertion
+          arguments:
+            - acceptIgnoredAssertionResult: true
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unused-parameter
+        - name: unused-parameter
+          arguments:
+            - allowRegex: ^_
+          exclude:
+            - ""
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#var-naming
+        - name: var-naming
+          disabled: true
+    tagliatelle:
+      case:
+        rules:
+          json: snake
+        use-field-name: true
+        ignored-fields:
+          - TemplateId
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - prisma
+      - third_party$
+      - builtin$
+      - examples$
 issues:
   fix: true
-  exclude-dirs:
-    - prisma
-
-linters-settings:
-  revive:
-    ignore-generated-header: true
-    severity: error
-    enable-all-rules: true
-    rules:
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#add-constant
-      - name: add-constant
-        disabled: true
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#get-return
-      - name: get-return
-        disabled: true
-      - name: function-length
-        exclude: ["**/*_test.go"]
-      - name: flag-parameter
-        disabled: true
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#import-alias-naming
-      - name: import-alias-naming
-        disabled: true
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#line-length-limit
-      - name: line-length-limit
-        exclude: [""]
-        arguments: [120]
-        disabled: true
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
-      - name: max-public-structs
-        disabled: true
-      - name: unchecked-type-assertion
-        arguments:
-          - acceptIgnoredAssertionResult: true
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unused-parameter
-      - name: unused-parameter
-        exclude: [""]
-        arguments:
-          - allowRegex: "^_"
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#var-naming
-      - name: var-naming
-        disabled: true
-  tagliatelle:
-    case:
-      use-field-name: true
-      ignored-fields:
-        - TemplateId
-      rules:
-        # Any struct tag type can be used.
-        # Support string case: `camel`, `pascal`, `kebab`, `snake`, `upperSnake`, `goCamel`, `goPascal`, `goKebab`, `goSnake`, `upper`, `lower`, `header`
-        json: snake
+formatters:
+  enable:
+    - gci
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - prisma
+      - third_party$
+      - builtin$
+      - examples$

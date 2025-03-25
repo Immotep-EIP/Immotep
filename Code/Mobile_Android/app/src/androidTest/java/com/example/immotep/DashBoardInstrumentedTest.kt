@@ -7,6 +7,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.immotep.apiClient.mockApi.MockedApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.runBlocking
@@ -16,15 +17,19 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+
 @RunWith(AndroidJUnit4::class)
 class DashBoardInstrumentedTest {
+    constructor() {
+        isTesting = true
+    }
     @get:Rule
     val mainAct = createAndroidComposeRule<MainActivity>()
 
     @Before
     fun setup() {
         val dataStore = InstrumentationRegistry.getInstrumentation().targetContext.dataStore
-        val authServ = AuthService(dataStore)
+        val authServ = AuthService(dataStore, apiService = MockedApiService())
         try {
             runBlocking {
                 authServ.getToken()
@@ -78,7 +83,7 @@ class DashBoardInstrumentedTest {
     @Test
     fun canDisconnect() {
         mainAct.onNodeWithTag("loggedTopBarImage").performClick()
-        mainAct.onNodeWithTag("loginScreen").assertIsDisplayed()
+        mainAct.onNodeWithTag("loginEmailInput").assertIsDisplayed()
     }
 
     @Test

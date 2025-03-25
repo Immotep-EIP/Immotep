@@ -131,7 +131,7 @@ const Overview: React.FC = () => {
       <PageMeta
         title={t('pages.overview.document_title')}
         description={t('pages.overview.document_description')}
-        keywords="overview, dashboard, Immotep"
+        keywords="overview, dashboard, Keyz"
       />
       <div className={style.pageContainer}>
         <div className={style.pageHeader}>

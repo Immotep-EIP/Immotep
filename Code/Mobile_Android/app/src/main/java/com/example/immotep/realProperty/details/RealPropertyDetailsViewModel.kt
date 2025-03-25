@@ -1,98 +1,89 @@
 package com.example.immotep.realProperty.details
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.immotep.apiCallerServices.AddPropertyInput
+import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.PropertyStatus
+import com.example.immotep.apiCallerServices.RealPropertyCallerService
 import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
-import com.example.immotep.realProperty.IProperty
-import com.example.immotep.realProperty.Property
+import com.example.immotep.utils.Base64Utils
+import com.example.immotep.utils.PdfsUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.Date
 
-interface IDetailedProperty : IProperty {
-    val area : Int
-    val rent : Int
-    val deposit : Int
-    val documents : Array<String>
-}
-
-data class DetailedProperty(
-    override val id : String = "",
-    override val image : String = "",
-    override val address : String = "",
-    override val tenant : String = "",
-    override val available : Boolean = true,
-    override val startDate : LocalDateTime? = null,
-    override val endDate : LocalDateTime? = null,
-    override val area : Int = 0,
-    override val rent : Int = 0,
-    override val deposit : Int = 0,
-    override val documents : Array<String> = arrayOf()
-) : IDetailedProperty
-
-fun IDetailedProperty.toProperty() : Property {
-    return Property(
-        this.id,
-        this.image,
-        this.address,
-        this.tenant,
-        this.available,
-        this.startDate,
-        this.endDate
-    )
-}
-
-
-class RealPropertyDetailsViewModel(private val propertyId: String, private val navController: NavController) : ViewModel() {
+class RealPropertyDetailsViewModel(
+    navController: NavController,
+    apiService: ApiService
+) : ViewModel() {
+    enum class ApiErrors {
+        GET_PROPERTY,
+        UPDATE_PROPERTY,
+        NONE
+    }
+    private val apiCaller = RealPropertyCallerService(apiService, navController)
     private var _property = MutableStateFlow(DetailedProperty())
-    val property: StateFlow<DetailedProperty> = _property.asStateFlow()
+    private val _apiError = MutableStateFlow(ApiErrors.NONE)
+    private val _isLoading = MutableStateFlow(false)
 
-    fun loadProperty() {
+    val property: StateFlow<DetailedProperty> = _property.asStateFlow()
+    val apiError = _apiError.asStateFlow()
+    val isLoading = _isLoading.asStateFlow()
+
+    fun loadProperty(newProperty: DetailedProperty) {
+        _isLoading.value = true
+        _apiError.value = ApiErrors.NONE
+        _property.value = newProperty
         viewModelScope.launch {
-            var bearerToken = ""
-            val authService = AuthService(navController.context.dataStore)
             try {
-                bearerToken = authService.getBearerToken()
-            } catch(e : Exception) {
-                navController.navigate("login")
-            }
-            try {
-                val getPropertyRes = ApiClient.apiService.getProperty(bearerToken, propertyId)
-                _property.value = _property.value.copy(
-                    id = propertyId,
-                    image = "",
-                    address = getPropertyRes.address,
-                    tenant = getPropertyRes.tenant,
-                    available = getPropertyRes.status == "available",
-                    startDate = if (getPropertyRes.start_date != null) LocalDateTime.parse(getPropertyRes.start_date) else null,
-                    endDate = if (getPropertyRes.end_date != null) LocalDateTime.parse(getPropertyRes.end_date) else null,
-                    area = getPropertyRes.area_sqm.toInt(),
-                    rent = getPropertyRes.rental_price_per_month,
-                    deposit = getPropertyRes.deposit_price,
-                    documents = arrayOf()
-                )
+                val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id) { _apiError.value = ApiErrors.GET_PROPERTY }
+                _property.value = newProperty.copy(documents = propertyDocuments)
             } catch (e : Exception) {
+                println("Error loading property ${e.message}")
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
         }
     }
-}
 
-class RealPropertyDetailsViewModelFactory(private val propertyId: String, private val navController: NavController) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RealPropertyDetailsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return RealPropertyDetailsViewModel(propertyId, navController) as T
+    suspend fun editProperty(property: AddPropertyInput, propertyId: String) {
+        _apiError.value = ApiErrors.NONE
+        _property.value = apiCaller.updateProperty(property, propertyId) { _apiError.value = ApiErrors.UPDATE_PROPERTY }
+    }
+
+    fun openPdf(documentId : String, context: Context) {
+        try {
+            val document = _property.value.documents.find { it.id == documentId }
+            if (document == null) throw Exception("Document not found")
+            val pdfFile = Base64Utils.saveBase64PdfToCache(context, document.data, document.name)
+            pdfFile?.let { PdfsUtils.openPdfFile(context, it) }
+        } catch (e : Exception) {
+            println("Error opening pdf file: ${e.message}")
+            Toast.makeText(context, "Error opening pdf file", Toast.LENGTH_SHORT).show()
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+
+    fun onSubmitInviteTenant(email: String, startDate: Long, endDate: Long) {
+        _property.value = _property.value.copy(
+            tenant = email,
+            startDate = OffsetDateTime.ofInstant(Instant.ofEpochMilli(startDate), ZoneOffset.UTC),
+            endDate = OffsetDateTime.ofInstant(Instant.ofEpochMilli(endDate), ZoneOffset.UTC),
+            status = PropertyStatus.invite_sent
+        )
     }
 }

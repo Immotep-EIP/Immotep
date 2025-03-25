@@ -129,6 +129,13 @@ const DocumentsTab: React.FC = () => {
         </Form>
       </Modal>
       <div className={style.documentsContainer}>
+        {(!documents || documents === null || documents.length === 0) && (
+          <div className={style.noDocuments}>
+            <p>
+              {t('pages.real_property_details.tabs.documents.no_documents')}
+            </p>
+          </div>
+        )}
         {documents?.map(document => (
           <div
             key={document.id}
@@ -153,13 +160,6 @@ const DocumentsTab: React.FC = () => {
             </div>
           </div>
         ))}
-        {(!documents || documents.length === 0) && (
-          <div className={style.noDocuments}>
-            <p>
-              {t('pages.real_property_details.tabs.documents.no_documents')}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   )

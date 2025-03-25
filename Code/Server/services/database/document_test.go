@@ -40,7 +40,7 @@ func TestGetLeaseDocuments(t *testing.T) {
 
 	foundDocuments := database.GetLeaseDocuments("1")
 	assert.NotNil(t, foundDocuments)
-	assert.Equal(t, len(documents), len(foundDocuments))
+	assert.Len(t, foundDocuments, len(documents))
 	assert.Equal(t, documents[0].ID, foundDocuments[0].ID)
 	assert.Equal(t, documents[1].ID, foundDocuments[1].ID)
 }

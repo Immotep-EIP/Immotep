@@ -1228,7 +1228,7 @@ func TestGetAllArchivedProperties(t *testing.T) {
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	property.InnerProperty.Archived = true
+	property.Archived = true
 	mock.Property.Expect(
 		client.Client.Property.FindMany(
 			db.Property.OwnerID.Equals("1"),

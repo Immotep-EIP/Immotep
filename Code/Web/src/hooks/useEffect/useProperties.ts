@@ -26,27 +26,31 @@ const useProperties = (propertyId: string | null = null) => {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
+  const clearError = () => setError(null)
+
+  const extractBase64Content = (base64: string) => base64.split(',')[1]
+
   const createProperty = async (
     propertyData: CreatePropertyData,
     imageBase64: string | null
   ) => {
     setLoading(true)
-    setError(null)
+    clearError()
     try {
       const createdProperty = await CreatePropertyFunction(propertyData)
-      if (createdProperty) {
-        if (imageBase64) {
-          await UpdatePropertyPicture(
-            createdProperty.id,
-            imageBase64.split(',')[1]
-          )
-        }
-        setProperties(prevProperties => [...prevProperties, createdProperty])
-      } else {
-        throw new Error('Property creation failed.')
+      if (!createdProperty) throw new Error('Property creation failed.')
+
+      if (imageBase64) {
+        await UpdatePropertyPicture(
+          createdProperty.id,
+          extractBase64Content(imageBase64)
+        )
       }
-    } catch (err: any) {
-      setError(err.message)
+      setProperties(prev => [...prev, createdProperty])
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Unknown error occurred.'
+      setError(errorMessage)
       throw err
     } finally {
       setLoading(false)
@@ -59,25 +63,29 @@ const useProperties = (propertyId: string | null = null) => {
     propertyId: string
   ) => {
     setLoading(true)
-    setError(null)
+    clearError()
     try {
       const updatedProperty = await UpdatePropertyFunction(
         propertyData,
         propertyId
       )
-      if (updatedProperty) {
-        if (imageBase64) {
-          await UpdatePropertyPicture(
-            updatedProperty.id,
-            imageBase64.split(',')[1]
-          )
-        }
-        setProperties(prevProperties => [...prevProperties, updatedProperty])
-      } else {
-        throw new Error('Property creation failed.')
+      if (!updatedProperty) throw new Error('Property update failed.')
+
+      if (imageBase64) {
+        await UpdatePropertyPicture(
+          updatedProperty.id,
+          extractBase64Content(imageBase64)
+        )
       }
-    } catch (err: any) {
-      setError(err.message)
+      setProperties(prev =>
+        prev.map(prop =>
+          prop.id === updatedProperty.id ? updatedProperty : prop
+        )
+      )
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Unknown error occurred.'
+      setError(errorMessage)
       throw err
     } finally {
       setLoading(false)
@@ -89,48 +97,36 @@ const useProperties = (propertyId: string | null = null) => {
       setLoading(true)
       const res = await GetProperties()
       setProperties(res)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred.')
     } finally {
       setLoading(false)
     }
   }
 
-  const refreshProperties = async () => {
-    await fetchProperties()
-  }
+  const refreshProperties = fetchProperties
 
   const getPropertyDetails = async (propertyId: string) => {
     try {
       setLoading(true)
       const res = await GetPropertyDetails(propertyId)
       setPropertyDetails(res)
-    } catch (err: any) {
-      console.error('Error fetching property details:', err.message)
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred.')
       throw err
     } finally {
       setLoading(false)
     }
   }
 
-  const refreshPropertyDetails = async (propertyId: string) => {
-    await getPropertyDetails(propertyId)
-  }
+  const refreshPropertyDetails = getPropertyDetails
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await fetchProperties()
-        if (propertyId) {
-          await getPropertyDetails(propertyId)
-        }
-      } catch (err) {
-        console.error(err)
-      }
+    if (!propertyId) {
+      fetchProperties()
+    } else {
+      getPropertyDetails(propertyId)
     }
-
-    fetchData()
   }, [propertyId])
 
   return {
@@ -142,7 +138,8 @@ const useProperties = (propertyId: string | null = null) => {
     updateProperty,
     getPropertyDetails,
     refreshProperties,
-    refreshPropertyDetails
+    refreshPropertyDetails,
+    clearError
   }
 }
 

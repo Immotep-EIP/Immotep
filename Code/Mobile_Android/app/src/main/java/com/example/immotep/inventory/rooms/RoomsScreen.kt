@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,15 +36,6 @@ import com.example.immotep.components.InventoryCenterAddButton
 import com.example.immotep.components.inventory.AddRoomOrDetailModal
 import com.example.immotep.inventory.roomDetails.RoomDetailsScreen
 
-fun roomIsCompleted(room: Room): Boolean {
-    if (room.details.isEmpty()) return false
-    for (detail in room.details) {
-        if (!detail.completed) {
-            return false
-        }
-    }
-    return true
-}
 
 @Composable
 fun RoomsScreen(
@@ -51,7 +43,7 @@ fun RoomsScreen(
     addRoom: suspend (String) -> String?,
     addDetail: suspend (roomId : String, name : String) -> String?,
     removeRoom: (String) -> Unit,
-    editRoom: (String, Room) -> Unit,
+    editRoom: (Room) -> Unit,
     closeInventory: () -> Unit,
     confirmInventory: () -> Boolean,
     oldReportId : String?,
@@ -139,7 +131,9 @@ fun RoomsScreen(
                                 backgroundColor = MaterialTheme.colorScheme.secondary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            onClick = { confirmPopUpOpen = true }) {
+                            onClick = { confirmPopUpOpen = true },
+                            modifier = Modifier.testTag("confirmInventoryButton")
+                            ) {
                             Text(stringResource(R.string.confirm_inventory))
                         }
                         Button(
@@ -148,6 +142,7 @@ fun RoomsScreen(
                                 backgroundColor = MaterialTheme.colorScheme.tertiary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
+                            modifier = Modifier.testTag("editInventoryButton"),
                             onClick = { }) {
                             Text(stringResource(R.string.edit))
                         }
@@ -156,13 +151,13 @@ fun RoomsScreen(
                         LazyColumn {
                             items(viewModel.allRooms) { room ->
                                 NextInventoryButton(
-                                    leftIcon = if (roomIsCompleted(room)) Icons.Outlined.Check else null,
+                                    leftIcon = if (room.completed) Icons.Outlined.Check else null,
                                     leftText = room.name,
                                     onClick = {
                                         viewModel.openRoomPanel(room)
                                     },
                                     testTag = "roomButton ${room.id}",
-                                    error = !roomIsCompleted(room) && showNotCompletedRooms.value
+                                    error = !room.completed && showNotCompletedRooms.value
                                 )
                             }
                         }
@@ -176,14 +171,10 @@ fun RoomsScreen(
         }
     } else {
         RoomDetailsScreen(
-            closeRoomPanel = { roomId, details ->
-                viewModel.closeRoomPanel(roomId, details)
-            },
-            roomDetails = currentlyOpenRoom.value!!.details,
-            roomId = currentlyOpenRoom.value!!.id,
+            closeRoomPanel = { viewModel.closeRoomPanel(it) },
+            baseRoom = currentlyOpenRoom.value!!,
             oldReportId = oldReportId,
             addDetail = addDetail,
-            roomName = currentlyOpenRoom.value!!.name,
             navController = navController,
             propertyId = propertyId
         )
