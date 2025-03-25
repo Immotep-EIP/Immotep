@@ -26,6 +26,7 @@ import useImageCache from '@/hooks/useEffect/useImageCache'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import useProperties from '@/hooks/useEffect/useProperties'
 import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
+import CancelTenantInvitation from '@/services/api/Owner/Properties/CancelTenantInvitation'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 import PageTitle from '@/components/PageText/Title'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
@@ -89,8 +90,8 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
 
   const removeProperty = async () => {
     Modal.confirm({
-      title: t('components.messages.delete_property_title'),
-      content: t('components.messages.delete_property_description'),
+      title: t('components.modal.delete_property.title'),
+      content: t('components.modal.delete_property.description'),
       okText: t('components.button.confirm'),
       cancelText: t('components.button.cancel'),
       okButtonProps: { danger: true },
@@ -101,11 +102,11 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         }
         try {
           await ArchiveProperty(propertyData.id)
-          message.success(t('components.messages.delete_property_success'))
+          message.success(t('components.modal.delete_property.success'))
           goToRealProperty()
         } catch (error) {
           console.error('Error deleting property:', error)
-          message.error(t('components.messages.delete_property_error'))
+          message.error(t('components.modal.delete_property.error'))
         }
       }
     })
@@ -125,11 +126,35 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
             return
           }
           await StopCurrentContract(propertyData?.id || '')
-          refreshPropertyDetails(propertyData.id)
-          message.success(t('components.messages.end_contract.success'))
+          await refreshPropertyDetails(propertyData.id)
+          message.success(t('components.modal.end_contract.success'))
         } catch (error) {
           console.error('Error ending contract:', error)
-          message.error(t('components.messages.end_contract.error'))
+          message.error(t('components.modal.end_contract.error'))
+        }
+      }
+    })
+  }
+
+  const cancelInvitation = async () => {
+    Modal.confirm({
+      title: t('components.modal.cancel_invitation.title'),
+      content: t('components.modal.cancel_invitation.description'),
+      okText: t('components.button.confirm'),
+      cancelText: t('components.button.cancel'),
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          if (!propertyData) {
+            message.error('Property ID is missing.')
+            return
+          }
+          await CancelTenantInvitation(propertyData.id)
+          await refreshPropertyDetails(propertyData.id)
+          message.success(t('components.modal.cancel_invitation.success'))
+        } catch (error) {
+          console.error('Error cancelling invitation:', error)
+          message.error(t('components.modal.cancel_invitation.error'))
         }
       }
     })
@@ -157,6 +182,15 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
     },
     {
       key: '3',
+      label: t('components.button.cancel_invitation'),
+      onClick: () => {
+        cancelInvitation()
+      },
+      danger: true,
+      disabled: propertyData?.status !== PropertyStatusEnum.INVITATION_SENT
+    },
+    {
+      key: '4',
       label: t('components.button.edit_property'),
       onClick: () => {
         showModalUpdate()
@@ -164,7 +198,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
       // disabled: true
     },
     {
-      key: '4',
+      key: '5',
       label: t('components.button.delete_property'),
       danger: true,
       onClick: () => {
@@ -351,7 +385,7 @@ const RealPropertyDetails: React.FC = () => {
       <PageMeta
         title={t('pages.real_property_details.document_title')}
         description={t('pages.real_property_details.document_description')}
-        keywords="real property details, Property info, Immotep"
+        keywords="real property details, Property info, Keyz"
       />
       <div className={style.pageContainer}>
         <DetailsPart

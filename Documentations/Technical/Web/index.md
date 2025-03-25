@@ -1,4 +1,4 @@
-# Technical documentation for the Web Application of Immotep
+# Technical documentation for the Web Application of Keyz
 
 ## Summary
 

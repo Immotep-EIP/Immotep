@@ -26,6 +26,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
 import Lost from './views/Lost/Lost.tsx'
 import SuccesPageRegisterTenant from './components/SuccesPage/SuccesPageRegisterTenant.tsx'
+import SuccesPageLoginTenant from './components/SuccesPage/SuccesPageLoginTenant.tsx'
 
 if ('serviceWorker' in navigator) {
   ;(async () => {
@@ -34,11 +35,11 @@ if ('serviceWorker' in navigator) {
         scope: './'
       })
       if (registration.installing) {
-        console.log('Service worker installing')
+        // console.log('Service worker installing')
       } else if (registration.waiting) {
-        console.log('Service worker installed')
+        // console.log('Service worker installed')
       } else if (registration.active) {
-        console.log('Service worker active')
+        // console.log('Service worker active')
       }
     } catch (error) {
       console.error(`Registration failed with ${error}`)
@@ -52,18 +53,19 @@ const App: React.FC = () => (
       <AuthProvider>
         <Routes>
           <Route path={NavigationEnum.LOGIN} element={<Login />} />
+          <Route path={NavigationEnum.LOGIN_TENANT} element={<Login />} />
           <Route
             path={NavigationEnum.REGISTER_WITHOUT_CONTRACT}
-            element={<Register />}
-          />
-          <Route
-            path={NavigationEnum.REGISTER_WITH_CONTRACT}
             element={<Register />}
           />
           <Route path={NavigationEnum.REGISTER_TENANT} element={<Register />} />
           <Route
             path={NavigationEnum.SUCCESS_REGISTER_TENANT}
             element={<SuccesPageRegisterTenant />}
+          />
+          <Route
+            path={NavigationEnum.SUCCESS_LOGIN_TENANT}
+            element={<SuccesPageLoginTenant />}
           />
           <Route
             path={NavigationEnum.FORGOT_PASSWORD}

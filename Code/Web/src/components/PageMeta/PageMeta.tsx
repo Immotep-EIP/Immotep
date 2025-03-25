@@ -1,7 +1,7 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
 
-const DEFAULT_TITLE_PREFIX = 'Immotep'
+const DEFAULT_TITLE_PREFIX = 'Keyz'
 
 interface PageMetaProps {
   title: string

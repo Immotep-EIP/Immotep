@@ -8,7 +8,7 @@ import type { MenuProps } from 'antd'
 import Property from '@/assets/icons/realProperty.svg'
 import Overview from '@/assets/icons/overview.svg'
 import Messages from '@/assets/icons/messages.svg'
-import Immotep from '@/assets/icons/ImmotepLogo.svg'
+import Keyz from '@/assets/icons/KeyzLogo.svg'
 import Settings from '@/assets/icons/settings.svg'
 import NavigationEnum from '@/enums/NavigationEnum'
 import style from './MainLayout.module.css'
@@ -64,8 +64,8 @@ const MainLayout: React.FC = () => {
     <div className={style.pageContainer}>
       <div className={style.headerContainer}>
         <div className={style.leftPartHeader}>
-          <img src={Immotep} alt="logo Immotep" className={style.headerLogo} />
-          <span className={style.headerTitle}>Immotep</span>
+          <img src={Keyz} alt="logo Keyz" className={style.headerLogo} />
+          <span className={style.headerTitle}>Keyz</span>
         </div>
         <div className={style.rightPartHeader}>
           <div

@@ -18,7 +18,7 @@ const useImageCache = (
       'image/jpeg'
     )
 
-    const cache = await caches.open('immotep-cache-v1')
+    const cache = await caches.open('keyz-cache-v1')
     await cache.put(`/images/${id}`, new Response(file))
 
     const url = URL.createObjectURL(file)
@@ -50,7 +50,7 @@ const useImageCache = (
       if (response) {
         const file = base64ToFile(response.data, 'image.jpg', 'image/jpeg')
 
-        const cache = await caches.open('immotep-cache-v1')
+        const cache = await caches.open('keyz-cache-v1')
         await cache.put(`/images/${id}`, new Response(file))
 
         const fileUrl = URL.createObjectURL(file)

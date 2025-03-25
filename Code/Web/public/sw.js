@@ -1,5 +1,5 @@
 const version = 1
-const CACHE_NAME = `immotep-cache-v1`
+const CACHE_NAME = `keyz-cache-v1`
 const ASSETS_TO_CACHE = ['/', '/index.html', '/vite.svg', '/assets/*']
 
 const SENSITIVE_API_URLS = [
