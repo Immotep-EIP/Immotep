@@ -80,7 +80,7 @@ func SendEmailInvite(invite db.PendingContractModel, userExists bool) (string, e
 	ownerName := invite.Property().Owner().Firstname + " " + invite.Property().Owner().Lastname
 	var inviteLink string
 	if userExists {
-		inviteLink = os.Getenv("WEB_PUBLIC_URL") + "/NOT-SET/invite/" + invite.ID
+		inviteLink = os.Getenv("WEB_PUBLIC_URL") + "/login/invite/" + invite.ID
 	} else {
 		inviteLink = os.Getenv("WEB_PUBLIC_URL") + "/register/invite/" + invite.ID
 	}

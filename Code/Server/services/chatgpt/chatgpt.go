@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"immotep/backend/prisma/db"
+	"immotep/backend/utils"
 )
 
 type Response struct {
@@ -30,6 +31,116 @@ func buildImageContent(picture string) map[string]any {
 			"url": "data:image/jpeg;base64," + picture,
 		},
 	}
+}
+
+func buildSummaryPromptMessage(stuffType string, name string) string {
+	promptRoom := `
+This request is part of an inventory report for a real estate lease. The goal is to document the condition of a room at the beginning of a lease. The provided images show an overview of the room: ` + name + `.
+
+Your task is to analyze these images and generate a structured summary of the room's condition, focusing on key elements such as walls, floor, ceiling, shelves, and any visible signs of damage, wear, or cleanliness.
+
+The response must strictly follow this format:
+<state>|<cleanliness>|<notes>
+Ex: "good|clean|Example of a note."
+DON'T SEND ANYTHING ELSE IN THE RESPONSE.
+
+In case of error, your response must strictly follow this format:
+error|<error_message>
+Ex: "error|The image does not correspond to the name provided."
+
+Where:
+- **State** represents the overall condition of the room and must be one of the following: broken, needsRepair, bad, medium, good, new.
+- **Cleanliness** describes the level of cleanliness and must be one of: dirty, medium, clean.
+- **Notes** is a short text providing relevant details about any specific observations (e.g., "scuff marks on the wall" or "newly painted").
+
+Please provide an objective and concise assessment based purely on the visual information from the images.
+`
+	promptFurniture := `
+This request is part of an inventory report for a real estate lease. The goal is to document the condition of a specific piece of furniture at the beginning of a lease. The provided images focus on: ` + name + `.
+
+Your task is to analyze these images and generate a structured summary of the furniture's condition. Only assess the furniture itself—ignore the background and any unrelated objects. Identify visible wear, damage, and cleanliness.
+
+The response must strictly follow this format:
+<state>|<cleanliness>|<notes>
+Ex: "good|clean|Example of a note."
+DON'T SEND ANYTHING ELSE IN THE RESPONSE.
+
+In case of error, your response must strictly follow this format:
+error|<error_message>
+Ex: "error|The image does not correspond to the name provided."
+
+Where:
+- **State** represents the overall condition of the furniture and must be one of the following: broken, needsRepair, bad, medium, good, new.
+- **Cleanliness** describes the level of cleanliness and must be one of: dirty, medium, clean.
+- **Notes** is a short text providing relevant details about any specific observations (e.g., "scratches on the surface" or "like new").
+
+Provide an objective and concise assessment based purely on the visual details in the images.
+`
+	return utils.Ternary(stuffType == "room", promptRoom, promptFurniture)
+}
+
+func buildComparePromptMessage(stuffType string, name string, initialState string, initialCleanliness string, initialNote string) string {
+	promptRoom := `
+This request is part of a real estate lease inventory comparison process. The goal is to evaluate the changes in the condition of a room: ` + name + ` between the start and end of a lease.
+
+The images for this comparison are sent in two separate messages:
+- The first set contains the original images of the room, taken at the start of the lease.
+- The second set contains new images of the same room, taken at the end of the lease.
+
+Additionally, here is the room's initial assessment from the first inventory report:
+- **Initial State:** ` + initialState + `
+- **Initial Cleanliness:** ` + initialCleanliness + `
+- **Initial Notes:** ` + initialNote + `
+
+Your task is to analyze and compare the new images with the original ones, focusing on key elements such as walls, floor, ceiling, shelves, and any visible changes in damage, wear, or cleanliness. Consider the initial assessment while determining if the condition has worsened, improved, or remained the same.
+
+The response must strictly follow this format:
+<state>|<cleanliness>|<notes>
+Ex: "good|clean|Example of a note."
+DON'T SEND ANYTHING ELSE IN THE RESPONSE.
+
+In case of error, your response must strictly follow this format:
+error|<error_message>
+Ex: "error|The image does not correspond to the name provided."
+
+Where:
+- **State** represents the overall condition of the room at the end of the lease and must be one of the following: broken, needsRepair, bad, medium, good, new. Compare with the initial state and adjust accordingly if significant deterioration or improvement has occurred.
+- **Cleanliness** describes the current level of cleanliness and must be one of: dirty, medium, clean. Compare with the initial cleanliness to determine if the room is cleaner or dirtier.
+- **Notes** is an optional short text describing any relevant changes or observations (e.g., "new stains on the floor" or "walls repainted and look new").
+
+Provide an objective and concise assessment based on the visual differences between the two sets of images, incorporating the initial assessment as a reference.
+`
+	promptFurniture := `
+This request is part of a real estate lease inventory comparison process. The goal is to evaluate the changes in the condition of a piece of furniture: ` + name + ` between the start and end of a lease.
+
+The images for this comparison are sent in two separate messages:
+- The first set contains the original images of the furniture, taken at the start of the lease.
+- The second set contains new images of the same furniture, taken at the end of the lease.
+
+Additionally, here is the furniture's initial assessment from the first inventory report:
+- **Initial State:** ` + initialState + `
+- **Initial Cleanliness:** ` + initialCleanliness + `
+- **Initial Notes:** ` + initialNote + `
+
+Your task is to analyze and compare the new images with the original ones, focusing only on the furniture itself. Ignore the background and any unrelated objects. Identify any visible differences in condition, wear, damage, or cleanliness. Consider the initial assessment while determining if the furniture’s condition has worsened, improved, or remained the same.
+
+The response must strictly follow this format:
+<state>|<cleanliness>|<notes>
+Ex: "good|clean|Example of a note."
+DON'T SEND ANYTHING ELSE IN THE RESPONSE.
+
+In case of error, your response must strictly follow this format:
+error|<error_message>
+Ex: "error|The image does not correspond to the name provided."
+
+Where:
+- **State** represents the overall condition of the furniture at the end of the lease and must be one of the following: broken, needsRepair, bad, medium, good, new. Compare with the initial state and adjust accordingly if significant deterioration or improvement has occurred.
+- **Cleanliness** describes the current level of cleanliness and must be one of: dirty, medium, clean. Compare with the initial cleanliness to determine if the furniture is cleaner or dirtier.
+- **Notes** is an optional short text describing any relevant changes or observations (e.g., "new scratch on the surface" or "polished and looks better than before").
+
+Provide an objective and concise assessment based on the visual differences between the two sets of images, incorporating the initial assessment as a reference.
+`
+	return utils.Ternary(stuffType == "room", promptRoom, promptFurniture)
 }
 
 func callChatGPT(messages []map[string]any) (string, error) {
@@ -73,11 +184,7 @@ func summarize(stuffType string, name string, pictures []string) (string, error)
 	content := []map[string]any{
 		{
 			"type": "text",
-			"text": "You are a real estate agent doing the first inventory report for a new tenant in a property you own. " +
-				"This step is about evaluating a " + stuffType + " named " + name + ". " +
-				"Along with these instructions are some pictures of the current state of the " + stuffType + ". " +
-				"After analysing these pictures, please give me the " + stuffType + "'s state (broken, needsRepair, bad, medium, good, new), the cleanliness (dirty medium clean), and any additional notes describing the maintenance status of what you see. " +
-				"Be concise and clear. Only send the information that I asked for without any other text in the format: state|cleanliness|notes.",
+			"text": buildSummaryPromptMessage(stuffType, name),
 		},
 	}
 	for _, picture := range pictures {
@@ -138,12 +245,7 @@ func compare(stuffType string, initialState string, initialCleanliness string, i
 	contentText := []map[string]any{
 		{
 			"type": "text",
-			"text": "You are a real estate agent doing the last inventory report for a tenant who has lived in a property you own. " +
-				"This step is about highlighting the major differences of a " + stuffType + " named " + name + " in comparison with the first inventory report made with the tennat. " +
-				"During the first inventory report, this " + stuffType + " has been evaluated with a state: " + initialState + ", a cleanliness: " + initialCleanliness + ", and a note: " + initialNote + ". " +
-				"Before these instructions I sent you two sets of pictures corresponding to the initial and the current state of this " + stuffType + ". " +
-				"After analysing these pictures, please give me the " + stuffType + "'s differences between these two sets of pictures as the state (broken, needsRepair, bad, medium, good, new), the cleanliness (dirty medium clean), and any additional notes describing the maintenance status of what you see. " +
-				"Be concise and clear. Only send the information that I asked for without any other text in the format: state|cleanliness|notes.",
+			"text": buildComparePromptMessage(stuffType, name, initialState, initialCleanliness, initialNote),
 		},
 	}
 	messages := []map[string]any{
