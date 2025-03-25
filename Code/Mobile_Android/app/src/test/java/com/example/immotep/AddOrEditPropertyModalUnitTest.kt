@@ -1,8 +1,12 @@
 package com.example.immotep
-/*
+
 import android.net.Uri
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyViewModel
 import com.example.immotep.apiCallerServices.AddPropertyInput
+import io.mockk.coVerify
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -12,13 +16,11 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
+import io.mockk.every
 
 @ExperimentalCoroutinesApi
 class AddOrEditPropertyViewModelTest {
@@ -98,7 +100,7 @@ class AddOrEditPropertyViewModelTest {
 
     @Test
     fun `addPicture adds picture to pictures list`() {
-        val uri = mock(Uri::class.java)
+        val uri = mockk<Uri>()
         viewModel.addPicture(uri)
         assertTrue(viewModel.pictures.contains(uri))
     }
@@ -125,8 +127,8 @@ class AddOrEditPropertyViewModelTest {
 
     @Test
     fun `onSubmit with valid data calls sendFormFn and onClose`() = runTest {
-        val mockOnClose = mock<() -> Unit>()
-        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mock()
+        val mockOnClose = mockk<() -> Unit>(relaxed = true)
+        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mockk(relaxed = true)
         val property = AddPropertyInput(
             address = "Valid Address",
             postal_code = "12345",
@@ -140,15 +142,15 @@ class AddOrEditPropertyViewModelTest {
         viewModel.onSubmit(mockOnClose, mockSendFormFn)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        verify(mockSendFormFn).invoke(property)
-        verify(mockOnClose).invoke()
+        coVerify { mockSendFormFn(property) }
+        verify { mockOnClose() }
         assertEquals(AddPropertyInput(), viewModel.propertyForm.first())
     }
 
     @Test
     fun `onSubmit with invalid address sets address error`() = runTest {
-        val mockOnClose = mock<() -> Unit>()
-        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mock()
+        val mockOnClose = mockk<() -> Unit>(relaxed = true)
+        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mockk(relaxed = true)
         viewModel.setAddress("aa")
 
         viewModel.onSubmit(mockOnClose, mockSendFormFn)
@@ -159,8 +161,8 @@ class AddOrEditPropertyViewModelTest {
 
     @Test
     fun `onSubmit with invalid zipCode sets zipCode error`() = runTest {
-        val mockOnClose = mock<() -> Unit>()
-        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mock()
+        val mockOnClose = mockk<() -> Unit>(relaxed = true)
+        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mockk(relaxed = true)
         viewModel.setZipCode("123")
 
         viewModel.onSubmit(mockOnClose, mockSendFormFn)
@@ -171,8 +173,8 @@ class AddOrEditPropertyViewModelTest {
 
     @Test
     fun `onSubmit with invalid country sets country error`() = runTest {
-        val mockOnClose = mock<() -> Unit>()
-        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mock()
+        val mockOnClose = mockk<() -> Unit>(relaxed = true)
+        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mockk(relaxed = true)
         viewModel.setCountry("aa")
 
         viewModel.onSubmit(mockOnClose, mockSendFormFn)
@@ -183,8 +185,8 @@ class AddOrEditPropertyViewModelTest {
 
     @Test
     fun `onSubmit with invalid area sets area error`() = runTest {
-        val mockOnClose = mock<() -> Unit>()
-        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mock()
+        val mockOnClose = mockk<() -> Unit>(relaxed = true)
+        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mockk(relaxed = true)
         viewModel.setArea(0.0)
 
         viewModel.onSubmit(mockOnClose, mockSendFormFn)
@@ -195,8 +197,8 @@ class AddOrEditPropertyViewModelTest {
 
     @Test
     fun `onSubmit with invalid rental sets rental error`() = runTest {
-        val mockOnClose = mock<() -> Unit>()
-        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mock()
+        val mockOnClose = mockk<() -> Unit>(relaxed = true)
+        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mockk(relaxed = true)
         viewModel.setRental(0)
 
         viewModel.onSubmit(mockOnClose, mockSendFormFn)
@@ -207,8 +209,8 @@ class AddOrEditPropertyViewModelTest {
 
     @Test
     fun `onSubmit with invalid deposit sets deposit error`() = runTest {
-        val mockOnClose = mock<() -> Unit>()
-        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mock()
+        val mockOnClose = mockk<() -> Unit>(relaxed = true)
+        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mockk(relaxed = true)
         viewModel.setDeposit(0)
 
         viewModel.onSubmit(mockOnClose, mockSendFormFn)
@@ -217,18 +219,4 @@ class AddOrEditPropertyViewModelTest {
         assertTrue(viewModel.propertyFormError.first().deposit)
     }
 
-    @Test
-    fun `onSubmit with multiple invalid fields sets multiple errors`() = runTest {
-        val mockOnClose = mock<() -> Unit>()
-        val mockSendFormFn: suspend (AddPropertyInput) -> Unit = mock()
-        viewModel.setAddress("aa")
-        viewModel.setZipCode("123")
-        viewModel.setCountry("aa")
-        viewModel.setArea(0.0)
-        viewModel.setRental(0)
-        viewModel.setDeposit(0)
-
-        viewModel.onSubmit(mockOnClose, mockSendFormFn)
-        testDispatcher.scheduler.advanceUntilIdle()
-    }
-*/
+}
