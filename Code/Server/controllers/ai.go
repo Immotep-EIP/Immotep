@@ -106,9 +106,10 @@ func GenerateComparison(c *gin.Context) {
 		return
 	}
 
-	if req.Type == "room" {
+	switch req.Type {
+	case "room":
 		handleRoomComparison(c, req, oldReport)
-	} else if req.Type == "furniture" {
+	case "furniture":
 		handleFurnitureComparison(c, req, oldReport)
 	}
 }
