@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 import java.time.LocalDate
 import java.time.ZoneOffset
 
-/*
+
 @RunWith(AndroidJUnit4::class)
 class RealPropertyInstrumentedTest {
     constructor() {
@@ -309,4 +309,3 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithTag("startInventory").assertIsDisplayed()
     }
 }
-*/

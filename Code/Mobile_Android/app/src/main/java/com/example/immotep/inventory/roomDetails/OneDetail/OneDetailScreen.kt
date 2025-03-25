@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -79,7 +80,8 @@ fun OneDetailScreen(
                     minLines = 4,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 10.dp),
+                        .padding(top = 10.dp)
+                        .testTag("oneDetailComment"),
                     errorMessage = if (detailError.value.comment) stringResource(R.string.comment_error) else null
                 )
                 Text(stringResource(R.string.status), modifier = Modifier.padding(top = 10.dp))
@@ -94,7 +96,8 @@ fun OneDetailScreen(
                     ),
                     selectedItem = detailValue.value.status,
                     onItemSelected = { newVal -> viewModel.setStatus(newVal) },
-                    error = if (detailError.value.status) stringResource(R.string.status_error) else null
+                    error = if (detailError.value.status) stringResource(R.string.status_error) else null,
+                    testTag = "dropDownState"
                 )
                 Text(stringResource(R.string.cleaniness), modifier = Modifier.padding(top = 10.dp))
                 DropDown(
@@ -105,13 +108,14 @@ fun OneDetailScreen(
                     ),
                     selectedItem = detailValue.value.cleanliness,
                     onItemSelected = { newVal -> viewModel.setCleanliness(newVal) },
-                    error = if (detailError.value.cleanliness) stringResource(R.string.cleaniness_error) else null
+                    error = if (detailError.value.cleanliness) stringResource(R.string.cleaniness_error) else null,
+                    testTag = "dropDownCleanliness"
                 )
 
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                     Button(
                         shape = RoundedCornerShape(5.dp),
-                        modifier = Modifier.padding(top = 10.dp),
+                        modifier = Modifier.padding(top = 10.dp).testTag("aiCallButton"),
                         colors = androidx.compose.material.ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
@@ -126,7 +130,7 @@ fun OneDetailScreen(
                     }
                     Button(
                         shape = RoundedCornerShape(5.dp),
-                        modifier = Modifier.padding(top = 10.dp),
+                        modifier = Modifier.padding(top = 10.dp).testTag("validateButton"),
                         colors = androidx.compose.material.ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onPrimary

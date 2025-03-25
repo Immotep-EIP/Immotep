@@ -55,6 +55,8 @@ class InventoryInstrumentedTests {
                 Thread.sleep(2000)
                 mainAct.onNodeWithTag("loggedBottomBarElement realProperty").assertIsDisplayed()
                     .performClick()
+                mainAct.onNodeWithTag("propertyBox parisFakeProperty").assertIsDisplayed().performClick()
+                mainAct.onNodeWithTag("startInventory").assertIsDisplayed().performClick()
             }
         }
     }
@@ -86,6 +88,7 @@ class InventoryInstrumentedTests {
 
     @Test
     fun canGoToEntryInventoryPage() {
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("entryInventoryButton"), timeoutMillis = 15000)
         mainAct.onNodeWithTag("entryInventoryButton").assertIsDisplayed().performClick()
         mainAct.waitUntilAtLeastOneExists(hasTestTag("roomsScreen"), timeoutMillis = 2000)
     }
@@ -180,61 +183,42 @@ class InventoryInstrumentedTests {
 
     @Test
     fun oneDetailPageContainsAllGoodInfos() {
-
+        this.canGoToOneDetailPage()
+        mainAct.onNodeWithTag("addingPicturesCarousel").assertIsDisplayed()
+        mainAct.onNodeWithTag("validateButton").assertIsDisplayed()
+        mainAct.onNodeWithTag("aiCallButton").assertIsDisplayed()
+        mainAct.onNodeWithTag("dropDownState").assertIsDisplayed()
+        mainAct.onNodeWithTag("dropDownCleanliness").assertIsDisplayed()
+        mainAct.onNodeWithTag("oneDetailComment").assertIsDisplayed()
     }
 
     @Test
     fun canFillOneDetailAllInfos() {
-
-    }
-
-    @Test
-    fun canMakeAnAISimpleCall() {
-
-    }
-
-    @Test
-    fun canMakeAnCompareAiCall() {
-
+        this.canGoToOneDetailPage()
+        mainAct.onNodeWithTag("addingPicturesCarousel").assertIsDisplayed()
+        mainAct.onNodeWithTag("validateButton").assertIsDisplayed()
+        mainAct.onNodeWithTag("aiCallButton").assertIsDisplayed()
+        mainAct.onNodeWithTag("dropDownState").assertIsDisplayed()
+        mainAct.onNodeWithTag("oneDetailComment").assertIsDisplayed()
+        mainAct.onNodeWithTag("inventoryTopBarCloseIcon").assertIsDisplayed()
     }
 
     @Test
     fun canExitOneDetail() {
-
-    }
-
-    @Test
-    fun canCompleteARoom() {
-
-    }
-
-    @Test
-    fun canCompleteAnInventoryReport() {
-
-    }
-
-    @Test
-    fun canGoToExitInventory() {
-
-    }
-
-    @Test
-    fun canCompleteExitInventoryReport() {
-
+        this.canGoToOneDetailPage()
+        mainAct.onNodeWithTag("inventoryTopBarCloseIcon").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("roomsDetailsScreen"), timeoutMillis = 2000)
     }
 
     @Test
     fun canGoBack() {
-
+        mainAct.onNodeWithTag("inventoryTopBarCloseIcon").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("realPropertyDetailsScreen"), timeoutMillis = 2000)
     }
 
     @Test
     fun exitInventoryIsBlocked() {
-
-    }
-
-    @Test
-    fun exitIn() {
-
+        mainAct.onNodeWithTag("exitInventoryButton").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("roomsScreen").assertDoesNotExist()
     }
 }

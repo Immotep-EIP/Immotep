@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.immotep.R
@@ -30,7 +31,13 @@ data class DropDownItem<T>(
 )
 
 @Composable
-fun <T>DropDown(items : List<DropDownItem<T>>, selectedItem : T, onItemSelected : (T) -> Unit, error : String? = null) {
+fun <T>DropDown(
+    items : List<DropDownItem<T>>,
+    selectedItem : T,
+    onItemSelected : (T) -> Unit,
+    error : String? = null,
+    testTag : String = "dropDown"
+    ) {
     val isDropDownExpanded = remember {
         mutableStateOf(false)
     }
@@ -42,7 +49,10 @@ fun <T>DropDown(items : List<DropDownItem<T>>, selectedItem : T, onItemSelected 
             color = if (error == null) MaterialTheme.colors.onSurface else MaterialTheme.colors.error,
             shape = RoundedCornerShape(8.dp)
         )
-        .padding(10.dp).fillMaxWidth()
+        .padding(10.dp)
+        .fillMaxWidth()
+        .testTag(testTag),
+
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,

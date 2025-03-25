@@ -71,6 +71,7 @@ fun AddingPicturesCarousel(
             .clip(RoundedCornerShape(5.dp))
             .background(color = MaterialTheme.colorScheme.surfaceDim)
             .border(1.dp, if (error == null) MaterialTheme.colorScheme.surfaceDim else MaterialTheme.colorScheme.error, RoundedCornerShape(5.dp))
+            .testTag("addingPicturesCarousel")
 
     ) {
         if (chooseOpen && addPicture != null) {
