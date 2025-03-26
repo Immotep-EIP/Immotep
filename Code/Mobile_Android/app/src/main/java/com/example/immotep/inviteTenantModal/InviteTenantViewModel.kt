@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.TenantCallerService
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.utils.RegexUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -63,9 +64,7 @@ class InviteTenantViewModel(
 
     private fun inviteTenantValidator() : Boolean {
         val newFormError = InviteTenantInputFormError()
-        if (!android.util.Patterns.EMAIL_ADDRESS
-                .matcher(_invitationForm.value.email)
-                .matches()) {
+        if (!RegexUtils.isValidEmail(_invitationForm.value.email)) {
             newFormError.email = true
         }
         if (Date(_invitationForm.value.startDate).after(Date(_invitationForm.value.endDate))) {
