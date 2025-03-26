@@ -10,7 +10,15 @@ data class RoomOutput(
     val id : String,
     val name : String,
     val property_id : String,
-)
+) {
+    fun toRoom(details : Array<RoomDetail>?) : Room {
+        return Room(
+            id = id,
+            name = name,
+            details = details ?: arrayOf()
+        )
+    }
+}
 
 class RoomCallerService(
     apiService: ApiService,
@@ -44,20 +52,9 @@ class RoomCallerService(
             try {
                 val roomsDetails = furnitureCaller.getFurnituresByRoomId(
                     propertyId,
-                    it.id,
-                    { onErrorRoomFurniture(it.name) }
-                )
-                val room = Room(
-                    id = it.id,
-                    name = it.name,
-                    description = "",
-                    details = roomsDetails.map { detail ->
-                        RoomDetail(
-                            id = detail.id,
-                            name = detail.name,
-                        )
-                    }.toTypedArray()
-                )
+                    it.id
+                ) { onErrorRoomFurniture(it.name) }
+                val room = it.toRoom(roomsDetails.map { roomDetail -> roomDetail.toRoomDetail() }.toTypedArray())
                 newRooms.add(room)
             } catch (e: Exception) {
                 println("Error during get all rooms with furniture ${e.message}")

@@ -111,7 +111,7 @@ fun InventoryScreen(
             },
             oldReportId = if (inventoryOpen.value == InventoryOpenValues.EXIT) oldReportId.value else null,
             confirmInventory = { viewModel.sendInventory() },
-            addDetail = { roomId, name -> viewModel.addFurniture(roomId, name,
+            addDetail = { roomId, name -> viewModel.addFurnitureCall(roomId, name,
                 {
                     Toast.makeText(context, cannotAddDetailText, Toast.LENGTH_LONG).show()
                 }) },

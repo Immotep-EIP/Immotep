@@ -2,6 +2,8 @@ package com.example.immotep.apiCallerServices
 
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.inventory.RoomDetail
+import com.example.immotep.inventory.State
 
 data class FurnitureOutput(
     val id: String,
@@ -9,7 +11,19 @@ data class FurnitureOutput(
     val room_id: String,
     val name: String,
     val quantity: Int
-)
+) {
+    fun toRoomDetail() : RoomDetail {
+        return RoomDetail(
+            id = id,
+            name = name,
+            completed = false,
+            comment = "",
+            status = State.not_set,
+            cleanliness = com.example.immotep.inventory.Cleanliness.not_set,
+            pictures = arrayOf()
+        )
+    }
+}
 
 data class FurnitureInput(
     val name: String,
