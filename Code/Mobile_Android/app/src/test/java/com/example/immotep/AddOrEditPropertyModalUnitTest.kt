@@ -71,7 +71,7 @@ class AddOrEditPropertyViewModelTest {
     @Test
     fun `setArea updates area_sqm in propertyForm`() = runTest {
         viewModel.setArea(100.0)
-        assertEquals(100.0, viewModel.propertyForm.first().area_sqm)
+        assertEquals(100.0, viewModel.propertyForm.first().area_sqm, 0.01)
     }
 
     @Test
