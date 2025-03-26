@@ -234,6 +234,7 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = CAF02E672D91D84D00B50B33;
 			minimizedProjectReferenceProxies = 1;
@@ -442,6 +443,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Keyz;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access to fill an inventory report with furniture and room photos";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app requires library access to fill an inventory report with furniture and room photos";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -477,6 +480,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Keyz;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access to fill an inventory report with furniture and room photos";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app requires library access to fill an inventory report with furniture and room photos";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
