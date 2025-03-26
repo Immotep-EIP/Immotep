@@ -168,7 +168,7 @@ class InventoryViewModelTest {
         assert(viewModel.getRooms().isNotEmpty())
     }
     */
-    
+
 
     @Test
     fun getBaseRooms() = runTest {

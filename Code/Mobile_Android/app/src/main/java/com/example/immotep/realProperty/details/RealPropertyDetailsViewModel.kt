@@ -50,7 +50,7 @@ class RealPropertyDetailsViewModel(
         _property.value = newProperty
         viewModelScope.launch {
             try {
-                val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id) { _apiError.value = ApiErrors.GET_PROPERTY }
+                val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id) { }
                 _property.value = newProperty.copy(documents = propertyDocuments)
             } catch (e : Exception) {
                 println("Error loading property ${e.message}")

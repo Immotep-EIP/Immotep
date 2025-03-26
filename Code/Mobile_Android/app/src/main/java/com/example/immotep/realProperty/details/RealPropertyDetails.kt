@@ -277,19 +277,21 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
                 property = property,
                 openPdf = { viewModel.openPdf(it, context) }
             )
-            Button(
-                onClick = { navController.navigate("inventory/${newProperty.id}") },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
-                modifier = Modifier
-                    .clip(RoundedCornerShape(5.dp))
-                    .padding(5.dp)
-                    .fillMaxWidth()
-                    .testTag("startInventory")
-            ) {
-                Text(
-                    stringResource(R.string.start_inventory),
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
+            if (property.value.status == PropertyStatus.unavailable) {
+                Button(
+                    onClick = { navController.navigate("inventory/${newProperty.id}") },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .padding(5.dp)
+                        .fillMaxWidth()
+                        .testTag("startInventory")
+                ) {
+                    Text(
+                        stringResource(R.string.start_inventory),
+                        color = MaterialTheme.colorScheme.onTertiary
+                    )
+                }
             }
         }
     }
