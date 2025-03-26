@@ -16,6 +16,12 @@ jobs:
   deploy-dev:
     needs: [check-build]
     if: github.event_name == 'push'
-    uses: ./.github/workflows/deploy.yml
-    with:
-      deploy_env: dev
+    runs-on: ubuntu-latest
+    environment: dev
+    concurrency: deploy_dev
+    steps:
+      - uses: ./.github/workflows/deploy.yml
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}

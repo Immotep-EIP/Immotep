@@ -3,15 +3,19 @@ name: deploy
 on:
   workflow_call:
     inputs:
-      deploy_env:
-        required: true
+      username:
         type: string
+        required: true
+      host:
+        type: string
+        required: true
+      key:
+        type: string
+        required: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.deploy_env }}
-    concurrency: deploy_${{ inputs.deploy_env }}
 
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +23,7 @@ jobs:
       - name: SSH Remote Commands
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.DEPLOY_SERVER }}
-          username: ${{ vars.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/ && git switch main && git pull && docker compose down && docker compose up --build -d
+          host: ${{ inputs.host }}
+          username: ${{ inputs.username }}
+          key: ${{ inputs.key }}
+          script: cd /home/${{ inputs.username }}/Immotep/Code/ && git switch main && git pull && docker compose down && docker compose up --build -d

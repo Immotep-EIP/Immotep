@@ -13,6 +13,12 @@ jobs:
 
   deploy-prod:
     needs: [check-build]
-    uses: ./.github/workflows/deploy.yml
-    with:
-      deploy_env: prod
+    runs-on: ubuntu-latest
+    environment: prod
+    concurrency: deploy_prod
+    steps:
+      - uses: ./.github/workflows/deploy.yml
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
