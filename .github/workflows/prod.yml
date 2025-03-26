@@ -1,4 +1,4 @@
-name: Deploy on prod VM and dev VM
+name: deploy-prod
 
 on:
   push:
@@ -8,30 +8,11 @@ on:
     #   - 'v*'
 
 jobs:
-  deploy-dev:
-    name: Deploy on dev VM
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: SSH Remote Commands
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DEPLOY_SERVER_DEV }}
-          username: ${{ vars.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/ && git switch main && git pull && docker compose down && docker compose up --build -d
+  check-build:
+    uses: ./.github/workflows/check-build.yml
 
   deploy-prod:
-    name: Deploy on prod VM
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: SSH Remote Commands
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DEPLOY_SERVER_PROD }}
-          username: ${{ vars.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/ && git switch main && git pull && docker compose down && docker compose up --build -d
+    needs: [check-build]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      deploy_env: prod
