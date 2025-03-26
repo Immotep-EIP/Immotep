@@ -65,6 +65,7 @@ const MaintenanceWidget: React.FC<WidgetProps> = ({ height }) => {
       <div className={style.maintenanceWidgetScrollList}>
         <List
           dataSource={tasks}
+          aria-label={t('listDamage')}
           renderItem={task => (
             <List.Item className={style.maintenanceWidgetListItem}>
               <div className={style.maintenanceWidgetTask}>

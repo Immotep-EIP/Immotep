@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
+import { HelmetProvider } from 'react-helmet-async'
 import { message } from 'antd'
+import useNavigation from '@/hooks/useNavigation/useNavigation'
 import ForgotPassword from '../ForgotPassword'
 
 jest.mock('react-i18next', () => ({
@@ -24,9 +25,13 @@ jest.mock('antd', () => ({
   }
 }))
 
+// eslint-disable-next-line no-undef
+const renderWithHelmet = (component: React.ReactNode) =>
+  render(<HelmetProvider>{component}</HelmetProvider>)
+
 describe('ForgotPassword', () => {
   beforeEach(() => {
-    render(<ForgotPassword />)
+    renderWithHelmet(<ForgotPassword />)
   })
 
   test('renders correctly', () => {

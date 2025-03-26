@@ -1,9 +1,10 @@
+import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { HelmetProvider } from 'react-helmet-async'
 import Login from '@/views/Authentification/Login/Login'
 import { useAuth } from '@/context/authContext'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
-import React from 'react'
 
 jest.mock('@/context/authContext', () => ({
   useAuth: jest.fn()
@@ -43,8 +44,12 @@ describe('Login Component', () => {
     jest.clearAllMocks()
   })
 
+  // eslint-disable-next-line no-undef
+  const renderWithHelmet = (component: React.ReactNode) =>
+    render(<HelmetProvider>{component}</HelmetProvider>)
+
   it('renders the Login component with form fields', () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
     expect(
       screen.getByLabelText('components.input.email.label')
@@ -60,7 +65,7 @@ describe('Login Component', () => {
   })
 
   it('navigates to Forgot Password page when "Enter" key is pressed on "Forgot Password" link', () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
     const forgotPasswordLink = screen.getByText(
       'components.button.ask_forgot_password'
@@ -76,19 +81,19 @@ describe('Login Component', () => {
   })
 
   it('navigates to Signup page when "Sign Up" is clicked', () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
     fireEvent.click(screen.getByText('components.button.sign_up'))
     expect(mockGoToSignup).toHaveBeenCalledTimes(1)
   })
 
   it('navigates to Forgot Password page when the link is clicked', () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
     fireEvent.click(screen.getByText('components.button.ask_forgot_password'))
     expect(mockGoToForgotPassword).toHaveBeenCalledTimes(1)
   })
 
   it('shows an error message when fields are empty on form submission', async () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
     fireEvent.click(
       screen.getByRole('button', { name: 'components.button.sign_in' })
     )
@@ -104,7 +109,7 @@ describe('Login Component', () => {
   })
 
   it('submits the form successfully with valid inputs', async () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
     const emailInput = screen.getByLabelText('components.input.email.label')
     const passwordInput = screen.getByLabelText(
@@ -133,7 +138,7 @@ describe('Login Component', () => {
   it('shows an error message when login fails with 401', async () => {
     mockLogin.mockRejectedValueOnce({ response: { status: 401 } })
 
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
     const emailInput = screen.getByLabelText('components.input.email.label')
     const passwordInput = screen.getByLabelText(
@@ -159,7 +164,7 @@ describe('Login Component', () => {
     sessionStorage.setItem('refresh_token', 'dummy_refresh')
     sessionStorage.setItem('expires_in', '12345')
 
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
     expect(sessionStorage.getItem('access_token')).toBeNull()
     expect(sessionStorage.getItem('refresh_token')).toBeNull()
@@ -171,19 +176,19 @@ describe('Login Component', () => {
     localStorage.setItem('refresh_token', 'dummy_refresh')
     localStorage.setItem('expires_in', '12345')
 
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
     expect(mockGoToOverview).toHaveBeenCalledTimes(1)
   })
 
   it('calls the goToForgotPassword when the forgot password link is clicked', () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
     fireEvent.click(screen.getByText('components.button.ask_forgot_password'))
     expect(mockGoToForgotPassword).toHaveBeenCalledTimes(1)
   })
 
   it('checks rememberMe functionality', async () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
     const emailInput = screen.getByLabelText('components.input.email.label')
     const passwordInput = screen.getByLabelText(
@@ -212,7 +217,7 @@ describe('Login Component', () => {
   })
 
   it('navigates to Signup page when "Sign Up" link is clicked', () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
     const signUpLink = screen.getByText('components.button.sign_up')
 
@@ -222,7 +227,7 @@ describe('Login Component', () => {
   })
 
   it('navigates to Signup page when "Sign Up" link is pressed with Enter key', () => {
-    render(<Login />)
+    renderWithHelmet(<Login />)
 
     const signUpLink = screen.getByText('components.button.sign_up')
 

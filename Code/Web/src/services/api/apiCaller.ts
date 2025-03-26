@@ -1,13 +1,13 @@
 import axios from 'axios'
 
 import { loginApi } from '@/services/api/Authentification/AuthApi'
-import { saveData, deleteData } from '@/utils/localStorage'
+import { saveData, deleteData } from '@/utils/cache/localStorage'
 import AuthEnum from '@/enums/AuthEnum'
 import NavigationEnum from '@/enums/NavigationEnum'
 import { ApiCallerParams } from '@/interfaces/Api/callApi'
 
 const API_BASE_URL =
-  `${import.meta.env.VITE_API_URL}` || 'http://localhost:3001/api/v1'
+  `${process.env.VITE_API_URL}` || 'http://localhost:3001/api/v1'
 
 const api = axios.create({
   baseURL: API_BASE_URL
@@ -96,7 +96,7 @@ const callApi = async <TData = undefined, TResponse = TData>({
   headers
 }: ApiCallerParams<TData>): Promise<TResponse> => {
   try {
-    const response = await api({
+    const response = await api.request({
       method,
       url: `/${endpoint}`,
       data,
@@ -105,6 +105,7 @@ const callApi = async <TData = undefined, TResponse = TData>({
         ...headers
       }
     })
+
     return response.data as TResponse
   } catch (error) {
     console.error(`Error during API call to ${endpoint}:`, error)

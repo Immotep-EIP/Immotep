@@ -1,135 +1,62 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Button, message, Modal, Tabs, TabsProps, Tag } from 'antd'
+import {
+  Button,
+  MenuProps,
+  message,
+  Modal,
+  Tabs,
+  TabsProps,
+  Dropdown,
+  Badge
+} from 'antd'
+import { MoreOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
-import appartmentIcon from '@/assets/icons/appartement.png'
-import locationIcon from '@/assets/icons/location.png'
-import tenantIcon from '@/assets/icons/tenant.png'
-import dateIcon from '@/assets/icons/date.png'
 
 import InviteTenantModal from '@/components/DetailsPage/InviteTenantModal'
-import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
 import { PropertyDetails } from '@/interfaces/Property/Property'
-import returnIcon from '@/assets/icons/retour.png'
+import returnIcon from '@/assets/icons/retour.svg'
 
 import { PropertyIdProvider } from '@/context/propertyIdContext'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
 import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentContract'
 import useImageCache from '@/hooks/useEffect/useImageCache'
-import AboutTab from './tabs/1AboutTab'
-import DamageTab from './tabs/2DamageTab'
-import InventoryTab from './tabs/3InventoryTab'
-import DocumentsTab from './tabs/4DocumentsTab'
+import PageMeta from '@/components/PageMeta/PageMeta'
+import useProperties from '@/hooks/useEffect/useProperties'
+import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
+import CancelTenantInvitation from '@/services/api/Owner/Properties/CancelTenantInvitation'
+import useNavigation from '@/hooks/useNavigation/useNavigation'
+import PageTitle from '@/components/PageText/Title'
+import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
+import PropertyStatusEnum, { TenantStatusEnum } from '@/enums/PropertyEnum'
+import DocumentsTab from './tabs/1DocumentsTab'
+import DamageTab from './tabs/3DamageTab'
+import InventoryTab from './tabs/2InventoryTab'
 import style from './RealPropertyDetails.module.css'
-
-const HeaderPart: React.FC<{ propertyData: PropertyDetails | null }> = ({
-  propertyData
-}) => {
-  const { t } = useTranslation()
-
-  const { data: picture, isLoading } = useImageCache(
-    propertyData?.id || '',
-    GetPropertyPicture
-  )
-
-  if (!propertyData) {
-    return null
-  }
-
-  return (
-    <div className={style.headerPartContainer}>
-      <div className={style.imageContainer}>
-        <img
-          src={isLoading ? defaultHouse : picture || defaultHouse}
-          alt="Property"
-          className={style.image}
-        />
-      </div>
-      <div className={style.detailsContainer}>
-        <div className={style.details}>
-          <img
-            src={appartmentIcon}
-            alt="Appartment"
-            className={style.detailsIcon}
-          />
-          <span className={style.detailsText}>{propertyData.name}</span>
-        </div>
-        <div className={style.details}>
-          <img
-            src={locationIcon}
-            alt="Location"
-            className={style.detailsIcon}
-          />
-          <span className={style.detailsText}>
-            {`${propertyData.address}, ${propertyData.postal_code} ${propertyData.city}`}
-          </span>
-        </div>
-        <div className={style.details}>
-          <img src={tenantIcon} alt="Tenant" className={style.detailsIcon} />
-          <span className={style.detailsText}>
-            {propertyData.tenant ? propertyData.tenant : '-----------'}
-          </span>
-        </div>
-        <div className={style.details}>
-          <img src={dateIcon} alt="Date" className={style.detailsIcon} />
-          <span className={style.detailsText}>
-            {propertyData.start_date
-              ? `${new Date(propertyData.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
-              : '...'}
-            {' - '}
-            {propertyData.end_date
-              ? `${new Date(propertyData.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
-              : '...'}
-          </span>
-        </div>
-      </div>
-
-      <div className={style.moreInfosContainer}>
-        <Tag color={propertyData.nb_damage > 0 ? 'red' : 'green'}>
-          {propertyData.nb_damage || 0}{' '}
-          {t('pages.real_property.damage.waiting')}
-        </Tag>
-        <Tag color={propertyData.status === 'available' ? 'green' : 'red'}>
-          {propertyData.status === 'available'
-            ? t('pages.real_property.status.available')
-            : t('pages.real_property.status.unavailable')}
-        </Tag>
-      </div>
-    </div>
-  )
-}
+import RealPropertyUpdate from '../update/RealPropertyUpdate'
 
 interface ChildrenComponentProps {
   t: (key: string) => string
 }
 
 const ChildrenComponent: React.FC<ChildrenComponentProps> = ({ t }) => {
-  // const onChange = (key: string) => {
-  //   console.log(key)
-  // }
-
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: t('components.button.about'),
-      children: <AboutTab />
+      label: t('components.button.documents'),
+      children: <DocumentsTab />
     },
     {
       key: '2',
-      label: t('components.button.damage'),
-      children: <DamageTab />
-    },
-    {
-      key: '3',
       label: t('components.button.inventory'),
       children: <InventoryTab />
     },
     {
-      key: '4',
-      label: t('components.button.documents'),
-      children: <DocumentsTab />
+      key: '3',
+      label: t('components.button.damage'),
+      children: <DamageTab />
     }
   ]
 
@@ -140,106 +67,350 @@ const ChildrenComponent: React.FC<ChildrenComponentProps> = ({ t }) => {
   )
 }
 
-const RealPropertyDetails: React.FC = () => {
+interface DetailsPartProps {
+  propertyData: PropertyDetails | null
+  showModal: () => void
+  propertyId: string
+  showModalUpdate: () => void
+}
+
+const DetailsPart: React.FC<DetailsPartProps> = ({
+  propertyData,
+  showModal,
+  propertyId,
+  showModalUpdate
+}) => {
   const { t } = useTranslation()
-  const location = useLocation()
-  const { id } = location.state || {}
-  const [propertyData, setPropertyData] = useState<PropertyDetails | null>(null)
+  const { goToRealProperty } = useNavigation()
+  const { data: picture, isLoading } = useImageCache(
+    propertyData?.id || '',
+    GetPropertyPicture
+  )
+  const { refreshPropertyDetails } = useProperties()
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalRemoveTenant, setModalRemoveTenant] = useState(false)
+  const removeProperty = async () => {
+    Modal.confirm({
+      title: t('components.modal.delete_property.title'),
+      content: t('components.modal.delete_property.description'),
+      okText: t('components.button.confirm'),
+      cancelText: t('components.button.cancel'),
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        if (!propertyData) {
+          message.error('Property ID is missing.')
+          return
+        }
+        try {
+          await ArchiveProperty(propertyData.id)
+          message.success(t('components.modal.delete_property.success'))
+          goToRealProperty()
+        } catch (error) {
+          console.error('Error deleting property:', error)
+          message.error(t('components.modal.delete_property.error'))
+        }
+      }
+    })
+  }
 
-  const fetchData = async () => {
-    const req = await GetPropertyDetails(id)
-    if (req) {
-      setPropertyData(req)
-    } else {
-      message.error(t('pages.real_property_details.error_fetching_data'))
+  const endContract = async () => {
+    Modal.confirm({
+      title: t('components.modal.end_contract.title'),
+      content: t('components.modal.end_contract.description'),
+      okText: t('components.button.confirm'),
+      cancelText: t('components.button.cancel'),
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          if (!propertyData) {
+            message.error('Property ID is missing.')
+            return
+          }
+          await StopCurrentContract(propertyData?.id || '')
+          await refreshPropertyDetails(propertyData.id)
+          message.success(t('components.modal.end_contract.success'))
+        } catch (error) {
+          console.error('Error ending contract:', error)
+          message.error(t('components.modal.end_contract.error'))
+        }
+      }
+    })
+  }
+
+  const cancelInvitation = async () => {
+    Modal.confirm({
+      title: t('components.modal.cancel_invitation.title'),
+      content: t('components.modal.cancel_invitation.description'),
+      okText: t('components.button.confirm'),
+      cancelText: t('components.button.cancel'),
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          if (!propertyData) {
+            message.error('Property ID is missing.')
+            return
+          }
+          await CancelTenantInvitation(propertyData.id)
+          await refreshPropertyDetails(propertyData.id)
+          message.success(t('components.modal.cancel_invitation.success'))
+        } catch (error) {
+          console.error('Error cancelling invitation:', error)
+          message.error(t('components.modal.cancel_invitation.error'))
+        }
+      }
+    })
+  }
+
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: t('components.button.add_tenant'),
+      onClick: () => {
+        showModal()
+      },
+      disabled:
+        propertyData?.status === PropertyStatusEnum.UNAVAILABLE ||
+        propertyData?.status === PropertyStatusEnum.INVITATION_SENT
+    },
+    {
+      key: '2',
+      label: t('components.button.end_contract'),
+      onClick: () => {
+        endContract()
+      },
+      danger: true,
+      disabled: propertyData?.status !== PropertyStatusEnum.UNAVAILABLE
+    },
+    {
+      key: '3',
+      label: t('components.button.cancel_invitation'),
+      onClick: () => {
+        cancelInvitation()
+      },
+      danger: true,
+      disabled: propertyData?.status !== PropertyStatusEnum.INVITATION_SENT
+    },
+    {
+      key: '4',
+      label: t('components.button.edit_property'),
+      onClick: () => {
+        showModalUpdate()
+      }
+      // disabled: true
+    },
+    {
+      key: '5',
+      label: t('components.button.delete_property'),
+      danger: true,
+      onClick: () => {
+        removeProperty()
+      }
     }
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [id])
-
-  const showModal = () => setIsModalOpen(true)
-  const handleCancel = () => setIsModalOpen(false)
-
-  const showModalRemoveTenant = () => setModalRemoveTenant(true)
-  const handleCancelRemoveTenant = () => setModalRemoveTenant(false)
-  const handleRemoveTenant = async () => {
-    await StopCurrentContract(id)
-    setModalRemoveTenant(false)
-    message.success(t('components.modal.end_contract.success'))
-    await fetchData()
-  }
+  ]
 
   return (
-    <div className={style.pageContainer}>
-      <div className={style.buttonsContainer}>
+    <div className={style.mainContainer}>
+      <div className={style.moreInfosContainer}>
         <div
           className={style.returnButtonContainer}
           onClick={() => window.history.back()}
           tabIndex={0}
+          role="button"
           onKeyDown={e => {
             if (e.key === 'Enter') {
               window.history.back()
             }
           }}
-          role="button"
         >
           <img src={returnIcon} alt="Return" className={style.returnIcon} />
-          <span className={style.returnText}>
-            {t('components.button.return')}
-          </span>
+          <PageTitle
+            title={t('pages.real_property_details.title')}
+            size="title"
+            margin={false}
+          />
         </div>
-
-        <div className={style.actionButtonsContainer}>
+        <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
           <Button
-            type="primary"
-            onClick={showModal}
-            disabled={propertyData?.status !== 'available'}
+            type="text"
+            icon={<MoreOutlined />}
+            className={style.actionButton}
+          />
+        </Dropdown>
+      </div>
+      <div className={style.headerInformationContainer}>
+        <div className={style.pictureContainer}>
+          <Badge.Ribbon
+            text={t(
+              TenantStatusEnum[
+                propertyData!.status as keyof typeof TenantStatusEnum
+              ].text || ''
+            )}
+            color={
+              TenantStatusEnum[
+                propertyData!.status as keyof typeof TenantStatusEnum
+              ].color || 'default'
+            }
           >
-            {t('components.button.add_tenant')}
-          </Button>
-          <Button
-            type="primary"
-            danger
-            disabled={propertyData?.status !== 'unavailable'}
-            onClick={showModalRemoveTenant}
-          >
-            {t('components.button.end_contract')}
-          </Button>
+            <img
+              src={isLoading ? defaultHouse : picture || defaultHouse}
+              alt="Property"
+              className={style.propertyPicture}
+            />
+          </Badge.Ribbon>
+        </div>
+        <div className={style.informationsContainer}>
+          <div className={style.details}>
+            <SubtitledElement
+              subtitleKey={t('pages.real_property_details.informations.name')}
+            >
+              <span className={style.detailsText}>{propertyData?.name}</span>
+            </SubtitledElement>
+          </div>
+          <div className={style.details}>
+            <SubtitledElement
+              subtitleKey={t(
+                'pages.real_property_details.informations.address'
+              )}
+            >
+              <span className={style.detailsText}>
+                {propertyData?.apartment_number
+                  ? `N°${propertyData?.apartment_number} - ${propertyData?.address}, ${propertyData?.postal_code} ${propertyData?.city}`
+                  : `${propertyData?.address}, ${propertyData?.postal_code} ${propertyData?.city}`}
+              </span>
+            </SubtitledElement>
+          </div>
+          <div className={style.details}>
+            <SubtitledElement
+              subtitleKey={t('pages.real_property_details.informations.tenant')}
+            >
+              <span className={style.detailsText}>
+                {propertyData?.tenant ? propertyData?.tenant : '-----------'}
+              </span>
+            </SubtitledElement>
+          </div>
+          <div className={style.details}>
+            <SubtitledElement
+              subtitleKey={t('pages.real_property_details.informations.dates')}
+            >
+              <span className={style.detailsText}>
+                {propertyData?.start_date
+                  ? `${new Date(propertyData?.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                  : '...'}
+                {' - '}
+                {propertyData?.end_date
+                  ? `${new Date(propertyData?.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                  : '...'}
+              </span>
+            </SubtitledElement>
+          </div>
+          <div className={style.details}>
+            <SubtitledElement
+              subtitleKey={t('pages.real_property_details.informations.area')}
+            >
+              <span className={style.detailsText}>
+                {propertyData?.area_sqm} m²
+              </span>
+            </SubtitledElement>
+          </div>
+          <div className={style.details}>
+            <SubtitledElement
+              subtitleKey={t('pages.real_property_details.informations.rental')}
+            >
+              <span className={style.detailsText}>
+                {propertyData?.rental_price_per_month} €
+              </span>
+            </SubtitledElement>
+          </div>
+          <div className={style.details}>
+            <SubtitledElement
+              subtitleKey={t(
+                'pages.real_property_details.informations.deposit'
+              )}
+            >
+              <span className={style.detailsText}>
+                {propertyData?.deposit_price} €
+              </span>
+            </SubtitledElement>
+          </div>
         </div>
       </div>
-
-      <Modal
-        title={t('components.modal.end_contract.title')}
-        open={modalRemoveTenant}
-        onCancel={handleCancelRemoveTenant}
-        footer={[
-          <Button key="cancel" onClick={handleCancelRemoveTenant}>
-            {t('components.button.cancel')}
-          </Button>,
-          <Button key="ok" type="primary" onClick={handleRemoveTenant}>
-            {t('components.button.confirm')}
-          </Button>
-        ]}
-      >
-        {t('components.modal.end_contract.description')}
-      </Modal>
-
-      <InviteTenantModal
-        isOpen={isModalOpen}
-        onClose={handleCancel}
-        propertyId={id}
-      />
-
-      <HeaderPart propertyData={propertyData} />
-      <PropertyIdProvider id={id}>
+      <PropertyIdProvider id={propertyId}>
         <ChildrenComponent t={t} />
       </PropertyIdProvider>
     </div>
+  )
+}
+
+const RealPropertyDetails: React.FC = () => {
+  const { t } = useTranslation()
+  const location = useLocation()
+  const { id } = location.state || {}
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const showModal = () => setIsModalOpen(true)
+
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false)
+  const showModalUpdate = () => setIsModalUpdateOpen(true)
+  const [isPropertyUpdated, setIsPropertyUpdated] = useState(false)
+
+  const {
+    propertyDetails: propertyData,
+    refreshPropertyDetails,
+    loading,
+    error
+  } = useProperties(id)
+
+  const handleCancel = (invitationSent: boolean) => {
+    setIsModalOpen(false)
+    if (invitationSent) {
+      refreshPropertyDetails(id)
+    }
+  }
+
+  useEffect(() => {
+    if (isPropertyUpdated) {
+      refreshPropertyDetails(id)
+      setIsPropertyUpdated(false)
+    }
+  }, [isPropertyUpdated, id, refreshPropertyDetails])
+
+  if (loading) {
+    return <div>{t('components.loading')}</div>
+  }
+
+  if (error) {
+    return <div>{t('components.error', { message: error })}</div>
+  }
+
+  return (
+    <>
+      <PageMeta
+        title={t('pages.real_property_details.document_title')}
+        description={t('pages.real_property_details.document_description')}
+        keywords="real property details, Property info, Keyz"
+      />
+      <div className={style.pageContainer}>
+        <DetailsPart
+          propertyData={propertyData}
+          showModal={showModal}
+          propertyId={id}
+          showModalUpdate={showModalUpdate}
+        />
+        {propertyData && (
+          <>
+            <InviteTenantModal
+              isOpen={isModalOpen}
+              onClose={handleCancel}
+              property={propertyData}
+            />
+            <RealPropertyUpdate
+              isModalUpdateOpen={isModalUpdateOpen}
+              setIsModalUpdateOpen={setIsModalUpdateOpen}
+              propertyData={propertyData}
+              setIsPropertyUpdated={setIsPropertyUpdated}
+            />
+          </>
+        )}
+      </div>
+    </>
   )
 }
 

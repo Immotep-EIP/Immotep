@@ -7,13 +7,12 @@ import React, {
   useMemo
 } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LoadingOutlined } from '@ant-design/icons';
-
+import { LoadingOutlined } from '@ant-design/icons'
 
 import { UserToken, TokenResponse, User } from '@/interfaces/User/User'
 import { loginApi } from '@/services/api/Authentification/AuthApi'
 import getUserProfile from '@/services/api/User/GetUserProfile'
-import { saveData, deleteData } from '@/utils/localStorage'
+import { saveData, deleteData } from '@/utils/cache/localStorage'
 import NavigationEnum from '@/enums/NavigationEnum'
 
 interface AuthContextType {
@@ -36,34 +35,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const navigate = useNavigate()
 
-  const updateUser = (newUserData: Partial<User>) => {
+  const updateUser = async (newUserData: Partial<User>) => {
     if (user) {
-      setUser({ ...user, ...newUserData })
+      const updatedUser = { ...user, ...newUserData }
+      setUser(updatedUser)
     }
   }
 
   useEffect(() => {
-    const accessToken =
-      sessionStorage.getItem('access_token') ||
-      localStorage.getItem('access_token')
+    const initializeAuth = async () => {
+      const accessToken =
+        sessionStorage.getItem('access_token') ||
+        localStorage.getItem('access_token')
 
-    const refreshToken =
-      sessionStorage.getItem('refresh_token') ||
-      localStorage.getItem('refresh_token')
+      const refreshToken =
+        sessionStorage.getItem('refresh_token') ||
+        localStorage.getItem('refresh_token')
 
-    const userInfo = async () => {
-      const profile = await getUserProfile()
-      setUser(profile)
+      try {
+        if (accessToken && refreshToken) {
+          setIsAuthenticated(true)
+          const profile = await getUserProfile()
+          setUser(profile)
+        } else {
+          setIsAuthenticated(false)
+          deleteData()
+        }
+      } catch (err) {
+        console.error('Error during auth initialization:', err)
+        setIsAuthenticated(false)
+        deleteData()
+      } finally {
+        setLoading(false)
+      }
     }
 
-    if (accessToken && refreshToken) {
-      setIsAuthenticated(true)
-      userInfo()
-    } else {
-      setIsAuthenticated(false)
-      deleteData()
-    }
-    setLoading(false)
+    initializeAuth()
   }, [])
 
   const login = async (userInfo: UserToken) => {
@@ -89,6 +96,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        if (registration.active) {
+          registration.active.postMessage({
+            type: 'LOGOUT'
+          })
+        }
+      })
+    }
     deleteData()
     navigate(NavigationEnum.LOGIN)
   }
@@ -106,7 +122,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading ? children : <div><LoadingOutlined /></div>}{' '}
+      {!loading ? (
+        children
+      ) : (
+        <div>
+          <LoadingOutlined />
+        </div>
+      )}{' '}
     </AuthContext.Provider>
   )
 }
