@@ -10,7 +10,7 @@
     "types": ["jest", "node"],
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["*"]
     },
     "rootDir": "./src",
     "outDir": "./dist",

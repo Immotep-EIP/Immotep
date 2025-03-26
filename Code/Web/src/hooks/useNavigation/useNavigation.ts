@@ -9,7 +9,7 @@ const useNavigation = () => {
   }
 
   const goToSignup = () => {
-    navigate(NavigationEnum.REGISTER)
+    navigate(NavigationEnum.REGISTER_WITHOUT_CONTRACT)
   }
 
   const goToForgotPassword = () => {
@@ -22,10 +22,6 @@ const useNavigation = () => {
 
   const goToRealProperty = () => {
     navigate(NavigationEnum.REAL_PROPERTY)
-  }
-
-  const goToRealPropertyCreate = () => {
-    navigate(NavigationEnum.REAL_PROPERTY_CREATE)
   }
 
   const goToRealPropertyDetails = (id: string) => {
@@ -46,17 +42,26 @@ const useNavigation = () => {
     navigate(NavigationEnum.MY_PROFILE)
   }
 
+  const goToSuccessRegisterTenant = () => {
+    navigate(NavigationEnum.SUCCESS_REGISTER_TENANT)
+  }
+
+  const goToSuccessLoginTenant = () => {
+    navigate(NavigationEnum.SUCCESS_LOGIN_TENANT)
+  }
+
   return {
     goToLogin,
     goToSignup,
     goToForgotPassword,
     goToOverview,
     goToRealProperty,
-    goToRealPropertyCreate,
     goToRealPropertyDetails,
     goToMessages,
     goToSettings,
-    goToMyProfile
+    goToMyProfile,
+    goToSuccessRegisterTenant,
+    goToSuccessLoginTenant
   }
 }
 

@@ -1,21 +1,21 @@
-import React from 'react'
-import { Button, Tag } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Badge, Button, Empty, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 import useProperties from '@/hooks/useEffect/useProperties.ts'
 
-import appartmentIcon from '@/assets/icons/appartement.png'
-import locationIcon from '@/assets/icons/location.png'
-import tenantIcon from '@/assets/icons/tenant.png'
-import dateIcon from '@/assets/icons/date.png'
+import locationIcon from '@/assets/icons/location.svg'
 
 import PageTitle from '@/components/PageText/Title.tsx'
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
 import useImageCache from '@/hooks/useEffect/useImageCache'
 import CardPropertyLoader from '@/components/Loader/CardPropertyLoader'
+import PageMeta from '@/components/PageMeta/PageMeta'
+import { TenantStatusEnum } from '@/enums/PropertyEnum'
 import style from './RealProperty.module.css'
+import RealPropertyCreate from './create/RealPropertyCreate'
 
 interface CardComponentProps {
   realProperty: any
@@ -32,8 +32,8 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
 
   return (
     <div
-      key={realProperty.id}
       className={style.card}
+      key={realProperty.id}
       role="button"
       tabIndex={0}
       onClick={() => goToRealPropertyDetails(realProperty.id)}
@@ -43,75 +43,49 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         }
       }}
     >
-      {/* FIRST PART */}
-      <div className={style.statusContainer}>
-        <Tag color={realProperty.status === 'available' ? 'green' : 'red'}>
-          {realProperty.status === 'available'
-            ? t('pages.real_property.status.available')
-            : t('pages.real_property.status.unavailable')}
-        </Tag>
-        <Tag color={realProperty.nb_damage > 0 ? 'red' : 'green'}>
-          {realProperty.nb_damage || 0}{' '}
-          {t('pages.real_property.damage.waiting')}
-        </Tag>
-      </div>
-
-      {/* SECOND PART */}
-      <div className={style.pictureContainer}>
-        <img
-          src={isLoading ? defaultHouse : picture || defaultHouse}
-          alt="property"
-          className={style.picture}
-        />
-      </div>
-
-      {/* THIRD PART */}
-      <div className={style.informationsContainer}>
-        <div className={style.informations}>
-          <img src={appartmentIcon} alt="appartment" className={style.icon} />
-          <span>
-            {(() => {
-              if (realProperty.name) {
-                return realProperty.name.length > 40
-                  ? `${realProperty.name.substring(0, 40)}...`
-                  : realProperty.name
-              }
-              return '-----------'
-            })()}
-          </span>
-        </div>
-        <div className={style.informations}>
-          <img src={locationIcon} alt="location" className={style.icon} />
-          <span>
-            {realProperty.address &&
-            realProperty.postal_code &&
-            realProperty.city
-              ? (() => {
-                  const fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
-                  return fullAddress.length > 40
-                    ? `${fullAddress.substring(0, 40)}...`
-                    : fullAddress
-                })()
-              : '-----------'}
-          </span>
-        </div>
-        <div className={style.informations}>
-          <img src={tenantIcon} alt="tenant" className={style.icon} />
-          <span>
-            {realProperty.tenant ? realProperty.tenant : '-----------'}
-          </span>
-        </div>
-        <div className={style.informations}>
-          <img src={dateIcon} alt="date" className={style.icon} />
-          <span>
-            {realProperty.start_date
-              ? `${new Date(realProperty.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
-              : '...'}
-            {' - '}
-            {realProperty.end_date
-              ? `${new Date(realProperty.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
-              : '...'}
-          </span>
+      <div className={style.cardContentContainer}>
+        <Badge.Ribbon
+          text={t(
+            TenantStatusEnum[
+              realProperty!.status as keyof typeof TenantStatusEnum
+            ].text || ''
+          )}
+          color={
+            TenantStatusEnum[
+              realProperty!.status as keyof typeof TenantStatusEnum
+            ].color || 'default'
+          }
+        >
+          <div className={style.cardPictureContainer}>
+            <img
+              src={isLoading ? defaultHouse : picture || defaultHouse}
+              alt="property"
+              className={style.cardPicture}
+            />
+          </div>
+        </Badge.Ribbon>
+        <div className={style.cardInfoContainer}>
+          <b className={style.cardText}>{realProperty.name}</b>
+          <div className={style.cardAddressContainer}>
+            <img src={locationIcon} alt="location" className={style.icon} />
+            <span className={style.cardText}>
+              {realProperty.address &&
+              realProperty.postal_code &&
+              realProperty.city
+                ? (() => {
+                    let fullAddress = ''
+                    if (realProperty.apartment_number) {
+                      fullAddress = `N° ${realProperty.apartment_number} - ${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
+                    } else {
+                      fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
+                    }
+                    return fullAddress.length > 40
+                      ? `${fullAddress.substring(0, 40)}...`
+                      : fullAddress
+                  })()
+                : '-----------'}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -120,34 +94,66 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
 
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
-  const { goToRealPropertyCreate } = useNavigation()
-  const { properties, loading, error } = useProperties()
+  const { properties, loading, error, refreshProperties } = useProperties()
+  const [showModalCreate, setShowModalCreate] = useState(false)
+  const [isPropertyCreated, setIsPropertyCreated] = useState(false)
+
+  useEffect(() => {
+    if (isPropertyCreated) {
+      refreshProperties()
+      setIsPropertyCreated(false)
+    }
+  }, [isPropertyCreated, refreshProperties])
 
   if (error) {
     return <p>{t('pages.real_property.error.error_fetching_data')}</p>
   }
 
   return (
-    <div className={style.pageContainer}>
-      <div className={style.pageHeader}>
-        <PageTitle title={t('pages.real_property.title')} size="title" />
-        <Button type="primary" onClick={goToRealPropertyCreate}>
-          {t('components.button.add_real_property')}
-        </Button>
-      </div>
+    <>
+      <PageMeta
+        title={t('pages.real_property.document_title')}
+        description={t('pages.real_property.document_description')}
+        keywords="real property, Property info, Keyz"
+      />
+      <div className={style.pageContainer}>
+        <div className={style.pageHeader}>
+          <PageTitle title={t('pages.real_property.title')} size="title" />
+          <Button type="primary" onClick={() => setShowModalCreate(true)}>
+            {t('components.button.add_real_property')}
+          </Button>
+        </div>
 
-      {loading && <CardPropertyLoader cards={9} />}
+        {loading && <CardPropertyLoader cards={12} />}
 
-      <div className={style.cardsContainer}>
-        {properties.map(realProperty => (
-          <CardComponent
-            key={realProperty.id}
-            realProperty={realProperty}
-            t={t}
-          />
-        ))}
+        <div className={style.cardsContainer}>
+          {properties.length === 0 && (
+            <div className={style.emptyContainer}>
+              <Empty
+                image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+                description={
+                  <Typography.Text>
+                    {t('components.messages.no_properties')}
+                  </Typography.Text>
+                }
+              />
+            </div>
+          )}
+          {properties.map(realProperty => (
+            <CardComponent
+              key={realProperty.id}
+              realProperty={realProperty}
+              t={t}
+            />
+          ))}
+        </div>
+        <RealPropertyCreate
+          showModalCreate={showModalCreate}
+          setShowModalCreate={setShowModalCreate}
+          setIsPropertyCreated={setIsPropertyCreated}
+        />
       </div>
-    </div>
+    </>
   )
 }
 

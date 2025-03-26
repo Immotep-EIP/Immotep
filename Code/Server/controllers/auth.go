@@ -116,11 +116,7 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	contract := database.CreateContract(*pendingContract, *user)
-	if contract == nil {
-		utils.SendError(c, http.StatusConflict, utils.ContractAlreadyExist, nil)
-		return
-	}
+	_ = database.CreateContract(*pendingContract, *user)
 	c.JSON(http.StatusCreated, models.DbUserToResponse(*user))
 }
 
@@ -165,10 +161,6 @@ func AcceptInvite(c *gin.Context) {
 		return
 	}
 
-	contract := database.CreateContract(*pendingContract, *user)
-	if contract == nil {
-		utils.SendError(c, http.StatusConflict, utils.ContractAlreadyExist, nil)
-		return
-	}
+	_ = database.CreateContract(*pendingContract, *user)
 	c.Status(http.StatusNoContent)
 }

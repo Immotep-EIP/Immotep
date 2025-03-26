@@ -14,9 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class RoomDetailsViewModel(
-    private val closeRoomPanel : (roomId: String, details: Array<RoomDetail>) -> Unit,
+    private val closeRoomPanel : (room : Room) -> Unit,
     private val addDetail : suspend (roomId : String, name : String) -> String?,
-    private val roomId : String
 )  : ViewModel()  {
 
     val details = mutableStateListOf<RoomDetail>()
@@ -27,12 +26,13 @@ class RoomDetailsViewModel(
         details.addAll(bDetails)
     }
 
-    fun onClose(roomId : String) {
-        closeRoomPanel(roomId, details.toTypedArray())
+    fun onClose(room: Room) {
+        room.details = details.toTypedArray()
+        closeRoomPanel(room)
         details.clear()
     }
 
-    fun addDetailToRoomDetailPage(name : String) {
+    fun addDetailToRoomDetailPage(name : String, roomId: String) {
         viewModelScope.launch {
             val detailId = addDetail(roomId, name) ?: return@launch
             val newDetail = RoomDetail(id = detailId, name = name)
@@ -55,20 +55,5 @@ class RoomDetailsViewModel(
 
     fun onOpenDetail(detail: RoomDetail) {
         currentlyOpenDetail.value = detail
-    }
-}
-
-class RoomDetailsViewModelFactory(
-    private val closeRoomPanel : (roomIndex: String, details: Array<RoomDetail>) -> Unit,
-    private val addDetail : suspend (roomId : String, name : String) -> String?,
-    private val roomId : String
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RoomDetailsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return RoomDetailsViewModel(closeRoomPanel, addDetail, roomId) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

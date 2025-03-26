@@ -25,6 +25,7 @@ func BuildTestUser(id string) db.UserModel {
 			Firstname: "Test",
 			Lastname:  "User",
 			Password:  "Password123",
+			Role:      db.RoleOwner,
 		},
 	}
 }
@@ -247,7 +248,7 @@ func TestUpdateCurrentUserProfile(t *testing.T) {
 	).Returns(user)
 
 	updatedUser := user
-	updatedUser.InnerUser.Firstname = "Updated"
+	updatedUser.Firstname = "Updated"
 	mock.User.Expect(
 		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
 			db.User.Email.SetIfPresent(nil),

@@ -83,33 +83,6 @@ func TestCreateContract(t *testing.T) {
 	assert.Equal(t, contract.PropertyID, newContract.PropertyID)
 }
 
-func TestCreateContract_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	tenant := BuildTestTenant("1")
-	pendingContract := BuildTestPendingContract()
-
-	mock.Contract.Expect(
-		client.Client.Contract.CreateOne(
-			db.Contract.StartDate.Set(pendingContract.StartDate),
-			db.Contract.Tenant.Link(db.User.ID.Equals(tenant.ID)),
-			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
-		),
-	).Errors(&protocol.UserFacingError{
-		IsPanic:   false,
-		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference
-		Meta: protocol.Meta{
-			Target: []any{"tenant_id", "property_id"},
-		},
-		Message: "Unique constraint failed",
-	})
-
-	newContract := database.CreateContract(pendingContract, tenant)
-	assert.Nil(t, newContract)
-}
-
 func TestCreateContract_NoConnection1(t *testing.T) {
 	client, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
@@ -453,5 +426,307 @@ func TestEndContract_NoConnection(t *testing.T) {
 
 	assert.Panics(t, func() {
 		database.EndContract(contract.ID, &endDate)
+	})
+}
+
+func TestGetCurrentActiveContractWithInfos(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	contract := BuildTestContract()
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals(property.ID),
+			db.Contract.Active.Equals(true),
+		).With(
+			db.Contract.Tenant.Fetch(),
+			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).ReturnsMany([]db.ContractModel{contract})
+
+	activeContract := database.GetCurrentActiveContractWithInfos(property.ID)
+	assert.NotNil(t, activeContract)
+	assert.Equal(t, contract.PropertyID, activeContract.PropertyID)
+	assert.Equal(t, contract.TenantID, activeContract.TenantID)
+}
+
+func TestGetCurrentActiveContractWithInfos_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals(property.ID),
+			db.Contract.Active.Equals(true),
+		).With(
+			db.Contract.Tenant.Fetch(),
+			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).Errors(db.ErrNotFound)
+
+	activeContract := database.GetCurrentActiveContractWithInfos(property.ID)
+	assert.Nil(t, activeContract)
+}
+
+func TestGetCurrentActiveContractWithInfos_NoActiveContract(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals(property.ID),
+			db.Contract.Active.Equals(true),
+		).With(
+			db.Contract.Tenant.Fetch(),
+			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).ReturnsMany([]db.ContractModel{})
+
+	activeContract := database.GetCurrentActiveContractWithInfos(property.ID)
+	assert.Nil(t, activeContract)
+}
+
+func TestGetCurrentActiveContractWithInfos_MultipleActiveContracts(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	contract1 := BuildTestContract()
+	contract2 := BuildTestContract()
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals(property.ID),
+			db.Contract.Active.Equals(true),
+		).With(
+			db.Contract.Tenant.Fetch(),
+			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).ReturnsMany([]db.ContractModel{contract1, contract2})
+
+	assert.Panics(t, func() {
+		database.GetCurrentActiveContractWithInfos(property.ID)
+	})
+}
+
+func TestGetCurrentActiveContractWithInfos_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.PropertyID.Equals(property.ID),
+			db.Contract.Active.Equals(true),
+		).With(
+			db.Contract.Tenant.Fetch(),
+			db.Contract.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetCurrentActiveContractWithInfos(property.ID)
+	})
+}
+
+func TestGetTenantCurrentActiveContract(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	tenant := BuildTestTenant("1")
+	contract := BuildTestContract()
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.TenantID.Equals(tenant.ID),
+			db.Contract.Active.Equals(true),
+		),
+	).ReturnsMany([]db.ContractModel{contract})
+
+	activeContract := database.GetTenantCurrentActiveContract(tenant.ID)
+	assert.NotNil(t, activeContract)
+	assert.Equal(t, contract.TenantID, activeContract.TenantID)
+	assert.Equal(t, contract.PropertyID, activeContract.PropertyID)
+}
+
+func TestGetTenantCurrentActiveContract_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	tenant := BuildTestTenant("1")
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.TenantID.Equals(tenant.ID),
+			db.Contract.Active.Equals(true),
+		),
+	).Errors(db.ErrNotFound)
+
+	activeContract := database.GetTenantCurrentActiveContract(tenant.ID)
+	assert.Nil(t, activeContract)
+}
+
+func TestGetTenantCurrentActiveContract_NoActiveContract(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	tenant := BuildTestTenant("1")
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.TenantID.Equals(tenant.ID),
+			db.Contract.Active.Equals(true),
+		),
+	).ReturnsMany([]db.ContractModel{})
+
+	activeContract := database.GetTenantCurrentActiveContract(tenant.ID)
+	assert.Nil(t, activeContract)
+}
+
+func TestGetTenantCurrentActiveContract_MultipleActiveContracts(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	tenant := BuildTestTenant("1")
+	contract1 := BuildTestContract()
+	contract2 := BuildTestContract()
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.TenantID.Equals(tenant.ID),
+			db.Contract.Active.Equals(true),
+		),
+	).ReturnsMany([]db.ContractModel{contract1, contract2})
+
+	assert.Panics(t, func() {
+		database.GetTenantCurrentActiveContract(tenant.ID)
+	})
+}
+
+func TestGetTenantCurrentActiveContract_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	tenant := BuildTestTenant("1")
+
+	mock.Contract.Expect(
+		client.Client.Contract.FindMany(
+			db.Contract.TenantID.Equals(tenant.ID),
+			db.Contract.Active.Equals(true),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetTenantCurrentActiveContract(tenant.ID)
+	})
+}
+
+func TestGetCurrentPendingContract(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	pendingContract := BuildTestPendingContract()
+
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(
+			db.PendingContract.PropertyID.Equals(property.ID),
+		),
+	).Returns(pendingContract)
+
+	foundPending := database.GetCurrentPendingContract(property.ID)
+	assert.NotNil(t, foundPending)
+	assert.Equal(t, pendingContract.ID, foundPending.ID)
+}
+
+func TestGetCurrentPendingContract_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(
+			db.PendingContract.PropertyID.Equals(property.ID),
+		),
+	).Errors(db.ErrNotFound)
+
+	foundPending := database.GetCurrentPendingContract(property.ID)
+	assert.Nil(t, foundPending)
+}
+
+func TestGetCurrentPendingContract_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(
+			db.PendingContract.PropertyID.Equals(property.ID),
+		),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetCurrentPendingContract(property.ID)
+	})
+}
+
+func TestDeleteCurrentPendingContract(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	pendingContract := BuildTestPendingContract()
+
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(
+			db.PendingContract.PropertyID.Equals(property.ID),
+		).Delete(),
+	).Returns(pendingContract)
+
+	assert.NotPanics(t, func() {
+		database.DeleteCurrentPendingContract(property.ID)
+	})
+}
+
+func TestDeleteCurrentPendingContract_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(
+			db.PendingContract.PropertyID.Equals(property.ID),
+		).Delete(),
+	).Errors(db.ErrNotFound)
+
+	assert.Panics(t, func() {
+		database.DeleteCurrentPendingContract(property.ID)
+	})
+}
+
+func TestDeleteCurrentPendingContract_NoConnection(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+
+	mock.PendingContract.Expect(
+		client.Client.PendingContract.FindUnique(
+			db.PendingContract.PropertyID.Equals(property.ID),
+		).Delete(),
+	).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.DeleteCurrentPendingContract(property.ID)
 	})
 }

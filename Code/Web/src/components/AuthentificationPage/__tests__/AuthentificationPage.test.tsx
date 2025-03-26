@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import AuthentificationPage from '@/components/AuthentificationPage/AuthentificationPage'
 
-jest.mock('@/assets/icons/ImmotepLogo.svg', () => 'mockedLogoPath')
+jest.mock('@/assets/icons/KeyzLogo.svg', () => 'mockedLogoPath')
 
 describe('AuthentificationPage', () => {
   const title = 'Login'
@@ -36,7 +36,7 @@ describe('AuthentificationPage', () => {
       </AuthentificationPage>
     )
 
-    const logo = screen.getByAltText('logo Immotep')
+    const logo = screen.getByAltText('logo Keyz')
     expect(logo).toBeInTheDocument()
     expect(logo).toHaveAttribute('src', 'mockedLogoPath')
   })

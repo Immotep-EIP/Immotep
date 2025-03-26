@@ -27,7 +27,25 @@ import (
 //	@Router			/owner/properties/ [get]
 func GetAllProperties(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	allProperties := database.GetAllPropertyByOwnerId(claims["id"])
+	allProperties := database.GetAllPropertyByOwnerId(claims["id"], false)
+	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
+}
+
+// GetAllArchivedProperties godoc
+//
+//	@Summary		Get all archived properties of an owner
+//	@Description	Get all archived properties information of an owner
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{array}		models.PropertyResponse	"List of archived properties"
+//	@Failure		401	{object}	utils.Error				"Unauthorized"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/archived/ [get]
+func GetAllArchivedProperties(c *gin.Context) {
+	claims := utils.GetClaims(c)
+	allProperties := database.GetAllPropertyByOwnerId(claims["id"], true)
 	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
 }
 
@@ -298,21 +316,48 @@ func EndContract(c *gin.Context) {
 	}
 }
 
+// CancelInvite godoc
+//
+//	@Summary		Cancel invite
+//	@Description	Cancel pending contract invite
+//	@Tags			owner
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path	string	true	"Property ID"
+//	@Success		204			"Invite canceled"
+//	@Failure		403			{object}	utils.Error	"Property is not yours"
+//	@Failure		404			{object}	utils.Error	"No pending contract"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/cancel-invite [delete]
+func CancelInvite(c *gin.Context) {
+	database.DeleteCurrentPendingContract(c.Param("property_id"))
+	c.Status(http.StatusNoContent)
+}
+
 // ArchiveProperty godoc
 //
-//	@Summary		Archive property by ID
-//	@Description	Archive a property by its ID
+//	@Summary		Toggle archive property by ID
+//	@Description	Toggle archive status of a property by its ID
 //	@Tags			owner
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
-//	@Success		200			{object}	models.PropertyResponse	"Archived property data"
+//	@Param			archive		body		models.ArchiveRequest	true	"Archive status"
+//	@Success		200			{object}	models.PropertyResponse	"Toggled archive property data"
+//	@Failure		400			{object}	utils.Error				"Mising fields"
 //	@Failure		403			{object}	utils.Error				"Property not yours"
 //	@Failure		404			{object}	utils.Error				"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/ [delete]
+//	@Router			/owner/properties/{property_id}/archive [put]
 func ArchiveProperty(c *gin.Context) {
-	property := database.ArchiveProperty(c.Param("property_id"))
+	var req models.ArchiveRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		return
+	}
+
+	property := database.ToggleArchiveProperty(c.Param("property_id"), req.Archive)
 	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
 }

@@ -70,18 +70,20 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 	{
 		properties.POST("/", controllers.CreateProperty)
 		properties.GET("/", controllers.GetAllProperties)
+		properties.GET("/archived/", controllers.GetAllArchivedProperties)
 
 		propertyId := properties.Group("/:property_id/")
 		{
 			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
 			propertyId.GET("/", controllers.GetPropertyById)
 			propertyId.PUT("/", controllers.UpdateProperty)
-			propertyId.DELETE("/", controllers.ArchiveProperty)
+			propertyId.PUT("/archive/", controllers.ArchiveProperty)
 			propertyId.GET("/inventory/", controllers.GetPropertyInventory)
 			propertyId.GET("/picture/", controllers.GetPropertyPicture)
 			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
 
 			propertyId.POST("/send-invite/", controllers.InviteTenant)
+			propertyId.DELETE("/cancel-invite/", middlewares.CheckPendingContract("property_id"), controllers.CancelInvite)
 
 			contract := propertyId.Group("")
 			{
@@ -94,23 +96,25 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			{
 				rooms.POST("/", controllers.CreateRoom)
 				rooms.GET("/", controllers.GetRoomsByProperty)
+				rooms.GET("/archived/", controllers.GetArchivedRoomsByProperty)
 
 				roomId := rooms.Group("/:room_id")
 				{
 					roomId.Use(middlewares.CheckRoomOwnership("property_id", "room_id"))
 					roomId.GET("/", controllers.GetRoomByID)
-					roomId.DELETE("/", controllers.ArchiveRoom)
+					roomId.PUT("/archive/", controllers.ArchiveRoom)
 
 					furnitures := roomId.Group("/furnitures")
 					{
 						furnitures.POST("/", controllers.CreateFurniture)
 						furnitures.GET("/", controllers.GetFurnituresByRoom)
+						furnitures.GET("/archived/", controllers.GetArchivedFurnituresByRoom)
 
 						furnitureId := furnitures.Group("/:furniture_id")
 						{
 							furnitureId.Use(middlewares.CheckFurnitureOwnership("room_id", "furniture_id"))
 							furnitureId.GET("/", controllers.GetFurnitureByID)
-							furnitureId.DELETE("/", controllers.ArchiveFurniture)
+							furnitureId.PUT("/archive/", controllers.ArchiveFurniture)
 						}
 					}
 				}

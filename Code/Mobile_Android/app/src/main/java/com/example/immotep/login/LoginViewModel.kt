@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +29,10 @@ data class LoginErrorState(
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tokens")
 
-class LoginViewModel(private val navController: NavController) : ViewModel() {
+class LoginViewModel(
+    private val navController: NavController,
+    private val apiService: ApiService
+) : ViewModel() {
     private val _emailAndPassword = MutableStateFlow(LoginState())
     private val _errors = MutableStateFlow(LoginErrorState())
     val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
@@ -61,10 +65,14 @@ class LoginViewModel(private val navController: NavController) : ViewModel() {
         }
         viewModelScope.launch {
             try {
-                AuthService(navController.context.dataStore).onLogin(_emailAndPassword.value.email, _emailAndPassword.value.password)
+                AuthService(
+                    dataStore = navController.context.dataStore,
+                    apiService = apiService
+                ).onLogin(_emailAndPassword.value.email, _emailAndPassword.value.password)
                 navController.navigate("dashboard")
                 return@launch
             } catch (e: Exception) {
+                println("error: ${e.message}")
                 val messageAndCode = e.message?.split(",")
                 if (messageAndCode != null && messageAndCode.size == 2) {
                     val code = messageAndCode[1].toInt()
@@ -76,13 +84,3 @@ class LoginViewModel(private val navController: NavController) : ViewModel() {
     }
 }
 
-class LoginViewModelFactory(private val navController: NavController) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return LoginViewModel(navController) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

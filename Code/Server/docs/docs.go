@@ -281,6 +281,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/archived/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all archived properties information of an owner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get all archived properties of an owner",
+                "responses": {
+                    "200": {
+                        "description": "List of archived properties",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.PropertyResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/": {
             "get": {
                 "security": [
@@ -393,14 +433,16 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/owner/properties/{property_id}/archive": {
+            "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Archive a property by its ID",
+                "description": "Toggle archive status of a property by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -410,7 +452,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Archive property by ID",
+                "summary": "Toggle archive property by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -418,13 +460,28 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Archive status",
+                        "name": "archive",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ArchiveRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Archived property data",
+                        "description": "Toggled archive property data",
                         "schema": {
                             "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Mising fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "403": {
@@ -435,6 +492,55 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/cancel-invite": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Cancel pending contract invite",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Cancel invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Invite canceled"
+                    },
+                    "403": {
+                        "description": "Property is not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No pending contract",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -642,7 +748,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created inventory report data",
                         "schema": {
-                            "$ref": "#/definitions/models.InventoryReportResponse"
+                            "$ref": "#/definitions/models.CreateInventoryReportResponse"
                         }
                     },
                     "400": {
@@ -1179,6 +1285,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/rooms/archived/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all archived rooms for a specific property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get archived rooms by property ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of archived rooms",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.RoomResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/rooms/{room_id}/": {
             "get": {
                 "security": [
@@ -1236,14 +1397,16 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/owner/properties/{property_id}/rooms/{room_id}/archive": {
+            "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Archive a room by its ID",
+                "description": "Toggle archive status of a room by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1253,7 +1416,7 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Archive room by ID",
+                "summary": "Toggle archive room by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -1268,13 +1431,28 @@ const docTemplate = `{
                         "name": "room_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Archive status",
+                        "name": "archive",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ArchiveRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Achieved room data",
+                        "description": "Toggled archive room data",
                         "schema": {
-                            "$ref": "#/definitions/models.RoomResponse"
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Mising fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "403": {
@@ -1429,6 +1607,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/archived/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all archived furnitures for a specific room",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get archived furnitures by room ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "room_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of archived furnitures",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.FurnitureResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/": {
             "get": {
                 "security": [
@@ -1493,14 +1733,16 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/archive": {
+            "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Archive a furniture by its ID",
+                "description": "Toggle archive status of a furniture by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1510,21 +1752,56 @@ const docTemplate = `{
                 "tags": [
                     "owner"
                 ],
-                "summary": "Archive furniture by ID",
+                "summary": "Toggle archive furniture by ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Furniture ID",
-                        "name": "id",
+                        "description": "Property ID",
+                        "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "room_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Furniture ID",
+                        "name": "furniture_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Archive status",
+                        "name": "archive",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ArchiveRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Archived furniture data",
+                        "description": "Toggled archive furniture data",
                         "schema": {
-                            "$ref": "#/definitions/models.FurnitureResponse"
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Mising fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "404": {
@@ -2033,6 +2310,43 @@ const docTemplate = `{
                 "RoleOwner",
                 "RoleTenant"
             ]
+        },
+        "models.ArchiveRequest": {
+            "type": "object",
+            "properties": {
+                "archive": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.CreateInventoryReportResponse": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "pdf_data": {
+                    "type": "string"
+                },
+                "pdf_name": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
         },
         "models.DocumentResponse": {
             "type": "object",
@@ -2739,6 +3053,7 @@ const docTemplate = `{
                 "property-not-available",
                 "tenant-already-has-contract",
                 "no-active-contract",
+                "no-pending-contract",
                 "failed-to-link-image",
                 "bad-base64-string",
                 "property-picture-not-found",
@@ -2780,6 +3095,7 @@ const docTemplate = `{
                 "PropertyNotAvailable",
                 "TenantAlreadyHasContract",
                 "NoActiveContract",
+                "NoPendingContract",
                 "FailedLinkImage",
                 "BadBase64String",
                 "PropertyPictureNotFound",
