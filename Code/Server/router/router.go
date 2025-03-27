@@ -78,30 +78,16 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			propertyId.GET("/", controllers.GetPropertyById)
 			propertyId.PUT("/", controllers.UpdateProperty)
 			propertyId.PUT("/archive/", controllers.ArchiveProperty)
-			propertyId.GET("/inventory/", controllers.GetPropertyInventory)
 			propertyId.GET("/picture/", controllers.GetPropertyPicture)
 			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
 
 			propertyId.POST("/send-invite/", controllers.InviteTenant)
 			propertyId.DELETE("/cancel-invite/", middlewares.CheckLeaseInvite("property_id"), controllers.CancelInvite)
 
-			lease := propertyId.Group("/leases/")
-			{
-				lease.GET("/", controllers.GetLeasesByProperty)
+			leases := propertyId.Group("/leases/")
+			registerLeaseRoutes(leases)
 
-				leaseId := lease.Group("/:lease_id/")
-				{
-					leaseId.Use(middlewares.CheckLeaseOwnership("property_id", "lease_id"))
-					leaseId.GET("/", controllers.GetLeaseByID)
-					leaseId.PUT("/end/", controllers.EndLease)
-					leaseId.GET("/documents/", controllers.GetLeaseDocuments)
-					// TODO:
-					// leaseId.POST("/documents/", controllers.UploadDocument)
-					// leaseId.GET("/document/:doc_id/", controllers.GetDocument)
-					// leaseId.DELETE("/document/:doc_id/", controllers.DeleteDocument)
-				}
-			}
-
+			propertyId.GET("/inventory/", controllers.GetPropertyInventory)
 			rooms := propertyId.Group("/rooms")
 			{
 				rooms.POST("/", controllers.CreateRoom)
@@ -140,6 +126,30 @@ func registerTenantRoutes(tenant *gin.RouterGroup) {
 	tenant.Use(middlewares.AuthorizeTenant())
 
 	tenant.POST("/invite/:id/", controllers.AcceptInvite)
+}
+
+func registerLeaseRoutes(leases *gin.RouterGroup) {
+	leases.GET("/", controllers.GetLeasesByProperty)
+
+	leaseId := leases.Group("/:lease_id/")
+	{
+		leaseId.Use(middlewares.CheckLeaseOwnership("property_id", "lease_id"))
+		leaseId.GET("/", controllers.GetLeaseByID)
+		leaseId.PUT("/end/", controllers.EndLease)
+
+		docs := leaseId.Group("/docs/")
+		{
+			docs.POST("/", controllers.UploadDocument)
+			docs.GET("/", controllers.GetLeaseDocuments)
+
+			docId := docs.Group("/:doc_id/")
+			{
+				docId.Use(middlewares.CheckDocumentOwnership("doc_id"))
+				docId.GET("/", controllers.GetDocumentByID)
+				// document.DELETE("/:doc_id/", controllers.DeleteDocument)
+			}
+		}
+	}
 }
 
 func registerInvReportRoutes(invReports *gin.RouterGroup) {

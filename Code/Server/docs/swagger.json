@@ -11,7 +11,7 @@
         "version": "1.0"
     },
     "host": "localhost:3001",
-    "basePath": "/api/v1",
+    "basePath": "/v1",
     "paths": {
         "/auth/invite/{id}/": {
             "post": {
@@ -1025,7 +1025,7 @@
                 }
             }
         },
-        "/owner/properties/{property_id}/leases/{lease_id}/documents/": {
+        "/owner/properties/{property_id}/leases/{lease_id}/docs/": {
             "get": {
                 "security": [
                     {
@@ -1077,6 +1077,144 @@
                     },
                     "404": {
                         "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Upload a document to a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Upload document",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID or `current`",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Document to upload",
+                        "name": "doc",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DocumentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Document uploaded",
+                        "schema": {
+                            "$ref": "#/definitions/models.DocumentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/docs/{doc_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a document by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Get document by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID or `current`",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Document ID",
+                        "name": "doc_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Document",
+                        "schema": {
+                            "$ref": "#/definitions/models.DocumentResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Document not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -2464,6 +2602,21 @@
                 }
             }
         },
+        "models.DocumentRequest": {
+            "type": "object",
+            "required": [
+                "data",
+                "name"
+            ],
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.DocumentResponse": {
             "type": "object",
             "properties": {
@@ -3204,6 +3357,7 @@
                 "lease-not-found",
                 "cannot-end-non-current-lease",
                 "no-pending-lease",
+                "document-not-found",
                 "failed-to-link-image",
                 "bad-base64-string",
                 "property-picture-not-found",
@@ -3248,6 +3402,7 @@
                 "LeaseNotFound",
                 "CannotEndNonCurrentLease",
                 "NoLeaseInvite",
+                "DocumentNotFound",
                 "FailedLinkImage",
                 "BadBase64String",
                 "PropertyPictureNotFound",

@@ -1,4 +1,4 @@
-basePath: /api/v1
+basePath: /v1
 definitions:
   db.Role:
     enum:
@@ -31,6 +31,16 @@ definitions:
         type: string
       type:
         type: string
+    type: object
+  models.DocumentRequest:
+    properties:
+      data:
+        type: string
+      name:
+        type: string
+    required:
+    - data
+    - name
     type: object
   models.DocumentResponse:
     properties:
@@ -540,6 +550,7 @@ definitions:
     - lease-not-found
     - cannot-end-non-current-lease
     - no-pending-lease
+    - document-not-found
     - failed-to-link-image
     - bad-base64-string
     - property-picture-not-found
@@ -584,6 +595,7 @@ definitions:
     - LeaseNotFound
     - CannotEndNonCurrentLease
     - NoLeaseInvite
+    - DocumentNotFound
     - FailedLinkImage
     - BadBase64String
     - PropertyPictureNotFound
@@ -1237,7 +1249,7 @@ paths:
       summary: Get lease by ID
       tags:
       - owner
-  /owner/properties/{property_id}/leases/{lease_id}/documents/:
+  /owner/properties/{property_id}/leases/{lease_id}/docs/:
     get:
       consumes:
       - application/json
@@ -1275,6 +1287,96 @@ paths:
       security:
       - Bearer: []
       summary: Get property documents
+      tags:
+      - owner
+    post:
+      consumes:
+      - application/json
+      description: Upload a document to a lease
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Document to upload
+        in: body
+        name: doc
+        required: true
+        schema:
+          $ref: '#/definitions/models.DocumentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Document uploaded
+          schema:
+            $ref: '#/definitions/models.DocumentResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Upload document
+      tags:
+      - owner
+  /owner/properties/{property_id}/leases/{lease_id}/docs/{doc_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get a document by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Document ID
+        in: path
+        name: doc_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Document
+          schema:
+            $ref: '#/definitions/models.DocumentResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Document not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get document by ID
       tags:
       - owner
   /owner/properties/{property_id}/leases/{lease_id}/end/:

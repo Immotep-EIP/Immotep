@@ -68,7 +68,7 @@ func TestGetLeasesByProperty(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -107,7 +107,7 @@ func TestGetLeasesByProperty_NotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -135,7 +135,7 @@ func TestGetLeasesByProperty_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -169,7 +169,7 @@ func TestGetLeaseByID(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -207,7 +207,7 @@ func TestGetLeaseByID_NotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -242,7 +242,7 @@ func TestGetLeaseByID_CurrentActive(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/current/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/current/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -281,7 +281,7 @@ func TestGetLeaseByID_CurrentActive_NotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/leases/current/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/current/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -323,7 +323,7 @@ func TestEndLease1(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/leases/current/end/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/leases/current/end/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -366,7 +366,7 @@ func TestEndLease2(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/leases/current/end/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/leases/current/end/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -398,7 +398,7 @@ func TestEndLease_NotCurrent(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/leases/1/end/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/leases/1/end/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -435,7 +435,7 @@ func TestEndLease_NoActiveLease(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/leases/current/end/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/leases/current/end/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -462,7 +462,7 @@ func TestEndLease_PropertyNotFound(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/wrong/leases/current/end/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/wrong/leases/current/end/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

@@ -133,11 +133,10 @@ func createInvReportPDF(invRepId string, lease db.LeaseModel) (*db.DocumentModel
 
 	res := database.CreateDocument(db.DocumentModel{
 		InnerDocument: db.InnerDocument{
-			Name:    "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
-			Data:    docBytes,
-			LeaseID: lease.ID,
+			Name: "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
+			Data: docBytes,
 		},
-	})
+	}, lease.ID)
 	return &res, nil
 }
 

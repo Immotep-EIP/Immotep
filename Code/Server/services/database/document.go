@@ -28,12 +28,12 @@ func GetDocumentByID(id string) *db.DocumentModel {
 	return doc
 }
 
-func CreateDocument(doc db.DocumentModel) db.DocumentModel {
+func CreateDocument(doc db.DocumentModel, leaseId string) db.DocumentModel {
 	pdb := services.DBclient
 	newDocument, err := pdb.Client.Document.CreateOne(
 		db.Document.Name.Set(doc.Name),
 		db.Document.Data.Set(doc.Data),
-		db.Document.Lease.Link(db.Lease.ID.Equals(doc.LeaseID)),
+		db.Document.Lease.Link(db.Lease.ID.Equals(leaseId)),
 	).Exec(pdb.Context)
 	if err != nil || newDocument == nil {
 		panic(err)

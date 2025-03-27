@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
@@ -36,7 +37,6 @@ func CheckLeaseInvite(propertyIdUrlParam string) gin.HandlerFunc {
 func CheckLeaseOwnership(propertyIdUrlParam string, leaseIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		leaseId := c.Param(leaseIdUrlParam)
-
 		if leaseId == "current" {
 			CheckActiveLease(propertyIdUrlParam)(c)
 			return
@@ -49,6 +49,21 @@ func CheckLeaseOwnership(propertyIdUrlParam string, leaseIdUrlParam string) gin.
 		}
 
 		c.Set("lease", *lease)
+		c.Next()
+	}
+}
+
+func CheckDocumentOwnership(docIdUrlParam string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		lease, _ := c.MustGet("lease").(db.LeaseModel)
+
+		doc := database.GetDocumentByID(c.Param(docIdUrlParam))
+		if doc == nil || doc.LeaseID != lease.ID {
+			utils.AbortSendError(c, http.StatusNotFound, utils.DocumentNotFound, nil)
+			return
+		}
+
+		c.Set("document", *doc)
 		c.Next()
 	}
 }

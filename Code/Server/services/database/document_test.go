@@ -129,7 +129,7 @@ func TestCreateDocument(t *testing.T) {
 		),
 	).Returns(document)
 
-	newDocument := database.CreateDocument(document)
+	newDocument := database.CreateDocument(document, document.LeaseID)
 	assert.NotNil(t, newDocument)
 	assert.Equal(t, document.ID, newDocument.ID)
 }
@@ -149,6 +149,6 @@ func TestCreateDocument_NoConnection(t *testing.T) {
 	).Errors(errors.New("connection error"))
 
 	assert.Panics(t, func() {
-		database.CreateDocument(document)
+		database.CreateDocument(document, document.LeaseID)
 	})
 }

@@ -311,7 +311,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 
 // 	r := router.TestRoutes()
 // 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
+// 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
 // 	req.Header.Set("Content-Type", "application/json")
 // 	req.Header.Set("Oauth.claims.id", "1")
 // 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -346,7 +346,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 
 // 	r := router.TestRoutes()
 // 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
+// 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
 // 	req.Header.Set("Content-Type", "application/json")
 // 	req.Header.Set("Oauth.claims.id", "1")
 // 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -401,7 +401,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 
 // 	r := router.TestRoutes()
 // 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
+// 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
 // 	req.Header.Set("Content-Type", "application/json")
 // 	req.Header.Set("Oauth.claims.id", "1")
 // 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -434,7 +434,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 
 // 	r := router.TestRoutes()
 // 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
+// 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
 // 	req.Header.Set("Content-Type", "application/json")
 // 	req.Header.Set("Oauth.claims.id", "1")
 // 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -483,7 +483,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 
 // 	r := router.TestRoutes()
 // 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
+// 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
 // 	req.Header.Set("Content-Type", "application/json")
 // 	req.Header.Set("Oauth.claims.id", "1")
 // 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -566,7 +566,7 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 
 // 	r := router.TestRoutes()
 // 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
+// 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/inventory-reports/", bytes.NewReader(b))
 // 	req.Header.Set("Content-Type", "application/json")
 // 	req.Header.Set("Oauth.claims.id", "1")
 // 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
