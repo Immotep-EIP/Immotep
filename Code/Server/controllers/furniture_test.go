@@ -70,7 +70,7 @@ func TestCreateFurniture(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/rooms/1/furnitures/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/rooms/1/furnitures/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -112,7 +112,7 @@ func TestCreateFurniture_MissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/rooms/1/furnitures/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/rooms/1/furnitures/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -170,7 +170,7 @@ func TestCreateFurniture_AlreadyExists(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/rooms/1/furnitures/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/rooms/1/furnitures/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -220,7 +220,7 @@ func TestGetFurnituresByRoom(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -256,7 +256,7 @@ func TestGetFurnituresByRoom_RoomNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -292,7 +292,7 @@ func TestGetFurnituresByRoom_WrongProperty(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -320,7 +320,7 @@ func TestGetFurnituresByRoom_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -365,7 +365,7 @@ func TestGetFurnitureById(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -409,7 +409,7 @@ func TestGetFurnitureById_NotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -454,7 +454,7 @@ func TestGetFurnitureById_WrongRoom(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -489,7 +489,7 @@ func TestGetFurnitureById_RoomNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -525,7 +525,7 @@ func TestGetFurnitureById_WrongProperty(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -553,7 +553,7 @@ func TestGetFurnitureById_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -613,7 +613,7 @@ func TestArchiveFurniture(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/rooms/1/furnitures/1/archive/", bytes.NewReader(b))
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -659,7 +659,7 @@ func TestArchiveFurniture_MissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -703,7 +703,7 @@ func TestArchiveFurniture_NotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -748,7 +748,7 @@ func TestArchiveFurniture_WrongRoom(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -776,7 +776,7 @@ func TestArchiveFurniture_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/rooms/1/furnitures/1/archive/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -828,7 +828,7 @@ func TestGetArchivedFurnituresByRoom(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -865,7 +865,7 @@ func TestGetArchivedFurnituresByRoom_RoomNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -901,7 +901,7 @@ func TestGetArchivedFurnituresByRoom_WrongProperty(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -929,7 +929,7 @@ func TestGetArchivedFurnituresByRoom_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
