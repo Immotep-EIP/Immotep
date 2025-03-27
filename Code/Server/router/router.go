@@ -27,7 +27,7 @@ func registerAPIRoutes(r *gin.Engine, test bool) {
 		&TestUserVerifier{},
 		nil)
 
-	v1 := r.Group("/api/v1")
+	v1 := r.Group("/v1")
 	{
 		auth := v1.Group("/auth")
 		{
@@ -188,7 +188,7 @@ func Routes() *gin.Engine {
 		MaxAge:           300,
 	}))
 	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	r.Use(gin.CustomRecovery(middlewares.PanicRecovery))
 	r.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), rate)))
 
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })

@@ -613,7 +613,7 @@ func TestGetInventoryReportsByProperty(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/inventory-reports/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory-reports/", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -643,7 +643,7 @@ func TestGetInventoryReportsByProperty_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/inventory-reports/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory-reports/", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -684,7 +684,7 @@ func TestGetInventoryReportByID(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/inventory-reports/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory-reports/1/", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -727,7 +727,7 @@ func TestGetInventoryReportByID_Latest(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/inventory-reports/latest/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory-reports/latest/", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -767,7 +767,7 @@ func TestGetInventoryReportByID_NotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/inventory-reports/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory-reports/1/", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
