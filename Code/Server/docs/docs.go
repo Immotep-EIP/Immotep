@@ -3128,7 +3128,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:3001",
-	BasePath:         "/api/v1",
+	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Immotep API",
 	Description:      "This is the API used by the Immotep application.",
