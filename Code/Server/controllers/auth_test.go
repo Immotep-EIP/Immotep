@@ -42,7 +42,7 @@ func TestRegisterOwnerMissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/register/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/auth/register/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
@@ -61,7 +61,7 @@ func TestRegisterOwnerWrongPassword(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/register/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/auth/register/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
@@ -80,7 +80,7 @@ func TestRegisterTenantMissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/auth/invite/1/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
@@ -99,7 +99,7 @@ func TestRegisterTenantWrongPassword(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/auth/invite/1/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
@@ -124,7 +124,7 @@ func TestRegisterTenantInviteNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/wrong/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/auth/invite/wrong/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
@@ -152,7 +152,7 @@ func TestRegisterTenantWrongEmail(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/auth/invite/1/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
@@ -187,7 +187,7 @@ func TestRegisterTenantPropertyNotAvailable(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/invite/1/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/auth/invite/1/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
@@ -245,7 +245,7 @@ func TestAcceptInvite(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/tenant/invite/1/", nil)
+	req, _ := http.NewRequest(http.MethodPost, "/v1/tenant/invite/1/", nil)
 	req.Header.Set("Oauth.claims.id", user.ID)
 	req.Header.Set("Oauth.claims.role", string(user.Role))
 	r.ServeHTTP(w, req)
@@ -264,7 +264,7 @@ func TestAcceptInviteNotATenant(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/tenant/invite/1/", nil)
+	req, _ := http.NewRequest(http.MethodPost, "/v1/tenant/invite/1/", nil)
 	req.Header.Set("Oauth.claims.id", user.ID)
 	req.Header.Set("Oauth.claims.role", string(db.RoleTenant))
 	r.ServeHTTP(w, req)
@@ -292,7 +292,7 @@ func TestAcceptInviteInviteNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/tenant/invite/wrong/", nil)
+	req, _ := http.NewRequest(http.MethodPost, "/v1/tenant/invite/wrong/", nil)
 	req.Header.Set("Oauth.claims.id", user.ID)
 	req.Header.Set("Oauth.claims.role", string(user.Role))
 	r.ServeHTTP(w, req)
@@ -323,7 +323,7 @@ func TestAcceptInviteWrongEmail(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/tenant/invite/1/", nil)
+	req, _ := http.NewRequest(http.MethodPost, "/v1/tenant/invite/1/", nil)
 	req.Header.Set("Oauth.claims.id", user.ID)
 	req.Header.Set("Oauth.claims.role", string(user.Role))
 	r.ServeHTTP(w, req)
@@ -361,7 +361,7 @@ func TestAcceptInvitePropertyNotAvailable(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/tenant/invite/1/", nil)
+	req, _ := http.NewRequest(http.MethodPost, "/v1/tenant/invite/1/", nil)
 	req.Header.Set("Oauth.claims.id", user.ID)
 	req.Header.Set("Oauth.claims.role", string(user.Role))
 	r.ServeHTTP(w, req)
@@ -406,7 +406,7 @@ func TestAcceptInviteTenantAlreadyHasContract(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/tenant/invite/1/", nil)
+	req, _ := http.NewRequest(http.MethodPost, "/v1/tenant/invite/1/", nil)
 	req.Header.Set("Oauth.claims.id", user.ID)
 	req.Header.Set("Oauth.claims.role", string(user.Role))
 	r.ServeHTTP(w, req)

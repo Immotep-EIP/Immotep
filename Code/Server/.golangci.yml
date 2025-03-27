@@ -108,10 +108,10 @@ linters:
       severity: error
       enable-all-rules: true
       rules:
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#add-constant
+        # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#add-constant
         - name: add-constant
           disabled: true
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#get-return
+        # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#get-return
         - name: get-return
           disabled: true
         - name: function-length
@@ -119,31 +119,36 @@ linters:
             - '**/*_test.go'
         - name: flag-parameter
           disabled: true
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#import-alias-naming
+        # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#import-alias-naming
         - name: import-alias-naming
           disabled: true
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#line-length-limit
+        # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#line-length-limit
         - name: line-length-limit
           arguments:
             - 120
           disabled: true
           exclude:
             - ""
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
+        # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
         - name: max-public-structs
           disabled: true
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unused-parameter
+        - name: unchecked-type-assertion
+          arguments:
+            - acceptIgnoredAssertionResult: true
+        # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unused-parameter
         - name: unused-parameter
           arguments:
             - allowRegex: ^_
           exclude:
             - ""
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#var-naming
+        # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#var-naming
         - name: var-naming
           disabled: true
     tagliatelle:
       case:
         rules:
+          # Any struct tag type can be used.
+          # Support string case: `camel`, `pascal`, `kebab`, `snake`, `upperSnake`, `goCamel`, `goPascal`, `goKebab`, `goSnake`, `upper`, `lower`, `header`
           json: snake
         use-field-name: true
         ignored-fields:

@@ -42,7 +42,7 @@ func TestGetAllUsers(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/users/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -64,7 +64,7 @@ func TestGetUserByID(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/"+user.ID+"/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/"+user.ID+"/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -85,7 +85,7 @@ func TestGetUserByID_NotFound(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/nonexistent/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/nonexistent/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -107,7 +107,7 @@ func TestGetProfile(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -130,7 +130,7 @@ func TestGetProfile_UserNotFound(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/", nil)
 	req.Header.Set("Oauth.claims.id", "nonexistent")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -160,7 +160,7 @@ func TestGetUserProfilePicture(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/"+user.ID+"/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/"+user.ID+"/picture/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -183,7 +183,7 @@ func TestGetUserProfilePicture_NoContent(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/"+user.ID+"/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/"+user.ID+"/picture/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNoContent, w.Code)
@@ -200,7 +200,7 @@ func TestGetUserProfilePicture_UserNotFound(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/nonexistent/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/nonexistent/picture/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -228,7 +228,7 @@ func TestGetUserProfilePicture_ImageNotFound(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/"+user.ID+"/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/"+user.ID+"/picture/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -265,7 +265,7 @@ func TestUpdateCurrentUserProfile(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -295,7 +295,7 @@ func TestUpdateCurrentUserProfile_UserNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "nonexistent")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -325,7 +325,7 @@ func TestUpdateCurrentUserProfile_MissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -370,7 +370,7 @@ func TestUpdateCurrentUserProfile_EmailAlreadyExists(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -415,7 +415,7 @@ func TestUpdateCurrentUserProfilePicture(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -445,7 +445,7 @@ func TestUpdateCurrentUserProfilePicture_UserNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "nonexistent")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -473,7 +473,7 @@ func TestUpdateCurrentUserProfilePicture_MissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -503,7 +503,7 @@ func TestUpdateCurrentUserProfilePicture_BadBase64String(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -534,7 +534,7 @@ func TestGetCurrentUserProfilePicture(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -558,7 +558,7 @@ func TestGetCurrentUserProfilePicture_NoContent(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -576,7 +576,7 @@ func TestGetCurrentUserProfilePicture_UserNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "nonexistent")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -605,7 +605,7 @@ func TestGetCurrentUserProfilePicture_ImageNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

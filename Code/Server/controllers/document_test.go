@@ -59,7 +59,7 @@ func TestGetPropertyDocuments(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/documents/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/documents/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -87,7 +87,7 @@ func TestGetPropertyDocuments_NotYours(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/documents/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/documents/", nil)
 	req.Header.Set("Oauth.claims.id", "2")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -122,7 +122,7 @@ func TestGetPropertyDocuments_NoActiveContract(t *testing.T) {
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/documents/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/documents/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
