@@ -35,3 +35,29 @@ func TestDocumentResponse(t *testing.T) {
 		assert.Equal(t, document.CreatedAt, documentResponse.CreatedAt)
 	})
 }
+
+func TestDocumentRequest_ToDbDocument(t *testing.T) {
+	t.Run("ValidBase64Data", func(t *testing.T) {
+		documentRequest := models.DocumentRequest{
+			Name: "Test Document",
+			Data: "dGVzdCBkYXRh", // base64 for "test data"
+		}
+
+		dbDocument := documentRequest.ToDbDocument()
+
+		assert.NotNil(t, dbDocument)
+		assert.Equal(t, documentRequest.Name, dbDocument.Name)
+		assert.Equal(t, []byte("test data"), dbDocument.Data)
+	})
+
+	t.Run("InvalidBase64Data", func(t *testing.T) {
+		documentRequest := models.DocumentRequest{
+			Name: "Invalid Document",
+			Data: "invalid_base64_data",
+		}
+
+		dbDocument := documentRequest.ToDbDocument()
+
+		assert.Nil(t, dbDocument)
+	})
+}

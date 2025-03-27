@@ -264,3 +264,98 @@ func TestCheckLeaseOwnership_PropertyMismatch(t *testing.T) {
 	middlewares.CheckLeaseOwnership("propertyId", "leaseId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
+
+func TestCheckDocumentOwnership(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID: "1",
+		},
+	}
+	doc := db.DocumentModel{
+		InnerDocument: db.InnerDocument{
+			ID:      "doc1",
+			LeaseID: "1",
+		},
+	}
+
+	mock.Document.Expect(
+		client.Client.Document.FindUnique(
+			db.Document.ID.Equals("doc1"),
+		),
+	).Returns(doc)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("lease", lease)
+	c.Params = gin.Params{gin.Param{Key: "docId", Value: "doc1"}}
+
+	middlewares.CheckDocumentOwnership("docId")(c)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestCheckDocumentOwnership_DocumentNotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:         "1",
+			PropertyID: "1",
+		},
+	}
+
+	mock.Document.Expect(
+		client.Client.Document.FindUnique(
+			db.Document.ID.Equals("doc1"),
+		),
+	).Errors(db.ErrNotFound)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("lease", lease)
+	c.Params = gin.Params{gin.Param{Key: "docId", Value: "doc1"}}
+
+	middlewares.CheckDocumentOwnership("docId")(c)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCheckDocumentOwnership_LeaseMismatch(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:         "1",
+			PropertyID: "1",
+		},
+	}
+	doc := db.DocumentModel{
+		InnerDocument: db.InnerDocument{
+			ID:      "doc1",
+			LeaseID: "2",
+		},
+	}
+
+	mock.Document.Expect(
+		client.Client.Document.FindUnique(
+			db.Document.ID.Equals("doc1"),
+		),
+	).Returns(doc)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("lease", lease)
+	c.Params = gin.Params{gin.Param{Key: "docId", Value: "doc1"}}
+
+	middlewares.CheckDocumentOwnership("docId")(c)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
