@@ -50,9 +50,16 @@ fun RoomsScreen(
     navController: NavController,
     propertyId: String
 ) {
-    val viewModel: RoomsViewModel = viewModel(
-        factory = RoomsViewModelFactory(getRooms, addRoom, removeRoom, editRoom, closeInventory, confirmInventory)
-    )
+    val viewModel: RoomsViewModel = viewModel {
+        RoomsViewModel(
+            getRooms = getRooms,
+            addRoom = addRoom,
+            removeRoom = removeRoom,
+            editRoom = editRoom,
+            closeInventory = closeInventory,
+            confirmInventory = confirmInventory
+        )
+    }
 
     val currentlyOpenRoom = viewModel.currentlyOpenRoom.collectAsState()
     var exitPopUpOpen by rememberSaveable { mutableStateOf(false) }

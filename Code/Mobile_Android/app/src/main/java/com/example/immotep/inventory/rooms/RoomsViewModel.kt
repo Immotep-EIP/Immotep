@@ -65,21 +65,3 @@ class RoomsViewModel(
         _currentlyOpenRoom.value = null
     }
 }
-
-class RoomsViewModelFactory(
-    private val getRooms: () -> Array<Room>,
-    private val addRoom: suspend (String) -> String?,
-    private val removeRoom: (String) -> Unit,
-    private val editRoom: (Room) -> Unit,
-    private val closeInventory: () -> Unit,
-    private val confirmInventory: () -> Boolean
-    ) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RoomsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return RoomsViewModel(getRooms, addRoom, removeRoom, closeInventory, editRoom, confirmInventory) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

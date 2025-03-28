@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
+import com.example.immotep.utils.RegexUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,10 +32,11 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "to
 
 class LoginViewModel(
     private val navController: NavController,
-    private val apiService: ApiService
+    apiService: ApiService
 ) : ViewModel() {
     private val _emailAndPassword = MutableStateFlow(LoginState())
     private val _errors = MutableStateFlow(LoginErrorState())
+    private val authService = AuthService(navController.context.dataStore, apiService)
     val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
     val errors: StateFlow<LoginErrorState> = _errors.asStateFlow()
 
@@ -49,10 +51,7 @@ class LoginViewModel(
     fun login() {
         var noError = true
         _errors.value = _errors.value.copy(email = false, password = false, apiError = null)
-        if (!android.util.Patterns.EMAIL_ADDRESS
-            .matcher(_emailAndPassword.value.email)
-            .matches()
-        ) {
+        if (!RegexUtils.isValidEmail(_emailAndPassword.value.email)) {
             _errors.value = _errors.value.copy(email = true)
             noError = false
         }
@@ -65,10 +64,7 @@ class LoginViewModel(
         }
         viewModelScope.launch {
             try {
-                AuthService(
-                    dataStore = navController.context.dataStore,
-                    apiService = apiService
-                ).onLogin(_emailAndPassword.value.email, _emailAndPassword.value.password)
+                authService.onLogin(username = _emailAndPassword.value.email, password = _emailAndPassword.value.password)
                 navController.navigate("dashboard")
                 return@launch
             } catch (e: Exception) {
