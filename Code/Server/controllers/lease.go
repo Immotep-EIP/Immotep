@@ -11,11 +11,11 @@ import (
 	"immotep/backend/utils"
 )
 
-// GetLeasesByProperty godoc
+// GetAllLeasesByProperty godoc
 //
 //	@Summary		Get leases by property
 //	@Description	Get all leases (active and inactive) for a property
-//	@Tags			owner
+//	@Tags			lease
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
@@ -24,16 +24,35 @@ import (
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/leases/ [get]
-func GetLeasesByProperty(c *gin.Context) {
+func GetAllLeasesByProperty(c *gin.Context) {
 	leases := database.GetLeasesByProperty(c.Param("property_id"))
 	c.JSON(http.StatusOK, utils.Map(leases, models.DbLeaseToResponse))
 }
 
-// GetLeaseByID godoc
+// GetAllLeasesByTenant godoc
+//
+//	@Summary		Get leases by tenant
+//	@Description	Get all leases (active and inactive) for a tenant
+//	@Tags			lease
+//	@Accept			json
+//	@Produce		json
+//	@Param			tenant_id	path		string					true	"Tenant ID"
+//	@Success		200			{array}		models.LeaseResponse	"List of leases"
+//	@Failure		404			{object}	utils.Error				"No leases found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/tenant/leases/ [get]
+func GetAllLeasesByTenant(c *gin.Context) {
+	claims := utils.GetClaims(c)
+	leases := database.GetLeasesByTenant(claims["id"])
+	c.JSON(http.StatusOK, utils.Map(leases, models.DbLeaseToResponse))
+}
+
+// GetLease godoc
 //
 //	@Summary		Get lease by ID
 //	@Description	Get lease by ID or current active lease
-//	@Tags			owner
+//	@Tags			lease
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
@@ -43,7 +62,8 @@ func GetLeasesByProperty(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/leases/{lease_id}/ [get]
-func GetLeaseByID(c *gin.Context) {
+//	@Router			/tenant/leases/{lease_id}/ [get]
+func GetLease(c *gin.Context) {
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
 	c.JSON(http.StatusOK, models.DbLeaseToResponse(lease))
 }
@@ -52,7 +72,7 @@ func GetLeaseByID(c *gin.Context) {
 //
 //	@Summary		End lease
 //	@Description	End active lease for a property
-//	@Tags			owner
+//	@Tags			lease
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path	string	true	"Property ID"

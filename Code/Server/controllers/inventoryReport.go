@@ -144,7 +144,7 @@ func createInvReportPDF(invRepId string, lease db.LeaseModel) (*db.DocumentModel
 //
 //	@Summary		Create a new inventory report
 //	@Description	Create a new inventory report for a room
-//	@Tags			owner
+//	@Tags			inventory-report
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string									true	"Property ID"
@@ -165,7 +165,7 @@ func CreateInventoryReport(c *gin.Context) {
 
 	propertyId := c.Param("property_id")
 
-	lease := database.GetCurrentActiveLeaseWithInfos(propertyId)
+	lease := database.GetCurrentActiveLeaseByProperty(propertyId)
 	if lease == nil {
 		utils.SendError(c, http.StatusNotFound, utils.NoActiveLease, nil)
 		return
@@ -187,11 +187,11 @@ func CreateInventoryReport(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbInventoryReportToCreateResponse(*invrep, irPdf, errorsList))
 }
 
-// GetInventoryReportsByProperty godoc
+// GetAllInventoryReportsByProperty godoc
 //
 //	@Summary		Get all inventory reports for a property
 //	@Description	Get all inventory reports for a property
-//	@Tags			owner
+//	@Tags			inventory-report
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string							true	"Property ID"
@@ -201,16 +201,16 @@ func CreateInventoryReport(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/ [get]
-func GetInventoryReportsByProperty(c *gin.Context) {
+func GetAllInventoryReportsByProperty(c *gin.Context) {
 	reports := database.GetInvReportByPropertyID(c.Param("property_id"))
 	c.JSON(http.StatusOK, utils.Map(reports, models.DbInventoryReportToResponse))
 }
 
-// GetInventoryReportByID godoc
+// GetInventoryReport godoc
 //
 //	@Summary		Get inventory report by ID
 //	@Description	Get inventory report information by its ID or get the latest one
-//	@Tags			owner
+//	@Tags			inventory-report
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string							true	"Property ID"
@@ -221,7 +221,7 @@ func GetInventoryReportsByProperty(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/{report_id}/ [get]
-func GetInventoryReportByID(c *gin.Context) {
+func GetInventoryReport(c *gin.Context) {
 	var report *db.InventoryReportModel
 	if c.Param("report_id") == "latest" {
 		report = database.GetLatestInvReport(c.Param("property_id"))

@@ -213,7 +213,15 @@ definitions:
         type: string
       id:
         type: string
+      owner_email:
+        type: string
+      owner_id:
+        type: string
+      owner_name:
+        type: string
       property_id:
+        type: string
+      property_name:
         type: string
       start_date:
         type: string
@@ -759,7 +767,7 @@ paths:
       - Bearer: []
       summary: Get all properties of an owner
       tags:
-      - owner
+      - property
     post:
       consumes:
       - application/json
@@ -792,7 +800,7 @@ paths:
       - Bearer: []
       summary: Create a new property
       tags:
-      - owner
+      - property
   /owner/properties/{property_id}/:
     get:
       consumes:
@@ -829,7 +837,7 @@ paths:
       - Bearer: []
       summary: Get property by ID
       tags:
-      - owner
+      - property
     put:
       consumes:
       - application/json
@@ -865,7 +873,7 @@ paths:
       - Bearer: []
       summary: Update property by ID
       tags:
-      - owner
+      - property
   /owner/properties/{property_id}/archive:
     put:
       consumes:
@@ -908,7 +916,7 @@ paths:
       - Bearer: []
       summary: Toggle archive property by ID
       tags:
-      - owner
+      - property
   /owner/properties/{property_id}/cancel-invite:
     delete:
       consumes:
@@ -939,7 +947,7 @@ paths:
       - Bearer: []
       summary: Cancel invite
       tags:
-      - owner
+      - property
   /owner/properties/{property_id}/inventory-reports/:
     get:
       consumes:
@@ -974,7 +982,7 @@ paths:
       - Bearer: []
       summary: Get all inventory reports for a property
       tags:
-      - owner
+      - inventory-report
     post:
       consumes:
       - application/json
@@ -1016,7 +1024,7 @@ paths:
       - Bearer: []
       summary: Create a new inventory report
       tags:
-      - owner
+      - inventory-report
   /owner/properties/{property_id}/inventory-reports/{report_id}/:
     get:
       consumes:
@@ -1054,7 +1062,7 @@ paths:
       - Bearer: []
       summary: Get inventory report by ID
       tags:
-      - owner
+      - inventory-report
   /owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/:
     post:
       consumes:
@@ -1183,7 +1191,8 @@ paths:
       - Bearer: []
       summary: Get property inventory by ID
       tags:
-      - owner
+      - property
+      - inventory
   /owner/properties/{property_id}/leases/:
     get:
       consumes:
@@ -1214,7 +1223,7 @@ paths:
       - Bearer: []
       summary: Get leases by property
       tags:
-      - owner
+      - lease
   /owner/properties/{property_id}/leases/{lease_id}/:
     get:
       consumes:
@@ -1248,7 +1257,7 @@ paths:
       - Bearer: []
       summary: Get lease by ID
       tags:
-      - owner
+      - lease
   /owner/properties/{property_id}/leases/{lease_id}/docs/:
     get:
       consumes:
@@ -1288,7 +1297,7 @@ paths:
       - Bearer: []
       summary: Get property documents
       tags:
-      - owner
+      - document
     post:
       consumes:
       - application/json
@@ -1335,7 +1344,7 @@ paths:
       - Bearer: []
       summary: Upload document
       tags:
-      - owner
+      - document
   /owner/properties/{property_id}/leases/{lease_id}/docs/{doc_id}/:
     get:
       consumes:
@@ -1378,7 +1387,7 @@ paths:
       - Bearer: []
       summary: Get document by ID
       tags:
-      - owner
+      - document
   /owner/properties/{property_id}/leases/{lease_id}/end/:
     put:
       consumes:
@@ -1418,7 +1427,7 @@ paths:
       - Bearer: []
       summary: End lease
       tags:
-      - owner
+      - lease
   /owner/properties/{property_id}/picture/:
     get:
       consumes:
@@ -1457,7 +1466,7 @@ paths:
       - Bearer: []
       summary: Get property's picture
       tags:
-      - owner
+      - property
     put:
       consumes:
       - application/json
@@ -1503,7 +1512,7 @@ paths:
       - Bearer: []
       summary: Update property's picture
       tags:
-      - owner
+      - property
   /owner/properties/{property_id}/rooms/:
     get:
       consumes:
@@ -1538,7 +1547,7 @@ paths:
       - Bearer: []
       summary: Get rooms by property ID
       tags:
-      - owner
+      - inventory
     post:
       consumes:
       - application/json
@@ -1580,7 +1589,7 @@ paths:
       - Bearer: []
       summary: Create a new room
       tags:
-      - owner
+      - inventory
   /owner/properties/{property_id}/rooms/{room_id}/:
     get:
       consumes:
@@ -1618,7 +1627,7 @@ paths:
       - Bearer: []
       summary: Get room by ID
       tags:
-      - owner
+      - inventory
   /owner/properties/{property_id}/rooms/{room_id}/archive:
     put:
       consumes:
@@ -1666,7 +1675,7 @@ paths:
       - Bearer: []
       summary: Toggle archive room by ID
       tags:
-      - owner
+      - inventory
   /owner/properties/{property_id}/rooms/{room_id}/furnitures/:
     get:
       consumes:
@@ -1706,7 +1715,7 @@ paths:
       - Bearer: []
       summary: Get furnitures by room ID
       tags:
-      - owner
+      - inventory
     post:
       consumes:
       - application/json
@@ -1753,7 +1762,7 @@ paths:
       - Bearer: []
       summary: Create a new furniture
       tags:
-      - owner
+      - inventory
   /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/:
     get:
       consumes:
@@ -1796,7 +1805,7 @@ paths:
       - Bearer: []
       summary: Get furniture by ID
       tags:
-      - owner
+      - inventory
   /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/archive:
     put:
       consumes:
@@ -1849,7 +1858,7 @@ paths:
       - Bearer: []
       summary: Toggle archive furniture by ID
       tags:
-      - owner
+      - inventory
   /owner/properties/{property_id}/rooms/{room_id}/furnitures/archived/:
     get:
       consumes:
@@ -1889,7 +1898,7 @@ paths:
       - Bearer: []
       summary: Get archived furnitures by room ID
       tags:
-      - owner
+      - inventory
   /owner/properties/{property_id}/rooms/archived/:
     get:
       consumes:
@@ -1924,7 +1933,7 @@ paths:
       - Bearer: []
       summary: Get archived rooms by property ID
       tags:
-      - owner
+      - inventory
   /owner/properties/{property_id}/send-invite:
     post:
       consumes:
@@ -1971,7 +1980,7 @@ paths:
       - Bearer: []
       summary: Invite tenant to owner's property
       tags:
-      - owner
+      - property
   /owner/properties/archived/:
     get:
       consumes:
@@ -1996,7 +2005,7 @@ paths:
       - Bearer: []
       summary: Get all archived properties of an owner
       tags:
-      - owner
+      - property
   /profile/:
     get:
       consumes:
@@ -2172,6 +2181,296 @@ paths:
       summary: Accept an invite
       tags:
       - auth
+  /tenant/leases/:
+    get:
+      consumes:
+      - application/json
+      description: Get all leases (active and inactive) for a tenant
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of leases
+          schema:
+            items:
+              $ref: '#/definitions/models.LeaseResponse'
+            type: array
+        "404":
+          description: No leases found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get leases by tenant
+      tags:
+      - lease
+  /tenant/leases/{lease_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get lease by ID or current active lease
+      parameters:
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lease
+          schema:
+            $ref: '#/definitions/models.LeaseResponse'
+        "404":
+          description: Lease not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get lease by ID
+      tags:
+      - lease
+  /tenant/leases/{lease_id}/docs/:
+    get:
+      consumes:
+      - application/json
+      description: Get all documents of a lease related to a property
+      parameters:
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of documents
+          schema:
+            items:
+              $ref: '#/definitions/models.DocumentResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property documents
+      tags:
+      - document
+    post:
+      consumes:
+      - application/json
+      description: Upload a document to a lease
+      parameters:
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Document to upload
+        in: body
+        name: doc
+        required: true
+        schema:
+          $ref: '#/definitions/models.DocumentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Document uploaded
+          schema:
+            $ref: '#/definitions/models.DocumentResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Upload document
+      tags:
+      - document
+  /tenant/leases/{lease_id}/docs/{doc_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get a document by its ID
+      parameters:
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Document ID
+        in: path
+        name: doc_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Document
+          schema:
+            $ref: '#/definitions/models.DocumentResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Document not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get document by ID
+      tags:
+      - document
+  /tenant/leases/{lease_id}/property/:
+    get:
+      consumes:
+      - application/json
+      description: Get property information by its ID
+      parameters:
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property data
+          schema:
+            $ref: '#/definitions/models.PropertyResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property by ID
+      tags:
+      - property
+  /tenant/leases/{lease_id}/property/inventory/:
+    get:
+      consumes:
+      - application/json
+      description: Get property information by its ID with inventory including rooms
+        and furnitures
+      parameters:
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property inventory data
+          schema:
+            $ref: '#/definitions/models.PropertyInventoryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property inventory by ID
+      tags:
+      - property
+      - inventory
+  /tenant/leases/{lease_id}/property/picture/:
+    get:
+      consumes:
+      - application/json
+      description: Get property's picture
+      parameters:
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Image data
+          schema:
+            $ref: '#/definitions/models.ImageResponse'
+        "204":
+          description: No picture associated
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property's picture
+      tags:
+      - property
   /users/:
     get:
       description: Get all users information

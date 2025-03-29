@@ -31,6 +31,7 @@ func TestCheckActiveLease(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{lease})
 
@@ -38,7 +39,7 @@ func TestCheckActiveLease(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckActiveLease("propertyId")(c)
+	middlewares.CheckActiveLeaseByProperty("propertyId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -54,6 +55,7 @@ func TestCheckActiveLease_NotFound(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{})
 
@@ -61,7 +63,7 @@ func TestCheckActiveLease_NotFound(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckActiveLease("propertyId")(c)
+	middlewares.CheckActiveLeaseByProperty("propertyId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -91,6 +93,7 @@ func TestCheckActiveLease_MultipleActiveLeases(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
@@ -99,7 +102,7 @@ func TestCheckActiveLease_MultipleActiveLeases(t *testing.T) {
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
 	assert.Panics(t, func() {
-		middlewares.CheckActiveLease("propertyId")(c)
+		middlewares.CheckActiveLeaseByProperty("propertyId")(c)
 	})
 }
 
@@ -164,6 +167,7 @@ func TestCheckLeaseOwnership_CurrentLease(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{lease})
 
@@ -174,7 +178,7 @@ func TestCheckLeaseOwnership_CurrentLease(t *testing.T) {
 		gin.Param{Key: "leaseId", Value: "current"},
 	}
 
-	middlewares.CheckLeaseOwnership("propertyId", "leaseId")(c)
+	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -195,6 +199,7 @@ func TestCheckLeaseOwnership_LeaseByID(t *testing.T) {
 			db.Lease.ID.Equals("1"),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Returns(lease)
 
@@ -205,7 +210,7 @@ func TestCheckLeaseOwnership_LeaseByID(t *testing.T) {
 		gin.Param{Key: "leaseId", Value: "1"},
 	}
 
-	middlewares.CheckLeaseOwnership("propertyId", "leaseId")(c)
+	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -220,6 +225,7 @@ func TestCheckLeaseOwnership_LeaseNotFound(t *testing.T) {
 			db.Lease.ID.Equals("1"),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -230,7 +236,7 @@ func TestCheckLeaseOwnership_LeaseNotFound(t *testing.T) {
 		gin.Param{Key: "leaseId", Value: "1"},
 	}
 
-	middlewares.CheckLeaseOwnership("propertyId", "leaseId")(c)
+	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -251,6 +257,7 @@ func TestCheckLeaseOwnership_PropertyMismatch(t *testing.T) {
 			db.Lease.ID.Equals("1"),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Returns(lease)
 
@@ -261,7 +268,7 @@ func TestCheckLeaseOwnership_PropertyMismatch(t *testing.T) {
 		gin.Param{Key: "leaseId", Value: "1"},
 	}
 
-	middlewares.CheckLeaseOwnership("propertyId", "leaseId")(c)
+	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -294,7 +301,7 @@ func TestCheckDocumentOwnership(t *testing.T) {
 	c.Set("lease", lease)
 	c.Params = gin.Params{gin.Param{Key: "docId", Value: "doc1"}}
 
-	middlewares.CheckDocumentOwnership("docId")(c)
+	middlewares.CheckDocumentLeaseOwnership("docId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -322,7 +329,7 @@ func TestCheckDocumentOwnership_DocumentNotFound(t *testing.T) {
 	c.Set("lease", lease)
 	c.Params = gin.Params{gin.Param{Key: "docId", Value: "doc1"}}
 
-	middlewares.CheckDocumentOwnership("docId")(c)
+	middlewares.CheckDocumentLeaseOwnership("docId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -356,6 +363,6 @@ func TestCheckDocumentOwnership_LeaseMismatch(t *testing.T) {
 	c.Set("lease", lease)
 	c.Params = gin.Params{gin.Param{Key: "docId", Value: "doc1"}}
 
-	middlewares.CheckDocumentOwnership("docId")(c)
+	middlewares.CheckDocumentLeaseOwnership("docId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }

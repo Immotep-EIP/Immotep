@@ -13,7 +13,7 @@ import (
 //
 //	@Summary		Create a new furniture
 //	@Description	Create a new furniture for a room
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string						true	"Property ID"
@@ -41,11 +41,11 @@ func CreateFurniture(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbFurnitureToResponse(*furniture))
 }
 
-// GetFurnituresByRoom godoc
+// GetAllFurnituresByRoom godoc
 //
 //	@Summary		Get furnitures by room ID
 //	@Description	Get all furnitures for a specific room
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string						true	"Property ID"
@@ -56,7 +56,7 @@ func CreateFurniture(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/ [get]
-func GetFurnituresByRoom(c *gin.Context) {
+func GetAllFurnituresByRoom(c *gin.Context) {
 	furnitures := database.GetFurnitureByRoomID(c.Param("room_id"), false)
 	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
 }
@@ -65,7 +65,7 @@ func GetFurnituresByRoom(c *gin.Context) {
 //
 //	@Summary		Get archived furnitures by room ID
 //	@Description	Get all archived furnitures for a specific room
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string						true	"Property ID"
@@ -81,11 +81,11 @@ func GetArchivedFurnituresByRoom(c *gin.Context) {
 	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
 }
 
-// GetFurnitureByID godoc
+// GetFurniture godoc
 //
 //	@Summary		Get furniture by ID
 //	@Description	Get furniture information by its ID
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id		path		string						true	"Property ID"
@@ -97,7 +97,7 @@ func GetArchivedFurnituresByRoom(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [get]
-func GetFurnitureByID(c *gin.Context) {
+func GetFurniture(c *gin.Context) {
 	furniture := database.GetFurnitureByID(c.Param("furniture_id"))
 	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
 }
@@ -106,7 +106,7 @@ func GetFurnitureByID(c *gin.Context) {
 //
 //	@Summary		Toggle archive furniture by ID
 //	@Description	Toggle archive status of a furniture by its ID
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id		path		string					true	"Property ID"

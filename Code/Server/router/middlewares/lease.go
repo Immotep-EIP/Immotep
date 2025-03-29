@@ -9,9 +9,23 @@ import (
 	"immotep/backend/utils"
 )
 
-func CheckActiveLease(propertyIdUrlParam string) gin.HandlerFunc {
+func CheckActiveLeaseByProperty(propertyIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		lease := database.GetCurrentActiveLease(c.Param(propertyIdUrlParam))
+		lease := database.GetCurrentActiveLeaseByProperty(c.Param(propertyIdUrlParam))
+		if lease == nil {
+			utils.AbortSendError(c, http.StatusNotFound, utils.NoActiveLease, nil)
+			return
+		}
+
+		c.Set("lease", *lease)
+		c.Next()
+	}
+}
+
+func CheckActiveLeaseByTenant() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		claims := utils.GetClaims(c)
+		lease := database.GetCurrentActiveLeaseByTenant(claims["id"])
 		if lease == nil {
 			utils.AbortSendError(c, http.StatusNotFound, utils.NoActiveLease, nil)
 			return
@@ -34,11 +48,11 @@ func CheckLeaseInvite(propertyIdUrlParam string) gin.HandlerFunc {
 	}
 }
 
-func CheckLeaseOwnership(propertyIdUrlParam string, leaseIdUrlParam string) gin.HandlerFunc {
+func CheckLeasePropertyOwnership(propertyIdUrlParam string, leaseIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		leaseId := c.Param(leaseIdUrlParam)
 		if leaseId == "current" {
-			CheckActiveLease(propertyIdUrlParam)(c)
+			CheckActiveLeaseByProperty(propertyIdUrlParam)(c)
 			return
 		}
 
@@ -53,7 +67,27 @@ func CheckLeaseOwnership(propertyIdUrlParam string, leaseIdUrlParam string) gin.
 	}
 }
 
-func CheckDocumentOwnership(docIdUrlParam string) gin.HandlerFunc {
+func CheckLeaseTenantOwnership(leaseIdUrlParam string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		claims := utils.GetClaims(c)
+		leaseId := c.Param(leaseIdUrlParam)
+		if leaseId == "current" {
+			CheckActiveLeaseByTenant()(c)
+			return
+		}
+
+		lease := database.GetLeaseByID(leaseId)
+		if lease == nil || lease.TenantID != claims["id"] {
+			utils.AbortSendError(c, http.StatusNotFound, utils.LeaseNotFound, nil)
+			return
+		}
+
+		c.Set("lease", *lease)
+		c.Next()
+	}
+}
+
+func CheckDocumentLeaseOwnership(docIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		lease, _ := c.MustGet("lease").(db.LeaseModel)
 

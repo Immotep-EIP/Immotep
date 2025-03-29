@@ -71,6 +71,22 @@ func TestLeaseResponse(t *testing.T) {
 					Email:     "johndoe@example.com",
 				},
 			},
+			Property: &db.PropertyModel{
+				InnerProperty: db.InnerProperty{
+					ID:   "1",
+					Name: "Test Property",
+				},
+				RelationsProperty: db.RelationsProperty{
+					Owner: &db.UserModel{
+						InnerUser: db.InnerUser{
+							ID:        "1",
+							Firstname: "John",
+							Lastname:  "Doe",
+							Email:     "johndoe@example.com",
+						},
+					},
+				},
+			},
 		},
 	}
 

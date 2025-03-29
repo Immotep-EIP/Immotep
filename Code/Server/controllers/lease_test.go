@@ -36,6 +36,22 @@ func BuildTestLease(id string) db.LeaseModel {
 					Email:     "johndoe@example.com",
 				},
 			},
+			Property: &db.PropertyModel{
+				InnerProperty: db.InnerProperty{
+					ID:   "1",
+					Name: "Test Property",
+				},
+				RelationsProperty: db.RelationsProperty{
+					Owner: &db.UserModel{
+						InnerUser: db.InnerUser{
+							ID:        "1",
+							Firstname: "John",
+							Lastname:  "Doe",
+							Email:     "johndoe@example.com",
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -63,6 +79,7 @@ func TestGetLeasesByProperty(t *testing.T) {
 			db.Lease.PropertyID.Equals("1"),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
@@ -102,6 +119,7 @@ func TestGetLeasesByProperty_NotFound(t *testing.T) {
 			db.Lease.PropertyID.Equals("1"),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{})
 
@@ -164,6 +182,7 @@ func TestGetLeaseByID(t *testing.T) {
 			db.Lease.ID.Equals(lease.ID),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Returns(lease)
 
@@ -202,6 +221,7 @@ func TestGetLeaseByID_NotFound(t *testing.T) {
 			db.Lease.ID.Equals("1"),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -237,6 +257,7 @@ func TestGetLeaseByID_CurrentActive(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{lease})
 
@@ -276,6 +297,7 @@ func TestGetLeaseByID_CurrentActive_NotFound(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{})
 
@@ -309,6 +331,7 @@ func TestEndLease1(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{lease})
 
@@ -352,6 +375,7 @@ func TestEndLease2(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{lease})
 
@@ -393,6 +417,7 @@ func TestEndLease_NotCurrent(t *testing.T) {
 			db.Lease.ID.Equals(lease.ID),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Returns(lease)
 
@@ -429,6 +454,7 @@ func TestEndLease_NoActiveLease(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(db.ErrNotFound)
 

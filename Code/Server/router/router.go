@@ -29,7 +29,7 @@ func registerAPIRoutes(r *gin.Engine, test bool) {
 
 	v1 := r.Group("/v1")
 	{
-		auth := v1.Group("/auth")
+		auth := v1.Group("/auth/")
 		{
 			auth.POST("/register/", controllers.RegisterOwner)
 			auth.POST("/invite/:id/", controllers.RegisterTenant)
@@ -54,116 +54,13 @@ func registerAPIRoutes(r *gin.Engine, test bool) {
 			root.GET("/profile/picture/", controllers.GetCurrentUserProfilePicture)
 			root.PUT("/profile/picture/", controllers.UpdateCurrentUserProfilePicture)
 
-			owner := root.Group("/owner")
+			owner := root.Group("/owner/")
 			registerOwnerRoutes(owner)
 
-			tenant := root.Group("/tenant")
+			tenant := root.Group("/tenant/")
 			registerTenantRoutes(tenant)
 		}
 	}
-}
-
-func registerOwnerRoutes(owner *gin.RouterGroup) {
-	owner.Use(middlewares.AuthorizeOwner())
-
-	properties := owner.Group("/properties")
-	{
-		properties.POST("/", controllers.CreateProperty)
-		properties.GET("/", controllers.GetAllProperties)
-		properties.GET("/archived/", controllers.GetAllArchivedProperties)
-
-		propertyId := properties.Group("/:property_id/")
-		{
-			propertyId.Use(middlewares.CheckPropertyOwnership("property_id"))
-			propertyId.GET("/", controllers.GetPropertyById)
-			propertyId.PUT("/", controllers.UpdateProperty)
-			propertyId.PUT("/archive/", controllers.ArchiveProperty)
-			propertyId.GET("/picture/", controllers.GetPropertyPicture)
-			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
-
-			propertyId.POST("/send-invite/", controllers.InviteTenant)
-			propertyId.DELETE("/cancel-invite/", middlewares.CheckLeaseInvite("property_id"), controllers.CancelInvite)
-
-			leases := propertyId.Group("/leases/")
-			registerLeaseRoutes(leases)
-
-			propertyId.GET("/inventory/", controllers.GetPropertyInventory)
-			rooms := propertyId.Group("/rooms")
-			{
-				rooms.POST("/", controllers.CreateRoom)
-				rooms.GET("/", controllers.GetRoomsByProperty)
-				rooms.GET("/archived/", controllers.GetArchivedRoomsByProperty)
-
-				roomId := rooms.Group("/:room_id")
-				{
-					roomId.Use(middlewares.CheckRoomOwnership("property_id", "room_id"))
-					roomId.GET("/", controllers.GetRoomByID)
-					roomId.PUT("/archive/", controllers.ArchiveRoom)
-
-					furnitures := roomId.Group("/furnitures")
-					{
-						furnitures.POST("/", controllers.CreateFurniture)
-						furnitures.GET("/", controllers.GetFurnituresByRoom)
-						furnitures.GET("/archived/", controllers.GetArchivedFurnituresByRoom)
-
-						furnitureId := furnitures.Group("/:furniture_id")
-						{
-							furnitureId.Use(middlewares.CheckFurnitureOwnership("room_id", "furniture_id"))
-							furnitureId.GET("/", controllers.GetFurnitureByID)
-							furnitureId.PUT("/archive/", controllers.ArchiveFurniture)
-						}
-					}
-				}
-			}
-
-			invReports := propertyId.Group("/inventory-reports")
-			registerInvReportRoutes(invReports)
-		}
-	}
-}
-
-func registerTenantRoutes(tenant *gin.RouterGroup) {
-	tenant.Use(middlewares.AuthorizeTenant())
-
-	tenant.POST("/invite/:id/", controllers.AcceptInvite)
-}
-
-func registerLeaseRoutes(leases *gin.RouterGroup) {
-	leases.GET("/", controllers.GetLeasesByProperty)
-
-	leaseId := leases.Group("/:lease_id/")
-	{
-		leaseId.Use(middlewares.CheckLeaseOwnership("property_id", "lease_id"))
-		leaseId.GET("/", controllers.GetLeaseByID)
-		leaseId.PUT("/end/", controllers.EndLease)
-
-		docs := leaseId.Group("/docs/")
-		{
-			docs.POST("/", controllers.UploadDocument)
-			docs.GET("/", controllers.GetLeaseDocuments)
-
-			docId := docs.Group("/:doc_id/")
-			{
-				docId.Use(middlewares.CheckDocumentOwnership("doc_id"))
-				docId.GET("/", controllers.GetDocumentByID)
-				// document.DELETE("/:doc_id/", controllers.DeleteDocument)
-			}
-		}
-	}
-}
-
-func registerInvReportRoutes(invReports *gin.RouterGroup) {
-	invReports.POST("/", controllers.CreateInventoryReport)
-	invReports.GET("/", controllers.GetInventoryReportsByProperty)
-
-	invReports.GET("/:report_id/",
-		middlewares.CheckInventoryReportOwnership("property_id", "report_id"),
-		controllers.GetInventoryReportByID)
-
-	invReports.POST("/summarize/", controllers.GenerateSummary)
-	invReports.POST("/compare/:old_report_id/",
-		middlewares.CheckInventoryReportOwnership("property_id", "old_report_id"),
-		controllers.GenerateComparison)
 }
 
 func Routes() *gin.Engine {

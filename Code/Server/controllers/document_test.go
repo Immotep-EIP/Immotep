@@ -49,6 +49,7 @@ func TestGetPropertyDocuments(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 
@@ -121,6 +122,7 @@ func TestGetPropertyDocuments_NoActiveLease(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -159,6 +161,7 @@ func TestGetDocumentByID(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 
@@ -232,6 +235,7 @@ func TestGetDocumentByID_NotFound(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 
@@ -276,6 +280,7 @@ func TestUploadDocument(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 
@@ -331,6 +336,7 @@ func TestUploadDocument_MissingFields(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 
@@ -368,6 +374,7 @@ func TestUploadDocument_NoActiveLease(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(db.ErrNotFound)
 

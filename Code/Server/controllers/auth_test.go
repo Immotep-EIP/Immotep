@@ -184,6 +184,7 @@ func TestRegisterTenantPropertyNotAvailable(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{BuildTestLease("1")})
 
@@ -222,6 +223,7 @@ func TestAcceptInvite(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{})
 
@@ -231,6 +233,7 @@ func TestAcceptInvite(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{})
 
@@ -364,6 +367,7 @@ func TestAcceptInvitePropertyNotAvailable(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 
@@ -404,6 +408,7 @@ func TestAcceptInviteTenantAlreadyHasLease(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).Errors(db.ErrNotFound)
 
@@ -413,6 +418,7 @@ func TestAcceptInviteTenantAlreadyHasLease(t *testing.T) {
 			db.Lease.Active.Equals(true),
 		).With(
 			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 		),
 	).ReturnsMany([]db.LeaseModel{activeLease})
 

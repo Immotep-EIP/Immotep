@@ -57,7 +57,7 @@ func TestCheckPropertyOwnership(t *testing.T) {
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 	c.Set("oauth.claims", map[string]string{"id": "1"})
 
-	middlewares.CheckPropertyOwnership("propertyId")(c)
+	middlewares.CheckPropertyOwnerOwnership("propertyId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -80,7 +80,7 @@ func TestCheckPropertyOwnership_NotFound(t *testing.T) {
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 	c.Set("oauth.claims", map[string]string{"id": "1"})
 
-	middlewares.CheckPropertyOwnership("propertyId")(c)
+	middlewares.CheckPropertyOwnerOwnership("propertyId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -104,7 +104,7 @@ func TestCheckPropertyOwnership_NotYours(t *testing.T) {
 	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 	c.Set("oauth.claims", map[string]string{"id": "2"})
 
-	middlewares.CheckPropertyOwnership("propertyId")(c)
+	middlewares.CheckPropertyOwnerOwnership("propertyId")(c)
 	assert.Equal(t, http.StatusForbidden, w.Code)
 }
 
@@ -131,7 +131,7 @@ func TestCheckRoomOwnership(t *testing.T) {
 		{Key: "roomId", Value: "1"},
 	}
 
-	middlewares.CheckRoomOwnership("propertyId", "roomId")(c)
+	middlewares.CheckRoomPropertyOwnership("propertyId", "roomId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -152,7 +152,7 @@ func TestCheckRoomOwnership_NotFound(t *testing.T) {
 		{Key: "roomId", Value: "1"},
 	}
 
-	middlewares.CheckRoomOwnership("propertyId", "roomId")(c)
+	middlewares.CheckRoomPropertyOwnership("propertyId", "roomId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -179,7 +179,7 @@ func TestCheckRoomOwnership_NotYours(t *testing.T) {
 		{Key: "roomId", Value: "1"},
 	}
 
-	middlewares.CheckRoomOwnership("propertyId", "roomId")(c)
+	middlewares.CheckRoomPropertyOwnership("propertyId", "roomId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -210,7 +210,7 @@ func TestCheckFurnitureOwnership(t *testing.T) {
 		{Key: "furnitureId", Value: "1"},
 	}
 
-	middlewares.CheckFurnitureOwnership("roomId", "furnitureId")(c)
+	middlewares.CheckFurnitureRoomOwnership("roomId", "furnitureId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -235,7 +235,7 @@ func TestCheckFurnitureOwnership_NotFound(t *testing.T) {
 		{Key: "furnitureId", Value: "1"},
 	}
 
-	middlewares.CheckFurnitureOwnership("roomId", "furnitureId")(c)
+	middlewares.CheckFurnitureRoomOwnership("roomId", "furnitureId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -266,7 +266,7 @@ func TestCheckFurnitureOwnership_NotYours(t *testing.T) {
 		{Key: "furnitureId", Value: "1"},
 	}
 
-	middlewares.CheckFurnitureOwnership("roomId", "furnitureId")(c)
+	middlewares.CheckFurnitureRoomOwnership("roomId", "furnitureId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -299,7 +299,7 @@ func TestCheckInventoryReportOwnership(t *testing.T) {
 		{Key: "reportId", Value: "1"},
 	}
 
-	middlewares.CheckInventoryReportOwnership("propertyId", "reportId")(c)
+	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -313,7 +313,7 @@ func TestCheckInventoryReportOwnership_Latest(t *testing.T) {
 		{Key: "reportId", Value: "latest"},
 	}
 
-	middlewares.CheckInventoryReportOwnership("propertyId", "reportId")(c)
+	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(c)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -340,7 +340,7 @@ func TestCheckInventoryReportOwnership_NotFound(t *testing.T) {
 		{Key: "reportId", Value: "1"},
 	}
 
-	middlewares.CheckInventoryReportOwnership("propertyId", "reportId")(c)
+	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -373,6 +373,6 @@ func TestCheckInventoryReportOwnership_NotYours(t *testing.T) {
 		{Key: "reportId", Value: "1"},
 	}
 
-	middlewares.CheckInventoryReportOwnership("propertyId", "reportId")(c)
+	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }

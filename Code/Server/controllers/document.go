@@ -14,7 +14,7 @@ import (
 //
 //	@Summary		Upload document
 //	@Description	Upload a document to a lease
-//	@Tags			owner
+//	@Tags			document
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
@@ -27,6 +27,7 @@ import (
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/leases/{lease_id}/docs/ [post]
+//	@Router			/tenant/leases/{lease_id}/docs/ [post]
 func UploadDocument(c *gin.Context) {
 	var req models.DocumentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -45,11 +46,11 @@ func UploadDocument(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbDocumentToResponse(res))
 }
 
-// GetLeaseDocuments godoc
+// GetAllDocumentsByLease godoc
 //
 //	@Summary		Get property documents
 //	@Description	Get all documents of a lease related to a property
-//	@Tags			owner
+//	@Tags			document
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
@@ -60,17 +61,18 @@ func UploadDocument(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/leases/{lease_id}/docs/ [get]
-func GetLeaseDocuments(c *gin.Context) {
+//	@Router			/tenant/leases/{lease_id}/docs/ [get]
+func GetAllDocumentsByLease(c *gin.Context) {
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
 	documents := database.GetLeaseDocuments(lease.ID)
 	c.JSON(http.StatusOK, utils.Map(documents, models.DbDocumentToResponse))
 }
 
-// GetDocumentByID godoc
+// GetDocument godoc
 //
 //	@Summary		Get document by ID
 //	@Description	Get a document by its ID
-//	@Tags			owner
+//	@Tags			document
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
@@ -82,7 +84,8 @@ func GetLeaseDocuments(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/leases/{lease_id}/docs/{doc_id}/ [get]
-func GetDocumentByID(c *gin.Context) {
+//	@Router			/tenant/leases/{lease_id}/docs/{doc_id}/ [get]
+func GetDocument(c *gin.Context) {
 	doc, _ := c.MustGet("document").(db.DocumentModel)
 	c.JSON(http.StatusOK, models.DbDocumentToResponse(doc))
 }

@@ -8,31 +8,7 @@ import (
 	"immotep/backend/services"
 )
 
-func GetCurrentActiveLease(propertyId string) *db.LeaseModel {
-	pdb := services.DBclient
-	c, err := pdb.Client.Lease.FindMany(
-		db.Lease.PropertyID.Equals(propertyId),
-		db.Lease.Active.Equals(true),
-	).With(
-		db.Lease.Tenant.Fetch(),
-	).Exec(pdb.Context)
-	if err != nil {
-		if db.IsErrNotFound(err) {
-			return nil
-		}
-		panic(err)
-	}
-	l := len(c)
-	if l == 0 {
-		return nil
-	}
-	if l > 1 {
-		panic("Only one active lease must exist for a property")
-	}
-	return &c[0]
-}
-
-func GetCurrentActiveLeaseWithInfos(propertyId string) *db.LeaseModel {
+func GetCurrentActiveLeaseByProperty(propertyId string) *db.LeaseModel {
 	pdb := services.DBclient
 	c, err := pdb.Client.Lease.FindMany(
 		db.Lease.PropertyID.Equals(propertyId),
@@ -57,13 +33,14 @@ func GetCurrentActiveLeaseWithInfos(propertyId string) *db.LeaseModel {
 	return &c[0]
 }
 
-func GetTenantCurrentActiveLease(tenantId string) *db.LeaseModel {
+func GetCurrentActiveLeaseByTenant(tenantId string) *db.LeaseModel {
 	pdb := services.DBclient
 	c, err := pdb.Client.Lease.FindMany(
 		db.Lease.TenantID.Equals(tenantId),
 		db.Lease.Active.Equals(true),
 	).With(
 		db.Lease.Tenant.Fetch(),
+		db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -87,6 +64,7 @@ func GetLeaseByID(id string) *db.LeaseModel {
 		db.Lease.ID.Equals(id),
 	).With(
 		db.Lease.Tenant.Fetch(),
+		db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -103,6 +81,24 @@ func GetLeasesByProperty(propertyId string) []db.LeaseModel {
 		db.Lease.PropertyID.Equals(propertyId),
 	).With(
 		db.Lease.Tenant.Fetch(),
+		db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return pc
+}
+
+func GetLeasesByTenant(tenantId string) []db.LeaseModel {
+	pdb := services.DBclient
+	pc, err := pdb.Client.Lease.FindMany(
+		db.Lease.TenantID.Equals(tenantId),
+	).With(
+		db.Lease.Tenant.Fetch(),
+		db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {

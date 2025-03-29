@@ -99,7 +99,7 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	if database.GetCurrentActiveLease(leaseInvite.PropertyID) != nil {
+	if database.GetCurrentActiveLeaseByProperty(leaseInvite.PropertyID) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
@@ -152,11 +152,11 @@ func AcceptInvite(c *gin.Context) {
 		return
 	}
 
-	if database.GetCurrentActiveLease(leaseInvite.PropertyID) != nil {
+	if database.GetCurrentActiveLeaseByProperty(leaseInvite.PropertyID) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
-	if database.GetTenantCurrentActiveLease(user.ID) != nil {
+	if database.GetCurrentActiveLeaseByTenant(user.ID) != nil {
 		utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasLease, nil)
 		return
 	}

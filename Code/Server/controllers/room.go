@@ -13,7 +13,7 @@ import (
 //
 //	@Summary		Create a new room
 //	@Description	Create a new room for a property
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string				true	"Property ID"
@@ -40,11 +40,11 @@ func CreateRoom(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbRoomToResponse(*room))
 }
 
-// GetRoomsByProperty godoc
+// GetAllRoomsByProperty godoc
 //
 //	@Summary		Get rooms by property ID
 //	@Description	Get all rooms for a specific property
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string				true	"Property ID"
@@ -54,7 +54,7 @@ func CreateRoom(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/ [get]
-func GetRoomsByProperty(c *gin.Context) {
+func GetAllRoomsByProperty(c *gin.Context) {
 	rooms := database.GetRoomByPropertyID(c.Param("property_id"), false)
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
@@ -63,7 +63,7 @@ func GetRoomsByProperty(c *gin.Context) {
 //
 //	@Summary		Get archived rooms by property ID
 //	@Description	Get all archived rooms for a specific property
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string				true	"Property ID"
@@ -78,11 +78,11 @@ func GetArchivedRoomsByProperty(c *gin.Context) {
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 
-// GetRoomByID godoc
+// GetRoom godoc
 //
 //	@Summary		Get room by ID
 //	@Description	Get room information by its ID
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string				true	"Property ID"
@@ -93,7 +93,7 @@ func GetArchivedRoomsByProperty(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [get]
-func GetRoomByID(c *gin.Context) {
+func GetRoom(c *gin.Context) {
 	room := database.GetRoomByID(c.Param("room_id"))
 	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
 }
@@ -102,7 +102,7 @@ func GetRoomByID(c *gin.Context) {
 //
 //	@Summary		Toggle archive room by ID
 //	@Description	Toggle archive status of a room by its ID
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
