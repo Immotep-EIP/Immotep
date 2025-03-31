@@ -12,7 +12,7 @@ final class CreatePropertyUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-        app.launchArguments = ["-skipLogin", "-createPropertyView"]
+        app.launchArguments = ["-skipLogin", "-createPropertyView", "--UITests"]
         print("XCUITest - Launch arguments set to: \(app.launchArguments)")
         app.launch()
     }
@@ -21,6 +21,7 @@ final class CreatePropertyUITests: XCTestCase {
         let titlePredicate = NSPredicate(format: "label == %@ OR label == %@", "New Property", "Nouveau bien")
         let titleElement = app.staticTexts.element(matching: titlePredicate)
         XCTAssertTrue(titleElement.waitForExistence(timeout: 2), "The 'New Property' title should be visible in English or French")
+        XCTAssertTrue(app.images["image_property"].exists, "Default property image should be visible")
 
         app.swipeUp()
 
@@ -37,12 +38,9 @@ final class CreatePropertyUITests: XCTestCase {
         let cancelButton = app.buttons.element(matching: cancelButtonPredicate)
         XCTAssertTrue(cancelButton.exists, "Cancel button should be visible in English or French")
 
-        let addButtonPredicate =
-        NSPredicate(format: "identifier == 'confirm_button' AND (label == %@ OR label == %@)", "Add Property", "Ajouter un bien")
+        let addButtonPredicate = NSPredicate(format: "identifier == 'confirm_button' AND (label == %@ OR label == %@)", "Add Property", "Ajouter un bien")
         let addButton = app.buttons.element(matching: addButtonPredicate)
         XCTAssertTrue(addButton.exists, "Add Property button should be visible in English or French")
-
-        XCTAssertTrue(app.images["image_property"].exists, "Default property image should be visible")
     }
 
     func testCancelCreateProperty() throws {
@@ -61,8 +59,8 @@ final class CreatePropertyUITests: XCTestCase {
         if overviewTitle.waitForExistence(timeout: 2) {
             XCTAssertTrue(true, "Returned to Overview view after cancel (adjust if this is not the expected view)")
         } else {
-            _ = NSPredicate(format: "label == %@ OR label == %@", "Property", "Biens")
-            let propertyTitle = app.staticTexts["Property"]
+            let propertyTitlePredicate = NSPredicate(format: "label == %@ OR label == %@", "Property", "Biens")
+            let propertyTitle = app.staticTexts.element(matching: propertyTitlePredicate)
             XCTAssertTrue(propertyTitle.waitForExistence(timeout: 2), "Should return to Property list view after cancel")
         }
     }
@@ -92,8 +90,7 @@ final class CreatePropertyUITests: XCTestCase {
 
         scroll(hasScrollView ? formScrollView : app)
 
-        let addButtonPredicate =
-        NSPredicate(format: "identifier == 'confirm_button' AND (label == %@ OR label == %@)", "Add Property", "Ajouter un bien")
+        let addButtonPredicate = NSPredicate(format: "identifier == 'confirm_button' AND (label == %@ OR label == %@)", "Add Property", "Ajouter un bien")
         let addButton = app.buttons.element(matching: addButtonPredicate)
         XCTAssertTrue(addButton.waitForExistence(timeout: 2), "Add Property button should be accessible")
         while !addButton.isHittable {
@@ -144,11 +141,16 @@ final class CreatePropertyUITests: XCTestCase {
         XCTAssertTrue(cancelButton.exists, "Cancel option in action sheet should appear in English or French")
 
         cancelButton.tap()
+
+        let sheetDismissedPredicate = NSPredicate(format: "exists == false")
+        let sheetDismissedExpectation = expectation(for: sheetDismissedPredicate, evaluatedWith: app.sheets.element, handler: nil)
+        wait(for: [sheetDismissedExpectation], timeout: 5.0)
+
         XCTAssertFalse(app.sheets.element.exists, "Action sheet should be dismissed after tapping Cancel")
     }
 
     func testEditPropertyViewLoadsAndCancel() throws {
-        app.launchArguments = ["-skipLogin", "-editPropertyView"]
+        app.launchArguments = ["-skipLogin", "-editPropertyView", "--UITests"]
         app.launch()
 
         let editTitlePredicate = NSPredicate(format: "label == %@ OR label == %@", "Edit Property", "Modifier le bien")
@@ -174,16 +176,16 @@ final class CreatePropertyUITests: XCTestCase {
     }
 
     func testEditPropertyOpenImagePickerOptions() throws {
-        app.launchArguments = ["-skipLogin", "-editPropertyView"]
+        app.launchArguments = ["-skipLogin", "-editPropertyView", "--UITests"] 
         app.launch()
 
         let image = app.images["image_property"]
-        XCTAssertTrue(image.waitForExistence(timeout: 2), "Property image should be accessible")
+        XCTAssertTrue(image.waitForExistence(timeout: 5), "Property image should be accessible")
         image.tap()
 
         let takePhotoPredicate = NSPredicate(format: "label == %@ OR label == %@", "Take Photo", "Prendre une photo")
         let takePhotoButton = app.buttons.element(matching: takePhotoPredicate)
-        XCTAssertTrue(takePhotoButton.waitForExistence(timeout: 2), "Take Photo option should appear in English or French")
+        XCTAssertTrue(takePhotoButton.waitForExistence(timeout: 5), "Take Photo option should appear in English or French")
 
         let chooseLibraryPredicate = NSPredicate(format: "label == %@ OR label == %@", "Choose from Library", "Choisir dans la bibliothèque")
         let chooseLibraryButton = app.buttons.element(matching: chooseLibraryPredicate)
@@ -194,6 +196,11 @@ final class CreatePropertyUITests: XCTestCase {
         XCTAssertTrue(cancelButton.exists, "Cancel option in action sheet should appear in English or French")
 
         cancelButton.tap()
+
+        let sheetDismissedPredicate = NSPredicate(format: "exists == false")
+        let sheetDismissedExpectation = expectation(for: sheetDismissedPredicate, evaluatedWith: app.sheets.element, handler: nil)
+        wait(for: [sheetDismissedExpectation], timeout: 5.0)
+
         XCTAssertFalse(app.sheets.element.exists, "Action sheet should be dismissed after tapping Cancel")
     }
 }

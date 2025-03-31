@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Foundation
+import UIKit
 
 // only for local test purpose
 // let baseURL = URL(string: "http://localhost:3001/api/v1")!
@@ -17,6 +18,12 @@ import Foundation
 struct ImmotepApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appdelegate
     @AppStorage("theme") private var selectedTheme: String = ThemeOption.system.rawValue
+
+    init() {
+        if CommandLine.arguments.contains("--UITests") {
+            UIView.setAnimationsEnabled(false)
+        }
+    }
 
     var body: some Scene {
         let isUITestMode = CommandLine.arguments.contains("-skipLogin")
