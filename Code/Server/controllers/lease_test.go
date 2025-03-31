@@ -499,3 +499,77 @@ func TestEndLease_PropertyNotFound(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, utils.PropertyNotFound, resp.Code)
 }
+
+func TestGetAllLeasesByTenant(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease1 := BuildTestLease("1")
+	lease2 := BuildTestLease("2")
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals("1"),
+		).With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).ReturnsMany([]db.LeaseModel{lease1, lease2})
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/v1/tenant/leases/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleTenant))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
+	var resp []models.LeaseResponse
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Len(t, resp, 2)
+	assert.Equal(t, lease1.ID, resp[0].ID)
+	assert.Equal(t, lease2.ID, resp[1].ID)
+}
+
+func TestGetAllLeasesByTenant_NotFound(t *testing.T) {
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals("1"),
+		).With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).ReturnsMany([]db.LeaseModel{})
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/v1/tenant/leases/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleTenant))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
+	var resp []models.LeaseResponse
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Empty(t, resp)
+}
+
+func TestGetAllLeasesByTenant_Unauthorized(t *testing.T) {
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/v1/tenant/leases/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner)) // Unauthorized role
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusForbidden, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.NotATenant, resp.Code)
+}

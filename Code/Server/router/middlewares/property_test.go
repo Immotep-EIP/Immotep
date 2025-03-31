@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"immotep/backend/prisma/db"
 	"immotep/backend/router/middlewares"
 	"immotep/backend/services"
@@ -374,5 +375,68 @@ func TestCheckInventoryReportOwnership_NotYours(t *testing.T) {
 	}
 
 	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(c)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestGetPropertyByLease(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:         "1",
+			PropertyID: "1",
+		},
+	}
+	property := BuildTestProperty("1")
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
+			db.Property.LeaseInvite.Fetch(),
+		),
+	).Returns(property)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("lease", lease)
+
+	middlewares.GetPropertyByLease()(c)
+	require.Equal(t, http.StatusOK, w.Code)
+	p, ok := c.Get("property")
+	require.True(t, ok)
+	assert.NotNil(t, p)
+	assert.IsType(t, db.PropertyModel{}, p)
+}
+
+func TestGetPropertyByLease_PropertyNotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:         "1",
+			PropertyID: "1",
+		},
+	}
+
+	mock.Property.Expect(
+		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
+			db.Property.Damages.Fetch(),
+			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
+			db.Property.LeaseInvite.Fetch(),
+		),
+	).Errors(db.ErrNotFound)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("lease", lease)
+
+	middlewares.GetPropertyByLease()(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }

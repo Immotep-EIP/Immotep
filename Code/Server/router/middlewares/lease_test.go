@@ -366,3 +366,217 @@ func TestCheckDocumentOwnership_LeaseMismatch(t *testing.T) {
 	middlewares.CheckDocumentLeaseOwnership("docId")(c)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
+
+func TestCheckActiveLeaseByTenant(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:         "1",
+			PropertyID: "1",
+			TenantID:   "1",
+			Active:     true,
+		},
+	}
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals("1"),
+			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).ReturnsMany([]db.LeaseModel{lease})
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("oauth.claims", map[string]string{"id": "1"})
+
+	middlewares.CheckActiveLeaseByTenant()(c)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestCheckActiveLeaseByTenant_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals("1"),
+			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).ReturnsMany([]db.LeaseModel{})
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("oauth.claims", map[string]string{"id": "1"})
+
+	middlewares.CheckActiveLeaseByTenant()(c)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCheckActiveLeaseByTenant_MultipleActiveLeases(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease1 := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:         "1",
+			PropertyID: "1",
+			TenantID:   "1",
+			Active:     true,
+		},
+	}
+	lease2 := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:         "2",
+			PropertyID: "2",
+			TenantID:   "1",
+			Active:     true,
+		},
+	}
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals("1"),
+			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).ReturnsMany([]db.LeaseModel{lease1, lease2})
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("oauth.claims", map[string]string{"id": "1"})
+
+	assert.Panics(t, func() {
+		middlewares.CheckActiveLeaseByTenant()(c)
+	})
+}
+
+func TestCheckLeaseTenantOwnership_CurrentLease(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:         "1",
+			PropertyID: "1",
+			TenantID:   "1",
+			Active:     true,
+		},
+	}
+	mock.Lease.Expect(
+		client.Client.Lease.FindMany(
+			db.Lease.TenantID.Equals("1"),
+			db.Lease.Active.Equals(true),
+		).With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).ReturnsMany([]db.LeaseModel{lease})
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("oauth.claims", map[string]string{"id": "1"})
+	c.Params = gin.Params{gin.Param{Key: "leaseId", Value: "current"}}
+
+	middlewares.CheckLeaseTenantOwnership("leaseId")(c)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestCheckLeaseTenantOwnership_LeaseByID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:       "1",
+			TenantID: "1",
+		},
+	}
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals("1"),
+		).With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).Returns(lease)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("oauth.claims", map[string]string{"id": "1"})
+	c.Params = gin.Params{gin.Param{Key: "leaseId", Value: "1"}}
+
+	middlewares.CheckLeaseTenantOwnership("leaseId")(c)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestCheckLeaseTenantOwnership_LeaseNotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals("1"),
+		).With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).Errors(db.ErrNotFound)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("oauth.claims", map[string]string{"id": "1"})
+	c.Params = gin.Params{gin.Param{Key: "leaseId", Value: "1"}}
+
+	middlewares.CheckLeaseTenantOwnership("leaseId")(c)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCheckLeaseTenantOwnership_TenantMismatch(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	client, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:       "1",
+			TenantID: "2",
+		},
+	}
+	mock.Lease.Expect(
+		client.Client.Lease.FindUnique(
+			db.Lease.ID.Equals("1"),
+		).With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
+		),
+	).Returns(lease)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Set("oauth.claims", map[string]string{"id": "1"})
+	c.Params = gin.Params{gin.Param{Key: "leaseId", Value: "1"}}
+
+	middlewares.CheckLeaseTenantOwnership("leaseId")(c)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
