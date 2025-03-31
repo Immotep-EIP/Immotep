@@ -20,7 +20,7 @@ struct ImmotepApp: App {
     @AppStorage("theme") private var selectedTheme: String = ThemeOption.system.rawValue
 
     init() {
-        if CommandLine.arguments.contains("--UITests") {
+        if CommandLine.arguments.contains("--UITests") or CommandLine.arguments.contains("-skipLogin") {
             UIView.setAnimationsEnabled(false)
         }
     }
