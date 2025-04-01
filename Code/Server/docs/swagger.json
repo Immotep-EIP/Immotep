@@ -4290,7 +4290,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.ReportType"
                 }
             }
         },
@@ -4301,16 +4301,7 @@
             ],
             "properties": {
                 "event": {
-                    "enum": [
-                        "fix_planned",
-                        "fixed",
-                        "read"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.DamageUpdateEvent"
-                        }
-                    ]
+                    "$ref": "#/definitions/models.DamageUpdateEvent"
                 },
                 "fix_planned_at": {
                     "type": "string"
@@ -4503,12 +4494,7 @@
             ],
             "properties": {
                 "cleanliness": {
-                    "type": "string",
-                    "enum": [
-                        "dirty",
-                        "medium",
-                        "clean"
-                    ]
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "id": {
                     "type": "string"
@@ -4524,15 +4510,7 @@
                     }
                 },
                 "state": {
-                    "type": "string",
-                    "enum": [
-                        "broken",
-                        "needsRepair",
-                        "bad",
-                        "medium",
-                        "good",
-                        "new"
-                    ]
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -4540,7 +4518,7 @@
             "type": "object",
             "properties": {
                 "cleanliness": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "id": {
                     "type": "string"
@@ -4561,7 +4539,7 @@
                     "type": "integer"
                 },
                 "state": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -4604,12 +4582,7 @@
                     }
                 },
                 "type": {
-                    "type": "string",
-                    "enum": [
-                        "start",
-                        "middle",
-                        "end"
-                    ]
+                    "$ref": "#/definitions/db.ReportType"
                 }
             }
         },
@@ -4632,7 +4605,7 @@
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.ReportType"
                 }
             }
         },
@@ -4946,12 +4919,7 @@
             ],
             "properties": {
                 "cleanliness": {
-                    "type": "string",
-                    "enum": [
-                        "dirty",
-                        "medium",
-                        "clean"
-                    ]
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "furnitures": {
                     "type": "array",
@@ -4973,15 +4941,7 @@
                     }
                 },
                 "state": {
-                    "type": "string",
-                    "enum": [
-                        "broken",
-                        "needsRepair",
-                        "bad",
-                        "medium",
-                        "good",
-                        "new"
-                    ]
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -4989,7 +4949,7 @@
             "type": "object",
             "properties": {
                 "cleanliness": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "furnitures": {
                     "type": "array",
@@ -5013,7 +4973,7 @@
                     }
                 },
                 "state": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },

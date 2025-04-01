@@ -31,7 +31,7 @@ const (
 )
 
 type DamageOwnerUpdateRequest struct {
-	Event        DamageUpdateEvent `binding:"required,oneof=fix_planned fixed read" json:"event"`
+	Event        DamageUpdateEvent `binding:"required,damageUpdateEvent" json:"event"`
 	FixPlannedAt *db.DateTime      `json:"fix_planned_at,omitempty"`
 }
 

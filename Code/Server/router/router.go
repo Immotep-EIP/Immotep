@@ -106,6 +106,10 @@ func Routes() *gin.Engine {
 		panic("Could not register validator")
 	}
 	_ = v.RegisterValidation("priority", validators.Priority)
+	_ = v.RegisterValidation("damageUpdateEvent", validators.DamageUpdateEvent)
+	_ = v.RegisterValidation("reportType", validators.Type)
+	_ = v.RegisterValidation("state", validators.State)
+	_ = v.RegisterValidation("cleanliness", validators.Cleanliness)
 
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -64,8 +64,8 @@ func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomState
 			InnerFurnitureState: db.InnerFurnitureState{
 				FurnitureID: f.ID,
 				ReportID:    invrep.ID,
-				Cleanliness: db.Cleanliness(f.Cleanliness),
-				State:       db.State(f.State),
+				Cleanliness: f.Cleanliness,
+				State:       f.State,
 				Note:        f.Note,
 			},
 		}
@@ -108,8 +108,8 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 			InnerRoomState: db.InnerRoomState{
 				RoomID:      r.ID,
 				ReportID:    invrep.ID,
-				Cleanliness: db.Cleanliness(r.Cleanliness),
-				State:       db.State(r.State),
+				Cleanliness: r.Cleanliness,
+				State:       r.State,
 				Note:        r.Note,
 			},
 		}
@@ -171,7 +171,7 @@ func CreateInventoryReport(c *gin.Context) {
 		return
 	}
 
-	invrep := database.CreateInvReport(db.ReportType(req.Type), propertyId)
+	invrep := database.CreateInvReport(req.Type, propertyId)
 	if invrep == nil {
 		utils.SendError(c, http.StatusConflict, utils.InventoryReportAlreadyExists, nil)
 		return

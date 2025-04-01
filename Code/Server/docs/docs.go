@@ -4296,7 +4296,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.ReportType"
                 }
             }
         },
@@ -4307,16 +4307,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "event": {
-                    "enum": [
-                        "fix_planned",
-                        "fixed",
-                        "read"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.DamageUpdateEvent"
-                        }
-                    ]
+                    "$ref": "#/definitions/models.DamageUpdateEvent"
                 },
                 "fix_planned_at": {
                     "type": "string"
@@ -4509,12 +4500,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "cleanliness": {
-                    "type": "string",
-                    "enum": [
-                        "dirty",
-                        "medium",
-                        "clean"
-                    ]
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "id": {
                     "type": "string"
@@ -4530,15 +4516,7 @@ const docTemplate = `{
                     }
                 },
                 "state": {
-                    "type": "string",
-                    "enum": [
-                        "broken",
-                        "needsRepair",
-                        "bad",
-                        "medium",
-                        "good",
-                        "new"
-                    ]
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -4546,7 +4524,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "cleanliness": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "id": {
                     "type": "string"
@@ -4567,7 +4545,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "state": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -4610,12 +4588,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "type": "string",
-                    "enum": [
-                        "start",
-                        "middle",
-                        "end"
-                    ]
+                    "$ref": "#/definitions/db.ReportType"
                 }
             }
         },
@@ -4638,7 +4611,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.ReportType"
                 }
             }
         },
@@ -4952,12 +4925,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "cleanliness": {
-                    "type": "string",
-                    "enum": [
-                        "dirty",
-                        "medium",
-                        "clean"
-                    ]
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "furnitures": {
                     "type": "array",
@@ -4979,15 +4947,7 @@ const docTemplate = `{
                     }
                 },
                 "state": {
-                    "type": "string",
-                    "enum": [
-                        "broken",
-                        "needsRepair",
-                        "bad",
-                        "medium",
-                        "good",
-                        "new"
-                    ]
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -4995,7 +4955,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "cleanliness": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "furnitures": {
                     "type": "array",
@@ -5019,7 +4979,7 @@ const docTemplate = `{
                     }
                 },
                 "state": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
