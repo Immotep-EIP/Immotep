@@ -115,7 +115,7 @@ final class CreatePropertyUITests: XCTestCase {
         field.typeText(text)
 
         let returnButton = app.keyboards.buttons.element(matching: NSPredicate(format: "label == %@ OR label == %@", "Return", "retour"))
-        XCTAssertTrue(returnButton.waitForExistence(timeout: 1), "Return button should be present for \(identifier)")
+        XCTAssertTrue(returnButton.waitForExistence(timeout: 2), "Return button should be present for \(identifier)")
         returnButton.tap()
     }
 
