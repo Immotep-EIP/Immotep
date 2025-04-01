@@ -5,10 +5,9 @@ import (
 	"immotep/backend/utils"
 )
 
-// TODO: add validator for Priority enum
 type DamageRequest struct {
 	Comment  string      `binding:"required"             json:"comment"`
-	Priority db.Priority `binding:"required"             json:"priority"`
+	Priority db.Priority `binding:"required,priority"    json:"priority"`
 	RoomID   string      `binding:"required"             json:"room_id"`
 	Pictures []string    `binding:"dive,required,base64" json:"pictures"`
 }

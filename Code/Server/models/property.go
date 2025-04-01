@@ -8,6 +8,14 @@ import (
 	"immotep/backend/utils"
 )
 
+type PropertyStatus string
+
+const (
+	StatusUnavailable PropertyStatus = "unavailable"
+	StatusInviteSent  PropertyStatus = "invite sent"
+	StatusAvailable   PropertyStatus = "available"
+)
+
 type PropertyRequest struct {
 	Name                string  `binding:"required"                json:"name"`
 	Address             string  `binding:"required"                json:"address"`
@@ -66,11 +74,11 @@ type PropertyResponse struct {
 
 	// calculated fields
 
-	NbDamage  int          `json:"nb_damage"`
-	Status    string       `json:"status"`
-	Tenant    string       `json:"tenant,omitempty"`
-	StartDate *db.DateTime `json:"start_date,omitempty"`
-	EndDate   *db.DateTime `json:"end_date,omitempty"`
+	NbDamage  int            `json:"nb_damage"`
+	Status    PropertyStatus `json:"status"`
+	Tenant    string         `json:"tenant,omitempty"`
+	StartDate *db.DateTime   `json:"start_date,omitempty"`
+	EndDate   *db.DateTime   `json:"end_date,omitempty"`
 }
 
 func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
@@ -99,17 +107,17 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	switch {
 	case activeIndex != -1:
 		active := model.Leases()[activeIndex]
-		p.Status = "unavailable"
+		p.Status = StatusUnavailable
 		p.Tenant = active.Tenant().Name()
 		p.StartDate = &active.StartDate
 		p.EndDate = active.InnerLease.EndDate
 	case inviteOk:
-		p.Status = "invite sent"
+		p.Status = StatusInviteSent
 		p.Tenant = invite.TenantEmail
 		p.StartDate = &invite.StartDate
 		p.EndDate = invite.InnerLeaseInvite.EndDate
 	default:
-		p.Status = "available"
+		p.Status = StatusAvailable
 		p.Tenant = ""
 		p.StartDate = nil
 		p.EndDate = nil
@@ -140,11 +148,11 @@ type PropertyInventoryResponse struct {
 
 	// calculated fields
 
-	NbDamage  int          `json:"nb_damage"`
-	Status    string       `json:"status"`
-	Tenant    string       `json:"tenant,omitempty"`
-	StartDate *db.DateTime `json:"start_date,omitempty"`
-	EndDate   *db.DateTime `json:"end_date,omitempty"`
+	NbDamage  int            `json:"nb_damage"`
+	Status    PropertyStatus `json:"status"`
+	Tenant    string         `json:"tenant,omitempty"`
+	StartDate *db.DateTime   `json:"start_date,omitempty"`
+	EndDate   *db.DateTime   `json:"end_date,omitempty"`
 
 	Rooms []roomResponse `json:"rooms"`
 }
@@ -190,17 +198,17 @@ func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel) {
 	switch {
 	case activeIndex != -1:
 		active := model.Leases()[activeIndex]
-		p.Status = "unavailable"
+		p.Status = StatusUnavailable
 		p.Tenant = active.Tenant().Name()
 		p.StartDate = &active.StartDate
 		p.EndDate = active.InnerLease.EndDate
 	case inviteOk:
-		p.Status = "invite sent"
+		p.Status = StatusInviteSent
 		p.Tenant = invite.TenantEmail
 		p.StartDate = &invite.StartDate
 		p.EndDate = invite.InnerLeaseInvite.EndDate
 	default:
-		p.Status = "available"
+		p.Status = StatusAvailable
 		p.Tenant = ""
 		p.StartDate = nil
 		p.EndDate = nil

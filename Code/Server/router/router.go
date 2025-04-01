@@ -8,6 +8,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/maxzerbini/oauth"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -17,6 +19,7 @@ import (
 	"immotep/backend/controllers"
 	_ "immotep/backend/docs" // mandatory import for swagger doc
 	"immotep/backend/router/middlewares"
+	"immotep/backend/router/validators"
 )
 
 func registerAPIRoutes(r *gin.Engine, test bool) {
@@ -97,6 +100,12 @@ func Routes() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.CustomRecovery(middlewares.PanicRecovery))
 	r.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), rate)))
+
+	v, ok := binding.Validator.Engine().(*validator.Validate)
+	if !ok {
+		panic("Could not register validator")
+	}
+	_ = v.RegisterValidation("priority", validators.Priority)
 
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

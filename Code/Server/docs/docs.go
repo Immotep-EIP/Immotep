@@ -4452,7 +4452,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.PropertyStatus"
                 },
                 "tenant": {
                     "type": "string"
@@ -4556,12 +4556,25 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.PropertyStatus"
                 },
                 "tenant": {
                     "type": "string"
                 }
             }
+        },
+        "models.PropertyStatus": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "invite sent",
+                "available"
+            ],
+            "x-enum-varnames": [
+                "StatusUnavailable",
+                "StatusInviteSent",
+                "StatusAvailable"
+            ]
         },
         "models.RoomRequest": {
             "type": "object",
