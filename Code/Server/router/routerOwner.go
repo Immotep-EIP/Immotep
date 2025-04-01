@@ -59,6 +59,13 @@ func registerOwnerLeaseRoutes(leases *gin.RouterGroup) {
 		{
 			damages.GET("/", controllers.GetDamagesByLease)
 			damages.GET("/fixed/", controllers.GetFixedDamagesByLease)
+
+			damageId := damages.Group("/:damage_id/")
+			{
+				damageId.Use(middlewares.CheckDamageLeaseOwnership("damage_id"))
+				damageId.GET("/", controllers.GetDamage)
+				damageId.PUT("/", controllers.UpdateDamageOwner)
+			}
 		}
 
 		docs := leaseId.Group("/docs/")

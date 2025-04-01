@@ -396,6 +396,20 @@ definitions:
       type:
         type: string
     type: object
+  models.DamageOwnerUpdateRequest:
+    properties:
+      event:
+        allOf:
+        - $ref: '#/definitions/models.DamageUpdateEvent'
+        enum:
+        - fix_planned
+        - fixed
+        - read
+      fix_planned_at:
+        type: string
+    required:
+    - event
+    type: object
   models.DamageRequest:
     properties:
       comment:
@@ -447,6 +461,27 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.DamageTenantUpdateRequest:
+    properties:
+      add_pictures:
+        items:
+          type: string
+        type: array
+      comment:
+        type: string
+      priority:
+        $ref: '#/definitions/db.Priority'
+    type: object
+  models.DamageUpdateEvent:
+    enum:
+    - fix_planned
+    - fixed
+    - read
+    type: string
+    x-enum-varnames:
+    - DamageUpdateEventFixPlanned
+    - DamageUpdateEventFixed
+    - DamageUpdateEventRead
   models.DocumentRequest:
     properties:
       data:
@@ -984,6 +1019,8 @@ definitions:
     - cannot-end-non-current-lease
     - no-pending-lease
     - document-not-found
+    - damage-not-found
+    - damage-already-fixed
     - failed-to-link-image
     - bad-base64-string
     - property-picture-not-found
@@ -1029,6 +1066,8 @@ definitions:
     - CannotEndNonCurrentLease
     - NoLeaseInvite
     - DocumentNotFound
+    - DamageNotFound
+    - DamageAlreadyFixed
     - FailedLinkImage
     - BadBase64String
     - PropertyPictureNotFound
@@ -1791,6 +1830,102 @@ paths:
       security:
       - Bearer: []
       summary: Get lease damages
+      tags:
+      - damage
+  /owner/properties/{property_id}/leases/{lease_id}/damages/{damage_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get a damage
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Damage ID
+        in: path
+        name: damage_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Damage
+          schema:
+            $ref: '#/definitions/models.DamageResponse'
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Damage not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get damage
+      tags:
+      - damage
+    put:
+      consumes:
+      - application/json
+      description: Update damage according to event triggered. This can be either
+        fix_planned, fixed or read.
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Damage ID
+        in: path
+        name: damage_id
+        required: true
+        type: string
+      - description: Damage update request with event
+        in: body
+        name: damages
+        required: true
+        schema:
+          $ref: '#/definitions/models.DamageOwnerUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated damage
+          schema:
+            $ref: '#/definitions/models.DamageResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Damage not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update damage from event
       tags:
       - damage
   /owner/properties/{property_id}/leases/{lease_id}/damages/fixed/:
@@ -2896,6 +3031,96 @@ paths:
       security:
       - Bearer: []
       summary: Create damage
+      tags:
+      - damage
+  /tenant/leases/{lease_id}/damages/{damage_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get a damage
+      parameters:
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Damage ID
+        in: path
+        name: damage_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Damage
+          schema:
+            $ref: '#/definitions/models.DamageResponse'
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Damage not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get damage
+      tags:
+      - damage
+    put:
+      consumes:
+      - application/json
+      description: Update damage from tenant
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Damage ID
+        in: path
+        name: damage_id
+        required: true
+        type: string
+      - description: Damage update request
+        in: body
+        name: damages
+        required: true
+        schema:
+          $ref: '#/definitions/models.DamageTenantUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated damage
+          schema:
+            $ref: '#/definitions/models.DamageResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Damage not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Update damage
       tags:
       - damage
   /tenant/leases/{lease_id}/damages/fixed/:

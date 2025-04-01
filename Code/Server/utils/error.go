@@ -35,6 +35,8 @@ const (
 	CannotEndNonCurrentLease     ErrorCode = "cannot-end-non-current-lease"
 	NoLeaseInvite                ErrorCode = "no-pending-lease"
 	DocumentNotFound             ErrorCode = "document-not-found"
+	DamageNotFound               ErrorCode = "damage-not-found"
+	DamageAlreadyFixed           ErrorCode = "damage-already-fixed"
 	FailedLinkImage              ErrorCode = "failed-to-link-image"
 	BadBase64String              ErrorCode = "bad-base64-string"
 	PropertyPictureNotFound      ErrorCode = "property-picture-not-found"

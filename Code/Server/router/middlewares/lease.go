@@ -101,3 +101,18 @@ func CheckDocumentLeaseOwnership(docIdUrlParam string) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func CheckDamageLeaseOwnership(damageIdUrlParam string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		lease, _ := c.MustGet("lease").(db.LeaseModel)
+
+		damage := database.GetDamageByID(c.Param(damageIdUrlParam))
+		if damage == nil || damage.LeaseID != lease.ID {
+			utils.AbortSendError(c, http.StatusNotFound, utils.DamageNotFound, nil)
+			return
+		}
+
+		c.Set("damage", *damage)
+		c.Next()
+	}
+}

@@ -1266,6 +1266,151 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/leases/{lease_id}/damages/{damage_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a damage",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Get damage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update damage according to event triggered. This can be either fix_planned, fixed or read.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Update damage from event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Damage update request with event",
+                        "name": "damages",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageOwnerUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/leases/{lease_id}/docs/": {
             "get": {
                 "security": [
@@ -2932,6 +3077,144 @@ const docTemplate = `{
                 }
             }
         },
+        "/tenant/leases/{lease_id}/damages/{damage_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a damage",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Get damage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update damage from tenant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Update damage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Damage update request",
+                        "name": "damages",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageTenantUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/tenant/leases/{lease_id}/docs/": {
             "get": {
                 "security": [
@@ -4017,6 +4300,29 @@ const docTemplate = `{
                 }
             }
         },
+        "models.DamageOwnerUpdateRequest": {
+            "type": "object",
+            "required": [
+                "event"
+            ],
+            "properties": {
+                "event": {
+                    "enum": [
+                        "fix_planned",
+                        "fixed",
+                        "read"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.DamageUpdateEvent"
+                        }
+                    ]
+                },
+                "fix_planned_at": {
+                    "type": "string"
+                }
+            }
+        },
         "models.DamageRequest": {
             "type": "object",
             "required": [
@@ -4092,6 +4398,36 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "models.DamageTenantUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "add_pictures": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "comment": {
+                    "type": "string"
+                },
+                "priority": {
+                    "$ref": "#/definitions/db.Priority"
+                }
+            }
+        },
+        "models.DamageUpdateEvent": {
+            "type": "string",
+            "enum": [
+                "fix_planned",
+                "fixed",
+                "read"
+            ],
+            "x-enum-varnames": [
+                "DamageUpdateEventFixPlanned",
+                "DamageUpdateEventFixed",
+                "DamageUpdateEventRead"
+            ]
         },
         "models.DocumentRequest": {
             "type": "object",
@@ -4874,6 +5210,8 @@ const docTemplate = `{
                 "cannot-end-non-current-lease",
                 "no-pending-lease",
                 "document-not-found",
+                "damage-not-found",
+                "damage-already-fixed",
                 "failed-to-link-image",
                 "bad-base64-string",
                 "property-picture-not-found",
@@ -4919,6 +5257,8 @@ const docTemplate = `{
                 "CannotEndNonCurrentLease",
                 "NoLeaseInvite",
                 "DocumentNotFound",
+                "DamageNotFound",
+                "DamageAlreadyFixed",
                 "FailedLinkImage",
                 "BadBase64String",
                 "PropertyPictureNotFound",

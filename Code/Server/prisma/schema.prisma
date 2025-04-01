@@ -90,6 +90,9 @@ model damage {
     room_id     String
 
     pictures    image[]
+
+    @@index([lease_id])
+    @@index([fixed_at])
 }
 
 model property {

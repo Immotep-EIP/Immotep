@@ -22,6 +22,25 @@ func (r *DamageRequest) ToDbDamage() db.DamageModel {
 	}
 }
 
+type DamageUpdateEvent string
+
+const (
+	DamageUpdateEventFixPlanned DamageUpdateEvent = "fix_planned"
+	DamageUpdateEventFixed      DamageUpdateEvent = "fixed"
+	DamageUpdateEventRead       DamageUpdateEvent = "read"
+)
+
+type DamageOwnerUpdateRequest struct {
+	Event        DamageUpdateEvent `binding:"required,oneof=fix_planned fixed read" json:"event"`
+	FixPlannedAt *db.DateTime      `json:"fix_planned_at,omitempty"`
+}
+
+type DamageTenantUpdateRequest struct {
+	Comment     *string      `json:"comment,omitempty"`
+	Priority    *db.Priority `json:"priority,omitempty"`
+	AddPictures []string     `json:"add_pictures,omitempty"`
+}
+
 type DamageResponse struct {
 	ID         string `json:"id"`
 	LeaseID    string `json:"lease_id"`
@@ -114,7 +133,7 @@ func (i *DamageCreateResponse) FromDbDamage(model db.DamageModel, err error) {
 	}
 }
 
-func DbDamageCreateToResponse(pc db.DamageModel, err error) DamageCreateResponse {
+func DbDamageToCreateResponse(pc db.DamageModel, err error) DamageCreateResponse {
 	var resp DamageCreateResponse
 	resp.FromDbDamage(pc, err)
 	return resp
