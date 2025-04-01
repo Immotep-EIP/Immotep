@@ -2,7 +2,6 @@ package models_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"immotep/backend/models"
@@ -42,12 +41,32 @@ func BuildTestProperty(id string) db.PropertyModel {
 			AreaSqm:             20.0,
 			RentalPricePerMonth: 500,
 			DepositPrice:        1000,
-			CreatedAt:           time.Now(),
+			CreatedAt:           db.DateTime{},
 			OwnerID:             "1",
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages: []db.DamageModel{{}},
-			Leases:  []db.LeaseModel{},
+			Leases: []db.LeaseModel{{
+				InnerLease: db.InnerLease{
+					ID:        "1",
+					Active:    true,
+					StartDate: db.DateTime{},
+					EndDate:   nil,
+				},
+				RelationsLease: db.RelationsLease{
+					Tenant: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Name",
+						},
+					},
+					Damages: []db.DamageModel{{
+						InnerDamage: db.InnerDamage{
+							ID:      "1",
+							FixedAt: nil,
+						}},
+					},
+				},
+			}},
 		},
 	}
 }
@@ -64,14 +83,34 @@ func BuildTestPropertyWithInventory(id string) db.PropertyModel {
 			AreaSqm:             20.0,
 			RentalPricePerMonth: 500,
 			DepositPrice:        1000,
-			CreatedAt:           time.Now(),
+			CreatedAt:           db.DateTime{},
 			OwnerID:             "1",
 			PictureID:           utils.Ptr("1"),
 			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages: []db.DamageModel{{}},
-			Leases:  []db.LeaseModel{{}},
+			Leases: []db.LeaseModel{{
+				InnerLease: db.InnerLease{
+					ID:        "1",
+					Active:    true,
+					StartDate: db.DateTime{},
+					EndDate:   nil,
+				},
+				RelationsLease: db.RelationsLease{
+					Tenant: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Name",
+						},
+					},
+					Damages: []db.DamageModel{{
+						InnerDamage: db.InnerDamage{
+							ID:      "1",
+							FixedAt: nil,
+						}},
+					},
+				},
+			}},
 			Rooms: []db.RoomModel{
 				{
 					InnerRoom: db.InnerRoom{
@@ -104,33 +143,16 @@ func TestPropertyResponse(t *testing.T) {
 		assert.Equal(t, pc.Country, propertyResponse.Country)
 		assert.Equal(t, pc.OwnerID, propertyResponse.OwnerID)
 
-		assert.Equal(t, "available", propertyResponse.Status)
+		assert.Equal(t, "unavailable", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Empty(t, propertyResponse.Tenant)
-		assert.Nil(t, propertyResponse.StartDate)
+		assert.Equal(t, "Test Name", propertyResponse.Tenant)
+		assert.Equal(t, propertyResponse.StartDate, utils.Ptr(db.DateTime{}))
 		assert.Nil(t, propertyResponse.EndDate)
 	})
 
 	t.Run("FromProperty2", func(t *testing.T) {
-		date := time.Now()
 		newPc := BuildTestProperty("2")
-		newPc.RelationsProperty.Leases = []db.LeaseModel{
-			{
-				InnerLease: db.InnerLease{
-					Active:    true,
-					StartDate: date,
-					EndDate:   nil,
-				},
-				RelationsLease: db.RelationsLease{
-					Tenant: &db.UserModel{
-						InnerUser: db.InnerUser{
-							Firstname: "Test",
-							Lastname:  "Name",
-						},
-					},
-				},
-			},
-		}
+		newPc.RelationsProperty.Leases[0].Active = false
 
 		propertyResponse := models.PropertyResponse{}
 		propertyResponse.FromDbProperty(newPc)
@@ -143,19 +165,20 @@ func TestPropertyResponse(t *testing.T) {
 		assert.Equal(t, newPc.Country, propertyResponse.Country)
 		assert.Equal(t, newPc.OwnerID, propertyResponse.OwnerID)
 
-		assert.Equal(t, "unavailable", propertyResponse.Status)
+		assert.Equal(t, "available", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "Test Name", propertyResponse.Tenant)
-		assert.Equal(t, propertyResponse.StartDate, &date)
+		assert.Empty(t, propertyResponse.Tenant)
+		assert.Nil(t, propertyResponse.StartDate)
 		assert.Nil(t, propertyResponse.EndDate)
 	})
 
 	t.Run("FromProperty3", func(t *testing.T) {
 		newPc := BuildTestProperty("3")
+		newPc.RelationsProperty.Leases[0].Active = false
 		newPc.RelationsProperty.LeaseInvite = &db.LeaseInviteModel{
 			InnerLeaseInvite: db.InnerLeaseInvite{
 				TenantEmail: "test@example.com",
-				StartDate:   time.Now(),
+				StartDate:   db.DateTime{},
 				EndDate:     nil,
 			},
 		}
@@ -189,10 +212,10 @@ func TestPropertyResponse(t *testing.T) {
 		assert.Equal(t, pc.Country, propertyResponse.Country)
 		assert.Equal(t, pc.OwnerID, propertyResponse.OwnerID)
 
-		assert.Equal(t, "available", propertyResponse.Status)
+		assert.Equal(t, "unavailable", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Empty(t, propertyResponse.Tenant)
-		assert.Nil(t, propertyResponse.StartDate)
+		assert.Equal(t, "Test Name", propertyResponse.Tenant)
+		assert.Equal(t, propertyResponse.StartDate, utils.Ptr(db.DateTime{}))
 		assert.Nil(t, propertyResponse.EndDate)
 	})
 }
@@ -212,10 +235,10 @@ func TestPropertyInventoryResponse(t *testing.T) {
 		assert.Equal(t, pc.Country, propertyResponse.Country)
 		assert.Equal(t, pc.OwnerID, propertyResponse.OwnerID)
 
-		assert.Equal(t, "available", propertyResponse.Status)
+		assert.Equal(t, "unavailable", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Empty(t, propertyResponse.Tenant)
-		assert.Nil(t, propertyResponse.StartDate)
+		assert.Equal(t, "Test Name", propertyResponse.Tenant)
+		assert.Equal(t, propertyResponse.StartDate, utils.Ptr(db.DateTime{}))
 		assert.Nil(t, propertyResponse.EndDate)
 
 		assert.Equal(t, pc.InnerProperty.PictureID, propertyResponse.PictureID)
@@ -225,25 +248,8 @@ func TestPropertyInventoryResponse(t *testing.T) {
 	})
 
 	t.Run("FromProperty2", func(t *testing.T) {
-		date := time.Now()
 		newPc := BuildTestPropertyWithInventory("2")
-		newPc.RelationsProperty.Leases = []db.LeaseModel{
-			{
-				InnerLease: db.InnerLease{
-					Active:    true,
-					StartDate: date,
-					EndDate:   nil,
-				},
-				RelationsLease: db.RelationsLease{
-					Tenant: &db.UserModel{
-						InnerUser: db.InnerUser{
-							Firstname: "Test",
-							Lastname:  "Name",
-						},
-					},
-				},
-			},
-		}
+		newPc.RelationsProperty.Leases[0].Active = false
 
 		propertyResponse := models.PropertyInventoryResponse{}
 		propertyResponse.FromDbProperty(newPc)
@@ -256,10 +262,10 @@ func TestPropertyInventoryResponse(t *testing.T) {
 		assert.Equal(t, newPc.Country, propertyResponse.Country)
 		assert.Equal(t, newPc.OwnerID, propertyResponse.OwnerID)
 
-		assert.Equal(t, "unavailable", propertyResponse.Status)
+		assert.Equal(t, "available", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "Test Name", propertyResponse.Tenant)
-		assert.Equal(t, propertyResponse.StartDate, &date)
+		assert.Empty(t, propertyResponse.Tenant)
+		assert.Nil(t, propertyResponse.StartDate)
 		assert.Nil(t, propertyResponse.EndDate)
 
 		assert.Equal(t, newPc.InnerProperty.PictureID, propertyResponse.PictureID)
@@ -270,10 +276,11 @@ func TestPropertyInventoryResponse(t *testing.T) {
 
 	t.Run("FromProperty3", func(t *testing.T) {
 		newPc := BuildTestPropertyWithInventory("3")
+		newPc.RelationsProperty.Leases[0].Active = false
 		newPc.RelationsProperty.LeaseInvite = &db.LeaseInviteModel{
 			InnerLeaseInvite: db.InnerLeaseInvite{
 				TenantEmail: "test@example.com",
-				StartDate:   time.Now(),
+				StartDate:   db.DateTime{},
 				EndDate:     nil,
 			},
 		}
@@ -312,10 +319,10 @@ func TestPropertyInventoryResponse(t *testing.T) {
 		assert.Equal(t, pc.Country, propertyResponse.Country)
 		assert.Equal(t, pc.OwnerID, propertyResponse.OwnerID)
 
-		assert.Equal(t, "available", propertyResponse.Status)
+		assert.Equal(t, "unavailable", propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Empty(t, propertyResponse.Tenant)
-		assert.Nil(t, propertyResponse.StartDate)
+		assert.Equal(t, "Test Name", propertyResponse.Tenant)
+		assert.Equal(t, propertyResponse.StartDate, utils.Ptr(db.DateTime{}))
 		assert.Nil(t, propertyResponse.EndDate)
 
 		assert.Equal(t, pc.InnerProperty.PictureID, propertyResponse.PictureID)

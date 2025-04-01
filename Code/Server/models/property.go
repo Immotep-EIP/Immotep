@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"immotep/backend/prisma/db"
+	// "immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -88,7 +89,10 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	p.CreatedAt = model.CreatedAt
 	p.Archived = model.Archived
 
-	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	p.NbDamage = 0
+	for _, lease := range model.Leases() {
+		p.NbDamage += utils.CountIf(lease.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	}
 
 	activeIndex := slices.IndexFunc(model.Leases(), func(x db.LeaseModel) bool { return x.Active })
 	invite, inviteOk := model.LeaseInvite()
@@ -176,7 +180,10 @@ func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel) {
 	p.CreatedAt = model.CreatedAt
 	p.Archived = model.Archived
 
-	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	p.NbDamage = 0
+	for _, lease := range model.Leases() {
+		p.NbDamage += utils.CountIf(lease.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	}
 
 	activeIndex := slices.IndexFunc(model.Leases(), func(x db.LeaseModel) bool { return x.Active })
 	invite, inviteOk := model.LeaseInvite()

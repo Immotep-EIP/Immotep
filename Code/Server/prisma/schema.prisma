@@ -70,21 +70,26 @@ model lease {
     property_id String
 
     documents   document[]
+    damages     damage[]
 }
 
 model damage {
     id          String   @id @default(cuid())
     comment     String
-    room        String
     priority    priority
     read        Boolean  @default(false)
 
-    created_at  DateTime @default(now())
-    updated_at  DateTime @updatedAt
-    fixed_at    DateTime?
+    created_at     DateTime @default(now())
+    updated_at     DateTime @updatedAt
+    fix_planned_at DateTime?
+    fixed_at       DateTime?
 
-    property    property @relation(fields: [property_id], references: [id])
-    property_id String
+    lease       lease   @relation(fields: [lease_id], references: [id])
+    lease_id    String
+    room        room    @relation(fields: [room_id], references: [id])
+    room_id     String
+
+    pictures    image[]
 }
 
 model property {
@@ -109,7 +114,6 @@ model property {
 
     leases        lease[]
     lease_invite  leaseInvite?
-    damages       damage[]
     rooms         room[]
     reports       inventoryReport[]
 
@@ -137,6 +141,7 @@ model image {
     properties      property[]
     roomstates      roomState[]
     furniturestates furnitureState[]
+    damages         damage[]
 }
 
 model document {
@@ -159,6 +164,7 @@ model room {
 
     furnitures  furniture[]
     roomStates  roomState[]
+    damages     damage[]
 
     @@unique([name, property_id])
 }

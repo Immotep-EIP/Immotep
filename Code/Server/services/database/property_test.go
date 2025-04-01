@@ -33,28 +33,39 @@ func BuildTestProperty(id string) db.PropertyModel {
 			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages: []db.DamageModel{{}},
-			Leases:  []db.LeaseModel{{}},
+			Leases: []db.LeaseModel{{
+				InnerLease: db.InnerLease{
+					ID:     "1",
+					Active: true,
+				},
+				RelationsLease: db.RelationsLease{
+					Tenant: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Test",
+						},
+					},
+					Damages: []db.DamageModel{{
+						InnerDamage: db.InnerDamage{
+							ID:      "1",
+							FixedAt: nil,
+						}},
+					},
+				},
+			}},
+			LeaseInvite: &db.LeaseInviteModel{},
 		},
 	}
 }
 
+// #############################################################################
+
 func TestGetAllProperties(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-
-	mock.Property.Expect(
-		client.Client.Property.FindMany(
-			db.Property.OwnerID.Equals("1"),
-			db.Property.Archived.Equals(false),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).ReturnsMany([]db.PropertyModel{property})
+	m.Property.Expect(database.MockGetAllPropertyByOwnerId(c, false)).ReturnsMany([]db.PropertyModel{property})
 
 	allProperties := database.GetAllPropertyByOwnerId("1", false)
 	assert.Len(t, allProperties, 1)
@@ -62,22 +73,12 @@ func TestGetAllProperties(t *testing.T) {
 }
 
 func TestGetAllProperties_MultipleProperties(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	p1 := BuildTestProperty("1")
 	p2 := BuildTestProperty("2")
-
-	mock.Property.Expect(
-		client.Client.Property.FindMany(
-			db.Property.OwnerID.Equals("1"),
-			db.Property.Archived.Equals(false),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).ReturnsMany([]db.PropertyModel{p1, p2})
+	m.Property.Expect(database.MockGetAllPropertyByOwnerId(c, false)).ReturnsMany([]db.PropertyModel{p1, p2})
 
 	allProperties := database.GetAllPropertyByOwnerId("1", false)
 	assert.Len(t, allProperties, 2)
@@ -86,57 +87,34 @@ func TestGetAllProperties_MultipleProperties(t *testing.T) {
 }
 
 func TestGetAllProperties_NoProperties(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindMany(
-			db.Property.OwnerID.Equals("1"),
-			db.Property.Archived.Equals(false),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).ReturnsMany([]db.PropertyModel{})
+	m.Property.Expect(database.MockGetAllPropertyByOwnerId(c, false)).ReturnsMany([]db.PropertyModel{})
 
 	allProperties := database.GetAllPropertyByOwnerId("1", false)
 	assert.Empty(t, allProperties)
 }
 
 func TestGetAllProperties_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindMany(
-			db.Property.OwnerID.Equals("1"),
-			db.Property.Archived.Equals(false),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Property.Expect(database.MockGetAllPropertyByOwnerId(c, false)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.GetAllPropertyByOwnerId("1", false)
 	})
 }
 
+// #############################################################################
+
 func TestGetPropertyByID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	foundProperty := database.GetPropertyByID("1")
 	assert.NotNil(t, foundProperty)
@@ -144,52 +122,34 @@ func TestGetPropertyByID(t *testing.T) {
 }
 
 func TestGetPropertyByID_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	foundProperty := database.GetPropertyByID("1")
 	assert.Nil(t, foundProperty)
 }
 
 func TestGetPropertyByID_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Property.Expect(database.MockGetPropertyByID(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.GetPropertyByID("1")
 	})
 }
 
+// #############################################################################
+
 func TestGetPropertyInventory(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
-		),
-	).Returns(property)
+	m.Property.Expect(database.MockGetPropertyInventory(c)).Returns(property)
 
 	foundProperty := database.GetPropertyInventory("1")
 	assert.NotNil(t, foundProperty)
@@ -197,64 +157,34 @@ func TestGetPropertyInventory(t *testing.T) {
 }
 
 func TestGetPropertyInventory_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyInventory(c)).Errors(db.ErrNotFound)
 
 	foundProperty := database.GetPropertyInventory("1")
 	assert.Nil(t, foundProperty)
 }
 
 func TestGetPropertyInventory_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Property.Expect(database.MockGetPropertyInventory(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.GetPropertyInventory("1")
 	})
 }
 
+// #############################################################################
+
 func TestCreateProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-
-	mock.Property.Expect(
-		client.Client.Property.CreateOne(
-			db.Property.Name.Set(property.Name),
-			db.Property.Address.Set(property.Address),
-			db.Property.City.Set(property.City),
-			db.Property.PostalCode.Set(property.PostalCode),
-			db.Property.Country.Set(property.Country),
-			db.Property.AreaSqm.Set(property.AreaSqm),
-			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
-			db.Property.DepositPrice.Set(property.DepositPrice),
-			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch(),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	m.Property.Expect(database.MockCreateProperty(c, property)).Returns(property)
 
 	newProperty := database.CreateProperty(property, "1")
 	assert.NotNil(t, newProperty)
@@ -262,29 +192,11 @@ func TestCreateProperty(t *testing.T) {
 }
 
 func TestCreateProperty_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-
-	mock.Property.Expect(
-		client.Client.Property.CreateOne(
-			db.Property.Name.Set(property.Name),
-			db.Property.Address.Set(property.Address),
-			db.Property.City.Set(property.City),
-			db.Property.PostalCode.Set(property.PostalCode),
-			db.Property.Country.Set(property.Country),
-			db.Property.AreaSqm.Set(property.AreaSqm),
-			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
-			db.Property.DepositPrice.Set(property.DepositPrice),
-			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch(),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(&protocol.UserFacingError{
+	m.Property.Expect(database.MockCreateProperty(c, property)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference
 		Meta: protocol.Meta{
@@ -298,51 +210,26 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 }
 
 func TestCreateProperty_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-
-	mock.Property.Expect(
-		client.Client.Property.CreateOne(
-			db.Property.Name.Set(property.Name),
-			db.Property.Address.Set(property.Address),
-			db.Property.City.Set(property.City),
-			db.Property.PostalCode.Set(property.PostalCode),
-			db.Property.Country.Set(property.Country),
-			db.Property.AreaSqm.Set(property.AreaSqm),
-			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
-			db.Property.DepositPrice.Set(property.DepositPrice),
-			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch(),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Property.Expect(database.MockCreateProperty(c, property)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.CreateProperty(property, "1")
 	})
 }
 
+// #############################################################################
+
 func TestUpdatePropertyPicture(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 	image := BuildTestImage("1", "b3Vp")
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
-		),
-	).Returns(property)
+	m.Property.Expect(database.MockUpdatePropertyPicture(c)).Returns(property)
 
 	updatedProperty := database.UpdatePropertyPicture(property, image)
 	assert.NotNil(t, updatedProperty)
@@ -350,66 +237,39 @@ func TestUpdatePropertyPicture(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 	image := BuildTestImage("1", "b3Vp")
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockUpdatePropertyPicture(c)).Errors(db.ErrNotFound)
 
 	updatedProperty := database.UpdatePropertyPicture(property, image)
 	assert.Nil(t, updatedProperty)
 }
 
 func TestUpdatePropertyPicture_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 	image := BuildTestImage("1", "b3Vp")
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Property.Expect(database.MockUpdatePropertyPicture(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.UpdatePropertyPicture(property, image)
 	})
 }
 
+// #############################################################################
+
 func TestArchiveProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 	property.Archived = true
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Archived.Set(true),
-		),
-	).Returns(property)
+	m.Property.Expect(database.MockArchiveProperty(c)).Returns(property)
 
 	archivedProperty := database.ToggleArchiveProperty(property.ID, true)
 	assert.NotNil(t, archivedProperty)
@@ -418,52 +278,32 @@ func TestArchiveProperty(t *testing.T) {
 }
 
 func TestArchiveProperty_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Archived.Set(true),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockArchiveProperty(c)).Errors(db.ErrNotFound)
 
 	archivedProperty := database.ToggleArchiveProperty(property.ID, true)
 	assert.Nil(t, archivedProperty)
 }
 
 func TestArchiveProperty_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Archived.Set(true),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Property.Expect(database.MockArchiveProperty(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.ToggleArchiveProperty(property.ID, true)
 	})
 }
 
+// #############################################################################
+
 func TestUpdateProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
@@ -478,24 +318,7 @@ func TestUpdateProperty(t *testing.T) {
 		RentalPricePerMonth: utils.Ptr(600.0),
 		DepositPrice:        utils.Ptr(1200.0),
 	}
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Name.SetIfPresent(updateRequest.Name),
-			db.Property.Address.SetIfPresent(updateRequest.Address),
-			db.Property.ApartmentNumber.SetIfPresent(updateRequest.ApartmentNumber),
-			db.Property.City.SetIfPresent(updateRequest.City),
-			db.Property.PostalCode.SetIfPresent(updateRequest.PostalCode),
-			db.Property.Country.SetIfPresent(updateRequest.Country),
-			db.Property.AreaSqm.SetIfPresent(updateRequest.AreaSqm),
-			db.Property.RentalPricePerMonth.SetIfPresent(updateRequest.RentalPricePerMonth),
-			db.Property.DepositPrice.SetIfPresent(updateRequest.DepositPrice),
-		),
-	).Returns(property)
+	m.Property.Expect(database.MockUpdateProperty(c, updateRequest)).Returns(property)
 
 	updatedProperty := database.UpdateProperty(property.ID, updateRequest)
 	assert.NotNil(t, updatedProperty)
@@ -503,7 +326,7 @@ func TestUpdateProperty(t *testing.T) {
 }
 
 func TestUpdateProperty_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	updateRequest := models.PropertyUpdateRequest{
@@ -517,31 +340,14 @@ func TestUpdateProperty_NotFound(t *testing.T) {
 		RentalPricePerMonth: utils.Ptr(600.0),
 		DepositPrice:        utils.Ptr(1200.0),
 	}
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Name.SetIfPresent(updateRequest.Name),
-			db.Property.Address.SetIfPresent(updateRequest.Address),
-			db.Property.ApartmentNumber.SetIfPresent(updateRequest.ApartmentNumber),
-			db.Property.City.SetIfPresent(updateRequest.City),
-			db.Property.PostalCode.SetIfPresent(updateRequest.PostalCode),
-			db.Property.Country.SetIfPresent(updateRequest.Country),
-			db.Property.AreaSqm.SetIfPresent(updateRequest.AreaSqm),
-			db.Property.RentalPricePerMonth.SetIfPresent(updateRequest.RentalPricePerMonth),
-			db.Property.DepositPrice.SetIfPresent(updateRequest.DepositPrice),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockUpdateProperty(c, updateRequest)).Errors(db.ErrNotFound)
 
 	updatedProperty := database.UpdateProperty("1", updateRequest)
 	assert.Nil(t, updatedProperty)
 }
 
 func TestUpdateProperty_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	updateRequest := models.PropertyUpdateRequest{
@@ -555,24 +361,7 @@ func TestUpdateProperty_NoConnection(t *testing.T) {
 		RentalPricePerMonth: utils.Ptr(600.0),
 		DepositPrice:        utils.Ptr(1200.0),
 	}
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Name.SetIfPresent(updateRequest.Name),
-			db.Property.Address.SetIfPresent(updateRequest.Address),
-			db.Property.ApartmentNumber.SetIfPresent(updateRequest.ApartmentNumber),
-			db.Property.City.SetIfPresent(updateRequest.City),
-			db.Property.PostalCode.SetIfPresent(updateRequest.PostalCode),
-			db.Property.Country.SetIfPresent(updateRequest.Country),
-			db.Property.AreaSqm.SetIfPresent(updateRequest.AreaSqm),
-			db.Property.RentalPricePerMonth.SetIfPresent(updateRequest.RentalPricePerMonth),
-			db.Property.DepositPrice.SetIfPresent(updateRequest.DepositPrice),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Property.Expect(database.MockUpdateProperty(c, updateRequest)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.UpdateProperty("1", updateRequest)

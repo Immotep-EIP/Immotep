@@ -10,12 +10,12 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/router/middlewares"
 	"immotep/backend/services"
+	"immotep/backend/services/database"
 )
 
 func TestCheckActiveLease(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -25,52 +25,34 @@ func TestCheckActiveLease(t *testing.T) {
 			Active:     true,
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{lease})
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{lease})
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckActiveLeaseByProperty("propertyId")(c)
+	middlewares.CheckActiveLeaseByProperty("propertyId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckActiveLease_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{})
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{})
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckActiveLeaseByProperty("propertyId")(c)
+	middlewares.CheckActiveLeaseByProperty("propertyId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckActiveLease_MultipleActiveLeases(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease1 := db.LeaseModel{
@@ -87,29 +69,20 @@ func TestCheckActiveLease_MultipleActiveLeases(t *testing.T) {
 			Active:     true,
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{lease1, lease2})
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
 	assert.Panics(t, func() {
-		middlewares.CheckActiveLeaseByProperty("propertyId")(c)
+		middlewares.CheckActiveLeaseByProperty("propertyId")(ctx)
 	})
 }
 
 func TestCheckLeaseInvite(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	leaseInvite := db.LeaseInviteModel{
@@ -118,40 +91,34 @@ func TestCheckLeaseInvite(t *testing.T) {
 			PropertyID: "1",
 		},
 	}
-	mock.LeaseInvite.Expect(
-		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.PropertyID.Equals("1")),
-	).Returns(leaseInvite)
+	m.LeaseInvite.Expect(database.MockGetCurrentLeaseInvite(c)).Returns(leaseInvite)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckLeaseInvite("propertyId")(c)
+	middlewares.CheckLeaseInvite("propertyId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckLeaseInvite_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.LeaseInvite.Expect(
-		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.PropertyID.Equals("1")),
-	).Errors(db.ErrNotFound)
+	m.LeaseInvite.Expect(database.MockGetCurrentLeaseInvite(c)).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
 
-	middlewares.CheckLeaseInvite("propertyId")(c)
+	middlewares.CheckLeaseInvite("propertyId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckLeaseOwnership_CurrentLease(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -161,31 +128,22 @@ func TestCheckLeaseOwnership_CurrentLease(t *testing.T) {
 			Active:     true,
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{lease})
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{lease})
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		gin.Param{Key: "propertyId", Value: "1"},
 		gin.Param{Key: "leaseId", Value: "current"},
 	}
 
-	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(c)
+	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckLeaseOwnership_LeaseByID(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -194,56 +152,40 @@ func TestCheckLeaseOwnership_LeaseByID(t *testing.T) {
 			PropertyID: "1",
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindUnique(
-			db.Lease.ID.Equals("1"),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Returns(lease)
+	m.Lease.Expect(database.MockGetLeaseByID(c)).Returns(lease)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		gin.Param{Key: "propertyId", Value: "1"},
 		gin.Param{Key: "leaseId", Value: "1"},
 	}
 
-	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(c)
+	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckLeaseOwnership_LeaseNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Lease.Expect(
-		client.Client.Lease.FindUnique(
-			db.Lease.ID.Equals("1"),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
+	m.Lease.Expect(database.MockGetLeaseByID(c)).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		gin.Param{Key: "propertyId", Value: "1"},
 		gin.Param{Key: "leaseId", Value: "1"},
 	}
 
-	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(c)
+	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckLeaseOwnership_PropertyMismatch(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -252,30 +194,22 @@ func TestCheckLeaseOwnership_PropertyMismatch(t *testing.T) {
 			PropertyID: "2",
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindUnique(
-			db.Lease.ID.Equals("1"),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Returns(lease)
+	m.Lease.Expect(database.MockGetLeaseByID(c)).Returns(lease)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		gin.Param{Key: "propertyId", Value: "1"},
 		gin.Param{Key: "leaseId", Value: "1"},
 	}
 
-	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(c)
+	middlewares.CheckLeasePropertyOwnership("propertyId", "leaseId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckDocumentOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -285,30 +219,24 @@ func TestCheckDocumentOwnership(t *testing.T) {
 	}
 	doc := db.DocumentModel{
 		InnerDocument: db.InnerDocument{
-			ID:      "doc1",
+			ID:      "1",
 			LeaseID: "1",
 		},
 	}
-
-	mock.Document.Expect(
-		client.Client.Document.FindUnique(
-			db.Document.ID.Equals("doc1"),
-		),
-	).Returns(doc)
+	m.Document.Expect(database.MockGetDocumentByID(c)).Returns(doc)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("lease", lease)
-	c.Params = gin.Params{gin.Param{Key: "docId", Value: "doc1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", lease)
+	ctx.Params = gin.Params{gin.Param{Key: "docId", Value: "1"}}
 
-	middlewares.CheckDocumentLeaseOwnership("docId")(c)
+	middlewares.CheckDocumentLeaseOwnership("docId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckDocumentOwnership_DocumentNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -317,26 +245,20 @@ func TestCheckDocumentOwnership_DocumentNotFound(t *testing.T) {
 			PropertyID: "1",
 		},
 	}
-
-	mock.Document.Expect(
-		client.Client.Document.FindUnique(
-			db.Document.ID.Equals("doc1"),
-		),
-	).Errors(db.ErrNotFound)
+	m.Document.Expect(database.MockGetDocumentByID(c)).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("lease", lease)
-	c.Params = gin.Params{gin.Param{Key: "docId", Value: "doc1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", lease)
+	ctx.Params = gin.Params{gin.Param{Key: "docId", Value: "1"}}
 
-	middlewares.CheckDocumentLeaseOwnership("docId")(c)
+	middlewares.CheckDocumentLeaseOwnership("docId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckDocumentOwnership_LeaseMismatch(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -347,30 +269,24 @@ func TestCheckDocumentOwnership_LeaseMismatch(t *testing.T) {
 	}
 	doc := db.DocumentModel{
 		InnerDocument: db.InnerDocument{
-			ID:      "doc1",
+			ID:      "1",
 			LeaseID: "2",
 		},
 	}
-
-	mock.Document.Expect(
-		client.Client.Document.FindUnique(
-			db.Document.ID.Equals("doc1"),
-		),
-	).Returns(doc)
+	m.Document.Expect(database.MockGetDocumentByID(c)).Returns(doc)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("lease", lease)
-	c.Params = gin.Params{gin.Param{Key: "docId", Value: "doc1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", lease)
+	ctx.Params = gin.Params{gin.Param{Key: "docId", Value: "1"}}
 
-	middlewares.CheckDocumentLeaseOwnership("docId")(c)
+	middlewares.CheckDocumentLeaseOwnership("docId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckActiveLeaseByTenant(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -381,52 +297,34 @@ func TestCheckActiveLeaseByTenant(t *testing.T) {
 			Active:     true,
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.TenantID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{lease})
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByTenant(c)).ReturnsMany([]db.LeaseModel{lease})
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("oauth.claims", map[string]string{"id": "1"})
 
-	middlewares.CheckActiveLeaseByTenant()(c)
+	middlewares.CheckActiveLeaseByTenant()(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckActiveLeaseByTenant_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.TenantID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{})
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByTenant(c)).ReturnsMany([]db.LeaseModel{})
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("oauth.claims", map[string]string{"id": "1"})
 
-	middlewares.CheckActiveLeaseByTenant()(c)
+	middlewares.CheckActiveLeaseByTenant()(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckActiveLeaseByTenant_MultipleActiveLeases(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease1 := db.LeaseModel{
@@ -445,29 +343,20 @@ func TestCheckActiveLeaseByTenant_MultipleActiveLeases(t *testing.T) {
 			Active:     true,
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.TenantID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{lease1, lease2})
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByTenant(c)).ReturnsMany([]db.LeaseModel{lease1, lease2})
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("oauth.claims", map[string]string{"id": "1"})
 
 	assert.Panics(t, func() {
-		middlewares.CheckActiveLeaseByTenant()(c)
+		middlewares.CheckActiveLeaseByTenant()(ctx)
 	})
 }
 
 func TestCheckLeaseTenantOwnership_CurrentLease(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -478,29 +367,20 @@ func TestCheckLeaseTenantOwnership_CurrentLease(t *testing.T) {
 			Active:     true,
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.TenantID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{lease})
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByTenant(c)).ReturnsMany([]db.LeaseModel{lease})
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{gin.Param{Key: "leaseId", Value: "current"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("oauth.claims", map[string]string{"id": "1"})
+	ctx.Params = gin.Params{gin.Param{Key: "leaseId", Value: "current"}}
 
-	middlewares.CheckLeaseTenantOwnership("leaseId")(c)
+	middlewares.CheckLeaseTenantOwnership("leaseId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckLeaseTenantOwnership_LeaseByID(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -509,52 +389,36 @@ func TestCheckLeaseTenantOwnership_LeaseByID(t *testing.T) {
 			TenantID: "1",
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindUnique(
-			db.Lease.ID.Equals("1"),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Returns(lease)
+	m.Lease.Expect(database.MockGetLeaseByID(c)).Returns(lease)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{gin.Param{Key: "leaseId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("oauth.claims", map[string]string{"id": "1"})
+	ctx.Params = gin.Params{gin.Param{Key: "leaseId", Value: "1"}}
 
-	middlewares.CheckLeaseTenantOwnership("leaseId")(c)
+	middlewares.CheckLeaseTenantOwnership("leaseId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckLeaseTenantOwnership_LeaseNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Lease.Expect(
-		client.Client.Lease.FindUnique(
-			db.Lease.ID.Equals("1"),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
+	m.Lease.Expect(database.MockGetLeaseByID(c)).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{gin.Param{Key: "leaseId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("oauth.claims", map[string]string{"id": "1"})
+	ctx.Params = gin.Params{gin.Param{Key: "leaseId", Value: "1"}}
 
-	middlewares.CheckLeaseTenantOwnership("leaseId")(c)
+	middlewares.CheckLeaseTenantOwnership("leaseId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckLeaseTenantOwnership_TenantMismatch(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	lease := db.LeaseModel{
@@ -563,20 +427,13 @@ func TestCheckLeaseTenantOwnership_TenantMismatch(t *testing.T) {
 			TenantID: "2",
 		},
 	}
-	mock.Lease.Expect(
-		client.Client.Lease.FindUnique(
-			db.Lease.ID.Equals("1"),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Returns(lease)
+	m.Lease.Expect(database.MockGetLeaseByID(c)).Returns(lease)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Set("oauth.claims", map[string]string{"id": "1"})
-	c.Params = gin.Params{gin.Param{Key: "leaseId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("oauth.claims", map[string]string{"id": "1"})
+	ctx.Params = gin.Params{gin.Param{Key: "leaseId", Value: "1"}}
 
-	middlewares.CheckLeaseTenantOwnership("leaseId")(c)
+	middlewares.CheckLeaseTenantOwnership("leaseId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }

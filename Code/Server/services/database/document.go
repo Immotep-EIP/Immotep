@@ -5,7 +5,7 @@ import (
 	"immotep/backend/services"
 )
 
-func GetLeaseDocuments(leaseID string) []db.DocumentModel {
+func GetDocumentsByLease(leaseID string) []db.DocumentModel {
 	pdb := services.DBclient
 	documents, err := pdb.Client.Document.FindMany(
 		db.Document.LeaseID.Equals(leaseID),
@@ -14,6 +14,12 @@ func GetLeaseDocuments(leaseID string) []db.DocumentModel {
 		panic(err)
 	}
 	return documents
+}
+
+func MockGetDocumentsByLease(c *services.PrismaDB) db.DocumentMockExpectParam {
+	return c.Client.Document.FindMany(
+		db.Document.LeaseID.Equals("1"),
+	)
 }
 
 func GetDocumentByID(id string) *db.DocumentModel {
@@ -28,6 +34,12 @@ func GetDocumentByID(id string) *db.DocumentModel {
 	return doc
 }
 
+func MockGetDocumentByID(c *services.PrismaDB) db.DocumentMockExpectParam {
+	return c.Client.Document.FindUnique(
+		db.Document.ID.Equals("1"),
+	)
+}
+
 func CreateDocument(doc db.DocumentModel, leaseId string) db.DocumentModel {
 	pdb := services.DBclient
 	newDocument, err := pdb.Client.Document.CreateOne(
@@ -39,4 +51,12 @@ func CreateDocument(doc db.DocumentModel, leaseId string) db.DocumentModel {
 		panic(err)
 	}
 	return *newDocument
+}
+
+func MockCreateDocument(c *services.PrismaDB, document db.DocumentModel) db.DocumentMockExpectParam {
+	return c.Client.Document.CreateOne(
+		db.Document.Name.Set(document.Name),
+		db.Document.Data.Set(document.Data),
+		db.Document.Lease.Link(db.Lease.ID.Equals(document.LeaseID)),
+	)
 }

@@ -1,5 +1,274 @@
 basePath: /v1
 definitions:
+  db.Cleanliness:
+    enum:
+    - dirty
+    - medium
+    - clean
+    type: string
+    x-enum-varnames:
+    - CleanlinessDirty
+    - CleanlinessMedium
+    - CleanlinessClean
+  db.DamageModel:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      fix_planned_at:
+        type: string
+      fixed_at:
+        type: string
+      id:
+        type: string
+      lease:
+        $ref: '#/definitions/db.LeaseModel'
+      lease_id:
+        type: string
+      pictures:
+        items:
+          $ref: '#/definitions/db.ImageModel'
+        type: array
+      priority:
+        $ref: '#/definitions/db.Priority'
+      read:
+        type: boolean
+      room:
+        $ref: '#/definitions/db.RoomModel'
+      room_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  db.DocumentModel:
+    properties:
+      created_at:
+        type: string
+      data:
+        items:
+          type: integer
+        type: array
+      id:
+        type: string
+      lease:
+        $ref: '#/definitions/db.LeaseModel'
+      lease_id:
+        type: string
+      name:
+        type: string
+    type: object
+  db.FurnitureModel:
+    properties:
+      archived:
+        type: boolean
+      furnitureStates:
+        items:
+          $ref: '#/definitions/db.FurnitureStateModel'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      quantity:
+        type: integer
+      room:
+        $ref: '#/definitions/db.RoomModel'
+      room_id:
+        type: string
+    type: object
+  db.FurnitureStateModel:
+    properties:
+      cleanliness:
+        $ref: '#/definitions/db.Cleanliness'
+      furniture:
+        $ref: '#/definitions/db.FurnitureModel'
+      furniture_id:
+        type: string
+      id:
+        type: string
+      note:
+        type: string
+      pictures:
+        items:
+          $ref: '#/definitions/db.ImageModel'
+        type: array
+      report:
+        $ref: '#/definitions/db.InventoryReportModel'
+      report_id:
+        type: string
+      state:
+        $ref: '#/definitions/db.State'
+    type: object
+  db.ImageModel:
+    properties:
+      created_at:
+        type: string
+      damages:
+        items:
+          $ref: '#/definitions/db.DamageModel'
+        type: array
+      data:
+        items:
+          type: integer
+        type: array
+      furniturestates:
+        items:
+          $ref: '#/definitions/db.FurnitureStateModel'
+        type: array
+      id:
+        type: string
+      properties:
+        items:
+          $ref: '#/definitions/db.PropertyModel'
+        type: array
+      roomstates:
+        items:
+          $ref: '#/definitions/db.RoomStateModel'
+        type: array
+      users:
+        items:
+          $ref: '#/definitions/db.UserModel'
+        type: array
+    type: object
+  db.InventoryReportModel:
+    properties:
+      date:
+        type: string
+      furnitureStates:
+        items:
+          $ref: '#/definitions/db.FurnitureStateModel'
+        type: array
+      id:
+        type: string
+      property:
+        $ref: '#/definitions/db.PropertyModel'
+      property_id:
+        type: string
+      roomStates:
+        items:
+          $ref: '#/definitions/db.RoomStateModel'
+        type: array
+      type:
+        $ref: '#/definitions/db.ReportType'
+    type: object
+  db.LeaseInviteModel:
+    properties:
+      created_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      property:
+        $ref: '#/definitions/db.PropertyModel'
+      property_id:
+        type: string
+      start_date:
+        type: string
+      tenant_email:
+        type: string
+    type: object
+  db.LeaseModel:
+    properties:
+      active:
+        type: boolean
+      created_at:
+        type: string
+      damages:
+        items:
+          $ref: '#/definitions/db.DamageModel'
+        type: array
+      documents:
+        items:
+          $ref: '#/definitions/db.DocumentModel'
+        type: array
+      end_date:
+        type: string
+      id:
+        type: string
+      property:
+        $ref: '#/definitions/db.PropertyModel'
+      property_id:
+        type: string
+      start_date:
+        type: string
+      tenant:
+        $ref: '#/definitions/db.UserModel'
+      tenant_id:
+        type: string
+    type: object
+  db.Priority:
+    enum:
+    - low
+    - medium
+    - high
+    - urgent
+    type: string
+    x-enum-varnames:
+    - PriorityLow
+    - PriorityMedium
+    - PriorityHigh
+    - PriorityUrgent
+  db.PropertyModel:
+    properties:
+      address:
+        type: string
+      apartment_number:
+        type: string
+      archived:
+        type: boolean
+      area_sqm:
+        type: number
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      deposit_price:
+        type: number
+      id:
+        type: string
+      lease_invite:
+        $ref: '#/definitions/db.LeaseInviteModel'
+      leases:
+        items:
+          $ref: '#/definitions/db.LeaseModel'
+        type: array
+      name:
+        type: string
+      owner:
+        $ref: '#/definitions/db.UserModel'
+      owner_id:
+        type: string
+      picture:
+        $ref: '#/definitions/db.ImageModel'
+      picture_id:
+        type: string
+      postal_code:
+        type: string
+      rental_price_per_month:
+        type: number
+      reports:
+        items:
+          $ref: '#/definitions/db.InventoryReportModel'
+        type: array
+      rooms:
+        items:
+          $ref: '#/definitions/db.RoomModel'
+        type: array
+    type: object
+  db.ReportType:
+    enum:
+    - start
+    - middle
+    - end
+    type: string
+    x-enum-varnames:
+    - ReportTypeStart
+    - ReportTypeMiddle
+    - ReportTypeEnd
   db.Role:
     enum:
     - owner
@@ -8,6 +277,101 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  db.RoomModel:
+    properties:
+      archived:
+        type: boolean
+      damages:
+        items:
+          $ref: '#/definitions/db.DamageModel'
+        type: array
+      furnitures:
+        items:
+          $ref: '#/definitions/db.FurnitureModel'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      property:
+        $ref: '#/definitions/db.PropertyModel'
+      property_id:
+        type: string
+      roomStates:
+        items:
+          $ref: '#/definitions/db.RoomStateModel'
+        type: array
+    type: object
+  db.RoomStateModel:
+    properties:
+      cleanliness:
+        $ref: '#/definitions/db.Cleanliness'
+      id:
+        type: string
+      note:
+        type: string
+      pictures:
+        items:
+          $ref: '#/definitions/db.ImageModel'
+        type: array
+      report:
+        $ref: '#/definitions/db.InventoryReportModel'
+      report_id:
+        type: string
+      room:
+        $ref: '#/definitions/db.RoomModel'
+      room_id:
+        type: string
+      state:
+        $ref: '#/definitions/db.State'
+    type: object
+  db.State:
+    enum:
+    - broken
+    - needsRepair
+    - bad
+    - medium
+    - good
+    - new
+    type: string
+    x-enum-varnames:
+    - StateBroken
+    - StateNeedsRepair
+    - StateBad
+    - StateMedium
+    - StateGood
+    - StateNew
+  db.UserModel:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      firstname:
+        type: string
+      id:
+        type: string
+      lastname:
+        type: string
+      owned_properties:
+        items:
+          $ref: '#/definitions/db.PropertyModel'
+        type: array
+      password:
+        type: string
+      profile_picture:
+        $ref: '#/definitions/db.ImageModel'
+      profile_picture_id:
+        type: string
+      rented_properties:
+        items:
+          $ref: '#/definitions/db.LeaseModel'
+        type: array
+      role:
+        $ref: '#/definitions/db.Role'
+      updated_at:
+        type: string
+    type: object
   models.ArchiveRequest:
     properties:
       archive:
@@ -30,6 +394,57 @@ definitions:
       property_id:
         type: string
       type:
+        type: string
+    type: object
+  models.DamageRequest:
+    properties:
+      comment:
+        type: string
+      pictures:
+        items:
+          type: string
+        type: array
+      priority:
+        $ref: '#/definitions/db.Priority'
+      room_id:
+        type: string
+    required:
+    - comment
+    - pictures
+    - priority
+    - room_id
+    type: object
+  models.DamageResponse:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      fix_planned_at:
+        type: string
+      fixed:
+        type: boolean
+      fixed_at:
+        type: string
+      id:
+        type: string
+      lease_id:
+        type: string
+      pictures:
+        items:
+          type: string
+        type: array
+      priority:
+        $ref: '#/definitions/db.Priority'
+      read:
+        type: boolean
+      room_id:
+        type: string
+      room_name:
+        type: string
+      tenant_name:
+        type: string
+      updated_at:
         type: string
     type: object
   models.DocumentRequest:
@@ -948,6 +1363,76 @@ paths:
       summary: Cancel invite
       tags:
       - property
+  /owner/properties/{property_id}/damages/:
+    get:
+      consumes:
+      - application/json
+      description: Get all damages of a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of damages
+          schema:
+            items:
+              $ref: '#/definitions/db.DamageModel'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property damages
+      tags:
+      - damage
+  /owner/properties/{property_id}/damages/fixed/:
+    get:
+      consumes:
+      - application/json
+      description: Get all fixed damages of a property
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of damages
+          schema:
+            items:
+              $ref: '#/definitions/db.DamageModel'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get property fixed damages
+      tags:
+      - damage
   /owner/properties/{property_id}/inventory-reports/:
     get:
       consumes:
@@ -1258,6 +1743,86 @@ paths:
       summary: Get lease by ID
       tags:
       - lease
+  /owner/properties/{property_id}/leases/{lease_id}/damages/:
+    get:
+      consumes:
+      - application/json
+      description: Get all damages of a lease
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of damages
+          schema:
+            items:
+              $ref: '#/definitions/db.DamageModel'
+            type: array
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get lease damages
+      tags:
+      - damage
+  /owner/properties/{property_id}/leases/{lease_id}/damages/fixed/:
+    get:
+      consumes:
+      - application/json
+      description: Get all fixed damages of a lease
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of damages
+          schema:
+            items:
+              $ref: '#/definitions/db.DamageModel'
+            type: array
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get lease fixed damages
+      tags:
+      - damage
   /owner/properties/{property_id}/leases/{lease_id}/docs/:
     get:
       consumes:
@@ -2241,6 +2806,123 @@ paths:
       summary: Get lease by ID
       tags:
       - lease
+  /tenant/leases/{lease_id}/damages/:
+    get:
+      consumes:
+      - application/json
+      description: Get all damages of a lease
+      parameters:
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of damages
+          schema:
+            items:
+              $ref: '#/definitions/db.DamageModel'
+            type: array
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get lease damages
+      tags:
+      - damage
+    post:
+      consumes:
+      - application/json
+      description: Create a damage to a lease
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Damages to create
+        in: body
+        name: damages
+        required: true
+        schema:
+          $ref: '#/definitions/models.DamageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Damage created
+          schema:
+            $ref: '#/definitions/models.DamageResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create damage
+      tags:
+      - damage
+  /tenant/leases/{lease_id}/damages/fixed/:
+    get:
+      consumes:
+      - application/json
+      description: Get all fixed damages of a lease
+      parameters:
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of damages
+          schema:
+            items:
+              $ref: '#/definitions/db.DamageModel'
+            type: array
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: No active lease
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get lease fixed damages
+      tags:
+      - damage
   /tenant/leases/{lease_id}/docs/:
     get:
       consumes:

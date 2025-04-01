@@ -15,6 +15,7 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
 	"immotep/backend/services"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -37,8 +38,26 @@ func BuildTestProperty(id string) db.PropertyModel {
 			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages:     []db.DamageModel{{}},
-			Leases:      []db.LeaseModel{{}},
+			Leases: []db.LeaseModel{{
+				InnerLease: db.InnerLease{
+					ID:     "1",
+					Active: true,
+				},
+				RelationsLease: db.RelationsLease{
+					Tenant: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Test",
+						},
+					},
+					Damages: []db.DamageModel{{
+						InnerDamage: db.InnerDamage{
+							ID:      "1",
+							FixedAt: nil,
+						}},
+					},
+				},
+			}},
 			LeaseInvite: &db.LeaseInviteModel{},
 		},
 	}
@@ -62,8 +81,27 @@ func BuildTestPropertyWithInventory(id string) db.PropertyModel {
 			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages: []db.DamageModel{{}},
-			Leases:  []db.LeaseModel{{}},
+			Leases: []db.LeaseModel{{
+				InnerLease: db.InnerLease{
+					ID:     "1",
+					Active: true,
+				},
+				RelationsLease: db.RelationsLease{
+					Tenant: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Test",
+						},
+					},
+					Damages: []db.DamageModel{{
+						InnerDamage: db.InnerDamage{
+							ID:      "1",
+							FixedAt: nil,
+						}},
+					},
+				},
+			}},
+			LeaseInvite: &db.LeaseInviteModel{},
 			Rooms: []db.RoomModel{
 				{
 					InnerRoom: db.InnerRoom{
@@ -86,7 +124,7 @@ func BuildTestLeaseInvite() db.LeaseInviteModel {
 		InnerLeaseInvite: db.InnerLeaseInvite{
 			ID:          "1",
 			PropertyID:  "1",
-			TenantEmail: "test.test@example.com",
+			TenantEmail: "test@example.com",
 			CreatedAt:   time.Now(),
 			StartDate:   time.Now(),
 			EndDate:     utils.Ptr(time.Now().Add(time.Hour)),
@@ -107,23 +145,13 @@ func BuildTestLeaseInvite() db.LeaseInviteModel {
 }
 
 func TestGetAllProperties(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindMany(
-			db.Property.OwnerID.Equals("1"),
-			db.Property.Archived.Equals(false),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).ReturnsMany([]db.PropertyModel{property})
+	mock.Property.Expect(database.MockGetAllPropertyByOwnerId(c, false)).ReturnsMany([]db.PropertyModel{property})
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
@@ -138,20 +166,13 @@ func TestGetAllProperties(t *testing.T) {
 }
 
 func TestGetPropertyById(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
@@ -166,20 +187,12 @@ func TestGetPropertyById(t *testing.T) {
 }
 
 func TestGetPropertyById_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
@@ -194,20 +207,13 @@ func TestGetPropertyById_NotFound(t *testing.T) {
 }
 
 func TestGetPropertyById_NotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/", nil)
 	req.Header.Set("Oauth.claims.id", "2")
@@ -222,34 +228,15 @@ func TestGetPropertyById_NotYours(t *testing.T) {
 }
 
 func TestGetPropertyInventory(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	propertyInv := BuildTestPropertyWithInventory("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(propertyInv.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
-		),
-	).Returns(propertyInv)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyInventory(c)).Returns(propertyInv)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
@@ -264,23 +251,14 @@ func TestGetPropertyInventory(t *testing.T) {
 }
 
 func TestGetPropertyInventory_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals("wrong"),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/wrong/inventory/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -293,22 +271,13 @@ func TestGetPropertyInventory_NotFound(t *testing.T) {
 }
 
 func TestGetPropertyInventory_NotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory/", nil)
 	req.Header.Set("Oauth.claims.id", "2")
@@ -323,34 +292,16 @@ func TestGetPropertyInventory_NotYours(t *testing.T) {
 }
 
 func TestCreateProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.CreateOne(
-			db.Property.Name.Set(property.Name),
-			db.Property.Address.Set(property.Address),
-			db.Property.City.Set(property.City),
-			db.Property.PostalCode.Set(property.PostalCode),
-			db.Property.Country.Set(property.Country),
-			db.Property.AreaSqm.Set(property.AreaSqm),
-			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
-			db.Property.DepositPrice.Set(property.DepositPrice),
-			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch(),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockCreateProperty(c, property)).Returns(property)
 
 	b, err := json.Marshal(property)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -372,7 +323,6 @@ func TestCreateProperty_MissingFields(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -388,28 +338,11 @@ func TestCreateProperty_MissingFields(t *testing.T) {
 }
 
 func TestCreateProperty_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.CreateOne(
-			db.Property.Name.Set(property.Name),
-			db.Property.Address.Set(property.Address),
-			db.Property.City.Set(property.City),
-			db.Property.PostalCode.Set(property.PostalCode),
-			db.Property.Country.Set(property.Country),
-			db.Property.AreaSqm.Set(property.AreaSqm),
-			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
-			db.Property.DepositPrice.Set(property.DepositPrice),
-			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch(),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(&protocol.UserFacingError{
+	mock.Property.Expect(database.MockCreateProperty(c, property)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference#p2002
 		Meta: protocol.Meta{
@@ -422,7 +355,6 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -438,43 +370,15 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 }
 
 func TestInviteTenant(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals(property.ID),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
-
 	leaseInvite := BuildTestLeaseInvite()
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.Email.Equals(leaseInvite.TenantEmail)),
-	).Errors(db.ErrNotFound)
-
-	mock.LeaseInvite.Expect(
-		client.Client.LeaseInvite.CreateOne(
-			db.LeaseInvite.TenantEmail.Set(leaseInvite.TenantEmail),
-			db.LeaseInvite.StartDate.Set(leaseInvite.StartDate),
-			db.LeaseInvite.Property.Link(db.Property.ID.Equals(property.ID)),
-			db.LeaseInvite.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
-		).With(
-			db.LeaseInvite.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Returns(leaseInvite)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+	mock.User.Expect(database.MockGetUserByEmail(c)).Errors(db.ErrNotFound)
+	mock.LeaseInvite.Expect(database.MockCreateLeaseInvite(c, leaseInvite)).Returns(leaseInvite)
 
 	reqBody := models.InviteRequest{
 		TenantEmail: leaseInvite.TenantEmail,
@@ -485,7 +389,6 @@ func TestInviteTenant(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -510,7 +413,6 @@ func TestInviteTenant_MissingField(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -526,19 +428,12 @@ func TestInviteTenant_MissingField(t *testing.T) {
 }
 
 func TestInviteTenant_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	leaseInvite := BuildTestLeaseInvite()
-
 	reqBody := models.InviteRequest{
 		TenantEmail: leaseInvite.TenantEmail,
 		StartDate:   leaseInvite.StartDate,
@@ -548,9 +443,8 @@ func TestInviteTenant_PropertyNotFound(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/wrong/send-invite/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -564,17 +458,11 @@ func TestInviteTenant_PropertyNotFound(t *testing.T) {
 }
 
 func TestInviteTenant_PropertyNotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	leaseInvite := BuildTestLeaseInvite()
 
@@ -587,7 +475,6 @@ func TestInviteTenant_PropertyNotYours(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -603,28 +490,13 @@ func TestInviteTenant_PropertyNotYours(t *testing.T) {
 }
 
 func TestInviteTenant_PropertyNotAvailable(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	lease := BuildTestLease("1")
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals(property.ID),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{lease})
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{lease})
 
 	leaseInvite := BuildTestLeaseInvite()
 	reqBody := models.InviteRequest{
@@ -636,7 +508,6 @@ func TestInviteTenant_PropertyNotAvailable(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -652,43 +523,15 @@ func TestInviteTenant_PropertyNotAvailable(t *testing.T) {
 }
 
 func TestInviteTenant_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals(property.ID),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
-
 	leaseInvite := BuildTestLeaseInvite()
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.Email.Equals(leaseInvite.TenantEmail)),
-	).Errors(db.ErrNotFound)
-
-	mock.LeaseInvite.Expect(
-		client.Client.LeaseInvite.CreateOne(
-			db.LeaseInvite.TenantEmail.Set(leaseInvite.TenantEmail),
-			db.LeaseInvite.StartDate.Set(leaseInvite.StartDate),
-			db.LeaseInvite.Property.Link(db.Property.ID.Equals(property.ID)),
-			db.LeaseInvite.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
-		).With(
-			db.LeaseInvite.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Errors(&protocol.UserFacingError{
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+	mock.User.Expect(database.MockGetUserByEmail(c)).Errors(db.ErrNotFound)
+	mock.LeaseInvite.Expect(database.MockCreateLeaseInvite(c, leaseInvite)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference
 		Meta: protocol.Meta{
@@ -706,7 +549,6 @@ func TestInviteTenant_AlreadyExists(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -722,33 +564,15 @@ func TestInviteTenant_AlreadyExists(t *testing.T) {
 }
 
 func TestInviteTenant_AlreadyExistsAsOwner(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals(property.ID),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
-
 	leaseInvite := BuildTestLeaseInvite()
 	owner := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.Email.Equals(leaseInvite.TenantEmail)),
-	).Returns(owner)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+	mock.User.Expect(database.MockGetUserByEmail(c)).Returns(owner)
 
 	reqBody := models.InviteRequest{
 		TenantEmail: leaseInvite.TenantEmail,
@@ -759,7 +583,6 @@ func TestInviteTenant_AlreadyExistsAsOwner(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -775,45 +598,18 @@ func TestInviteTenant_AlreadyExistsAsOwner(t *testing.T) {
 }
 
 func TestInviteTenant_AlreadyHasLease(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	lease := BuildTestLease("1")
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.PropertyID.Equals(property.ID),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
-
 	leaseInvite := BuildTestLeaseInvite()
 	user := BuildTestUser("1")
 	user.Role = db.RoleTenant
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.Email.Equals(leaseInvite.TenantEmail)),
-	).Returns(user)
-
-	mock.Lease.Expect(
-		client.Client.Lease.FindMany(
-			db.Lease.TenantID.Equals("1"),
-			db.Lease.Active.Equals(true),
-		).With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).ReturnsMany([]db.LeaseModel{lease})
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+	mock.User.Expect(database.MockGetUserByEmail(c)).Returns(user)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByTenant(c)).ReturnsMany([]db.LeaseModel{lease})
 
 	reqBody := models.InviteRequest{
 		TenantEmail: leaseInvite.TenantEmail,
@@ -824,7 +620,6 @@ func TestInviteTenant_AlreadyHasLease(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
@@ -840,22 +635,13 @@ func TestInviteTenant_AlreadyHasLease(t *testing.T) {
 }
 
 func TestGetPropertyPicture(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	image := BuildTestImage("1", "b3Vp")
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals(image.ID)),
-	).Returns(image)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Image.Expect(database.MockGetImageByID(c)).Returns(image)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -872,18 +658,12 @@ func TestGetPropertyPicture(t *testing.T) {
 }
 
 func TestGetPropertyPicture_NoContent(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 	property.InnerProperty.PictureID = nil
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -896,21 +676,12 @@ func TestGetPropertyPicture_NoContent(t *testing.T) {
 }
 
 func TestGetPropertyPicture_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals("1")),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Image.Expect(database.MockGetImageByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -927,20 +698,14 @@ func TestGetPropertyPicture_NotFound(t *testing.T) {
 }
 
 func TestGetPropertyPicture_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/wrong/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -953,34 +718,14 @@ func TestGetPropertyPicture_PropertyNotFound(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	image := BuildTestImage("1", "b3Vp")
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(image.Data),
-		),
-	).Returns(image)
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
+	mock.Property.Expect(database.MockUpdatePropertyPicture(c)).Returns(property)
 
 	reqBody := models.ImageRequest{
 		Data: "b3Vp",
@@ -1004,17 +749,11 @@ func TestUpdatePropertyPicture(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_MissingFields(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	reqBody := models.ImageRequest{}
 	b, err := json.Marshal(reqBody)
@@ -1036,17 +775,11 @@ func TestUpdatePropertyPicture_MissingFields(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_BadBase64String(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	reqBody := models.ImageRequest{
 		Data: "invalid_base64",
@@ -1070,16 +803,10 @@ func TestUpdatePropertyPicture_BadBase64String(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	reqBody := models.ImageRequest{
 		Data: "b3Vp",
@@ -1089,7 +816,7 @@ func TestUpdatePropertyPicture_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/wrong/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1103,34 +830,14 @@ func TestUpdatePropertyPicture_PropertyNotFound(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	image := BuildTestImage("1", "b3Vp")
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(image.Data),
-		),
-	).Returns(image)
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
+	mock.Property.Expect(database.MockUpdatePropertyPicture(c)).Errors(db.ErrNotFound)
 
 	reqBody := models.ImageRequest{
 		Data: "b3Vp",
@@ -1154,33 +861,14 @@ func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
 }
 
 func TestArchiveProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	updatedProperty := property
 	updatedProperty.Archived = true
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Archived.Set(true),
-		),
-	).Returns(updatedProperty)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Property.Expect(database.MockArchiveProperty(c)).Returns(updatedProperty)
 
 	b, err := json.Marshal(map[string]bool{"archive": true})
 	require.NoError(t, err)
@@ -1201,19 +889,10 @@ func TestArchiveProperty(t *testing.T) {
 }
 
 func TestArchiveProperty_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -1230,24 +909,14 @@ func TestArchiveProperty_NotFound(t *testing.T) {
 }
 
 func TestGetAllArchivedProperties(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 	property.Archived = true
-	mock.Property.Expect(
-		client.Client.Property.FindMany(
-			db.Property.OwnerID.Equals("1"),
-			db.Property.Archived.Equals(true),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).ReturnsMany([]db.PropertyModel{property})
+	mock.Property.Expect(database.MockGetAllPropertyByOwnerId(c, true)).ReturnsMany([]db.PropertyModel{property})
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/archived/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
@@ -1262,38 +931,12 @@ func TestGetAllArchivedProperties(t *testing.T) {
 }
 
 func TestUpdateProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	updatedProperty := property
 	updatedProperty.Name = "Updated Test"
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		).Update(
-			db.Property.Name.SetIfPresent(&updatedProperty.Name),
-			db.Property.Address.SetIfPresent(&updatedProperty.Address),
-			db.Property.ApartmentNumber.SetIfPresent(updatedProperty.InnerProperty.ApartmentNumber),
-			db.Property.City.SetIfPresent(&updatedProperty.City),
-			db.Property.PostalCode.SetIfPresent(&updatedProperty.PostalCode),
-			db.Property.Country.SetIfPresent(&updatedProperty.Country),
-			db.Property.AreaSqm.SetIfPresent(&updatedProperty.AreaSqm),
-			db.Property.RentalPricePerMonth.SetIfPresent(&updatedProperty.RentalPricePerMonth),
-			db.Property.DepositPrice.SetIfPresent(&updatedProperty.DepositPrice),
-		),
-	).Returns(updatedProperty)
-
 	reqBody := models.PropertyUpdateRequest{
 		Name:                &updatedProperty.Name,
 		Address:             &updatedProperty.Address,
@@ -1305,6 +948,9 @@ func TestUpdateProperty(t *testing.T) {
 		RentalPricePerMonth: &updatedProperty.RentalPricePerMonth,
 		DepositPrice:        &updatedProperty.DepositPrice,
 	}
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Property.Expect(database.MockUpdateProperty(c, reqBody)).Returns(updatedProperty)
+
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
@@ -1325,16 +971,10 @@ func TestUpdateProperty(t *testing.T) {
 }
 
 func TestUpdateProperty_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	reqBody := models.PropertyUpdateRequest{
 		Name: utils.Ptr("Updated Test"),
@@ -1344,7 +984,7 @@ func TestUpdateProperty_NotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/wrong/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1358,17 +998,11 @@ func TestUpdateProperty_NotFound(t *testing.T) {
 }
 
 func TestUpdateProperty_NotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	reqBody := models.PropertyUpdateRequest{
 		Name: utils.Ptr("Updated Test"),
@@ -1392,28 +1026,15 @@ func TestUpdateProperty_NotYours(t *testing.T) {
 }
 
 func TestCancelInvite(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
-	mock.LeaseInvite.Expect(
-		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.PropertyID.Equals(property.ID)),
-	).Returns(BuildTestLeaseInvite())
-
-	mock.LeaseInvite.Expect(
-		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.PropertyID.Equals(property.ID)).Delete(),
-	).Returns(BuildTestLeaseInvite())
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.LeaseInvite.Expect(database.MockGetCurrentLeaseInvite(c)).Returns(BuildTestLeaseInvite())
+	mock.LeaseInvite.Expect(database.MockDeleteCurrentLeaseInvite(c)).Returns(BuildTestLeaseInvite())
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/cancel-invite/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
@@ -1424,20 +1045,13 @@ func TestCancelInvite(t *testing.T) {
 }
 
 func TestCancelInvite_PropertyNotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/cancel-invite/", nil)
 	req.Header.Set("Oauth.claims.id", "wrong")
@@ -1452,24 +1066,14 @@ func TestCancelInvite_PropertyNotYours(t *testing.T) {
 }
 
 func TestCancelInvite_NoLeaseInvite(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
-	mock.LeaseInvite.Expect(
-		client.Client.LeaseInvite.FindUnique(db.LeaseInvite.PropertyID.Equals(property.ID)),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.LeaseInvite.Expect(database.MockGetCurrentLeaseInvite(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/cancel-invite/", nil)
 	req.Header.Set("Oauth.claims.id", "1")

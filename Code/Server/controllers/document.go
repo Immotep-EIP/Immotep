@@ -64,7 +64,7 @@ func UploadDocument(c *gin.Context) {
 //	@Router			/tenant/leases/{lease_id}/docs/ [get]
 func GetAllDocumentsByLease(c *gin.Context) {
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
-	documents := database.GetLeaseDocuments(lease.ID)
+	documents := database.GetDocumentsByLease(lease.ID)
 	c.JSON(http.StatusOK, utils.Map(documents, models.DbDocumentToResponse))
 }
 

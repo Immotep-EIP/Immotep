@@ -13,6 +13,7 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
 	"immotep/backend/services"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -178,23 +179,22 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 }
 
 // func TestCreateInventoryReport(t *testing.T) {
-// 	client, mock, ensure := services.ConnectDBTest()
+// 	c, m, ensure := services.ConnectDBTest()
 // 	defer ensure(t)
 
 // 	property := BuildTestProperty("1")
-// 	mock.Property.Expect(
-// 		client.Client.Property.FindUnique(
+// 	m.Property.Expect(
+// 		c.Client.Property.FindUnique(
 // 			db.Property.ID.Equals(property.ID),
 // 		).With(
-// 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 // 			db.Property.LeaseInvite.Fetch(),
 // 		),
 // 	).Returns(property)
 
 // 	lease := BuildTestLeaseWithInfo()
-// 	mock.Lease.Expect(
-// 		client.Client.Lease.FindMany(
+// 	m.Lease.Expect(
+// 		c.Client.Lease.FindMany(
 // 			db.Lease.PropertyID.Equals(property.ID),
 // 			db.Lease.Active.Equals(true),
 // 		).With(
@@ -204,23 +204,23 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 	).ReturnsMany([]db.LeaseModel{lease})
 
 // 	invReport1 := BuildTestInvReport("1", "1", false)
-// 	mock.InventoryReport.Expect(
-// 		client.Client.InventoryReport.CreateOne(
+// 	m.InventoryReport.Expect(
+// 		c.Client.InventoryReport.CreateOne(
 // 			db.InventoryReport.Type.Set(invReport1.Type),
 // 			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport1.PropertyID)),
 // 		),
 // 	).Returns(invReport1)
 
 // 	room := BuildTestRoom("1", "1")
-// 	mock.Room.Expect(
-// 		client.Client.Room.FindUnique(
+// 	m.Room.Expect(
+// 		c.Client.Room.FindUnique(
 // 			db.Room.ID.Equals(room.ID),
 // 		),
 // 	).Returns(room)
 
 // 	roomPicture := BuildTestImage("1", "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAAFAAUDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAABP/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/Ad//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Ah//xAAVEAEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPyH/2gAMAwEAAgADAAAAEB//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAgEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPxD/2Q==")
-// 	mock.Image.Expect(
-// 		client.Client.Image.CreateOne(
+// 	m.Image.Expect(
+// 		c.Client.Image.CreateOne(
 // 			db.Image.Data.Set(roomPicture.Data),
 // 		),
 // 	).Returns(roomPicture)
@@ -231,8 +231,8 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 		roomParams = append(roomParams, db.RoomState.Pictures.Link(db.Image.ID.Equals(id)))
 // 	}
 // 	roomState := BuildTestRoomState("1", "1", "1")
-// 	mock.RoomState.Expect(
-// 		client.Client.RoomState.CreateOne(
+// 	m.RoomState.Expect(
+// 		c.Client.RoomState.CreateOne(
 // 			db.RoomState.Cleanliness.Set(roomState.Cleanliness),
 // 			db.RoomState.State.Set(roomState.State),
 // 			db.RoomState.Note.Set(roomState.Note),
@@ -243,8 +243,8 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 	).Returns(roomState)
 
 // 	furniture := BuildTestFurniture("1", "1")
-// 	mock.Furniture.Expect(
-// 		client.Client.Furniture.FindUnique(
+// 	m.Furniture.Expect(
+// 		c.Client.Furniture.FindUnique(
 // 			db.Furniture.ID.Equals(furniture.ID),
 // 		).With(
 // 			db.Furniture.Room.Fetch(),
@@ -252,8 +252,8 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 	).Returns(furniture)
 
 // 	// furniturePicture := BuildTestImage("2", "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAAFAAUDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAABP/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/Ad//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Ah//xAAVEAEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPyH/2gAMAwEAAgADAAAAEB//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAgEBPxD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAQABPxD/2Q==")
-// 	// mock.Image.Expect(
-// 	// 	client.Client.Image.CreateOne(
+// 	// m.Image.Expect(
+// 	// 	c.Client.Image.CreateOne(
 // 	// 		db.Image.Data.Set(furniturePicture.Data),
 // 	// 	),
 // 	// ).Returns(furniturePicture)
@@ -265,8 +265,8 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 		furnitureParams = append(furnitureParams, db.FurnitureState.Pictures.Link(db.Image.ID.Equals(id)))
 // 	}
 // 	furnitureState := BuildTestFurnitureState("1", "1", "1")
-// 	mock.FurnitureState.Expect(
-// 		client.Client.FurnitureState.CreateOne(
+// 	m.FurnitureState.Expect(
+// 		c.Client.FurnitureState.CreateOne(
 // 			db.FurnitureState.Cleanliness.Set(furnitureState.Cleanliness),
 // 			db.FurnitureState.State.Set(furnitureState.State),
 // 			db.FurnitureState.Note.Set(furnitureState.Note),
@@ -277,8 +277,8 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 	).Returns(furnitureState)
 
 // 	// invReport2 := BuildTestInvReport("1", "1", true)
-// 	// mock.InventoryReport.Expect(
-// 	// 	client.Client.InventoryReport.FindUnique(
+// 	// m.InventoryReport.Expect(
+// 	// 	c.Client.InventoryReport.FindUnique(
 // 	// 		db.InventoryReport.ID.Equals(invReport2.ID),
 // 	// 	).With(
 // 	// 		db.InventoryReport.Property.Fetch(),
@@ -290,8 +290,8 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 	// doc, err := pdf.NewInventoryReportPDF(invReport, lease)
 // 	// require.NoError(t, err)
 
-// 	// mock.Document.Expect(
-// 	// 	client.Client.Document.CreateOne(
+// 	// m.Document.Expect(
+// 	// 	c.Client.Document.CreateOne(
 // 	// 		db.Document.Name.Set("inventory_report_"+time.Now().Format("2006-01-02")+"_"+invReport.ID+".pdf"),
 // 	// 		db.Document.Data.Set(doc),
 // 	// 		db.Document.Lease.Link(db.Lease.ID.Equals(lease.ID)),
@@ -325,15 +325,14 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // }
 
 // func TestCreateInventoryReport_MissingFields(t *testing.T) {
-// 	client, mock, ensure := services.ConnectDBTest()
+// 	c, m, ensure := services.ConnectDBTest()
 // 	defer ensure(t)
 
 // 	property := BuildTestProperty("1")
-// 	mock.Property.Expect(
-// 		client.Client.Property.FindUnique(
+// 	m.Property.Expect(
+// 		c.Client.Property.FindUnique(
 // 			db.Property.ID.Equals(property.ID),
 // 		).With(
-// 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 // 			db.Property.LeaseInvite.Fetch(),
 // 		),
@@ -360,15 +359,14 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // }
 
 // func TestCreateInventoryReport_AlreadyExists(t *testing.T) {
-// 	client, mock, ensure := services.ConnectDBTest()
+// 	c, m, ensure := services.ConnectDBTest()
 // 	defer ensure(t)
 
 // 	property := BuildTestProperty("1")
-// 	mock.Property.Expect(
-// 		client.Client.Property.FindUnique(
+// 	m.Property.Expect(
+// 		c.Client.Property.FindUnique(
 // 			db.Property.ID.Equals(property.ID),
 // 		).With(
-// 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 // 			db.Property.LeaseInvite.Fetch(),
 // 		),
@@ -381,8 +379,8 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 			PropertyID: "1",
 // 		},
 // 	}
-// 	mock.InventoryReport.Expect(
-// 		client.Client.InventoryReport.CreateOne(
+// 	m.InventoryReport.Expect(
+// 		c.Client.InventoryReport.CreateOne(
 // 			db.InventoryReport.Type.Set(invReport.Type),
 // 			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport.PropertyID)),
 // 		),
@@ -415,14 +413,13 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // }
 
 // func TestCreateInventoryReport_PropertyNotFound(t *testing.T) {
-// 	client, mock, ensure := services.ConnectDBTest()
+// 	c, m, ensure := services.ConnectDBTest()
 // 	defer ensure(t)
 
-// 	mock.Property.Expect(
-// 		client.Client.Property.FindUnique(
+// 	m.Property.Expect(
+// 		c.Client.Property.FindUnique(
 // 			db.Property.ID.Equals("1"),
 // 		).With(
-// 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 // 			db.Property.LeaseInvite.Fetch(),
 // 		),
@@ -448,31 +445,30 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // }
 
 // func TestCreateInventoryReport_RoomNotFound(t *testing.T) {
-// 	client, mock, ensure := services.ConnectDBTest()
+// 	c, m, ensure := services.ConnectDBTest()
 // 	defer ensure(t)
 
 // 	property := BuildTestProperty("1")
-// 	mock.Property.Expect(
-// 		client.Client.Property.FindUnique(
+// 	m.Property.Expect(
+// 		c.Client.Property.FindUnique(
 // 			db.Property.ID.Equals(property.ID),
 // 		).With(
-// 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 // 			db.Property.LeaseInvite.Fetch(),
 // 		),
 // 	).Returns(property)
 
 // 	invReport := BuildTestInvReport("1", "1", false)
-// 	mock.InventoryReport.Expect(
-// 		client.Client.InventoryReport.CreateOne(
+// 	m.InventoryReport.Expect(
+// 		c.Client.InventoryReport.CreateOne(
 // 			db.InventoryReport.Type.Set(invReport.Type),
 // 			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport.PropertyID)),
 // 		),
 // 	).Returns(invReport)
 
 // 	room := BuildTestRoom("1", "1")
-// 	mock.Room.Expect(
-// 		client.Client.Room.FindUnique(
+// 	m.Room.Expect(
+// 		c.Client.Room.FindUnique(
 // 			db.Room.ID.Equals(room.ID),
 // 		),
 // 	).Errors(db.ErrNotFound)
@@ -498,38 +494,37 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // }
 
 // func TestCreateInventoryReport_FurnitureNotFound(t *testing.T) {
-// 	client, mock, ensure := services.ConnectDBTest()
+// 	c, m, ensure := services.ConnectDBTest()
 // 	defer ensure(t)
 
 // 	property := BuildTestProperty("1")
-// 	mock.Property.Expect(
-// 		client.Client.Property.FindUnique(
+// 	m.Property.Expect(
+// 		c.Client.Property.FindUnique(
 // 			db.Property.ID.Equals(property.ID),
 // 		).With(
-// 			db.Property.Damages.Fetch(),
 // 			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
 // 			db.Property.LeaseInvite.Fetch(),
 // 		),
 // 	).Returns(property)
 
 // 	invReport := BuildTestInvReport("1", "1", false)
-// 	mock.InventoryReport.Expect(
-// 		client.Client.InventoryReport.CreateOne(
+// 	m.InventoryReport.Expect(
+// 		c.Client.InventoryReport.CreateOne(
 // 			db.InventoryReport.Type.Set(invReport.Type),
 // 			db.InventoryReport.Property.Link(db.Property.ID.Equals(invReport.PropertyID)),
 // 		),
 // 	).Returns(invReport)
 
 // 	room := BuildTestRoom("1", "1")
-// 	mock.Room.Expect(
-// 		client.Client.Room.FindUnique(
+// 	m.Room.Expect(
+// 		c.Client.Room.FindUnique(
 // 			db.Room.ID.Equals(room.ID),
 // 		),
 // 	).Returns(room)
 
 // 	roomPicture := BuildTestImage("1", "b3Vp")
-// 	mock.Image.Expect(
-// 		client.Client.Image.CreateOne(
+// 	m.Image.Expect(
+// 		c.Client.Image.CreateOne(
 // 			db.Image.Data.Set(roomPicture.Data),
 // 		),
 // 	).Returns(roomPicture)
@@ -540,8 +535,8 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 		roomParams = append(roomParams, db.RoomState.Pictures.Link(db.Image.ID.Equals(id)))
 // 	}
 // 	roomState := BuildTestRoomState("1", "1", "1")
-// 	mock.RoomState.Expect(
-// 		client.Client.RoomState.CreateOne(
+// 	m.RoomState.Expect(
+// 		c.Client.RoomState.CreateOne(
 // 			db.RoomState.Cleanliness.Set(roomState.Cleanliness),
 // 			db.RoomState.State.Set(roomState.State),
 // 			db.RoomState.Note.Set(roomState.Note),
@@ -552,8 +547,8 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // 	).Returns(roomState)
 
 // 	furniture := BuildTestFurniture("1", "1")
-// 	mock.Furniture.Expect(
-// 		client.Client.Furniture.FindUnique(
+// 	m.Furniture.Expect(
+// 		c.Client.Furniture.FindUnique(
 // 			db.Furniture.ID.Equals(furniture.ID),
 // 		).With(
 // 			db.Furniture.Room.Fetch(),
@@ -581,35 +576,16 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 // }
 
 func TestGetInventoryReportsByProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	invReports := []db.InventoryReportModel{
 		BuildTestInvReport("1", "1", true),
 		BuildTestInvReport("2", "1", true),
 	}
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindMany(
-			db.InventoryReport.PropertyID.Equals("1"),
-		).OrderBy(
-			db.InventoryReport.Date.Order(db.SortOrderDesc),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).ReturnsMany(invReports)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.InventoryReport.Expect(database.MockGetInvReportByPropertyID(c)).ReturnsMany(invReports)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -628,18 +604,10 @@ func TestGetInventoryReportsByProperty(t *testing.T) {
 }
 
 func TestGetInventoryReportsByProperty_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals("1"),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -657,30 +625,13 @@ func TestGetInventoryReportsByProperty_PropertyNotFound(t *testing.T) {
 }
 
 func TestGetInventoryReportByID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	invReport := BuildTestInvReport("1", "1", true)
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindUnique(
-			db.InventoryReport.ID.Equals(invReport.ID),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Returns(invReport)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Returns(invReport)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -698,32 +649,13 @@ func TestGetInventoryReportByID(t *testing.T) {
 }
 
 func TestGetInventoryReportByID_Latest(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
 	invReport := BuildTestInvReport("1", "1", true)
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindFirst(
-			db.InventoryReport.PropertyID.Equals(property.ID),
-		).OrderBy(
-			db.InventoryReport.Date.Order(db.SortOrderDesc),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Returns(invReport)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Returns(invReport)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -741,29 +673,12 @@ func TestGetInventoryReportByID_Latest(t *testing.T) {
 }
 
 func TestGetInventoryReportByID_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Leases.Fetch().With(db.Lease.Tenant.Fetch()),
-			db.Property.LeaseInvite.Fetch(),
-		),
-	).Returns(property)
-
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindUnique(
-			db.InventoryReport.ID.Equals("1"),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()

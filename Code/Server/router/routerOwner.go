@@ -29,13 +29,19 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			propertyId.POST("/send-invite/", controllers.InviteTenant)
 			propertyId.DELETE("/cancel-invite/", middlewares.CheckLeaseInvite("property_id"), controllers.CancelInvite)
 
-			registerOwnerInventoryRoutes(propertyId)
+			damages := propertyId.Group("/damages/")
+			{
+				damages.GET("/", controllers.GetDamagesByProperty)
+				damages.GET("/fixed/", controllers.GetFixedDamagesByProperty)
+			}
 
-			invReports := propertyId.Group("/inventory-reports/")
-			registerOwnerInvReportRoutes(invReports)
+			registerOwnerInventoryRoutes(propertyId)
 
 			leases := propertyId.Group("/leases/")
 			registerOwnerLeaseRoutes(leases)
+
+			invReports := propertyId.Group("/inventory-reports/")
+			registerOwnerInvReportRoutes(invReports)
 		}
 	}
 }
@@ -48,6 +54,12 @@ func registerOwnerLeaseRoutes(leases *gin.RouterGroup) {
 		leaseId.Use(middlewares.CheckLeasePropertyOwnership("property_id", "lease_id"))
 		leaseId.GET("/", controllers.GetLease)
 		leaseId.PUT("/end/", controllers.EndLease)
+
+		damages := leaseId.Group("/damages/")
+		{
+			damages.GET("/", controllers.GetDamagesByLease)
+			damages.GET("/fixed/", controllers.GetFixedDamagesByLease)
+		}
 
 		docs := leaseId.Group("/docs/")
 		{

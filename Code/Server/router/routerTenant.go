@@ -29,6 +29,13 @@ func registerTenantRoutes(tenant *gin.RouterGroup) {
 				property.GET("/inventory/", controllers.GetPropertyInventory)
 			}
 
+			damages := leaseId.Group("/damages/")
+			{
+				damages.POST("/", controllers.CreateDamage)
+				damages.GET("/", controllers.GetDamagesByLease)
+				damages.GET("/fixed/", controllers.GetFixedDamagesByLease)
+			}
+
 			docs := leaseId.Group("/docs/")
 			{
 				docs.POST("/", controllers.UploadDocument)

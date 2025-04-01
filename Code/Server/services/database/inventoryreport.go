@@ -20,6 +20,13 @@ func CreateInvReport(repType db.ReportType, propertyId string) *db.InventoryRepo
 	return newInvReport
 }
 
+func MockCreateInventoryReport(c *services.PrismaDB, invRep db.InventoryReportModel) db.InventoryReportMockExpectParam {
+	return c.Client.InventoryReport.CreateOne(
+		db.InventoryReport.Type.Set(invRep.Type),
+		db.InventoryReport.Property.Link(db.Property.ID.Equals("1")),
+	)
+}
+
 func CreateRoomState(roomState db.RoomStateModel, picturesId []string, invReportID string) *db.RoomStateModel {
 	params := make([]db.RoomStateSetParam, 0, len(picturesId))
 	for _, id := range picturesId {
@@ -42,6 +49,17 @@ func CreateRoomState(roomState db.RoomStateModel, picturesId []string, invReport
 		panic(err)
 	}
 	return newRoomState
+}
+
+func MockCreateRoomState(c *services.PrismaDB, roomState db.RoomStateModel) db.RoomStateMockExpectParam {
+	return c.Client.RoomState.CreateOne(
+		db.RoomState.Cleanliness.Set(roomState.Cleanliness),
+		db.RoomState.State.Set(roomState.State),
+		db.RoomState.Note.Set(roomState.Note),
+		db.RoomState.Report.Link(db.InventoryReport.ID.Equals("1")),
+		db.RoomState.Room.Link(db.Room.ID.Equals("1")),
+		db.RoomState.Pictures.Link(db.Image.ID.Equals("1")),
+	)
 }
 
 func CreateFurnitureState(furnitureState db.FurnitureStateModel, picturesId []string, invReportID string) *db.FurnitureStateModel {
@@ -68,6 +86,17 @@ func CreateFurnitureState(furnitureState db.FurnitureStateModel, picturesId []st
 	return newFurnitureState
 }
 
+func MockCreateFurnitureState(c *services.PrismaDB, furnitureState db.FurnitureStateModel) db.FurnitureStateMockExpectParam {
+	return c.Client.FurnitureState.CreateOne(
+		db.FurnitureState.Cleanliness.Set(furnitureState.Cleanliness),
+		db.FurnitureState.State.Set(furnitureState.State),
+		db.FurnitureState.Note.Set(furnitureState.Note),
+		db.FurnitureState.Report.Link(db.InventoryReport.ID.Equals("1")),
+		db.FurnitureState.Furniture.Link(db.Furniture.ID.Equals("1")),
+		db.FurnitureState.Pictures.Link(db.Image.ID.Equals("1")),
+	)
+}
+
 func GetInvReportByPropertyID(propertyID string) []db.InventoryReportModel {
 	pdb := services.DBclient
 	invReports, err := pdb.Client.InventoryReport.FindMany(
@@ -83,6 +112,18 @@ func GetInvReportByPropertyID(propertyID string) []db.InventoryReportModel {
 		panic(err)
 	}
 	return invReports
+}
+
+func MockGetInvReportByPropertyID(c *services.PrismaDB) db.InventoryReportMockExpectParam {
+	return c.Client.InventoryReport.FindMany(
+		db.InventoryReport.PropertyID.Equals("1"),
+	).OrderBy(
+		db.InventoryReport.Date.Order(db.SortOrderDesc),
+	).With(
+		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
+	)
 }
 
 func GetInvReportByID(id string) *db.InventoryReportModel {
@@ -103,6 +144,16 @@ func GetInvReportByID(id string) *db.InventoryReportModel {
 	return invReport
 }
 
+func MockGetInvReportByID(c *services.PrismaDB) db.InventoryReportMockExpectParam {
+	return c.Client.InventoryReport.FindUnique(
+		db.InventoryReport.ID.Equals("1"),
+	).With(
+		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
+	)
+}
+
 func GetLatestInvReport(propertyID string) *db.InventoryReportModel {
 	pdb := services.DBclient
 	invReport, err := pdb.Client.InventoryReport.FindFirst(
@@ -121,4 +172,16 @@ func GetLatestInvReport(propertyID string) *db.InventoryReportModel {
 		panic(err)
 	}
 	return invReport
+}
+
+func MockGetLatestInvReport(c *services.PrismaDB) db.InventoryReportMockExpectParam {
+	return c.Client.InventoryReport.FindFirst(
+		db.InventoryReport.PropertyID.Equals("1"),
+	).OrderBy(
+		db.InventoryReport.Date.Order(db.SortOrderDesc),
+	).With(
+		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
+	)
 }
