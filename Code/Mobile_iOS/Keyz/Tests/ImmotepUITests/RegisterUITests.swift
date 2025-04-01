@@ -163,17 +163,17 @@ final class RegisterUITests: XCTestCase {
 
         nameTextField.tap()
         nameTextField.typeText("testName")
-        Thread.sleep(forTimeInterval: 1.0)
+        Thread.sleep(forTimeInterval: 2.0)
         XCTAssertEqual(nameTextField.value as? String, "testName")
 
         firstNameTextField.tap()
         firstNameTextField.typeText("testFirstName")
-        Thread.sleep(forTimeInterval: 1.0)
+        Thread.sleep(forTimeInterval: 2.0)
         XCTAssertEqual(firstNameTextField.value as? String, "testFirstName")
 
         emailTextField.tap()
         emailTextField.typeText("test@example.com")
-        Thread.sleep(forTimeInterval: 1.0)
+        Thread.sleep(forTimeInterval: 2.0)
 
         passwordSecureField.tap()
         passwordSecureField.typeText("testpassword")

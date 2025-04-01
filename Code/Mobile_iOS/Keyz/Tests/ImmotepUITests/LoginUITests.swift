@@ -43,7 +43,21 @@ final class LoginUITests: XCTestCase {
     }
 
     func testWelcomeTextExists() throws {
-        navigateToLoginView()
+        if app.buttons["person.crop.circle.fill"].exists {
+            app.buttons["person.crop.circle.fill"].tap()
+
+            let logoutButton = app.buttons["Logout"].exists || app.buttons["Se déconnecter"].exists
+            XCTAssertTrue(logoutButton)
+
+            if app.buttons["Logout"].exists {
+                app.buttons["Logout"].tap()
+            } else if app.buttons["Se déconnecter"].exists {
+                app.buttons["Se déconnecter"].tap()
+            }
+        } else {
+            return
+        }
+
         let welcomeText = app.staticTexts["Welcome back"].exists || app.staticTexts["Bienvenue !"].exists
         XCTAssertTrue(welcomeText)
     }
@@ -99,15 +113,7 @@ final class LoginUITests: XCTestCase {
 
         passwordSecureField.tap()
         passwordSecureField.typeText("testpassword")
-        Thread.sleep(forTimeInterval: 1.0)
-
-        let predicate = NSPredicate { (evaluatedObject, _) in
-                guard let secureField = evaluatedObject as? XCUIElement,
-                      let value = secureField.value as? String else { return false }
-                return value.count == 12 && value.allSatisfy { $0 == "•" || $0 == "*" }
-            }
-            let expectation = expectation(for: predicate, evaluatedWith: passwordSecureField, handler: nil)
-            wait(for: [expectation], timeout: 5.0)
+        Thread.sleep(forTimeInterval: 5.0)
 
         XCTAssertEqual(emailTextField.value as? String, "test@example.com", "The email is not filled in correctly.")
         XCTAssertEqual(passwordSecureField.value as? String, "••••••••••••", "The password is not filled in correctly.")

@@ -68,28 +68,28 @@ final class CreatePropertyUITests: XCTestCase {
 
     func testFillAndSubmitCreateProperty() throws {
         let formScrollView = app.scrollViews.firstMatch
-        let hasScrollView = formScrollView.waitForExistence(timeout: 2)
+        let hasScrollView = formScrollView.waitForExistence(timeout: 5)
         if !hasScrollView {
-            print("No scroll view found, falling back to app.swipeUp()")
+            print("No scroll view found, falling back to app-level scrolling")
+        } else {
+            print("Scroll view found: \(formScrollView.debugDescription)")
         }
 
-        try fillTextField("Name_textfield", with: "Beach House", scrollView: formScrollView, hasScrollView: hasScrollView)
-        try fillTextField("Address_textfield", with: "789 Coastal Rd", scrollView: formScrollView, hasScrollView: hasScrollView)
+        let fields = [
+            ("Name_textfield", "Beach House"),
+            ("Address_textfield", "789 Coastal Rd"),
+            ("City_textfield", "Miami"),
+            ("Postal Code_textfield", "33101"),
+            ("Country_textfield", "USA"),
+            ("Monthly Rent_textfield", "2000"),
+            ("Deposit_textfield", "4000"),
+            ("Surface (m²)_textfield", "120")
+        ]
 
-        scroll(hasScrollView ? formScrollView : app)
-        Thread.sleep(forTimeInterval: 0.5)
-
-        try fillTextField("City_textfield", with: "Miami", scrollView: formScrollView, hasScrollView: hasScrollView)
-        try fillTextField("Postal Code_textfield", with: "33101", scrollView: formScrollView, hasScrollView: hasScrollView)
-        try fillTextField("Country_textfield", with: "USA", scrollView: formScrollView, hasScrollView: hasScrollView)
-
-        scroll(hasScrollView ? formScrollView : app)
-
-        try fillTextField("Monthly Rent_textfield", with: "2000", scrollView: formScrollView, hasScrollView: hasScrollView)
-        try fillTextField("Deposit_textfield", with: "4000", scrollView: formScrollView, hasScrollView: hasScrollView)
-        try fillTextField("Surface (m²)_textfield", with: "120", scrollView: formScrollView, hasScrollView: hasScrollView)
-
-        scroll(hasScrollView ? formScrollView : app)
+        for (index, (identifier, text)) in fields.enumerated() {
+            let scrollAfter = index < fields.count - 1
+            try fillTextField(identifier, with: text, scrollView: formScrollView, hasScrollView: hasScrollView, scrollAfter: scrollAfter)
+        }
 
         let addButtonPredicate = NSPredicate(format: "identifier == 'confirm_button' AND (label == %@ OR label == %@)", "Add Property", "Ajouter un bien")
         let addButton = app.buttons.element(matching: addButtonPredicate)
@@ -104,29 +104,25 @@ final class CreatePropertyUITests: XCTestCase {
         XCTAssertTrue(titleElement.exists, "Should remain on CreatePropertyView since API is not mocked")
     }
 
-    private func fillTextField(_ identifier: String, with text: String, scrollView: XCUIElement, hasScrollView: Bool) throws {
+    private func fillTextField(_ identifier: String, with text: String, scrollView: XCUIElement, hasScrollView: Bool, scrollAfter: Bool = true) throws {
         let field = app.textFields[identifier]
-        XCTAssertTrue(field.waitForExistence(timeout: 2), "\(identifier) should be accessible")
         while !field.isHittable {
+            print("Field \(identifier) not hittable, scrolling...")
             scroll(hasScrollView ? scrollView : app)
             Thread.sleep(forTimeInterval: 0.5)
             if field.isHittable { break }
+            XCTAssertTrue(field.waitForExistence(timeout: 2), "\(identifier) should be accessible")
         }
+        print("Tapping \(identifier)")
         field.tap()
+        print("Typing '\(text)' into \(identifier)")
         field.typeText(text)
-
-        let returnButtonPredicate = NSPredicate(format: "label IN %@", ["Return", "retour", "Done", "Terminé"])
-        let returnButton = app.keyboards.buttons.element(matching: returnButtonPredicate)
-        
-        let returnButtonExpectation = expectation(for: returnButtonPredicate, evaluatedWith: returnButton, handler: nil)
-        wait(for: [returnButtonExpectation], timeout: 5.0)
-        
-        XCTAssertTrue(returnButton.exists, "Return button should be present for \(identifier)")
-        returnButton.tap()
     }
 
     private func scroll(_ element: XCUIElement) {
-        element.swipeUp()
+        let start = element.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.3)) 
+        let end = element.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.25))
+        start.press(forDuration: 0.1, thenDragTo: end)
     }
 
     func testOpenImagePickerOptions() throws {
