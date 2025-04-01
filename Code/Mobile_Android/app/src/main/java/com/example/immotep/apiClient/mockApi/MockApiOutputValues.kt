@@ -170,3 +170,5 @@ val fakeLoginResponse = LoginResponse(
     expires_in = 100000,
     properties = mapOf("test" to "test")
 )
+
+val fakeProperties = arrayOf(parisFakeProperty, lyonFakeProperty, marseilleFakeProperty)

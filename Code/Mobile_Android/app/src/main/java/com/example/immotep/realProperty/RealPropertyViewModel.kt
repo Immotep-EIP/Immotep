@@ -47,10 +47,10 @@ class RealPropertyViewModel(
             closeError()
             _isLoading.value = true
             try {
-                apiCaller.getPropertiesAsDetailedProperties { _apiError.value = WhichApiError.GET_PROPERTIES }
                 properties.clear()
                 properties.addAll(apiCaller.getPropertiesAsDetailedProperties { _apiError.value = WhichApiError.GET_PROPERTIES })
             } catch (e : Exception) {
+                _apiError.value = WhichApiError.GET_PROPERTIES
                 println("error getting properties ${e.message}")
                 e.printStackTrace()
             } finally {
@@ -60,9 +60,15 @@ class RealPropertyViewModel(
     }
 
     suspend fun addProperty(propertyForm: AddPropertyInput) {
-        val newProperty = apiCaller.addProperty(propertyForm) { _apiError.value = WhichApiError.ADD_PROPERTY }
-        properties.add(newProperty)
-        closeError()
+        try {
+            val newProperty =
+                apiCaller.addProperty(propertyForm) { _apiError.value = WhichApiError.ADD_PROPERTY }
+            properties.add(newProperty)
+            closeError()
+        } catch (e : Exception) {
+            _apiError.value = WhichApiError.ADD_PROPERTY
+            println("error adding property ${e.message}")
+        }
     }
 
     fun deleteProperty(propertyId: String) {
@@ -76,6 +82,7 @@ class RealPropertyViewModel(
                 properties.removeAt(index)
                 closeError()
             } catch (e : Exception) {
+                _apiError.value = WhichApiError.DELETE_PROPERTY
                 println("error deleting property ${e.message}")
                 e.printStackTrace()
             }
