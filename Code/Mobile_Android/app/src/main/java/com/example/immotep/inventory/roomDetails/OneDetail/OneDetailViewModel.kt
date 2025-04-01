@@ -208,8 +208,8 @@ class OneDetailViewModel(
             return
         }
         if (oldReportId == null) {
-            return summarize(propertyId, isRoom, { _aiCallError.value = true })
+            return summarize(propertyId, isRoom) { _aiCallError.value = true }
         }
-        return compare(oldReportId, propertyId, isRoom, { _aiCallError.value = true })
+        return compare(oldReportId, propertyId, isRoom) { _aiCallError.value = true }
     }
 }
