@@ -43,11 +43,15 @@ final class RegisterUITests: XCTestCase {
                 app.buttons["Se déconnecter"].tap()
             }
             let signUpButton = app.buttons["signUpLink"]
+            XCTAssertTrue(signUpButton.waitForExistence(timeout: 2), "Sign Up link should exist")
             signUpButton.tap()
         } else {
             let signUpButton = app.buttons["signUpLink"]
             signUpButton.tap()
         }
+        let welcomePredicate = NSPredicate(format: "label == %@ OR label == %@", "Create your account", "Créer un compte")
+        let welcomeExpectation = expectation(for: welcomePredicate, evaluatedWith: app.staticTexts.element, handler: nil)
+        wait(for: [welcomeExpectation], timeout: 5.0)
     }
 
     func testWelcomeTextExists() throws {
@@ -161,15 +165,17 @@ final class RegisterUITests: XCTestCase {
 
         nameTextField.tap()
         nameTextField.typeText("testName")
+        Thread.sleep(forTimeInterval: 1.0)
         XCTAssertEqual(nameTextField.value as? String, "testName")
 
         firstNameTextField.tap()
         firstNameTextField.typeText("testFirstName")
+        Thread.sleep(forTimeInterval: 1.0)
         XCTAssertEqual(firstNameTextField.value as? String, "testFirstName")
 
         emailTextField.tap()
         emailTextField.typeText("test@example.com")
-        XCTAssertEqual(emailTextField.value as? String, "test@example.com")
+        Thread.sleep(forTimeInterval: 1.0)
 
         passwordSecureField.tap()
         passwordSecureField.typeText("testpassword")

@@ -23,10 +23,11 @@ final class CreatePropertyUITests: XCTestCase {
         XCTAssertTrue(titleElement.waitForExistence(timeout: 2), "The 'New Property' title should be visible in English or French")
         XCTAssertTrue(app.images["image_property"].exists, "Default property image should be visible")
 
-        app.swipeUp()
-
         XCTAssertTrue(app.textFields["Name_textfield"].exists, "Name field should be visible")
         XCTAssertTrue(app.textFields["Address_textfield"].exists, "Address field should be visible")
+
+        app.swipeUp()
+
         XCTAssertTrue(app.textFields["City_textfield"].exists, "City field should be visible")
         XCTAssertTrue(app.textFields["Postal Code_textfield"].exists, "Postal Code field should be visible")
         XCTAssertTrue(app.textFields["Country_textfield"].exists, "Country field should be visible")
@@ -114,8 +115,13 @@ final class CreatePropertyUITests: XCTestCase {
         field.tap()
         field.typeText(text)
 
-        let returnButton = app.keyboards.buttons.element(matching: NSPredicate(format: "label == %@ OR label == %@", "Return", "retour"))
-        XCTAssertTrue(returnButton.waitForExistence(timeout: 2), "Return button should be present for \(identifier)")
+        let returnButtonPredicate = NSPredicate(format: "label IN %@", ["Return", "retour", "Done", "Terminé"])
+        let returnButton = app.keyboards.buttons.element(matching: returnButtonPredicate)
+        
+        let returnButtonExpectation = expectation(for: returnButtonPredicate, evaluatedWith: returnButton, handler: nil)
+        wait(for: [returnButtonExpectation], timeout: 5.0)
+        
+        XCTAssertTrue(returnButton.exists, "Return button should be present for \(identifier)")
         returnButton.tap()
     }
 

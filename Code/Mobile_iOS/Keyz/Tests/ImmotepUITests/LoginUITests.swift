@@ -99,10 +99,15 @@ final class LoginUITests: XCTestCase {
 
         passwordSecureField.tap()
         passwordSecureField.typeText("testpassword")
+        Thread.sleep(forTimeInterval: 1.0)
 
-        let predicate = NSPredicate(format: "value == '••••••••••••'")
-        let expectation = expectation(for: predicate, evaluatedWith: passwordSecureField, handler: nil)
-        wait(for: [expectation], timeout: 5.0)
+        let predicate = NSPredicate { (evaluatedObject, _) in
+                guard let secureField = evaluatedObject as? XCUIElement,
+                      let value = secureField.value as? String else { return false }
+                return value.count == 12 && value.allSatisfy { $0 == "•" || $0 == "*" }
+            }
+            let expectation = expectation(for: predicate, evaluatedWith: passwordSecureField, handler: nil)
+            wait(for: [expectation], timeout: 5.0)
 
         XCTAssertEqual(emailTextField.value as? String, "test@example.com", "The email is not filled in correctly.")
         XCTAssertEqual(passwordSecureField.value as? String, "••••••••••••", "The password is not filled in correctly.")
