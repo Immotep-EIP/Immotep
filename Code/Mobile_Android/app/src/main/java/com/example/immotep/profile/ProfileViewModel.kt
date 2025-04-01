@@ -52,6 +52,7 @@ class ProfileViewModel(
                     role = profile.role,
                 )
             } catch (e: Exception) {
+                _apiError.value = true
                 println(e)
             }
         }
@@ -76,6 +77,7 @@ class ProfileViewModel(
             try {
                 apiCaller.updateProfile(_infos.value.toProfileUpdateInput(), { _apiError.value = true })
             } catch (e: Exception) {
+                _apiError.value = true
                 println(e)
             } finally {
                 _isLoading.value = false
