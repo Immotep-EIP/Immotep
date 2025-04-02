@@ -9,32 +9,7 @@ import (
 	"immotep/backend/utils"
 )
 
-func CheckActiveLeaseByProperty(propertyIdUrlParam string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		lease := database.GetCurrentActiveLeaseByProperty(c.Param(propertyIdUrlParam))
-		if lease == nil {
-			utils.AbortSendError(c, http.StatusNotFound, utils.NoActiveLease, nil)
-			return
-		}
-
-		c.Set("lease", *lease)
-		c.Next()
-	}
-}
-
-func CheckActiveLeaseByTenant() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		claims := utils.GetClaims(c)
-		lease := database.GetCurrentActiveLeaseByTenant(claims["id"])
-		if lease == nil {
-			utils.AbortSendError(c, http.StatusNotFound, utils.NoActiveLease, nil)
-			return
-		}
-
-		c.Set("lease", *lease)
-		c.Next()
-	}
-}
+const CurrentLeaseID = "current"
 
 func CheckLeaseInvite(propertyIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -44,21 +19,25 @@ func CheckLeaseInvite(propertyIdUrlParam string) gin.HandlerFunc {
 			return
 		}
 
+		c.Set("invite", *leaseInvite)
 		c.Next()
 	}
 }
 
 func CheckLeasePropertyOwnership(propertyIdUrlParam string, leaseIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var lease *db.LeaseModel
+		propertyId := c.Param(propertyIdUrlParam)
 		leaseId := c.Param(leaseIdUrlParam)
-		if leaseId == "current" {
-			CheckActiveLeaseByProperty(propertyIdUrlParam)(c)
-			return
+
+		if leaseId == CurrentLeaseID {
+			lease = database.GetCurrentActiveLeaseByProperty(propertyId)
+		} else {
+			lease = database.GetLeaseByID(leaseId)
 		}
 
-		lease := database.GetLeaseByID(leaseId)
-		if lease == nil || lease.PropertyID != c.Param(propertyIdUrlParam) {
-			utils.AbortSendError(c, http.StatusNotFound, utils.LeaseNotFound, nil)
+		if lease == nil || lease.PropertyID != propertyId {
+			utils.AbortSendError(c, http.StatusNotFound, utils.Ternary(leaseId == CurrentLeaseID, utils.NoActiveLease, utils.LeaseNotFound), nil)
 			return
 		}
 
@@ -69,16 +48,18 @@ func CheckLeasePropertyOwnership(propertyIdUrlParam string, leaseIdUrlParam stri
 
 func CheckLeaseTenantOwnership(leaseIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var lease *db.LeaseModel
 		claims := utils.GetClaims(c)
 		leaseId := c.Param(leaseIdUrlParam)
-		if leaseId == "current" {
-			CheckActiveLeaseByTenant()(c)
-			return
+
+		if leaseId == CurrentLeaseID {
+			lease = database.GetCurrentActiveLeaseByTenant(claims["id"])
+		} else {
+			lease = database.GetLeaseByID(leaseId)
 		}
 
-		lease := database.GetLeaseByID(leaseId)
 		if lease == nil || lease.TenantID != claims["id"] {
-			utils.AbortSendError(c, http.StatusNotFound, utils.LeaseNotFound, nil)
+			utils.AbortSendError(c, http.StatusNotFound, utils.Ternary(leaseId == CurrentLeaseID, utils.NoActiveLease, utils.LeaseNotFound), nil)
 			return
 		}
 

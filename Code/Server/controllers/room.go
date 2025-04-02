@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
+	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
@@ -55,7 +56,7 @@ func CreateRoom(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/ [get]
 func GetAllRoomsByProperty(c *gin.Context) {
-	rooms := database.GetRoomByPropertyID(c.Param("property_id"), false)
+	rooms := database.GetRoomsByPropertyID(c.Param("property_id"), false)
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 
@@ -74,7 +75,7 @@ func GetAllRoomsByProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/archived/ [get]
 func GetArchivedRoomsByProperty(c *gin.Context) {
-	rooms := database.GetRoomByPropertyID(c.Param("property_id"), true)
+	rooms := database.GetRoomsByPropertyID(c.Param("property_id"), true)
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 
@@ -94,8 +95,8 @@ func GetArchivedRoomsByProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [get]
 func GetRoom(c *gin.Context) {
-	room := database.GetRoomByID(c.Param("room_id"))
-	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
+	room, _ := c.MustGet("room").(db.RoomModel)
+	c.JSON(http.StatusOK, models.DbRoomToResponse(room))
 }
 
 // ArchiveRoom godoc

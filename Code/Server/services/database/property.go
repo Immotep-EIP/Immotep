@@ -6,7 +6,7 @@ import (
 	"immotep/backend/services"
 )
 
-func GetAllPropertyByOwnerId(ownerId string, archived bool) []db.PropertyModel {
+func GetPropertiesByOwnerId(ownerId string, archived bool) []db.PropertyModel {
 	pdb := services.DBclient
 	allProperties, err := pdb.Client.Property.FindMany(
 		db.Property.OwnerID.Equals(ownerId),

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
+	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
@@ -57,7 +58,7 @@ func CreateFurniture(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/ [get]
 func GetAllFurnituresByRoom(c *gin.Context) {
-	furnitures := database.GetFurnitureByRoomID(c.Param("room_id"), false)
+	furnitures := database.GetFurnituresByRoomID(c.Param("room_id"), false)
 	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
 }
 
@@ -77,7 +78,7 @@ func GetAllFurnituresByRoom(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/archived/ [get]
 func GetArchivedFurnituresByRoom(c *gin.Context) {
-	furnitures := database.GetFurnitureByRoomID(c.Param("room_id"), true)
+	furnitures := database.GetFurnituresByRoomID(c.Param("room_id"), true)
 	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
 }
 
@@ -98,8 +99,8 @@ func GetArchivedFurnituresByRoom(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [get]
 func GetFurniture(c *gin.Context) {
-	furniture := database.GetFurnitureByID(c.Param("furniture_id"))
-	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
+	furniture, _ := c.MustGet("furniture").(db.FurnitureModel)
+	c.JSON(http.StatusOK, models.DbFurnitureToResponse(furniture))
 }
 
 // ArchiveFurniture godoc

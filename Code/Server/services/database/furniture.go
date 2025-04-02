@@ -33,7 +33,7 @@ func MockCreateFurniture(c *services.PrismaDB, furniture db.FurnitureModel) db.F
 	)
 }
 
-func GetFurnitureByRoomID(roomID string, archived bool) []db.FurnitureModel {
+func GetFurnituresByRoomID(roomID string, archived bool) []db.FurnitureModel {
 	pdb := services.DBclient
 	furnitures, err := pdb.Client.Furniture.FindMany(
 		db.Furniture.RoomID.Equals(roomID),

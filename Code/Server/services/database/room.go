@@ -27,7 +27,7 @@ func MockCreateRoom(c *services.PrismaDB, room db.RoomModel) db.RoomMockExpectPa
 	)
 }
 
-func GetRoomByPropertyID(propertyID string, archived bool) []db.RoomModel {
+func GetRoomsByPropertyID(propertyID string, archived bool) []db.RoomModel {
 	pdb := services.DBclient
 	rooms, err := pdb.Client.Room.FindMany(
 		db.Room.PropertyID.Equals(propertyID),

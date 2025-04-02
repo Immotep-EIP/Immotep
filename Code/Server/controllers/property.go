@@ -26,7 +26,7 @@ import (
 //	@Router			/owner/properties/ [get]
 func GetAllPropertiesByOwner(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	allProperties := database.GetAllPropertyByOwnerId(claims["id"], false)
+	allProperties := database.GetPropertiesByOwnerId(claims["id"], false)
 	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
 }
 
@@ -44,7 +44,7 @@ func GetAllPropertiesByOwner(c *gin.Context) {
 //	@Router			/owner/properties/archived/ [get]
 func GetArchivedPropertiesByOwner(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	allProperties := database.GetAllPropertyByOwnerId(claims["id"], true)
+	allProperties := database.GetPropertiesByOwnerId(claims["id"], true)
 	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
 }
 
@@ -181,6 +181,7 @@ func GetPropertyPicture(c *gin.Context) {
 		c.Status(http.StatusNoContent)
 		return
 	}
+
 	image := database.GetImageByID(pictureId)
 	if image == nil {
 		utils.SendError(c, http.StatusNotFound, utils.PropertyPictureNotFound, nil)
@@ -221,8 +222,8 @@ func UpdatePropertyPicture(c *gin.Context) {
 	}
 	newImage := database.CreateImage(*image)
 
-	property := database.GetPropertyByID(c.Param("property_id"))
-	newProperty := database.UpdatePropertyPicture(*property, newImage)
+	property, _ := c.MustGet("property").(db.PropertyModel)
+	newProperty := database.UpdatePropertyPicture(property, newImage)
 	if newProperty == nil {
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)
 		return

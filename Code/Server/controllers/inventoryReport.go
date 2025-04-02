@@ -202,7 +202,7 @@ func CreateInventoryReport(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/ [get]
 func GetAllInventoryReportsByProperty(c *gin.Context) {
-	reports := database.GetInvReportByPropertyID(c.Param("property_id"))
+	reports := database.GetInvReportsByPropertyID(c.Param("property_id"))
 	c.JSON(http.StatusOK, utils.Map(reports, models.DbInventoryReportToResponse))
 }
 
@@ -222,11 +222,6 @@ func GetAllInventoryReportsByProperty(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/{report_id}/ [get]
 func GetInventoryReport(c *gin.Context) {
-	var report *db.InventoryReportModel
-	if c.Param("report_id") == "latest" {
-		report = database.GetLatestInvReport(c.Param("property_id"))
-	} else {
-		report = database.GetInvReportByID(c.Param("report_id"))
-	}
-	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(*report))
+	report, _ := c.MustGet("invrep").(db.InventoryReportModel)
+	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(report))
 }

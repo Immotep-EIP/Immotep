@@ -190,7 +190,7 @@ func TestGetInvReportByPropertyID(t *testing.T) {
 	invReport := BuildTestInventoryReport("1")
 	m.InventoryReport.Expect(database.MockGetInvReportByPropertyID(c)).ReturnsMany([]db.InventoryReportModel{invReport})
 
-	invReports := database.GetInvReportByPropertyID("1")
+	invReports := database.GetInvReportsByPropertyID("1")
 	assert.Len(t, invReports, 1)
 	assert.Equal(t, invReport.ID, invReports[0].ID)
 }
@@ -203,7 +203,7 @@ func TestGetInvReportByPropertyID_MultipleReports(t *testing.T) {
 	invReport2 := BuildTestInventoryReport("2")
 	m.InventoryReport.Expect(database.MockGetInvReportByPropertyID(c)).ReturnsMany([]db.InventoryReportModel{invReport1, invReport2})
 
-	invReports := database.GetInvReportByPropertyID("1")
+	invReports := database.GetInvReportsByPropertyID("1")
 	assert.Len(t, invReports, 2)
 	assert.Equal(t, invReport1.ID, invReports[0].ID)
 	assert.Equal(t, invReport2.ID, invReports[1].ID)
@@ -215,7 +215,7 @@ func TestGetInvReportByPropertyID_NoReports(t *testing.T) {
 
 	m.InventoryReport.Expect(database.MockGetInvReportByPropertyID(c)).ReturnsMany([]db.InventoryReportModel{})
 
-	invReports := database.GetInvReportByPropertyID("1")
+	invReports := database.GetInvReportsByPropertyID("1")
 	assert.Empty(t, invReports)
 }
 
@@ -226,7 +226,7 @@ func TestGetInvReportByPropertyID_NoConnection(t *testing.T) {
 	m.InventoryReport.Expect(database.MockGetInvReportByPropertyID(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetInvReportByPropertyID("1")
+		database.GetInvReportsByPropertyID("1")
 	})
 }
 

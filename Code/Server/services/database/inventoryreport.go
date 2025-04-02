@@ -97,7 +97,7 @@ func MockCreateFurnitureState(c *services.PrismaDB, furnitureState db.FurnitureS
 	)
 }
 
-func GetInvReportByPropertyID(propertyID string) []db.InventoryReportModel {
+func GetInvReportsByPropertyID(propertyID string) []db.InventoryReportModel {
 	pdb := services.DBclient
 	invReports, err := pdb.Client.InventoryReport.FindMany(
 		db.InventoryReport.PropertyID.Equals(propertyID),

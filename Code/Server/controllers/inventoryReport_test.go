@@ -672,6 +672,29 @@ func TestGetInventoryReportByID_Latest(t *testing.T) {
 	assert.Equal(t, invReport.ID, resp.ID)
 }
 
+func TestGetInventoryReportByID_LatestNotFound(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory-reports/latest/", nil)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.InventoryReportNotFound, resp.Code)
+}
+
 func TestGetInventoryReportByID_NotFound(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)

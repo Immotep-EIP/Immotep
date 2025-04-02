@@ -74,7 +74,7 @@ func TestGetRoomByPropertyID(t *testing.T) {
 	room2 := BuildTestRoom("2")
 	m.Room.Expect(database.MockGetRoomsByPropertyID(c, false)).ReturnsMany([]db.RoomModel{room1, room2})
 
-	rooms := database.GetRoomByPropertyID("1", false)
+	rooms := database.GetRoomsByPropertyID("1", false)
 	assert.Len(t, rooms, 2)
 	assert.Equal(t, room1.ID, rooms[0].ID)
 	assert.Equal(t, room2.ID, rooms[1].ID)
@@ -86,7 +86,7 @@ func TestGetRoomByPropertyID_NoRooms(t *testing.T) {
 
 	m.Room.Expect(database.MockGetRoomsByPropertyID(c, false)).ReturnsMany([]db.RoomModel{})
 
-	rooms := database.GetRoomByPropertyID("1", false)
+	rooms := database.GetRoomsByPropertyID("1", false)
 	assert.Empty(t, rooms)
 }
 
@@ -97,7 +97,7 @@ func TestGetRoomByPropertyID_NoConnection(t *testing.T) {
 	m.Room.Expect(database.MockGetRoomsByPropertyID(c, false)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetRoomByPropertyID("1", false)
+		database.GetRoomsByPropertyID("1", false)
 	})
 }
 

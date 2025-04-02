@@ -75,7 +75,7 @@ func TestGetFurnitureByRoomID(t *testing.T) {
 	furniture2 := BuildTestFurniture("2")
 	m.Furniture.Expect(database.MockGetFurnituresByRoomID(c, false)).ReturnsMany([]db.FurnitureModel{furniture1, furniture2})
 
-	furnitures := database.GetFurnitureByRoomID("1", false)
+	furnitures := database.GetFurnituresByRoomID("1", false)
 	assert.Len(t, furnitures, 2)
 	assert.Equal(t, furniture1.ID, furnitures[0].ID)
 	assert.Equal(t, furniture2.ID, furnitures[1].ID)
@@ -87,7 +87,7 @@ func TestGetFurnitureByRoomID_NoFurnitures(t *testing.T) {
 
 	m.Furniture.Expect(database.MockGetFurnituresByRoomID(c, false)).ReturnsMany([]db.FurnitureModel{})
 
-	furnitures := database.GetFurnitureByRoomID("1", false)
+	furnitures := database.GetFurnituresByRoomID("1", false)
 	assert.Empty(t, furnitures)
 }
 
@@ -98,7 +98,7 @@ func TestGetFurnitureByRoomID_NoConnection(t *testing.T) {
 	m.Furniture.Expect(database.MockGetFurnituresByRoomID(c, false)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetFurnitureByRoomID("1", false)
+		database.GetFurnituresByRoomID("1", false)
 	})
 }
 

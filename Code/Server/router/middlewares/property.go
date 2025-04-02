@@ -70,11 +70,12 @@ func CheckFurnitureRoomOwnership(roomIdUrlParam string, furnitureIdUrlParam stri
 
 func CheckInventoryReportPropertyOwnership(propertyIdUrlParam string, reportIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var invrep *db.InventoryReportModel
 		if c.Param(reportIdUrlParam) == "latest" {
-			c.Next()
-			return
+			invrep = database.GetLatestInvReport(c.Param(propertyIdUrlParam))
+		} else {
+			invrep = database.GetInvReportByID(c.Param(reportIdUrlParam))
 		}
-		invrep := database.GetInvReportByID(c.Param(reportIdUrlParam))
 		if invrep == nil || invrep.PropertyID != c.Param(propertyIdUrlParam) {
 			utils.AbortSendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
 			return
