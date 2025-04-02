@@ -167,7 +167,7 @@ func TestUpdateUser(t *testing.T) {
 	}
 	m.User.Expect(database.MockUpdateUser(c, updateRequest)).Returns(user)
 
-	updatedUser := database.UpdateUser(user.ID, updateRequest)
+	updatedUser := database.UpdateUser(user, updateRequest)
 	assert.NotNil(t, updatedUser)
 	assert.Equal(t, user.ID, updatedUser.ID)
 }
@@ -183,8 +183,9 @@ func TestUpdateUser_NotFound(t *testing.T) {
 	}
 	m.User.Expect(database.MockUpdateUser(c, updateRequest)).Errors(db.ErrNotFound)
 
-	updatedUser := database.UpdateUser("1", updateRequest)
-	assert.Nil(t, updatedUser)
+	assert.Panics(t, func() {
+		database.UpdateUser(BuildTestUser("1"), updateRequest)
+	})
 }
 
 func TestUpdateUser_DuplicateEmail(t *testing.T) {
@@ -206,7 +207,7 @@ func TestUpdateUser_DuplicateEmail(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	updatedUser := database.UpdateUser(user.ID, updateRequest)
+	updatedUser := database.UpdateUser(user, updateRequest)
 	assert.Nil(t, updatedUser)
 }
 
@@ -214,7 +215,6 @@ func TestUpdateUser_NoConnection(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	user := BuildTestUser("1")
 	updateRequest := models.UserUpdateRequest{
 		Email:     utils.Ptr("updated@example.com"),
 		Firstname: utils.Ptr("Updated"),
@@ -223,7 +223,7 @@ func TestUpdateUser_NoConnection(t *testing.T) {
 	m.User.Expect(database.MockUpdateUser(c, updateRequest)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.UpdateUser(user.ID, updateRequest)
+		database.UpdateUser(BuildTestUser("1"), updateRequest)
 	})
 }
 

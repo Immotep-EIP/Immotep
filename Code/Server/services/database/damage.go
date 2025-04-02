@@ -98,19 +98,19 @@ func GetDamageByID(damageID string) *db.DamageModel {
 	return damage
 }
 
-func UpdateDamage(id string, damage models.DamageTenantUpdateRequest, picturesId []string) *db.DamageModel {
+func UpdateDamage(damage db.DamageModel, req models.DamageTenantUpdateRequest, picturesId []string) *db.DamageModel {
 	pdb := services.DBclient
 
 	updates := []db.DamageSetParam{
-		db.Damage.Comment.SetIfPresent(damage.Comment),
-		db.Damage.Priority.SetIfPresent(damage.Priority),
+		db.Damage.Comment.SetIfPresent(req.Comment),
+		db.Damage.Priority.SetIfPresent(req.Priority),
 	}
-	for _, id := range picturesId {
-		updates = append(updates, db.Damage.Pictures.Link(db.Image.ID.Equals(id)))
+	for _, picId := range picturesId {
+		updates = append(updates, db.Damage.Pictures.Link(db.Image.ID.Equals(picId)))
 	}
 
 	dmg, err := pdb.Client.Damage.FindUnique(
-		db.Damage.ID.Equals(id),
+		db.Damage.ID.Equals(damage.ID),
 	).With(
 		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Damage.Room.Fetch(),
@@ -118,7 +118,7 @@ func UpdateDamage(id string, damage models.DamageTenantUpdateRequest, picturesId
 		updates...,
 	).Exec(pdb.Context)
 	if err != nil {
-		if db.IsErrNotFound(err) {
+		if _, is := db.IsErrUniqueConstraint(err); is {
 			return nil
 		}
 		panic(err)
@@ -126,7 +126,7 @@ func UpdateDamage(id string, damage models.DamageTenantUpdateRequest, picturesId
 	return dmg
 }
 
-func MarkDamageAsRead(damageID string) *db.DamageModel {
+func MarkDamageAsRead(damageID string) db.DamageModel {
 	pdb := services.DBclient
 	damage, err := pdb.Client.Damage.FindUnique(
 		db.Damage.ID.Equals(damageID),
@@ -138,15 +138,12 @@ func MarkDamageAsRead(damageID string) *db.DamageModel {
 		db.Damage.Read.Set(true),
 	).Exec(pdb.Context)
 	if err != nil {
-		if db.IsErrNotFound(err) {
-			return nil
-		}
 		panic(err)
 	}
-	return damage
+	return *damage
 }
 
-func UpdateDamageFixPlannedAt(damageID string, fixPlannedAt db.DateTime) *db.DamageModel {
+func UpdateDamageFixPlannedAt(damageID string, fixPlannedAt db.DateTime) db.DamageModel {
 	pdb := services.DBclient
 	damage, err := pdb.Client.Damage.FindUnique(
 		db.Damage.ID.Equals(damageID),
@@ -158,15 +155,12 @@ func UpdateDamageFixPlannedAt(damageID string, fixPlannedAt db.DateTime) *db.Dam
 		db.Damage.FixPlannedAt.Set(fixPlannedAt),
 	).Exec(pdb.Context)
 	if err != nil {
-		if db.IsErrNotFound(err) {
-			return nil
-		}
 		panic(err)
 	}
-	return damage
+	return *damage
 }
 
-func MarkDamageAsFixed(damageID string) *db.DamageModel {
+func MarkDamageAsFixed(damageID string) db.DamageModel {
 	pdb := services.DBclient
 	damage, err := pdb.Client.Damage.FindUnique(
 		db.Damage.ID.Equals(damageID),
@@ -178,10 +172,7 @@ func MarkDamageAsFixed(damageID string) *db.DamageModel {
 		db.Damage.FixedAt.Set(time.Now()),
 	).Exec(pdb.Context)
 	if err != nil {
-		if db.IsErrNotFound(err) {
-			return nil
-		}
 		panic(err)
 	}
-	return damage
+	return *damage
 }

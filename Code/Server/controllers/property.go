@@ -148,12 +148,13 @@ func UpdateProperty(c *gin.Context) {
 		return
 	}
 
-	property := database.UpdateProperty(c.Param("property_id"), req)
-	if property == nil {
+	property, _ := c.MustGet("property").(db.PropertyModel)
+	newProperty := database.UpdateProperty(property, req)
+	if newProperty == nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*newProperty))
 }
 
 // GetPropertyPicture godoc

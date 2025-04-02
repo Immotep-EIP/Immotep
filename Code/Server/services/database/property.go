@@ -153,27 +153,27 @@ func MockCreateProperty(c *services.PrismaDB, property db.PropertyModel) db.Prop
 	)
 }
 
-func UpdateProperty(id string, property models.PropertyUpdateRequest) *db.PropertyModel {
+func UpdateProperty(property db.PropertyModel, req models.PropertyUpdateRequest) *db.PropertyModel {
 	pdb := services.DBclient
-	newProperty, err := pdb.Client.Property.FindUnique(db.Property.ID.Equals(id)).With(
+	newProperty, err := pdb.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
 		db.Property.Leases.Fetch().With(
 			db.Lease.Tenant.Fetch(),
 			db.Lease.Damages.Fetch(db.Damage.FixedAt.IsNull()),
 		),
 		db.Property.LeaseInvite.Fetch(),
 	).Update(
-		db.Property.Name.SetIfPresent(property.Name),
-		db.Property.Address.SetIfPresent(property.Address),
-		db.Property.ApartmentNumber.SetIfPresent(property.ApartmentNumber),
-		db.Property.City.SetIfPresent(property.City),
-		db.Property.PostalCode.SetIfPresent(property.PostalCode),
-		db.Property.Country.SetIfPresent(property.Country),
-		db.Property.AreaSqm.SetIfPresent(property.AreaSqm),
-		db.Property.RentalPricePerMonth.SetIfPresent(property.RentalPricePerMonth),
-		db.Property.DepositPrice.SetIfPresent(property.DepositPrice),
+		db.Property.Name.SetIfPresent(req.Name),
+		db.Property.Address.SetIfPresent(req.Address),
+		db.Property.ApartmentNumber.SetIfPresent(req.ApartmentNumber),
+		db.Property.City.SetIfPresent(req.City),
+		db.Property.PostalCode.SetIfPresent(req.PostalCode),
+		db.Property.Country.SetIfPresent(req.Country),
+		db.Property.AreaSqm.SetIfPresent(req.AreaSqm),
+		db.Property.RentalPricePerMonth.SetIfPresent(req.RentalPricePerMonth),
+		db.Property.DepositPrice.SetIfPresent(req.DepositPrice),
 	).Exec(pdb.Context)
 	if err != nil {
-		if db.IsErrNotFound(err) {
+		if _, is := db.IsErrUniqueConstraint(err); is {
 			return nil
 		}
 		panic(err)

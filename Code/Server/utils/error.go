@@ -36,6 +36,7 @@ const (
 	NoLeaseInvite                ErrorCode = "no-pending-lease"
 	DocumentNotFound             ErrorCode = "document-not-found"
 	DamageNotFound               ErrorCode = "damage-not-found"
+	DamageAlreadyExists          ErrorCode = "damage-already-exists"
 	DamageAlreadyFixed           ErrorCode = "damage-already-fixed"
 	FailedLinkImage              ErrorCode = "failed-to-link-image"
 	BadBase64String              ErrorCode = "bad-base64-string"

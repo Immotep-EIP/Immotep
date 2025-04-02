@@ -320,9 +320,37 @@ func TestUpdateProperty(t *testing.T) {
 	}
 	m.Property.Expect(database.MockUpdateProperty(c, updateRequest)).Returns(property)
 
-	updatedProperty := database.UpdateProperty(property.ID, updateRequest)
+	updatedProperty := database.UpdateProperty(property, updateRequest)
 	assert.NotNil(t, updatedProperty)
 	assert.Equal(t, property.ID, updatedProperty.ID)
+}
+
+func TestUpdateProperty_AlreadyExists(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	updateRequest := models.PropertyUpdateRequest{
+		Name:                utils.Ptr("Updated Name"),
+		Address:             utils.Ptr("Updated Address"),
+		ApartmentNumber:     utils.Ptr("Updated Apartment Number"),
+		City:                utils.Ptr("Updated City"),
+		PostalCode:          utils.Ptr("Updated Postal Code"),
+		Country:             utils.Ptr("Updated Country"),
+		AreaSqm:             utils.Ptr(30.0),
+		RentalPricePerMonth: utils.Ptr(600.0),
+		DepositPrice:        utils.Ptr(1200.0),
+	}
+	m.Property.Expect(database.MockUpdateProperty(c, updateRequest)).Errors(&protocol.UserFacingError{
+		IsPanic:   false,
+		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference#p2002
+		Meta: protocol.Meta{
+			Target: []any{"owner_id", "name"},
+		},
+		Message: "Unique constraint failed",
+	})
+
+	updatedProperty := database.UpdateProperty(BuildTestProperty("1"), updateRequest)
+	assert.Nil(t, updatedProperty)
 }
 
 func TestUpdateProperty_NotFound(t *testing.T) {
@@ -342,8 +370,9 @@ func TestUpdateProperty_NotFound(t *testing.T) {
 	}
 	m.Property.Expect(database.MockUpdateProperty(c, updateRequest)).Errors(db.ErrNotFound)
 
-	updatedProperty := database.UpdateProperty("1", updateRequest)
-	assert.Nil(t, updatedProperty)
+	assert.Panics(t, func() {
+		database.UpdateProperty(BuildTestProperty("1"), updateRequest)
+	})
 }
 
 func TestUpdateProperty_NoConnection(t *testing.T) {
@@ -364,6 +393,6 @@ func TestUpdateProperty_NoConnection(t *testing.T) {
 	m.Property.Expect(database.MockUpdateProperty(c, updateRequest)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.UpdateProperty("1", updateRequest)
+		database.UpdateProperty(BuildTestProperty("1"), updateRequest)
 	})
 }

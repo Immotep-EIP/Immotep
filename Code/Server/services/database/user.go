@@ -83,17 +83,14 @@ func MockCreateUser(c *services.PrismaDB, user db.UserModel) db.UserMockExpectPa
 	)
 }
 
-func UpdateUser(id string, user models.UserUpdateRequest) *db.UserModel {
+func UpdateUser(user db.UserModel, req models.UserUpdateRequest) *db.UserModel {
 	pdb := services.DBclient
-	newUser, err := pdb.Client.User.FindUnique(db.User.ID.Equals(id)).Update(
-		db.User.Email.SetIfPresent(user.Email),
-		db.User.Firstname.SetIfPresent(user.Firstname),
-		db.User.Lastname.SetIfPresent(user.Lastname),
+	newUser, err := pdb.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
+		db.User.Email.SetIfPresent(req.Email),
+		db.User.Firstname.SetIfPresent(req.Firstname),
+		db.User.Lastname.SetIfPresent(req.Lastname),
 	).Exec(pdb.Context)
 	if err != nil {
-		if db.IsErrNotFound(err) {
-			return nil
-		}
 		if info, is := db.IsErrUniqueConstraint(err); is && info.Fields[0] == db.User.Email.Field() {
 			return nil
 		}

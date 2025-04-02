@@ -168,8 +168,8 @@ func GetDamage(c *gin.Context) {
 	c.JSON(http.StatusOK, models.DbDamageToResponse(damage))
 }
 
-func switchEvent(req models.DamageOwnerUpdateRequest, damage db.DamageModel) *db.DamageModel {
-	var newDamage *db.DamageModel
+func switchEvent(req models.DamageOwnerUpdateRequest, damage db.DamageModel) db.DamageModel {
+	var newDamage db.DamageModel
 
 	switch req.Event {
 	case models.DamageUpdateEventFixPlanned:
@@ -220,11 +220,7 @@ func UpdateDamageOwner(c *gin.Context) {
 	}
 
 	newDamage := switchEvent(req, damage)
-	if newDamage == nil {
-		utils.SendError(c, http.StatusNotFound, utils.DamageNotFound, nil)
-		return
-	}
-	c.JSON(http.StatusOK, models.DbDamageToResponse(*newDamage))
+	c.JSON(http.StatusOK, models.DbDamageToResponse(newDamage))
 }
 
 // UpdateDamageTenant godoc
@@ -255,9 +251,9 @@ func UpdateDamageTenant(c *gin.Context) {
 	damage, _ := c.MustGet("damage").(db.DamageModel)
 	picturesIds, imgErr := getPictures(req.AddPictures)
 
-	newDamage := database.UpdateDamage(damage.ID, req, picturesIds)
+	newDamage := database.UpdateDamage(damage, req, picturesIds)
 	if newDamage == nil {
-		utils.SendError(c, http.StatusNotFound, utils.DamageNotFound, nil)
+		utils.SendError(c, http.StatusConflict, utils.DamageAlreadyExists, nil)
 		return
 	}
 	c.JSON(http.StatusOK, models.DbDamageToCreateResponse(*newDamage, imgErr))
