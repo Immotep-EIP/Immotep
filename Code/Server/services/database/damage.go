@@ -98,7 +98,7 @@ func GetDamageByID(damageID string) *db.DamageModel {
 	return damage
 }
 
-func UpdateDamage(damage db.DamageModel, req models.DamageTenantUpdateRequest, picturesId []string) *db.DamageModel {
+func UpdateDamageTenant(damage db.DamageModel, req models.DamageTenantUpdateRequest, picturesId []string) *db.DamageModel {
 	pdb := services.DBclient
 
 	updates := []db.DamageSetParam{
@@ -126,53 +126,57 @@ func UpdateDamage(damage db.DamageModel, req models.DamageTenantUpdateRequest, p
 	return dmg
 }
 
-func MarkDamageAsRead(damageID string) db.DamageModel {
+func UpdateDamageOwner(damage db.DamageModel, req models.DamageOwnerUpdateRequest) *db.DamageModel {
 	pdb := services.DBclient
-	damage, err := pdb.Client.Damage.FindUnique(
-		db.Damage.ID.Equals(damageID),
+
+	updates := []db.DamageSetParam{
+		db.Damage.Read.SetIfPresent(req.Read),
+		db.Damage.FixPlannedAt.SetIfPresent(req.FixPlannedAt),
+	}
+
+	dmg, err := pdb.Client.Damage.FindUnique(
+		db.Damage.ID.Equals(damage.ID),
 	).With(
 		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
 	).Update(
-		db.Damage.Read.Set(true),
+		updates...,
 	).Exec(pdb.Context)
 	if err != nil {
+		if _, is := db.IsErrUniqueConstraint(err); is {
+			return nil
+		}
 		panic(err)
 	}
-	return *damage
+	return dmg
 }
 
-func UpdateDamageFixPlannedAt(damageID string, fixPlannedAt db.DateTime) db.DamageModel {
-	pdb := services.DBclient
-	damage, err := pdb.Client.Damage.FindUnique(
-		db.Damage.ID.Equals(damageID),
-	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
-		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
-	).Update(
-		db.Damage.FixPlannedAt.Set(fixPlannedAt),
-	).Exec(pdb.Context)
-	if err != nil {
-		panic(err)
+func MarkDamageAsFixed(damage db.DamageModel, role db.Role) db.DamageModel {
+	var params []db.DamageSetParam
+	if role == db.RoleTenant {
+		params = append(params, db.Damage.FixedTenant.Set(true))
+		damage.FixedTenant = true
 	}
-	return *damage
-}
+	if role == db.RoleOwner {
+		params = append(params, db.Damage.FixedOwner.Set(true))
+		damage.FixedOwner = true
+	}
+	if damage.IsFixed() {
+		params = append(params, db.Damage.FixedAt.Set(time.Now()))
+	}
 
-func MarkDamageAsFixed(damageID string) db.DamageModel {
 	pdb := services.DBclient
-	damage, err := pdb.Client.Damage.FindUnique(
-		db.Damage.ID.Equals(damageID),
+	newDamage, err := pdb.Client.Damage.FindUnique(
+		db.Damage.ID.Equals(damage.ID),
 	).With(
 		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Damage.Room.Fetch(),
 		db.Damage.Pictures.Fetch(),
 	).Update(
-		db.Damage.FixedAt.Set(time.Now()),
+		params...,
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
 	}
-	return *damage
+	return *newDamage
 }

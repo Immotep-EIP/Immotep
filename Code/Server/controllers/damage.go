@@ -168,33 +168,17 @@ func GetDamage(c *gin.Context) {
 	c.JSON(http.StatusOK, models.DbDamageToResponse(damage))
 }
 
-func switchEvent(req models.DamageOwnerUpdateRequest, damage db.DamageModel) db.DamageModel {
-	var newDamage db.DamageModel
-
-	switch req.Event {
-	case models.DamageUpdateEventFixPlanned:
-		newDamage = database.UpdateDamageFixPlannedAt(damage.ID, *req.FixPlannedAt)
-	case models.DamageUpdateEventFixed:
-		newDamage = database.MarkDamageAsFixed(damage.ID)
-	case models.DamageUpdateEventRead:
-		newDamage = database.MarkDamageAsRead(damage.ID)
-	default:
-		panic("unknown event")
-	}
-	return newDamage
-}
-
 // UpdateDamageOwner godoc
 //
-//	@Summary		Update damage from event
-//	@Description	Update damage according to event triggered. This can be either fix_planned, fixed or read.
+//	@Summary		Update damage for owner
+//	@Description	Update damage on owner side. Owner can only update the read status and the fix planned date.
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string							true	"Property ID"
 //	@Param			lease_id	path		string							true	"Lease ID"
 //	@Param			damage_id	path		string							true	"Damage ID"
-//	@Param			damages		body		models.DamageOwnerUpdateRequest	true	"Damage update request with event"
+//	@Param			damages		body		models.DamageOwnerUpdateRequest	true	"Damage update request"
 //	@Success		200			{object}	models.DamageResponse			"Updated damage"
 //	@Failure		400			{object}	utils.Error						"Missing fields"
 //	@Failure		403			{object}	utils.Error						"Property not yours"
@@ -208,25 +192,25 @@ func UpdateDamageOwner(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
 		return
 	}
-	if req.Event == models.DamageUpdateEventFixPlanned && req.FixPlannedAt == nil {
-		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, errors.New("fix_planned_at is required"))
-		return
-	}
 
 	damage, _ := c.MustGet("damage").(db.DamageModel)
-	if req.Event == models.DamageUpdateEventFixed && damage.InnerDamage.FixedAt != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.DamageAlreadyFixed, nil)
+	if damage.IsFixed() {
+		utils.SendError(c, http.StatusBadRequest, utils.CannotUpdateFixedDamage, nil)
 		return
 	}
 
-	newDamage := switchEvent(req, damage)
-	c.JSON(http.StatusOK, models.DbDamageToResponse(newDamage))
+	newDamage := database.UpdateDamageOwner(damage, req)
+	if newDamage == nil {
+		utils.SendError(c, http.StatusConflict, utils.DamageAlreadyExists, nil)
+		return
+	}
+	c.JSON(http.StatusOK, models.DbDamageToCreateResponse(*newDamage, nil))
 }
 
 // UpdateDamageTenant godoc
 //
-//	@Summary		Update damage
-//	@Description	Update damage from tenant
+//	@Summary		Update damage for tenant
+//	@Description	Update damage on tenant side. Tenant can only update comment, priority and add new pictures.
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
@@ -249,12 +233,47 @@ func UpdateDamageTenant(c *gin.Context) {
 	}
 
 	damage, _ := c.MustGet("damage").(db.DamageModel)
-	picturesIds, imgErr := getPictures(req.AddPictures)
+	if damage.IsFixed() {
+		utils.SendError(c, http.StatusBadRequest, utils.CannotUpdateFixedDamage, nil)
+		return
+	}
 
-	newDamage := database.UpdateDamage(damage, req, picturesIds)
+	picturesIds, imgErr := getPictures(req.AddPictures)
+	newDamage := database.UpdateDamageTenant(damage, req, picturesIds)
 	if newDamage == nil {
 		utils.SendError(c, http.StatusConflict, utils.DamageAlreadyExists, nil)
 		return
 	}
 	c.JSON(http.StatusOK, models.DbDamageToCreateResponse(*newDamage, imgErr))
+}
+
+// FixDamage godoc
+//
+//	@Summary		Fix damage for one user
+//	@Description	Fix a damage for a tenant or owner. When both users have fixed the damage, it will be marked as fixed.
+//	@Tags			damage
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Param			lease_id	path		string					true	"Lease ID"
+//	@Param			damage_id	path		string					true	"Damage ID"
+//	@Success		204			{object}	models.DamageResponse	"Fixed damage"
+//	@Failure		400			{object}	utils.Error				"Missing fields"
+//	@Failure		403			{object}	utils.Error				"Lease not yours"
+//	@Failure		404			{object}	utils.Error				"Damage not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/damages/{damage_id}/fix/ [put]
+//	@Router			/tenant/leases/{lease_id}/damages/{damage_id}/fix/ [put]
+func FixDamage(c *gin.Context) {
+	claims := utils.GetClaims(c)
+
+	damage, _ := c.MustGet("damage").(db.DamageModel)
+	if damage.IsFixed() {
+		utils.SendError(c, http.StatusBadRequest, utils.DamageAlreadyFixed, nil)
+		return
+	}
+
+	newDamage := database.MarkDamageAsFixed(damage, db.Role(claims["role"]))
+	c.JSON(http.StatusOK, models.DbDamageToResponse(newDamage))
 }

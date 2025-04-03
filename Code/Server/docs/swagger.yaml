@@ -20,6 +20,10 @@ definitions:
         type: string
       fixed_at:
         type: string
+      fixed_owner:
+        type: boolean
+      fixed_tenant:
+        type: boolean
       id:
         type: string
       lease:
@@ -58,6 +62,20 @@ definitions:
       name:
         type: string
     type: object
+  db.FixStatus:
+    enum:
+    - pending
+    - planned
+    - awaiting_owner_confirmation
+    - awaiting_tenant_confirmation
+    - fixed
+    type: string
+    x-enum-varnames:
+    - FixStatusPending
+    - FixStatusPlanned
+    - FixStatusAwaitingOwnerConfirmation
+    - FixStatusAwaitingTenantConfirmation
+    - FixStatusFixed
   db.FurnitureModel:
     properties:
       archived:
@@ -398,12 +416,10 @@ definitions:
     type: object
   models.DamageOwnerUpdateRequest:
     properties:
-      event:
-        $ref: '#/definitions/models.DamageUpdateEvent'
       fix_planned_at:
         type: string
-    required:
-    - event
+      read:
+        type: boolean
     type: object
   models.DamageRequest:
     properties:
@@ -431,8 +447,8 @@ definitions:
         type: string
       fix_planned_at:
         type: string
-      fixed:
-        type: boolean
+      fix_status:
+        $ref: '#/definitions/db.FixStatus'
       fixed_at:
         type: string
       id:
@@ -467,16 +483,6 @@ definitions:
       priority:
         $ref: '#/definitions/db.Priority'
     type: object
-  models.DamageUpdateEvent:
-    enum:
-    - fix_planned
-    - fixed
-    - read
-    type: string
-    x-enum-varnames:
-    - DamageUpdateEventFixPlanned
-    - DamageUpdateEventFixed
-    - DamageUpdateEventRead
   models.DocumentRequest:
     properties:
       data:
@@ -989,6 +995,8 @@ definitions:
     - no-pending-lease
     - document-not-found
     - damage-not-found
+    - damage-already-exists
+    - cannot-update-fixed-damage
     - damage-already-fixed
     - failed-to-link-image
     - bad-base64-string
@@ -1036,6 +1044,8 @@ definitions:
     - NoLeaseInvite
     - DocumentNotFound
     - DamageNotFound
+    - DamageAlreadyExists
+    - CannotUpdateFixedDamage
     - DamageAlreadyFixed
     - FailedLinkImage
     - BadBase64String
@@ -1847,8 +1857,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update damage according to event triggered. This can be either
-        fix_planned, fixed or read.
+      description: Update damage on owner side. Owner can only update the read status
+        and the fix planned date.
       parameters:
       - description: Property ID
         in: path
@@ -1865,7 +1875,7 @@ paths:
         name: damage_id
         required: true
         type: string
-      - description: Damage update request with event
+      - description: Damage update request
         in: body
         name: damages
         required: true
@@ -1894,7 +1904,55 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Update damage from event
+      summary: Update damage for owner
+      tags:
+      - damage
+  /owner/properties/{property_id}/leases/{lease_id}/damages/{damage_id}/fix/:
+    put:
+      consumes:
+      - application/json
+      description: Fix a damage for a tenant or owner. When both users have fixed
+        the damage, it will be marked as fixed.
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Damage ID
+        in: path
+        name: damage_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Fixed damage
+          schema:
+            $ref: '#/definitions/models.DamageResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Damage not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Fix damage for one user
       tags:
       - damage
   /owner/properties/{property_id}/leases/{lease_id}/damages/fixed/:
@@ -3043,7 +3101,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update damage from tenant
+      description: Update damage on tenant side. Tenant can only update comment, priority
+        and add new pictures.
       parameters:
       - description: Property ID
         in: path
@@ -3089,7 +3148,50 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Update damage
+      summary: Update damage for tenant
+      tags:
+      - damage
+  /tenant/leases/{lease_id}/damages/{damage_id}/fix/:
+    put:
+      consumes:
+      - application/json
+      description: Fix a damage for a tenant or owner. When both users have fixed
+        the damage, it will be marked as fixed.
+      parameters:
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Damage ID
+        in: path
+        name: damage_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Fixed damage
+          schema:
+            $ref: '#/definitions/models.DamageResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Damage not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Fix damage for one user
       tags:
       - damage
   /tenant/leases/{lease_id}/damages/fixed/:

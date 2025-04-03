@@ -40,6 +40,7 @@ func registerTenantRoutes(tenant *gin.RouterGroup) {
 					damageId.Use(middlewares.CheckDamageLeaseOwnership("damage_id"))
 					damageId.GET("/", controllers.GetDamage)
 					damageId.PUT("/", controllers.UpdateDamageTenant)
+					damageId.PUT("/fix/", controllers.FixDamage)
 				}
 			}
 

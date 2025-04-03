@@ -2,7 +2,6 @@ package models
 
 import (
 	"immotep/backend/prisma/db"
-	"immotep/backend/utils"
 )
 
 type DamageRequest struct {
@@ -22,17 +21,9 @@ func (r *DamageRequest) ToDbDamage() db.DamageModel {
 	}
 }
 
-type DamageUpdateEvent string
-
-const (
-	DamageUpdateEventFixPlanned DamageUpdateEvent = "fix_planned"
-	DamageUpdateEventFixed      DamageUpdateEvent = "fixed"
-	DamageUpdateEventRead       DamageUpdateEvent = "read"
-)
-
 type DamageOwnerUpdateRequest struct {
-	Event        DamageUpdateEvent `binding:"required,damageUpdateEvent" json:"event"`
-	FixPlannedAt *db.DateTime      `json:"fix_planned_at,omitempty"`
+	Read         *bool        `json:"read,omitempty"`
+	FixPlannedAt *db.DateTime `json:"fix_planned_at,omitempty"`
 }
 
 type DamageTenantUpdateRequest struct {
@@ -53,8 +44,8 @@ type DamageResponse struct {
 	Read         bool         `json:"read"`
 	CreatedAt    db.DateTime  `json:"created_at"`
 	UpdatedAt    db.DateTime  `json:"updated_at"`
+	FixStatus    db.FixStatus `json:"fix_status"`
 	FixPlannedAt *db.DateTime `json:"fix_planned_at"`
-	Fixed        bool         `json:"fixed"`
 	FixedAt      *db.DateTime `json:"fixed_at,omitempty"`
 
 	Pictures []string `json:"pictures"`
@@ -73,10 +64,9 @@ func (i *DamageResponse) FromDbDamage(model db.DamageModel) {
 	i.CreatedAt = model.CreatedAt
 	i.UpdatedAt = model.UpdatedAt
 
-	fixedAt, fixed := model.FixedAt()
-	i.Fixed = fixed
-	i.FixedAt = utils.Ternary(fixed, &fixedAt, nil)
+	i.FixStatus = model.FixStatus()
 	i.FixPlannedAt = model.InnerDamage.FixPlannedAt
+	i.FixedAt = model.InnerDamage.FixedAt
 
 	for _, picture := range model.Pictures() {
 		i.Pictures = append(i.Pictures, DbImageToResponse(picture).Data)
@@ -101,8 +91,8 @@ type DamageCreateResponse struct {
 	Read         bool         `json:"read"`
 	CreatedAt    db.DateTime  `json:"created_at"`
 	UpdatedAt    db.DateTime  `json:"updated_at"`
+	FixStatus    db.FixStatus `json:"fix_status"`
 	FixPlannedAt *db.DateTime `json:"fix_planned_at"`
-	Fixed        bool         `json:"fixed"`
 	FixedAt      *db.DateTime `json:"fixed_at,omitempty"`
 
 	Error string `json:"error,omitempty"`
@@ -121,10 +111,9 @@ func (i *DamageCreateResponse) FromDbDamage(model db.DamageModel, err error) {
 	i.CreatedAt = model.CreatedAt
 	i.UpdatedAt = model.UpdatedAt
 
-	fixedAt, fixed := model.FixedAt()
-	i.Fixed = fixed
-	i.FixedAt = utils.Ternary(fixed, &fixedAt, nil)
+	i.FixStatus = model.FixStatus()
 	i.FixPlannedAt = model.InnerDamage.FixPlannedAt
+	i.FixedAt = model.InnerDamage.FixedAt
 
 	if err != nil {
 		i.Error = err.Error()

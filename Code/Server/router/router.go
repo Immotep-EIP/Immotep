@@ -106,7 +106,6 @@ func Routes() *gin.Engine {
 		panic("Could not register validator")
 	}
 	_ = v.RegisterValidation("priority", validators.Priority)
-	_ = v.RegisterValidation("damageUpdateEvent", validators.DamageUpdateEvent)
 	_ = v.RegisterValidation("reportType", validators.Type)
 	_ = v.RegisterValidation("state", validators.State)
 	_ = v.RegisterValidation("cleanliness", validators.Cleanliness)

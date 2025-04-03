@@ -1337,7 +1337,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Update damage according to event triggered. This can be either fix_planned, fixed or read.",
+                "description": "Update damage on owner side. Owner can only update the read status and the fix planned date.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1347,7 +1347,7 @@ const docTemplate = `{
                 "tags": [
                     "damage"
                 ],
-                "summary": "Update damage from event",
+                "summary": "Update damage for owner",
                 "parameters": [
                     {
                         "type": "string",
@@ -1371,7 +1371,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Damage update request with event",
+                        "description": "Damage update request",
                         "name": "damages",
                         "in": "body",
                         "required": true,
@@ -1395,6 +1395,78 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/damages/{damage_id}/fix/": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Fix a damage for a tenant or owner. When both users have fixed the damage, it will be marked as fixed.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Fix damage for one user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Fixed damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -3141,7 +3213,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Update damage from tenant",
+                "description": "Update damage on tenant side. Tenant can only update comment, priority and add new pictures.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3151,7 +3223,7 @@ const docTemplate = `{
                 "tags": [
                     "damage"
                 ],
-                "summary": "Update damage",
+                "summary": "Update damage for tenant",
                 "parameters": [
                     {
                         "type": "string",
@@ -3187,6 +3259,71 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Updated damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/damages/{damage_id}/fix/": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Fix a damage for a tenant or owner. When both users have fixed the damage, it will be marked as fixed.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Fix damage for one user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Fixed damage",
                         "schema": {
                             "$ref": "#/definitions/models.DamageResponse"
                         }
@@ -3740,6 +3877,12 @@ const docTemplate = `{
                 "fixed_at": {
                     "type": "string"
                 },
+                "fixed_owner": {
+                    "type": "boolean"
+                },
+                "fixed_tenant": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -3797,6 +3940,23 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "db.FixStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "planned",
+                "awaiting_owner_confirmation",
+                "awaiting_tenant_confirmation",
+                "fixed"
+            ],
+            "x-enum-varnames": [
+                "FixStatusPending",
+                "FixStatusPlanned",
+                "FixStatusAwaitingOwnerConfirmation",
+                "FixStatusAwaitingTenantConfirmation",
+                "FixStatusFixed"
+            ]
         },
         "db.FurnitureModel": {
             "type": "object",
@@ -4302,15 +4462,12 @@ const docTemplate = `{
         },
         "models.DamageOwnerUpdateRequest": {
             "type": "object",
-            "required": [
-                "event"
-            ],
             "properties": {
-                "event": {
-                    "$ref": "#/definitions/models.DamageUpdateEvent"
-                },
                 "fix_planned_at": {
                     "type": "string"
+                },
+                "read": {
+                    "type": "boolean"
                 }
             }
         },
@@ -4352,8 +4509,8 @@ const docTemplate = `{
                 "fix_planned_at": {
                     "type": "string"
                 },
-                "fixed": {
-                    "type": "boolean"
+                "fix_status": {
+                    "$ref": "#/definitions/db.FixStatus"
                 },
                 "fixed_at": {
                     "type": "string"
@@ -4406,19 +4563,6 @@ const docTemplate = `{
                     "$ref": "#/definitions/db.Priority"
                 }
             }
-        },
-        "models.DamageUpdateEvent": {
-            "type": "string",
-            "enum": [
-                "fix_planned",
-                "fixed",
-                "read"
-            ],
-            "x-enum-varnames": [
-                "DamageUpdateEventFixPlanned",
-                "DamageUpdateEventFixed",
-                "DamageUpdateEventRead"
-            ]
         },
         "models.DocumentRequest": {
             "type": "object",
@@ -5171,6 +5315,8 @@ const docTemplate = `{
                 "no-pending-lease",
                 "document-not-found",
                 "damage-not-found",
+                "damage-already-exists",
+                "cannot-update-fixed-damage",
                 "damage-already-fixed",
                 "failed-to-link-image",
                 "bad-base64-string",
@@ -5218,6 +5364,8 @@ const docTemplate = `{
                 "NoLeaseInvite",
                 "DocumentNotFound",
                 "DamageNotFound",
+                "DamageAlreadyExists",
+                "CannotUpdateFixedDamage",
                 "DamageAlreadyFixed",
                 "FailedLinkImage",
                 "BadBase64String",
