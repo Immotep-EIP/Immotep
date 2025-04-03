@@ -55,6 +55,14 @@ func registerTenantRoutes(tenant *gin.RouterGroup) {
 					docId.GET("/", controllers.GetDocument)
 				}
 			}
+
+			reports := leaseId.Group("/inventory-reports/")
+			{
+				reports.GET("/", controllers.GetInventoryReportsByLease)
+				reports.GET("/:report_id/",
+					middlewares.CheckInventoryReportLeaseOwnership("report_id"),
+					controllers.GetInventoryReport)
+			}
 		}
 	}
 }

@@ -13,12 +13,18 @@ import (
 func TestInventoryReport(t *testing.T) {
 	model := db.InventoryReportModel{
 		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			PropertyID: "1",
-			Date:       time.Now(),
-			Type:       db.ReportTypeStart,
+			ID:      "1",
+			LeaseID: "1",
+			Date:    time.Now(),
+			Type:    db.ReportTypeStart,
 		},
 		RelationsInventoryReport: db.RelationsInventoryReport{
+			Lease: &db.LeaseModel{
+				InnerLease: db.InnerLease{
+					ID:         "1",
+					PropertyID: "1",
+				},
+			},
 			RoomStates: []db.RoomStateModel{
 				{
 					InnerRoomState: db.InnerRoomState{
@@ -102,7 +108,7 @@ func TestInventoryReport(t *testing.T) {
 		resp.FromDbInventoryReport(model)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
 		assert.Equal(t, model.Type, resp.Type)
 		assert.Len(t, resp.Rooms, 2)
@@ -135,7 +141,7 @@ func TestInventoryReport(t *testing.T) {
 		resp := models.DbInventoryReportToResponse(model)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
 		assert.Equal(t, model.Type, resp.Type)
 		assert.Len(t, resp.Rooms, 2)
@@ -168,10 +174,18 @@ func TestInventoryReport(t *testing.T) {
 func TestCreateInventoryReportResponse(t *testing.T) {
 	model := db.InventoryReportModel{
 		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			PropertyID: "1",
-			Date:       time.Now(),
-			Type:       db.ReportTypeStart,
+			ID:      "1",
+			LeaseID: "1",
+			Date:    time.Now(),
+			Type:    db.ReportTypeStart,
+		},
+		RelationsInventoryReport: db.RelationsInventoryReport{
+			Lease: &db.LeaseModel{
+				InnerLease: db.InnerLease{
+					ID:         "1",
+					PropertyID: "1",
+				},
+			},
 		},
 	}
 
@@ -189,7 +203,7 @@ func TestCreateInventoryReportResponse(t *testing.T) {
 		resp.FromDbInventoryReport(model, pdf, errors)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
 		assert.Equal(t, model.Type, resp.Type)
 		assert.Equal(t, pdf.Name, resp.PdfName)
@@ -202,7 +216,7 @@ func TestCreateInventoryReportResponse(t *testing.T) {
 		resp.FromDbInventoryReport(model, nil, errors)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
 		assert.Equal(t, model.Type, resp.Type)
 		assert.Empty(t, resp.PdfName)
@@ -214,7 +228,7 @@ func TestCreateInventoryReportResponse(t *testing.T) {
 		resp := models.DbInventoryReportToCreateResponse(model, pdf, errors)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
 		assert.Equal(t, model.Type, resp.Type)
 		assert.Equal(t, pdf.Name, resp.PdfName)
@@ -226,7 +240,7 @@ func TestCreateInventoryReportResponse(t *testing.T) {
 		resp := models.DbInventoryReportToCreateResponse(model, nil, errors)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
 		assert.Equal(t, model.Type, resp.Type)
 		assert.Empty(t, resp.PdfName)

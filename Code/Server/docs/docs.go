@@ -714,71 +714,6 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new inventory report for a room",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory-report"
-                ],
-                "summary": "Create a new inventory report",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property ID",
-                        "name": "property_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Inventory report data",
-                        "name": "invReport",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.InventoryReportRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created inventory report data",
-                        "schema": {
-                            "$ref": "#/definitions/models.CreateInventoryReportResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Missing fields",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "403": {
-                        "description": "Property not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Property or room not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
             }
         },
         "/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/": {
@@ -1735,6 +1670,199 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all inventory reports for a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Get all inventory reports for a lease",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of inventory reports",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.InventoryReportResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new inventory report for a room",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Create a new inventory report",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Inventory report data",
+                        "name": "invReport",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateInventoryReportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property or room not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get inventory report information by its ID or get the latest one",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Get inventory report by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Report ID or 'latest' to get the latest one",
+                        "name": "report_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Inventory report not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -3531,6 +3659,113 @@ const docTemplate = `{
                 }
             }
         },
+        "/tenant/leases/{lease_id}/inventory-reports/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all inventory reports for a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Get all inventory reports for a lease",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of inventory reports",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.InventoryReportResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/inventory-reports/{report_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get inventory report information by its ID or get the latest one",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Get inventory report by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Report ID or 'latest' to get the latest one",
+                        "name": "report_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Inventory report not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/tenant/leases/{lease_id}/property/": {
             "get": {
                 "security": [
@@ -4084,10 +4319,10 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "property": {
-                    "$ref": "#/definitions/db.PropertyModel"
+                "lease": {
+                    "$ref": "#/definitions/db.LeaseModel"
                 },
-                "property_id": {
+                "lease_id": {
                     "type": "string"
                 },
                 "roomStates": {
@@ -4159,6 +4394,12 @@ const docTemplate = `{
                 },
                 "property_id": {
                     "type": "string"
+                },
+                "reports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.InventoryReportModel"
+                    }
                 },
                 "start_date": {
                     "type": "string"
@@ -4245,12 +4486,6 @@ const docTemplate = `{
                 },
                 "rental_price_per_month": {
                     "type": "number"
-                },
-                "reports": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.InventoryReportModel"
-                    }
                 },
                 "rooms": {
                     "type": "array",
@@ -4444,6 +4679,9 @@ const docTemplate = `{
                     }
                 },
                 "id": {
+                    "type": "string"
+                },
+                "lease_id": {
                     "type": "string"
                 },
                 "pdf_data": {
@@ -4743,6 +4981,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "lease_id": {
                     "type": "string"
                 },
                 "property_id": {
@@ -5312,6 +5553,7 @@ const docTemplate = `{
                 "no-active-lease",
                 "lease-not-found",
                 "cannot-end-non-current-lease",
+                "inventory-report-must-be-linked-to-current-lease",
                 "no-pending-lease",
                 "document-not-found",
                 "damage-not-found",
@@ -5361,6 +5603,7 @@ const docTemplate = `{
                 "NoActiveLease",
                 "LeaseNotFound",
                 "CannotEndNonCurrentLease",
+                "InvReportMustBeCurrentLease",
                 "NoLeaseInvite",
                 "DocumentNotFound",
                 "DamageNotFound",

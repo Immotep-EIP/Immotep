@@ -51,6 +51,7 @@ type RoomStateResponse struct {
 type InventoryReportResponse struct {
 	ID         string              `json:"id"`
 	PropertyID string              `json:"property_id"`
+	LeaseID    string              `json:"lease_id"`
 	Date       db.DateTime         `json:"date"`
 	Type       db.ReportType       `json:"type"`
 	Rooms      []RoomStateResponse `json:"rooms"`
@@ -58,7 +59,8 @@ type InventoryReportResponse struct {
 
 func (i *InventoryReportResponse) FromDbInventoryReport(model db.InventoryReportModel) {
 	i.ID = model.ID
-	i.PropertyID = model.PropertyID
+	i.PropertyID = model.Lease().PropertyID
+	i.LeaseID = model.LeaseID
 	i.Date = model.Date
 	i.Type = model.Type
 	for _, room := range model.RoomStates() {
@@ -104,6 +106,7 @@ func DbInventoryReportToResponse(pc db.InventoryReportModel) InventoryReportResp
 type CreateInventoryReportResponse struct {
 	ID         string        `json:"id"`
 	PropertyID string        `json:"property_id"`
+	LeaseID    string        `json:"lease_id"`
 	Date       db.DateTime   `json:"date"`
 	Type       db.ReportType `json:"type"`
 	PdfName    string        `json:"pdf_name"`
@@ -113,7 +116,8 @@ type CreateInventoryReportResponse struct {
 
 func (c *CreateInventoryReportResponse) FromDbInventoryReport(model db.InventoryReportModel, pdf *db.DocumentModel, errors []string) {
 	c.ID = model.ID
-	c.PropertyID = model.PropertyID
+	c.PropertyID = model.Lease().PropertyID
+	c.LeaseID = model.LeaseID
 	c.Date = model.Date
 	c.Type = model.Type
 	if pdf != nil {

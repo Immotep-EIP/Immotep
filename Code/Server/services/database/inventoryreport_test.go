@@ -14,9 +14,9 @@ import (
 func BuildTestInventoryReport(id string) db.InventoryReportModel {
 	return db.InventoryReportModel{
 		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         id,
-			Type:       db.ReportTypeStart,
-			PropertyID: "1",
+			ID:      id,
+			Type:    db.ReportTypeStart,
+			LeaseID: "1",
 		},
 	}
 }
@@ -267,35 +267,35 @@ func TestGetInvReportByID_NoConnection(t *testing.T) {
 
 // #############################################################################
 
-func TestGetLatestInvReport(t *testing.T) {
+func TestGetLatestInvReportByProperty(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	invReport := BuildTestInventoryReport("1")
 	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Returns(invReport)
 
-	latestInvReport := database.GetLatestInvReport("1")
+	latestInvReport := database.GetLatestInvReportByProperty("1")
 	assert.NotNil(t, latestInvReport)
 	assert.Equal(t, invReport.ID, latestInvReport.ID)
 }
 
-func TestGetLatestInvReport_NoReports(t *testing.T) {
+func TestGetLatestInvReportByProperty_NoReports(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Errors(db.ErrNotFound)
 
-	latestInvReport := database.GetLatestInvReport("1")
+	latestInvReport := database.GetLatestInvReportByProperty("1")
 	assert.Nil(t, latestInvReport)
 }
 
-func TestGetLatestInvReport_NoConnection(t *testing.T) {
+func TestGetLatestInvReportByProperty_NoConnection(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetLatestInvReport("1")
+		database.GetLatestInvReportByProperty("1")
 	})
 }

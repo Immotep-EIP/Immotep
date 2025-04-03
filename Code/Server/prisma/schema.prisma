@@ -71,6 +71,7 @@ model lease {
 
     documents   document[]
     damages     damage[]
+    reports     inventoryReport[]
 }
 
 model damage {
@@ -120,7 +121,6 @@ model property {
     leases        lease[]
     lease_invite  leaseInvite?
     rooms         room[]
-    reports       inventoryReport[]
 
     @@unique([name, owner_id])
 }
@@ -193,8 +193,8 @@ model inventoryReport {
     date    DateTime   @default(now())
     type    reportType
 
-    property    property @relation(fields: [property_id], references: [id])
-    property_id String
+    lease    lease  @relation(fields: [lease_id], references: [id])
+    lease_id String
 
     roomStates      roomState[]
     furnitureStates furnitureState[]

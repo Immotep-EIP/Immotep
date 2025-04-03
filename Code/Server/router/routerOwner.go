@@ -35,13 +35,18 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 				damages.GET("/fixed/", controllers.GetFixedDamagesByProperty)
 			}
 
+			reports := propertyId.Group("/inventory-reports/")
+			{
+				reports.GET("/", controllers.GetAllInventoryReportsByProperty)
+				reports.GET("/:report_id/",
+					middlewares.CheckInventoryReportPropertyOwnership("report_id"),
+					controllers.GetInventoryReport)
+			}
+
 			registerOwnerInventoryRoutes(propertyId)
 
 			leases := propertyId.Group("/leases/")
 			registerOwnerLeaseRoutes(leases)
-
-			invReports := propertyId.Group("/inventory-reports/")
-			registerOwnerInvReportRoutes(invReports)
 		}
 	}
 }
@@ -81,6 +86,21 @@ func registerOwnerLeaseRoutes(leases *gin.RouterGroup) {
 				// document.DELETE("/:doc_id/", controllers.DeleteDocument)
 			}
 		}
+
+		reports := leaseId.Group("/inventory-reports/")
+		{
+			reports.POST("/", controllers.CreateInventoryReport)
+			reports.GET("/", controllers.GetInventoryReportsByLease)
+			reports.GET("/:report_id/",
+				middlewares.CheckInventoryReportLeaseOwnership("report_id"),
+				controllers.GetInventoryReport)
+
+			// AI
+			reports.POST("/summarize/", controllers.GenerateSummary)
+			reports.POST("/compare/:old_report_id/",
+				middlewares.CheckInventoryReportLeaseOwnership("old_report_id"),
+				controllers.GenerateComparison)
+		}
 	}
 }
 
@@ -115,18 +135,4 @@ func registerOwnerInventoryRoutes(propertyId *gin.RouterGroup) {
 			}
 		}
 	}
-}
-
-func registerOwnerInvReportRoutes(invReports *gin.RouterGroup) {
-	invReports.POST("/", controllers.CreateInventoryReport)
-	invReports.GET("/", controllers.GetAllInventoryReportsByProperty)
-
-	invReports.GET("/:report_id/",
-		middlewares.CheckInventoryReportPropertyOwnership("property_id", "report_id"),
-		controllers.GetInventoryReport)
-
-	invReports.POST("/summarize/", controllers.GenerateSummary)
-	invReports.POST("/compare/:old_report_id/",
-		middlewares.CheckInventoryReportPropertyOwnership("property_id", "old_report_id"),
-		controllers.GenerateComparison)
 }

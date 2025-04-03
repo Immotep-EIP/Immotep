@@ -5,11 +5,13 @@ import (
 	"immotep/backend/services"
 )
 
-func CreateInvReport(repType db.ReportType, propertyId string) *db.InventoryReportModel {
+func CreateInvReport(repType db.ReportType, leaseId string) *db.InventoryReportModel {
 	pdb := services.DBclient
 	newInvReport, err := pdb.Client.InventoryReport.CreateOne(
 		db.InventoryReport.Type.Set(repType),
-		db.InventoryReport.Property.Link(db.Property.ID.Equals(propertyId)),
+		db.InventoryReport.Lease.Link(db.Lease.ID.Equals(leaseId)),
+	).With(
+		db.InventoryReport.Lease.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {
@@ -23,7 +25,9 @@ func CreateInvReport(repType db.ReportType, propertyId string) *db.InventoryRepo
 func MockCreateInventoryReport(c *services.PrismaDB, invRep db.InventoryReportModel) db.InventoryReportMockExpectParam {
 	return c.Client.InventoryReport.CreateOne(
 		db.InventoryReport.Type.Set(invRep.Type),
-		db.InventoryReport.Property.Link(db.Property.ID.Equals("1")),
+		db.InventoryReport.Lease.Link(db.Lease.ID.Equals("1")),
+	).With(
+		db.InventoryReport.Lease.Fetch(),
 	)
 }
 
@@ -100,11 +104,11 @@ func MockCreateFurnitureState(c *services.PrismaDB, furnitureState db.FurnitureS
 func GetInvReportsByPropertyID(propertyID string) []db.InventoryReportModel {
 	pdb := services.DBclient
 	invReports, err := pdb.Client.InventoryReport.FindMany(
-		db.InventoryReport.PropertyID.Equals(propertyID),
+		db.InventoryReport.Lease.Where(db.Lease.PropertyID.Equals(propertyID)),
 	).OrderBy(
 		db.InventoryReport.Date.Order(db.SortOrderDesc),
 	).With(
-		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.Lease.Fetch(),
 		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
 		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
 	).Exec(pdb.Context)
@@ -116,11 +120,40 @@ func GetInvReportsByPropertyID(propertyID string) []db.InventoryReportModel {
 
 func MockGetInvReportByPropertyID(c *services.PrismaDB) db.InventoryReportMockExpectParam {
 	return c.Client.InventoryReport.FindMany(
-		db.InventoryReport.PropertyID.Equals("1"),
+		db.InventoryReport.Lease.Where(db.Lease.PropertyID.Equals("1")),
 	).OrderBy(
 		db.InventoryReport.Date.Order(db.SortOrderDesc),
 	).With(
-		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.Lease.Fetch(),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
+	)
+}
+
+func GetInvReportsByLeaseID(leaseID string) []db.InventoryReportModel {
+	pdb := services.DBclient
+	invReports, err := pdb.Client.InventoryReport.FindMany(
+		db.InventoryReport.LeaseID.Equals(leaseID),
+	).OrderBy(
+		db.InventoryReport.Date.Order(db.SortOrderDesc),
+	).With(
+		db.InventoryReport.Lease.Fetch(),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
+	).Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
+	return invReports
+}
+
+func MockGetInvReportByLeaseID(c *services.PrismaDB) db.InventoryReportMockExpectParam {
+	return c.Client.InventoryReport.FindMany(
+		db.InventoryReport.LeaseID.Equals("1"),
+	).OrderBy(
+		db.InventoryReport.Date.Order(db.SortOrderDesc),
+	).With(
+		db.InventoryReport.Lease.Fetch(),
 		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
 		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
 	)
@@ -131,7 +164,7 @@ func GetInvReportByID(id string) *db.InventoryReportModel {
 	invReport, err := pdb.Client.InventoryReport.FindUnique(
 		db.InventoryReport.ID.Equals(id),
 	).With(
-		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.Lease.Fetch(),
 		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
 		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
 	).Exec(pdb.Context)
@@ -148,20 +181,52 @@ func MockGetInvReportByID(c *services.PrismaDB) db.InventoryReportMockExpectPara
 	return c.Client.InventoryReport.FindUnique(
 		db.InventoryReport.ID.Equals("1"),
 	).With(
-		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.Lease.Fetch(),
 		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
 		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
 	)
 }
 
-func GetLatestInvReport(propertyID string) *db.InventoryReportModel {
+func GetLatestInvReportByLease(leaseID string) *db.InventoryReportModel {
 	pdb := services.DBclient
 	invReport, err := pdb.Client.InventoryReport.FindFirst(
-		db.InventoryReport.PropertyID.Equals(propertyID),
+		db.InventoryReport.LeaseID.Equals(leaseID),
 	).OrderBy(
 		db.InventoryReport.Date.Order(db.SortOrderDesc),
 	).With(
-		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.Lease.Fetch(),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
+	).Exec(pdb.Context)
+	if err != nil {
+		if db.IsErrNotFound(err) {
+			return nil
+		}
+		panic(err)
+	}
+	return invReport
+}
+
+func MockGetLatestInvReportByLease(c *services.PrismaDB) db.InventoryReportMockExpectParam {
+	return c.Client.InventoryReport.FindFirst(
+		db.InventoryReport.LeaseID.Equals("1"),
+	).OrderBy(
+		db.InventoryReport.Date.Order(db.SortOrderDesc),
+	).With(
+		db.InventoryReport.Lease.Fetch(),
+		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
+		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
+	)
+}
+
+func GetLatestInvReportByProperty(propertyID string) *db.InventoryReportModel {
+	pdb := services.DBclient
+	invReport, err := pdb.Client.InventoryReport.FindFirst(
+		db.InventoryReport.Lease.Where(db.Lease.PropertyID.Equals(propertyID)),
+	).OrderBy(
+		db.InventoryReport.Date.Order(db.SortOrderDesc),
+	).With(
+		db.InventoryReport.Lease.Fetch(),
 		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
 		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
 	).Exec(pdb.Context)
@@ -176,11 +241,11 @@ func GetLatestInvReport(propertyID string) *db.InventoryReportModel {
 
 func MockGetLatestInvReport(c *services.PrismaDB) db.InventoryReportMockExpectParam {
 	return c.Client.InventoryReport.FindFirst(
-		db.InventoryReport.PropertyID.Equals("1"),
+		db.InventoryReport.Lease.Where(db.Lease.PropertyID.Equals("1")),
 	).OrderBy(
 		db.InventoryReport.Date.Order(db.SortOrderDesc),
 	).With(
-		db.InventoryReport.Property.Fetch(),
+		db.InventoryReport.Lease.Fetch(),
 		db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
 		db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
 	)

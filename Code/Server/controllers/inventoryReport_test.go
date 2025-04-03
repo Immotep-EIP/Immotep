@@ -84,17 +84,23 @@ func BuildTestLeaseWithInfo() db.LeaseModel {
 	}
 }
 
-func BuildTestInvReport(id string, propertyId string, withRelations bool) db.InventoryReportModel {
+func BuildTestInvReport(id string, leaseId string, withRelations bool) db.InventoryReportModel {
 	if withRelations {
 		testRoom := BuildTestRoom("1", "1")
 		testFurniture := BuildTestFurniture("1", "1")
 		return db.InventoryReportModel{
 			InnerInventoryReport: db.InnerInventoryReport{
-				ID:         id,
-				Type:       db.ReportTypeStart,
-				PropertyID: propertyId,
+				ID:      id,
+				Type:    db.ReportTypeStart,
+				LeaseID: leaseId,
 			},
 			RelationsInventoryReport: db.RelationsInventoryReport{
+				Lease: &db.LeaseModel{
+					InnerLease: db.InnerLease{
+						ID:         leaseId,
+						PropertyID: "1",
+					},
+				},
 				RoomStates: []db.RoomStateModel{
 					{
 						InnerRoomState: db.InnerRoomState{
@@ -136,9 +142,9 @@ func BuildTestInvReport(id string, propertyId string, withRelations bool) db.Inv
 	}
 	return db.InventoryReportModel{
 		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         id,
-			Type:       db.ReportTypeStart,
-			PropertyID: propertyId,
+			ID:      id,
+			Type:    db.ReportTypeStart,
+			LeaseID: leaseId,
 		},
 	}
 }

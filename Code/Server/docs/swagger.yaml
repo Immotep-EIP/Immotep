@@ -159,9 +159,9 @@ definitions:
         type: array
       id:
         type: string
-      property:
-        $ref: '#/definitions/db.PropertyModel'
-      property_id:
+      lease:
+        $ref: '#/definitions/db.LeaseModel'
+      lease_id:
         type: string
       roomStates:
         items:
@@ -209,6 +209,10 @@ definitions:
         $ref: '#/definitions/db.PropertyModel'
       property_id:
         type: string
+      reports:
+        items:
+          $ref: '#/definitions/db.InventoryReportModel'
+        type: array
       start_date:
         type: string
       tenant:
@@ -268,10 +272,6 @@ definitions:
         type: string
       rental_price_per_month:
         type: number
-      reports:
-        items:
-          $ref: '#/definitions/db.InventoryReportModel'
-        type: array
       rooms:
         items:
           $ref: '#/definitions/db.RoomModel'
@@ -404,6 +404,8 @@ definitions:
           type: string
         type: array
       id:
+        type: string
+      lease_id:
         type: string
       pdf_data:
         type: string
@@ -602,6 +604,8 @@ definitions:
       date:
         type: string
       id:
+        type: string
+      lease_id:
         type: string
       property_id:
         type: string
@@ -992,6 +996,7 @@ definitions:
     - no-active-lease
     - lease-not-found
     - cannot-end-non-current-lease
+    - inventory-report-must-be-linked-to-current-lease
     - no-pending-lease
     - document-not-found
     - damage-not-found
@@ -1041,6 +1046,7 @@ definitions:
     - NoActiveLease
     - LeaseNotFound
     - CannotEndNonCurrentLease
+    - InvReportMustBeCurrentLease
     - NoLeaseInvite
     - DocumentNotFound
     - DamageNotFound
@@ -1494,48 +1500,6 @@ paths:
       security:
       - Bearer: []
       summary: Get all inventory reports for a property
-      tags:
-      - inventory-report
-    post:
-      consumes:
-      - application/json
-      description: Create a new inventory report for a room
-      parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
-      - description: Inventory report data
-        in: body
-        name: invReport
-        required: true
-        schema:
-          $ref: '#/definitions/models.InventoryReportRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created inventory report data
-          schema:
-            $ref: '#/definitions/models.CreateInventoryReportResponse'
-        "400":
-          description: Missing fields
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Property or room not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Create a new inventory report
       tags:
       - inventory-report
   /owner/properties/{property_id}/inventory-reports/{report_id}/:
@@ -2165,6 +2129,131 @@ paths:
       summary: End lease
       tags:
       - lease
+  /owner/properties/{property_id}/leases/{lease_id}/inventory-reports/:
+    get:
+      consumes:
+      - application/json
+      description: Get all inventory reports for a lease
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of inventory reports
+          schema:
+            items:
+              $ref: '#/definitions/models.InventoryReportResponse'
+            type: array
+        "403":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get all inventory reports for a lease
+      tags:
+      - inventory-report
+    post:
+      consumes:
+      - application/json
+      description: Create a new inventory report for a room
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Inventory report data
+        in: body
+        name: invReport
+        required: true
+        schema:
+          $ref: '#/definitions/models.InventoryReportRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created inventory report data
+          schema:
+            $ref: '#/definitions/models.CreateInventoryReportResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property or room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create a new inventory report
+      tags:
+      - inventory-report
+  /owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get inventory report information by its ID or get the latest one
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Report ID or 'latest' to get the latest one
+        in: path
+        name: report_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Inventory report data
+          schema:
+            $ref: '#/definitions/models.InventoryReportResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Inventory report not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get inventory report by ID
+      tags:
+      - inventory-report
   /owner/properties/{property_id}/picture/:
     get:
       consumes:
@@ -3344,6 +3433,74 @@ paths:
       summary: Get document by ID
       tags:
       - document
+  /tenant/leases/{lease_id}/inventory-reports/:
+    get:
+      consumes:
+      - application/json
+      description: Get all inventory reports for a lease
+      parameters:
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of inventory reports
+          schema:
+            items:
+              $ref: '#/definitions/models.InventoryReportResponse'
+            type: array
+        "403":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get all inventory reports for a lease
+      tags:
+      - inventory-report
+  /tenant/leases/{lease_id}/inventory-reports/{report_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get inventory report information by its ID or get the latest one
+      parameters:
+      - description: Report ID or 'latest' to get the latest one
+        in: path
+        name: report_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Inventory report data
+          schema:
+            $ref: '#/definitions/models.InventoryReportResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Inventory report not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get inventory report by ID
+      tags:
+      - inventory-report
   /tenant/leases/{lease_id}/property/:
     get:
       consumes:

@@ -33,6 +33,7 @@ const (
 	NoActiveLease                ErrorCode = "no-active-lease"
 	LeaseNotFound                ErrorCode = "lease-not-found"
 	CannotEndNonCurrentLease     ErrorCode = "cannot-end-non-current-lease"
+	InvReportMustBeCurrentLease  ErrorCode = "inventory-report-must-be-linked-to-current-lease"
 	NoLeaseInvite                ErrorCode = "no-pending-lease"
 	DocumentNotFound             ErrorCode = "document-not-found"
 	DamageNotFound               ErrorCode = "damage-not-found"

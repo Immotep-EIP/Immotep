@@ -58,6 +58,23 @@ func BuildTestProperty(id string) db.PropertyModel {
 	}
 }
 
+func BuildTestInvReport(id string) db.InventoryReportModel {
+	return db.InventoryReportModel{
+		InnerInventoryReport: db.InnerInventoryReport{
+			ID:      id,
+			LeaseID: "1",
+		},
+		RelationsInventoryReport: db.RelationsInventoryReport{
+			Lease: &db.LeaseModel{
+				InnerLease: db.InnerLease{
+					ID:         "1",
+					PropertyID: "1",
+				},
+			},
+		},
+	}
+}
+
 func TestCheckPropertyOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	c, m, ensure := services.ConnectDBTest()
@@ -240,55 +257,47 @@ func TestCheckFurnitureOwnership_NotYours(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCheckInventoryReportOwnership(t *testing.T) {
+func TestCheckInventoryReportPropertyOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	invReport := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			PropertyID: "1",
-		},
-	}
+	invReport := BuildTestInvReport("1")
 	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Returns(invReport)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
 	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "reportId", Value: "1"},
 	}
 
-	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(ctx)
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestCheckInventoryReportOwnership_Latest(t *testing.T) {
+func TestCheckInventoryReportPropertyOwnership_Latest(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	invReport := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			PropertyID: "1",
-		},
-	}
+	invReport := BuildTestInvReport("1")
 	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Returns(invReport)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
 	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "reportId", Value: "latest"},
 	}
 
-	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(ctx)
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestCheckInventoryReportOwnership_LatestNotFound(t *testing.T) {
+func TestCheckInventoryReportPropertyOwnership_LatestNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
@@ -297,16 +306,17 @@ func TestCheckInventoryReportOwnership_LatestNotFound(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
 	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "reportId", Value: "latest"},
 	}
 
-	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(ctx)
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCheckInventoryReportOwnership_NotFound(t *testing.T) {
+func TestCheckInventoryReportPropertyOwnership_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
@@ -315,36 +325,34 @@ func TestCheckInventoryReportOwnership_NotFound(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
 	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "reportId", Value: "1"},
 	}
 
-	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(ctx)
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCheckInventoryReportOwnership_NotYours(t *testing.T) {
+func TestCheckInventoryReportPropertyOwnership_NotYours(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	invReport := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			PropertyID: "2",
-		},
-	}
+	invReport := BuildTestInvReport("1")
+	invReport.Lease().PropertyID = "2"
 	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Returns(invReport)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
 	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "reportId", Value: "1"},
 	}
 
-	middlewares.CheckInventoryReportPropertyOwnership("propertyId", "reportId")(ctx)
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 

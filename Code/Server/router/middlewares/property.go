@@ -68,15 +68,37 @@ func CheckFurnitureRoomOwnership(roomIdUrlParam string, furnitureIdUrlParam stri
 	}
 }
 
-func CheckInventoryReportPropertyOwnership(propertyIdUrlParam string, reportIdUrlParam string) gin.HandlerFunc {
+func CheckInventoryReportPropertyOwnership(reportIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		property, _ := c.MustGet("property").(db.PropertyModel)
+
 		var invrep *db.InventoryReportModel
 		if c.Param(reportIdUrlParam) == "latest" {
-			invrep = database.GetLatestInvReport(c.Param(propertyIdUrlParam))
+			invrep = database.GetLatestInvReportByProperty(property.ID)
 		} else {
 			invrep = database.GetInvReportByID(c.Param(reportIdUrlParam))
 		}
-		if invrep == nil || invrep.PropertyID != c.Param(propertyIdUrlParam) {
+		if invrep == nil || invrep.Lease().PropertyID != property.ID {
+			utils.AbortSendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
+			return
+		}
+
+		c.Set("invrep", *invrep)
+		c.Next()
+	}
+}
+
+func CheckInventoryReportLeaseOwnership(reportIdUrlParam string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		lease, _ := c.MustGet("lease").(db.LeaseModel)
+
+		var invrep *db.InventoryReportModel
+		if c.Param(reportIdUrlParam) == "latest" {
+			invrep = database.GetLatestInvReportByLease(lease.ID)
+		} else {
+			invrep = database.GetInvReportByID(c.Param(reportIdUrlParam))
+		}
+		if invrep == nil || invrep.LeaseID != lease.ID {
 			utils.AbortSendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
 			return
 		}
