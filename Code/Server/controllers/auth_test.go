@@ -16,6 +16,7 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
 	"immotep/backend/services"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -111,12 +112,10 @@ func TestRegisterTenantWrongPassword(t *testing.T) {
 }
 
 func TestRegisterTenantInviteNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals("wrong")),
-	).Errors(db.ErrNotFound)
+	m.LeaseInvite.Expect(database.MockGetLeaseInviteByID(c)).Errors(db.ErrNotFound)
 
 	user := BuildTestUser("1")
 	b, err := json.Marshal(user)
@@ -124,7 +123,7 @@ func TestRegisterTenantInviteNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/v1/auth/invite/wrong/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/auth/invite/1/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
@@ -136,14 +135,12 @@ func TestRegisterTenantInviteNotFound(t *testing.T) {
 }
 
 func TestRegisterTenantWrongEmail(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	pendingContract := BuildTestPendingContract()
-	pendingContract.TenantEmail = TENANT_EMAIL
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
-	).Returns(pendingContract)
+	leaseInvite := BuildTestLeaseInvite()
+	leaseInvite.TenantEmail = TENANT_EMAIL
+	m.LeaseInvite.Expect(database.MockGetLeaseInviteByID(c)).Returns(leaseInvite)
 
 	user := BuildTestUser("1")
 	user.Email = "test2@example.com"
@@ -164,26 +161,18 @@ func TestRegisterTenantWrongEmail(t *testing.T) {
 }
 
 func TestRegisterTenantPropertyNotAvailable(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	pendingContract := BuildTestPendingContract()
-	pendingContract.TenantEmail = TENANT_EMAIL
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
-	).Returns(pendingContract)
+	leaseInvite := BuildTestLeaseInvite()
+	leaseInvite.TenantEmail = TENANT_EMAIL
+	m.LeaseInvite.Expect(database.MockGetLeaseInviteByID(c)).Returns(leaseInvite)
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{BuildTestLease("1")})
 
 	user := BuildTestUser("1")
-	user.Email = pendingContract.TenantEmail
+	user.Email = leaseInvite.TenantEmail
 	b, err := json.Marshal(user)
 	require.NoError(t, err)
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{BuildTestContract()})
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -199,49 +188,19 @@ func TestRegisterTenantPropertyNotAvailable(t *testing.T) {
 }
 
 func TestAcceptInvite(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
 	user.Role = db.RoleTenant
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	pendingContract := BuildTestPendingContract()
-	pendingContract.TenantEmail = user.Email
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
-	).Returns(pendingContract)
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(pendingContract.PropertyID),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{})
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals(user.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{})
-
-	mock.Contract.Expect(
-		client.Client.Contract.CreateOne(
-			db.Contract.StartDate.Set(pendingContract.StartDate),
-			db.Contract.Tenant.Link(db.User.ID.Equals(user.ID)),
-			db.Contract.Property.Link(db.Property.ID.Equals(pendingContract.PropertyID)),
-			db.Contract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
-		),
-	).Returns(BuildTestContract())
-
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(
-			db.PendingContract.ID.Equals(pendingContract.ID),
-		).Delete(),
-	).Returns(db.PendingContractModel{})
+	leaseInvite := BuildTestLeaseInvite()
+	leaseInvite.TenantEmail = user.Email
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.LeaseInvite.Expect(database.MockGetLeaseInviteByID(c)).Returns(leaseInvite)
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{})
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByTenant(c)).ReturnsMany([]db.LeaseModel{})
+	m.Lease.Expect(database.MockCreateLease(c, leaseInvite)).Returns(BuildTestLease("1"))
+	m.LeaseInvite.Expect(database.MockDeleteLeaseInviteById(c)).Returns(db.LeaseInviteModel{})
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -254,13 +213,11 @@ func TestAcceptInvite(t *testing.T) {
 }
 
 func TestAcceptInviteNotATenant(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -277,22 +234,17 @@ func TestAcceptInviteNotATenant(t *testing.T) {
 }
 
 func TestAcceptInviteInviteNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
 	user.Role = db.RoleTenant
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals("wrong")),
-	).Errors(db.ErrNotFound)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.LeaseInvite.Expect(database.MockGetLeaseInviteByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/v1/tenant/invite/wrong/", nil)
+	req, _ := http.NewRequest(http.MethodPost, "/v1/tenant/invite/1/", nil)
 	req.Header.Set("Oauth.claims.id", user.ID)
 	req.Header.Set("Oauth.claims.role", string(user.Role))
 	r.ServeHTTP(w, req)
@@ -305,21 +257,16 @@ func TestAcceptInviteInviteNotFound(t *testing.T) {
 }
 
 func TestAcceptInviteWrongEmail(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
 	user.Role = db.RoleTenant
 	user.Email = TENANT_EMAIL
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	pendingContract := BuildTestPendingContract()
-	pendingContract.TenantEmail = "test2@example.com"
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
-	).Returns(pendingContract)
+	leaseInvite := BuildTestLeaseInvite()
+	leaseInvite.TenantEmail = "test2@example.com"
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.LeaseInvite.Expect(database.MockGetLeaseInviteByID(c)).Returns(leaseInvite)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -336,28 +283,17 @@ func TestAcceptInviteWrongEmail(t *testing.T) {
 }
 
 func TestAcceptInvitePropertyNotAvailable(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
 	user.Role = db.RoleTenant
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	pendingContract := BuildTestPendingContract()
-	pendingContract.TenantEmail = user.Email
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
-	).Returns(pendingContract)
-
-	activeContract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(pendingContract.PropertyID),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{activeContract})
+	leaseInvite := BuildTestLeaseInvite()
+	leaseInvite.TenantEmail = user.Email
+	activeLease := BuildTestLease("1")
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.LeaseInvite.Expect(database.MockGetLeaseInviteByID(c)).Returns(leaseInvite)
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{activeLease})
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -373,36 +309,19 @@ func TestAcceptInvitePropertyNotAvailable(t *testing.T) {
 	assert.Equal(t, utils.PropertyNotAvailable, errorResponse.Code)
 }
 
-func TestAcceptInviteTenantAlreadyHasContract(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+func TestAcceptInviteTenantAlreadyHasLease(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
 	user.Role = db.RoleTenant
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	pendingContract := BuildTestPendingContract()
-	pendingContract.TenantEmail = user.Email
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.ID.Equals(pendingContract.ID)),
-	).Returns(pendingContract)
-
-	activeContract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(pendingContract.PropertyID),
-			db.Contract.Active.Equals(true),
-		),
-	).Errors(db.ErrNotFound)
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals(user.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{activeContract})
+	leaseInvite := BuildTestLeaseInvite()
+	leaseInvite.TenantEmail = user.Email
+	activeLease := BuildTestLease("1")
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.LeaseInvite.Expect(database.MockGetLeaseInviteByID(c)).Returns(leaseInvite)
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByTenant(c)).ReturnsMany([]db.LeaseModel{activeLease})
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
@@ -415,5 +334,5 @@ func TestAcceptInviteTenantAlreadyHasContract(t *testing.T) {
 	var errorResponse utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
 	require.NoError(t, err)
-	assert.Equal(t, utils.TenantAlreadyHasContract, errorResponse.Code)
+	assert.Equal(t, utils.TenantAlreadyHasLease, errorResponse.Code)
 }

@@ -6,26 +6,24 @@ import (
 	"immotep/backend/prisma/db"
 )
 
-// type DocumentRequest struct {
-// 	Data string `binding:"required,base64" json:"data"`
-// }
+type DocumentRequest struct {
+	Name string `binding:"required"        json:"name"`
+	Data string `binding:"required,base64" json:"data"`
+}
 
-// func (i *DocumentRequest) ToDbDocument() *db.DocumentModel {
-// 	decoded, err := base64.StdEncoding.DecodeString(i.Data)
-// 	if err != nil {
-// 		return nil
-// 	}
+func (i *DocumentRequest) ToDbDocument() *db.DocumentModel {
+	decoded, err := base64.StdEncoding.DecodeString(i.Data)
+	if err != nil {
+		return nil
+	}
 
-// 	return &db.DocumentModel{
-// 		InnerDocument: db.InnerDocument{
-// 			Data: decoded,
-// 		},
-// 	}
-// }
-
-// func StringToDbDocument(data string) *db.DocumentModel {
-// 	return (&DocumentRequest{Data: data}).ToDbDocument()
-// }
+	return &db.DocumentModel{
+		InnerDocument: db.InnerDocument{
+			Name: i.Name,
+			Data: decoded,
+		},
+	}
+}
 
 type DocumentResponse struct {
 	ID        string      `json:"id"`

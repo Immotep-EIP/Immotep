@@ -4,7 +4,16 @@ import (
 	"slices"
 
 	"immotep/backend/prisma/db"
+	// "immotep/backend/services/database"
 	"immotep/backend/utils"
+)
+
+type PropertyStatus string
+
+const (
+	StatusUnavailable PropertyStatus = "unavailable"
+	StatusInviteSent  PropertyStatus = "invite sent"
+	StatusAvailable   PropertyStatus = "available"
 )
 
 type PropertyRequest struct {
@@ -65,11 +74,11 @@ type PropertyResponse struct {
 
 	// calculated fields
 
-	NbDamage  int          `json:"nb_damage"`
-	Status    string       `json:"status"`
-	Tenant    string       `json:"tenant,omitempty"`
-	StartDate *db.DateTime `json:"start_date,omitempty"`
-	EndDate   *db.DateTime `json:"end_date,omitempty"`
+	NbDamage  int            `json:"nb_damage"`
+	Status    PropertyStatus `json:"status"`
+	Tenant    string         `json:"tenant,omitempty"`
+	StartDate *db.DateTime   `json:"start_date,omitempty"`
+	EndDate   *db.DateTime   `json:"end_date,omitempty"`
 }
 
 func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
@@ -88,24 +97,27 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	p.CreatedAt = model.CreatedAt
 	p.Archived = model.Archived
 
-	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	p.NbDamage = 0
+	for _, lease := range model.Leases() {
+		p.NbDamage += utils.CountIf(lease.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	}
 
-	activeIndex := slices.IndexFunc(model.Contracts(), func(x db.ContractModel) bool { return x.Active })
-	invite, inviteOk := model.PendingContract()
+	activeIndex := slices.IndexFunc(model.Leases(), func(x db.LeaseModel) bool { return x.Active })
+	invite, inviteOk := model.LeaseInvite()
 	switch {
 	case activeIndex != -1:
-		active := model.Contracts()[activeIndex]
-		p.Status = "unavailable"
-		p.Tenant = active.Tenant().Firstname + " " + active.Tenant().Lastname
+		active := model.Leases()[activeIndex]
+		p.Status = StatusUnavailable
+		p.Tenant = active.Tenant().Name()
 		p.StartDate = &active.StartDate
-		p.EndDate = active.InnerContract.EndDate
+		p.EndDate = active.InnerLease.EndDate
 	case inviteOk:
-		p.Status = "invite sent"
+		p.Status = StatusInviteSent
 		p.Tenant = invite.TenantEmail
 		p.StartDate = &invite.StartDate
-		p.EndDate = invite.InnerPendingContract.EndDate
+		p.EndDate = invite.InnerLeaseInvite.EndDate
 	default:
-		p.Status = "available"
+		p.Status = StatusAvailable
 		p.Tenant = ""
 		p.StartDate = nil
 		p.EndDate = nil
@@ -136,11 +148,11 @@ type PropertyInventoryResponse struct {
 
 	// calculated fields
 
-	NbDamage  int          `json:"nb_damage"`
-	Status    string       `json:"status"`
-	Tenant    string       `json:"tenant,omitempty"`
-	StartDate *db.DateTime `json:"start_date,omitempty"`
-	EndDate   *db.DateTime `json:"end_date,omitempty"`
+	NbDamage  int            `json:"nb_damage"`
+	Status    PropertyStatus `json:"status"`
+	Tenant    string         `json:"tenant,omitempty"`
+	StartDate *db.DateTime   `json:"start_date,omitempty"`
+	EndDate   *db.DateTime   `json:"end_date,omitempty"`
 
 	Rooms []roomResponse `json:"rooms"`
 }
@@ -176,24 +188,27 @@ func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel) {
 	p.CreatedAt = model.CreatedAt
 	p.Archived = model.Archived
 
-	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	p.NbDamage = 0
+	for _, lease := range model.Leases() {
+		p.NbDamage += utils.CountIf(lease.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	}
 
-	activeIndex := slices.IndexFunc(model.Contracts(), func(x db.ContractModel) bool { return x.Active })
-	invite, inviteOk := model.PendingContract()
+	activeIndex := slices.IndexFunc(model.Leases(), func(x db.LeaseModel) bool { return x.Active })
+	invite, inviteOk := model.LeaseInvite()
 	switch {
 	case activeIndex != -1:
-		active := model.Contracts()[activeIndex]
-		p.Status = "unavailable"
-		p.Tenant = active.Tenant().Firstname + " " + active.Tenant().Lastname
+		active := model.Leases()[activeIndex]
+		p.Status = StatusUnavailable
+		p.Tenant = active.Tenant().Name()
 		p.StartDate = &active.StartDate
-		p.EndDate = active.InnerContract.EndDate
+		p.EndDate = active.InnerLease.EndDate
 	case inviteOk:
-		p.Status = "invite sent"
+		p.Status = StatusInviteSent
 		p.Tenant = invite.TenantEmail
 		p.StartDate = &invite.StartDate
-		p.EndDate = invite.InnerPendingContract.EndDate
+		p.EndDate = invite.InnerLeaseInvite.EndDate
 	default:
-		p.Status = "available"
+		p.Status = StatusAvailable
 		p.Tenant = ""
 		p.StartDate = nil
 		p.EndDate = nil

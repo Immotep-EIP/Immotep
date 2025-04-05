@@ -35,7 +35,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Pending contract ID",
+                        "description": "Pending lease ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -64,7 +64,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Pending contract not found",
+                        "description": "Pending lease not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -204,7 +204,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Get all properties of an owner",
                 "responses": {
@@ -242,7 +242,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Create a new property",
                 "parameters": [
@@ -296,7 +296,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Get all archived properties of an owner",
                 "responses": {
@@ -336,7 +336,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Get property by ID",
                 "parameters": [
@@ -392,7 +392,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Update property by ID",
                 "parameters": [
@@ -450,7 +450,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Toggle archive property by ID",
                 "parameters": [
@@ -509,7 +509,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Cancel pending contract invite",
+                "description": "Cancel pending lease invite",
                 "consumes": [
                     "application/json"
                 ],
@@ -517,7 +517,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Cancel invite",
                 "parameters": [
@@ -540,7 +540,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "No pending contract",
+                        "description": "No pending lease",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -551,14 +551,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/documents/": {
+        "/owner/properties/{property_id}/damages/": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Get all documents of a contract related to a property",
+                "description": "Get all damages of a property",
                 "consumes": [
                     "application/json"
                 ],
@@ -566,9 +566,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "damage"
                 ],
-                "summary": "Get property documents",
+                "summary": "Get property damages",
                 "parameters": [
                     {
                         "type": "string",
@@ -580,11 +580,11 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of documents",
+                        "description": "List of damages",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.DocumentResponse"
+                                "$ref": "#/definitions/db.DamageModel"
                             }
                         }
                     },
@@ -595,7 +595,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "No active contract",
+                        "description": "No active lease",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -606,14 +606,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/end-contract": {
-            "put": {
+        "/owner/properties/{property_id}/damages/fixed/": {
+            "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "End active contract for a property",
+                "description": "Get all fixed damages of a property",
                 "consumes": [
                     "application/json"
                 ],
@@ -621,9 +621,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "damage"
                 ],
-                "summary": "End contract",
+                "summary": "Get property fixed damages",
                 "parameters": [
                     {
                         "type": "string",
@@ -634,17 +634,23 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "Contract ended"
+                    "200": {
+                        "description": "List of damages",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/db.DamageModel"
+                            }
+                        }
                     },
                     "403": {
-                        "description": "Property is not yours",
+                        "description": "Property not yours",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "404": {
-                        "description": "No active contract",
+                        "description": "No active lease",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -670,7 +676,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory-report"
                 ],
                 "summary": "Get all inventory reports for a property",
                 "parameters": [
@@ -700,71 +706,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Property not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new inventory report for a room",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "owner"
-                ],
-                "summary": "Create a new inventory report",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property ID",
-                        "name": "property_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Inventory report data",
-                        "name": "invReport",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.InventoryReportRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created inventory report data",
-                        "schema": {
-                            "$ref": "#/definitions/models.CreateInventoryReportResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Missing fields",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "403": {
-                        "description": "Property not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Property or room not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -931,7 +872,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory-report"
                 ],
                 "summary": "Get inventory report by ID",
                 "parameters": [
@@ -990,7 +931,8 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property",
+                    "inventory"
                 ],
                 "summary": "Get property inventory by ID",
                 "parameters": [
@@ -1033,6 +975,904 @@ const docTemplate = `{
                 }
             }
         },
+        "/owner/properties/{property_id}/leases/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all leases (active and inactive) for a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lease"
+                ],
+                "summary": "Get leases by property",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of leases",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.LeaseResponse"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No leases found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get lease by ID or current active lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lease"
+                ],
+                "summary": "Get lease by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lease",
+                        "schema": {
+                            "$ref": "#/definitions/models.LeaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Lease not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/damages/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all damages of a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Get lease damages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of damages",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/db.DamageModel"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/damages/fixed/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all fixed damages of a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Get lease fixed damages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of damages",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/db.DamageModel"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/damages/{damage_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a damage",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Get damage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update damage on owner side. Owner can only update the read status and the fix planned date.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Update damage for owner",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Damage update request",
+                        "name": "damages",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageOwnerUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/damages/{damage_id}/fix/": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Fix a damage for a tenant or owner. When both users have fixed the damage, it will be marked as fixed.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Fix damage for one user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Fixed damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/docs/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all documents of a lease related to a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "document"
+                ],
+                "summary": "Get property documents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of documents",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DocumentResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Upload a document to a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "document"
+                ],
+                "summary": "Upload document",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Document to upload",
+                        "name": "doc",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DocumentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Document uploaded",
+                        "schema": {
+                            "$ref": "#/definitions/models.DocumentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/docs/{doc_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a document by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "document"
+                ],
+                "summary": "Get document by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Document ID",
+                        "name": "doc_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Document",
+                        "schema": {
+                            "$ref": "#/definitions/models.DocumentResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Document not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/end/": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "End active lease for a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lease"
+                ],
+                "summary": "End lease",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Mandatory: ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Lease ended"
+                    },
+                    "400": {
+                        "description": "Cannot end non current lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property is not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all inventory reports for a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Get all inventory reports for a lease",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of inventory reports",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.InventoryReportResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new inventory report for a room",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Create a new inventory report",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Inventory report data",
+                        "name": "invReport",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateInventoryReportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property or room not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get inventory report information by its ID or get the latest one",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Get inventory report by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Report ID or 'latest' to get the latest one",
+                        "name": "report_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Inventory report not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/{property_id}/picture/": {
             "get": {
                 "security": [
@@ -1048,7 +1888,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Get property's picture",
                 "parameters": [
@@ -1107,7 +1947,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Update property's picture",
                 "parameters": [
@@ -1180,7 +2020,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Get rooms by property ID",
                 "parameters": [
@@ -1233,7 +2073,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Create a new room",
                 "parameters": [
@@ -1300,7 +2140,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Get archived rooms by property ID",
                 "parameters": [
@@ -1355,7 +2195,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Get room by ID",
                 "parameters": [
@@ -1414,7 +2254,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Toggle archive room by ID",
                 "parameters": [
@@ -1488,7 +2328,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Get furnitures by room ID",
                 "parameters": [
@@ -1548,7 +2388,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Create a new furniture",
                 "parameters": [
@@ -1622,7 +2462,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Get archived furnitures by room ID",
                 "parameters": [
@@ -1684,7 +2524,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Get furniture by ID",
                 "parameters": [
@@ -1750,7 +2590,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "inventory"
                 ],
                 "summary": "Toggle archive furniture by ID",
                 "parameters": [
@@ -1831,7 +2671,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "owner"
+                    "property"
                 ],
                 "summary": "Invite tenant to owner's property",
                 "parameters": [
@@ -2126,7 +2966,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Pending contract ID",
+                        "description": "Pending lease ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2143,13 +2983,957 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Pending contract not found",
+                        "description": "Pending lease not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "409": {
-                        "description": "Property not available or tenant already has contract",
+                        "description": "Property not available or tenant already has lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all leases (active and inactive) for a tenant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lease"
+                ],
+                "summary": "Get leases by tenant",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenant_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of leases",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.LeaseResponse"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No leases found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get lease by ID or current active lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lease"
+                ],
+                "summary": "Get lease by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lease",
+                        "schema": {
+                            "$ref": "#/definitions/models.LeaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Lease not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/damages/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all damages of a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Get lease damages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of damages",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/db.DamageModel"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a damage to a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Create damage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Damages to create",
+                        "name": "damages",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Damage created",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/damages/fixed/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all fixed damages of a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Get lease fixed damages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of damages",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/db.DamageModel"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/damages/{damage_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a damage",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Get damage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update damage on tenant side. Tenant can only update comment, priority and add new pictures.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Update damage for tenant",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Damage update request",
+                        "name": "damages",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageTenantUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/damages/{damage_id}/fix/": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Fix a damage for a tenant or owner. When both users have fixed the damage, it will be marked as fixed.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Fix damage for one user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Fixed damage",
+                        "schema": {
+                            "$ref": "#/definitions/models.DamageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/docs/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all documents of a lease related to a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "document"
+                ],
+                "summary": "Get property documents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of documents",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DocumentResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Upload a document to a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "document"
+                ],
+                "summary": "Upload document",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Document to upload",
+                        "name": "doc",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DocumentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Document uploaded",
+                        "schema": {
+                            "$ref": "#/definitions/models.DocumentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "No active lease",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/docs/{doc_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a document by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "document"
+                ],
+                "summary": "Get document by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Document ID",
+                        "name": "doc_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Document",
+                        "schema": {
+                            "$ref": "#/definitions/models.DocumentResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Document not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/inventory-reports/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all inventory reports for a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Get all inventory reports for a lease",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of inventory reports",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.InventoryReportResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/inventory-reports/{report_id}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get inventory report information by its ID or get the latest one",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Get inventory report by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Report ID or 'latest' to get the latest one",
+                        "name": "report_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inventory report data",
+                        "schema": {
+                            "$ref": "#/definitions/models.InventoryReportResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Inventory report not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/property/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get property information by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get property by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/property/inventory/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get property information by its ID with inventory including rooms and furnitures",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property",
+                    "inventory"
+                ],
+                "summary": "Get property inventory by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property inventory data",
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyInventoryResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tenant/leases/{lease_id}/property/picture/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get property's picture",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get property's picture",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Image data",
+                        "schema": {
+                            "$ref": "#/definitions/models.ImageResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No picture associated"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -2300,6 +4084,430 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "db.Cleanliness": {
+            "type": "string",
+            "enum": [
+                "dirty",
+                "medium",
+                "clean"
+            ],
+            "x-enum-varnames": [
+                "CleanlinessDirty",
+                "CleanlinessMedium",
+                "CleanlinessClean"
+            ]
+        },
+        "db.DamageModel": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fix_planned_at": {
+                    "type": "string"
+                },
+                "fixed_at": {
+                    "type": "string"
+                },
+                "fixed_owner": {
+                    "type": "boolean"
+                },
+                "fixed_tenant": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lease": {
+                    "$ref": "#/definitions/db.LeaseModel"
+                },
+                "lease_id": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.ImageModel"
+                    }
+                },
+                "priority": {
+                    "$ref": "#/definitions/db.Priority"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "room": {
+                    "$ref": "#/definitions/db.RoomModel"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.DocumentModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lease": {
+                    "$ref": "#/definitions/db.LeaseModel"
+                },
+                "lease_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.FixStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "planned",
+                "awaiting_owner_confirmation",
+                "awaiting_tenant_confirmation",
+                "fixed"
+            ],
+            "x-enum-varnames": [
+                "FixStatusPending",
+                "FixStatusPlanned",
+                "FixStatusAwaitingOwnerConfirmation",
+                "FixStatusAwaitingTenantConfirmation",
+                "FixStatusFixed"
+            ]
+        },
+        "db.FurnitureModel": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "furnitureStates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.FurnitureStateModel"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "room": {
+                    "$ref": "#/definitions/db.RoomModel"
+                },
+                "room_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.FurnitureStateModel": {
+            "type": "object",
+            "properties": {
+                "cleanliness": {
+                    "$ref": "#/definitions/db.Cleanliness"
+                },
+                "furniture": {
+                    "$ref": "#/definitions/db.FurnitureModel"
+                },
+                "furniture_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.ImageModel"
+                    }
+                },
+                "report": {
+                    "$ref": "#/definitions/db.InventoryReportModel"
+                },
+                "report_id": {
+                    "type": "string"
+                },
+                "state": {
+                    "$ref": "#/definitions/db.State"
+                }
+            }
+        },
+        "db.ImageModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "damages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.DamageModel"
+                    }
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "furniturestates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.FurnitureStateModel"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.PropertyModel"
+                    }
+                },
+                "roomstates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.RoomStateModel"
+                    }
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.UserModel"
+                    }
+                }
+            }
+        },
+        "db.InventoryReportModel": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "furnitureStates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.FurnitureStateModel"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lease": {
+                    "$ref": "#/definitions/db.LeaseModel"
+                },
+                "lease_id": {
+                    "type": "string"
+                },
+                "roomStates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.RoomStateModel"
+                    }
+                },
+                "type": {
+                    "$ref": "#/definitions/db.ReportType"
+                }
+            }
+        },
+        "db.LeaseInviteModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "property": {
+                    "$ref": "#/definitions/db.PropertyModel"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.LeaseModel": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "damages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.DamageModel"
+                    }
+                },
+                "documents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.DocumentModel"
+                    }
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "property": {
+                    "$ref": "#/definitions/db.PropertyModel"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "reports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.InventoryReportModel"
+                    }
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant": {
+                    "$ref": "#/definitions/db.UserModel"
+                },
+                "tenant_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.Priority": {
+            "type": "string",
+            "enum": [
+                "low",
+                "medium",
+                "high",
+                "urgent"
+            ],
+            "x-enum-varnames": [
+                "PriorityLow",
+                "PriorityMedium",
+                "PriorityHigh",
+                "PriorityUrgent"
+            ]
+        },
+        "db.PropertyModel": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "apartment_number": {
+                    "type": "string"
+                },
+                "archived": {
+                    "type": "boolean"
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deposit_price": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lease_invite": {
+                    "$ref": "#/definitions/db.LeaseInviteModel"
+                },
+                "leases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.LeaseModel"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner": {
+                    "$ref": "#/definitions/db.UserModel"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "picture": {
+                    "$ref": "#/definitions/db.ImageModel"
+                },
+                "picture_id": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "number"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.RoomModel"
+                    }
+                }
+            }
+        },
+        "db.ReportType": {
+            "type": "string",
+            "enum": [
+                "start",
+                "middle",
+                "end"
+            ],
+            "x-enum-varnames": [
+                "ReportTypeStart",
+                "ReportTypeMiddle",
+                "ReportTypeEnd"
+            ]
+        },
         "db.Role": {
             "type": "string",
             "enum": [
@@ -2310,6 +4518,145 @@ const docTemplate = `{
                 "RoleOwner",
                 "RoleTenant"
             ]
+        },
+        "db.RoomModel": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "damages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.DamageModel"
+                    }
+                },
+                "furnitures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.FurnitureModel"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "property": {
+                    "$ref": "#/definitions/db.PropertyModel"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "roomStates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.RoomStateModel"
+                    }
+                }
+            }
+        },
+        "db.RoomStateModel": {
+            "type": "object",
+            "properties": {
+                "cleanliness": {
+                    "$ref": "#/definitions/db.Cleanliness"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.ImageModel"
+                    }
+                },
+                "report": {
+                    "$ref": "#/definitions/db.InventoryReportModel"
+                },
+                "report_id": {
+                    "type": "string"
+                },
+                "room": {
+                    "$ref": "#/definitions/db.RoomModel"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "state": {
+                    "$ref": "#/definitions/db.State"
+                }
+            }
+        },
+        "db.State": {
+            "type": "string",
+            "enum": [
+                "broken",
+                "needsRepair",
+                "bad",
+                "medium",
+                "good",
+                "new"
+            ],
+            "x-enum-varnames": [
+                "StateBroken",
+                "StateNeedsRepair",
+                "StateBad",
+                "StateMedium",
+                "StateGood",
+                "StateNew"
+            ]
+        },
+        "db.UserModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "owned_properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.PropertyModel"
+                    }
+                },
+                "password": {
+                    "type": "string"
+                },
+                "profile_picture": {
+                    "$ref": "#/definitions/db.ImageModel"
+                },
+                "profile_picture_id": {
+                    "type": "string"
+                },
+                "rented_properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.LeaseModel"
+                    }
+                },
+                "role": {
+                    "$ref": "#/definitions/db.Role"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
         },
         "models.ArchiveRequest": {
             "type": "object",
@@ -2334,6 +4681,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "lease_id": {
+                    "type": "string"
+                },
                 "pdf_data": {
                     "type": "string"
                 },
@@ -2344,6 +4694,125 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
+                    "$ref": "#/definitions/db.ReportType"
+                }
+            }
+        },
+        "models.DamageOwnerUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "fix_planned_at": {
+                    "type": "string"
+                },
+                "read": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.DamageRequest": {
+            "type": "object",
+            "required": [
+                "comment",
+                "pictures",
+                "priority",
+                "room_id"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "priority": {
+                    "$ref": "#/definitions/db.Priority"
+                },
+                "room_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.DamageResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fix_planned_at": {
+                    "type": "string"
+                },
+                "fix_status": {
+                    "$ref": "#/definitions/db.FixStatus"
+                },
+                "fixed_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lease_id": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "priority": {
+                    "$ref": "#/definitions/db.Priority"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "room_name": {
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.DamageTenantUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "add_pictures": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "comment": {
+                    "type": "string"
+                },
+                "priority": {
+                    "$ref": "#/definitions/db.Priority"
+                }
+            }
+        },
+        "models.DocumentRequest": {
+            "type": "object",
+            "required": [
+                "data",
+                "name"
+            ],
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -2413,12 +4882,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "cleanliness": {
-                    "type": "string",
-                    "enum": [
-                        "dirty",
-                        "medium",
-                        "clean"
-                    ]
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "id": {
                     "type": "string"
@@ -2434,15 +4898,7 @@ const docTemplate = `{
                     }
                 },
                 "state": {
-                    "type": "string",
-                    "enum": [
-                        "broken",
-                        "needsRepair",
-                        "bad",
-                        "medium",
-                        "good",
-                        "new"
-                    ]
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -2450,7 +4906,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "cleanliness": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "id": {
                     "type": "string"
@@ -2471,7 +4927,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "state": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -2514,12 +4970,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "type": "string",
-                    "enum": [
-                        "start",
-                        "middle",
-                        "end"
-                    ]
+                    "$ref": "#/definitions/db.ReportType"
                 }
             }
         },
@@ -2532,6 +4983,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "lease_id": {
+                    "type": "string"
+                },
                 "property_id": {
                     "type": "string"
                 },
@@ -2542,7 +4996,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.ReportType"
                 }
             }
         },
@@ -2583,6 +5037,50 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tenant_email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LeaseResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "owner_email": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "owner_name": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "property_name": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                },
+                "tenant_id": {
+                    "type": "string"
+                },
+                "tenant_name": {
                     "type": "string"
                 }
             }
@@ -2648,7 +5146,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.PropertyStatus"
                 },
                 "tenant": {
                     "type": "string"
@@ -2752,12 +5250,25 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.PropertyStatus"
                 },
                 "tenant": {
                     "type": "string"
                 }
             }
+        },
+        "models.PropertyStatus": {
+            "type": "string",
+            "enum": [
+                "unavailable",
+                "invite sent",
+                "available"
+            ],
+            "x-enum-varnames": [
+                "StatusUnavailable",
+                "StatusInviteSent",
+                "StatusAvailable"
+            ]
         },
         "models.RoomRequest": {
             "type": "object",
@@ -2799,12 +5310,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "cleanliness": {
-                    "type": "string",
-                    "enum": [
-                        "dirty",
-                        "medium",
-                        "clean"
-                    ]
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "furnitures": {
                     "type": "array",
@@ -2826,15 +5332,7 @@ const docTemplate = `{
                     }
                 },
                 "state": {
-                    "type": "string",
-                    "enum": [
-                        "broken",
-                        "needsRepair",
-                        "bad",
-                        "medium",
-                        "good",
-                        "new"
-                    ]
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -2842,7 +5340,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "cleanliness": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.Cleanliness"
                 },
                 "furnitures": {
                     "type": "array",
@@ -2866,7 +5364,7 @@ const docTemplate = `{
                     }
                 },
                 "state": {
-                    "type": "string"
+                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -3043,7 +5541,7 @@ const docTemplate = `{
                 "invite-not-found",
                 "user-must-have-same-email-as-invite",
                 "invite-already-exists-for-email-or-property",
-                "contract-already-exists-for-tenant-and-property",
+                "lease-already-exists-for-tenant-and-property",
                 "property-not-found",
                 "property-is-not-yours",
                 "not-an-owner",
@@ -3051,9 +5549,17 @@ const docTemplate = `{
                 "user-already-exists-as-owner",
                 "property-already-exists",
                 "property-not-available",
-                "tenant-already-has-contract",
-                "no-active-contract",
-                "no-pending-contract",
+                "tenant-already-has-lease",
+                "no-active-lease",
+                "lease-not-found",
+                "cannot-end-non-current-lease",
+                "inventory-report-must-be-linked-to-current-lease",
+                "no-pending-lease",
+                "document-not-found",
+                "damage-not-found",
+                "damage-already-exists",
+                "cannot-update-fixed-damage",
+                "damage-already-fixed",
                 "failed-to-link-image",
                 "bad-base64-string",
                 "property-picture-not-found",
@@ -3085,7 +5591,7 @@ const docTemplate = `{
                 "InviteNotFound",
                 "UserSameEmailAsInvite",
                 "InviteAlreadyExists",
-                "ContractAlreadyExist",
+                "LeaseAlreadyExist",
                 "PropertyNotFound",
                 "PropertyNotYours",
                 "NotAnOwner",
@@ -3093,9 +5599,17 @@ const docTemplate = `{
                 "UserAlreadyExistsAsOwner",
                 "PropertyAlreadyExists",
                 "PropertyNotAvailable",
-                "TenantAlreadyHasContract",
-                "NoActiveContract",
-                "NoPendingContract",
+                "TenantAlreadyHasLease",
+                "NoActiveLease",
+                "LeaseNotFound",
+                "CannotEndNonCurrentLease",
+                "InvReportMustBeCurrentLease",
+                "NoLeaseInvite",
+                "DocumentNotFound",
+                "DamageNotFound",
+                "DamageAlreadyExists",
+                "CannotUpdateFixedDamage",
+                "DamageAlreadyFixed",
                 "FailedLinkImage",
                 "BadBase64String",
                 "PropertyPictureNotFound",

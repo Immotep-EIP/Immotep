@@ -8,9 +8,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"immotep/backend/prisma/db"
 	"immotep/backend/router/middlewares"
 	"immotep/backend/services"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -31,87 +33,101 @@ func BuildTestProperty(id string) db.PropertyModel {
 			PictureID:           utils.Ptr("1"),
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages:   []db.DamageModel{{}},
-			Contracts: []db.ContractModel{{}},
+			Leases: []db.LeaseModel{{
+				InnerLease: db.InnerLease{
+					ID:     "1",
+					Active: true,
+				},
+				RelationsLease: db.RelationsLease{
+					Tenant: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Test",
+						},
+					},
+					Damages: []db.DamageModel{{
+						InnerDamage: db.InnerDamage{
+							ID:      "1",
+							FixedAt: nil,
+						}},
+					},
+				},
+			}},
+			LeaseInvite: &db.LeaseInviteModel{},
+		},
+	}
+}
+
+func BuildTestInvReport(id string) db.InventoryReportModel {
+	return db.InventoryReportModel{
+		InnerInventoryReport: db.InnerInventoryReport{
+			ID:      id,
+			LeaseID: "1",
+		},
+		RelationsInventoryReport: db.RelationsInventoryReport{
+			Lease: &db.LeaseModel{
+				InnerLease: db.InnerLease{
+					ID:         "1",
+					PropertyID: "1",
+				},
+			},
 		},
 	}
 }
 
 func TestCheckPropertyOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
-	c.Set("oauth.claims", map[string]string{"id": "1"})
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx.Set("oauth.claims", map[string]string{"id": "1"})
 
-	middlewares.CheckPropertyOwnership("propertyId")(c)
+	middlewares.CheckPropertyOwnerOwnership("propertyId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckPropertyOwnership_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
-	c.Set("oauth.claims", map[string]string{"id": "1"})
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx.Set("oauth.claims", map[string]string{"id": "1"})
 
-	middlewares.CheckPropertyOwnership("propertyId")(c)
+	middlewares.CheckPropertyOwnerOwnership("propertyId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckPropertyOwnership_NotYours(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("1")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
-	c.Set("oauth.claims", map[string]string{"id": "2"})
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx.Set("oauth.claims", map[string]string{"id": "2"})
 
-	middlewares.CheckPropertyOwnership("propertyId")(c)
+	middlewares.CheckPropertyOwnerOwnership("propertyId")(ctx)
 	assert.Equal(t, http.StatusForbidden, w.Code)
 }
 
 func TestCheckRoomOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	room := db.RoomModel{
@@ -120,46 +136,40 @@ func TestCheckRoomOwnership(t *testing.T) {
 			PropertyID: "1",
 		},
 	}
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(db.Room.ID.Equals("1")),
-	).Returns(room)
+	m.Room.Expect(database.MockGetRoomByID(c)).Returns(room)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "roomId", Value: "1"},
 	}
 
-	middlewares.CheckRoomOwnership("propertyId", "roomId")(c)
+	middlewares.CheckRoomPropertyOwnership("propertyId", "roomId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckRoomOwnership_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(db.Room.ID.Equals("1")),
-	).Errors(db.ErrNotFound)
+	m.Room.Expect(database.MockGetRoomByID(c)).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "roomId", Value: "1"},
 	}
 
-	middlewares.CheckRoomOwnership("propertyId", "roomId")(c)
+	middlewares.CheckRoomPropertyOwnership("propertyId", "roomId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckRoomOwnership_NotYours(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	room := db.RoomModel{
@@ -168,25 +178,22 @@ func TestCheckRoomOwnership_NotYours(t *testing.T) {
 			PropertyID: "2",
 		},
 	}
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(db.Room.ID.Equals("1")),
-	).Returns(room)
+	m.Room.Expect(database.MockGetRoomByID(c)).Returns(room)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "roomId", Value: "1"},
 	}
 
-	middlewares.CheckRoomOwnership("propertyId", "roomId")(c)
+	middlewares.CheckRoomPropertyOwnership("propertyId", "roomId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckFurnitureOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furniture := db.FurnitureModel{
@@ -195,54 +202,40 @@ func TestCheckFurnitureOwnership(t *testing.T) {
 			RoomID: "1",
 		},
 	}
-	mock.Furniture.Expect(
-		client.Client.Furniture.FindUnique(
-			db.Furniture.ID.Equals("1"),
-		).With(
-			db.Furniture.Room.Fetch(),
-		),
-	).Returns(furniture)
+	m.Furniture.Expect(database.MockGetFurnitureByID(c)).Returns(furniture)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		{Key: "roomId", Value: "1"},
 		{Key: "furnitureId", Value: "1"},
 	}
 
-	middlewares.CheckFurnitureOwnership("roomId", "furnitureId")(c)
+	middlewares.CheckFurnitureRoomOwnership("roomId", "furnitureId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestCheckFurnitureOwnership_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Furniture.Expect(
-		client.Client.Furniture.FindUnique(
-			db.Furniture.ID.Equals("1"),
-		).With(
-			db.Furniture.Room.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	m.Furniture.Expect(database.MockGetFurnitureByID(c)).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		{Key: "roomId", Value: "1"},
 		{Key: "furnitureId", Value: "1"},
 	}
 
-	middlewares.CheckFurnitureOwnership("roomId", "furnitureId")(c)
+	middlewares.CheckFurnitureRoomOwnership("roomId", "furnitureId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCheckFurnitureOwnership_NotYours(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	furniture := db.FurnitureModel{
@@ -251,255 +244,161 @@ func TestCheckFurnitureOwnership_NotYours(t *testing.T) {
 			RoomID: "2",
 		},
 	}
-	mock.Furniture.Expect(
-		client.Client.Furniture.FindUnique(
-			db.Furniture.ID.Equals("1"),
-		).With(
-			db.Furniture.Room.Fetch(),
-		),
-	).Returns(furniture)
+	m.Furniture.Expect(database.MockGetFurnitureByID(c)).Returns(furniture)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = gin.Params{
 		{Key: "roomId", Value: "1"},
 		{Key: "furnitureId", Value: "1"},
 	}
 
-	middlewares.CheckFurnitureOwnership("roomId", "furnitureId")(c)
+	middlewares.CheckFurnitureRoomOwnership("roomId", "furnitureId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCheckInventoryReportOwnership(t *testing.T) {
+func TestCheckInventoryReportPropertyOwnership(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	invReport := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			PropertyID: "1",
-		},
-	}
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindUnique(
-			db.InventoryReport.ID.Equals("1"),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Returns(invReport)
+	invReport := BuildTestInvReport("1")
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Returns(invReport)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
+	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "reportId", Value: "1"},
 	}
 
-	middlewares.CheckInventoryReportOwnership("propertyId", "reportId")(c)
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestCheckInventoryReportOwnership_Latest(t *testing.T) {
+func TestCheckInventoryReportPropertyOwnership_Latest(t *testing.T) {
 	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport := BuildTestInvReport("1")
+	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Returns(invReport)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
+	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "reportId", Value: "latest"},
 	}
 
-	middlewares.CheckInventoryReportOwnership("propertyId", "reportId")(c)
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestCheckInventoryReportOwnership_NotFound(t *testing.T) {
+func TestCheckInventoryReportPropertyOwnership_LatestNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindUnique(
-			db.InventoryReport.ID.Equals("1"),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
+	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
+	ctx.Params = gin.Params{
+		{Key: "propertyId", Value: "1"},
+		{Key: "reportId", Value: "latest"},
+	}
+
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCheckInventoryReportPropertyOwnership_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Errors(db.ErrNotFound)
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
+	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "reportId", Value: "1"},
 	}
 
-	middlewares.CheckInventoryReportOwnership("propertyId", "reportId")(c)
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCheckInventoryReportOwnership_NotYours(t *testing.T) {
+func TestCheckInventoryReportPropertyOwnership_NotYours(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	invReport := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			PropertyID: "2",
-		},
-	}
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindUnique(
-			db.InventoryReport.ID.Equals("1"),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Returns(invReport)
+	invReport := BuildTestInvReport("1")
+	invReport.Lease().PropertyID = "2"
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Returns(invReport)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
+	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "reportId", Value: "1"},
 	}
 
-	middlewares.CheckInventoryReportOwnership("propertyId", "reportId")(c)
+	middlewares.CheckInventoryReportPropertyOwnership("reportId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCheckActiveContract(t *testing.T) {
+func TestGetPropertyByLease(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	contract := db.ContractModel{
-		InnerContract: db.InnerContract{
-			ID:         "1",
-			PropertyID: "1",
-			Active:     true,
-		},
-	}
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{contract})
-
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
-
-	middlewares.CheckActiveContract("propertyId")(c)
-	assert.Equal(t, http.StatusOK, w.Code)
-}
-
-func TestCheckActiveContract_NotFound(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{})
-
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
-
-	middlewares.CheckActiveContract("propertyId")(c)
-	assert.Equal(t, http.StatusNotFound, w.Code)
-}
-
-func TestCheckActiveContract_MultipleActiveContracts(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	contract1 := db.ContractModel{
-		InnerContract: db.InnerContract{
-			ID:         "1",
-			PropertyID: "1",
-			Active:     true,
-		},
-	}
-	contract2 := db.ContractModel{
-		InnerContract: db.InnerContract{
-			ID:         "2",
-			PropertyID: "1",
-			Active:     true,
-		},
-	}
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{contract1, contract2})
-
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
-
-	assert.Panics(t, func() {
-		middlewares.CheckActiveContract("propertyId")(c)
-	})
-}
-
-func TestCheckPendingContract(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	pendingContract := db.PendingContractModel{
-		InnerPendingContract: db.InnerPendingContract{
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
 			ID:         "1",
 			PropertyID: "1",
 		},
 	}
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals("1")),
-	).Returns(pendingContract)
+	property := BuildTestProperty("1")
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", lease)
 
-	middlewares.CheckPendingContract("propertyId")(c)
-	assert.Equal(t, http.StatusOK, w.Code)
+	middlewares.GetPropertyByLease()(ctx)
+	require.Equal(t, http.StatusOK, w.Code)
+	p, ok := ctx.Get("property")
+	require.True(t, ok)
+	assert.NotNil(t, p)
+	assert.IsType(t, db.PropertyModel{}, p)
 }
 
-func TestCheckPendingContract_NotFound(t *testing.T) {
+func TestGetPropertyByLease_PropertyNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals("1")),
-	).Errors(db.ErrNotFound)
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID:         "1",
+			PropertyID: "1",
+		},
+	}
+	m.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "propertyId", Value: "1"}}
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", lease)
 
-	middlewares.CheckPendingContract("propertyId")(c)
+	middlewares.GetPropertyByLease()(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
