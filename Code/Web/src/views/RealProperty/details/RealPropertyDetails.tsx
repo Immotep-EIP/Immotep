@@ -21,7 +21,6 @@ import returnIcon from '@/assets/icons/retour.svg'
 
 import { PropertyIdProvider } from '@/context/propertyIdContext'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
-import StopCurrentContract from '@/services/api/Owner/Properties/StopCurrentContract'
 import useImageCache from '@/hooks/useEffect/useImageCache'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import useProperties from '@/hooks/useEffect/useProperties'
@@ -31,6 +30,7 @@ import useNavigation from '@/hooks/useNavigation/useNavigation'
 import PageTitle from '@/components/PageText/Title'
 import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
 import PropertyStatusEnum, { TenantStatusEnum } from '@/enums/PropertyEnum'
+import EndLease from '@/services/api/Owner/Properties/Leases/EndLease'
 import DocumentsTab from './tabs/1DocumentsTab'
 import DamageTab from './tabs/3DamageTab'
 import InventoryTab from './tabs/2InventoryTab'
@@ -125,7 +125,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
             message.error('Property ID is missing.')
             return
           }
-          await StopCurrentContract(propertyData?.id || '')
+          await EndLease(propertyData?.id || '')
           await refreshPropertyDetails(propertyData.id)
           message.success(t('components.modal.end_contract.success'))
         } catch (error) {
