@@ -13,8 +13,8 @@ import useNavigation from '@/hooks/useNavigation/useNavigation'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import DividedPage from '@/components/DividedPage/DividedPage'
 import PageTitle from '@/components/PageText/Title'
-import style from './Login.module.css'
 import AcceptInvite from '@/services/api/Tenant/AcceptInvite'
+import style from './Login.module.css'
 
 const Login: React.FC = () => {
   const {
@@ -25,7 +25,7 @@ const Login: React.FC = () => {
   } = useNavigation()
   const { login } = useAuth()
   const [loading, setLoading] = useState(false)
-  const { contractId } = useParams()
+  const { leaseId } = useParams()
 
   const { t } = useTranslation()
 
@@ -60,8 +60,8 @@ const Login: React.FC = () => {
       await login(loginValues)
       message.success(t('pages.login.connection_success'))
       setLoading(false)
-      if (contractId) {
-        await AcceptInvite(contractId)
+      if (leaseId) {
+        await AcceptInvite(leaseId)
         goToSuccessLoginTenant()
       } else {
         goToOverview()

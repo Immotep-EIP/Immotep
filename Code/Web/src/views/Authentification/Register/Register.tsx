@@ -17,7 +17,7 @@ import style from './Register.module.css'
 const Register: React.FC = () => {
   const { goToLogin, goToSuccessRegisterTenant } = useNavigation()
   const [form] = Form.useForm()
-  const { contractId } = useParams()
+  const { leaseId } = useParams()
   const [loading, setLoading] = useState(false)
 
   const { t } = useTranslation()
@@ -29,13 +29,13 @@ const Register: React.FC = () => {
       if (password === confirmPassword) {
         const userInfo = {
           ...values,
-          contractId
+          leaseId
         }
         await register(userInfo)
         message.success(t('pages.register.register_success'))
         form.resetFields()
         setLoading(false)
-        if (contractId) {
+        if (leaseId) {
           goToSuccessRegisterTenant()
         } else {
           goToLogin()
@@ -201,7 +201,7 @@ const Register: React.FC = () => {
 
               <div
                 className={style.dontHaveAccountContainer}
-                style={{ display: contractId ? 'none' : 'flex' }}
+                style={{ display: leaseId ? 'none' : 'flex' }}
               >
                 <span className={style.footerText}>
                   {t('pages.register.already_have_account')}

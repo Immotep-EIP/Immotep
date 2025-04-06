@@ -1,9 +1,9 @@
 const NavigationEnum = {
   // ! AUTHENTIFICATION
   LOGIN: '/',
-  LOGIN_TENANT: '/login/invite/:contractId',
+  LOGIN_TENANT: '/login/invite/:leaseId',
   REGISTER_WITHOUT_CONTRACT: '/register',
-  REGISTER_TENANT: '/register/invite/:contractId',
+  REGISTER_TENANT: '/register/invite/:leaseId',
   FORGOT_PASSWORD: '/forgot-password',
 
   // ! MAIN LAYOUT - SIDEBAR
