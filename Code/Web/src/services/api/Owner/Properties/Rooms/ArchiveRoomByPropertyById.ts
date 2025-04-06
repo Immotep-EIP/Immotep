@@ -1,13 +1,17 @@
 import callApi from '@/services/api/apiCaller'
+import endpoints from '@/enums/EndPointEnum'
 
 const ArchiveRoomByPropertyById = async (
-  PropertyId: string,
-  RoomId: string
+  propertyId: string,
+  roomId: string
 ) => {
   try {
     return await callApi({
-      method: 'DELETE',
-      endpoint: `owner/properties/${PropertyId}/rooms/${RoomId}/`
+      method: 'PUT',
+      endpoint: endpoints.owner.properties.rooms.archive(propertyId, roomId),
+      data: {
+        archive: true
+      }
     })
   } catch (error) {
     console.error('Error fetching data:', error)

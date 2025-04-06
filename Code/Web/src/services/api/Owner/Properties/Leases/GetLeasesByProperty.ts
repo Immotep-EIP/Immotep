@@ -1,11 +1,12 @@
 import callApi from '@/services/api/apiCaller'
 import { Lease } from '@/interfaces/Lease/Lease'
+import endpoints from '@/enums/EndPointEnum'
 
 const GetLeasesByProperty = async (propertyId: string) => {
   try {
     return await callApi<Lease[]>({
       method: 'GET',
-      endpoint: `owner/properties/${propertyId}/leases/`
+      endpoint: endpoints.owner.properties.leases.list(propertyId)
     })
   } catch (error) {
     console.error('Error fetching leases:', error)

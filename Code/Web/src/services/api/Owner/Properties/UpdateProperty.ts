@@ -1,5 +1,6 @@
 import callApi from '@/services/api/apiCaller'
 import { CreateProperty, PropertyDetails } from '@/interfaces/Property/Property'
+import endpoints from '@/enums/EndPointEnum'
 
 const UpdatePropertyFunction = async (
   data: CreateProperty,
@@ -8,7 +9,7 @@ const UpdatePropertyFunction = async (
   try {
     return await callApi({
       method: 'PUT',
-      endpoint: `owner/properties/${id}/`,
+      endpoint: endpoints.owner.properties.update(id),
       data
     })
   } catch (error) {

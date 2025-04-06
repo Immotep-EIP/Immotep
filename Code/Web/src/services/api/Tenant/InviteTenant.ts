@@ -3,12 +3,13 @@ import {
   InviteTenantResponse,
   InviteTenant
 } from '@/interfaces/Tenant/InviteTenant.ts'
+import endpoints from '@/enums/EndPointEnum'
 
 export const InviteTenants = async (tenantInfo: InviteTenant) => {
   try {
     return await callApi<InviteTenant, InviteTenantResponse>({
       method: 'POST',
-      endpoint: `owner/properties/${tenantInfo.propertyId}/send-invite/`,
+      endpoint: endpoints.owner.properties.tenant.invite(tenantInfo.propertyId),
       data: tenantInfo
     })
   } catch (error) {

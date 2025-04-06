@@ -1,11 +1,12 @@
 import callApi from '@/services/api/apiCaller'
 import { User } from '@/interfaces/User/User'
+import endpoints from '@/enums/EndPointEnum'
 
 export const getUserProfile = async () => {
   try {
     const response = await callApi<User>({
       method: 'GET',
-      endpoint: 'profile/'
+      endpoint: endpoints.user.profile.get()
     })
     return response
   } catch (error) {

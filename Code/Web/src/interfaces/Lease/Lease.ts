@@ -13,3 +13,8 @@ export interface Lease {
   tenant_id: string
   tenant_name: string
 }
+
+export interface EndLeaseResponse {
+  success: boolean
+  message?: string
+}

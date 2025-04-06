@@ -1,15 +1,19 @@
 import callApi from '@/services/api/apiCaller'
 import { CreateFurniture } from '@/interfaces/Property/Room/Furniture/Furniture'
+import endpoints from '@/enums/EndPointEnum'
 
 const CreateFurnitureByRoom = async (
-  PropertyId: string,
-  RoomId: string,
+  propertyId: string,
+  roomId: string,
   data: CreateFurniture
 ): Promise<CreateFurniture> => {
   try {
     const response = await callApi({
       method: 'POST',
-      endpoint: `owner/properties/${PropertyId}/rooms/${RoomId}/furnitures/`,
+      endpoint: endpoints.owner.properties.rooms.furnitures.create(
+        propertyId,
+        roomId
+      ),
       data
     })
 

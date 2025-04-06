@@ -1,11 +1,12 @@
 import callApi from '@/services/api/apiCaller'
 import { Room } from '@/interfaces/Property/Room/Room'
+import endpoints from '@/enums/EndPointEnum'
 
-const GetRoomsByProperty = async (id: string) => {
+const GetRoomsByProperty = async (propertyId: string) => {
   try {
     return await callApi<Room[]>({
       method: 'GET',
-      endpoint: `owner/properties/${id}/rooms/`
+      endpoint: endpoints.owner.properties.rooms.list(propertyId)
     })
   } catch (error) {
     console.error('Error fetching data:', error)

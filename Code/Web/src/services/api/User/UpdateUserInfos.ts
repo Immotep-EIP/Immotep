@@ -1,5 +1,6 @@
 import callApi from '@/services/api/apiCaller'
 import { User } from '@/interfaces/User/User'
+import endpoints from '@/enums/EndPointEnum'
 
 interface UpdateUserInfosProps {
   firstname: string
@@ -10,8 +11,8 @@ export const UpdateUserInfos = async (data: UpdateUserInfosProps) => {
   try {
     const response = await callApi<User>({
       method: 'PUT',
-      endpoint: 'profile/',
-      data: JSON.stringify(data),
+      endpoint: endpoints.user.profile.get(),
+      data: JSON.stringify(data)
     })
     return response
   } catch (error) {

@@ -1,5 +1,6 @@
 import callApi from '@/services/api/apiCaller'
 import { CreateInventoryReports } from '@/interfaces/Property/InventoryReports/InventoryReports'
+import endpoints from '@/enums/EndPointEnum'
 
 const CreateInventoryReportByProperty = async (
   PropertyId: string,
@@ -8,7 +9,7 @@ const CreateInventoryReportByProperty = async (
   try {
     return await callApi({
       method: 'POST',
-      endpoint: `owner/properties/${PropertyId}/inventory-reports/`,
+      endpoint: endpoints.owner.properties.inventoryReports.create(PropertyId),
       data
     })
   } catch (error) {
