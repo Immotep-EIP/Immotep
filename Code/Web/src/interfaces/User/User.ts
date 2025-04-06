@@ -4,7 +4,7 @@ export interface UserRegister {
   email: string
   password: string
   confirmPassword: string
-  contractId?: string
+  leaseId?: string
 }
 
 export interface UserToken {

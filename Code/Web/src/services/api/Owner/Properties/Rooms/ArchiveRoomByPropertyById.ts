@@ -9,7 +9,7 @@ const ArchiveRoomByPropertyById = async (
     return await callApi({
       method: 'PUT',
       endpoint: endpoints.owner.properties.rooms.archive(propertyId, roomId),
-      data: {
+      body: {
         archive: true
       }
     })

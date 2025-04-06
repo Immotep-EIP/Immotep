@@ -10,7 +10,7 @@ const UpdatePropertyFunction = async (
     return await callApi({
       method: 'PUT',
       endpoint: endpoints.owner.properties.update(id),
-      data
+      body: data
     })
   } catch (error) {
     console.error('Error fetching data:', error)

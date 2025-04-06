@@ -14,7 +14,7 @@ const ArchiveFurnitureByRoom = async (
         roomId,
         furnitureId
       ),
-      data: {
+      body: {
         archive: true
       }
     })

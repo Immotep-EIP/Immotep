@@ -6,7 +6,7 @@ const ArchiveProperty = async (propertyId: string) => {
     return await callApi({
       method: 'PUT',
       endpoint: endpoints.owner.properties.archive(propertyId),
-      data: {
+      body: {
         archive: true
       }
     })

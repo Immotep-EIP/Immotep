@@ -6,7 +6,7 @@ const UpdatePropertyPicture = async (id: string, pictureData: string) => {
     return await callApi({
       method: 'PUT',
       endpoint: endpoints.owner.properties.picture(id),
-      data: JSON.stringify({ data: pictureData })
+      body: JSON.stringify({ data: pictureData })
     })
   } catch (error) {
     console.error('Error updating property picture:', error)

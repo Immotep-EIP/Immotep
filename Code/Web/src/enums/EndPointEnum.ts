@@ -84,6 +84,11 @@ const endpoints = {
     picture: {
       get: (id: string) => `user/${id}/picture/`,
       update: () => 'profile/picture/'
+    },
+    auth: {
+      register: () => 'auth/register/',
+      token: () => 'auth/token/',
+      invite: (leaseId: string) => `auth/invite/${leaseId}/`
     }
   }
 }

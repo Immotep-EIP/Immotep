@@ -6,7 +6,7 @@ const PutUserPicture = async (pictureData: string) => {
     return await callApi({
       method: 'PUT',
       endpoint: endpoints.user.picture.update(),
-      data: JSON.stringify({ data: pictureData })
+      body: JSON.stringify({ data: pictureData })
     })
   } catch (error) {
     console.error('Error updating user picture:', error)

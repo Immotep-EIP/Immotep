@@ -10,7 +10,7 @@ const CreateRoomByProperty = async (
     return await callApi<Room>({
       method: 'POST',
       endpoint: endpoints.owner.properties.rooms.create(propertyId),
-      data: JSON.stringify({ name: PropertyName })
+      body: JSON.stringify({ name: PropertyName })
     })
   } catch (error) {
     console.error('Error fetching data:', error)

@@ -9,7 +9,7 @@ const CreatePropertyFunction = async (
     return await callApi({
       method: 'POST',
       endpoint: endpoints.owner.properties.create,
-      data
+      body: data
     })
   } catch (error) {
     console.error('Error fetching data:', error)

@@ -10,7 +10,7 @@ const CreateInventoryReportByProperty = async (
     return await callApi({
       method: 'POST',
       endpoint: endpoints.owner.properties.inventoryReports.create(PropertyId),
-      data
+      body: data
     })
   } catch (error) {
     console.error('Error fetching data:', error)

@@ -10,7 +10,7 @@ export const InviteTenants = async (tenantInfo: InviteTenant) => {
     return await callApi<InviteTenant, InviteTenantResponse>({
       method: 'POST',
       endpoint: endpoints.owner.properties.tenant.invite(tenantInfo.propertyId),
-      data: tenantInfo
+      body: tenantInfo
     })
   } catch (error) {
     console.error('Error fetching data:', error)

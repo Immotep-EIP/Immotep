@@ -14,7 +14,7 @@ const CreateFurnitureByRoom = async (
         propertyId,
         roomId
       ),
-      data
+      body: data
     })
 
     return {
