@@ -6,8 +6,7 @@ import AuthEnum from '@/enums/AuthEnum'
 import NavigationEnum from '@/enums/NavigationEnum'
 import { ApiCallerParams } from '@/interfaces/Api/callApi'
 
-const API_BASE_URL =
-  `${process.env.VITE_API_URL}` || 'http://localhost:3001/api/v1'
+const API_BASE_URL = `${process.env.VITE_API_URL}` || 'http://localhost:3001/v1'
 
 const api = axios.create({
   baseURL: API_BASE_URL
@@ -92,14 +91,14 @@ api.interceptors.response.use(
 const callApi = async <TData = undefined, TResponse = TData>({
   method,
   endpoint,
-  data,
+  body,
   headers
 }: ApiCallerParams<TData>): Promise<TResponse> => {
   try {
     const response = await api.request({
       method,
       url: `/${endpoint}`,
-      data,
+      data: body,
       headers: {
         Accept: 'application/json',
         ...headers
