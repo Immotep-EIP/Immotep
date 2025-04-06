@@ -40,7 +40,7 @@ describe('UpdateUserInfos', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: 'profile/',
-      data: JSON.stringify(userData)
+      body: JSON.stringify(userData)
     })
 
     expect(result).toEqual(mockResponse)
@@ -71,7 +71,7 @@ describe('UpdateUserInfos', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: 'profile/',
-      data: JSON.stringify(userData)
+      body: JSON.stringify(userData)
     })
 
     consoleErrorSpy.mockRestore()

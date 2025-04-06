@@ -33,7 +33,7 @@ describe('CreateFurnitureByRoom', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: `owner/properties/${mockPropertyId}/rooms/${mockRoomId}/furnitures/`,
-      data: mockData
+      body: mockData
     })
     expect(result).toEqual(mockResponse)
   })
@@ -52,7 +52,7 @@ describe('CreateFurnitureByRoom', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: `owner/properties/${mockPropertyId}/rooms/${mockRoomId}/furnitures/`,
-      data: mockData
+      body: mockData
     })
 
     consoleErrorSpy.mockRestore()

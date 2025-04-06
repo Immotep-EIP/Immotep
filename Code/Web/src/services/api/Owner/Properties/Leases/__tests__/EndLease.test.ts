@@ -1,11 +1,11 @@
-import UpdatePropertyPicture from '@/services/api/Owner/Properties/UpdatePropertyPicture'
 import callApi from '@/services/api/apiCaller'
+import EndLease from '../EndLease'
 
 jest.mock('@/services/api/apiCaller')
 
 const mockedCallApi = callApi as jest.MockedFunction<typeof callApi>
 
-describe('UpdatePropertyPicture', () => {
+describe('EndLease', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -13,41 +13,36 @@ describe('UpdatePropertyPicture', () => {
   it('should call callApi with the correct parameters and return the response', async () => {
     const mockResponse = {
       success: true,
-      message: 'Picture updated successfully'
+      message: 'Lease ended'
     }
     mockedCallApi.mockResolvedValueOnce(mockResponse)
 
     const propertyId = '123'
-    const pictureData = 'base64-encoded-image-data'
 
-    const result = await UpdatePropertyPicture(propertyId, pictureData)
+    const result = await EndLease(propertyId)
 
     expect(mockedCallApi).toHaveBeenCalledWith({
       method: 'PUT',
-      endpoint: `owner/properties/${propertyId}/picture/`,
-      body: JSON.stringify({ data: pictureData })
+      endpoint: `owner/properties/${propertyId}/leases/current/end/`
     })
 
     expect(result).toEqual(mockResponse)
   })
 
-  it('should handle errors during picture update', async () => {
+  it('should handle errors during contract termination', async () => {
     const mockError = new Error('API call failed')
     mockedCallApi.mockRejectedValueOnce(mockError)
 
     const propertyId = '123'
-    const pictureData = 'base64-encoded-image-data'
 
     const consoleErrorSpy = jest
       .spyOn(console, 'error')
       .mockImplementation(() => {})
 
-    await expect(
-      UpdatePropertyPicture(propertyId, pictureData)
-    ).rejects.toThrow('API call failed')
+    await expect(EndLease(propertyId)).rejects.toThrow('API call failed')
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Error updating property picture:',
+      'Error ending lease:',
       mockError
     )
 

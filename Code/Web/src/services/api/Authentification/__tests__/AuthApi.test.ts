@@ -13,7 +13,7 @@ describe('AuthApi', () => {
   })
 
   describe('register', () => {
-    it('should call callApi with the correct parameters for registration without contractId', async () => {
+    it('should call callApi with the correct parameters for registration without leaseId', async () => {
       const userInfo: UserRegister = {
         email: 'test@example.com',
         password: 'password123',
@@ -30,19 +30,19 @@ describe('AuthApi', () => {
       expect(mockedCallApi).toHaveBeenCalledWith({
         method: 'POST',
         endpoint: 'auth/register/',
-        data: userInfo
+        body: userInfo
       })
 
       expect(result).toEqual(mockResponse)
     })
 
-    it('should call callApi with the correct parameters for registration with contractId', async () => {
+    it('should call callApi with the correct parameters for registration with leaseId', async () => {
       const userInfo: UserRegister = {
         email: 'test@example.com',
         password: 'password123',
         firstname: 'John',
         lastname: 'Doe',
-        contractId: '12345',
+        leaseId: '12345',
         confirmPassword: 'password123'
       }
 
@@ -54,7 +54,7 @@ describe('AuthApi', () => {
       expect(mockedCallApi).toHaveBeenCalledWith({
         method: 'POST',
         endpoint: 'auth/invite/12345/',
-        data: userInfo
+        body: userInfo
       })
 
       expect(result).toEqual(mockResponse)
@@ -104,7 +104,7 @@ describe('AuthApi', () => {
       expect(mockedCallApi).toHaveBeenCalledWith({
         method: 'POST',
         endpoint: 'auth/token/',
-        data: qs.stringify(userInfo),
+        body: qs.stringify(userInfo),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }

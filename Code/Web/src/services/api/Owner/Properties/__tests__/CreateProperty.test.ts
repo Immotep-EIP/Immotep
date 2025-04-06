@@ -51,7 +51,7 @@ describe('CreatePropertyFunction', () => {
     expect(mockedCallApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: 'owner/properties/',
-      data: propertyData
+      body: propertyData
     })
 
     expect(result).toEqual(mockResponse)

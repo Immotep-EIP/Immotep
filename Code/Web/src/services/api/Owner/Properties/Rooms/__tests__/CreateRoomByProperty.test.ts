@@ -20,7 +20,7 @@ describe('CreateRoomByProperty', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: `owner/properties/${mockPropertyId}/rooms/`,
-      data: JSON.stringify({ name: mockRoomName })
+      body: JSON.stringify({ name: mockRoomName })
     })
     expect(result).toEqual(mockResponse)
   })
@@ -38,7 +38,7 @@ describe('CreateRoomByProperty', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: `owner/properties/${mockPropertyId}/rooms/`,
-      data: JSON.stringify({ name: mockRoomName })
+      body: JSON.stringify({ name: mockRoomName })
     })
 
     consoleErrorSpy.mockRestore()

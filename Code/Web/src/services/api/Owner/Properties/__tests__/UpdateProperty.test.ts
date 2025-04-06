@@ -57,7 +57,7 @@ describe('UpdatePropertyFunction', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: `owner/properties/${mockPropertyId}/`,
-      data: mockPropertyData
+      body: mockPropertyData
     })
     expect(callApi).toHaveBeenCalledTimes(1)
     expect(consoleErrorSpy).not.toHaveBeenCalled()
@@ -74,7 +74,7 @@ describe('UpdatePropertyFunction', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: `owner/properties/${mockPropertyId}/`,
-      data: mockPropertyData
+      body: mockPropertyData
     })
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Error fetching data:',
@@ -94,7 +94,7 @@ describe('UpdatePropertyFunction', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: 'owner/properties//',
-      data: mockPropertyData
+      body: mockPropertyData
     })
   })
 
@@ -120,7 +120,7 @@ describe('UpdatePropertyFunction', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: `owner/properties/${mockPropertyId}/`,
-      data: partialUpdate
+      body: partialUpdate
     })
     expect(consoleErrorSpy).not.toHaveBeenCalled()
   })
