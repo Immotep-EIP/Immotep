@@ -1,7 +1,7 @@
 import callApi from '@/services/api/apiCaller'
 import endpoints from '@/enums/EndPointEnum'
 
-const CancelTenantInvitation = async (propertyId: string) => {
+const CancelTenantInvitation = async (propertyId: string): Promise<void> => {
   try {
     return await callApi({
       method: 'DELETE',

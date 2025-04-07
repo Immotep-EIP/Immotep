@@ -1,12 +1,15 @@
 import callApi from '@/services/api/apiCaller'
-import { CreateProperty, PropertyDetails } from '@/interfaces/Property/Property'
+import {
+  CreatePropertyPayload,
+  PropertyDetails
+} from '@/interfaces/Property/Property'
 import endpoints from '@/enums/EndPointEnum'
 
 const CreatePropertyFunction = async (
-  data: CreateProperty
+  data: CreatePropertyPayload
 ): Promise<PropertyDetails> => {
   try {
-    return await callApi({
+    return await callApi<PropertyDetails, CreatePropertyPayload>({
       method: 'POST',
       endpoint: endpoints.owner.properties.create,
       body: data

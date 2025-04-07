@@ -4,5 +4,3 @@ export interface Document {
   id: string
   name: string
 }
-
-export type DocumentResponse = Document[]

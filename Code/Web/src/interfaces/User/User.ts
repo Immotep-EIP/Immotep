@@ -1,4 +1,4 @@
-export interface UserRegister {
+export interface UserRegisterPayload {
   firstname: string
   lastname: string
   email: string
@@ -7,7 +7,7 @@ export interface UserRegister {
   leaseId?: string
 }
 
-export interface UserToken {
+export interface UserTokenPayload {
   username?: string
   password?: string
   grant_type: string
@@ -27,6 +27,7 @@ export interface User {
   firstname: string
   lastname: string
   role: string
+  profile_picture_id: string
   created_at: Date
   updated_at: Date
 }
@@ -35,4 +36,10 @@ export interface UserPictureResponse {
   id: string
   created_at: string
   data: string
+}
+
+export interface UpdateUserInfoPayload {
+  email: string
+  firstname: string
+  lastname: string
 }

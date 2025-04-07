@@ -8,7 +8,7 @@ import backgroundImg from '@/assets/images/buildingBackground.png'
 import useNavigation from '@/hooks/useNavigation/useNavigation'
 import '@/App.css'
 import { register } from '@/services/api/Authentification/AuthApi'
-import { UserRegister } from '@/interfaces/User/User'
+import { UserRegisterPayload } from '@/interfaces/User/User'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import DividedPage from '@/components/DividedPage/DividedPage'
 import PageTitle from '@/components/PageText/Title'
@@ -22,7 +22,7 @@ const Register: React.FC = () => {
 
   const { t } = useTranslation()
 
-  const onFinish: FormProps<UserRegister>['onFinish'] = async values => {
+  const onFinish: FormProps<UserRegisterPayload>['onFinish'] = async values => {
     try {
       setLoading(true)
       const { password, confirmPassword } = values
@@ -49,9 +49,10 @@ const Register: React.FC = () => {
     }
   }
 
-  const onFinishFailed: FormProps<UserRegister>['onFinishFailed'] = () => {
-    message.error(t('pages.register.fill_fields'))
-  }
+  const onFinishFailed: FormProps<UserRegisterPayload>['onFinishFailed'] =
+    () => {
+      message.error(t('pages.register.fill_fields'))
+    }
 
   return (
     <>

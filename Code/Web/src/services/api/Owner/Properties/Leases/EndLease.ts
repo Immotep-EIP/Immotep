@@ -1,10 +1,9 @@
 import callApi from '@/services/api/apiCaller'
-import { EndLeaseResponse } from '@/interfaces/Lease/Lease'
 import endpoints from '@/enums/EndPointEnum'
 
-const EndLease = async (propertyId: string): Promise<EndLeaseResponse> => {
+const EndLease = async (propertyId: string): Promise<void> => {
   try {
-    return await callApi<EndLeaseResponse>({
+    return await callApi({
       method: 'PUT',
       endpoint: endpoints.owner.properties.leases.end(propertyId)
     })

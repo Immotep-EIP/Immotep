@@ -2,13 +2,16 @@ import callApi from '@/services/api/apiCaller'
 import { InventoryReports } from '@/interfaces/Property/InventoryReports/InventoryReports'
 import endpoints from '@/enums/EndPointEnum'
 
-const GetInventoryReportById = async (PropertyId: string, ReportId: string) => {
+const GetInventoryReportById = async (
+  propertyId: string,
+  reportId: string
+): Promise<InventoryReports> => {
   try {
     return await callApi<InventoryReports>({
       method: 'GET',
       endpoint: endpoints.owner.properties.inventoryReports.byId(
-        PropertyId,
-        ReportId
+        propertyId,
+        reportId
       )
     })
   } catch (error) {

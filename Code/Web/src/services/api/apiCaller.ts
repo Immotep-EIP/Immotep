@@ -88,12 +88,12 @@ api.interceptors.response.use(
   }
 )
 
-const callApi = async <TData = undefined, TResponse = TData>({
+const callApi = async <TResponse, TBody = unknown>({
   method,
   endpoint,
   body,
   headers
-}: ApiCallerParams<TData>): Promise<TResponse> => {
+}: ApiCallerParams<TResponse, TBody>): Promise<TResponse> => {
   try {
     const response = await api.request({
       method,

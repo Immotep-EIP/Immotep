@@ -1,7 +1,7 @@
 import callApi from '@/services/api/apiCaller'
 import endpoints from '@/enums/EndPointEnum'
 
-export const AcceptInvite = async (leaseId: string) => {
+export const AcceptInvite = async (leaseId: string): Promise<void> => {
   try {
     return await callApi({
       method: 'POST',

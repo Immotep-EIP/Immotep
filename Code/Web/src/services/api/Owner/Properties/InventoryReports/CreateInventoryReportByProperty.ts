@@ -1,13 +1,19 @@
 import callApi from '@/services/api/apiCaller'
-import { CreateInventoryReports } from '@/interfaces/Property/InventoryReports/InventoryReports'
+import {
+  CreateInventoryReportsPayload,
+  InventoryReportsResponse
+} from '@/interfaces/Property/InventoryReports/InventoryReports'
 import endpoints from '@/enums/EndPointEnum'
 
 const CreateInventoryReportByProperty = async (
   PropertyId: string,
-  data: CreateInventoryReports
-) => {
+  data: CreateInventoryReportsPayload
+): Promise<InventoryReportsResponse> => {
   try {
-    return await callApi({
+    return await callApi<
+      InventoryReportsResponse,
+      CreateInventoryReportsPayload
+    >({
       method: 'POST',
       endpoint: endpoints.owner.properties.inventoryReports.create(PropertyId),
       body: data

@@ -6,7 +6,7 @@ const GetFurnitureByRoomById = async (
   propertyId: string,
   roomId: string,
   furnitureId: string
-) => {
+): Promise<Furniture> => {
   try {
     return await callApi<Furniture>({
       method: 'GET',

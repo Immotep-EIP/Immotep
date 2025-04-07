@@ -2,7 +2,10 @@ import callApi from '@/services/api/apiCaller'
 import { Room } from '@/interfaces/Property/Room/Room'
 import endpoints from '@/enums/EndPointEnum'
 
-const GetRoomByPropertyById = async (propertyId: string, roomId: string) => {
+const GetRoomByPropertyById = async (
+  propertyId: string,
+  roomId: string
+): Promise<Room> => {
   try {
     return await callApi<Room>({
       method: 'GET',

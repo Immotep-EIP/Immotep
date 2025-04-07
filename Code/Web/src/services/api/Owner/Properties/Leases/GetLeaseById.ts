@@ -5,7 +5,7 @@ import endpoints from '@/enums/EndPointEnum'
 const GetLeaseById = async (
   propertyId: string,
   leaseId: string = 'current'
-) => {
+): Promise<Lease> => {
   try {
     return await callApi<Lease>({
       method: 'GET',

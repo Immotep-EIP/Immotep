@@ -1,12 +1,13 @@
 import callApi from '@/services/api/apiCaller'
 import endpoints from '@/enums/EndPointEnum'
+import { PropertyDetails } from '@/interfaces/Property/Property'
 
 const ArchiveRoomByPropertyById = async (
   propertyId: string,
   roomId: string
-) => {
+): Promise<PropertyDetails> => {
   try {
-    return await callApi({
+    return await callApi<PropertyDetails, { archive: boolean }>({
       method: 'PUT',
       endpoint: endpoints.owner.properties.rooms.archive(propertyId, roomId),
       body: {

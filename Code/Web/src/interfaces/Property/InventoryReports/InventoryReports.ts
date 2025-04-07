@@ -17,12 +17,24 @@ export interface RoomInventoryReports extends Room {
 export interface InventoryReports {
   date: string
   id: string
+  lease_id: string
   property_id: string
   rooms: RoomInventoryReports[]
   type: string
 }
 
-export interface CreateInventoryReports {
+export interface CreateInventoryReportsPayload {
   rooms: RoomInventoryReports[]
+  type: string
+}
+
+export interface InventoryReportsResponse {
+  date: string
+  errors: string[]
+  id: string
+  lease_id: string
+  pdf_data: string
+  pdf_name: string
+  property_id: string
   type: string
 }
