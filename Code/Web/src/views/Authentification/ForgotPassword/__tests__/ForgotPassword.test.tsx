@@ -10,7 +10,7 @@ jest.mock('react-i18next', () => ({
   })
 }))
 
-jest.mock('@/hooks/useNavigation/useNavigation', () => ({
+jest.mock('@/hooks/Navigation/useNavigation', () => ({
   __esModule: true,
   default: () => ({
     goToLogin: jest.fn()

@@ -9,7 +9,7 @@ jest.mock('react-i18next', () => ({
   useTranslation: jest.fn()
 }))
 
-jest.mock('@/hooks/useNavigation/useNavigation', () => ({
+jest.mock('@/hooks/Navigation/useNavigation', () => ({
   __esModule: true,
   default: jest.fn()
 }))

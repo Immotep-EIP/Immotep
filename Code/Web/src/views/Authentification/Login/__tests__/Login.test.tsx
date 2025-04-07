@@ -10,7 +10,7 @@ jest.mock('@/context/authContext', () => ({
   useAuth: jest.fn()
 }))
 
-jest.mock('@/hooks/useNavigation/useNavigation', () => ({
+jest.mock('@/hooks/Navigation/useNavigation', () => ({
   __esModule: true,
   default: jest.fn(() => ({
     goToSignup: jest.fn(),
