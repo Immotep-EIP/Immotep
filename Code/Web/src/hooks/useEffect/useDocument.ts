@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Document } from '@/interfaces/Property/Document'
 import GetPropertyDocuments from '@/services/api/Owner/Properties/GetPropertyDocuments'
+import UploadDocument from '@/services/api/Owner/Properties/UploadDocument'
 
 interface UseDocumentReturn {
   documents: Document[] | null
   loading: boolean
   error: string | null
   refreshDocuments: (propertyId: string) => Promise<void>
+  uploadDocument: (
+    payload: string,
+    propertyId: string,
+    leaseId: string
+  ) => Promise<void>
 }
 
 const useDocument = (propertyId: string): UseDocumentReturn => {
@@ -32,6 +38,28 @@ const useDocument = (propertyId: string): UseDocumentReturn => {
     }
   }
 
+  const uploadDocument = async (
+    payload: string,
+    propertyId: string,
+    leaseId: string = 'current'
+  ) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      await UploadDocument(payload, propertyId, leaseId)
+      await fetchDocuments(propertyId)
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'An error occurred while uploading the document'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (propertyId) {
       fetchDocuments(propertyId)
@@ -42,7 +70,8 @@ const useDocument = (propertyId: string): UseDocumentReturn => {
     documents,
     loading,
     error,
-    refreshDocuments: fetchDocuments
+    refreshDocuments: fetchDocuments,
+    uploadDocument
   }
 }
 
