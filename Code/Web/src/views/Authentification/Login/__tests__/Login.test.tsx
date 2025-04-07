@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { HelmetProvider } from 'react-helmet-async'
 import Login from '@/views/Authentification/Login/Login'
 import { useAuth } from '@/context/authContext'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
+import useNavigation from '@/hooks/Navigation/useNavigation'
 
 jest.mock('@/context/authContext', () => ({
   useAuth: jest.fn()

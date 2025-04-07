@@ -1,5 +1,5 @@
 import callApi from '@/services/api/apiCaller'
-import { Lease } from '@/interfaces/Lease/Lease'
+import { Lease } from '@/interfaces/Property/Lease/Lease'
 import endpoints from '@/enums/EndPointEnum'
 
 const GetLeaseById = async (leaseId: string = 'current'): Promise<Lease> => {

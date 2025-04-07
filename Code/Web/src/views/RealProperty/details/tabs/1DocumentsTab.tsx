@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Button, Modal, Form, message, Spin } from 'antd'
 import fileToBase64 from '@/utils/base64/fileToBase'
 import { usePropertyId } from '@/context/propertyIdContext'
-import useDocument from '@/hooks/useEffect/useDocument'
+import useDocument from '@/hooks/Property/useDocument'
 import UploadForm from '@/components/RealProperty/details/tabs/Documents/UploadForm'
 import DocumentList from '@/components/RealProperty/details/tabs/Documents/DocumentList'
 import style from './1DocumentsTab.module.css'
@@ -25,31 +25,18 @@ const DocumentsTab: React.FC = () => {
       .validateFields()
       .then(values => {
         const file = values.documentFile[0].originFileObj
-
-        fileToBase64(file)
-          .then(base64Data => {
-            const payload = {
-              name: values.documentName,
-              data: base64Data.split(',')[1]
+        uploadDocument(file, values.documentName, propertyId || '', 'current')
+          .then(() => {
+            message.success(t('components.documents.success_add'))
+            form.resetFields()
+            setIsModalOpen(false)
+            if (propertyId) {
+              refreshDocuments(propertyId)
             }
-
-            uploadDocument(JSON.stringify(payload), propertyId || '', 'current')
-              .then(() => {
-                message.success(t('components.documents.success_add'))
-                form.resetFields()
-                setIsModalOpen(false)
-                if (propertyId) {
-                  refreshDocuments(propertyId)
-                }
-              })
-              .catch(error => {
-                console.error('Upload failed:', error)
-                message.error(t('components.documents.error_add'))
-              })
           })
           .catch(error => {
-            console.error('Error reading file:', error)
-            message.error(t('components.documents.error_reading_file'))
+            console.error('Upload failed:', error)
+            message.error(t('components.documents.error_add'))
           })
       })
       .catch(errorInfo => {

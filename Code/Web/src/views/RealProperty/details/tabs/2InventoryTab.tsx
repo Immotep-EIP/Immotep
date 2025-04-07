@@ -12,7 +12,7 @@ import {
 } from 'antd'
 import addIcon from '@/assets/icons/plus.svg'
 import { usePropertyId } from '@/context/propertyIdContext'
-import useInventory from '@/hooks/useInventory/useInventory'
+import useInventory from '@/hooks/Property/useInventory'
 import CardInventoryLoader from '@/components/Loader/CardInventoryLoader'
 import style from './2InventoryTab.module.css'
 

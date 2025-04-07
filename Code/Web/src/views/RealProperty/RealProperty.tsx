@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Badge, Button, Empty, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 
-import useNavigation from '@/hooks/useNavigation/useNavigation'
-import useProperties from '@/hooks/useEffect/useProperties.ts'
+import useNavigation from '@/hooks/Navigation/useNavigation'
+import useProperties from '@/hooks/Property/useProperties'
 
 import locationIcon from '@/assets/icons/location.svg'
 
 import PageTitle from '@/components/PageText/Title.tsx'
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
-import useImageCache from '@/hooks/useEffect/useImageCache'
+import useImageCache from '@/hooks/Property/useImageCache'
 import CardPropertyLoader from '@/components/Loader/CardPropertyLoader'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import { TenantStatusEnum } from '@/enums/PropertyEnum'

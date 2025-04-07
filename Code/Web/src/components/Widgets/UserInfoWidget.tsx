@@ -2,7 +2,7 @@ import React from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
 
 import { useTranslation } from 'react-i18next'
-import useProperties from '@/hooks/useEffect/useProperties.ts'
+import useProperties from '@/hooks/Property/useProperties'
 import { useAuth } from '@/context/authContext'
 import { WidgetProps } from '@/interfaces/Widgets/Widgets.ts'
 import style from './UserInfoWidget.module.css'
