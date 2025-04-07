@@ -20,6 +20,7 @@ describe('UpdateUserInfos', () => {
       lastname: 'Doe',
       email: 'john.doe@example.com',
       role: 'user',
+      profile_picture_id: '1',
       created_at: new Date(),
       updated_at: new Date()
     }
@@ -31,6 +32,7 @@ describe('UpdateUserInfos', () => {
       lastname: 'Doe',
       email: 'john.doe@example.com',
       role: 'user',
+      profile_picture_id: '1',
       created_at: new Date(),
       updated_at: new Date()
     }
@@ -62,6 +64,7 @@ describe('UpdateUserInfos', () => {
       lastname: 'Doe',
       email: 'john.doe@example.com',
       role: 'user',
+      profile_picture_id: '1',
       created_at: new Date(),
       updated_at: new Date()
     }
@@ -91,6 +94,7 @@ describe('UpdateUserInfos', () => {
       lastname: 'Doe',
       email: 'john.doe@example.com',
       role: 'user',
+      profile_picture_id: '1',
       created_at: new Date(),
       updated_at: new Date()
     }

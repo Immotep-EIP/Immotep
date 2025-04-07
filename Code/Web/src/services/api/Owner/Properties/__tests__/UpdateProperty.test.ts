@@ -1,11 +1,14 @@
 import callApi from '@/services/api/apiCaller'
-import { CreateProperty, PropertyDetails } from '@/interfaces/Property/Property'
+import {
+  CreatePropertyPayload,
+  PropertyDetails
+} from '@/interfaces/Property/Property'
 import UpdatePropertyFunction from '../UpdateProperty'
 
 jest.mock('@/services/api/apiCaller')
 
 describe('UpdatePropertyFunction', () => {
-  const mockPropertyData: CreateProperty = {
+  const mockPropertyData: CreatePropertyPayload = {
     name: 'Updated Property',
     address: 'Updated St Test',
     city: 'Updated City',
@@ -22,6 +25,7 @@ describe('UpdatePropertyFunction', () => {
   const mockUpdatedProperty: PropertyDetails = {
     id: mockPropertyId,
     ...mockPropertyData,
+    archived: false,
     created_at: '2024-03-10T10:00:00Z',
     owner_id: '1',
     picture_id: '1',
@@ -99,7 +103,7 @@ describe('UpdatePropertyFunction', () => {
   })
 
   it('should handle partial property updates', async () => {
-    const partialUpdate: Partial<CreateProperty> = {
+    const partialUpdate: Partial<CreatePropertyPayload> = {
       name: 'Updated Name Only',
       rental_price_per_month: 1500
     }
@@ -112,7 +116,7 @@ describe('UpdatePropertyFunction', () => {
     ;(callApi as jest.Mock).mockResolvedValue(mockPartialResponse)
 
     const result = await UpdatePropertyFunction(
-      partialUpdate as CreateProperty,
+      partialUpdate as CreatePropertyPayload,
       mockPropertyId
     )
 

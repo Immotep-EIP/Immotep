@@ -1,5 +1,9 @@
 import qs from 'qs'
-import { TokenResponse, UserRegister, UserToken } from '@/interfaces/User/User'
+import {
+  TokenResponse,
+  UserRegisterPayload,
+  UserTokenPayload
+} from '@/interfaces/User/User'
 import { register, loginApi } from '@/services/api/Authentification/AuthApi'
 import callApi from '@/services/api/apiCaller'
 
@@ -14,7 +18,7 @@ describe('AuthApi', () => {
 
   describe('register', () => {
     it('should call callApi with the correct parameters for registration without leaseId', async () => {
-      const userInfo: UserRegister = {
+      const userInfo: UserRegisterPayload = {
         email: 'test@example.com',
         password: 'password123',
         firstname: 'John',
@@ -37,7 +41,7 @@ describe('AuthApi', () => {
     })
 
     it('should call callApi with the correct parameters for registration with leaseId', async () => {
-      const userInfo: UserRegister = {
+      const userInfo: UserRegisterPayload = {
         email: 'test@example.com',
         password: 'password123',
         firstname: 'John',
@@ -61,7 +65,7 @@ describe('AuthApi', () => {
     })
 
     it('should handle errors during registration', async () => {
-      const userInfo: UserRegister = {
+      const userInfo: UserRegisterPayload = {
         email: 'test@example.com',
         password: 'password123',
         firstname: 'John',
@@ -86,7 +90,7 @@ describe('AuthApi', () => {
 
   describe('loginApi', () => {
     it('should call callApi with the correct parameters for login', async () => {
-      const userInfo: UserToken = {
+      const userInfo: UserTokenPayload = {
         grant_type: 'password',
         username: 'test@example.com',
         password: 'password123'
@@ -114,7 +118,7 @@ describe('AuthApi', () => {
     })
 
     it('should handle errors during login', async () => {
-      const userInfo: UserToken = {
+      const userInfo: UserTokenPayload = {
         grant_type: 'password',
         username: 'test@example.com',
         password: 'password123'
