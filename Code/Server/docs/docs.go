@@ -584,7 +584,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/db.DamageModel"
+                                "$ref": "#/definitions/models.DamageResponse"
                             }
                         }
                     },
@@ -639,7 +639,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/db.DamageModel"
+                                "$ref": "#/definitions/models.DamageResponse"
                             }
                         }
                     },
@@ -1117,7 +1117,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/db.DamageModel"
+                                "$ref": "#/definitions/models.DamageResponse"
                             }
                         }
                     },
@@ -1179,7 +1179,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/db.DamageModel"
+                                "$ref": "#/definitions/models.DamageResponse"
                             }
                         }
                     },
@@ -1319,7 +1319,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Updated damage",
                         "schema": {
-                            "$ref": "#/definitions/models.DamageResponse"
+                            "$ref": "#/definitions/models.DamageCreateResponse"
                         }
                     },
                     "400": {
@@ -3128,7 +3128,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/db.DamageModel"
+                                "$ref": "#/definitions/models.DamageResponse"
                             }
                         }
                     },
@@ -3255,7 +3255,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/db.DamageModel"
+                                "$ref": "#/definitions/models.DamageResponse"
                             }
                         }
                     },
@@ -3388,7 +3388,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Updated damage",
                         "schema": {
-                            "$ref": "#/definitions/models.DamageResponse"
+                            "$ref": "#/definitions/models.DamageCreateResponse"
                         }
                     },
                     "400": {
@@ -4097,85 +4097,6 @@ const docTemplate = `{
                 "CleanlinessClean"
             ]
         },
-        "db.DamageModel": {
-            "type": "object",
-            "properties": {
-                "comment": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "fix_planned_at": {
-                    "type": "string"
-                },
-                "fixed_at": {
-                    "type": "string"
-                },
-                "fixed_owner": {
-                    "type": "boolean"
-                },
-                "fixed_tenant": {
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "lease": {
-                    "$ref": "#/definitions/db.LeaseModel"
-                },
-                "lease_id": {
-                    "type": "string"
-                },
-                "pictures": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.ImageModel"
-                    }
-                },
-                "priority": {
-                    "$ref": "#/definitions/db.Priority"
-                },
-                "read": {
-                    "type": "boolean"
-                },
-                "room": {
-                    "$ref": "#/definitions/db.RoomModel"
-                },
-                "room_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "db.DocumentModel": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "id": {
-                    "type": "string"
-                },
-                "lease": {
-                    "$ref": "#/definitions/db.LeaseModel"
-                },
-                "lease_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "db.FixStatus": {
             "type": "string",
             "enum": [
@@ -4193,225 +4114,6 @@ const docTemplate = `{
                 "FixStatusFixed"
             ]
         },
-        "db.FurnitureModel": {
-            "type": "object",
-            "properties": {
-                "archived": {
-                    "type": "boolean"
-                },
-                "furnitureStates": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.FurnitureStateModel"
-                    }
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "room": {
-                    "$ref": "#/definitions/db.RoomModel"
-                },
-                "room_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "db.FurnitureStateModel": {
-            "type": "object",
-            "properties": {
-                "cleanliness": {
-                    "$ref": "#/definitions/db.Cleanliness"
-                },
-                "furniture": {
-                    "$ref": "#/definitions/db.FurnitureModel"
-                },
-                "furniture_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "note": {
-                    "type": "string"
-                },
-                "pictures": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.ImageModel"
-                    }
-                },
-                "report": {
-                    "$ref": "#/definitions/db.InventoryReportModel"
-                },
-                "report_id": {
-                    "type": "string"
-                },
-                "state": {
-                    "$ref": "#/definitions/db.State"
-                }
-            }
-        },
-        "db.ImageModel": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "damages": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.DamageModel"
-                    }
-                },
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "furniturestates": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.FurnitureStateModel"
-                    }
-                },
-                "id": {
-                    "type": "string"
-                },
-                "properties": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.PropertyModel"
-                    }
-                },
-                "roomstates": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.RoomStateModel"
-                    }
-                },
-                "users": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.UserModel"
-                    }
-                }
-            }
-        },
-        "db.InventoryReportModel": {
-            "type": "object",
-            "properties": {
-                "date": {
-                    "type": "string"
-                },
-                "furnitureStates": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.FurnitureStateModel"
-                    }
-                },
-                "id": {
-                    "type": "string"
-                },
-                "lease": {
-                    "$ref": "#/definitions/db.LeaseModel"
-                },
-                "lease_id": {
-                    "type": "string"
-                },
-                "roomStates": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.RoomStateModel"
-                    }
-                },
-                "type": {
-                    "$ref": "#/definitions/db.ReportType"
-                }
-            }
-        },
-        "db.LeaseInviteModel": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "property": {
-                    "$ref": "#/definitions/db.PropertyModel"
-                },
-                "property_id": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "tenant_email": {
-                    "type": "string"
-                }
-            }
-        },
-        "db.LeaseModel": {
-            "type": "object",
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "damages": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.DamageModel"
-                    }
-                },
-                "documents": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.DocumentModel"
-                    }
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "property": {
-                    "$ref": "#/definitions/db.PropertyModel"
-                },
-                "property_id": {
-                    "type": "string"
-                },
-                "reports": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.InventoryReportModel"
-                    }
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "tenant": {
-                    "$ref": "#/definitions/db.UserModel"
-                },
-                "tenant_id": {
-                    "type": "string"
-                }
-            }
-        },
         "db.Priority": {
             "type": "string",
             "enum": [
@@ -4426,74 +4128,6 @@ const docTemplate = `{
                 "PriorityHigh",
                 "PriorityUrgent"
             ]
-        },
-        "db.PropertyModel": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "apartment_number": {
-                    "type": "string"
-                },
-                "archived": {
-                    "type": "boolean"
-                },
-                "area_sqm": {
-                    "type": "number"
-                },
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "deposit_price": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "lease_invite": {
-                    "$ref": "#/definitions/db.LeaseInviteModel"
-                },
-                "leases": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.LeaseModel"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                },
-                "owner": {
-                    "$ref": "#/definitions/db.UserModel"
-                },
-                "owner_id": {
-                    "type": "string"
-                },
-                "picture": {
-                    "$ref": "#/definitions/db.ImageModel"
-                },
-                "picture_id": {
-                    "type": "string"
-                },
-                "postal_code": {
-                    "type": "string"
-                },
-                "rental_price_per_month": {
-                    "type": "number"
-                },
-                "rooms": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.RoomModel"
-                    }
-                }
-            }
         },
         "db.ReportType": {
             "type": "string",
@@ -4519,79 +4153,6 @@ const docTemplate = `{
                 "RoleTenant"
             ]
         },
-        "db.RoomModel": {
-            "type": "object",
-            "properties": {
-                "archived": {
-                    "type": "boolean"
-                },
-                "damages": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.DamageModel"
-                    }
-                },
-                "furnitures": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.FurnitureModel"
-                    }
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "property": {
-                    "$ref": "#/definitions/db.PropertyModel"
-                },
-                "property_id": {
-                    "type": "string"
-                },
-                "roomStates": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.RoomStateModel"
-                    }
-                }
-            }
-        },
-        "db.RoomStateModel": {
-            "type": "object",
-            "properties": {
-                "cleanliness": {
-                    "$ref": "#/definitions/db.Cleanliness"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "note": {
-                    "type": "string"
-                },
-                "pictures": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.ImageModel"
-                    }
-                },
-                "report": {
-                    "$ref": "#/definitions/db.InventoryReportModel"
-                },
-                "report_id": {
-                    "type": "string"
-                },
-                "room": {
-                    "$ref": "#/definitions/db.RoomModel"
-                },
-                "room_id": {
-                    "type": "string"
-                },
-                "state": {
-                    "$ref": "#/definitions/db.State"
-                }
-            }
-        },
         "db.State": {
             "type": "string",
             "enum": [
@@ -4610,53 +4171,6 @@ const docTemplate = `{
                 "StateGood",
                 "StateNew"
             ]
-        },
-        "db.UserModel": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "firstname": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "lastname": {
-                    "type": "string"
-                },
-                "owned_properties": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.PropertyModel"
-                    }
-                },
-                "password": {
-                    "type": "string"
-                },
-                "profile_picture": {
-                    "$ref": "#/definitions/db.ImageModel"
-                },
-                "profile_picture_id": {
-                    "type": "string"
-                },
-                "rented_properties": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.LeaseModel"
-                    }
-                },
-                "role": {
-                    "$ref": "#/definitions/db.Role"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
         },
         "models.ArchiveRequest": {
             "type": "object",
@@ -4695,6 +4209,53 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/db.ReportType"
+                }
+            }
+        },
+        "models.DamageCreateResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "fix_planned_at": {
+                    "type": "string"
+                },
+                "fix_status": {
+                    "$ref": "#/definitions/db.FixStatus"
+                },
+                "fixed_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lease_id": {
+                    "type": "string"
+                },
+                "priority": {
+                    "$ref": "#/definitions/db.Priority"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "room_name": {
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },

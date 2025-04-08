@@ -71,10 +71,10 @@ func CreateDamage(c *gin.Context) {
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string			true	"Property ID"
-//	@Success		200			{array}		db.DamageModel	"List of damages"
-//	@Failure		403			{object}	utils.Error		"Property not yours"
-//	@Failure		404			{object}	utils.Error		"No active lease"
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Success		200			{array}		models.DamageResponse	"List of damages"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"No active lease"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/damages/ [get]
@@ -90,10 +90,10 @@ func GetDamagesByProperty(c *gin.Context) {
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string			true	"Property ID"
-//	@Success		200			{array}		db.DamageModel	"List of damages"
-//	@Failure		403			{object}	utils.Error		"Property not yours"
-//	@Failure		404			{object}	utils.Error		"No active lease"
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Success		200			{array}		models.DamageResponse	"List of damages"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"No active lease"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/damages/fixed/ [get]
@@ -109,11 +109,11 @@ func GetFixedDamagesByProperty(c *gin.Context) {
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string			true	"Property ID"
-//	@Param			lease_id	path		string			true	"Lease ID"
-//	@Success		200			{array}		db.DamageModel	"List of damages"
-//	@Failure		403			{object}	utils.Error		"Lease not yours"
-//	@Failure		404			{object}	utils.Error		"No active lease"
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Param			lease_id	path		string					true	"Lease ID"
+//	@Success		200			{array}		models.DamageResponse	"List of damages"
+//	@Failure		403			{object}	utils.Error				"Lease not yours"
+//	@Failure		404			{object}	utils.Error				"No active lease"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/leases/{lease_id}/damages/ [get]
@@ -131,11 +131,11 @@ func GetDamagesByLease(c *gin.Context) {
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string			true	"Property ID"
-//	@Param			lease_id	path		string			true	"Lease ID"
-//	@Success		200			{array}		db.DamageModel	"List of damages"
-//	@Failure		403			{object}	utils.Error		"Lease not yours"
-//	@Failure		404			{object}	utils.Error		"No active lease"
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Param			lease_id	path		string					true	"Lease ID"
+//	@Success		200			{array}		models.DamageResponse	"List of damages"
+//	@Failure		403			{object}	utils.Error				"Lease not yours"
+//	@Failure		404			{object}	utils.Error				"No active lease"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/leases/{lease_id}/damages/fixed/ [get]
@@ -179,7 +179,7 @@ func GetDamage(c *gin.Context) {
 //	@Param			lease_id	path		string							true	"Lease ID"
 //	@Param			damage_id	path		string							true	"Damage ID"
 //	@Param			damages		body		models.DamageOwnerUpdateRequest	true	"Damage update request"
-//	@Success		200			{object}	models.DamageResponse			"Updated damage"
+//	@Success		200			{object}	models.DamageCreateResponse		"Updated damage"
 //	@Failure		400			{object}	utils.Error						"Missing fields"
 //	@Failure		403			{object}	utils.Error						"Property not yours"
 //	@Failure		404			{object}	utils.Error						"Damage not found"
@@ -218,7 +218,7 @@ func UpdateDamageOwner(c *gin.Context) {
 //	@Param			lease_id	path		string								true	"Lease ID"
 //	@Param			damage_id	path		string								true	"Damage ID"
 //	@Param			damages		body		models.DamageTenantUpdateRequest	true	"Damage update request"
-//	@Success		200			{object}	models.DamageResponse				"Updated damage"
+//	@Success		200			{object}	models.DamageCreateResponse			"Updated damage"
 //	@Failure		400			{object}	utils.Error							"Missing fields"
 //	@Failure		403			{object}	utils.Error							"Lease not yours"
 //	@Failure		404			{object}	utils.Error							"Damage not found"

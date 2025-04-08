@@ -10,58 +10,6 @@ definitions:
     - CleanlinessDirty
     - CleanlinessMedium
     - CleanlinessClean
-  db.DamageModel:
-    properties:
-      comment:
-        type: string
-      created_at:
-        type: string
-      fix_planned_at:
-        type: string
-      fixed_at:
-        type: string
-      fixed_owner:
-        type: boolean
-      fixed_tenant:
-        type: boolean
-      id:
-        type: string
-      lease:
-        $ref: '#/definitions/db.LeaseModel'
-      lease_id:
-        type: string
-      pictures:
-        items:
-          $ref: '#/definitions/db.ImageModel'
-        type: array
-      priority:
-        $ref: '#/definitions/db.Priority'
-      read:
-        type: boolean
-      room:
-        $ref: '#/definitions/db.RoomModel'
-      room_id:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  db.DocumentModel:
-    properties:
-      created_at:
-        type: string
-      data:
-        items:
-          type: integer
-        type: array
-      id:
-        type: string
-      lease:
-        $ref: '#/definitions/db.LeaseModel'
-      lease_id:
-        type: string
-      name:
-        type: string
-    type: object
   db.FixStatus:
     enum:
     - pending
@@ -76,150 +24,6 @@ definitions:
     - FixStatusAwaitingOwnerConfirmation
     - FixStatusAwaitingTenantConfirmation
     - FixStatusFixed
-  db.FurnitureModel:
-    properties:
-      archived:
-        type: boolean
-      furnitureStates:
-        items:
-          $ref: '#/definitions/db.FurnitureStateModel'
-        type: array
-      id:
-        type: string
-      name:
-        type: string
-      quantity:
-        type: integer
-      room:
-        $ref: '#/definitions/db.RoomModel'
-      room_id:
-        type: string
-    type: object
-  db.FurnitureStateModel:
-    properties:
-      cleanliness:
-        $ref: '#/definitions/db.Cleanliness'
-      furniture:
-        $ref: '#/definitions/db.FurnitureModel'
-      furniture_id:
-        type: string
-      id:
-        type: string
-      note:
-        type: string
-      pictures:
-        items:
-          $ref: '#/definitions/db.ImageModel'
-        type: array
-      report:
-        $ref: '#/definitions/db.InventoryReportModel'
-      report_id:
-        type: string
-      state:
-        $ref: '#/definitions/db.State'
-    type: object
-  db.ImageModel:
-    properties:
-      created_at:
-        type: string
-      damages:
-        items:
-          $ref: '#/definitions/db.DamageModel'
-        type: array
-      data:
-        items:
-          type: integer
-        type: array
-      furniturestates:
-        items:
-          $ref: '#/definitions/db.FurnitureStateModel'
-        type: array
-      id:
-        type: string
-      properties:
-        items:
-          $ref: '#/definitions/db.PropertyModel'
-        type: array
-      roomstates:
-        items:
-          $ref: '#/definitions/db.RoomStateModel'
-        type: array
-      users:
-        items:
-          $ref: '#/definitions/db.UserModel'
-        type: array
-    type: object
-  db.InventoryReportModel:
-    properties:
-      date:
-        type: string
-      furnitureStates:
-        items:
-          $ref: '#/definitions/db.FurnitureStateModel'
-        type: array
-      id:
-        type: string
-      lease:
-        $ref: '#/definitions/db.LeaseModel'
-      lease_id:
-        type: string
-      roomStates:
-        items:
-          $ref: '#/definitions/db.RoomStateModel'
-        type: array
-      type:
-        $ref: '#/definitions/db.ReportType'
-    type: object
-  db.LeaseInviteModel:
-    properties:
-      created_at:
-        type: string
-      end_date:
-        type: string
-      id:
-        type: string
-      property:
-        $ref: '#/definitions/db.PropertyModel'
-      property_id:
-        type: string
-      start_date:
-        type: string
-      tenant_email:
-        type: string
-    type: object
-  db.LeaseModel:
-    properties:
-      active:
-        type: boolean
-      created_at:
-        type: string
-      damages:
-        items:
-          $ref: '#/definitions/db.DamageModel'
-        type: array
-      documents:
-        items:
-          $ref: '#/definitions/db.DocumentModel'
-        type: array
-      end_date:
-        type: string
-      id:
-        type: string
-      property:
-        $ref: '#/definitions/db.PropertyModel'
-      property_id:
-        type: string
-      reports:
-        items:
-          $ref: '#/definitions/db.InventoryReportModel'
-        type: array
-      start_date:
-        type: string
-      tenant:
-        $ref: '#/definitions/db.UserModel'
-      tenant_id:
-        type: string
-    type: object
   db.Priority:
     enum:
     - low
@@ -232,51 +36,6 @@ definitions:
     - PriorityMedium
     - PriorityHigh
     - PriorityUrgent
-  db.PropertyModel:
-    properties:
-      address:
-        type: string
-      apartment_number:
-        type: string
-      archived:
-        type: boolean
-      area_sqm:
-        type: number
-      city:
-        type: string
-      country:
-        type: string
-      created_at:
-        type: string
-      deposit_price:
-        type: number
-      id:
-        type: string
-      lease_invite:
-        $ref: '#/definitions/db.LeaseInviteModel'
-      leases:
-        items:
-          $ref: '#/definitions/db.LeaseModel'
-        type: array
-      name:
-        type: string
-      owner:
-        $ref: '#/definitions/db.UserModel'
-      owner_id:
-        type: string
-      picture:
-        $ref: '#/definitions/db.ImageModel'
-      picture_id:
-        type: string
-      postal_code:
-        type: string
-      rental_price_per_month:
-        type: number
-      rooms:
-        items:
-          $ref: '#/definitions/db.RoomModel'
-        type: array
-    type: object
   db.ReportType:
     enum:
     - start
@@ -295,54 +54,6 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
-  db.RoomModel:
-    properties:
-      archived:
-        type: boolean
-      damages:
-        items:
-          $ref: '#/definitions/db.DamageModel'
-        type: array
-      furnitures:
-        items:
-          $ref: '#/definitions/db.FurnitureModel'
-        type: array
-      id:
-        type: string
-      name:
-        type: string
-      property:
-        $ref: '#/definitions/db.PropertyModel'
-      property_id:
-        type: string
-      roomStates:
-        items:
-          $ref: '#/definitions/db.RoomStateModel'
-        type: array
-    type: object
-  db.RoomStateModel:
-    properties:
-      cleanliness:
-        $ref: '#/definitions/db.Cleanliness'
-      id:
-        type: string
-      note:
-        type: string
-      pictures:
-        items:
-          $ref: '#/definitions/db.ImageModel'
-        type: array
-      report:
-        $ref: '#/definitions/db.InventoryReportModel'
-      report_id:
-        type: string
-      room:
-        $ref: '#/definitions/db.RoomModel'
-      room_id:
-        type: string
-      state:
-        $ref: '#/definitions/db.State'
-    type: object
   db.State:
     enum:
     - broken
@@ -359,37 +70,6 @@ definitions:
     - StateMedium
     - StateGood
     - StateNew
-  db.UserModel:
-    properties:
-      created_at:
-        type: string
-      email:
-        type: string
-      firstname:
-        type: string
-      id:
-        type: string
-      lastname:
-        type: string
-      owned_properties:
-        items:
-          $ref: '#/definitions/db.PropertyModel'
-        type: array
-      password:
-        type: string
-      profile_picture:
-        $ref: '#/definitions/db.ImageModel'
-      profile_picture_id:
-        type: string
-      rented_properties:
-        items:
-          $ref: '#/definitions/db.LeaseModel'
-        type: array
-      role:
-        $ref: '#/definitions/db.Role'
-      updated_at:
-        type: string
-    type: object
   models.ArchiveRequest:
     properties:
       archive:
@@ -415,6 +95,37 @@ definitions:
         type: string
       type:
         $ref: '#/definitions/db.ReportType'
+    type: object
+  models.DamageCreateResponse:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      error:
+        type: string
+      fix_planned_at:
+        type: string
+      fix_status:
+        $ref: '#/definitions/db.FixStatus'
+      fixed_at:
+        type: string
+      id:
+        type: string
+      lease_id:
+        type: string
+      priority:
+        $ref: '#/definitions/db.Priority'
+      read:
+        type: boolean
+      room_id:
+        type: string
+      room_name:
+        type: string
+      tenant_name:
+        type: string
+      updated_at:
+        type: string
     type: object
   models.DamageOwnerUpdateRequest:
     properties:
@@ -1415,7 +1126,7 @@ paths:
           description: List of damages
           schema:
             items:
-              $ref: '#/definitions/db.DamageModel'
+              $ref: '#/definitions/models.DamageResponse'
             type: array
         "403":
           description: Property not yours
@@ -1450,7 +1161,7 @@ paths:
           description: List of damages
           schema:
             items:
-              $ref: '#/definitions/db.DamageModel'
+              $ref: '#/definitions/models.DamageResponse'
             type: array
         "403":
           description: Property not yours
@@ -1758,7 +1469,7 @@ paths:
           description: List of damages
           schema:
             items:
-              $ref: '#/definitions/db.DamageModel'
+              $ref: '#/definitions/models.DamageResponse'
             type: array
         "403":
           description: Lease not yours
@@ -1851,7 +1562,7 @@ paths:
         "200":
           description: Updated damage
           schema:
-            $ref: '#/definitions/models.DamageResponse'
+            $ref: '#/definitions/models.DamageCreateResponse'
         "400":
           description: Missing fields
           schema:
@@ -1942,7 +1653,7 @@ paths:
           description: List of damages
           schema:
             items:
-              $ref: '#/definitions/db.DamageModel'
+              $ref: '#/definitions/models.DamageResponse'
             type: array
         "403":
           description: Lease not yours
@@ -3085,7 +2796,7 @@ paths:
           description: List of damages
           schema:
             items:
-              $ref: '#/definitions/db.DamageModel'
+              $ref: '#/definitions/models.DamageResponse'
             type: array
         "403":
           description: Lease not yours
@@ -3220,7 +2931,7 @@ paths:
         "200":
           description: Updated damage
           schema:
-            $ref: '#/definitions/models.DamageResponse'
+            $ref: '#/definitions/models.DamageCreateResponse'
         "400":
           description: Missing fields
           schema:
@@ -3301,7 +3012,7 @@ paths:
           description: List of damages
           schema:
             items:
-              $ref: '#/definitions/db.DamageModel'
+              $ref: '#/definitions/models.DamageResponse'
             type: array
         "403":
           description: Lease not yours
