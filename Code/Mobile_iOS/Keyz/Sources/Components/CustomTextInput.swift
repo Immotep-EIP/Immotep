@@ -112,6 +112,5 @@ struct CustomTextInputNB: View {
         }
         .font(.system(size: 14))
         .autocapitalization(.none)
-//        .keyboardType(.decimalPad)
     }
 }

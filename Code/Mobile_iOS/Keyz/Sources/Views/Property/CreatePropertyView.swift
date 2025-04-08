@@ -61,7 +61,6 @@ struct CreatePropertyView: View {
                     CustomTextInputNB(title: "Surface (m²)", placeholder: "Enter surface", value: $surface, isSecure: false)
                 }
             }
-
             HStack {
                 Spacer()
                 Button("Cancel".localized()) {

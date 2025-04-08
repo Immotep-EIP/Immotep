@@ -11,6 +11,9 @@ import PDFKit
 struct PropertyDetailView: View {
     @Binding var property: Property
     @ObservedObject var viewModel: PropertyViewModel
+    @StateObject private var tenantViewModel = TenantViewModel()
+    @State private var showInviteTenantSheet = false
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,6 +32,47 @@ struct PropertyDetailView: View {
                     DocumentsGrid(documents: $property.documents)
                 }
             }
+
+            Menu {
+                Button(action: {
+                    showInviteTenantSheet = true
+                }) {
+                    Label("Invite Tenant", systemImage: "person.crop.circle.badge.plus")
+                }
+                
+                Button(action: {
+                    // TODO: End Lease
+                }) {
+                    Label("End Lease", systemImage: "xmark.circle")
+                }
+                
+                Button(action: {
+                    // TODO: Cancel Invite
+                }) {
+                    Label("Cancel Invitation", systemImage: "person.crop.circle.badge.xmark")
+                }
+                
+                Button(action: {
+                    // TODO: Nav to EditPropertyView
+                }) {
+                    Label("Edit Property", systemImage: "pencil")
+                }
+                
+                Button(action: {
+                    // TODO: Delete property
+                }) {
+                    Label("Delete Property", systemImage: "trash")
+                }
+            } label: {
+                Text("Actions")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
+                    .foregroundStyle(.blue)
+            }
+            .padding(.top, 20)
+            .padding(.horizontal)
 
             NavigationLink {
                 InventoryTypeView(property: $property)
@@ -58,6 +102,9 @@ struct PropertyDetailView: View {
                 }
             }
         }
+        .sheet(isPresented: $showInviteTenantSheet) {
+            InviteTenantView(tenantViewModel: tenantViewModel, property: property)
+        }
     }
 }
 
@@ -82,7 +129,7 @@ struct AboutCardView: View {
                 rightIcon: "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90",
                 rightText: String(format: "rent_month".localized(), property.monthlyRent)
             )
-            .accessibilityIdentifier("lease_start_date") // Ajout ici
+            .accessibilityIdentifier("lease_start_date")
 
             buildRow(
                 icon: "calendar",
@@ -186,35 +233,31 @@ struct PDFKitView: UIViewRepresentable {
     }
 }
 
-// struct PropertyDetailView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let property = Property(
-//            id: "",
-//            ownerID: "",
-//            name: "Condo",
-//            address: "4391 Hedge Street",
-//            city: "New Jersey",
-//            postalCode: "07102",
-//            country: "USA",
-//            photo: nil,
-//            monthlyRent: 1200,
-//            deposit: 2400,
-//            surface: 80.0,
-//            isAvailable: false,
-//            tenantName: "John & Mary Doe",
-//            leaseStartDate: Date(),
-//            leaseEndDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
-//            documents: [
-//                PropertyDocument(id: UUID(), title: "Lease Agreement", fileName: "lease_agreement.pdf"),
-//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf"),
-//                PropertyDocument(id: UUID(), title: "Inspection Report", fileName: "inspection_report.pdf")
-//
-//            ],
-//            rooms: []
-//        )
-//        PropertyDetailView(property: .constant(property), viewModel: viewModel)
-//    }
-// }
+struct PropertyDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        let property = Property(
+            id: "",
+            ownerID: "",
+            name: "Condo",
+            address: "4391 Hedge Street",
+            city: "New Jersey",
+            postalCode: "07102",
+            country: "USA",
+            photo: nil,
+            monthlyRent: 1200,
+            deposit: 2400,
+            surface: 80.0,
+            isAvailable: "Busy",
+            tenantName: "John & Mary Doe",
+            leaseStartDate: "13/04/2025",
+            leaseEndDate: "13/04/2025",
+            documents: [],
+            rooms: []
+        )
+        
+        let viewModel = PropertyViewModel()
+        
+        PropertyDetailView(property: .constant(property), viewModel: viewModel)
+            .environmentObject(viewModel)
+    }
+}
