@@ -11,7 +11,7 @@ struct TestImmotepView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @StateObject private var profileViewModel = ProfileViewModel()
     @State private var propertyExample: Property = exampleDataProperty
-    @State private var mockProperty = Property( // Déplacé ici
+    @State private var mockProperty = Property(
         id: "cm7gijdee000ly7i82uq0qf35",
         ownerID: "owner123",
         name: "Maison de Campagne",

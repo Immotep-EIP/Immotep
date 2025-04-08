@@ -9,11 +9,6 @@ import SwiftUI
 import Foundation
 import UIKit
 
-// only for local test purpose
-// let baseURL = URL(string: "http://localhost:3001/api/v1")!
-// only for online test purpose
-// let baseURL = URL(string: "https://dev.backend.immotep.mazettt.fr/api/v1")!
-
 @main
 struct ImmotepApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appdelegate

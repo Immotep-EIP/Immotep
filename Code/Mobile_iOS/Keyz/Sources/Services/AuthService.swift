@@ -15,10 +15,11 @@ actor AuthService: AuthServiceProtocol {
     }
 
     func requestToken(grantType: String, email: String? = nil, password: String? = nil, refreshToken: String? = nil, keepMeSignedIn: Bool) async throws -> (String, String) {
-        let url = URL(string: "\(APIConfig.baseURL)/auth/token")!
+        let url = URL(string: "\(APIConfig.baseURL)/auth/token/")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
 
         var body: String
 
@@ -42,6 +43,8 @@ actor AuthService: AuthServiceProtocol {
         request.httpBody = body.data(using: .utf8)
 
         let (data, response) = try await URLSession.shared.data(for: request)
+        print("Response: \(String(data: data, encoding: .utf8) ?? "No data")")
+        print("response: \(response)")
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server."])
@@ -80,13 +83,10 @@ actor AuthService: AuthServiceProtocol {
     }
 
     private func refreshAccessTokenIfNeeded() async throws -> String {
-//        print("refresh access token")
         guard let refreshToken = await TokenStorage.getRefreshToken() else {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No refresh token found. Please log in again."])
         }
-//        print("refresh pending...")
         let (newAccessToken, _) = try await requestToken(grantType: "refresh_token", refreshToken: refreshToken, keepMeSignedIn: true)
-//        print("refresh complete.")
         return newAccessToken
     }
 
