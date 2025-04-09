@@ -63,7 +63,15 @@ class RealPropertyDetailsViewModel(
 
     suspend fun editProperty(property: AddPropertyInput, propertyId: String) {
         _apiError.value = ApiErrors.NONE
-        _property.value = apiCaller.updateProperty(property, propertyId) { _apiError.value = ApiErrors.UPDATE_PROPERTY }
+        _isLoading.value = true
+        try {
+            _property.value = apiCaller.updateProperty(property, propertyId) { _apiError.value = ApiErrors.UPDATE_PROPERTY }
+        } catch (e : Exception) {
+            e.printStackTrace()
+            _apiError.value = ApiErrors.UPDATE_PROPERTY
+        } finally {
+            _isLoading.value = false
+        }
     }
 
     fun openPdf(documentId : String, context: Context) {
