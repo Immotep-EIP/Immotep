@@ -11,25 +11,25 @@ struct InviteTenantView: View {
     @ObservedObject var tenantViewModel: TenantViewModel
     let property: Property
     @State private var email: String = ""
-    @State private var startDate: Date = Date() // Par défaut aujourd'hui
+    @State private var startDate: Date = Date()
     @State private var endDate: Date? = nil
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Invite Tenant to \(property.name)")) {
-                    TextField("Tenant Email", text: $email)
+                Section(header: Text(String(format: "Invite Tenant to %@".localized(), property.name))) {
+                    TextField("Tenant Email".localized(), text: $email)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                     
-                    DatePicker("Start Date",
+                    DatePicker("Start Date".localized(),
                               selection: $startDate,
                               displayedComponents: .date)
                         .datePickerStyle(.compact)
                     
-                    DatePicker("End Date (Optional)",
+                    DatePicker("End Date (Optional)".localized(),
                               selection: Binding(
                                 get: { endDate ?? Date() },
                                 set: { endDate = $0 }
@@ -49,7 +49,7 @@ struct InviteTenantView: View {
                         )
                 }
                 
-                Button("Send Invitation") {
+                Button("Send Invitation".localized()) {
                     Task {
                         do {
                             try await tenantViewModel.inviteTenant(
@@ -60,16 +60,16 @@ struct InviteTenantView: View {
                             )
                             dismiss()
                         } catch {
-                            print("Error inviting tenant: \(error)")
+                            print("Error inviting tenant: \(error)".localized())
                         }
                     }
                 }
                 .disabled(email.isEmpty || !email.contains("@"))
             }
-            .navigationTitle("Invite Tenant")
+            .navigationTitle("Invite Tenant".localized())
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button("Cancel".localized()) {
                         dismiss()
                     }
                 }

@@ -71,7 +71,6 @@ struct PropertyView: View {
         }
         .onChange(of: viewModel.properties) {
             listRefreshID = UUID()
-            print("Properties changed: \(viewModel.properties.map { $0.name })")
         }
         .onChange(of: navigateToEditId) {
             if navigateToEditId == nil {

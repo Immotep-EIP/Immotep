@@ -154,7 +154,6 @@ class RoomManager {
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: body)
             urlRequest.httpBody = jsonData
-            print("Request body: \(String(data: jsonData, encoding: .utf8) ?? "Invalid JSON")")
         } catch {
             print("error: \(error.localizedDescription)")
 //            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to serialize request body: \(error.localizedDescription)".localized()])

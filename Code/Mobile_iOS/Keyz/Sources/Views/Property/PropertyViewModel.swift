@@ -211,7 +211,7 @@ class PropertyViewModel: ObservableObject {
         let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/documents/")!
 
         let token = try await TokenStorage.getValidAccessToken()
-        print("Token used: \(token)")
+        // print("Token used: \(token)")
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"

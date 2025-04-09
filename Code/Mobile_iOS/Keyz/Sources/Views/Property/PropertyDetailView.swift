@@ -13,97 +13,148 @@ struct PropertyDetailView: View {
     @ObservedObject var viewModel: PropertyViewModel
     @StateObject private var tenantViewModel = TenantViewModel()
     @State private var showInviteTenantSheet = false
+    @State private var showEndLeasePopUp = false
+    @State private var showCancelInvitePopUp = false
+    @State private var showDeletePropertyPopUp = false
+    @State private var showEditPropertyPopUp = false
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        VStack(spacing: 0) {
-            TopBar(title: "Property Details".localized())
-
-            Form {
-                PropertyCardView(property: $property)
-                    .padding(.vertical, 4)
-
-                Section(header: Text("About the property".localized())) {
-                    AboutCardView(property: $property)
-                }
-
-                Section(header: Text("Documents")
-                    .accessibilityIdentifier("documents_header")) {
-                    DocumentsGrid(documents: $property.documents)
-                }
-            }
-
-            Menu {
-                Button(action: {
-                    showInviteTenantSheet = true
-                }) {
-                    Label("Invite Tenant", systemImage: "person.crop.circle.badge.plus")
-                }
+        ZStack {
+            VStack(spacing: 0) {
+                TopBar(title: "Property Details".localized())
                 
-                Button(action: {
-                    // TODO: End Lease
-                }) {
-                    Label("End Lease", systemImage: "xmark.circle")
-                }
-                
-                Button(action: {
-                    // TODO: Cancel Invite
-                }) {
-                    Label("Cancel Invitation", systemImage: "person.crop.circle.badge.xmark")
-                }
-                
-                Button(action: {
-                    // TODO: Nav to EditPropertyView
-                }) {
-                    Label("Edit Property", systemImage: "pencil")
-                }
-                
-                Button(action: {
-                    // TODO: Delete property
-                }) {
-                    Label("Delete Property", systemImage: "trash")
-                }
-            } label: {
-                Text("Actions")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(10)
-                    .foregroundStyle(.blue)
-            }
-            .padding(.top, 20)
-            .padding(.horizontal)
-
-            NavigationLink {
-                InventoryTypeView(property: $property)
-            } label: {
-                Text("Start Inventory".localized())
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .background(.blue)
-            .cornerRadius(10)
-            .padding()
-            .foregroundStyle(.white)
-            .accessibilityLabel("inventory_btn_start")
-        }
-        .navigationBarBackButtonHidden(true)
-        .onAppear {
-            Task {
-                if !CommandLine.arguments.contains("-skipLogin") {
-                    do {
-                        try await viewModel.fetchPropertyDocuments(propertyId: property.id)
-                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                            property = updatedProperty
+                Form {
+                    PropertyCardView(property: $property)
+                        .padding(.vertical, 4)
+                    
+                    Section(header: Text("About the property".localized())) {
+                        AboutCardView(property: $property)
+                    }
+                    
+                    Section(header: Text("Documents")
+                        .accessibilityIdentifier("documents_header")) {
+                            DocumentsGrid(documents: $property.documents)
                         }
-                    } catch {
-                        print("Error fetching documents: \(error.localizedDescription)")
+                }
+                
+                Menu {
+                    Button(action: {
+                        showInviteTenantSheet = true
+                    }) {
+                        Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
+                    }
+                    
+                    Button(action: {
+                        showEndLeasePopUp = true
+                    }) {
+                        Label("End Lease".localized(), systemImage: "xmark.circle")
+                    }
+                    
+                    Button(action: {
+                        showCancelInvitePopUp = true
+                    }) {
+                        Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
+                    }
+                    
+                    Button(action: {
+                        showEditPropertyPopUp = true
+                    }) {
+                        Label("Edit Property".localized(), systemImage: "pencil")
+                    }
+                    
+                    Button(action: {
+                        showDeletePropertyPopUp = true
+                    }) {
+                        Label("Delete Property".localized(), systemImage: "trash")
+                    }
+                } label: {
+                    Text("Actions")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(10)
+                        .foregroundStyle(.blue)
+                }
+                .padding(.top, 20)
+                .padding(.horizontal)
+                
+                NavigationLink {
+                    InventoryTypeView(property: $property)
+                } label: {
+                    Text("Start Inventory".localized())
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(.blue)
+                .cornerRadius(10)
+                .padding()
+                .foregroundStyle(.white)
+                .accessibilityLabel("inventory_btn_start")
+            }
+            .navigationBarBackButtonHidden(true)
+            .onAppear {
+                Task {
+                    if !CommandLine.arguments.contains("-skipLogin") {
+                        do {
+                            try await viewModel.fetchPropertyDocuments(propertyId: property.id)
+                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                property = updatedProperty
+                            }
+                        } catch {
+                            print("Error fetching documents: \(error.localizedDescription)")
+                        }
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showInviteTenantSheet) {
-            InviteTenantView(tenantViewModel: tenantViewModel, property: property)
+            .sheet(isPresented: $showInviteTenantSheet) {
+                InviteTenantView(tenantViewModel: tenantViewModel, property: property)
+            }
+            if showCancelInvitePopUp {
+                CustomAlertTwoButtons(
+                    isActive: $showCancelInvitePopUp,
+                    title: "Cancel Invite".localized(),
+                    message: "Are you sure you want to cancel the pending invite?".localized(),
+                    buttonTitle: "Confirm".localized(),
+                    secondaryButtonTitle: "Cancel".localized(),
+                    action: {
+                        
+                    },
+                    secondaryAction: {
+                    }
+                )
+                .accessibilityIdentifier("InviteTenantAlert")
+            }
+            if showEndLeasePopUp {
+                CustomAlertTwoButtons(
+                    isActive: $showEndLeasePopUp,
+                    title: "End Lease".localized(),
+                    message: "Are you sure you want to end the current lease?".localized(),
+                    buttonTitle: "Confirm".localized(),
+                    secondaryButtonTitle: "Cancel".localized(),
+                    action: {
+                        
+                    },
+                    secondaryAction: {
+                    }
+                )
+                .accessibilityIdentifier("EndLeaseAlert")
+            }
+            if showDeletePropertyPopUp {
+                CustomAlertTwoButtons(
+                    isActive: $showDeletePropertyPopUp,
+                    title: "Delete Property".localized(),
+                    message: "Are you sure you want to delete this property?".localized(),
+                    buttonTitle: "Confirm".localized(),
+                    secondaryButtonTitle: "Cancel".localized(),
+                    action: {
+                        
+                    },
+                    secondaryAction: {
+                    }
+                )
+                .accessibilityIdentifier("DeletePropertyAlert")
+            }
         }
     }
 }
