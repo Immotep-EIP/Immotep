@@ -50,6 +50,26 @@
 "No end date assigned" = "No end date assigned";
 "deposit_value" = "Deposit: %d€";
 
+"Invite Tenant" = "Invite Tenant";
+"End Lease" = "End Lease";
+"Cancel Invite" = "Cancel Invite";
+"Edit Property" = "Edit Property";
+"Delete Property" = "Delete Property";
+"Confirm" = "Confirm";
+"Cancel" = "Cancel";
+
+"Are you sure you want to cancel the pending invite?" = "Are you sure you want to cancel the pending invite?";
+"Are you sure you want to cancel the pending invite?" = "Are you sure you want to cancel the pending invite?";
+"Are you sure you want to end the current lease?" = "Are you sure you want to end the current lease?";
+"Are you sure you want to delete this property?" = "Are you sure you want to delete this property?";
+
+"Send Invitation" = "Send Invitation";
+"Invite Tenant to %@" = "Invite Tenant to %@";
+"Tenant Email" = "Tenant Email";
+"Start Date" = "Start Date";
+"End Date (Optional)" = "End Date (Optional)";
+"Error inviting tenant: %@" = "Error inviting tenant: %@";
+
 "Messages" = "Messages";
 
 "Settings" = "Settings";

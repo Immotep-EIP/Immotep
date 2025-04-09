@@ -50,6 +50,25 @@
 "No end date assigned" = "Pas de date renseignée";
 "deposit_value" = "Caution : %d€";
 
+"Invite Tenant" = "Inviter un locataire";
+"End Lease" = "Mettre fin à la location";
+"Cancel Invite" = "Annuler l'invitation";
+"Edit Property" = "Modifier la propriété";
+"Delete Property" = "Supprimer la propriété";
+"Confirm" = "Confirmer";
+"Cancel" = "Annuler";
+
+"Are you sure you want to cancel the pending invite?" = "Êtes-vous sûr de vouloir annuler l'invitation en cours ?";
+"Are you sure you want to end the current lease?" = "Êtes-vous sûr de vouloir mettre fin à la location en cours ?";
+"Are you sure you want to delete this property?" = "Êtes-vous sûr de vouloir supprimer cette propriété ?";
+
+"Send Invitation" = "Envoyer une invitation";
+"Invite Tenant to %@" = "Inviter un locataire dans %@";
+"Tenant Email" = "Mail du locataire";
+"Start Date" = "Date de début";
+"End Date (Optional)" = "Date de fin (facultatif)";
+"Error inviting tenant: %@" = "Erreur durant l'invitation du locataire: %@";
+
 "Messages" = "Messages";
 
 "Settings" = "Paramètres";

@@ -43,8 +43,6 @@ actor AuthService: AuthServiceProtocol {
         request.httpBody = body.data(using: .utf8)
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        print("Response: \(String(data: data, encoding: .utf8) ?? "No data")")
-        print("response: \(response)")
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server."])
