@@ -87,7 +87,7 @@ fun RegisterScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 onValueChange = { value -> viewModel.setEmail(value) },
                 modifier = Modifier.fillMaxWidth().testTag("registerEmail"),
-                errorMessage = if (errors.value.lastName) stringResource(R.string.email_error) else null,
+                errorMessage = if (errors.value.email) stringResource(R.string.email_error) else null,
             )
             PasswordInput(
                 label = stringResource(R.string.your_password),

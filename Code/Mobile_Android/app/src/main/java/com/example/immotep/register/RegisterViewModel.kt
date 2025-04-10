@@ -12,6 +12,7 @@ import com.example.immotep.authService.AuthService
 import com.example.immotep.authService.RegistrationInput
 import com.example.immotep.components.decodeRetroFitMessagesToHttpCodes
 import com.example.immotep.login.dataStore
+import com.example.immotep.utils.RegexUtils
 
 
 data class RegisterConfirm(
@@ -82,10 +83,7 @@ class RegisterViewModel(navController: NavController, apiService: ApiService) : 
             error.firstName = true
             noError = false
         }
-        if (!android.util.Patterns.EMAIL_ADDRESS
-                .matcher(_registerForm.value.email)
-                .matches()
-        ) {
+        if (!RegexUtils.isValidEmail(_registerForm.value.email)) {
             error.email = true
             noError = false
         }
@@ -123,6 +121,7 @@ class RegisterViewModel(navController: NavController, apiService: ApiService) : 
                 _registerConfirm.value = RegisterConfirm()
                 return@launch
             } catch (err: Exception) {
+                println(err)
                 _registerFormError.value = _registerFormError.value.copy(apiError = decodeRetroFitMessagesToHttpCodes(err))
             }
         }
