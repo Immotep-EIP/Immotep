@@ -4,7 +4,7 @@ import { Button, Input, Form, message } from 'antd'
 import type { FormProps } from 'antd'
 
 import AuthentificationPage from '@/components/AuthentificationPage/AuthentificationPage'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
+import useNavigation from '@/hooks/Navigation/useNavigation'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import '@/App.css'
 

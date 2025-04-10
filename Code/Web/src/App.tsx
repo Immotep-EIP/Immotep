@@ -21,7 +21,6 @@ import MessagesContent from '@/views/Messages/Messages'
 
 // ! MAIN LAYOUT - HEADER
 import Settings from '@/views/Settings/Settings'
-import MyProfile from '@/views/MyProfile/MyProfile'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
 import Lost from './views/Lost/Lost.tsx'
@@ -92,7 +91,6 @@ const App: React.FC = () => (
                 element={<MessagesContent />}
               />
               <Route path={NavigationEnum.SETTINGS} element={<Settings />} />
-              <Route path={NavigationEnum.MY_PROFILE} element={<MyProfile />} />
             </Route>
           </Route>
         </Routes>

@@ -85,4 +85,12 @@ describe('useNavigation', () => {
       NavigationEnum.SUCCESS_REGISTER_TENANT
     )
   })
+
+  it('should navigate to success login tenant page', () => {
+    const { result } = renderHook(() => useNavigation())
+    result.current.goToSuccessLoginTenant()
+    expect(mockNavigate).toHaveBeenCalledWith(
+      NavigationEnum.SUCCESS_LOGIN_TENANT
+    )
+  })
 })

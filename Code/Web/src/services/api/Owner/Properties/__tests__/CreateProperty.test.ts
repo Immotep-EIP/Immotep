@@ -1,6 +1,9 @@
 import CreatePropertyFunction from '@/services/api/Owner/Properties/CreateProperty'
 import callApi from '@/services/api/apiCaller'
-import { CreateProperty, PropertyDetails } from '@/interfaces/Property/Property'
+import {
+  CreatePropertyPayload,
+  PropertyDetails
+} from '@/interfaces/Property/Property'
 
 jest.mock('@/services/api/apiCaller')
 
@@ -15,6 +18,7 @@ describe('CreatePropertyFunction', () => {
     const mockResponse: PropertyDetails = {
       id: '1',
       owner_id: 'owner123',
+      archived: false,
       name: 'Test Property',
       address: '123 Test St',
       city: 'Test City',
@@ -34,7 +38,7 @@ describe('CreatePropertyFunction', () => {
     }
     mockedCallApi.mockResolvedValueOnce(mockResponse)
 
-    const propertyData: CreateProperty = {
+    const propertyData: CreatePropertyPayload = {
       name: 'Test Property',
       address: '123 Test St',
       city: 'Test City',
@@ -51,7 +55,7 @@ describe('CreatePropertyFunction', () => {
     expect(mockedCallApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: 'owner/properties/',
-      data: propertyData
+      body: propertyData
     })
 
     expect(result).toEqual(mockResponse)
@@ -61,7 +65,7 @@ describe('CreatePropertyFunction', () => {
     const mockError = new Error('API call failed')
     mockedCallApi.mockRejectedValueOnce(mockError)
 
-    const propertyData: CreateProperty = {
+    const propertyData: CreatePropertyPayload = {
       name: 'Test Property',
       address: '123 Test St',
       city: 'Test City',

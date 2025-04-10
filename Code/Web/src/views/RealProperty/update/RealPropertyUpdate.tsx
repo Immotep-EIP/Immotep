@@ -12,7 +12,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { UploadOutlined } from '@ant-design/icons'
 import fileToBase64 from '@/utils/base64/fileToBase'
-import useProperties from '@/hooks/useEffect/useProperties'
+import useProperties from '@/hooks/Property/useProperties'
 import { PropertyDetails } from '@/interfaces/Property/Property'
 import style from './RealPropertyUpdate.module.css'
 

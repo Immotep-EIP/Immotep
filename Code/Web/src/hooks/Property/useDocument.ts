@@ -1,12 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Document } from '@/interfaces/Property/Document'
 import GetPropertyDocuments from '@/services/api/Owner/Properties/GetPropertyDocuments'
+import UploadDocument from '@/services/api/Owner/Properties/UploadDocument'
+import fileToBase64 from '@/utils/base64/fileToBase'
 
 interface UseDocumentReturn {
   documents: Document[] | null
   loading: boolean
   error: string | null
   refreshDocuments: (propertyId: string) => Promise<void>
+  uploadDocument: (
+    file: File,
+    documentName: string,
+    propertyId: string,
+    leaseId: string
+  ) => Promise<void>
 }
 
 const useDocument = (propertyId: string): UseDocumentReturn => {
@@ -32,6 +40,35 @@ const useDocument = (propertyId: string): UseDocumentReturn => {
     }
   }
 
+  const uploadDocument = async (
+    file: File,
+    documentName: string,
+    propertyId: string,
+    leaseId: string = 'current'
+  ) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const base64Data = await fileToBase64(file)
+      const payload = {
+        name: documentName,
+        data: base64Data.split(',')[1]
+      }
+
+      await UploadDocument(JSON.stringify(payload), propertyId, leaseId)
+      await fetchDocuments(propertyId)
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'An error occurred while uploading the document'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (propertyId) {
       fetchDocuments(propertyId)
@@ -42,7 +79,8 @@ const useDocument = (propertyId: string): UseDocumentReturn => {
     documents,
     loading,
     error,
-    refreshDocuments: fetchDocuments
+    refreshDocuments: fetchDocuments,
+    uploadDocument
   }
 }
 

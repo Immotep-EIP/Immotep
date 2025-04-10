@@ -3,12 +3,12 @@ import '@testing-library/jest-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import Register from '@/views/Authentification/Register/Register'
 import { register } from '@/services/api/Authentification/AuthApi'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
+import useNavigation from '@/hooks/Navigation/useNavigation'
 
 jest.mock('@/services/api/Authentification/AuthApi', () => ({
   register: jest.fn()
 }))
-jest.mock('@/hooks/useNavigation/useNavigation', () => ({
+jest.mock('@/hooks/Navigation/useNavigation', () => ({
   __esModule: true,
   default: jest.fn(() => ({
     goToLogin: jest.fn()

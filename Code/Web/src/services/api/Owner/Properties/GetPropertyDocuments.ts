@@ -1,11 +1,15 @@
 import callApi from '@/services/api/apiCaller'
 import { Document } from '@/interfaces/Property/Document'
+import endpoints from '@/enums/EndPointEnum'
 
-const GetPropertyDocuments = async (propertyId: string) => {
+const GetPropertyDocuments = async (
+  propertyId: string,
+  leaseId: string = 'current'
+): Promise<Document[]> => {
   try {
     return await callApi<Document[]>({
       method: 'GET',
-      endpoint: `owner/properties/${propertyId}/documents/`
+      endpoint: endpoints.owner.properties.leases.documents(propertyId, leaseId)
     })
   } catch (error) {
     console.error('Error fetching documents:', error)

@@ -28,7 +28,7 @@ describe('CreateInventoryReportByProperty', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: `owner/properties/${mockPropertyId}/inventory-reports/`,
-      data: mockData
+      body: mockData
     })
     expect(result).toEqual(mockResponse)
   })
@@ -46,7 +46,7 @@ describe('CreateInventoryReportByProperty', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: `owner/properties/${mockPropertyId}/inventory-reports/`,
-      data: mockData
+      body: mockData
     })
 
     consoleErrorSpy.mockRestore()

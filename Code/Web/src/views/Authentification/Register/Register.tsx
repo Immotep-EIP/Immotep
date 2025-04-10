@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next'
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
 import backgroundImg from '@/assets/images/buildingBackground.png'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
+import useNavigation from '@/hooks/Navigation/useNavigation'
 import '@/App.css'
 import { register } from '@/services/api/Authentification/AuthApi'
-import { UserRegister } from '@/interfaces/User/User'
+import { UserRegisterPayload } from '@/interfaces/User/User'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import DividedPage from '@/components/DividedPage/DividedPage'
 import PageTitle from '@/components/PageText/Title'
@@ -17,25 +17,25 @@ import style from './Register.module.css'
 const Register: React.FC = () => {
   const { goToLogin, goToSuccessRegisterTenant } = useNavigation()
   const [form] = Form.useForm()
-  const { contractId } = useParams()
+  const { leaseId } = useParams()
   const [loading, setLoading] = useState(false)
 
   const { t } = useTranslation()
 
-  const onFinish: FormProps<UserRegister>['onFinish'] = async values => {
+  const onFinish: FormProps<UserRegisterPayload>['onFinish'] = async values => {
     try {
       setLoading(true)
       const { password, confirmPassword } = values
       if (password === confirmPassword) {
         const userInfo = {
           ...values,
-          contractId
+          leaseId
         }
         await register(userInfo)
         message.success(t('pages.register.register_success'))
         form.resetFields()
         setLoading(false)
-        if (contractId) {
+        if (leaseId) {
           goToSuccessRegisterTenant()
         } else {
           goToLogin()
@@ -49,9 +49,10 @@ const Register: React.FC = () => {
     }
   }
 
-  const onFinishFailed: FormProps<UserRegister>['onFinishFailed'] = () => {
-    message.error(t('pages.register.fill_fields'))
-  }
+  const onFinishFailed: FormProps<UserRegisterPayload>['onFinishFailed'] =
+    () => {
+      message.error(t('pages.register.fill_fields'))
+    }
 
   return (
     <>
@@ -201,7 +202,7 @@ const Register: React.FC = () => {
 
               <div
                 className={style.dontHaveAccountContainer}
-                style={{ display: contractId ? 'none' : 'flex' }}
+                style={{ display: leaseId ? 'none' : 'flex' }}
               >
                 <span className={style.footerText}>
                   {t('pages.register.already_have_account')}

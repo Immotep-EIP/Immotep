@@ -1,12 +1,16 @@
 import callApi from '@/services/api/apiCaller'
 import { Room } from '@/interfaces/Property/Room/Room'
+import endpoints from '@/enums/EndPointEnum'
 
-const CreateRoomByProperty = async (id: string, PropertyName: string) => {
+const CreateRoomByProperty = async (
+  propertyId: string,
+  propertyName: string
+): Promise<Room> => {
   try {
-    return await callApi<Room>({
+    return await callApi<Room, { name: string }>({
       method: 'POST',
-      endpoint: `owner/properties/${id}/rooms/`,
-      data: JSON.stringify({ name: PropertyName })
+      endpoint: endpoints.owner.properties.rooms.create(propertyId),
+      body: JSON.stringify({ name: propertyName })
     })
   } catch (error) {
     console.error('Error fetching data:', error)

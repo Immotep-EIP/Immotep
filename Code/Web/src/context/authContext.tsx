@@ -9,7 +9,7 @@ import React, {
 import { useNavigate } from 'react-router-dom'
 import { LoadingOutlined } from '@ant-design/icons'
 
-import { UserToken, TokenResponse, User } from '@/interfaces/User/User'
+import { UserTokenPayload, TokenResponse, User } from '@/interfaces/User/User'
 import { loginApi } from '@/services/api/Authentification/AuthApi'
 import getUserProfile from '@/services/api/User/GetUserProfile'
 import { saveData, deleteData } from '@/utils/cache/localStorage'
@@ -17,7 +17,7 @@ import NavigationEnum from '@/enums/NavigationEnum'
 
 interface AuthContextType {
   isAuthenticated: boolean
-  login: (user: UserToken) => Promise<TokenResponse>
+  login: (user: UserTokenPayload) => Promise<TokenResponse>
   logout: () => void
   user: User | null
   updateUser: (newUserData: Partial<User>) => void
@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth()
   }, [])
 
-  const login = async (userInfo: UserToken) => {
+  const login = async (userInfo: UserTokenPayload) => {
     try {
       const response = await loginApi(userInfo)
       setIsAuthenticated(true)

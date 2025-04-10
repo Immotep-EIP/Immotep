@@ -1,4 +1,5 @@
 export interface Furniture {
+  archived: boolean
   id: string
   name: string
   property_id: string
@@ -6,10 +7,16 @@ export interface Furniture {
   room_id: string
 }
 
-export interface CreateFurniture {
+export interface CreateFurniturePayload {
   name: string
   quantity: number
-  id?: string
-  property_id?: string
-  room_id?: string
+}
+
+export interface CreateFurnitureResponse {
+  archived: boolean
+  id: string
+  name: string
+  property_id: string
+  quantity: number
+  room_id: string
 }

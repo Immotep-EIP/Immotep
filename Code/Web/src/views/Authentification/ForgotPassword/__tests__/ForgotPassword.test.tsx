@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { HelmetProvider } from 'react-helmet-async'
 import { message } from 'antd'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
+import useNavigation from '@/hooks/Navigation/useNavigation'
 import ForgotPassword from '../ForgotPassword'
 
 jest.mock('react-i18next', () => ({
@@ -10,7 +10,7 @@ jest.mock('react-i18next', () => ({
   })
 }))
 
-jest.mock('@/hooks/useNavigation/useNavigation', () => ({
+jest.mock('@/hooks/Navigation/useNavigation', () => ({
   __esModule: true,
   default: () => ({
     goToLogin: jest.fn()
