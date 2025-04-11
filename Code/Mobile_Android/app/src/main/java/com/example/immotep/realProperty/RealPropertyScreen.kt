@@ -83,6 +83,39 @@ fun PropertyBoxTextLine(text: String, icon: ImageVector) {
 }
 
 @Composable
+fun PropertyStatusBox(status: PropertyStatus, modifier: Modifier) {
+    Box(
+        modifier = modifier
+            .padding(top = 5.dp, end = 5.dp)
+            .width(100.dp)
+            .height(30.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(
+                when(status) {
+                    PropertyStatus.available -> MaterialTheme.colorScheme.surfaceVariant
+                    PropertyStatus.invite_sent -> MaterialTheme.colorScheme.inversePrimary
+                    else -> MaterialTheme.colorScheme.error
+                }
+            )
+            .padding(3.dp)
+            .testTag("topRightPropertyBoxInfo")
+    ) {
+        Text(
+            color = MaterialTheme.colorScheme.onError,
+            text = when(status) {
+                PropertyStatus.available -> stringResource(R.string.available)
+                PropertyStatus.invite_sent -> stringResource(R.string.pending)
+                else -> stringResource(R.string.busy)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentSize(Alignment.Center)
+                .padding(1.dp)
+        )
+    }
+}
+
+@Composable
 fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDelete: (() -> Unit)? = null) {
     val modifierColumn = if (onClick != null && onDelete != null) {
         Modifier.pointerInput(Unit) {
@@ -150,38 +183,7 @@ fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDel
 
              */
         }
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 5.dp, end = 5.dp)
-                .width(100.dp)
-                .height(30.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(
-                    when(property.status) {
-                        PropertyStatus.available -> MaterialTheme.colorScheme.surfaceVariant
-                        PropertyStatus.invite_sent -> MaterialTheme.colorScheme.inversePrimary
-                        else -> MaterialTheme.colorScheme.error
-                    }
-                )
-                .padding(3.dp)
-                .testTag("topRightPropertyBoxInfo")
-        ) {
-            Text(
-                color = MaterialTheme.colorScheme.onError,
-                text = when(property.status) {
-                    PropertyStatus.available -> stringResource(R.string.available)
-                    PropertyStatus.invite_sent -> stringResource(R.string.pending)
-                    else -> stringResource(R.string.busy)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentSize(Alignment.Center)
-                    .padding(1.dp)
-            )
-        }
-
+        PropertyStatusBox(property.status, modifier = Modifier.align(Alignment.TopEnd))
     }
 }
 
@@ -243,11 +245,7 @@ fun RealPropertyScreen(navController: NavController) {
                     IconButton(
                         onClick = { addPropertyModalOpen = true },
                         colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                        modifier = Modifier
-                            .height(55.dp)
-                            .width(55.dp)
-                            .clip(CircleShape)
-                            .testTag("addAPropertyBtn")
+                        modifier = Modifier.testTag("addAPropertyBtn")
                     ) {
                         Icon(
                             Icons.Outlined.Add,

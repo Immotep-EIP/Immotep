@@ -1,7 +1,5 @@
 package com.example.immotep.realProperty.details
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,11 +24,15 @@ import androidx.compose.material.icons.outlined.AllOut
 import androidx.compose.material.icons.outlined.AttachFile
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.CalendarViewMonth
+import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.MailOutline
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,14 +49,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
@@ -67,6 +74,7 @@ import com.example.immotep.components.LoadingDialog
 import com.example.immotep.inviteTenantModal.InviteTenantModal
 import com.example.immotep.realProperty.PropertyBox
 import com.example.immotep.realProperty.PropertyBoxTextLine
+import com.example.immotep.realProperty.PropertyStatusBox
 import com.example.immotep.ui.components.BackButton
 import com.example.immotep.utils.Base64Utils
 import com.example.immotep.utils.DateFormatter
@@ -234,28 +242,55 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
     }
     InitialFadeIn(300) {
         Column(modifier = Modifier.padding(5.dp).testTag("realPropertyDetailsScreen")) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                BackButton {
-                    getBack(property.value)
-                }
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    Button(onClick = { navController.navigate("messages") }) {
-                        Text(
-                            stringResource(R.string.open_in_messages),
-                            modifier = Modifier.padding(end = 5.dp)
+            Box(modifier = Modifier.fillMaxWidth()) {
+                AsyncImage(
+                    model = property.value.image,
+                    placeholder = painterResource(id = R.drawable.immotep_png_logo),
+                    error = painterResource(id = R.drawable.immotep_png_logo),
+                    contentDescription = "picture of the ${property.value.tenant} property",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(
+                            RoundedCornerShape(50.dp)
                         )
-                        Icon(
-                            Icons.Outlined.MailOutline,
-                            contentDescription = stringResource(R.string.open_in_messages)
-                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(top = 5.dp, start = 5.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        BackButton { getBack(property.value) }
+                        IconButton(
+                            onClick = {},
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.background),
+                            modifier = Modifier.testTag("backButton"),
+                        ) {
+                            Icon(Icons.Outlined.MoreVert, contentDescription = "More vert", tint = MaterialTheme.colorScheme.onBackground)
+                        }
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(10.dp))
             ErrorAlert(null, null, errorAlertVal)
-            PropertyBox(property.value)
+            Column(modifier = Modifier.padding(20.dp)) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    PropertyStatusBox(property.value.status, modifier = Modifier.padding(end = 5.dp).align(Alignment.TopEnd))
+                }
+                Text(property.value.name, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                Text("${property.value.address}, ${property.value.zipCode} ${property.value.city}, ${property.value.country}",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Thin
+                )
+            }
+
+
+            /*
             if (property.value.status == PropertyStatus.available) {
                 Button(
                     onClick = { inviteTenantOpen = true },
@@ -272,6 +307,7 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
                     )
                 }
             }
+
             AboutThePropertyBox(property, openEdit = { editOpen = true })
             DocumentBox(
                 property = property,
@@ -293,6 +329,7 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
                     )
                 }
             }
+             */
         }
     }
 }
