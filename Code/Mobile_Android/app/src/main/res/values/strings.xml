@@ -157,4 +157,6 @@
     <string name="appartment_number">Appartement number</string>
     <string name="ai_call_error">There was on error on the ai call, please retry later</string>
     <string name="not_end_date_before_start">The end date cannot be before the starting date</string>
+    <string name="about">About</string>
+    <string name="damages">Damages</string>
 </resources>
