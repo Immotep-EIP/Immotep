@@ -57,7 +57,10 @@
     <string name="documents">Documents</string>
     <string name="start_inventory">Start an inventory</string>
     <string name="area">Area</string>
+    <string name="tenant">Tenant</string>
+    <string name="dates">Dates</string>
     <string name="rentMonth">Rent</string>
+    <string name="rentPerMonth">Rent / Month</string>
     <string name="create_new_property">Create a new property</string>
     <string name="fill_property_infos">Please, fill your property informations</string>
     <string name="address_placeholder">Please, enter your property address</string>

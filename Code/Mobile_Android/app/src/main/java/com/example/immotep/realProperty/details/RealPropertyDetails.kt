@@ -171,7 +171,7 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
             }
             TabsLayout(tabIndex, tabs, { tabIndex = it }) {
                 when (tabIndex) {
-                    0 -> AboutPropertyTab(property, openEdit = { editOpen = true })
+                    0 -> AboutPropertyTab(property)
                     1 -> DocumentBox(property = property, openPdf = { viewModel.openPdf(it, context)})
                     2 -> Damages()
                 }

@@ -8,7 +8,7 @@ object DateFormatter {
         if (dateTime == null) return null
         try {
             val formattedDate = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE)
-            return formattedDate
+            return formattedDate.replace("-", "/")
         } catch (e : Exception) {
             return "Invalid date"
         }

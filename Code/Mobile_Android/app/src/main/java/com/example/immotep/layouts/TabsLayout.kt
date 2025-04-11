@@ -26,7 +26,7 @@ fun TabsLayout(
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
             indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
+                TabRowDefaults.SecondaryIndicator(
                     Modifier.tabIndicatorOffset(tabPositions[tabIndex]),
                     color = MaterialTheme.colorScheme.secondary
                 )
@@ -37,11 +37,11 @@ fun TabsLayout(
                     text = { Text(title) },
                     selected = tabIndex == index,
                     onClick = { setTabIndex(index) },
-                    selectedContentColor = MaterialTheme.colorScheme.secondary
+                    selectedContentColor = MaterialTheme.colorScheme.secondary,
+                    unselectedContentColor = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
-
         content()
     }
 }
