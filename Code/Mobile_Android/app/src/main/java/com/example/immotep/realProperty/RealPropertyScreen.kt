@@ -10,15 +10,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
@@ -28,6 +31,8 @@ import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -207,21 +212,6 @@ fun RealPropertyScreen(navController: NavController) {
 
     DashBoardLayout(navController, "realPropertyScreen") {
         if (propertySelectedDetails.value == null) {
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = { addPropertyModalOpen = true },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .padding(5.dp)
-                        .testTag("addAPropertyBtn")
-                ) {
-                    Text(
-                        stringResource(R.string.add_prop),
-                        color = MaterialTheme.colorScheme.onTertiary
-                    )
-                }
-            }
             ErrorAlert(null, null, errorAlertVal)
             DeletePopUp(
                 open = deleteOpen != null,
@@ -230,19 +220,45 @@ fun RealPropertyScreen(navController: NavController) {
                 globalName = stringResource(R.string.property),
                 detailedName = deleteOpen?.second?: ""
             )
-            LazyColumn {
-                items(viewModel.properties) { item ->
-                    InitialFadeIn {
-                        PropertyBox(
-                            item,
-                            onClick = { if (deleteOpen == null) {
-                                viewModel.setPropertySelectedDetails(item.id)
-                                viewModel.closeError()
-                            } },
-                            onDelete = { deleteOpen = Pair(item.id, item.address) })
+            Box(modifier = Modifier.fillMaxSize()) {
+
+                LazyColumn {
+                    items(viewModel.properties) { item ->
+                        InitialFadeIn {
+                            PropertyBox(
+                                item,
+                                onClick = {
+                                    if (deleteOpen == null) {
+                                        viewModel.setPropertySelectedDetails(item.id)
+                                        viewModel.closeError()
+                                    }
+                                },
+                                onDelete = { deleteOpen = Pair(item.id, item.address) })
+                        }
+                    }
+                }
+                Box(
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                ) {
+                    IconButton(
+                        onClick = { addPropertyModalOpen = true },
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        modifier = Modifier
+                            .height(55.dp)
+                            .width(55.dp)
+                            .clip(CircleShape)
+                            .testTag("addAPropertyBtn")
+                    ) {
+                        Icon(
+                            Icons.Outlined.Add,
+                            contentDescription = "add",
+                            tint = MaterialTheme.colorScheme.onSecondary,
+                            modifier = Modifier.size(45.dp)
+                        )
                     }
                 }
             }
+
         } else {
             RealPropertyDetailsScreen(
                 navController,
