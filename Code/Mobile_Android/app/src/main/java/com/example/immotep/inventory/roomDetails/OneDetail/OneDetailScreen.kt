@@ -117,7 +117,7 @@ fun OneDetailScreen(
                         shape = RoundedCornerShape(5.dp),
                         modifier = Modifier.padding(top = 10.dp).testTag("aiCallButton"),
                         colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+                            backgroundColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         onClick = { viewModel.summarizeOrCompare(
@@ -132,7 +132,7 @@ fun OneDetailScreen(
                         shape = RoundedCornerShape(5.dp),
                         modifier = Modifier.padding(top = 10.dp).testTag("validateButton"),
                         colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+                            backgroundColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         onClick = { viewModel.onConfirm(onModifyDetail, isExit) },

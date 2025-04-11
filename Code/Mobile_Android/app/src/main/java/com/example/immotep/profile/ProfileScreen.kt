@@ -87,7 +87,7 @@ fun ProfileScreen(
                 )
                 Button(
                     onClick = { viewModel.updateProfile() },
-                    colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary),
+                    colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary),
                     modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
                         .padding(5.dp)

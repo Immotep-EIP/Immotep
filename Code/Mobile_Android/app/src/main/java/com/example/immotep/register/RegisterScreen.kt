@@ -123,7 +123,7 @@ fun RegisterScreen(
                 Text(
                     AnnotatedString(stringResource(R.string.sign_in)),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.tertiary,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
                         .padding(start = 3.dp)
                         .clickable { navController.navigate("login") }

@@ -106,7 +106,7 @@ fun LoginScreen(
                         stringResource(R.string.forgot_password),
                     ),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.tertiary,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier =
                     Modifier.clickable { navController.navigate("forgotPassword") },
                 )
@@ -120,7 +120,7 @@ fun LoginScreen(
                 Text(
                     stringResource(R.string.sign_up),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.tertiary,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier =
                     Modifier
                         .padding(start = 3.dp)

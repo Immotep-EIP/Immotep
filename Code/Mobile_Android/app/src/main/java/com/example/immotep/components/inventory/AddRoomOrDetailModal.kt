@@ -73,7 +73,7 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
                     Button(
                         shape = RoundedCornerShape(5.dp),
                         colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+                            backgroundColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         onClick = { addRoomOrDetail(roomName) },

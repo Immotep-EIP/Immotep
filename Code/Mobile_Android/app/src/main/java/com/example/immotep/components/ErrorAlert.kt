@@ -68,7 +68,6 @@ fun ErrorAlert(
 }
 
 fun decodeRetroFitMessagesToHttpCodes(e: Exception): Int {
-    println(e.message)
     if (e.message == null) {
         return -1
     }

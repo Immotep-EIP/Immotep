@@ -281,7 +281,7 @@ fun AddOrEditPropertyModal(
                 }
                 Button(
                     onClick = { viewModel.onSubmit(onClose, onSubmit) },
-                    colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary),
+                    colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)

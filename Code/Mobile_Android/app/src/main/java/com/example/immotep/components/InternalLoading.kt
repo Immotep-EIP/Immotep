@@ -21,7 +21,7 @@ fun InternalLoading() {
     ) {
         CircularProgressIndicator(
             modifier = Modifier.width(100.dp).height(100.dp),
-            color = MaterialTheme.colorScheme.tertiary,
+            color = MaterialTheme.colorScheme.secondary,
             trackColor = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }

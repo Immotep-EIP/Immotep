@@ -175,7 +175,7 @@ fun AboutThePropertyBox(property : State<DetailedProperty>, openEdit : () -> Uni
     Spacer(modifier = Modifier.height(10.dp))
     Button(
         onClick = { openEdit() },
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier
             .clip(RoundedCornerShape(5.dp))
             .padding(5.dp)
@@ -259,7 +259,7 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
             if (property.value.status == PropertyStatus.available) {
                 Button(
                     onClick = { inviteTenantOpen = true },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
                         .padding(5.dp)
@@ -280,7 +280,7 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
             if (property.value.status == PropertyStatus.unavailable) {
                 Button(
                     onClick = { navController.navigate("inventory/${newProperty.id}") },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
                         .padding(5.dp)

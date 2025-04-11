@@ -146,7 +146,7 @@ fun RoomsScreen(
                         Button(
                             shape = RoundedCornerShape(5.dp),
                             colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colorScheme.tertiary,
+                                backgroundColor = MaterialTheme.colorScheme.secondary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             modifier = Modifier.testTag("editInventoryButton"),
