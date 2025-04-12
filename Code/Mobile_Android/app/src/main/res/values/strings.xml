@@ -162,4 +162,9 @@
     <string name="not_end_date_before_start">The end date cannot be before the starting date</string>
     <string name="about">About</string>
     <string name="damages">Damages</string>
+    <string name="add_tenant">Add a tenant</string>
+    <string name="end_lease">End the lease</string>
+    <string name="cancel_invitation">Cancel the invitation</string>
+    <string name="mod_property">Modify the property</string>
+    <string name="delete_property">Delete the property</string>
 </resources>

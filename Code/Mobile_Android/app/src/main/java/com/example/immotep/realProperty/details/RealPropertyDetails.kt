@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.AllOut
@@ -40,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -54,23 +57,135 @@ import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.PropertyStatus
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InternalLoading
 import com.example.immotep.inviteTenantModal.InviteTenantModal
 import com.example.immotep.layouts.TabsLayout
-import com.example.immotep.realProperty.PropertyBoxTextLine
 import com.example.immotep.realProperty.PropertyStatusBox
 import com.example.immotep.realProperty.details.tabs.AboutPropertyTab
 import com.example.immotep.realProperty.details.tabs.Damages
 import com.example.immotep.realProperty.details.tabs.DocumentBox
-import com.example.immotep.realProperty.details.tabs.OneDocument
 import com.example.immotep.ui.components.BackButton
-import com.example.immotep.utils.DateFormatter
-
 
 @Composable
-fun RealPropertyDetailsScreen(navController: NavController, newProperty : DetailedProperty, getBack: (DetailedProperty) -> Unit) {
+fun RealPropertyDropDownMenuItem(
+    name : String,
+    onClick : (() -> Unit)?,
+    disabled : Boolean = false,
+    color : Color = MaterialTheme.colorScheme.onBackground,
+    closeDropDown : () -> Unit
+) {
+    val endColor = if (disabled) color.copy(alpha = 0.4f) else color
+    DropdownMenuItem(
+        onClick = if (disabled || onClick == null) {
+            closeDropDown
+        } else {
+            { onClick(); closeDropDown() }
+        },
+        text = { Text(name, color = endColor) }
+    )
+}
+
+@Composable
+fun RealPropertyImageWithTopButtonsAndDropdown(
+    getBack : (DetailedProperty) -> Unit,
+    property : State<DetailedProperty>,
+    openAddTenant:  (() -> Unit)?,
+    endLease : (() -> Unit)?,
+    cancelInvitation : (() -> Unit)?,
+    openEdit : () -> Unit,
+    openDelete : () -> Unit
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        AsyncImage(
+            model = property.value.image,
+            placeholder = painterResource(id = R.drawable.immotep_png_logo),
+            error = painterResource(id = R.drawable.immotep_png_logo),
+            contentDescription = "picture of the ${property.value.tenant} property",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(
+                    RoundedCornerShape(50.dp)
+                )
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 5.dp, start = 5.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BackButton { getBack(property.value) }
+                Box {
+                    IconButton(
+                        onClick = { expanded = true },
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.background),
+                        modifier = Modifier.testTag("backButton"),
+                    ) {
+                        Icon(
+                            Icons.Outlined.MoreVert,
+                            contentDescription = "More options",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        RealPropertyDropDownMenuItem(
+                            name = stringResource(R.string.add_tenant),
+                            onClick = openAddTenant,
+                            disabled = openAddTenant == null,
+                            closeDropDown = { expanded = false }
+                        )
+                        RealPropertyDropDownMenuItem(
+                            name = stringResource(R.string.end_lease),
+                            onClick = endLease,
+                            disabled = endLease == null,
+                            color = MaterialTheme.colorScheme.error,
+                            closeDropDown = { expanded = false }
+
+                        )
+                        RealPropertyDropDownMenuItem(
+                            name = stringResource(R.string.cancel_invitation),
+                            onClick = cancelInvitation,
+                            disabled = cancelInvitation == null,
+                            closeDropDown = { expanded = false }
+
+                        )
+                        RealPropertyDropDownMenuItem(
+                            name = stringResource(R.string.mod_property),
+                            onClick = openEdit,
+                            closeDropDown = { expanded = false }
+                        )
+                        RealPropertyDropDownMenuItem(
+                            name = stringResource(R.string.delete_property),
+                            onClick = openDelete,
+                            color = MaterialTheme.colorScheme.error,
+                            closeDropDown = { expanded = false }
+                        )
+                    }
+                }
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
+fun RealPropertyDetailsScreen(
+    navController: NavController, newProperty : DetailedProperty,
+    getBack: (DetailedProperty) -> Unit,
+
+) {
     val apiService = LocalApiService.current
     val context = LocalContext.current
     val tabs = listOf(
@@ -123,41 +238,15 @@ fun RealPropertyDetailsScreen(navController: NavController, newProperty : Detail
     }
     InitialFadeIn(300) {
         Column(modifier = Modifier.testTag("realPropertyDetailsScreen")) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                AsyncImage(
-                    model = property.value.image,
-                    placeholder = painterResource(id = R.drawable.immotep_png_logo),
-                    error = painterResource(id = R.drawable.immotep_png_logo),
-                    contentDescription = "picture of the ${property.value.tenant} property",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(
-                            RoundedCornerShape(50.dp)
-                        )
-                )
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(top = 5.dp, start = 5.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        BackButton { getBack(property.value) }
-                        IconButton(
-                            onClick = {},
-                            colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.background),
-                            modifier = Modifier.testTag("backButton"),
-                        ) {
-                            Icon(Icons.Outlined.MoreVert, contentDescription = "More vert", tint = MaterialTheme.colorScheme.onBackground)
-                        }
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
+            RealPropertyImageWithTopButtonsAndDropdown(
+                getBack,
+                property,
+                openAddTenant = if (property.value.status == PropertyStatus.available) { {inviteTenantOpen = true} } else null ,
+                endLease = if (property.value.status == PropertyStatus.unavailable) { {} } else null,
+                cancelInvitation = if (property.value.status == PropertyStatus.invite_sent) { {} } else null,
+                openEdit = { editOpen = true },
+                openDelete = { }
+            )
             ErrorAlert(null, null, errorAlertVal)
             Column(modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(20.dp)) {
                 Box(modifier = Modifier.fillMaxWidth()) {

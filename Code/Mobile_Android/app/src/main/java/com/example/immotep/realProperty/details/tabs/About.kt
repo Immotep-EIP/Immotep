@@ -93,7 +93,14 @@ fun AboutPropertyTab(property : State<DetailedProperty>) {
     ) {
         Column {
             Text("${stringResource(R.string.tenant)}:", fontWeight = FontWeight.Bold, fontSize = 15.sp)
-            Text(if (property.value.tenant != null) property.value.tenant!! else "---------------------", fontSize = 15.sp)
+            Text(
+                if (property.value.tenant != null && property.value.tenant!!.isNotEmpty()) {
+                    property.value.tenant.toString()
+                } else {
+                    "---------------------"
+                },
+                fontSize = 15.sp
+            )
         }
         Spacer(Modifier.width(15.dp))
         Column {
