@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AttachFile
 import androidx.compose.material3.Icon
@@ -34,42 +37,39 @@ import com.example.immotep.components.InitialFadeIn
 
 @Composable
 fun OneDocument(document: Document, openPdf: (String) -> Unit) {
-    InitialFadeIn(durationMs = 500) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth(0.33f)
-                .padding(5.dp)
-                .clickable {
-                    openPdf(document.id)
-                }
-                .wrapContentSize(Alignment.Center)
-                .testTag("OneDocument ${document.id}")
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .border(
-                        1.dp,
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(5.dp)
-                    )
-                    .padding(start = 25.dp, end = 25.dp, top = 10.dp, bottom = 10.dp)
-            ) {
-                Icon(
-                    Icons.Outlined.AttachFile,
-                    contentDescription = "document icon",
-                    modifier = Modifier.size(50.dp)
-                )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth(0.33f)
+            .padding(5.dp, top = 32.dp)
+            .clickable {
+                openPdf(document.id)
             }
-            Text(
-                text = document.name,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp).fillMaxWidth(),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+            .wrapContentSize(Alignment.Center)
+            .testTag("OneDocument ${document.id}")
+    ) {
+        Box(
+            modifier = Modifier
+                .border(
+                    1.dp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    shape = RoundedCornerShape(5.dp)
+                )
+                .padding(start = 25.dp, end = 25.dp, top = 10.dp, bottom = 10.dp)
+        ) {
+            Icon(
+                Icons.Outlined.AttachFile,
+                contentDescription = "document icon",
+                modifier = Modifier.size(50.dp)
             )
         }
+        Text(
+            text = document.name,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(start = 10.dp, end = 10.dp).fillMaxWidth(),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
@@ -77,21 +77,14 @@ fun OneDocument(document: Document, openPdf: (String) -> Unit) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DocumentBox(property : State<DetailedProperty>, openPdf: (String) -> Unit) {
-    Text(text = stringResource(R.string.documents))
-    Box(
-        modifier = Modifier.fillMaxWidth()
-            .border(
-                1.dp,
-                color = MaterialTheme.colorScheme.onBackground,
-                shape = RoundedCornerShape(5.dp)
-            )
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
-            .padding(5.dp)
-
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         FlowRow(modifier = Modifier.defaultMinSize(minHeight = 125.dp)) {
             property.value.documents.forEach { item ->
-                OneDocument(item, openPdf = { openPdf(it)})
+                OneDocument(item, openPdf = { openPdf(it) })
             }
         }
     }
