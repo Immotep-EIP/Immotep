@@ -66,6 +66,17 @@ func registerAPIRoutes(r *gin.Engine, test bool) {
 	}
 }
 
+func registerValidators() {
+	v, ok := binding.Validator.Engine().(*validator.Validate)
+	if !ok {
+		panic("Could not register validator")
+	}
+	_ = v.RegisterValidation("priority", validators.Priority)
+	_ = v.RegisterValidation("reportType", validators.Type)
+	_ = v.RegisterValidation("state", validators.State)
+	_ = v.RegisterValidation("cleanliness", validators.Cleanliness)
+}
+
 func Routes() *gin.Engine {
 	rate := limiter.Rate{
 		Period: 1 * time.Hour,
@@ -101,14 +112,7 @@ func Routes() *gin.Engine {
 	r.Use(gin.CustomRecovery(middlewares.PanicRecovery))
 	r.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), rate)))
 
-	v, ok := binding.Validator.Engine().(*validator.Validate)
-	if !ok {
-		panic("Could not register validator")
-	}
-	_ = v.RegisterValidation("priority", validators.Priority)
-	_ = v.RegisterValidation("reportType", validators.Type)
-	_ = v.RegisterValidation("state", validators.State)
-	_ = v.RegisterValidation("cleanliness", validators.Cleanliness)
+	registerValidators()
 
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -120,6 +124,7 @@ func Routes() *gin.Engine {
 func TestRoutes() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
+	registerValidators()
 	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
 	registerAPIRoutes(r, true)
 	return r

@@ -29,7 +29,7 @@ type DamageOwnerUpdateRequest struct {
 type DamageTenantUpdateRequest struct {
 	Comment     *string      `json:"comment,omitempty"`
 	Priority    *db.Priority `json:"priority,omitempty"`
-	AddPictures []string     `json:"add_pictures,omitempty"`
+	AddPictures []string     `binding:"dive,required,base64" json:"add_pictures,omitempty"`
 }
 
 type DamageResponse struct {
