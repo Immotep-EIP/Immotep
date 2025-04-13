@@ -2,7 +2,7 @@ package com.example.immotep
 
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.InviteInput
-import com.example.immotep.apiCallerServices.TenantCallerService
+import com.example.immotep.apiCallerServices.InviteTenantCallerService
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.mockApi.fakeInventoryReport
 import com.example.immotep.apiClient.mockApi.fakeInviteOutput
@@ -37,7 +37,7 @@ class InviteTenantViewModelTest {
     private lateinit var viewModel: InviteTenantViewModel
     private val apiService: ApiService = mockk(relaxed = true)
     private val navController: NavController = mockk(relaxed = true)
-    private val callerService: TenantCallerService = mockk(relaxed = true)
+    private val callerService: InviteTenantCallerService = mockk(relaxed = true)
     private val testDispatcher = StandardTestDispatcher()
 
     @Before

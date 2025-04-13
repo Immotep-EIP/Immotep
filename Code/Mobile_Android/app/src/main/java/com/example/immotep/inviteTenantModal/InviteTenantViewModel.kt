@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.InviteInput
-import com.example.immotep.apiCallerServices.TenantCallerService
+import com.example.immotep.apiCallerServices.InviteTenantCallerService
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.utils.RegexUtils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +37,7 @@ class InviteTenantViewModel(
     apiService: ApiService,
     navController: NavController
 ) : ViewModel() {
-    private val callerService = TenantCallerService(apiService, navController)
+    private val callerService = InviteTenantCallerService(apiService, navController)
     private val _invitationForm = MutableStateFlow(InviteTenantInputForm())
     private val _invitationFormError = MutableStateFlow(InviteTenantInputFormError())
 
@@ -80,19 +80,23 @@ class InviteTenantViewModel(
     fun inviteTenant(
         close : () -> Unit,
         propertyId : String, onError : () -> Unit,
-        onSubmit: (email: String, startDate: Long, endDate: Long) -> Unit
+        onSubmit: (email: String, startDate: Long, endDate: Long) -> Unit,
+        setIsLoading: (Boolean) -> Unit
     ) {
         if (!inviteTenantValidator()) {
             return
         }
         viewModelScope.launch {
             try {
+                setIsLoading(true)
                 close()
                 callerService.invite(propertyId, _invitationForm.value.toInviteInput(), onError)
                 onSubmit(_invitationForm.value.email, _invitationForm.value.startDate, _invitationForm.value.endDate)
                 reset()
             } catch(e: Exception) {
                 println(e)
+            } finally {
+                setIsLoading(false)
             }
         }
     }

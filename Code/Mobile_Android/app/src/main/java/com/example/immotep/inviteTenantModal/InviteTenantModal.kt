@@ -31,7 +31,8 @@ fun InviteTenantModal(
     close: () -> Unit,
     navController: NavController,
     propertyId : String,
-    onSubmit: (email: String, startDate: Long, endDate: Long) -> Unit
+    onSubmit: (email: String, startDate: Long, endDate: Long) -> Unit,
+    setIsLoading: (Boolean) -> Unit
 ) {
     val apiService = LocalApiService.current
     val viewModel: InviteTenantViewModel = viewModel {
@@ -76,7 +77,8 @@ fun InviteTenantModal(
                 close = close,
                 propertyId = propertyId,
                 onError = { Toast.makeText(navController.context, inviteTenantApiError, Toast.LENGTH_LONG).show() },
-                onSubmit = onSubmit
+                onSubmit = onSubmit,
+                setIsLoading = setIsLoading
             ) },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
             modifier = Modifier

@@ -1,5 +1,6 @@
 package com.example.immotep.apiClient
 
+import androidx.annotation.Nullable
 import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
@@ -18,7 +19,10 @@ import com.example.immotep.authService.LoginResponse
 import com.example.immotep.authService.RegistrationInput
 import com.example.immotep.authService.RegistrationResponse
 import com.example.immotep.inventory.InventoryReportOutput
+import okhttp3.Response
+import okhttp3.ResponseBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -33,7 +37,7 @@ data class AddRoomInput(
     val name : String,
 )
 
-const val API_PREFIX = "/api/v1"
+const val API_PREFIX = "/v1"
 
 interface ApiService {
 
@@ -159,7 +163,13 @@ interface ApiService {
         @Body summarizeInput: AiCallInput
     ) : AiCallOutput
 
-    //tenant functions
+    //invitation tenant functions
+    @DELETE("${API_PREFIX}/owner/properties/{propertyId}/cancel-invite")
+    suspend fun cancelTenantInvitation(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+    ) : retrofit2.Response<Unit>
+
     @POST("${API_PREFIX}/owner/properties/{propertyId}/send-invite")
     suspend fun inviteTenant(
         @Header("Authorization") authHeader : String,

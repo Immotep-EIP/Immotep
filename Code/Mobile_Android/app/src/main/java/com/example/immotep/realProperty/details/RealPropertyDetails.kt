@@ -158,7 +158,9 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
                             name = stringResource(R.string.cancel_invitation),
                             onClick = cancelInvitation,
                             disabled = cancelInvitation == null,
-                            closeDropDown = { expanded = false }
+                            closeDropDown = {
+                                expanded = false
+                            }
 
                         )
                         RealPropertyDropDownMenuItem(
@@ -230,7 +232,8 @@ fun RealPropertyDetailsScreen(
         close = { inviteTenantOpen = false },
         navController = navController,
         propertyId = newProperty.id,
-        onSubmit = {email, startDate, endDate -> viewModel.onSubmitInviteTenant(email, startDate, endDate) }
+        onSubmit = {email, startDate, endDate -> viewModel.onSubmitInviteTenant(email, startDate, endDate) },
+        setIsLoading = { viewModel.setIsLoading(it) }
     )
     if (isLoading.value) {
         InternalLoading()
@@ -243,7 +246,9 @@ fun RealPropertyDetailsScreen(
                 property,
                 openAddTenant = if (property.value.status == PropertyStatus.available) { {inviteTenantOpen = true} } else null ,
                 endLease = if (property.value.status == PropertyStatus.unavailable) { {} } else null,
-                cancelInvitation = if (property.value.status == PropertyStatus.invite_sent) { {} } else null,
+                cancelInvitation = if (property.value.status == PropertyStatus.invite_sent) {
+                    { viewModel.onCancelInviteTenant() }
+                } else null,
                 openEdit = { editOpen = true },
                 openDelete = { }
             )

@@ -1,5 +1,6 @@
 package com.example.immotep.apiClient.mockApi
 
+import androidx.annotation.Nullable
 import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
@@ -22,6 +23,8 @@ import com.example.immotep.authService.RegistrationResponse
 import com.example.immotep.inventory.Cleanliness
 import com.example.immotep.inventory.InventoryReportOutput
 import com.example.immotep.inventory.State
+import okhttp3.Response
+import okhttp3.ResponseBody
 
 
 class MockedApiService : ApiService {
@@ -176,13 +179,17 @@ class MockedApiService : ApiService {
         return fakeAiCallOutput
     }
 
-    //tenant functions
+    //invite tenant functions
     override suspend fun inviteTenant(
         authHeader : String,
         propertyId: String,
         invite: InviteInput
     ) : InviteOutput {
         return fakeInviteOutput
+    }
+    //tenant functions
+    override suspend fun cancelTenantInvitation(authHeader: String, propertyId: String): retrofit2.Response<Unit> {
+        return retrofit2.Response.success(Unit)
     }
 
     override suspend fun updateProfile(authHeader : String, profileUpdateInput: ProfileUpdateInput) : ProfileResponse {

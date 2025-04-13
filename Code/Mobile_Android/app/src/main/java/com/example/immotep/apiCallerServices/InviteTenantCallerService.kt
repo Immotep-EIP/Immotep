@@ -1,7 +1,9 @@
 package com.example.immotep.apiCallerServices
 
 import androidx.navigation.NavController
+import coil.network.HttpException
 import com.example.immotep.apiClient.ApiService
+import java.io.IOException
 
 //tenant input data classes
 
@@ -22,7 +24,7 @@ data class InviteOutput(
     val created_at: String
 )
 
-class TenantCallerService(
+class InviteTenantCallerService(
     apiService: ApiService,
     navController: NavController
 ) : ApiCallerService(apiService, navController) {
@@ -32,6 +34,14 @@ class TenantCallerService(
             return this.apiService.inviteTenant(this.getBearerToken(), propertyId, inviteInput)
         } catch (e: Exception) {
             onError()
+            throw e
+        }
+    }
+
+    suspend fun cancelInvite(propertyId: String) {
+        try {
+            this.apiService.cancelTenantInvitation(this.getBearerToken(), propertyId)
+        } catch (e: Exception) {
             throw e
         }
     }

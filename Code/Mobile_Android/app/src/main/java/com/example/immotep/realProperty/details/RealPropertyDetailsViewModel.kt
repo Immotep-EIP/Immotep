@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.InviteTenantCallerService
 import com.example.immotep.apiCallerServices.PropertyStatus
 import com.example.immotep.apiCallerServices.RealPropertyCallerService
 import com.example.immotep.apiClient.ApiClient
@@ -36,6 +37,7 @@ class RealPropertyDetailsViewModel(
         NONE
     }
     private val apiCaller = RealPropertyCallerService(apiService, navController)
+    private val inviteApiCaller = InviteTenantCallerService(apiService, navController)
     private var _property = MutableStateFlow(DetailedProperty())
     private val _apiError = MutableStateFlow(ApiErrors.NONE)
     private val _isLoading = MutableStateFlow(false)
@@ -43,6 +45,10 @@ class RealPropertyDetailsViewModel(
     val property: StateFlow<DetailedProperty> = _property.asStateFlow()
     val apiError = _apiError.asStateFlow()
     val isLoading = _isLoading.asStateFlow()
+
+    fun setIsLoading(value : Boolean) {
+        _isLoading.value = value
+    }
 
     fun loadProperty(newProperty: DetailedProperty) {
         _isLoading.value = true
@@ -93,5 +99,25 @@ class RealPropertyDetailsViewModel(
             endDate = OffsetDateTime.ofInstant(Instant.ofEpochMilli(endDate), ZoneOffset.UTC),
             status = PropertyStatus.invite_sent
         )
+    }
+
+    fun onCancelInviteTenant() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                inviteApiCaller.cancelInvite(_property.value.id)
+                _property.value = _property.value.copy(
+                    tenant = null,
+                    startDate = null,
+                    endDate = null,
+                    status = PropertyStatus.available
+                )
+            } catch (e : Exception) {
+                println(e.message)
+                _apiError.value = ApiErrors.UPDATE_PROPERTY
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 }
