@@ -14,6 +14,7 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
 	"immotep/backend/services"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -29,34 +30,20 @@ func BuildTestRoom(id string, propertyId string) db.RoomModel {
 }
 
 func TestCreateRoom(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	room := BuildTestRoom("1", "1")
-	mock.Room.Expect(
-		client.Client.Room.CreateOne(
-			db.Room.Name.Set(room.Name),
-			db.Room.Property.Link(db.Property.ID.Equals(property.ID)),
-		),
-	).Returns(room)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockCreateRoom(c, room)).Returns(room)
 
 	b, err := json.Marshal(room)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/rooms/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/rooms/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -70,19 +57,11 @@ func TestCreateRoom(t *testing.T) {
 }
 
 func TestCreateRoom_MissingFields(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	room := BuildTestRoom("1", "1")
 	room.Name = ""
@@ -91,7 +70,7 @@ func TestCreateRoom_MissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/rooms/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/rooms/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -105,27 +84,13 @@ func TestCreateRoom_MissingFields(t *testing.T) {
 }
 
 func TestCreateRoom_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	room := BuildTestRoom("1", "1")
-	mock.Room.Expect(
-		client.Client.Room.CreateOne(
-			db.Room.Name.Set(room.Name),
-			db.Room.Property.Link(db.Property.ID.Equals(property.ID)),
-		),
-	).Errors(&protocol.UserFacingError{
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockCreateRoom(c, room)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference#p2002
 		Meta: protocol.Meta{
@@ -139,7 +104,7 @@ func TestCreateRoom_AlreadyExists(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/rooms/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/rooms/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -153,34 +118,20 @@ func TestCreateRoom_AlreadyExists(t *testing.T) {
 }
 
 func TestGetRoomsByProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	rooms := []db.RoomModel{
 		BuildTestRoom("1", "1"),
 		BuildTestRoom("2", "1"),
 	}
-	mock.Room.Expect(
-		client.Client.Room.FindMany(
-			db.Room.PropertyID.Equals("1"),
-			db.Room.Archived.Equals(false),
-		),
-	).ReturnsMany(rooms)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomsByPropertyID(c, false)).ReturnsMany(rooms)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -194,22 +145,14 @@ func TestGetRoomsByProperty(t *testing.T) {
 }
 
 func TestGetRoomsByProperty_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals("1"),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -222,30 +165,17 @@ func TestGetRoomsByProperty_PropertyNotFound(t *testing.T) {
 }
 
 func TestGetRoomByID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	room := BuildTestRoom("1", "1")
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals(room.ID),
-		),
-	).Returns(room)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomByID(c)).Returns(room)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -258,29 +188,16 @@ func TestGetRoomByID(t *testing.T) {
 }
 
 func TestGetRoomByID_RoomNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals("1"),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -293,30 +210,17 @@ func TestGetRoomByID_RoomNotFound(t *testing.T) {
 }
 
 func TestGetRoomByID_WrongProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	room := BuildTestRoom("1", "2")
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals(room.ID),
-		),
-	).Returns(room)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomByID(c)).Returns(room)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -329,22 +233,14 @@ func TestGetRoomByID_WrongProperty(t *testing.T) {
 }
 
 func TestGetRoomByID_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals("1"),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -357,43 +253,23 @@ func TestGetRoomByID_PropertyNotFound(t *testing.T) {
 }
 
 func TestArchiveRoom(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	room := BuildTestRoom("1", "1")
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals(room.ID),
-		),
-	).Returns(room)
-
 	updatedRoom := room
 	updatedRoom.Archived = true
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals(room.ID),
-		).Update(
-			db.Room.Archived.Set(true),
-		),
-	).Returns(updatedRoom)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomByID(c)).Returns(room)
+	m.Room.Expect(database.MockArchiveRoom(c)).Returns(updatedRoom)
 
 	b, err := json.Marshal(map[string]bool{"archive": true})
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/archive/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/rooms/1/archive/", bytes.NewReader(b))
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -407,30 +283,16 @@ func TestArchiveRoom(t *testing.T) {
 }
 
 func TestArchiveRoom_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	room := BuildTestRoom("1", "1")
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals(room.ID),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/rooms/1/archive/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/rooms/1/archive/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -443,34 +305,20 @@ func TestArchiveRoom_NotFound(t *testing.T) {
 }
 
 func TestGetArchivedRoomsByProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	rooms := []db.RoomModel{
 		BuildTestRoom("1", "1"),
 		BuildTestRoom("2", "1"),
 	}
-	mock.Room.Expect(
-		client.Client.Room.FindMany(
-			db.Room.PropertyID.Equals("1"),
-			db.Room.Archived.Equals(true),
-		),
-	).ReturnsMany(rooms)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomsByPropertyID(c, true)).ReturnsMany(rooms)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/archived/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -484,22 +332,14 @@ func TestGetArchivedRoomsByProperty(t *testing.T) {
 }
 
 func TestGetArchivedRoomsByProperty_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals("1"),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	m.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/rooms/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/archived/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

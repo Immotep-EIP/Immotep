@@ -14,6 +14,7 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
 	"immotep/backend/services"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -31,18 +32,16 @@ func BuildTestUser(id string) db.UserModel {
 }
 
 func TestGetAllUsers(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindMany(),
-	).ReturnsMany([]db.UserModel{user})
+	m.User.Expect(database.MockGetAllUsers(c)).ReturnsMany([]db.UserModel{user})
 
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/users/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -53,18 +52,15 @@ func TestGetAllUsers(t *testing.T) {
 }
 
 func TestGetUserByID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/"+user.ID+"/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/1/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -75,17 +71,14 @@ func TestGetUserByID(t *testing.T) {
 }
 
 func TestGetUserByID_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals("nonexistent")),
-	).Errors(db.ErrNotFound)
+	m.User.Expect(database.MockGetUserByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/nonexistent/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/1/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -96,18 +89,15 @@ func TestGetUserByID_NotFound(t *testing.T) {
 }
 
 func TestGetProfile(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -120,18 +110,15 @@ func TestGetProfile(t *testing.T) {
 }
 
 func TestGetProfile_UserNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals("nonexistent")),
-	).Errors(db.ErrNotFound)
+	m.User.Expect(database.MockGetUserByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/", nil)
-	req.Header.Set("Oauth.claims.id", "nonexistent")
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
 
@@ -143,24 +130,18 @@ func TestGetProfile_UserNotFound(t *testing.T) {
 }
 
 func TestGetUserProfilePicture(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
 	image := BuildTestImage("1", "b3Vp")
 	user.InnerUser.ProfilePictureID = &image.ID
-
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals(image.ID)),
-	).Returns(image)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.Image.Expect(database.MockGetImageByID(c)).Returns(image)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/"+user.ID+"/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/1/picture/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -171,36 +152,30 @@ func TestGetUserProfilePicture(t *testing.T) {
 }
 
 func TestGetUserProfilePicture_NoContent(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 
 	r := router.TestRoutes()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/"+user.ID+"/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/1/picture/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNoContent, w.Code)
 }
 
 func TestGetUserProfilePicture_UserNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals("nonexistent")),
-	).Errors(db.ErrNotFound)
+	m.User.Expect(database.MockGetUserByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/nonexistent/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/1/picture/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -211,24 +186,17 @@ func TestGetUserProfilePicture_UserNotFound(t *testing.T) {
 }
 
 func TestGetUserProfilePicture_ImageNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	user.InnerUser.ProfilePictureID = utils.Ptr("nonexistent")
-
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals("nonexistent")),
-	).Errors(db.ErrNotFound)
+	user.InnerUser.ProfilePictureID = utils.Ptr("1")
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.Image.Expect(database.MockGetImageByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/"+user.ID+"/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/user/1/picture/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -239,33 +207,24 @@ func TestGetUserProfilePicture_ImageNotFound(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfile(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
 	updatedUser := user
 	updatedUser.Firstname = "Updated"
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
-			db.User.Email.SetIfPresent(nil),
-			db.User.Firstname.SetIfPresent(&updatedUser.Firstname),
-			db.User.Lastname.SetIfPresent(nil),
-		),
-	).Returns(updatedUser)
-
 	reqBody := models.UserUpdateRequest{
 		Firstname: utils.Ptr("Updated"),
 	}
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.User.Expect(database.MockUpdateUser(c, reqBody)).Returns(updatedUser)
+
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -280,13 +239,10 @@ func TestUpdateCurrentUserProfile(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfile_UserNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals("nonexistent")),
-	).Errors(db.ErrNotFound)
-
+	m.User.Expect(database.MockGetUserByID(c)).Errors(db.ErrNotFound)
 	reqBody := models.UserUpdateRequest{
 		Firstname: utils.Ptr("Updated"),
 	}
@@ -295,9 +251,9 @@ func TestUpdateCurrentUserProfile_UserNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Oauth.claims.id", "nonexistent")
+	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
 
@@ -309,13 +265,11 @@ func TestUpdateCurrentUserProfile_UserNotFound(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfile_MissingFields(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 
 	reqBody := models.UserUpdateRequest{
 		Email: utils.Ptr(""),
@@ -325,7 +279,7 @@ func TestUpdateCurrentUserProfile_MissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -339,21 +293,15 @@ func TestUpdateCurrentUserProfile_MissingFields(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfile_EmailAlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
-			db.User.Email.SetIfPresent(utils.Ptr("existing@example.com")),
-			db.User.Firstname.SetIfPresent(nil),
-			db.User.Lastname.SetIfPresent(nil),
-		),
-	).Errors(&protocol.UserFacingError{
+	reqBody := models.UserUpdateRequest{
+		Email: utils.Ptr("existing@example.com"),
+	}
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.User.Expect(database.MockUpdateUser(c, reqBody)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference#p2002
 		Meta: protocol.Meta{
@@ -362,15 +310,12 @@ func TestUpdateCurrentUserProfile_EmailAlreadyExists(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	reqBody := models.UserUpdateRequest{
-		Email: utils.Ptr("existing@example.com"),
-	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -384,28 +329,16 @@ func TestUpdateCurrentUserProfile_EmailAlreadyExists(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfilePicture(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
 	image := BuildTestImage("1", "b3Vp")
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(image.Data),
-		),
-	).Returns(image)
-
 	updatedUser := user
 	updatedUser.InnerUser.ProfilePictureID = &image.ID
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
-			db.User.ProfilePicture.Link(db.Image.ID.Equals(image.ID)),
-		),
-	).Returns(updatedUser)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
+	m.User.Expect(database.MockUpdateUserPicture(c)).Returns(updatedUser)
 
 	reqBody := models.ImageRequest{
 		Data: "b3Vp",
@@ -415,7 +348,7 @@ func TestUpdateCurrentUserProfilePicture(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -430,12 +363,10 @@ func TestUpdateCurrentUserProfilePicture(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfilePicture_UserNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals("nonexistent")),
-	).Errors(db.ErrNotFound)
+	m.User.Expect(database.MockGetUserByID(c)).Errors(db.ErrNotFound)
 
 	reqBody := models.ImageRequest{
 		Data: "b3Vp",
@@ -445,9 +376,9 @@ func TestUpdateCurrentUserProfilePicture_UserNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Oauth.claims.id", "nonexistent")
+	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
 
@@ -459,13 +390,11 @@ func TestUpdateCurrentUserProfilePicture_UserNotFound(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfilePicture_MissingFields(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 
 	reqBody := models.ImageRequest{}
 	b, err := json.Marshal(reqBody)
@@ -473,7 +402,7 @@ func TestUpdateCurrentUserProfilePicture_MissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -487,13 +416,11 @@ func TestUpdateCurrentUserProfilePicture_MissingFields(t *testing.T) {
 }
 
 func TestUpdateCurrentUserProfilePicture_BadBase64String(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 
 	reqBody := models.ImageRequest{
 		Data: "invalid_base64",
@@ -503,7 +430,7 @@ func TestUpdateCurrentUserProfilePicture_BadBase64String(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/profile/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -517,24 +444,18 @@ func TestUpdateCurrentUserProfilePicture_BadBase64String(t *testing.T) {
 }
 
 func TestGetCurrentUserProfilePicture(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
 	image := BuildTestImage("1", "b3Vp")
 	user.InnerUser.ProfilePictureID = &image.ID
-
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals(image.ID)),
-	).Returns(image)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.Image.Expect(database.MockGetImageByID(c)).Returns(image)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -547,18 +468,15 @@ func TestGetCurrentUserProfilePicture(t *testing.T) {
 }
 
 func TestGetCurrentUserProfilePicture_NoContent(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -567,17 +485,15 @@ func TestGetCurrentUserProfilePicture_NoContent(t *testing.T) {
 }
 
 func TestGetCurrentUserProfilePicture_UserNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals("nonexistent")),
-	).Errors(db.ErrNotFound)
+	m.User.Expect(database.MockGetUserByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/picture/", nil)
-	req.Header.Set("Oauth.claims.id", "nonexistent")
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/picture/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
 
@@ -589,23 +505,17 @@ func TestGetCurrentUserProfilePicture_UserNotFound(t *testing.T) {
 }
 
 func TestGetCurrentUserProfilePicture_ImageNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	user.InnerUser.ProfilePictureID = utils.Ptr("nonexistent")
-
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.ID.Equals(user.ID)),
-	).Returns(user)
-
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals("nonexistent")),
-	).Errors(db.ErrNotFound)
+	user.InnerUser.ProfilePictureID = utils.Ptr("1")
+	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
+	m.Image.Expect(database.MockGetImageByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/profile/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/profile/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

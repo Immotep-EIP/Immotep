@@ -19,7 +19,7 @@ import (
 //	@contact.email	martin.d-herouville@epitech.eu
 
 //	@host		localhost:3001
-//	@BasePath	/api/v1
+//	@BasePath	/v1
 
 //	@securityDefinitions.apikey	Bearer
 //	@in							header

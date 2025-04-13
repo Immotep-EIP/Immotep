@@ -11,23 +11,23 @@ import (
 	"immotep/backend/services/database"
 )
 
-func TestCreateRoom(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	room := db.RoomModel{
+func BuildTestRoom(id string) db.RoomModel {
+	return db.RoomModel{
 		InnerRoom: db.InnerRoom{
-			ID:   "1",
+			ID:   id,
 			Name: "Test Room",
 		},
 	}
+}
 
-	mock.Room.Expect(
-		client.Client.Room.CreateOne(
-			db.Room.Name.Set(room.Name),
-			db.Room.Property.Link(db.Property.ID.Equals("1")),
-		),
-	).Returns(room)
+// #############################################################################
+
+func TestCreateRoom(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	room := BuildTestRoom("1")
+	m.Room.Expect(database.MockCreateRoom(c, room)).Returns(room)
 
 	newRoom := database.CreateRoom(room, "1")
 	assert.NotNil(t, newRoom)
@@ -35,22 +35,11 @@ func TestCreateRoom(t *testing.T) {
 }
 
 func TestCreateRoom_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	room := db.RoomModel{
-		InnerRoom: db.InnerRoom{
-			ID:   "1",
-			Name: "Test Room",
-		},
-	}
-
-	mock.Room.Expect(
-		client.Client.Room.CreateOne(
-			db.Room.Name.Set(room.Name),
-			db.Room.Property.Link(db.Property.ID.Equals("1")),
-		),
-	).Errors(&protocol.UserFacingError{
+	room := BuildTestRoom("1")
+	m.Room.Expect(database.MockCreateRoom(c, room)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference
 		Meta: protocol.Meta{
@@ -64,105 +53,62 @@ func TestCreateRoom_AlreadyExists(t *testing.T) {
 }
 
 func TestCreateRoom_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	room := db.RoomModel{
-		InnerRoom: db.InnerRoom{
-			ID:   "1",
-			Name: "Test Room",
-		},
-	}
-
-	mock.Room.Expect(
-		client.Client.Room.CreateOne(
-			db.Room.Name.Set(room.Name),
-			db.Room.Property.Link(db.Property.ID.Equals("1")),
-		),
-	).Errors(errors.New("connection failed"))
+	room := BuildTestRoom("1")
+	m.Room.Expect(database.MockCreateRoom(c, room)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.CreateRoom(room, "1")
 	})
 }
 
+// #############################################################################
+
 func TestGetRoomByPropertyID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	room1 := db.RoomModel{
-		InnerRoom: db.InnerRoom{
-			ID:   "1",
-			Name: "Test Room 1",
-		},
-	}
-	room2 := db.RoomModel{
-		InnerRoom: db.InnerRoom{
-			ID:   "2",
-			Name: "Test Room 2",
-		},
-	}
+	room1 := BuildTestRoom("1")
+	room2 := BuildTestRoom("2")
+	m.Room.Expect(database.MockGetRoomsByPropertyID(c, false)).ReturnsMany([]db.RoomModel{room1, room2})
 
-	mock.Room.Expect(
-		client.Client.Room.FindMany(
-			db.Room.PropertyID.Equals("1"),
-			db.Room.Archived.Equals(false),
-		),
-	).ReturnsMany([]db.RoomModel{room1, room2})
-
-	rooms := database.GetRoomByPropertyID("1", false)
+	rooms := database.GetRoomsByPropertyID("1", false)
 	assert.Len(t, rooms, 2)
 	assert.Equal(t, room1.ID, rooms[0].ID)
 	assert.Equal(t, room2.ID, rooms[1].ID)
 }
 
 func TestGetRoomByPropertyID_NoRooms(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Room.Expect(
-		client.Client.Room.FindMany(
-			db.Room.PropertyID.Equals("1"),
-			db.Room.Archived.Equals(false),
-		),
-	).ReturnsMany([]db.RoomModel{})
+	m.Room.Expect(database.MockGetRoomsByPropertyID(c, false)).ReturnsMany([]db.RoomModel{})
 
-	rooms := database.GetRoomByPropertyID("1", false)
+	rooms := database.GetRoomsByPropertyID("1", false)
 	assert.Empty(t, rooms)
 }
 
 func TestGetRoomByPropertyID_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Room.Expect(
-		client.Client.Room.FindMany(
-			db.Room.PropertyID.Equals("1"),
-			db.Room.Archived.Equals(false),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Room.Expect(database.MockGetRoomsByPropertyID(c, false)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetRoomByPropertyID("1", false)
+		database.GetRoomsByPropertyID("1", false)
 	})
 }
 
+// #############################################################################
+
 func TestGetRoomByID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	room := db.RoomModel{
-		InnerRoom: db.InnerRoom{
-			ID:   "1",
-			Name: "Test Room",
-		},
-	}
-
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals("1"),
-		),
-	).Returns(room)
+	room := BuildTestRoom("1")
+	m.Room.Expect(database.MockGetRoomByID(c)).Returns(room)
 
 	foundRoom := database.GetRoomByID("1")
 	assert.NotNil(t, foundRoom)
@@ -170,53 +116,35 @@ func TestGetRoomByID(t *testing.T) {
 }
 
 func TestGetRoomByID_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals("1"),
-		),
-	).Errors(db.ErrNotFound)
+	m.Room.Expect(database.MockGetRoomByID(c)).Errors(db.ErrNotFound)
 
 	foundRoom := database.GetRoomByID("1")
 	assert.Nil(t, foundRoom)
 }
 
 func TestGetRoomByID_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals("1"),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Room.Expect(database.MockGetRoomByID(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.GetRoomByID("1")
 	})
 }
 
+// #############################################################################
+
 func TestArchiveRoom(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	room := db.RoomModel{
-		InnerRoom: db.InnerRoom{
-			ID:       "1",
-			Name:     "Test Room",
-			Archived: true,
-		},
-	}
-
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals("1"),
-		).Update(
-			db.Room.Archived.Set(true),
-		),
-	).Returns(room)
+	room := BuildTestRoom("1")
+	room.Archived = true
+	m.Room.Expect(database.MockArchiveRoom(c)).Returns(room)
 
 	archivedRoom := database.ToggleArchiveRoom("1", true)
 	assert.NotNil(t, archivedRoom)
@@ -225,32 +153,20 @@ func TestArchiveRoom(t *testing.T) {
 }
 
 func TestArchiveRoom_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals("1"),
-		).Update(
-			db.Room.Archived.Set(true),
-		),
-	).Errors(db.ErrNotFound)
+	m.Room.Expect(database.MockArchiveRoom(c)).Errors(db.ErrNotFound)
 
 	archivedRoom := database.ToggleArchiveRoom("1", true)
 	assert.Nil(t, archivedRoom)
 }
 
 func TestArchiveRoom_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Room.Expect(
-		client.Client.Room.FindUnique(
-			db.Room.ID.Equals("1"),
-		).Update(
-			db.Room.Archived.Set(true),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Room.Expect(database.MockArchiveRoom(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.ToggleArchiveRoom("1", true)

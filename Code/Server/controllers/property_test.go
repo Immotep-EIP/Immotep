@@ -15,6 +15,7 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/router"
 	"immotep/backend/services"
+	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
 
@@ -37,9 +38,27 @@ func BuildTestProperty(id string) db.PropertyModel {
 			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages:         []db.DamageModel{{}},
-			Contracts:       []db.ContractModel{{}},
-			PendingContract: &db.PendingContractModel{},
+			Leases: []db.LeaseModel{{
+				InnerLease: db.InnerLease{
+					ID:     "1",
+					Active: true,
+				},
+				RelationsLease: db.RelationsLease{
+					Tenant: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Test",
+						},
+					},
+					Damages: []db.DamageModel{{
+						InnerDamage: db.InnerDamage{
+							ID:      "1",
+							FixedAt: nil,
+						}},
+					},
+				},
+			}},
+			LeaseInvite: &db.LeaseInviteModel{},
 		},
 	}
 }
@@ -62,8 +81,27 @@ func BuildTestPropertyWithInventory(id string) db.PropertyModel {
 			Archived:            false,
 		},
 		RelationsProperty: db.RelationsProperty{
-			Damages:   []db.DamageModel{{}},
-			Contracts: []db.ContractModel{{}},
+			Leases: []db.LeaseModel{{
+				InnerLease: db.InnerLease{
+					ID:     "1",
+					Active: true,
+				},
+				RelationsLease: db.RelationsLease{
+					Tenant: &db.UserModel{
+						InnerUser: db.InnerUser{
+							Firstname: "Test",
+							Lastname:  "Test",
+						},
+					},
+					Damages: []db.DamageModel{{
+						InnerDamage: db.InnerDamage{
+							ID:      "1",
+							FixedAt: nil,
+						}},
+					},
+				},
+			}},
+			LeaseInvite: &db.LeaseInviteModel{},
 			Rooms: []db.RoomModel{
 				{
 					InnerRoom: db.InnerRoom{
@@ -81,17 +119,17 @@ func BuildTestPropertyWithInventory(id string) db.PropertyModel {
 	}
 }
 
-func BuildTestPendingContract() db.PendingContractModel {
-	return db.PendingContractModel{
-		InnerPendingContract: db.InnerPendingContract{
+func BuildTestLeaseInvite() db.LeaseInviteModel {
+	return db.LeaseInviteModel{
+		InnerLeaseInvite: db.InnerLeaseInvite{
 			ID:          "1",
 			PropertyID:  "1",
-			TenantEmail: "test.test@example.com",
+			TenantEmail: "test@example.com",
 			CreatedAt:   time.Now(),
 			StartDate:   time.Now(),
 			EndDate:     utils.Ptr(time.Now().Add(time.Hour)),
 		},
-		RelationsPendingContract: db.RelationsPendingContract{
+		RelationsLeaseInvite: db.RelationsLeaseInvite{
 			Property: &db.PropertyModel{
 				RelationsProperty: db.RelationsProperty{
 					Owner: &db.UserModel{
@@ -106,40 +144,16 @@ func BuildTestPendingContract() db.PendingContractModel {
 	}
 }
 
-func BuildTestContract() db.ContractModel {
-	return db.ContractModel{
-		InnerContract: db.InnerContract{
-			ID:         "1",
-			PropertyID: "1",
-			TenantID:   "1",
-			Active:     true,
-			CreatedAt:  time.Now(),
-			StartDate:  time.Now(),
-			EndDate:    utils.Ptr(time.Now().Add(time.Hour)),
-		},
-	}
-}
-
 func TestGetAllProperties(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindMany(
-			db.Property.OwnerID.Equals("1"),
-			db.Property.Archived.Equals(false),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).ReturnsMany([]db.PropertyModel{property})
+	mock.Property.Expect(database.MockGetAllPropertyByOwnerId(c, false)).ReturnsMany([]db.PropertyModel{property})
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -152,22 +166,15 @@ func TestGetAllProperties(t *testing.T) {
 }
 
 func TestGetPropertyById(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -180,22 +187,14 @@ func TestGetPropertyById(t *testing.T) {
 }
 
 func TestGetPropertyById_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -208,22 +207,15 @@ func TestGetPropertyById_NotFound(t *testing.T) {
 }
 
 func TestGetPropertyById_NotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/", nil)
 	req.Header.Set("Oauth.claims.id", "2")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -236,36 +228,17 @@ func TestGetPropertyById_NotYours(t *testing.T) {
 }
 
 func TestGetPropertyInventory(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	propertyInv := BuildTestPropertyWithInventory("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(propertyInv.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-			db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
-		),
-	).Returns(propertyInv)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyInventory(c)).Returns(propertyInv)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/inventory/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -278,23 +251,14 @@ func TestGetPropertyInventory(t *testing.T) {
 }
 
 func TestGetPropertyInventory_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals("wrong"),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/wrong/inventory/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -307,24 +271,15 @@ func TestGetPropertyInventory_NotFound(t *testing.T) {
 }
 
 func TestGetPropertyInventory_NotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/inventory/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/inventory/", nil)
 	req.Header.Set("Oauth.claims.id", "2")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -337,36 +292,18 @@ func TestGetPropertyInventory_NotYours(t *testing.T) {
 }
 
 func TestCreateProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.CreateOne(
-			db.Property.Name.Set(property.Name),
-			db.Property.Address.Set(property.Address),
-			db.Property.City.Set(property.City),
-			db.Property.PostalCode.Set(property.PostalCode),
-			db.Property.Country.Set(property.Country),
-			db.Property.AreaSqm.Set(property.AreaSqm),
-			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
-			db.Property.DepositPrice.Set(property.DepositPrice),
-			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch(),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockCreateProperty(c, property)).Returns(property)
 
 	b, err := json.Marshal(property)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -386,9 +323,8 @@ func TestCreateProperty_MissingFields(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -402,28 +338,11 @@ func TestCreateProperty_MissingFields(t *testing.T) {
 }
 
 func TestCreateProperty_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.CreateOne(
-			db.Property.Name.Set(property.Name),
-			db.Property.Address.Set(property.Address),
-			db.Property.City.Set(property.City),
-			db.Property.PostalCode.Set(property.PostalCode),
-			db.Property.Country.Set(property.Country),
-			db.Property.AreaSqm.Set(property.AreaSqm),
-			db.Property.RentalPricePerMonth.Set(property.RentalPricePerMonth),
-			db.Property.DepositPrice.Set(property.DepositPrice),
-			db.Property.Owner.Link(db.User.ID.Equals("1")),
-			db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch(),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(&protocol.UserFacingError{
+	mock.Property.Expect(database.MockCreateProperty(c, property)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference#p2002
 		Meta: protocol.Meta{
@@ -436,9 +355,8 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -452,53 +370,27 @@ func TestCreateProperty_AlreadyExists(t *testing.T) {
 }
 
 func TestInviteTenant(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).Errors(db.ErrNotFound)
-
-	pendingContract := BuildTestPendingContract()
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.Email.Equals(pendingContract.TenantEmail)),
-	).Errors(db.ErrNotFound)
-
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.CreateOne(
-			db.PendingContract.TenantEmail.Set(pendingContract.TenantEmail),
-			db.PendingContract.StartDate.Set(pendingContract.StartDate),
-			db.PendingContract.Property.Link(db.Property.ID.Equals(property.ID)),
-			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
-		).With(
-			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Returns(pendingContract)
+	leaseInvite := BuildTestLeaseInvite()
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+	mock.User.Expect(database.MockGetUserByEmail(c)).Errors(db.ErrNotFound)
+	mock.LeaseInvite.Expect(database.MockCreateLeaseInvite(c, leaseInvite)).Returns(leaseInvite)
 
 	reqBody := models.InviteRequest{
-		TenantEmail: pendingContract.TenantEmail,
-		StartDate:   pendingContract.StartDate,
-		EndDate:     pendingContract.InnerPendingContract.EndDate,
+		TenantEmail: leaseInvite.TenantEmail,
+		StartDate:   leaseInvite.StartDate,
+		EndDate:     leaseInvite.InnerLeaseInvite.EndDate,
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -508,22 +400,21 @@ func TestInviteTenant(t *testing.T) {
 	var resp models.InviteResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
-	assert.JSONEq(t, resp.ID, pendingContract.ID)
+	assert.JSONEq(t, resp.ID, leaseInvite.ID)
 }
 
 func TestInviteTenant_MissingField(t *testing.T) {
-	pendingContract := BuildTestPendingContract()
+	leaseInvite := BuildTestLeaseInvite()
 	reqBody := models.InviteRequest{
-		StartDate: pendingContract.StartDate,
-		EndDate:   pendingContract.InnerPendingContract.EndDate,
+		StartDate: leaseInvite.StartDate,
+		EndDate:   leaseInvite.InnerLeaseInvite.EndDate,
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -537,31 +428,23 @@ func TestInviteTenant_MissingField(t *testing.T) {
 }
 
 func TestInviteTenant_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
-	pendingContract := BuildTestPendingContract()
-
+	leaseInvite := BuildTestLeaseInvite()
 	reqBody := models.InviteRequest{
-		TenantEmail: pendingContract.TenantEmail,
-		StartDate:   pendingContract.StartDate,
-		EndDate:     pendingContract.InnerPendingContract.EndDate,
+		TenantEmail: leaseInvite.TenantEmail,
+		StartDate:   leaseInvite.StartDate,
+		EndDate:     leaseInvite.InnerLeaseInvite.EndDate,
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/wrong/send-invite/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -575,32 +458,25 @@ func TestInviteTenant_PropertyNotFound(t *testing.T) {
 }
 
 func TestInviteTenant_PropertyNotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
-	pendingContract := BuildTestPendingContract()
+	leaseInvite := BuildTestLeaseInvite()
 
 	reqBody := models.InviteRequest{
-		TenantEmail: pendingContract.TenantEmail,
-		StartDate:   pendingContract.StartDate,
-		EndDate:     pendingContract.InnerPendingContract.EndDate,
+		TenantEmail: leaseInvite.TenantEmail,
+		StartDate:   leaseInvite.StartDate,
+		EndDate:     leaseInvite.InnerLeaseInvite.EndDate,
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "wrong")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -614,39 +490,26 @@ func TestInviteTenant_PropertyNotYours(t *testing.T) {
 }
 
 func TestInviteTenant_PropertyNotAvailable(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	lease := BuildTestLease("1")
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{lease})
 
-	contract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{contract})
-
-	pendingContract := BuildTestPendingContract()
+	leaseInvite := BuildTestLeaseInvite()
 	reqBody := models.InviteRequest{
-		TenantEmail: pendingContract.TenantEmail,
-		StartDate:   pendingContract.StartDate,
-		EndDate:     pendingContract.InnerPendingContract.EndDate,
+		TenantEmail: leaseInvite.TenantEmail,
+		StartDate:   leaseInvite.StartDate,
+		EndDate:     leaseInvite.InnerLeaseInvite.EndDate,
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -660,40 +523,15 @@ func TestInviteTenant_PropertyNotAvailable(t *testing.T) {
 }
 
 func TestInviteTenant_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).Errors(db.ErrNotFound)
-
-	pendingContract := BuildTestPendingContract()
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.Email.Equals(pendingContract.TenantEmail)),
-	).Errors(db.ErrNotFound)
-
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.CreateOne(
-			db.PendingContract.TenantEmail.Set(pendingContract.TenantEmail),
-			db.PendingContract.StartDate.Set(pendingContract.StartDate),
-			db.PendingContract.Property.Link(db.Property.ID.Equals(property.ID)),
-			db.PendingContract.EndDate.SetIfPresent(pendingContract.InnerPendingContract.EndDate),
-		).With(
-			db.PendingContract.Property.Fetch().With(db.Property.Owner.Fetch()),
-		),
-	).Errors(&protocol.UserFacingError{
+	leaseInvite := BuildTestLeaseInvite()
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+	mock.User.Expect(database.MockGetUserByEmail(c)).Errors(db.ErrNotFound)
+	mock.LeaseInvite.Expect(database.MockCreateLeaseInvite(c, leaseInvite)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference
 		Meta: protocol.Meta{
@@ -703,17 +541,16 @@ func TestInviteTenant_AlreadyExists(t *testing.T) {
 	})
 
 	reqBody := models.InviteRequest{
-		TenantEmail: pendingContract.TenantEmail,
-		StartDate:   pendingContract.StartDate,
-		EndDate:     pendingContract.InnerPendingContract.EndDate,
+		TenantEmail: leaseInvite.TenantEmail,
+		StartDate:   leaseInvite.StartDate,
+		EndDate:     leaseInvite.InnerLeaseInvite.EndDate,
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -727,43 +564,27 @@ func TestInviteTenant_AlreadyExists(t *testing.T) {
 }
 
 func TestInviteTenant_AlreadyExistsAsOwner(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).Errors(db.ErrNotFound)
-
-	pendingContract := BuildTestPendingContract()
+	leaseInvite := BuildTestLeaseInvite()
 	owner := BuildTestUser("1")
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.Email.Equals(pendingContract.TenantEmail)),
-	).Returns(owner)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+	mock.User.Expect(database.MockGetUserByEmail(c)).Returns(owner)
 
 	reqBody := models.InviteRequest{
-		TenantEmail: pendingContract.TenantEmail,
-		StartDate:   pendingContract.StartDate,
-		EndDate:     pendingContract.InnerPendingContract.EndDate,
+		TenantEmail: leaseInvite.TenantEmail,
+		StartDate:   leaseInvite.StartDate,
+		EndDate:     leaseInvite.InnerLeaseInvite.EndDate,
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -776,53 +597,31 @@ func TestInviteTenant_AlreadyExistsAsOwner(t *testing.T) {
 	assert.Equal(t, utils.UserAlreadyExistsAsOwner, resp.Code)
 }
 
-func TestInviteTenant_AlreadyHasContract(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+func TestInviteTenant_AlreadyHasLease(t *testing.T) {
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	contract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).Errors(db.ErrNotFound)
-
-	pendingContract := BuildTestPendingContract()
+	lease := BuildTestLease("1")
+	leaseInvite := BuildTestLeaseInvite()
 	user := BuildTestUser("1")
 	user.Role = db.RoleTenant
-	mock.User.Expect(
-		client.Client.User.FindUnique(db.User.Email.Equals(pendingContract.TenantEmail)),
-	).Returns(user)
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.TenantID.Equals("1"),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{contract})
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+	mock.User.Expect(database.MockGetUserByEmail(c)).Returns(user)
+	mock.Lease.Expect(database.MockGetCurrentActiveLeaseByTenant(c)).ReturnsMany([]db.LeaseModel{lease})
 
 	reqBody := models.InviteRequest{
-		TenantEmail: pendingContract.TenantEmail,
-		StartDate:   pendingContract.StartDate,
-		EndDate:     pendingContract.InnerPendingContract.EndDate,
+		TenantEmail: leaseInvite.TenantEmail,
+		StartDate:   leaseInvite.StartDate,
+		EndDate:     leaseInvite.InnerLeaseInvite.EndDate,
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPost, "/v1/owner/properties/1/send-invite/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -832,30 +631,21 @@ func TestInviteTenant_AlreadyHasContract(t *testing.T) {
 	var resp utils.Error
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
-	assert.Equal(t, utils.TenantAlreadyHasContract, resp.Code)
+	assert.Equal(t, utils.TenantAlreadyHasLease, resp.Code)
 }
 
 func TestGetPropertyPicture(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	image := BuildTestImage("1", "b3Vp")
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals(image.ID)),
-	).Returns(image)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Image.Expect(database.MockGetImageByID(c)).Returns(image)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -868,22 +658,16 @@ func TestGetPropertyPicture(t *testing.T) {
 }
 
 func TestGetPropertyPicture_NoContent(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 	property.InnerProperty.PictureID = nil
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -892,25 +676,16 @@ func TestGetPropertyPicture_NoContent(t *testing.T) {
 }
 
 func TestGetPropertyPicture_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals("1")),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Image.Expect(database.MockGetImageByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/1/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -923,20 +698,14 @@ func TestGetPropertyPicture_NotFound(t *testing.T) {
 }
 
 func TestGetPropertyPicture_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/wrong/picture/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/picture/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -949,34 +718,14 @@ func TestGetPropertyPicture_PropertyNotFound(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	image := BuildTestImage("1", "b3Vp")
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(image.Data),
-		),
-	).Returns(image)
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		).Update(
-			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
+	mock.Property.Expect(database.MockUpdatePropertyPicture(c)).Returns(property)
 
 	reqBody := models.ImageRequest{
 		Data: "b3Vp",
@@ -986,7 +735,7 @@ func TestUpdatePropertyPicture(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1000,17 +749,11 @@ func TestUpdatePropertyPicture(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_MissingFields(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	reqBody := models.ImageRequest{}
 	b, err := json.Marshal(reqBody)
@@ -1018,7 +761,7 @@ func TestUpdatePropertyPicture_MissingFields(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1032,17 +775,11 @@ func TestUpdatePropertyPicture_MissingFields(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_BadBase64String(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	reqBody := models.ImageRequest{
 		Data: "invalid_base64",
@@ -1052,7 +789,7 @@ func TestUpdatePropertyPicture_BadBase64String(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1066,16 +803,10 @@ func TestUpdatePropertyPicture_BadBase64String(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	reqBody := models.ImageRequest{
 		Data: "b3Vp",
@@ -1085,7 +816,7 @@ func TestUpdatePropertyPicture_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/wrong/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1099,34 +830,14 @@ func TestUpdatePropertyPicture_PropertyNotFound(t *testing.T) {
 }
 
 func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	image := BuildTestImage("1", "b3Vp")
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(image.Data),
-		),
-	).Returns(image)
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		).Update(
-			db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
+	mock.Property.Expect(database.MockUpdatePropertyPicture(c)).Errors(db.ErrNotFound)
 
 	reqBody := models.ImageRequest{
 		Data: "b3Vp",
@@ -1136,7 +847,7 @@ func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/picture/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/picture/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1149,184 +860,22 @@ func TestUpdatePropertyPicture_FailedLinkImage(t *testing.T) {
 	assert.Equal(t, utils.FailedLinkImage, resp.Code)
 }
 
-func TestEndContract1(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	contract := BuildTestContract()
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{contract})
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindUnique(
-			db.Contract.ID.Equals(contract.ID),
-		).Update(
-			db.Contract.Active.Set(false),
-			db.Contract.EndDate.SetIfPresent(nil),
-		),
-	).Returns(contract)
-
-	r := router.TestRoutes()
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/end-contract/", nil)
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusNoContent, w.Code)
-}
-
-func TestEndContract2(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	contract := BuildTestContract()
-	contract.InnerContract.EndDate = nil
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{contract})
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindUnique(
-			db.Contract.ID.Equals(contract.ID),
-		).Update(
-			db.Contract.Active.Set(false),
-			db.Contract.EndDate.SetIfPresent(utils.Ptr(time.Now().Truncate(time.Minute))),
-		),
-	).Returns(contract)
-
-	r := router.TestRoutes()
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/end-contract/", nil)
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusNoContent, w.Code)
-}
-
-func TestEndContract_NoActiveContract(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals(property.ID),
-			db.Contract.Active.Equals(true),
-		),
-	).Errors(db.ErrNotFound)
-
-	r := router.TestRoutes()
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/end-contract/", nil)
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusNotFound, w.Code)
-	var resp utils.Error
-	err := json.Unmarshal(w.Body.Bytes(), &resp)
-	require.NoError(t, err)
-	assert.Equal(t, utils.NoActiveContract, resp.Code)
-}
-
-func TestEndContract_PropertyNotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
-
-	r := router.TestRoutes()
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/wrong/end-contract/", nil)
-	req.Header.Set("Oauth.claims.id", "1")
-	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
-	r.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusNotFound, w.Code)
-	var resp utils.Error
-	err := json.Unmarshal(w.Body.Bytes(), &resp)
-	require.NoError(t, err)
-	assert.Equal(t, utils.PropertyNotFound, resp.Code)
-}
-
 func TestArchiveProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	updatedProperty := property
 	updatedProperty.Archived = true
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		).Update(
-			db.Property.Archived.Set(true),
-		),
-	).Returns(updatedProperty)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Property.Expect(database.MockArchiveProperty(c)).Returns(updatedProperty)
 
 	b, err := json.Marshal(map[string]bool{"archive": true})
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/archive/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/archive/", bytes.NewReader(b))
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1340,23 +889,14 @@ func TestArchiveProperty(t *testing.T) {
 }
 
 func TestArchiveProperty_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(
-			db.Property.ID.Equals(property.ID),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/archive/", nil)
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/archive/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1369,26 +909,16 @@ func TestArchiveProperty_NotFound(t *testing.T) {
 }
 
 func TestGetAllArchivedProperties(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
 	property.Archived = true
-	mock.Property.Expect(
-		client.Client.Property.FindMany(
-			db.Property.OwnerID.Equals("1"),
-			db.Property.Archived.Equals(true),
-		).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).ReturnsMany([]db.PropertyModel{property})
+	mock.Property.Expect(database.MockGetAllPropertyByOwnerId(c, true)).ReturnsMany([]db.PropertyModel{property})
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/owner/properties/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/archived/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1401,38 +931,12 @@ func TestGetAllArchivedProperties(t *testing.T) {
 }
 
 func TestUpdateProperty(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
 	updatedProperty := property
 	updatedProperty.Name = "Updated Test"
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		).Update(
-			db.Property.Name.SetIfPresent(&updatedProperty.Name),
-			db.Property.Address.SetIfPresent(&updatedProperty.Address),
-			db.Property.ApartmentNumber.SetIfPresent(updatedProperty.InnerProperty.ApartmentNumber),
-			db.Property.City.SetIfPresent(&updatedProperty.City),
-			db.Property.PostalCode.SetIfPresent(&updatedProperty.PostalCode),
-			db.Property.Country.SetIfPresent(&updatedProperty.Country),
-			db.Property.AreaSqm.SetIfPresent(&updatedProperty.AreaSqm),
-			db.Property.RentalPricePerMonth.SetIfPresent(&updatedProperty.RentalPricePerMonth),
-			db.Property.DepositPrice.SetIfPresent(&updatedProperty.DepositPrice),
-		),
-	).Returns(updatedProperty)
-
 	reqBody := models.PropertyUpdateRequest{
 		Name:                &updatedProperty.Name,
 		Address:             &updatedProperty.Address,
@@ -1444,12 +948,15 @@ func TestUpdateProperty(t *testing.T) {
 		RentalPricePerMonth: &updatedProperty.RentalPricePerMonth,
 		DepositPrice:        &updatedProperty.DepositPrice,
 	}
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.Property.Expect(database.MockUpdateProperty(c, reqBody)).Returns(updatedProperty)
+
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1464,16 +971,10 @@ func TestUpdateProperty(t *testing.T) {
 }
 
 func TestUpdateProperty_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals("wrong")).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
 
 	reqBody := models.PropertyUpdateRequest{
 		Name: utils.Ptr("Updated Test"),
@@ -1483,7 +984,7 @@ func TestUpdateProperty_NotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/wrong/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1497,17 +998,11 @@ func TestUpdateProperty_NotFound(t *testing.T) {
 }
 
 func TestUpdateProperty_NotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	reqBody := models.PropertyUpdateRequest{
 		Name: utils.Ptr("Updated Test"),
@@ -1517,7 +1012,7 @@ func TestUpdateProperty_NotYours(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/owner/properties/1/", bytes.NewReader(b))
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "wrong")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -1531,30 +1026,17 @@ func TestUpdateProperty_NotYours(t *testing.T) {
 }
 
 func TestCancelInvite(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals(property.ID)),
-	).Returns(BuildTestPendingContract())
-
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals(property.ID)).Delete(),
-	).Returns(BuildTestPendingContract())
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.LeaseInvite.Expect(database.MockGetCurrentLeaseInvite(c)).Returns(BuildTestLeaseInvite())
+	mock.LeaseInvite.Expect(database.MockDeleteCurrentLeaseInvite(c)).Returns(BuildTestLeaseInvite())
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/cancel-invite/", nil)
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/cancel-invite/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1563,22 +1045,15 @@ func TestCancelInvite(t *testing.T) {
 }
 
 func TestCancelInvite_PropertyNotYours(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/cancel-invite/", nil)
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/cancel-invite/", nil)
 	req.Header.Set("Oauth.claims.id", "wrong")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1590,27 +1065,17 @@ func TestCancelInvite_PropertyNotYours(t *testing.T) {
 	assert.Equal(t, utils.PropertyNotYours, resp.Code)
 }
 
-func TestCancelInvite_NoPendingContract(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+func TestCancelInvite_NoLeaseInvite(t *testing.T) {
+	c, mock, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	mock.Property.Expect(
-		client.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-			db.Property.Damages.Fetch(),
-			db.Property.Contracts.Fetch().With(db.Contract.Tenant.Fetch()),
-			db.Property.PendingContract.Fetch(),
-		),
-	).Returns(property)
-
-	mock.PendingContract.Expect(
-		client.Client.PendingContract.FindUnique(db.PendingContract.PropertyID.Equals(property.ID)),
-	).Errors(db.ErrNotFound)
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	mock.LeaseInvite.Expect(database.MockGetCurrentLeaseInvite(c)).Errors(db.ErrNotFound)
 
 	r := router.TestRoutes()
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/owner/properties/1/cancel-invite/", nil)
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/cancel-invite/", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -1619,5 +1084,5 @@ func TestCancelInvite_NoPendingContract(t *testing.T) {
 	var resp utils.Error
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
-	assert.Equal(t, utils.NoPendingContract, resp.Code)
+	assert.Equal(t, utils.NoLeaseInvite, resp.Code)
 }

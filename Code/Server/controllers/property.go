@@ -3,7 +3,6 @@ package controllers
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
@@ -13,11 +12,11 @@ import (
 	"immotep/backend/utils"
 )
 
-// GetAllProperties godoc
+// GetAllPropertiesByOwner godoc
 //
 //	@Summary		Get all properties of an owner
 //	@Description	Get all properties information of an owner
-//	@Tags			owner
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{array}		models.PropertyResponse	"List of properties"
@@ -25,17 +24,17 @@ import (
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/ [get]
-func GetAllProperties(c *gin.Context) {
+func GetAllPropertiesByOwner(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	allProperties := database.GetAllPropertyByOwnerId(claims["id"], false)
+	allProperties := database.GetPropertiesByOwnerId(claims["id"], false)
 	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
 }
 
-// GetAllArchivedProperties godoc
+// GetArchivedPropertiesByOwner godoc
 //
 //	@Summary		Get all archived properties of an owner
 //	@Description	Get all archived properties information of an owner
-//	@Tags			owner
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{array}		models.PropertyResponse	"List of archived properties"
@@ -43,20 +42,21 @@ func GetAllProperties(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/archived/ [get]
-func GetAllArchivedProperties(c *gin.Context) {
+func GetArchivedPropertiesByOwner(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	allProperties := database.GetAllPropertyByOwnerId(claims["id"], true)
+	allProperties := database.GetPropertiesByOwnerId(claims["id"], true)
 	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
 }
 
-// GetPropertyById godoc
+// GetProperty godoc
 //
 //	@Summary		Get property by ID
 //	@Description	Get property information by its ID
-//	@Tags			owner
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
+//	@Param			lease_id	path		string					true	"Lease ID or `current`"
 //	@Success		200			{object}	models.PropertyResponse	"Property data"
 //	@Failure		401			{object}	utils.Error				"Unauthorized"
 //	@Failure		403			{object}	utils.Error				"Property not yours"
@@ -64,19 +64,21 @@ func GetAllArchivedProperties(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/ [get]
-func GetPropertyById(c *gin.Context) {
-	property := database.GetPropertyByID(c.Param("property_id"))
-	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
+//	@Router			/tenant/leases/{lease_id}/property/ [get]
+func GetProperty(c *gin.Context) {
+	property, _ := c.MustGet("property").(db.PropertyModel)
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(property))
 }
 
 // GetPropertyInventory godoc
 //
 //	@Summary		Get property inventory by ID
 //	@Description	Get property information by its ID with inventory including rooms and furnitures
-//	@Tags			owner
+//	@Tags			property,inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string								true	"Property ID"
+//	@Param			lease_id	path		string								true	"Lease ID or `current`"
 //	@Success		200			{object}	models.PropertyInventoryResponse	"Property inventory data"
 //	@Failure		401			{object}	utils.Error							"Unauthorized"
 //	@Failure		403			{object}	utils.Error							"Property not yours"
@@ -84,16 +86,18 @@ func GetPropertyById(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory/ [get]
+//	@Router			/tenant/leases/{lease_id}/property/inventory/ [get]
 func GetPropertyInventory(c *gin.Context) {
-	property := database.GetPropertyInventory(c.Param("property_id"))
-	c.JSON(http.StatusOK, models.DbPropertyInventoryToResponse(*property))
+	property, _ := c.MustGet("property").(db.PropertyModel)
+	propertyInv := database.GetPropertyInventory(property.ID)
+	c.JSON(http.StatusOK, models.DbPropertyInventoryToResponse(*propertyInv))
 }
 
 // CreateProperty godoc
 //
 //	@Summary		Create a new property
 //	@Description	Create a new property for an owner
-//	@Tags			owner
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		models.PropertyRequest	true	"Property data"
@@ -125,7 +129,7 @@ func CreateProperty(c *gin.Context) {
 //
 //	@Summary		Update property by ID
 //	@Description	Update property information by its ID
-//	@Tags			owner
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
@@ -144,22 +148,24 @@ func UpdateProperty(c *gin.Context) {
 		return
 	}
 
-	property := database.UpdateProperty(c.Param("property_id"), req)
-	if property == nil {
+	property, _ := c.MustGet("property").(db.PropertyModel)
+	newProperty := database.UpdateProperty(property, req)
+	if newProperty == nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*newProperty))
 }
 
 // GetPropertyPicture godoc
 //
 //	@Summary		Get property's picture
 //	@Description	Get property's picture
-//	@Tags			owner
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
+//	@Param			lease_id	path		string					true	"Lease ID or `current`"
 //	@Success		201			{object}	models.ImageResponse	"Image data"
 //	@Success		204			"No picture associated"
 //	@Failure		401			{object}	utils.Error	"Unauthorized"
@@ -168,13 +174,15 @@ func UpdateProperty(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/picture/ [get]
+//	@Router			/tenant/leases/{lease_id}/property/picture/ [get]
 func GetPropertyPicture(c *gin.Context) {
-	property := database.GetPropertyByID(c.Param("property_id"))
+	property, _ := c.MustGet("property").(db.PropertyModel)
 	pictureId, ok := property.PictureID()
 	if !ok {
 		c.Status(http.StatusNoContent)
 		return
 	}
+
 	image := database.GetImageByID(pictureId)
 	if image == nil {
 		utils.SendError(c, http.StatusNotFound, utils.PropertyPictureNotFound, nil)
@@ -187,7 +195,7 @@ func GetPropertyPicture(c *gin.Context) {
 //
 //	@Summary		Update property's picture
 //	@Description	Update property's picture
-//	@Tags			owner
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
@@ -215,8 +223,8 @@ func UpdatePropertyPicture(c *gin.Context) {
 	}
 	newImage := database.CreateImage(*image)
 
-	property := database.GetPropertyByID(c.Param("property_id"))
-	newProperty := database.UpdatePropertyPicture(*property, newImage)
+	property, _ := c.MustGet("property").(db.PropertyModel)
+	newProperty := database.UpdatePropertyPicture(property, newImage)
 	if newProperty == nil {
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)
 		return
@@ -228,7 +236,7 @@ func UpdatePropertyPicture(c *gin.Context) {
 //
 //	@Summary		Invite tenant to owner's property
 //	@Description	Invite tenant to owner's property
-//	@Tags			owner
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
@@ -249,7 +257,7 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
-	if database.GetCurrentActiveContract(c.Param("property_id")) != nil {
+	if database.GetCurrentActiveLeaseByProperty(c.Param("property_id")) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
@@ -259,20 +267,20 @@ func InviteTenant(c *gin.Context) {
 		return
 	}
 
-	pendingContract := database.CreatePendingContract(inviteReq.ToDbPendingContract(), c.Param("property_id"))
-	if pendingContract == nil {
+	leaseInvite := database.CreateLeaseInvite(inviteReq.ToDbLeaseInvite(), c.Param("property_id"))
+	if leaseInvite == nil {
 		utils.SendError(c, http.StatusConflict, utils.InviteAlreadyExists, nil)
 		return
 	}
 
-	res, err := brevo.SendEmailInvite(*pendingContract, user != nil)
+	res, err := brevo.SendEmailInvite(*leaseInvite, user != nil)
 	if err != nil {
 		log.Println(res, err.Error())
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedSendEmail, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, models.DbPendingContractToResponse(*pendingContract))
+	c.JSON(http.StatusOK, models.DbLeaseInviteToResponse(*leaseInvite))
 }
 
 func checkInvitedTenant(c *gin.Context, user *db.UserModel) bool {
@@ -281,57 +289,30 @@ func checkInvitedTenant(c *gin.Context, user *db.UserModel) bool {
 			utils.SendError(c, http.StatusConflict, utils.UserAlreadyExistsAsOwner, nil)
 			return false
 		}
-		if database.GetTenantCurrentActiveContract(user.ID) != nil {
-			utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasContract, nil)
+		if database.GetCurrentActiveLeaseByTenant(user.ID) != nil {
+			utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasLease, nil)
 			return false
 		}
 	}
 	return true
 }
 
-// EndContract godoc
-//
-//	@Summary		End contract
-//	@Description	End active contract for a property
-//	@Tags			owner
-//	@Accept			json
-//	@Produce		json
-//	@Param			property_id	path	string	true	"Property ID"
-//	@Success		204			"Contract ended"
-//	@Failure		403			{object}	utils.Error	"Property is not yours"
-//	@Failure		404			{object}	utils.Error	"No active contract"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/end-contract [put]
-func EndContract(c *gin.Context) {
-	currentActive := database.GetCurrentActiveContract(c.Param("property_id"))
-	_, ok := currentActive.EndDate()
-	if !ok {
-		now := time.Now().Truncate(time.Minute)
-		database.EndContract(currentActive.ID, &now)
-		c.Status(http.StatusNoContent)
-	} else {
-		database.EndContract(currentActive.PropertyID, nil)
-		c.Status(http.StatusNoContent)
-	}
-}
-
 // CancelInvite godoc
 //
 //	@Summary		Cancel invite
-//	@Description	Cancel pending contract invite
-//	@Tags			owner
+//	@Description	Cancel pending lease invite
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path	string	true	"Property ID"
 //	@Success		204			"Invite canceled"
 //	@Failure		403			{object}	utils.Error	"Property is not yours"
-//	@Failure		404			{object}	utils.Error	"No pending contract"
+//	@Failure		404			{object}	utils.Error	"No pending lease"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/cancel-invite [delete]
 func CancelInvite(c *gin.Context) {
-	database.DeleteCurrentPendingContract(c.Param("property_id"))
+	database.DeleteCurrentLeaseInvite(c.Param("property_id"))
 	c.Status(http.StatusNoContent)
 }
 
@@ -339,7 +320,7 @@ func CancelInvite(c *gin.Context) {
 //
 //	@Summary		Toggle archive property by ID
 //	@Description	Toggle archive status of a property by its ID
-//	@Tags			owner
+//	@Tags			property
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"

@@ -17,6 +17,12 @@ func GetImageByID(id string) *db.ImageModel {
 	return image
 }
 
+func MockGetImageByID(c *services.PrismaDB) db.ImageMockExpectParam {
+	return c.Client.Image.FindUnique(
+		db.Image.ID.Equals("1"),
+	)
+}
+
 func CreateImage(image db.ImageModel) db.ImageModel {
 	pdb := services.DBclient
 	newImage, err := pdb.Client.Image.CreateOne(
@@ -26,4 +32,10 @@ func CreateImage(image db.ImageModel) db.ImageModel {
 		panic(err)
 	}
 	return *newImage
+}
+
+func MockCreateImage(c *services.PrismaDB, image db.ImageModel) db.ImageMockExpectParam {
+	return c.Client.Image.CreateOne(
+		db.Image.Data.Set(image.Data),
+	)
 }
