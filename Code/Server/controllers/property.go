@@ -27,7 +27,9 @@ import (
 func GetAllPropertiesByOwner(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	allProperties := database.GetPropertiesByOwnerId(claims["id"], false)
-	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
+	c.JSON(http.StatusOK, utils.Map(allProperties, func(property db.PropertyModel) models.PropertyResponse {
+		return models.DbPropertyToResponse(property, "current")
+	}))
 }
 
 // GetArchivedPropertiesByOwner godoc
@@ -45,7 +47,9 @@ func GetAllPropertiesByOwner(c *gin.Context) {
 func GetArchivedPropertiesByOwner(c *gin.Context) {
 	claims := utils.GetClaims(c)
 	allProperties := database.GetPropertiesByOwnerId(claims["id"], true)
-	c.JSON(http.StatusOK, utils.Map(allProperties, models.DbPropertyToResponse))
+	c.JSON(http.StatusOK, utils.Map(allProperties, func(property db.PropertyModel) models.PropertyResponse {
+		return models.DbPropertyToResponse(property, "current")
+	}))
 }
 
 // GetProperty godoc
@@ -57,6 +61,7 @@ func GetArchivedPropertiesByOwner(c *gin.Context) {
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
 //	@Param			lease_id	path		string					true	"Lease ID or `current`"
+//	@Param			lease_id	query		string					false	"ONLY FOR OWNER: optional Lease ID (default: current)"
 //	@Success		200			{object}	models.PropertyResponse	"Property data"
 //	@Failure		401			{object}	utils.Error				"Unauthorized"
 //	@Failure		403			{object}	utils.Error				"Property not yours"
@@ -66,8 +71,17 @@ func GetArchivedPropertiesByOwner(c *gin.Context) {
 //	@Router			/owner/properties/{property_id}/ [get]
 //	@Router			/tenant/leases/{lease_id}/property/ [get]
 func GetProperty(c *gin.Context) {
+	claims := utils.GetClaims(c)
+
+	var leaseId string
+	if claims["role"] == string(db.RoleTenant) {
+		leaseId = c.Param("lease_id")
+	} else {
+		leaseId = c.DefaultQuery("lease_id", "current")
+	}
+
 	property, _ := c.MustGet("property").(db.PropertyModel)
-	c.JSON(http.StatusOK, models.DbPropertyToResponse(property))
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(property, leaseId))
 }
 
 // GetPropertyInventory godoc
@@ -79,6 +93,7 @@ func GetProperty(c *gin.Context) {
 //	@Produce		json
 //	@Param			property_id	path		string								true	"Property ID"
 //	@Param			lease_id	path		string								true	"Lease ID or `current`"
+//	@Param			lease_id	query		string								false	"ONLY FOR OWNER: optional Lease ID (default: current)"
 //	@Success		200			{object}	models.PropertyInventoryResponse	"Property inventory data"
 //	@Failure		401			{object}	utils.Error							"Unauthorized"
 //	@Failure		403			{object}	utils.Error							"Property not yours"
@@ -88,9 +103,18 @@ func GetProperty(c *gin.Context) {
 //	@Router			/owner/properties/{property_id}/inventory/ [get]
 //	@Router			/tenant/leases/{lease_id}/property/inventory/ [get]
 func GetPropertyInventory(c *gin.Context) {
+	claims := utils.GetClaims(c)
+
+	var leaseId string
+	if claims["role"] == string(db.RoleTenant) {
+		leaseId = c.Param("lease_id")
+	} else {
+		leaseId = c.DefaultQuery("lease_id", "current")
+	}
+
 	property, _ := c.MustGet("property").(db.PropertyModel)
 	propertyInv := database.GetPropertyInventory(property.ID)
-	c.JSON(http.StatusOK, models.DbPropertyInventoryToResponse(*propertyInv))
+	c.JSON(http.StatusOK, models.DbPropertyInventoryToResponse(*propertyInv, leaseId))
 }
 
 // CreateProperty godoc
@@ -122,7 +146,7 @@ func CreateProperty(c *gin.Context) {
 		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusCreated, models.DbPropertyToResponse(*property))
+	c.JSON(http.StatusCreated, models.DbPropertyToResponse(*property, "current"))
 }
 
 // UpdateProperty godoc
@@ -154,7 +178,7 @@ func UpdateProperty(c *gin.Context) {
 		utils.SendError(c, http.StatusConflict, utils.PropertyAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.DbPropertyToResponse(*newProperty))
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*newProperty, "current")) // will change
 }
 
 // GetPropertyPicture godoc
@@ -229,7 +253,7 @@ func UpdatePropertyPicture(c *gin.Context) {
 		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.DbPropertyToResponse(*newProperty))
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*newProperty, "current")) // will change
 }
 
 // InviteTenant godoc
@@ -340,5 +364,5 @@ func ArchiveProperty(c *gin.Context) {
 	}
 
 	property := database.ToggleArchiveProperty(c.Param("property_id"), req.Archive)
-	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property))
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property, "current")) // will change
 }

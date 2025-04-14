@@ -346,6 +346,12 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ONLY FOR OWNER: optional Lease ID (default: current)",
+                        "name": "lease_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -942,6 +948,12 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ONLY FOR OWNER: optional Lease ID (default: current)",
+                        "name": "lease_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3791,6 +3803,12 @@ const docTemplate = `{
                         "name": "lease_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ONLY FOR OWNER: optional Lease ID (default: current)",
+                        "name": "lease_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3850,6 +3868,12 @@ const docTemplate = `{
                         "name": "lease_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ONLY FOR OWNER: optional Lease ID (default: current)",
+                        "name": "lease_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4348,6 +4372,9 @@ const docTemplate = `{
         },
         "models.DamageTenantUpdateRequest": {
             "type": "object",
+            "required": [
+                "add_pictures"
+            ],
             "properties": {
                 "add_pictures": {
                     "type": "array",
@@ -4673,11 +4700,14 @@ const docTemplate = `{
                 "deposit_price": {
                     "type": "number"
                 },
-                "end_date": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
+                },
+                "invite": {
+                    "$ref": "#/definitions/models.propertyInviteResponse"
+                },
+                "lease": {
+                    "$ref": "#/definitions/models.propertyLeaseResponse"
                 },
                 "name": {
                     "type": "string"
@@ -4703,14 +4733,8 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.roomResponse"
                     }
                 },
-                "start_date": {
-                    "type": "string"
-                },
                 "status": {
                     "$ref": "#/definitions/models.PropertyStatus"
-                },
-                "tenant": {
-                    "type": "string"
                 }
             }
         },
@@ -4783,11 +4807,14 @@ const docTemplate = `{
                 "deposit_price": {
                     "type": "number"
                 },
-                "end_date": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
+                },
+                "invite": {
+                    "$ref": "#/definitions/models.propertyInviteResponse"
+                },
+                "lease": {
+                    "$ref": "#/definitions/models.propertyLeaseResponse"
                 },
                 "name": {
                     "type": "string"
@@ -4807,14 +4834,8 @@ const docTemplate = `{
                 "rental_price_per_month": {
                     "type": "number"
                 },
-                "start_date": {
-                    "type": "string"
-                },
                 "status": {
                     "$ref": "#/definitions/models.PropertyStatus"
-                },
-                "tenant": {
-                    "type": "string"
                 }
             }
         },
@@ -5051,6 +5072,43 @@ const docTemplate = `{
                 },
                 "quantity": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.propertyInviteResponse": {
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.propertyLeaseResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "type": "string"
                 }
             }
         },

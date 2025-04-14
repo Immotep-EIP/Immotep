@@ -195,6 +195,8 @@ definitions:
         type: string
       priority:
         $ref: '#/definitions/db.Priority'
+    required:
+    - add_pictures
     type: object
   models.DocumentRequest:
     properties:
@@ -401,10 +403,12 @@ definitions:
         type: string
       deposit_price:
         type: number
-      end_date:
-        type: string
       id:
         type: string
+      invite:
+        $ref: '#/definitions/models.propertyInviteResponse'
+      lease:
+        $ref: '#/definitions/models.propertyLeaseResponse'
       name:
         type: string
       nb_damage:
@@ -421,12 +425,8 @@ definitions:
         items:
           $ref: '#/definitions/models.roomResponse'
         type: array
-      start_date:
-        type: string
       status:
         $ref: '#/definitions/models.PropertyStatus'
-      tenant:
-        type: string
     type: object
   models.PropertyRequest:
     properties:
@@ -476,10 +476,12 @@ definitions:
         type: string
       deposit_price:
         type: number
-      end_date:
-        type: string
       id:
         type: string
+      invite:
+        $ref: '#/definitions/models.propertyInviteResponse'
+      lease:
+        $ref: '#/definitions/models.propertyLeaseResponse'
       name:
         type: string
       nb_damage:
@@ -492,12 +494,8 @@ definitions:
         type: string
       rental_price_per_month:
         type: number
-      start_date:
-        type: string
       status:
         $ref: '#/definitions/models.PropertyStatus'
-      tenant:
-        type: string
     type: object
   models.PropertyStatus:
     enum:
@@ -658,6 +656,30 @@ definitions:
         type: string
       quantity:
         type: integer
+    type: object
+  models.propertyInviteResponse:
+    properties:
+      end_date:
+        type: string
+      start_date:
+        type: string
+      tenant_email:
+        type: string
+    type: object
+  models.propertyLeaseResponse:
+    properties:
+      active:
+        type: boolean
+      end_date:
+        type: string
+      id:
+        type: string
+      start_date:
+        type: string
+      tenant_email:
+        type: string
+      tenant_name:
+        type: string
     type: object
   models.roomResponse:
     properties:
@@ -971,6 +993,10 @@ paths:
         in: path
         name: property_id
         required: true
+        type: string
+      - description: 'ONLY FOR OWNER: optional Lease ID (default: current)'
+        in: query
+        name: lease_id
         type: string
       produces:
       - application/json
@@ -1353,6 +1379,10 @@ paths:
         in: path
         name: property_id
         required: true
+        type: string
+      - description: 'ONLY FOR OWNER: optional Lease ID (default: current)'
+        in: query
+        name: lease_id
         type: string
       produces:
       - application/json
@@ -3223,6 +3253,10 @@ paths:
         name: lease_id
         required: true
         type: string
+      - description: 'ONLY FOR OWNER: optional Lease ID (default: current)'
+        in: query
+        name: lease_id
+        type: string
       produces:
       - application/json
       responses:
@@ -3260,6 +3294,10 @@ paths:
         in: path
         name: lease_id
         required: true
+        type: string
+      - description: 'ONLY FOR OWNER: optional Lease ID (default: current)'
+        in: query
+        name: lease_id
         type: string
       produces:
       - application/json
