@@ -12,41 +12,23 @@ import (
 	"immotep/backend/utils"
 )
 
-// GetAllPropertiesByOwner godoc
+// GetPropertiesByOwner godoc
 //
-//	@Summary		Get all properties of an owner
-//	@Description	Get all properties information of an owner
+//	@Summary		Get properties of an owner
+//	@Description	Get properties information of an owner, optionally filtered by archive status
 //	@Tags			property
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.PropertyResponse	"List of properties"
-//	@Failure		401	{object}	utils.Error				"Unauthorized"
+//	@Param			archive	query		bool					false	"Filter by archive status (default: false)"
+//	@Success		200		{array}		models.PropertyResponse	"List of properties"
+//	@Failure		401		{object}	utils.Error				"Unauthorized"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/ [get]
-func GetAllPropertiesByOwner(c *gin.Context) {
+func GetPropertiesByOwner(c *gin.Context) {
 	claims := utils.GetClaims(c)
-	allProperties := database.GetPropertiesByOwnerId(claims["id"], false)
-	c.JSON(http.StatusOK, utils.Map(allProperties, func(property db.PropertyModel) models.PropertyResponse {
-		return models.DbPropertyToResponse(property, "current")
-	}))
-}
-
-// GetArchivedPropertiesByOwner godoc
-//
-//	@Summary		Get all archived properties of an owner
-//	@Description	Get all archived properties information of an owner
-//	@Tags			property
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{array}		models.PropertyResponse	"List of archived properties"
-//	@Failure		401	{object}	utils.Error				"Unauthorized"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/owner/properties/archived/ [get]
-func GetArchivedPropertiesByOwner(c *gin.Context) {
-	claims := utils.GetClaims(c)
-	allProperties := database.GetPropertiesByOwnerId(claims["id"], true)
+	archive := c.DefaultQuery("archive", "false") == utils.Strue
+	allProperties := database.GetPropertiesByOwnerId(claims["id"], archive)
 	c.JSON(http.StatusOK, utils.Map(allProperties, func(property db.PropertyModel) models.PropertyResponse {
 		return models.DbPropertyToResponse(property, "current")
 	}))
@@ -363,6 +345,6 @@ func ArchiveProperty(c *gin.Context) {
 		return
 	}
 
-	property := database.ToggleArchiveProperty(c.Param("property_id"), req.Archive)
+	property := database.ArchiveProperty(c.Param("property_id"), req.Archive)
 	c.JSON(http.StatusOK, models.DbPropertyToResponse(*property, "current")) // will change
 }

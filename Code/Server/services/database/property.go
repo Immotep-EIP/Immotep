@@ -239,7 +239,7 @@ func MockUpdatePropertyPicture(c *services.PrismaDB) db.PropertyMockExpectParam 
 	)
 }
 
-func ToggleArchiveProperty(propertyId string, archive bool) *db.PropertyModel {
+func ArchiveProperty(propertyId string, archive bool) *db.PropertyModel {
 	pdb := services.DBclient
 	archivedProperty, err := pdb.Client.Property.FindUnique(
 		db.Property.ID.Equals(propertyId),

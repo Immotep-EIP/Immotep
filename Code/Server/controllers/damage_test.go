@@ -224,7 +224,7 @@ func TestGetFixedDamagesByProperty(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/damages/fixed/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/damages/?fixed=true", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -248,7 +248,7 @@ func TestGetFixedDamagesByProperty_PropertyNotYours(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/damages/fixed/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/damages/?fixed=true", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "2") // Simulate a different user
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -354,7 +354,7 @@ func TestGetFixedDamagesByLease(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/1/damages/fixed/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/1/damages/?fixed=true", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -379,7 +379,7 @@ func TestGetFixedDamagesByLease_LeaseNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/1/damages/fixed/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/1/damages/?fixed=true", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
@@ -402,7 +402,7 @@ func TestGetFixedDamagesByLease_NoActiveLease(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/current/damages/fixed/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/leases/current/damages/?fixed=true", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))

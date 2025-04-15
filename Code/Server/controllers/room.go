@@ -41,41 +41,24 @@ func CreateRoom(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbRoomToResponse(*room))
 }
 
-// GetAllRoomsByProperty godoc
+// GetRoomsByProperty godoc
 //
 //	@Summary		Get rooms by property ID
-//	@Description	Get all rooms for a specific property
+//	@Description	Get all rooms for a specific property, optionally filtered by archive status
 //	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string				true	"Property ID"
+//	@Param			archive		query		boolean				false	"Archive status (default: false)"
 //	@Success		200			{array}		models.RoomResponse	"List of rooms"
 //	@Failure		403			{object}	utils.Error			"Property not yours"
 //	@Failure		404			{object}	utils.Error			"Property not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/ [get]
-func GetAllRoomsByProperty(c *gin.Context) {
-	rooms := database.GetRoomsByPropertyID(c.Param("property_id"), false)
-	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
-}
-
-// GetArchivedRoomsByProperty godoc
-//
-//	@Summary		Get archived rooms by property ID
-//	@Description	Get all archived rooms for a specific property
-//	@Tags			inventory
-//	@Accept			json
-//	@Produce		json
-//	@Param			property_id	path		string				true	"Property ID"
-//	@Success		200			{array}		models.RoomResponse	"List of archived rooms"
-//	@Failure		403			{object}	utils.Error			"Property not yours"
-//	@Failure		404			{object}	utils.Error			"Property not found"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/archived/ [get]
-func GetArchivedRoomsByProperty(c *gin.Context) {
-	rooms := database.GetRoomsByPropertyID(c.Param("property_id"), true)
+func GetRoomsByProperty(c *gin.Context) {
+	archive := c.DefaultQuery("archive", "false") == utils.Strue
+	rooms := database.GetRoomsByPropertyID(c.Param("property_id"), archive)
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 

@@ -918,7 +918,7 @@ func TestGetAllArchivedProperties(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/?archive=true", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

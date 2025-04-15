@@ -42,43 +42,25 @@ func CreateFurniture(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbFurnitureToResponse(*furniture))
 }
 
-// GetAllFurnituresByRoom godoc
+// GetFurnituresByRoom godoc
 //
 //	@Summary		Get furnitures by room ID
-//	@Description	Get all furnitures for a specific room
+//	@Description	Get all furnitures for a specific room, optionally filtered by archive status
 //	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string						true	"Property ID"
 //	@Param			room_id		path		string						true	"Room ID"
+//	@Param			archive		query		bool						false	"Archive status filter"
 //	@Success		200			{array}		models.FurnitureResponse	"List of furnitures"
 //	@Failure		403			{object}	utils.Error					"Property not yours"
 //	@Failure		404			{object}	utils.Error					"Room not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/ [get]
-func GetAllFurnituresByRoom(c *gin.Context) {
-	furnitures := database.GetFurnituresByRoomID(c.Param("room_id"), false)
-	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
-}
-
-// GetArchivedFurnituresByRoom godoc
-//
-//	@Summary		Get archived furnitures by room ID
-//	@Description	Get all archived furnitures for a specific room
-//	@Tags			inventory
-//	@Accept			json
-//	@Produce		json
-//	@Param			property_id	path		string						true	"Property ID"
-//	@Param			room_id		path		string						true	"Room ID"
-//	@Success		200			{array}		models.FurnitureResponse	"List of archived furnitures"
-//	@Failure		403			{object}	utils.Error					"Property not yours"
-//	@Failure		404			{object}	utils.Error					"Room not found"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/archived/ [get]
-func GetArchivedFurnituresByRoom(c *gin.Context) {
-	furnitures := database.GetFurnituresByRoomID(c.Param("room_id"), true)
+func GetFurnituresByRoom(c *gin.Context) {
+	archive := c.DefaultQuery("archive", "false") == utils.Strue
+	furnitures := database.GetFurnituresByRoomID(c.Param("room_id"), archive)
 	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
 }
 

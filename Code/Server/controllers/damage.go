@@ -67,11 +67,12 @@ func CreateDamage(c *gin.Context) {
 // GetDamagesByProperty godoc
 //
 //	@Summary		Get property damages
-//	@Description	Get all damages of a property
+//	@Description	Get all damages of a property, optionally filtered by fixed status
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
+//	@Param			fixed		query		boolean					false	"Filter by fixed status (default: false)"
 //	@Success		200			{array}		models.DamageResponse	"List of damages"
 //	@Failure		403			{object}	utils.Error				"Property not yours"
 //	@Failure		404			{object}	utils.Error				"No active lease"
@@ -79,38 +80,21 @@ func CreateDamage(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/damages/ [get]
 func GetDamagesByProperty(c *gin.Context) {
-	damages := database.GetDamagesByPropertyID(c.Param("property_id"), false)
-	c.JSON(http.StatusOK, utils.Map(damages, models.DbDamageToResponse))
-}
-
-// GetFixedDamagesByProperty godoc
-//
-//	@Summary		Get property fixed damages
-//	@Description	Get all fixed damages of a property
-//	@Tags			damage
-//	@Accept			json
-//	@Produce		json
-//	@Param			property_id	path		string					true	"Property ID"
-//	@Success		200			{array}		models.DamageResponse	"List of damages"
-//	@Failure		403			{object}	utils.Error				"Property not yours"
-//	@Failure		404			{object}	utils.Error				"No active lease"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/damages/fixed/ [get]
-func GetFixedDamagesByProperty(c *gin.Context) {
-	damages := database.GetDamagesByPropertyID(c.Param("property_id"), true)
+	fixed := c.DefaultQuery("fixed", "false") == utils.Strue
+	damages := database.GetDamagesByPropertyID(c.Param("property_id"), fixed)
 	c.JSON(http.StatusOK, utils.Map(damages, models.DbDamageToResponse))
 }
 
 // GetDamagesByLease godoc
 //
 //	@Summary		Get lease damages
-//	@Description	Get all damages of a lease
+//	@Description	Get all damages of a lease, optionally filtered by fixed status
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string					true	"Property ID"
 //	@Param			lease_id	path		string					true	"Lease ID"
+//	@Param			fixed		query		boolean					false	"Filter by fixed status (default: false)"
 //	@Success		200			{array}		models.DamageResponse	"List of damages"
 //	@Failure		403			{object}	utils.Error				"Lease not yours"
 //	@Failure		404			{object}	utils.Error				"No active lease"
@@ -119,30 +103,9 @@ func GetFixedDamagesByProperty(c *gin.Context) {
 //	@Router			/owner/properties/{property_id}/leases/{lease_id}/damages/ [get]
 //	@Router			/tenant/leases/{lease_id}/damages/ [get]
 func GetDamagesByLease(c *gin.Context) {
+	fixed := c.DefaultQuery("fixed", "false") == utils.Strue
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
-	damages := database.GetDamagesByLeaseID(lease.ID, false)
-	c.JSON(http.StatusOK, utils.Map(damages, models.DbDamageToResponse))
-}
-
-// GetFixedDamagesByLease godoc
-//
-//	@Summary		Get lease fixed damages
-//	@Description	Get all fixed damages of a lease
-//	@Tags			damage
-//	@Accept			json
-//	@Produce		json
-//	@Param			property_id	path		string					true	"Property ID"
-//	@Param			lease_id	path		string					true	"Lease ID"
-//	@Success		200			{array}		models.DamageResponse	"List of damages"
-//	@Failure		403			{object}	utils.Error				"Lease not yours"
-//	@Failure		404			{object}	utils.Error				"No active lease"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/leases/{lease_id}/damages/fixed/ [get]
-//	@Router			/tenant/leases/{lease_id}/damages/fixed/ [get]
-func GetFixedDamagesByLease(c *gin.Context) {
-	lease, _ := c.MustGet("lease").(db.LeaseModel)
-	damages := database.GetDamagesByLeaseID(lease.ID, true)
+	damages := database.GetDamagesByLeaseID(lease.ID, fixed)
 	c.JSON(http.StatusOK, utils.Map(damages, models.DbDamageToResponse))
 }
 
