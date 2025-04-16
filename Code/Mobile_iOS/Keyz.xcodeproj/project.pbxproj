@@ -39,7 +39,6 @@
 				Tests/ImmotepTests/MockPropertyViewModel.swift,
 				Tests/ImmotepTests/RegisterUnitTest.swift,
 				Tests/ImmotepUITests/CreatePropertyUITests.swift,
-				Tests/ImmotepUITests/FeaturesUITests/ProfileUITests.swift,
 				Tests/ImmotepUITests/FeaturesUITests/PropertyViewUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,
 				Tests/ImmotepUITests/InventoryEntryEvaluationViewUITests.swift,
@@ -56,7 +55,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Tests/ImmotepUITests/CreatePropertyUITests.swift,
-				Tests/ImmotepUITests/FeaturesUITests/ProfileUITests.swift,
 				Tests/ImmotepUITests/FeaturesUITests/PropertyViewUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,
 				Tests/ImmotepUITests/InventoryEntryEvaluationViewUITests.swift,

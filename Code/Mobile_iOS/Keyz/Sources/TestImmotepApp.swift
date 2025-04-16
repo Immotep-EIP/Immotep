@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TestImmotepView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
-    @StateObject private var profileViewModel = ProfileViewModel()
+    @StateObject private var loginViewModel = LoginViewModel()
     @State private var propertyExample: Property = exampleDataProperty
     @State private var mockProperty = Property(
         id: "cm7gijdee000ly7i82uq0qf35",
@@ -56,14 +56,15 @@ struct TestImmotepView: View {
                     propertyEditView()
                 } else {
                     OverviewView()
-                        .environmentObject(profileViewModel)
+                        .environmentObject(loginViewModel)
                 }
             } else {
                 if isLoggedIn {
                     OverviewView()
-                        .environmentObject(profileViewModel)
+                        .environmentObject(loginViewModel)
                 } else {
                     LoginView()
+                        .environmentObject(loginViewModel)
                 }
             }
         }
@@ -208,5 +209,11 @@ struct TestImmotepView: View {
                     EditPropertyView(viewModel: viewModel, property: $mockProperty)
                 }
         }
+    }
+}
+
+struct TestImmotepView_Previews: PreviewProvider {
+    static var previews: some View {
+        TestImmotepView()
     }
 }

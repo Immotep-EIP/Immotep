@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @StateObject private var viewModel = ProfileViewModel()
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     
     @AppStorage("lang") private var lang: String = "en"
     @AppStorage("theme") private var selectedTheme: String = ThemeOption.system.rawValue
@@ -47,10 +47,26 @@ struct SettingsView: View {
                             
                             CustomTextInput(title: "Prénom", placeholder: "", text: $editableFirstname, isSecure: false)
                                 .disabled(!isEditing)
+                                .onTapGesture {
+                                    // Prevent tap from doing anything when not editing
+                                    if isEditing {
+                                        // Allow interaction only when editing
+                                    }
+                                }
                             CustomTextInput(title: "Nom", placeholder: "", text: $editableLastname, isSecure: false)
                                 .disabled(!isEditing)
+                                .onTapGesture {
+                                    if isEditing {
+                                        // Allow interaction only when editing
+                                    }
+                                }
                             CustomTextInput(title: "Email", placeholder: "", text: $editableEmail, isSecure: false)
                                 .disabled(!isEditing)
+                                .onTapGesture {
+                                    if isEditing {
+                                        // Allow interaction only when editing
+                                    }
+                                }
                             
                             HStack {
                                 Button(isEditing ? "Cancel".localized() : "Edit".localized()) {
@@ -122,10 +138,11 @@ struct SettingsView: View {
                 .background(Color(UIColor.systemGroupedBackground))
             }
             .navigationBarBackButtonHidden(true)
-            .onChange(of: viewModel.user?.email) {
+            .onChange(of: loginViewModel.user?.email) {
                 loadUserData()
             }
             .onAppear {
+                loginViewModel.loadUser() // Ensure user data is loaded
                 loadUserData()
             }
         }
@@ -134,7 +151,7 @@ struct SettingsView: View {
     private func signOut() {
         TokenStorage.clearTokens()
         isLoggedIn = false
-        viewModel.user = nil
+        loginViewModel.user = nil
         navigateToLogin = true
     }
     
@@ -144,17 +161,25 @@ struct SettingsView: View {
     
     private func saveChanges() {
         print("Saving changes: \(editableEmail), \(editableFirstname), \(editableLastname)")
+        if var updatedUser = loginViewModel.user {
+            updatedUser.email = editableEmail
+            updatedUser.firstname = editableFirstname
+            updatedUser.lastname = editableLastname
+            loginViewModel.user = updatedUser
+            loginViewModel.saveUser(updatedUser)
+        }
     }
     
     private func loadUserData() {
-        editableEmail = viewModel.user?.email ?? ""
-        editableFirstname = viewModel.user?.firstname ?? ""
-        editableLastname = viewModel.user?.lastname ?? ""
+        editableEmail = loginViewModel.user?.email ?? ""
+        editableFirstname = loginViewModel.user?.firstname ?? ""
+        editableLastname = loginViewModel.user?.lastname ?? ""
     }
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()
+            .environmentObject(LoginViewModel())
     }
 }

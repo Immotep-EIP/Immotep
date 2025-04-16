@@ -17,7 +17,6 @@ class LoginViewModel: ObservableObject {
     @Published var user: User?
 
     @AppStorage("user") private var storedUserData: String = ""
-    @Published var profileViewModel: ProfileViewModel?
 
     public var cancellables = Set<AnyCancellable>()
     public let userService: UserServiceProtocol
@@ -26,6 +25,7 @@ class LoginViewModel: ObservableObject {
     init(userService: UserServiceProtocol = UserService(), authService: AuthServiceProtocol = AuthService.shared) {
         self.userService = userService
         self.authService = authService
+        loadUser() // Load user data on initialization
     }
 
     func signIn() async {
@@ -43,17 +43,14 @@ class LoginViewModel: ObservableObject {
             do {
                 let (accessToken, refreshToken) =
                     try await authServiceCopy.loginUser(email: model.email, password: model.password, keepMeSignedIn: model.keepMeSignedIn)
-                TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: nil, keepMeSignedIn: model.keepMeSignedIn )
+                TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: nil, keepMeSignedIn: model.keepMeSignedIn)
                 user = try await userServiceCopy.fetchUserProfile(with: accessToken)
                 loginStatus = "Login successful!"
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 
                 if let user = user {
                     saveUser(user)
-                    profileViewModel = ProfileViewModel()
                 }
-                    self.isLoggedIn = true
-//                }
+                self.isLoggedIn = true
             } catch {
                 loginStatus = "Error: \(error.localizedDescription)"
             }
@@ -67,11 +64,21 @@ class LoginViewModel: ObservableObject {
         return nil
     }
 
-    private func saveUser(_ user: User) {
+    func saveUser(_ user: User) {
         let encoder = JSONEncoder()
         if let encodedData = try? encoder.encode(user) {
             if let jsonString = String(data: encodedData, encoding: .utf8) {
                 storedUserData = jsonString
+            }
+        }
+    }
+
+    func loadUser() {
+        guard !storedUserData.isEmpty else { return }
+        if let data = storedUserData.data(using: .utf8) {
+            let decoder = JSONDecoder()
+            if let decodedUser = try? decoder.decode(User.self, from: data) {
+                self.user = decodedUser
             }
         }
     }
