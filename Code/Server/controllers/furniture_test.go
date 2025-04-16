@@ -56,7 +56,7 @@ func TestCreateFurniture(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusCreated, w.Code)
-	var resp models.FurnitureResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, furniture.ID)
@@ -386,11 +386,10 @@ func TestArchiveFurniture(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusOK, w.Code)
-	var resp models.FurnitureResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, furniture.ID)
-	assert.True(t, resp.Archived)
 }
 
 func TestArchiveFurniture_MissingFields(t *testing.T) {

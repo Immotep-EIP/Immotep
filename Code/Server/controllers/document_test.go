@@ -195,11 +195,10 @@ func TestUploadDocument(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusCreated, w.Code)
-	var resp models.DocumentResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.Equal(t, "1", resp.ID)
-	assert.Equal(t, "Test Document", resp.Name)
 }
 
 func TestUploadDocument_MissingFields(t *testing.T) {

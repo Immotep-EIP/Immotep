@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
@@ -13,18 +14,16 @@ import (
 
 func getPictures(pics []string) ([]string, error) {
 	picturesId := make([]string, 0, len(pics))
-	var err error
 
-	for _, pic := range pics {
+	for i, pic := range pics {
 		dbImage := models.StringToDbImage(pic)
 		if dbImage == nil {
-			err = errors.New(string(utils.BadBase64String))
-		} else {
-			newImage := database.CreateImage(*dbImage)
-			picturesId = append(picturesId, newImage.ID)
+			return nil, errors.New("invalid base64 string at index " + strconv.Itoa(i))
 		}
+		newImage := database.CreateImage(*dbImage)
+		picturesId = append(picturesId, newImage.ID)
 	}
-	return picturesId, err
+	return picturesId, nil
 }
 
 // CreateDamage godoc
@@ -37,8 +36,8 @@ func getPictures(pics []string) ([]string, error) {
 //	@Param			property_id	path		string					true	"Property ID"
 //	@Param			lease_id	path		string					true	"Lease ID or `current`"
 //	@Param			damages		body		models.DamageRequest	true	"Damages to create"
-//	@Success		201			{object}	models.DamageResponse	"Damage created"
-//	@Failure		400			{object}	utils.Error				"Missing fields"
+//	@Success		201			{object}	models.IdResponse		"Created damage ID"
+//	@Failure		400			{object}	utils.Error				"Missing fields or bad base64 string"
 //	@Failure		403			{object}	utils.Error				"Property not yours"
 //	@Failure		404			{object}	utils.Error				"No active lease"
 //	@Failure		500
@@ -58,10 +57,14 @@ func CreateDamage(c *gin.Context) {
 	}
 
 	picturesIds, imgErr := getPictures(req.Pictures)
+	if imgErr != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, imgErr)
+		return
+	}
 
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
 	res := database.CreateDamage(damage, lease.ID, picturesIds)
-	c.JSON(http.StatusCreated, models.DbDamageToCreateResponse(res, imgErr))
+	c.JSON(http.StatusCreated, models.IdResponse{ID: res.ID})
 }
 
 // GetDamagesByProperty godoc
@@ -142,7 +145,7 @@ func GetDamage(c *gin.Context) {
 //	@Param			lease_id	path		string							true	"Lease ID"
 //	@Param			damage_id	path		string							true	"Damage ID"
 //	@Param			damages		body		models.DamageOwnerUpdateRequest	true	"Damage update request"
-//	@Success		200			{object}	models.DamageCreateResponse		"Updated damage"
+//	@Success		200			{object}	models.IdResponse				"Updated damage ID"
 //	@Failure		400			{object}	utils.Error						"Missing fields"
 //	@Failure		403			{object}	utils.Error						"Property not yours"
 //	@Failure		404			{object}	utils.Error						"Damage not found"
@@ -167,7 +170,7 @@ func UpdateDamageOwner(c *gin.Context) {
 		utils.SendError(c, http.StatusConflict, utils.DamageAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.DbDamageToCreateResponse(*newDamage, nil))
+	c.JSON(http.StatusOK, models.IdResponse{ID: newDamage.ID})
 }
 
 // UpdateDamageTenant godoc
@@ -181,7 +184,7 @@ func UpdateDamageOwner(c *gin.Context) {
 //	@Param			lease_id	path		string								true	"Lease ID"
 //	@Param			damage_id	path		string								true	"Damage ID"
 //	@Param			damages		body		models.DamageTenantUpdateRequest	true	"Damage update request"
-//	@Success		200			{object}	models.DamageCreateResponse			"Updated damage"
+//	@Success		200			{object}	models.IdResponse					"Updated damage ID"
 //	@Failure		400			{object}	utils.Error							"Missing fields"
 //	@Failure		403			{object}	utils.Error							"Lease not yours"
 //	@Failure		404			{object}	utils.Error							"Damage not found"
@@ -202,12 +205,17 @@ func UpdateDamageTenant(c *gin.Context) {
 	}
 
 	picturesIds, imgErr := getPictures(req.AddPictures)
+	if imgErr != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, imgErr)
+		return
+	}
+
 	newDamage := database.UpdateDamageTenant(damage, req, picturesIds)
 	if newDamage == nil {
 		utils.SendError(c, http.StatusConflict, utils.DamageAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.DbDamageToCreateResponse(*newDamage, imgErr))
+	c.JSON(http.StatusOK, models.IdResponse{ID: newDamage.ID})
 }
 
 // FixDamage godoc
@@ -217,13 +225,13 @@ func UpdateDamageTenant(c *gin.Context) {
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string					true	"Property ID"
-//	@Param			lease_id	path		string					true	"Lease ID"
-//	@Param			damage_id	path		string					true	"Damage ID"
-//	@Success		204			{object}	models.DamageResponse	"Fixed damage"
-//	@Failure		400			{object}	utils.Error				"Missing fields"
-//	@Failure		403			{object}	utils.Error				"Lease not yours"
-//	@Failure		404			{object}	utils.Error				"Damage not found"
+//	@Param			property_id	path		string				true	"Property ID"
+//	@Param			lease_id	path		string				true	"Lease ID"
+//	@Param			damage_id	path		string				true	"Damage ID"
+//	@Success		200			{object}	models.IdResponse	"Fixed damage ID"
+//	@Failure		400			{object}	utils.Error			"Missing fields"
+//	@Failure		403			{object}	utils.Error			"Lease not yours"
+//	@Failure		404			{object}	utils.Error			"Damage not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/leases/{lease_id}/damages/{damage_id}/fix/ [put]
@@ -238,5 +246,5 @@ func FixDamage(c *gin.Context) {
 	}
 
 	newDamage := database.MarkDamageAsFixed(damage, db.Role(claims["role"]))
-	c.JSON(http.StatusOK, models.DbDamageToResponse(newDamage))
+	c.JSON(http.StatusOK, models.IdResponse{ID: newDamage.ID})
 }

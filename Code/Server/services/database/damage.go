@@ -22,9 +22,6 @@ func CreateDamage(damage db.DamageModel, leaseId string, picturesId []string) db
 		db.Damage.Lease.Link(db.Lease.ID.Equals(leaseId)),
 		db.Damage.Room.Link(db.Room.ID.Equals(damage.RoomID)),
 		params...,
-	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
-		db.Damage.Room.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -44,9 +41,6 @@ func MockCreateDamage(c *services.PrismaDB, damage db.DamageModel, leaseId strin
 		db.Damage.Lease.Link(db.Lease.ID.Equals(leaseId)),
 		db.Damage.Room.Link(db.Room.ID.Equals(damage.RoomID)),
 		params...,
-	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
-		db.Damage.Room.Fetch(),
 	)
 }
 
@@ -171,9 +165,6 @@ func UpdateDamageTenant(damage db.DamageModel, req models.DamageTenantUpdateRequ
 
 	dmg, err := pdb.Client.Damage.FindUnique(
 		db.Damage.ID.Equals(damage.ID),
-	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
-		db.Damage.Room.Fetch(),
 	).Update(
 		updates...,
 	).Exec(pdb.Context)
@@ -197,9 +188,6 @@ func MockUpdateDamageTenant(c *services.PrismaDB, req models.DamageTenantUpdateR
 
 	return c.Client.Damage.FindUnique(
 		db.Damage.ID.Equals("1"),
-	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
-		db.Damage.Room.Fetch(),
 	).Update(
 		updates...,
 	)
@@ -210,9 +198,6 @@ func UpdateDamageOwner(damage db.DamageModel, req models.DamageOwnerUpdateReques
 
 	dmg, err := pdb.Client.Damage.FindUnique(
 		db.Damage.ID.Equals(damage.ID),
-	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
-		db.Damage.Room.Fetch(),
 	).Update(
 		db.Damage.Read.SetIfPresent(req.Read),
 		db.Damage.FixPlannedAt.SetIfPresent(req.FixPlannedAt),
@@ -229,9 +214,6 @@ func UpdateDamageOwner(damage db.DamageModel, req models.DamageOwnerUpdateReques
 func MockUpdateDamageOwner(c *services.PrismaDB, req models.DamageOwnerUpdateRequest) db.DamageMockExpectParam {
 	return c.Client.Damage.FindUnique(
 		db.Damage.ID.Equals("1"),
-	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
-		db.Damage.Room.Fetch(),
 	).Update(
 		db.Damage.Read.SetIfPresent(req.Read),
 		db.Damage.FixPlannedAt.SetIfPresent(req.FixPlannedAt),
@@ -255,10 +237,6 @@ func MarkDamageAsFixed(damage db.DamageModel, role db.Role) db.DamageModel {
 	pdb := services.DBclient
 	newDamage, err := pdb.Client.Damage.FindUnique(
 		db.Damage.ID.Equals(damage.ID),
-	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
-		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
 	).Update(
 		params...,
 	).Exec(pdb.Context)
@@ -284,10 +262,6 @@ func MockMarkDamageAsFixed(c *services.PrismaDB, damage db.DamageModel, role db.
 
 	return c.Client.Damage.FindUnique(
 		db.Damage.ID.Equals("1"),
-	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
-		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
 	).Update(
 		params...,
 	)

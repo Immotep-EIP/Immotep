@@ -19,7 +19,7 @@ import (
 //	@Produce		json
 //	@Param			property_id	path		string				true	"Property ID"
 //	@Param			room		body		models.RoomRequest	true	"Room data"
-//	@Success		201			{object}	models.RoomResponse	"Created room data"
+//	@Success		201			{object}	models.IdResponse	"Created room ID"
 //	@Failure		400			{object}	utils.Error			"Missing fields"
 //	@Failure		403			{object}	utils.Error			"Property not yours"
 //	@Failure		404			{object}	utils.Error			"Property not found"
@@ -38,7 +38,7 @@ func CreateRoom(c *gin.Context) {
 		utils.SendError(c, http.StatusConflict, utils.RoomAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusCreated, models.DbRoomToResponse(*room))
+	c.JSON(http.StatusCreated, models.IdResponse{ID: room.ID})
 }
 
 // GetRoomsByProperty godoc
@@ -92,7 +92,7 @@ func GetRoom(c *gin.Context) {
 //	@Param			property_id	path		string					true	"Property ID"
 //	@Param			room_id		path		string					true	"Room ID"
 //	@Param			archive		body		models.ArchiveRequest	true	"Archive status"
-//	@Success		200			{object}	models.PropertyResponse	"Toggled archive room data"
+//	@Success		200			{object}	models.IdResponse		"Updated room ID"
 //	@Failure		400			{object}	utils.Error				"Mising fields"
 //	@Failure		403			{object}	utils.Error				"Property not yours"
 //	@Failure		404			{object}	utils.Error				"Room not found"
@@ -107,5 +107,5 @@ func ArchiveRoom(c *gin.Context) {
 	}
 
 	room := database.ToggleArchiveRoom(c.Param("room_id"), req.Archive)
-	c.JSON(http.StatusOK, models.DbRoomToResponse(*room))
+	c.JSON(http.StatusOK, models.IdResponse{ID: room.ID})
 }

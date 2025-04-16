@@ -96,37 +96,6 @@ definitions:
       type:
         $ref: '#/definitions/db.ReportType'
     type: object
-  models.DamageCreateResponse:
-    properties:
-      comment:
-        type: string
-      created_at:
-        type: string
-      error:
-        type: string
-      fix_planned_at:
-        type: string
-      fix_status:
-        $ref: '#/definitions/db.FixStatus'
-      fixed_at:
-        type: string
-      id:
-        type: string
-      lease_id:
-        type: string
-      priority:
-        $ref: '#/definitions/db.Priority'
-      read:
-        type: boolean
-      room_id:
-        type: string
-      room_name:
-        type: string
-      tenant_name:
-        type: string
-      updated_at:
-        type: string
-    type: object
   models.DamageOwnerUpdateRequest:
     properties:
       fix_planned_at:
@@ -844,9 +813,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created user data
+          description: Created user ID
           schema:
-            $ref: '#/definitions/models.UserResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -880,9 +849,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created user data
+          description: Created user ID
           schema:
-            $ref: '#/definitions/models.UserResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -1586,9 +1555,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: Updated damage
+          description: Updated damage ID
           schema:
-            $ref: '#/definitions/models.DamageCreateResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -1633,10 +1602,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: Fixed damage
+        "200":
+          description: Fixed damage ID
           schema:
-            $ref: '#/definitions/models.DamageResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -1721,9 +1690,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: Document uploaded
+          description: Created document ID
           schema:
-            $ref: '#/definitions/models.DocumentResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -2096,9 +2065,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created room data
+          description: Created room ID
           schema:
-            $ref: '#/definitions/models.RoomResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -2182,9 +2151,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: Toggled archive room data
+          description: Updated room ID
           schema:
-            $ref: '#/definitions/models.PropertyResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Mising fields
           schema:
@@ -2274,9 +2243,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created furniture data
+          description: Created furniture ID
           schema:
-            $ref: '#/definitions/models.FurnitureResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -2370,9 +2339,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: Toggled archive furniture data
+          description: Updated furniture ID
           schema:
-            $ref: '#/definitions/models.PropertyResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Mising fields
           schema:
@@ -2738,11 +2707,11 @@ paths:
       - application/json
       responses:
         "201":
-          description: Damage created
+          description: Created damage ID
           schema:
-            $ref: '#/definitions/models.DamageResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
-          description: Missing fields
+          description: Missing fields or bad base64 string
           schema:
             $ref: '#/definitions/utils.Error'
         "403":
@@ -2829,9 +2798,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: Updated damage
+          description: Updated damage ID
           schema:
-            $ref: '#/definitions/models.DamageCreateResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -2871,10 +2840,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: Fixed damage
+        "200":
+          description: Fixed damage ID
           schema:
-            $ref: '#/definitions/models.DamageResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -2949,9 +2918,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: Document uploaded
+          description: Created document ID
           schema:
-            $ref: '#/definitions/models.DocumentResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
