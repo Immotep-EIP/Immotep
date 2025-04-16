@@ -21,14 +21,6 @@ struct TopBar: View {
                     .bold()
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
-
-                NavigationLink(destination: ProfileView()) {
-                    Image(systemName: "person.crop.circle.fill")
-                        .frame(width: 70, height: 50)
-                        .font(.system(size: 34))
-                        .foregroundStyle(Color("textColor"))
-                }
-                .buttonStyle(PlainButtonStyle())
             }
             .padding(.leading, 20)
 
