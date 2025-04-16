@@ -23,35 +23,6 @@ func TestInviteRequest(t *testing.T) {
 	})
 }
 
-func TestInviteResponse(t *testing.T) {
-	pc := db.LeaseInviteModel{
-		InnerLeaseInvite: db.InnerLeaseInvite{
-			ID:          "1",
-			TenantEmail: "test1@example.com",
-			StartDate:   time.Now(),
-			PropertyID:  "1",
-		},
-	}
-
-	t.Run("FromInvite", func(t *testing.T) {
-		resp := models.InviteResponse{}
-		resp.FromDbLeaseInvite(pc)
-
-		assert.Equal(t, pc.ID, resp.ID)
-		assert.Equal(t, pc.TenantEmail, resp.TenantEmail)
-		assert.Equal(t, pc.StartDate, resp.StartDate)
-		assert.Equal(t, pc.PropertyID, resp.PropertyID)
-	})
-
-	t.Run("InviteToResponse", func(t *testing.T) {
-		resp := models.DbLeaseInviteToResponse(pc)
-
-		assert.Equal(t, pc.ID, resp.ID)
-		assert.Equal(t, pc.StartDate, resp.StartDate)
-		assert.Equal(t, pc.PropertyID, resp.PropertyID)
-	})
-}
-
 func TestLeaseResponse(t *testing.T) {
 	model := db.LeaseModel{
 		InnerLease: db.InnerLease{

@@ -256,7 +256,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Property data",
-                        "name": "user",
+                        "name": "property",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -266,9 +266,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created property data",
+                        "description": "Created property ID",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -376,13 +376,22 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Property data",
+                        "name": "property",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyUpdateRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Property data",
+                        "description": "Updated property ID",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "401": {
@@ -447,9 +456,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Toggled archive property data",
+                        "description": "Property archive status",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -1845,9 +1854,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Updated property data",
+                        "description": "Updated property ID",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -2463,10 +2472,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Created invite",
+                    "201": {
+                        "description": "Created invite ID",
                         "schema": {
-                            "$ref": "#/definitions/models.InviteResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -4228,6 +4237,14 @@ const docTemplate = `{
                 }
             }
         },
+        "models.IdResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ImageRequest": {
             "type": "object",
             "required": [
@@ -4305,29 +4322,6 @@ const docTemplate = `{
             ],
             "properties": {
                 "end_date": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "tenant_email": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.InviteResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "property_id": {
                     "type": "string"
                 },
                 "start_date": {
@@ -4560,6 +4554,38 @@ const docTemplate = `{
                 "StatusInviteSent",
                 "StatusAvailable"
             ]
+        },
+        "models.PropertyUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "apartment_number": {
+                    "type": "string"
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "deposit_price": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "number"
+                }
+            }
         },
         "models.RoomRequest": {
             "type": "object",
