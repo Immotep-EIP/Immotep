@@ -48,23 +48,19 @@ struct SettingsView: View {
                             CustomTextInput(title: "Prénom", placeholder: "", text: $editableFirstname, isSecure: false)
                                 .disabled(!isEditing)
                                 .onTapGesture {
-                                    // Prevent tap from doing anything when not editing
                                     if isEditing {
-                                        // Allow interaction only when editing
                                     }
                                 }
                             CustomTextInput(title: "Nom", placeholder: "", text: $editableLastname, isSecure: false)
                                 .disabled(!isEditing)
                                 .onTapGesture {
                                     if isEditing {
-                                        // Allow interaction only when editing
                                     }
                                 }
                             CustomTextInput(title: "Email", placeholder: "", text: $editableEmail, isSecure: false)
                                 .disabled(!isEditing)
                                 .onTapGesture {
                                     if isEditing {
-                                        // Allow interaction only when editing
                                     }
                                 }
                             
@@ -142,7 +138,7 @@ struct SettingsView: View {
                 loadUserData()
             }
             .onAppear {
-                loginViewModel.loadUser() // Ensure user data is loaded
+                loginViewModel.loadUser()
                 loadUserData()
             }
         }

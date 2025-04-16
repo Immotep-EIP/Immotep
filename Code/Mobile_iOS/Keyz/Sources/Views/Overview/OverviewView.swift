@@ -43,7 +43,7 @@ struct OverviewView: View {
             }
             .navigationBarBackButtonHidden(true)
             .onAppear {
-                loginViewModel.loadUser() // Ensure user data is loaded
+                loginViewModel.loadUser()
             }
         }
     }

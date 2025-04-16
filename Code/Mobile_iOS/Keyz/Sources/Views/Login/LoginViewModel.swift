@@ -25,7 +25,7 @@ class LoginViewModel: ObservableObject {
     init(userService: UserServiceProtocol = UserService(), authService: AuthServiceProtocol = AuthService.shared) {
         self.userService = userService
         self.authService = authService
-        loadUser() // Load user data on initialization
+        loadUser()
     }
 
     func signIn() async {
