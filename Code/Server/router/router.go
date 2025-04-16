@@ -72,9 +72,10 @@ func registerValidators() {
 		panic("Could not register validator")
 	}
 	_ = v.RegisterValidation("priority", validators.Priority)
-	_ = v.RegisterValidation("reportType", validators.Type)
+	_ = v.RegisterValidation("reportType", validators.ReportType)
 	_ = v.RegisterValidation("state", validators.State)
 	_ = v.RegisterValidation("cleanliness", validators.Cleanliness)
+	_ = v.RegisterValidation("roomType", validators.RoomType)
 }
 
 func Routes() *gin.Engine {

@@ -3895,6 +3895,45 @@ const docTemplate = `{
                 "RoleTenant"
             ]
         },
+        "db.RoomType": {
+            "type": "string",
+            "enum": [
+                "dressing",
+                "laundryroom",
+                "bedroom",
+                "playroom",
+                "bathroom",
+                "toilet",
+                "livingroom",
+                "diningroom",
+                "kitchen",
+                "hallway",
+                "balcony",
+                "cellar",
+                "garage",
+                "storage",
+                "office",
+                "other"
+            ],
+            "x-enum-varnames": [
+                "RoomTypeDressing",
+                "RoomTypeLaundryroom",
+                "RoomTypeBedroom",
+                "RoomTypePlayroom",
+                "RoomTypeBathroom",
+                "RoomTypeToilet",
+                "RoomTypeLivingroom",
+                "RoomTypeDiningroom",
+                "RoomTypeKitchen",
+                "RoomTypeHallway",
+                "RoomTypeBalcony",
+                "RoomTypeCellar",
+                "RoomTypeGarage",
+                "RoomTypeStorage",
+                "RoomTypeOffice",
+                "RoomTypeOther"
+            ]
+        },
         "db.State": {
             "type": "string",
             "enum": [
@@ -4543,11 +4582,15 @@ const docTemplate = `{
         "models.RoomRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "type"
             ],
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/db.RoomType"
                 }
             }
         },
@@ -4565,6 +4608,9 @@ const docTemplate = `{
                 },
                 "property_id": {
                     "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/db.RoomType"
                 }
             }
         },

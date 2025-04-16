@@ -23,6 +23,7 @@ func BuildTestRoom(id string, propertyId string) db.RoomModel {
 		InnerRoom: db.InnerRoom{
 			ID:         id,
 			Name:       "Test",
+			Type:       db.RoomTypeOther,
 			PropertyID: propertyId,
 			Archived:   false,
 		},

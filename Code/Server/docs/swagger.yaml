@@ -54,6 +54,42 @@ definitions:
     x-enum-varnames:
     - RoleOwner
     - RoleTenant
+  db.RoomType:
+    enum:
+    - dressing
+    - laundryroom
+    - bedroom
+    - playroom
+    - bathroom
+    - toilet
+    - livingroom
+    - diningroom
+    - kitchen
+    - hallway
+    - balcony
+    - cellar
+    - garage
+    - storage
+    - office
+    - other
+    type: string
+    x-enum-varnames:
+    - RoomTypeDressing
+    - RoomTypeLaundryroom
+    - RoomTypeBedroom
+    - RoomTypePlayroom
+    - RoomTypeBathroom
+    - RoomTypeToilet
+    - RoomTypeLivingroom
+    - RoomTypeDiningroom
+    - RoomTypeKitchen
+    - RoomTypeHallway
+    - RoomTypeBalcony
+    - RoomTypeCellar
+    - RoomTypeGarage
+    - RoomTypeStorage
+    - RoomTypeOffice
+    - RoomTypeOther
   db.State:
     enum:
     - broken
@@ -491,8 +527,11 @@ definitions:
     properties:
       name:
         type: string
+      type:
+        $ref: '#/definitions/db.RoomType'
     required:
     - name
+    - type
     type: object
   models.RoomResponse:
     properties:
@@ -504,6 +543,8 @@ definitions:
         type: string
       property_id:
         type: string
+      type:
+        $ref: '#/definitions/db.RoomType'
     type: object
   models.RoomStateRequest:
     properties:
