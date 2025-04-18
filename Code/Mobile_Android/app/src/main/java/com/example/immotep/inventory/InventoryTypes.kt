@@ -72,6 +72,19 @@ data class RoomDetail(
             completed = completed
         )
     }
+
+    fun resetAfterInventory(context : Context) : RoomDetail {
+        return this.copy(
+            comment = "",
+            status = State.not_set,
+            cleanliness = Cleanliness.not_set,
+            completed = false,
+            entryPictures = pictures.map {
+                Base64Utils.encodeImageToBase64(it, context)
+            }.toTypedArray(),
+            pictures = arrayOf()
+        )
+    }
 }
 
 data class Room (
@@ -104,6 +117,7 @@ data class Room (
         }
         return tmpRoom
     }
+
     fun toRoomDetail() : RoomDetail {
         return RoomDetail(
             id = id,
@@ -114,6 +128,22 @@ data class Room (
             cleanliness = cleanliness,
             pictures = pictures,
             entryPictures = entryPictures
+        )
+    }
+
+    fun resetAfterInventory(context : Context) : Room {
+        return this.copy(
+            description = "",
+            state = State.not_set,
+            cleanliness = Cleanliness.not_set,
+            completed = false,
+            entryPictures = pictures.map {
+                Base64Utils.encodeImageToBase64(it, context)
+            }.toTypedArray(),
+            pictures = arrayOf(),
+            details = details.map {
+                it.resetAfterInventory(context)
+            }.toTypedArray()
         )
     }
 }

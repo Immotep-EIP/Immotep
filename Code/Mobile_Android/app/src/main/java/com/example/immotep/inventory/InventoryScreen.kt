@@ -22,7 +22,7 @@ import com.example.immotep.inventory.rooms.RoomsScreen
 fun InventoryScreen(
     navController: NavController,
     propertyId: String,
-    loaderButtonViewModel: LoaderInventoryViewModel
+    loaderViewModel: LoaderInventoryViewModel
 ) {
     val apiService = LocalApiService.current
     val context = LocalContext.current
@@ -33,16 +33,16 @@ fun InventoryScreen(
         }
 
     val inventoryErrors = viewModel.inventoryErrors.collectAsState()
-    val isLoading = loaderButtonViewModel.isLoading.collectAsState()
-    val oldReportId = loaderButtonViewModel.oldReportId.collectAsState()
+    val isLoading = loaderViewModel.isLoading.collectAsState()
+    val oldReportId = loaderViewModel.oldReportId.collectAsState()
 
     val cannotAddRoomText = stringResource(R.string.cannot_add_room)
     val cannotAddDetailText = stringResource(R.string.cannot_add_detail)
 
-    LaunchedEffect(propertyId, loaderButtonViewModel, isLoading) {
+    LaunchedEffect(propertyId, loaderViewModel, isLoading) {
         viewModel.setPropertyId(propertyId)
         if (!isLoading.value) {
-            val rooms = loaderButtonViewModel.getRooms()
+            val rooms = loaderViewModel.getRooms()
             println("rooms length = ${rooms.size}")
             viewModel.loadInventoryFromRooms(rooms)
         }
@@ -102,7 +102,14 @@ fun InventoryScreen(
                 navController.popBackStack()
             },
             oldReportId = oldReportId.value,
-            confirmInventory = { viewModel.sendInventory(oldReportId.value) },
+            confirmInventory = {
+                viewModel.sendInventory(
+                    oldReportId.value,
+                    { rooms, reportId ->
+                        loaderViewModel.setNewValueSetByCompletedInventory(rooms, reportId, navController.context)
+                    }
+                )
+            },
             addDetail = { roomId, name ->
                 viewModel.addFurnitureCall(roomId, name,
                     {

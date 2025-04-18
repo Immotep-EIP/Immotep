@@ -1,5 +1,6 @@
 package com.example.immotep.inventory
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -41,7 +42,6 @@ class InventoryViewModel(
     private val roomApiCaller = RoomCallerService(apiService, navController)
     private val furnitureApiCaller = FurnitureCallerService(apiService, navController)
 
-    private val _loadingMutex = Mutex()
     private var _propertyId : String? = null
     private val _inventoryErrors = MutableStateFlow(InventoryApiErrors())
 
@@ -159,16 +159,18 @@ class InventoryViewModel(
         return true
     }
 
-    fun sendInventory(oldReportId : String?) : Boolean {
+    fun sendInventory(oldReportId : String?, setNewValueOfInventory : (Array<Room>, reportId : String) -> Unit) : Boolean {
         if (!checkIfAllAreCompleted() || _propertyId == null) return false
         viewModelScope.launch {
             try {
                 val inventoryReport = roomsToInventoryReport(oldReportId)
+                val newReportId = "abc"
                 inventoryApiCaller.createInventoryReport(
                     _propertyId!!,
                     inventoryReport,
                     { _inventoryErrors.value = _inventoryErrors.value.copy(createInventoryReport = true) }
                 )
+                setNewValueOfInventory(rooms.toTypedArray(), newReportId)
                 onClose()
                 return@launch
             } catch (e : Exception) {

@@ -117,7 +117,7 @@ val fakeFurniture = FurnitureOutput(
 )
 
 val fakeInventoryReportFurnitureBed = InventoryReportFurniture(
-    id = "testFurniture",
+    id = "testFurnitureBed",
     name = "Bed",
     cleanliness = Cleanliness.clean,
     state = State.good,
@@ -127,7 +127,7 @@ val fakeInventoryReportFurnitureBed = InventoryReportFurniture(
 )
 
 val fakeInventoryReportFurnitureTable = InventoryReportFurniture(
-    id = "testFurniture",
+    id = "testFurnitureTable",
     name = "Table",
     cleanliness = Cleanliness.clean,
     state = State.good,

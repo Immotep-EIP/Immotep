@@ -1,5 +1,6 @@
 package com.example.immotep.inventory.loaderButton
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 
 class LoaderInventoryViewModel(
@@ -28,13 +30,11 @@ class LoaderInventoryViewModel(
         var createInventoryReport: Boolean = false,
     )
 
-    init {
-        println("LoaderInventoryViewModel initialized")
-    }
 
     private val inventoryApiCaller = InventoryCallerService(apiService, navController)
     private val roomApiCaller = RoomCallerService(apiService, navController)
 
+    private var _newValueSetByCompletedInventory = false
     private val _loadingMutex = Mutex()
     private val _inventoryErrors = MutableStateFlow(InventoryApiErrors())
     private val _oldReportId = MutableStateFlow<String?>(null)
@@ -69,56 +69,60 @@ class LoaderInventoryViewModel(
     }
 
     fun loadInventory(propertyId: String) {
-        println("Load the inventory...")
-        /*
-        try {
-            viewModelScope.cancel()
-        } catch (e: Exception) {
-            println("The scope does not contain any coroutines")
-        }
-        */
         _inventoryErrors.value = InventoryApiErrors()
-        this.rooms.clear()
+        if (_newValueSetByCompletedInventory) {
+            _newValueSetByCompletedInventory = false
+            return
+        }
         viewModelScope.launch {
-            _loadingMutex.lock()
-            _internalIsLoading.value = true
-            try {
-                tryLoadLastInventory(propertyId)
-            } catch (e: Exception) {
-                println("Impossible to load the last inventory ${e.message}")
-                tryGetBaseRooms(propertyId)
-            } finally {
-                _internalIsLoading.value = false
-                _loadingMutex.unlock()
+            _loadingMutex.withLock {
+                rooms.clear()
+                _internalIsLoading.value = true
+                try {
+                    tryLoadLastInventory(propertyId)
+                } catch (e: Exception) {
+                    println("Impossible to load the last inventory ${e.message}")
+                    tryGetBaseRooms(propertyId)
+                } finally {
+                    _internalIsLoading.value = false
+                }
             }
         }
     }
 
     fun onClick(setIsLoading : (Boolean) -> Unit, propertyId : String) {
         viewModelScope.launch {
-            try {
-                setIsLoading(true)
-                _loadingMutex.lock()
-                setIsLoading(false)
-                _loadingMutex.unlock()
-                println("first size...")
-                navController.navigate("inventory/${propertyId}")
-            } catch (e : Exception) {
-                setIsLoading(false)
-                println("Error occured on the onClick of LoaderInventoryButtonViewModel ${e.message}")
-                _loadingMutex.unlock()
-                e.printStackTrace()
+            _loadingMutex.withLock {
+                try {
+                    setIsLoading(true)
+                    setIsLoading(false)
+                    navController.navigate("inventory/${propertyId}")
+                } catch (e: Exception) {
+                    setIsLoading(false)
+                    println("Error occured on the onClick of LoaderInventoryButtonViewModel ${e.message}")
+                    e.printStackTrace()
+                }
             }
         }
     }
 
     fun getRooms() : Array<Room> {
-        if (!_loadingMutex.tryLock()) {
-            println("LOCKEDD")
+        if (_loadingMutex.isLocked) {
             return arrayOf()
         }
-        _loadingMutex.unlock()
-        println("get the loader rooms size ? ${rooms.size}")
         return this.rooms.toTypedArray()
+    }
+
+    fun setNewValueSetByCompletedInventory(newRooms : Array<Room>, reportId : String, context: Context) {
+        viewModelScope.launch {
+            _loadingMutex.withLock {
+                rooms.clear()
+                _oldReportId.value = reportId
+                rooms.addAll(newRooms.map {
+                    it.resetAfterInventory(context)
+                })
+                _newValueSetByCompletedInventory = true
+            }
+        }
     }
 }
