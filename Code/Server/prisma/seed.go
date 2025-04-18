@@ -88,6 +88,7 @@ func main() {
 
 	room1, err := c.Client.Room.CreateOne(
 		db.Room.Name.Set("Chambre"),
+		db.Room.Type.Set(db.RoomTypeBedroom),
 		db.Room.Property.Link(db.Property.ID.Equals(property1.ID)),
 		db.Room.ID.Set("cm8pr1ile0004d8nhqddiph2t"),
 	).Exec(c.Context)
@@ -96,6 +97,7 @@ func main() {
 	}
 	room2, err := c.Client.Room.CreateOne(
 		db.Room.Name.Set("Cuisine"),
+		db.Room.Type.Set(db.RoomTypeKitchen),
 		db.Room.Property.Link(db.Property.ID.Equals(property1.ID)),
 		db.Room.ID.Set("cm8pr1ilh0005d8nhqwtfnyq5"),
 	).Exec(c.Context)

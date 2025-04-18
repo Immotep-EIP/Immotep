@@ -133,7 +133,7 @@ func TestPropertyResponse(t *testing.T) {
 
 	t.Run("FromProperty1", func(t *testing.T) {
 		propertyResponse := models.PropertyResponse{}
-		propertyResponse.FromDbProperty(pc)
+		propertyResponse.FromDbProperty(pc, "current")
 
 		assert.Equal(t, pc.ID, propertyResponse.ID)
 		assert.Equal(t, pc.Name, propertyResponse.Name)
@@ -145,9 +145,9 @@ func TestPropertyResponse(t *testing.T) {
 
 		assert.Equal(t, models.StatusUnavailable, propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "Test Name", propertyResponse.Tenant)
-		assert.Equal(t, propertyResponse.StartDate, utils.Ptr(db.DateTime{}))
-		assert.Nil(t, propertyResponse.EndDate)
+		assert.Equal(t, "Test Name", propertyResponse.Lease.TenantName)
+		assert.Equal(t, db.DateTime{}, propertyResponse.Lease.StartDate)
+		assert.Nil(t, propertyResponse.Lease.EndDate)
 	})
 
 	t.Run("FromProperty2", func(t *testing.T) {
@@ -155,7 +155,7 @@ func TestPropertyResponse(t *testing.T) {
 		newPc.RelationsProperty.Leases[0].Active = false
 
 		propertyResponse := models.PropertyResponse{}
-		propertyResponse.FromDbProperty(newPc)
+		propertyResponse.FromDbProperty(newPc, "current")
 
 		assert.Equal(t, newPc.ID, propertyResponse.ID)
 		assert.Equal(t, newPc.Name, propertyResponse.Name)
@@ -167,9 +167,8 @@ func TestPropertyResponse(t *testing.T) {
 
 		assert.Equal(t, models.StatusAvailable, propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Empty(t, propertyResponse.Tenant)
-		assert.Nil(t, propertyResponse.StartDate)
-		assert.Nil(t, propertyResponse.EndDate)
+		assert.Nil(t, propertyResponse.Lease)
+		assert.Nil(t, propertyResponse.Invite)
 	})
 
 	t.Run("FromProperty3", func(t *testing.T) {
@@ -184,7 +183,7 @@ func TestPropertyResponse(t *testing.T) {
 		}
 
 		propertyResponse := models.PropertyResponse{}
-		propertyResponse.FromDbProperty(newPc)
+		propertyResponse.FromDbProperty(newPc, "current")
 
 		assert.Equal(t, newPc.ID, propertyResponse.ID)
 		assert.Equal(t, newPc.Name, propertyResponse.Name)
@@ -196,13 +195,13 @@ func TestPropertyResponse(t *testing.T) {
 
 		assert.Equal(t, models.StatusInviteSent, propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "test@example.com", propertyResponse.Tenant)
-		assert.NotNil(t, propertyResponse.StartDate)
-		assert.Nil(t, propertyResponse.EndDate)
+		assert.Nil(t, propertyResponse.Lease)
+		assert.NotNil(t, propertyResponse.Invite)
+		assert.Equal(t, "test@example.com", propertyResponse.Invite.TenantEmail)
 	})
 
 	t.Run("PropertyToResponse", func(t *testing.T) {
-		propertyResponse := models.DbPropertyToResponse(pc)
+		propertyResponse := models.DbPropertyToResponse(pc, "current")
 
 		assert.Equal(t, pc.ID, propertyResponse.ID)
 		assert.Equal(t, pc.Name, propertyResponse.Name)
@@ -214,9 +213,9 @@ func TestPropertyResponse(t *testing.T) {
 
 		assert.Equal(t, models.StatusUnavailable, propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "Test Name", propertyResponse.Tenant)
-		assert.Equal(t, propertyResponse.StartDate, utils.Ptr(db.DateTime{}))
-		assert.Nil(t, propertyResponse.EndDate)
+		assert.Equal(t, "Test Name", propertyResponse.Lease.TenantName)
+		assert.Equal(t, db.DateTime{}, propertyResponse.Lease.StartDate)
+		assert.Nil(t, propertyResponse.Lease.EndDate)
 	})
 }
 
@@ -225,7 +224,7 @@ func TestPropertyInventoryResponse(t *testing.T) {
 
 	t.Run("FromProperty1", func(t *testing.T) {
 		propertyResponse := models.PropertyInventoryResponse{}
-		propertyResponse.FromDbProperty(pc)
+		propertyResponse.FromDbProperty(pc, "current")
 
 		assert.Equal(t, pc.ID, propertyResponse.ID)
 		assert.Equal(t, pc.Name, propertyResponse.Name)
@@ -237,9 +236,9 @@ func TestPropertyInventoryResponse(t *testing.T) {
 
 		assert.Equal(t, models.StatusUnavailable, propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "Test Name", propertyResponse.Tenant)
-		assert.Equal(t, propertyResponse.StartDate, utils.Ptr(db.DateTime{}))
-		assert.Nil(t, propertyResponse.EndDate)
+		assert.Equal(t, "Test Name", propertyResponse.Lease.TenantName)
+		assert.Equal(t, db.DateTime{}, propertyResponse.Lease.StartDate)
+		assert.Nil(t, propertyResponse.Lease.EndDate)
 
 		assert.Equal(t, pc.InnerProperty.PictureID, propertyResponse.PictureID)
 		assert.Equal(t, pc.Archived, propertyResponse.Archived)
@@ -252,7 +251,7 @@ func TestPropertyInventoryResponse(t *testing.T) {
 		newPc.RelationsProperty.Leases[0].Active = false
 
 		propertyResponse := models.PropertyInventoryResponse{}
-		propertyResponse.FromDbProperty(newPc)
+		propertyResponse.FromDbProperty(newPc, "current")
 
 		assert.Equal(t, newPc.ID, propertyResponse.ID)
 		assert.Equal(t, newPc.Name, propertyResponse.Name)
@@ -264,9 +263,8 @@ func TestPropertyInventoryResponse(t *testing.T) {
 
 		assert.Equal(t, models.StatusAvailable, propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Empty(t, propertyResponse.Tenant)
-		assert.Nil(t, propertyResponse.StartDate)
-		assert.Nil(t, propertyResponse.EndDate)
+		assert.Nil(t, propertyResponse.Lease)
+		assert.Nil(t, propertyResponse.Invite)
 
 		assert.Equal(t, newPc.InnerProperty.PictureID, propertyResponse.PictureID)
 		assert.Equal(t, newPc.Archived, propertyResponse.Archived)
@@ -286,7 +284,7 @@ func TestPropertyInventoryResponse(t *testing.T) {
 		}
 
 		propertyResponse := models.PropertyInventoryResponse{}
-		propertyResponse.FromDbProperty(newPc)
+		propertyResponse.FromDbProperty(newPc, "current")
 
 		assert.Equal(t, newPc.ID, propertyResponse.ID)
 		assert.Equal(t, newPc.Name, propertyResponse.Name)
@@ -298,9 +296,9 @@ func TestPropertyInventoryResponse(t *testing.T) {
 
 		assert.Equal(t, models.StatusInviteSent, propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "test@example.com", propertyResponse.Tenant)
-		assert.NotNil(t, propertyResponse.StartDate)
-		assert.Nil(t, propertyResponse.EndDate)
+		assert.Nil(t, propertyResponse.Lease)
+		assert.NotNil(t, propertyResponse.Invite)
+		assert.Equal(t, "test@example.com", propertyResponse.Invite.TenantEmail)
 
 		assert.Equal(t, newPc.InnerProperty.PictureID, propertyResponse.PictureID)
 		assert.Equal(t, newPc.Archived, propertyResponse.Archived)
@@ -309,7 +307,7 @@ func TestPropertyInventoryResponse(t *testing.T) {
 	})
 
 	t.Run("PropertyToResponse", func(t *testing.T) {
-		propertyResponse := models.DbPropertyInventoryToResponse(pc)
+		propertyResponse := models.DbPropertyInventoryToResponse(pc, "current")
 
 		assert.Equal(t, pc.ID, propertyResponse.ID)
 		assert.Equal(t, pc.Name, propertyResponse.Name)
@@ -321,9 +319,9 @@ func TestPropertyInventoryResponse(t *testing.T) {
 
 		assert.Equal(t, models.StatusUnavailable, propertyResponse.Status)
 		assert.Equal(t, 1, propertyResponse.NbDamage)
-		assert.Equal(t, "Test Name", propertyResponse.Tenant)
-		assert.Equal(t, propertyResponse.StartDate, utils.Ptr(db.DateTime{}))
-		assert.Nil(t, propertyResponse.EndDate)
+		assert.Equal(t, "Test Name", propertyResponse.Lease.TenantName)
+		assert.Equal(t, db.DateTime{}, propertyResponse.Lease.StartDate)
+		assert.Nil(t, propertyResponse.Lease.EndDate)
 
 		assert.Equal(t, pc.InnerProperty.PictureID, propertyResponse.PictureID)
 		assert.Equal(t, pc.Archived, propertyResponse.Archived)

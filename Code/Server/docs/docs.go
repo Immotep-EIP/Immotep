@@ -52,9 +52,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created user data",
+                        "description": "Created user ID",
                         "schema": {
-                            "$ref": "#/definitions/models.UserResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -107,9 +107,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created user data",
+                        "description": "Created user ID",
                         "schema": {
-                            "$ref": "#/definitions/models.UserResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -196,7 +196,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get all properties information of an owner",
+                "description": "Get properties information of an owner, optionally filtered by archive status",
                 "consumes": [
                     "application/json"
                 ],
@@ -206,7 +206,15 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Get all properties of an owner",
+                "summary": "Get properties of an owner",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Filter by archive status (default: false)",
+                        "name": "archive",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of properties",
@@ -248,7 +256,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Property data",
-                        "name": "user",
+                        "name": "property",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -258,9 +266,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created property data",
+                        "description": "Created property ID",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -271,46 +279,6 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Property already exists",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/owner/properties/archived/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get all archived properties information of an owner",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Get all archived properties of an owner",
-                "responses": {
-                    "200": {
-                        "description": "List of archived properties",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.PropertyResponse"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -346,6 +314,12 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ONLY FOR OWNER: optional Lease ID (default: current)",
+                        "name": "lease_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -402,13 +376,22 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Property data",
+                        "name": "property",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PropertyUpdateRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Property data",
+                        "description": "Updated property ID",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "401": {
@@ -473,9 +456,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Toggled archive property data",
+                        "description": "Property archive status",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -558,7 +541,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get all damages of a property",
+                "description": "Get all damages of a property, optionally filtered by fixed status",
                 "consumes": [
                     "application/json"
                 ],
@@ -576,61 +559,12 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of damages",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.DamageResponse"
-                            }
-                        }
                     },
-                    "403": {
-                        "description": "Property not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "No active lease",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/owner/properties/{property_id}/damages/fixed/": {
-            "get": {
-                "security": [
                     {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get all fixed damages of a property",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "damage"
-                ],
-                "summary": "Get property fixed damages",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property ID",
-                        "name": "property_id",
-                        "in": "path",
-                        "required": true
+                        "type": "boolean",
+                        "description": "Filter by fixed status (default: false)",
+                        "name": "fixed",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -942,6 +876,12 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ONLY FOR OWNER: optional Lease ID (default: current)",
+                        "name": "lease_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1084,7 +1024,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get all damages of a lease",
+                "description": "Get all damages of a lease, optionally filtered by fixed status",
                 "consumes": [
                     "application/json"
                 ],
@@ -1109,68 +1049,12 @@ const docTemplate = `{
                         "name": "lease_id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of damages",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.DamageResponse"
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Lease not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "No active lease",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/owner/properties/{property_id}/leases/{lease_id}/damages/fixed/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get all fixed damages of a lease",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "damage"
-                ],
-                "summary": "Get lease fixed damages",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property ID",
-                        "name": "property_id",
-                        "in": "path",
-                        "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Lease ID",
-                        "name": "lease_id",
-                        "in": "path",
-                        "required": true
+                        "type": "boolean",
+                        "description": "Filter by fixed status (default: false)",
+                        "name": "fixed",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1317,9 +1201,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Updated damage",
+                        "description": "Updated damage ID",
                         "schema": {
-                            "$ref": "#/definitions/models.DamageCreateResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -1388,10 +1272,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "Fixed damage",
+                    "200": {
+                        "description": "Fixed damage ID",
                         "schema": {
-                            "$ref": "#/definitions/models.DamageResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -1523,9 +1407,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Document uploaded",
+                        "description": "Created document ID",
                         "schema": {
-                            "$ref": "#/definitions/models.DocumentResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -1970,9 +1854,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Updated property data",
+                        "description": "Updated property ID",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -2012,7 +1896,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get all rooms for a specific property",
+                "description": "Get all rooms for a specific property, optionally filtered by archive status",
                 "consumes": [
                     "application/json"
                 ],
@@ -2030,6 +1914,12 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Archive status (default: false)",
+                        "name": "archive",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2096,70 +1986,15 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created room data",
+                        "description": "Created room ID",
                         "schema": {
-                            "$ref": "#/definitions/models.RoomResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
                         "description": "Missing fields",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "403": {
-                        "description": "Property not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Property not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/owner/properties/{property_id}/rooms/archived/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get all archived rooms for a specific property",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Get archived rooms by property ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property ID",
-                        "name": "property_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of archived rooms",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.RoomResponse"
-                            }
                         }
                     },
                     "403": {
@@ -2284,9 +2119,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Toggled archive room data",
+                        "description": "Updated room ID",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -2320,7 +2155,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get all furnitures for a specific room",
+                "description": "Get all furnitures for a specific room, optionally filtered by archive status",
                 "consumes": [
                     "application/json"
                 ],
@@ -2345,6 +2180,12 @@ const docTemplate = `{
                         "name": "room_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Archive status filter",
+                        "name": "archive",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2418,9 +2259,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created furniture data",
+                        "description": "Created furniture ID",
                         "schema": {
-                            "$ref": "#/definitions/models.FurnitureResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -2437,68 +2278,6 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Furniture already exists",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/owner/properties/{property_id}/rooms/{room_id}/furnitures/archived/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get all archived furnitures for a specific room",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Get archived furnitures by room ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property ID",
-                        "name": "property_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Room ID",
-                        "name": "room_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of archived furnitures",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.FurnitureResponse"
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Property not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Room not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -2627,9 +2406,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Toggled archive furniture data",
+                        "description": "Updated furniture ID",
                         "schema": {
-                            "$ref": "#/definitions/models.PropertyResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -2693,10 +2472,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Created invite",
+                    "201": {
+                        "description": "Created invite ID",
                         "schema": {
-                            "$ref": "#/definitions/models.InviteResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -3102,7 +2881,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get all damages of a lease",
+                "description": "Get all damages of a lease, optionally filtered by fixed status",
                 "consumes": [
                     "application/json"
                 ],
@@ -3120,6 +2899,12 @@ const docTemplate = `{
                         "name": "lease_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter by fixed status (default: false)",
+                        "name": "fixed",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3193,74 +2978,19 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Damage created",
+                        "description": "Created damage ID",
                         "schema": {
-                            "$ref": "#/definitions/models.DamageResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
-                        "description": "Missing fields",
+                        "description": "Missing fields or bad base64 string",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
                     },
                     "403": {
                         "description": "Property not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "No active lease",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/tenant/leases/{lease_id}/damages/fixed/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get all fixed damages of a lease",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "damage"
-                ],
-                "summary": "Get lease fixed damages",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Lease ID",
-                        "name": "lease_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of damages",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.DamageResponse"
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Lease not yours",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -3386,9 +3116,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Updated damage",
+                        "description": "Updated damage ID",
                         "schema": {
-                            "$ref": "#/definitions/models.DamageCreateResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -3450,10 +3180,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "Fixed damage",
+                    "200": {
+                        "description": "Fixed damage ID",
                         "schema": {
-                            "$ref": "#/definitions/models.DamageResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -3571,9 +3301,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Document uploaded",
+                        "description": "Created document ID",
                         "schema": {
-                            "$ref": "#/definitions/models.DocumentResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -3791,6 +3521,12 @@ const docTemplate = `{
                         "name": "lease_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ONLY FOR OWNER: optional Lease ID (default: current)",
+                        "name": "lease_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3850,6 +3586,12 @@ const docTemplate = `{
                         "name": "lease_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ONLY FOR OWNER: optional Lease ID (default: current)",
+                        "name": "lease_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4153,6 +3895,45 @@ const docTemplate = `{
                 "RoleTenant"
             ]
         },
+        "db.RoomType": {
+            "type": "string",
+            "enum": [
+                "dressing",
+                "laundryroom",
+                "bedroom",
+                "playroom",
+                "bathroom",
+                "toilet",
+                "livingroom",
+                "diningroom",
+                "kitchen",
+                "hallway",
+                "balcony",
+                "cellar",
+                "garage",
+                "storage",
+                "office",
+                "other"
+            ],
+            "x-enum-varnames": [
+                "RoomTypeDressing",
+                "RoomTypeLaundryroom",
+                "RoomTypeBedroom",
+                "RoomTypePlayroom",
+                "RoomTypeBathroom",
+                "RoomTypeToilet",
+                "RoomTypeLivingroom",
+                "RoomTypeDiningroom",
+                "RoomTypeKitchen",
+                "RoomTypeHallway",
+                "RoomTypeBalcony",
+                "RoomTypeCellar",
+                "RoomTypeGarage",
+                "RoomTypeStorage",
+                "RoomTypeOffice",
+                "RoomTypeOther"
+            ]
+        },
         "db.State": {
             "type": "string",
             "enum": [
@@ -4209,53 +3990,6 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/db.ReportType"
-                }
-            }
-        },
-        "models.DamageCreateResponse": {
-            "type": "object",
-            "properties": {
-                "comment": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "error": {
-                    "type": "string"
-                },
-                "fix_planned_at": {
-                    "type": "string"
-                },
-                "fix_status": {
-                    "$ref": "#/definitions/db.FixStatus"
-                },
-                "fixed_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "lease_id": {
-                    "type": "string"
-                },
-                "priority": {
-                    "$ref": "#/definitions/db.Priority"
-                },
-                "read": {
-                    "type": "boolean"
-                },
-                "room_id": {
-                    "type": "string"
-                },
-                "room_name": {
-                    "type": "string"
-                },
-                "tenant_name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },
@@ -4348,6 +4082,9 @@ const docTemplate = `{
         },
         "models.DamageTenantUpdateRequest": {
             "type": "object",
+            "required": [
+                "add_pictures"
+            ],
             "properties": {
                 "add_pictures": {
                     "type": "array",
@@ -4492,6 +4229,14 @@ const docTemplate = `{
                 }
             }
         },
+        "models.IdResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ImageRequest": {
             "type": "object",
             "required": [
@@ -4579,29 +4324,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.InviteResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "property_id": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "tenant_email": {
-                    "type": "string"
-                }
-            }
-        },
         "models.LeaseResponse": {
             "type": "object",
             "properties": {
@@ -4673,11 +4395,14 @@ const docTemplate = `{
                 "deposit_price": {
                     "type": "number"
                 },
-                "end_date": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
+                },
+                "invite": {
+                    "$ref": "#/definitions/models.propertyInviteResponse"
+                },
+                "lease": {
+                    "$ref": "#/definitions/models.propertyLeaseResponse"
                 },
                 "name": {
                     "type": "string"
@@ -4703,14 +4428,8 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.roomResponse"
                     }
                 },
-                "start_date": {
-                    "type": "string"
-                },
                 "status": {
                     "$ref": "#/definitions/models.PropertyStatus"
-                },
-                "tenant": {
-                    "type": "string"
                 }
             }
         },
@@ -4783,11 +4502,14 @@ const docTemplate = `{
                 "deposit_price": {
                     "type": "number"
                 },
-                "end_date": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
+                },
+                "invite": {
+                    "$ref": "#/definitions/models.propertyInviteResponse"
+                },
+                "lease": {
+                    "$ref": "#/definitions/models.propertyLeaseResponse"
                 },
                 "name": {
                     "type": "string"
@@ -4807,14 +4529,8 @@ const docTemplate = `{
                 "rental_price_per_month": {
                     "type": "number"
                 },
-                "start_date": {
-                    "type": "string"
-                },
                 "status": {
                     "$ref": "#/definitions/models.PropertyStatus"
-                },
-                "tenant": {
-                    "type": "string"
                 }
             }
         },
@@ -4831,14 +4547,50 @@ const docTemplate = `{
                 "StatusAvailable"
             ]
         },
+        "models.PropertyUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "apartment_number": {
+                    "type": "string"
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "deposit_price": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "number"
+                }
+            }
+        },
         "models.RoomRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "type"
             ],
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/db.RoomType"
                 }
             }
         },
@@ -4856,6 +4608,9 @@ const docTemplate = `{
                 },
                 "property_id": {
                     "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/db.RoomType"
                 }
             }
         },
@@ -5051,6 +4806,43 @@ const docTemplate = `{
                 },
                 "quantity": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.propertyInviteResponse": {
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.propertyLeaseResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenant_email": {
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "type": "string"
                 }
             }
         },
