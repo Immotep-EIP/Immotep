@@ -6,12 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,14 +25,31 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.immotep.R
+import com.example.immotep.ui.components.OutlinedTextField
+import com.example.immotep.ui.components.StyledButton
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit, close: () -> Unit, isRoom : Boolean) {
+fun AddRoomOrDetailModal(
+    open: Boolean,
+    addRoomOrDetail: (name : String) -> Unit,
+    close: () -> Unit, isRoom : Boolean
+) {
     if (open) {
         val focusRequester = remember { FocusRequester() }
         var roomName by rememberSaveable { mutableStateOf("") }
+        var error by rememberSaveable { mutableStateOf<String?>(null) }
+
+        val onSubmit = {
+            try {
+                error = null
+                addRoomOrDetail(roomName)
+            } catch (e : Exception) {
+                error = e.message
+            }
+        }
+
         LaunchedEffect(Unit) {
             try {
                 focusRequester.requestFocus()
@@ -51,9 +67,17 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
                 OutlinedTextField(
                     value = roomName,
                     onValueChange = { roomName = it },
-                    label = { Text(stringResource(if (isRoom) R.string.room_name else R.string.detail_name)) },
+                    label = stringResource(if (isRoom) R.string.room_name else R.string.detail_name),
                     modifier = Modifier
-                        .fillMaxWidth().focusRequester(focusRequester).testTag("roomNameTextField")
+                        .fillMaxWidth().focusRequester(focusRequester).testTag("roomNameTextField"),
+                    errorMessage = when (error) {
+                        null -> null
+                        "room_already_exists" -> stringResource(R.string.room_already_exists)
+                        "detail_already_exists" -> stringResource(R.string.detail_already_exists)
+                        "impossible_to_add_room" -> stringResource(R.string.impossible_to_add_room)
+                        "impossible_to_add_detail" -> stringResource(R.string.impossible_to_add_detail)
+                        else -> stringResource(R.string.basic_error)
+                    }
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -61,8 +85,8 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
                 ) {
                     Button(
                         shape = RoundedCornerShape(5.dp),
-                        colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colorScheme.errorContainer,
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
                             contentColor = MaterialTheme.colorScheme.onError
                         ),
                         onClick = { close() },
@@ -70,17 +94,11 @@ fun AddRoomOrDetailModal(open: Boolean, addRoomOrDetail: (name : String) -> Unit
                     ) {
                         Text(stringResource(R.string.cancel))
                     }
-                    Button(
-                        shape = RoundedCornerShape(5.dp),
-                        colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        onClick = { addRoomOrDetail(roomName) },
-                        modifier = Modifier.testTag("addRoomModalConfirm")
-                    ) {
-                        Text(stringResource(if (isRoom) R.string.add_room else R.string.add_detail))
-                    }
+                    StyledButton(
+                        onClick = onSubmit,
+                        modifier = Modifier.testTag("addRoomModalConfirm"),
+                        text = stringResource(if (isRoom) R.string.add_room else R.string.add_detail)
+                    )
                 }
             }
         }

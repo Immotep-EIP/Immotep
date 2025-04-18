@@ -51,7 +51,7 @@ fun OneDetailScreen(
     val detailError = viewModel.errors.collectAsState()
     val isLoading = viewModel.aiLoading.collectAsState()
     val callError = viewModel.aiCallError.collectAsState()
-    val isExit = oldReportId != null
+    val isExit = !detailValue.value.newItem && oldReportId != null
     LaunchedEffect(Unit) {
         viewModel.reset(baseDetail)
     }

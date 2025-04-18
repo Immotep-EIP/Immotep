@@ -40,6 +40,7 @@ data class RoomDetail(
     var comment : String = "",
     var status : State = State.not_set,
     var cleanliness : Cleanliness = Cleanliness.not_set,
+    var newItem : Boolean = false,
     val pictures : Array<Uri> = arrayOf(),
     val entryPictures : Array<String>? = null,
 ) {
@@ -66,6 +67,7 @@ data class RoomDetail(
             description = comment,
             cleanliness = cleanliness,
             state = status,
+            newItem = newItem,
             pictures = pictures,
             entryPictures = entryPictures,
             details = arrayOf(),
@@ -75,6 +77,7 @@ data class RoomDetail(
 
     fun resetAfterInventory(context : Context) : RoomDetail {
         return this.copy(
+            newItem = false,
             comment = "",
             status = State.not_set,
             cleanliness = Cleanliness.not_set,
@@ -94,6 +97,7 @@ data class Room (
     val cleanliness: Cleanliness = Cleanliness.not_set,
     val state: State = State.not_set,
     val completed : Boolean = false,
+    var newItem: Boolean = false,
     val pictures: Array<Uri> = arrayOf(),
     val entryPictures: Array<String>? = null,
     var details : Array<RoomDetail> = arrayOf()
@@ -125,6 +129,7 @@ data class Room (
             completed = completed,
             comment = description,
             status = state,
+            newItem = newItem,
             cleanliness = cleanliness,
             pictures = pictures,
             entryPictures = entryPictures
@@ -133,6 +138,7 @@ data class Room (
 
     fun resetAfterInventory(context : Context) : Room {
         return this.copy(
+            newItem = false,
             description = "",
             state = State.not_set,
             cleanliness = Cleanliness.not_set,

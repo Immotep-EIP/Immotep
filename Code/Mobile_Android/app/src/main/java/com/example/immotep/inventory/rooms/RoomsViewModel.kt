@@ -46,9 +46,10 @@ class RoomsViewModel(
     }
 
     fun addARoom(name: String) {
+        if (allRooms.find { it.name == name } != null) throw Exception("room_already_exists")
         viewModelScope.launch {
-            val roomId = addRoom(name) ?: return@launch
-            val room = Room(id = roomId, name = name)
+            val roomId = addRoom(name) ?: throw Exception("impossible_to_add_room")
+            val room = Room(id = roomId, name = name, newItem = true)
             allRooms.add(room)
         }
     }

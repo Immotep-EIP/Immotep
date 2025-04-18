@@ -7,12 +7,12 @@
     <string name="no_account">Don\'t have an account ? </string>
     <string name="sign_up">Sign up</string>
     <string name="sign_in">Sign in</string>
-    <string name="immotep_logo_desc">Logo Immotep</string>
+    <string name="immotep_logo_desc">Logo Keyz</string>
     <string name="keep_signed">Keep me signed in</string>
     <string name="forgot_password">Forgot password ?</string>
     <string name="login_details">Please enter your details to sign in.</string>
     <string name="create_account">Create your account</string>
-    <string name="create_account_subtitle">Join immotep for your peace of mind !</string>
+    <string name="create_account_subtitle">Join keyz for your peace of mind !</string>
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
     <string name="password_confirm">Password confirmation</string>
@@ -78,7 +78,7 @@
     <string name="add_picture">Add a picture</string>
     <string name="city">City</string>
     <string name="name">Name</string>
-    <string name="inventory_title">Immotep - Inventory</string>
+    <string name="inventory_title">Keyz - Inventory</string>
     <string name="entry_inventory">Entry inventory</string>
     <string name="exit_inventory">Exit inventory</string>
     <string name="edit">Edit</string>
@@ -133,6 +133,7 @@
     <string name="cannot_exit_inventory_text">You need to create at least on entry inventory before creating an exit inventory. The exit inventory will be based on the entry inventory.</string>
     <string name="sure_to_delete">Are you sure to delete </string>
     <string name="delete">Delete</string>
+    <string name="basic_error">An error occured, please retry later</string>
     <string name="pending">Pending</string>
     <string name="property">Property</string>
     <string name="edit_property">Edit property</string>
@@ -167,4 +168,8 @@
     <string name="cancel_invitation">Cancel the invitation</string>
     <string name="mod_property">Modify the property</string>
     <string name="delete_property">Delete the property</string>
+    <string name="impossible_to_add_detail">Impossible to add the detail, please retry later</string>
+    <string name="detail_already_exists">A detail with this name already exists</string>
+    <string name="room_already_exists">A room with this name already exists</string>
+    <string name="impossible_to_add_room">Impossible to add the room, please retry later</string>
 </resources>
