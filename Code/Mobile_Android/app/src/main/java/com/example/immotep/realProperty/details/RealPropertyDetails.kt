@@ -61,6 +61,7 @@ import com.example.immotep.apiCallerServices.PropertyStatus
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InternalLoading
+import com.example.immotep.inventory.loaderButton.LoaderInventoryViewModel
 import com.example.immotep.inviteTenantModal.InviteTenantModal
 import com.example.immotep.layouts.TabsLayout
 import com.example.immotep.realProperty.PropertyStatusBox
@@ -186,7 +187,7 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
 fun RealPropertyDetailsScreen(
     navController: NavController, newProperty : DetailedProperty,
     getBack: (DetailedProperty) -> Unit,
-
+    loaderInventoryViewModel: LoaderInventoryViewModel
 ) {
     val apiService = LocalApiService.current
     val context = LocalContext.current
@@ -265,7 +266,7 @@ fun RealPropertyDetailsScreen(
             }
             TabsLayout(tabIndex, tabs, { tabIndex = it }) {
                 when (tabIndex) {
-                    0 -> AboutPropertyTab(property)
+                    0 -> AboutPropertyTab(property, navController, { viewModel.setIsLoading(it) }, loaderInventoryViewModel)
                     1 -> DocumentBox(property = property, openPdf = { viewModel.openPdf(it, context)})
                     2 -> Damages()
                 }

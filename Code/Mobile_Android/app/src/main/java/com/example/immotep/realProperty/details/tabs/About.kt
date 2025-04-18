@@ -37,8 +37,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.immotep.R
 import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.PropertyStatus
+import com.example.immotep.inventory.loaderButton.LoaderInventoryButton
+import com.example.immotep.inventory.loaderButton.LoaderInventoryViewModel
 import com.example.immotep.realProperty.PropertyBoxTextLine
 import com.example.immotep.utils.DateFormatter
 
@@ -64,7 +68,12 @@ fun AboutThePropertyBox(name : String, value : String, icon : ImageVector, modif
 
 
 @Composable
-fun AboutPropertyTab(property : State<DetailedProperty>) {
+fun AboutPropertyTab(
+    property : State<DetailedProperty>,
+    navController: NavController,
+    setIsLoading : (Boolean) -> Unit,
+    loaderInventoryViewModel: LoaderInventoryViewModel
+) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(18.dp)
@@ -114,5 +123,13 @@ fun AboutPropertyTab(property : State<DetailedProperty>) {
                 },
                 fontSize = 15.sp)
         }
+    }
+    if (property.value.status == PropertyStatus.unavailable) {
+        LoaderInventoryButton(
+            navController,
+            property.value.id,
+            setIsLoading,
+            loaderInventoryViewModel
+        )
     }
 }

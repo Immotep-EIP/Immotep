@@ -15,7 +15,9 @@ import com.example.immotep.apiClient.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import java.util.Vector
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * class InventoryViewModel, made to be with the Inventory screen and handle al of his logic
@@ -23,7 +25,6 @@ import java.util.Vector
 
 class InventoryViewModel(
     private val navController: NavController,
-    private var propertyId : String,
     apiService: ApiService
 ) : ViewModel() {
     /**
@@ -35,52 +36,33 @@ class InventoryViewModel(
         var errorRoomName : String? = null,
         var createInventoryReport : Boolean = false,
     )
+
     private val inventoryApiCaller = InventoryCallerService(apiService, navController)
     private val roomApiCaller = RoomCallerService(apiService, navController)
     private val furnitureApiCaller = FurnitureCallerService(apiService, navController)
-    private val _inventoryOpen = MutableStateFlow(InventoryOpenValues.CLOSED)
+
+    private val _loadingMutex = Mutex()
+    private var _propertyId : String? = null
     private val _inventoryErrors = MutableStateFlow(InventoryApiErrors())
-    private val _oldReportId = MutableStateFlow<String?>(null)
-    private val _cannotMakeExitInventory = MutableStateFlow(false)
 
     private val rooms = mutableStateListOf<Room>()
-    private val lastInventoryRooms = mutableStateListOf<Room>()
 
-    private var baseRooms: Vector<Room> = Vector()
-    private var lastInventoryBaseRooms: Vector<Room> = Vector()
+    private var nonModifiedRooms: Vector<Room> = Vector()
 
-    val cannotMakeExitInventory = _cannotMakeExitInventory.asStateFlow()
-    val inventoryOpen = _inventoryOpen.asStateFlow()
-    val oldReportId = _oldReportId.asStateFlow()
     val inventoryErrors = _inventoryErrors.asStateFlow()
 
-    /**
-     * setInventoryOpen, made to set the inventory open or close
-     * @param value, the value to set the inventory to
-     * @return void
-     */
-    fun setInventoryOpen(value: InventoryOpenValues) {
-        if (inventoryErrors.value.getAllRooms || inventoryErrors.value.errorRoomName != null) {
-            return
+    fun loadInventoryFromRooms(rooms : Array<Room>) {
+        println("Loading inventory from rooms ${rooms.size}")
+        this.rooms.clear()
+        nonModifiedRooms.clear()
+        this.rooms.addAll(rooms)
+        rooms.forEach {
+            nonModifiedRooms.add(it.copy())
         }
-        if (value === InventoryOpenValues.EXIT
-            &&
-            (_oldReportId.value == null
-                    || lastInventoryBaseRooms.isEmpty()
-                    || inventoryErrors.value.getLastInventoryReport)
-            ) {
-            _cannotMakeExitInventory.value = true
-            return
-        }
-        _inventoryOpen.value = value
     }
 
-    /**
-     * closeCannotMakeExitInventory, made to close the cannot make exit inventory error
-     * @return void
-     */
-    fun closeCannotMakeExitInventory() {
-        _cannotMakeExitInventory.value = false
+    fun setPropertyId(propertyId: String) {
+        _propertyId = propertyId
     }
 
     /**
@@ -88,9 +70,6 @@ class InventoryViewModel(
      * @return Array<Room>, the rooms of the inventory
      */
     fun getRooms() : Array<Room> {
-        if (inventoryOpen.value === InventoryOpenValues.EXIT) {
-            return lastInventoryRooms.toTypedArray()
-        }
         return rooms.toTypedArray()
     }
 
@@ -99,9 +78,12 @@ class InventoryViewModel(
      *
      */
     suspend fun addRoom(name: String, onError : () -> Unit) : String? {
+        if (_propertyId == null) {
+            return null
+        }
         try {
             val createdRoom = roomApiCaller.addRoom(
-                propertyId,
+                _propertyId!!,
                 AddRoomInput(name = name),
                 onError = onError
             )
@@ -116,9 +98,12 @@ class InventoryViewModel(
     }
 
     suspend fun addFurnitureCall(roomId: String, name: String, onError : () -> Unit) : String? {
+        if (_propertyId == null) {
+            return null
+        }
         try {
             val createdFurniture = furnitureApiCaller.addFurniture(
-                propertyId,
+                _propertyId!!,
                 roomId,
                 FurnitureInput(name, 1),
                 onError
@@ -143,87 +128,15 @@ class InventoryViewModel(
 
     fun onClose() {
         _inventoryErrors.value = InventoryApiErrors()
-        if (inventoryOpen.value == InventoryOpenValues.ENTRY) {
-            rooms.clear()
-            this.baseRooms.forEach {
-                rooms.add(it.copy())
-                val tmpRoom = rooms.last()
-                for (i in tmpRoom.details.indices) {
-                    tmpRoom.details[i] = it.details[i].copy(completed = false)
-                }
-            }
-            return
-        }
-        if (inventoryOpen.value == InventoryOpenValues.EXIT) {
-            lastInventoryRooms.clear()
-            this.lastInventoryBaseRooms.forEach {
-                lastInventoryRooms.add(it.copy())
-                val tmpRoom = lastInventoryRooms.last()
-                for (i in tmpRoom.details.indices) {
-                    tmpRoom.details[i] = it.details[i].copy(completed = false)
-                }
-            }
-        }
+        rooms.clear()
+        nonModifiedRooms.clear()
+        _propertyId = null
     }
 
-    private fun closeInventory() {
-        rooms.forEach {
-            it.details.forEach { detail ->
-                detail.completed = false
-            }
-        }
-        baseRooms.clear()
-        rooms.forEach {
-            baseRooms.add(it.copy())
-        }
-    }
 
-    private suspend fun getLastInventory() {
-        lastInventoryRooms.clear()
-        lastInventoryBaseRooms.clear()
-        try {
-            val inventoryReport = inventoryApiCaller.getLastInventoryReport(
-                propertyId
-            ) {}
-            val lastInventoryRoomsAsRooms = inventoryReport.getRoomsAsRooms(empty = true)
-            _oldReportId.value = inventoryReport.id
-            lastInventoryRooms.addAll(lastInventoryRoomsAsRooms)
-            lastInventoryRoomsAsRooms.forEach {
-                lastInventoryBaseRooms.add(it.copy())
-            }
-        } catch (e : Exception) {
-            println("Error during get last inventory ${e.message}")
-            e.printStackTrace()
-        }
-    }
-
-    fun getBaseRooms(propertyId: String) {
-        this.propertyId = propertyId
-        _inventoryErrors.value = InventoryApiErrors()
-        viewModelScope.launch {
-            rooms.clear()
-            baseRooms.clear()
-            try {
-                val newRooms = roomApiCaller.getAllRoomsWithFurniture(
-                    propertyId,
-                    { _inventoryErrors.value = _inventoryErrors.value.copy(getAllRooms = true) },
-                    { _inventoryErrors.value = _inventoryErrors.value.copy(errorRoomName = it) }
-                )
-                this@InventoryViewModel.rooms.addAll(newRooms)
-                newRooms.forEach {
-                    baseRooms.add(it.copy())
-                }
-            } catch (e : Exception) {
-                println("Error during get base rooms ${e.message}")
-                e.printStackTrace()
-            }
-            getLastInventory()
-        }
-    }
-
-    private fun roomsToInventoryReport(openValue: InventoryOpenValues) : InventoryReportInput {
+    private fun roomsToInventoryReport(oldReportId: String?) : InventoryReportInput {
         val inventoryReportInput = InventoryReportInput(
-            type = if (openValue === InventoryOpenValues.ENTRY) "start" else "end",
+            type = if (oldReportId == null) "start" else "end",
             rooms = Vector()
         )
         rooms.forEach {
@@ -246,19 +159,17 @@ class InventoryViewModel(
         return true
     }
 
-    fun sendInventory() : Boolean {
-        if (!checkIfAllAreCompleted()) return false
+    fun sendInventory(oldReportId : String?) : Boolean {
+        if (!checkIfAllAreCompleted() || _propertyId == null) return false
         viewModelScope.launch {
             try {
-                val inventoryReport = roomsToInventoryReport(inventoryOpen.value)
+                val inventoryReport = roomsToInventoryReport(oldReportId)
                 inventoryApiCaller.createInventoryReport(
-                    propertyId,
+                    _propertyId!!,
                     inventoryReport,
                     { _inventoryErrors.value = _inventoryErrors.value.copy(createInventoryReport = true) }
                 )
-                closeInventory()
-                setInventoryOpen(InventoryOpenValues.CLOSED)
-                getLastInventory()
+                onClose()
                 return@launch
             } catch (e : Exception) {
                 println("Error sending inventory ${e.message}")
@@ -266,20 +177,5 @@ class InventoryViewModel(
             }
         }
         return true
-    }
-}
-
-class InventoryViewModelFactory(
-    private val navController: NavController,
-    private val propertyId : String,
-    private val apiService: ApiService
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(InventoryViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return InventoryViewModel(navController, propertyId, apiService) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

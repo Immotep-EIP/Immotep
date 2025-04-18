@@ -68,6 +68,7 @@ import com.example.immotep.components.DeletePopUp
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.dashboard.DashBoardLayout
+import com.example.immotep.inventory.loaderButton.LoaderInventoryViewModel
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
 import com.example.immotep.utils.DateFormatter
 
@@ -188,7 +189,10 @@ fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDel
 }
 
 @Composable
-fun RealPropertyScreen(navController: NavController) {
+fun RealPropertyScreen(
+    navController: NavController,
+    loaderInventoryViewModel: LoaderInventoryViewModel
+) {
     val apiService = LocalApiService.current
     val viewModel: RealPropertyViewModel =
         viewModel {
@@ -261,7 +265,8 @@ fun RealPropertyScreen(navController: NavController) {
             RealPropertyDetailsScreen(
                 navController,
                 propertySelectedDetails.value!!,
-                getBack = { viewModel.getBackFromDetails(it) }
+                getBack = { viewModel.getBackFromDetails(it) },
+                loaderInventoryViewModel
             )
         }
         AddOrEditPropertyModal(

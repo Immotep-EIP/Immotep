@@ -41,12 +41,11 @@ class InventoryCallerService(
         }
     }
 
-    suspend fun getLastInventoryReport(propertyId: String, onError : () -> Unit) : InventoryReportOutput {
+    suspend fun getLastInventoryReport(propertyId: String) : InventoryReportOutput {
         try {
             val inventoryReport = apiService.getInventoryReportByIdOrLatest(getBearerToken(), propertyId, "latest")
             return inventoryReport
         } catch (e : Exception) {
-            onError()
             throw e
         }
     }

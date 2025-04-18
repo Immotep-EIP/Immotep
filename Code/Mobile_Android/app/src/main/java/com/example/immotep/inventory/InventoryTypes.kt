@@ -118,7 +118,6 @@ data class Room (
     }
 }
 
-
 data class InventoryReportOutput(
     val date: String,
     val id: String,
@@ -141,8 +140,8 @@ data class InventoryReportRoom(
     val cleanliness: Cleanliness,
     val state: State,
     val note: String,
-    val pictures: Vector<String>,
-    val furnitures: Vector<InventoryReportFurniture>,
+    val pictures: MutableList<String>,
+    val furnitures: MutableList<InventoryReportFurniture>,
     val name: String
 ) {
     fun toRoom(empty : Boolean) : Room {
@@ -169,7 +168,7 @@ data class InventoryReportFurniture(
     val id: String,
     val cleanliness: Cleanliness,
     val note: String,
-    val pictures: Vector<String>,
+    val pictures: MutableList<String>,
     val state: State,
     val name: String,
     val quantity: Int

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -41,17 +42,22 @@ class RealPropertyDetailsViewModel(
     private var _property = MutableStateFlow(DetailedProperty())
     private val _apiError = MutableStateFlow(ApiErrors.NONE)
     private val _isLoading = MutableStateFlow(false)
+    private val _isLoadingMutex = Mutex()
 
     val property: StateFlow<DetailedProperty> = _property.asStateFlow()
     val apiError = _apiError.asStateFlow()
     val isLoading = _isLoading.asStateFlow()
 
     fun setIsLoading(value : Boolean) {
-        _isLoading.value = value
+        viewModelScope.launch {
+            _isLoadingMutex.lock()
+            _isLoading.value = value
+            _isLoadingMutex.unlock()
+        }
     }
 
     fun loadProperty(newProperty: DetailedProperty) {
-        _isLoading.value = true
+        setIsLoading(true)
         _apiError.value = ApiErrors.NONE
         _property.value = newProperty
         viewModelScope.launch {
@@ -62,21 +68,21 @@ class RealPropertyDetailsViewModel(
                 println("Error loading property ${e.message}")
                 e.printStackTrace()
             } finally {
-                _isLoading.value = false
+               setIsLoading(false)
             }
         }
     }
 
     suspend fun editProperty(property: AddPropertyInput, propertyId: String) {
         _apiError.value = ApiErrors.NONE
-        _isLoading.value = true
+        setIsLoading(true)
         try {
             _property.value = apiCaller.updateProperty(property, propertyId) { _apiError.value = ApiErrors.UPDATE_PROPERTY }
         } catch (e : Exception) {
             e.printStackTrace()
             _apiError.value = ApiErrors.UPDATE_PROPERTY
         } finally {
-            _isLoading.value = false
+            setIsLoading(false)
         }
     }
 
@@ -103,7 +109,7 @@ class RealPropertyDetailsViewModel(
 
     fun onCancelInviteTenant() {
         viewModelScope.launch {
-            _isLoading.value = true
+            setIsLoading(true)
             try {
                 inviteApiCaller.cancelInvite(_property.value.id)
                 _property.value = _property.value.copy(
@@ -116,7 +122,7 @@ class RealPropertyDetailsViewModel(
                 println(e.message)
                 _apiError.value = ApiErrors.UPDATE_PROPERTY
             } finally {
-                _isLoading.value = false
+                setIsLoading(false)
             }
         }
     }

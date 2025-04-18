@@ -10,8 +10,11 @@ import com.example.immotep.apiCallerServices.RoomOutput
 import com.example.immotep.authService.LoginResponse
 import com.example.immotep.authService.RegistrationResponse
 import com.example.immotep.inventory.Cleanliness
+import com.example.immotep.inventory.InventoryReportFurniture
 import com.example.immotep.inventory.InventoryReportOutput
+import com.example.immotep.inventory.InventoryReportRoom
 import com.example.immotep.inventory.State
+import java.util.Vector
 
 const val baseDateStr = "2025-03-09T13:52:54.823Z"
 
@@ -113,11 +116,43 @@ val fakeFurniture = FurnitureOutput(
     quantity = 1
 )
 
+val fakeInventoryReportFurnitureBed = InventoryReportFurniture(
+    id = "testFurniture",
+    name = "Bed",
+    cleanliness = Cleanliness.clean,
+    state = State.good,
+    note = "State good and clean for furniture",
+    pictures = Vector<String>(),
+    quantity = 1
+)
+
+val fakeInventoryReportFurnitureTable = InventoryReportFurniture(
+    id = "testFurniture",
+    name = "Table",
+    cleanliness = Cleanliness.clean,
+    state = State.good,
+    note = "State good and clean for furniture",
+    pictures = Vector<String>(),
+    quantity = 1
+)
+
+val fakeInventoryReportRoom = InventoryReportRoom(
+    id = "testRoom",
+    name = "BedRoom",
+    cleanliness = Cleanliness.clean,
+    state = State.good,
+    note = "State good and clean",
+    furnitures = mutableListOf(fakeInventoryReportFurnitureBed, fakeInventoryReportFurnitureTable),
+    pictures = mutableListOf()
+
+)
+
+
 val fakeInventoryReport = InventoryReportOutput(
     date = "test",
     id = "testInventory",
     property_id = "test",
-    rooms = arrayOf(),
+    rooms = arrayOf(fakeInventoryReportRoom),
     type = "test",
 )
 
