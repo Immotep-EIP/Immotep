@@ -5,7 +5,7 @@ import (
 	"immotep/backend/prisma/db"
 )
 
-var Type validator.Func = func(fl validator.FieldLevel) bool {
+var ReportType validator.Func = func(fl validator.FieldLevel) bool {
 	p, ok := fl.Field().Interface().(db.ReportType)
 	if !ok {
 		return false

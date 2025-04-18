@@ -5,6 +5,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const Strue = "true"
+const Sfalse = "false"
+
 func GetClaims(c *gin.Context) map[string]string {
 	return c.GetStringMapString("oauth.claims")
 }

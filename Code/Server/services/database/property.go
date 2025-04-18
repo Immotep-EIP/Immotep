@@ -116,12 +116,6 @@ func CreateProperty(property db.PropertyModel, ownerId string) *db.PropertyModel
 		db.Property.DepositPrice.Set(property.DepositPrice),
 		db.Property.Owner.Link(db.User.ID.Equals(ownerId)),
 		db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
-	).With(
-		db.Property.Leases.Fetch().With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Damages.Fetch(db.Damage.FixedAt.IsNull()),
-		),
-		db.Property.LeaseInvite.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {
@@ -144,23 +138,13 @@ func MockCreateProperty(c *services.PrismaDB, property db.PropertyModel) db.Prop
 		db.Property.DepositPrice.Set(property.DepositPrice),
 		db.Property.Owner.Link(db.User.ID.Equals("1")),
 		db.Property.ApartmentNumber.SetIfPresent(property.InnerProperty.ApartmentNumber),
-	).With(
-		db.Property.Leases.Fetch().With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Damages.Fetch(db.Damage.FixedAt.IsNull()),
-		),
-		db.Property.LeaseInvite.Fetch(),
 	)
 }
 
 func UpdateProperty(property db.PropertyModel, req models.PropertyUpdateRequest) *db.PropertyModel {
 	pdb := services.DBclient
-	newProperty, err := pdb.Client.Property.FindUnique(db.Property.ID.Equals(property.ID)).With(
-		db.Property.Leases.Fetch().With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Damages.Fetch(db.Damage.FixedAt.IsNull()),
-		),
-		db.Property.LeaseInvite.Fetch(),
+	newProperty, err := pdb.Client.Property.FindUnique(
+		db.Property.ID.Equals(property.ID),
 	).Update(
 		db.Property.Name.SetIfPresent(req.Name),
 		db.Property.Address.SetIfPresent(req.Address),
@@ -184,12 +168,6 @@ func UpdateProperty(property db.PropertyModel, req models.PropertyUpdateRequest)
 func MockUpdateProperty(c *services.PrismaDB, uProperty models.PropertyUpdateRequest) db.PropertyMockExpectParam {
 	return c.Client.Property.FindUnique(
 		db.Property.ID.Equals("1"),
-	).With(
-		db.Property.Leases.Fetch().With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Damages.Fetch(db.Damage.FixedAt.IsNull()),
-		),
-		db.Property.LeaseInvite.Fetch(),
 	).Update(
 		db.Property.Name.SetIfPresent(uProperty.Name),
 		db.Property.Address.SetIfPresent(uProperty.Address),
@@ -207,12 +185,6 @@ func UpdatePropertyPicture(property db.PropertyModel, image db.ImageModel) *db.P
 	pdb := services.DBclient
 	newProperty, err := pdb.Client.Property.FindUnique(
 		db.Property.ID.Equals(property.ID),
-	).With(
-		db.Property.Leases.Fetch().With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Damages.Fetch(db.Damage.FixedAt.IsNull()),
-		),
-		db.Property.LeaseInvite.Fetch(),
 	).Update(
 		db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
 	).Exec(pdb.Context)
@@ -228,27 +200,15 @@ func UpdatePropertyPicture(property db.PropertyModel, image db.ImageModel) *db.P
 func MockUpdatePropertyPicture(c *services.PrismaDB) db.PropertyMockExpectParam {
 	return c.Client.Property.FindUnique(
 		db.Property.ID.Equals("1"),
-	).With(
-		db.Property.Leases.Fetch().With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Damages.Fetch(db.Damage.FixedAt.IsNull()),
-		),
-		db.Property.LeaseInvite.Fetch(),
 	).Update(
 		db.Property.Picture.Link(db.Image.ID.Equals("1")),
 	)
 }
 
-func ToggleArchiveProperty(propertyId string, archive bool) *db.PropertyModel {
+func ArchiveProperty(propertyId string, archive bool) *db.PropertyModel {
 	pdb := services.DBclient
 	archivedProperty, err := pdb.Client.Property.FindUnique(
 		db.Property.ID.Equals(propertyId),
-	).With(
-		db.Property.Leases.Fetch().With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Damages.Fetch(db.Damage.FixedAt.IsNull()),
-		),
-		db.Property.LeaseInvite.Fetch(),
 	).Update(
 		db.Property.Archived.Set(archive),
 	).Exec(pdb.Context)
@@ -264,12 +224,6 @@ func ToggleArchiveProperty(propertyId string, archive bool) *db.PropertyModel {
 func MockArchiveProperty(c *services.PrismaDB) db.PropertyMockExpectParam {
 	return c.Client.Property.FindUnique(
 		db.Property.ID.Equals("1"),
-	).With(
-		db.Property.Leases.Fetch().With(
-			db.Lease.Tenant.Fetch(),
-			db.Lease.Damages.Fetch(db.Damage.FixedAt.IsNull()),
-		),
-		db.Property.LeaseInvite.Fetch(),
 	).Update(
 		db.Property.Archived.Set(true),
 	)

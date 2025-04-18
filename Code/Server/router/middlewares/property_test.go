@@ -402,3 +402,117 @@ func TestGetPropertyByLease_PropertyNotFound(t *testing.T) {
 	middlewares.GetPropertyByLease()(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
+
+func TestCheckInventoryReportLeaseOwnership(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport := BuildTestInvReport("1")
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Returns(invReport)
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID: "1",
+		},
+	})
+	ctx.Params = gin.Params{
+		{Key: "reportId", Value: "1"},
+	}
+
+	middlewares.CheckInventoryReportLeaseOwnership("reportId")(ctx)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestCheckInventoryReportLeaseOwnership_Latest(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport := BuildTestInvReport("1")
+	m.InventoryReport.Expect(database.MockGetLatestInvReportByLease(c)).Returns(invReport)
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID: "1",
+		},
+	})
+	ctx.Params = gin.Params{
+		{Key: "reportId", Value: "latest"},
+	}
+
+	middlewares.CheckInventoryReportLeaseOwnership("reportId")(ctx)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestCheckInventoryReportLeaseOwnership_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Errors(db.ErrNotFound)
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID: "1",
+		},
+	})
+	ctx.Params = gin.Params{
+		{Key: "reportId", Value: "1"},
+	}
+
+	middlewares.CheckInventoryReportLeaseOwnership("reportId")(ctx)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCheckInventoryReportLeaseOwnership_LatestNotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetLatestInvReportByLease(c)).Errors(db.ErrNotFound)
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID: "1",
+		},
+	})
+	ctx.Params = gin.Params{
+		{Key: "reportId", Value: "latest"},
+	}
+
+	middlewares.CheckInventoryReportLeaseOwnership("reportId")(ctx)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCheckInventoryReportLeaseOwnership_NotYours(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport := BuildTestInvReport("1")
+	invReport.LeaseID = "2"
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Returns(invReport)
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID: "1",
+		},
+	})
+	ctx.Params = gin.Params{
+		{Key: "reportId", Value: "1"},
+	}
+
+	middlewares.CheckInventoryReportLeaseOwnership("reportId")(ctx)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}

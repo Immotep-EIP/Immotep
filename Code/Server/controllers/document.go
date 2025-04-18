@@ -20,7 +20,7 @@ import (
 //	@Param			property_id	path		string					true	"Property ID"
 //	@Param			lease_id	path		string					true	"Lease ID or `current`"
 //	@Param			doc			body		models.DocumentRequest	true	"Document to upload"
-//	@Success		201			{object}	models.DocumentResponse	"Document uploaded"
+//	@Success		201			{object}	models.IdResponse		"Created document ID"
 //	@Failure		400			{object}	utils.Error				"Missing fields"
 //	@Failure		403			{object}	utils.Error				"Property not yours"
 //	@Failure		404			{object}	utils.Error				"No active lease"
@@ -43,7 +43,7 @@ func UploadDocument(c *gin.Context) {
 
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
 	res := database.CreateDocument(*doc, lease.ID)
-	c.JSON(http.StatusCreated, models.DbDocumentToResponse(res))
+	c.JSON(http.StatusCreated, models.IdResponse{ID: res.ID})
 }
 
 // GetAllDocumentsByLease godoc

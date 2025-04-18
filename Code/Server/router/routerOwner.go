@@ -13,8 +13,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 	properties := owner.Group("/properties/")
 	{
 		properties.POST("/", controllers.CreateProperty)
-		properties.GET("/", controllers.GetAllPropertiesByOwner)
-		properties.GET("/archived/", controllers.GetArchivedPropertiesByOwner)
+		properties.GET("/", controllers.GetPropertiesByOwner)
 
 		propertyId := properties.Group("/:property_id/")
 		{
@@ -29,11 +28,7 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			propertyId.POST("/send-invite/", controllers.InviteTenant)
 			propertyId.DELETE("/cancel-invite/", middlewares.CheckLeaseInvite("property_id"), controllers.CancelInvite)
 
-			damages := propertyId.Group("/damages/")
-			{
-				damages.GET("/", controllers.GetDamagesByProperty)
-				damages.GET("/fixed/", controllers.GetFixedDamagesByProperty)
-			}
+			propertyId.GET("/damages/", controllers.GetDamagesByProperty)
 
 			reports := propertyId.Group("/inventory-reports/")
 			{
@@ -63,7 +58,6 @@ func registerOwnerLeaseRoutes(leases *gin.RouterGroup) {
 		damages := leaseId.Group("/damages/")
 		{
 			damages.GET("/", controllers.GetDamagesByLease)
-			damages.GET("/fixed/", controllers.GetFixedDamagesByLease)
 
 			damageId := damages.Group("/:damage_id/")
 			{
@@ -111,8 +105,7 @@ func registerOwnerInventoryRoutes(propertyId *gin.RouterGroup) {
 	rooms := propertyId.Group("/rooms/")
 	{
 		rooms.POST("/", controllers.CreateRoom)
-		rooms.GET("/", controllers.GetAllRoomsByProperty)
-		rooms.GET("/archived/", controllers.GetArchivedRoomsByProperty)
+		rooms.GET("/", controllers.GetRoomsByProperty)
 
 		roomId := rooms.Group("/:room_id/")
 		{
@@ -123,8 +116,7 @@ func registerOwnerInventoryRoutes(propertyId *gin.RouterGroup) {
 			furnitures := roomId.Group("/furnitures/")
 			{
 				furnitures.POST("/", controllers.CreateFurniture)
-				furnitures.GET("/", controllers.GetAllFurnituresByRoom)
-				furnitures.GET("/archived/", controllers.GetArchivedFurnituresByRoom)
+				furnitures.GET("/", controllers.GetFurnituresByRoom)
 
 				furnitureId := furnitures.Group("/:furniture_id/")
 				{

@@ -39,7 +39,7 @@ func TokenAuth(s *oauth.OAuthBearerServer) func(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		models.UserRequest	true	"Owner user data"
-//	@Success		201		{object}	models.UserResponse	"Created user data"
+//	@Success		201		{object}	models.IdResponse	"Created user ID"
 //	@Failure		400		{object}	utils.Error			"Missing fields"
 //	@Failure		409		{object}	utils.Error			"Email already exists"
 //	@Failure		500
@@ -63,7 +63,7 @@ func RegisterOwner(c *gin.Context) {
 		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusCreated, models.DbUserToResponse(*user))
+	c.JSON(http.StatusCreated, models.IdResponse{ID: user.ID})
 }
 
 // RegisterTenant godoc
@@ -75,7 +75,7 @@ func RegisterOwner(c *gin.Context) {
 //	@Produce		json
 //	@Param			id		path		string				true	"Pending lease ID"
 //	@Param			user	body		models.UserRequest	true	"Tenant user data"
-//	@Success		201		{object}	models.UserResponse	"Created user data"
+//	@Success		201		{object}	models.IdResponse	"Created user ID"
 //	@Failure		400		{object}	utils.Error			"Missing fields"
 //	@Failure		404		{object}	utils.Error			"Pending lease not found"
 //	@Failure		409		{object}	utils.Error			"Email already exists"
@@ -117,7 +117,7 @@ func RegisterTenant(c *gin.Context) {
 	}
 
 	_ = database.CreateLease(*leaseInvite, *user)
-	c.JSON(http.StatusCreated, models.DbUserToResponse(*user))
+	c.JSON(http.StatusCreated, models.IdResponse{ID: user.ID})
 }
 
 // AcceptInvite godoc
