@@ -5,6 +5,7 @@ import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
+import com.example.immotep.apiCallerServices.CreatedInventoryReport
 import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.FurnitureInput
 import com.example.immotep.apiCallerServices.FurnitureOutput
@@ -17,6 +18,7 @@ import com.example.immotep.apiCallerServices.ProfileUpdateInput
 import com.example.immotep.apiCallerServices.RoomOutput
 import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.apiClient.CreateOrUpdateResponse
 import com.example.immotep.authService.LoginResponse
 import com.example.immotep.authService.RegistrationInput
 import com.example.immotep.authService.RegistrationResponse
@@ -59,46 +61,32 @@ class MockedApiService : ApiService {
         return parisFakeProperty
     }
 
-    override suspend fun addProperty(authHeader : String, addPropertyInput: AddPropertyInput) : GetPropertyResponse {
-        return parisFakeProperty
+    override suspend fun addProperty(authHeader : String, addPropertyInput: AddPropertyInput) : CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = parisFakeProperty.id
+        )
     }
 
     override suspend fun getPropertyDocuments(
         authHeader: String,
-        propertyId: String
+        propertyId: String,
+        leaseId: String
     ): Array<Document> {
         return arrayOf(fakeDocument)
     }
+
     override suspend fun updateProperty(
         authHeader : String,
         addPropertyInput: AddPropertyInput,
         propertyId: String
-    ) : GetPropertyResponse {
-        val modifiedFakeProperty = GetPropertyResponse(
-            id = parisFakeProperty.id,
-            name = addPropertyInput.name,
-            address = addPropertyInput.address,
-            city = addPropertyInput.city,
-            postal_code = addPropertyInput.postal_code,
-            country = addPropertyInput.country,
-            area_sqm = addPropertyInput.area_sqm,
-            deposit_price = addPropertyInput.deposit_price,
-            rental_price_per_month = addPropertyInput.rental_price_per_month,
-            status = parisFakeProperty.status,
-            created_at = parisFakeProperty.created_at,
-            apartment_number = addPropertyInput.apartment_number,
-            archived = parisFakeProperty.archived,
-            owner_id = parisFakeProperty.owner_id,
-            nb_damage = parisFakeProperty.nb_damage,
-            tenant = parisFakeProperty.tenant,
-            start_date = parisFakeProperty.start_date,
-            end_date = parisFakeProperty.end_date
-        )
-        return modifiedFakeProperty
+    ) : CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(parisFakeProperty.id)
     }
 
-    override suspend fun archiveProperty(authHeader : String, propertyId: String, archive: ArchivePropertyInput) {
-        return
+    override suspend fun archiveProperty(authHeader : String, propertyId: String, archive: ArchivePropertyInput) : CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = propertyId
+        )
     }
 
 
@@ -114,8 +102,10 @@ class MockedApiService : ApiService {
         authHeader : String,
         propertyId: String,
         room: AddRoomInput
-    ) : RoomOutput {
-        return fakeRoom
+    ) : CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = fakeRoom.id
+        )
     }
 
     //furnitures functions
@@ -132,8 +122,10 @@ class MockedApiService : ApiService {
         propertyId: String,
         roomId: String,
         furniture: FurnitureInput
-    ) : FurnitureOutput {
-        return fakeFurniture
+    ) : CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = "newFurnitureId"
+        )
     }
 
     //inventory report functions
@@ -141,9 +133,19 @@ class MockedApiService : ApiService {
     override suspend fun inventoryReport(
         authHeader : String,
         propertyId: String,
+        leaseId: String,
         inventoryReportInput: InventoryReportInput
-    ) {
-
+    )  : CreatedInventoryReport {
+        return CreatedInventoryReport(
+            date = baseDateStr,
+            errors = arrayOf(),
+            id = "newInventoryReport",
+            lease_id = leaseId,
+            pdf_data = fakeDocument.data,
+            pdf_name = fakeDocument.name,
+            property_id = propertyId,
+            type = inventoryReportInput.type
+        )
     }
 
     override suspend fun getAllInventoryReports(
@@ -184,8 +186,10 @@ class MockedApiService : ApiService {
         authHeader : String,
         propertyId: String,
         invite: InviteInput
-    ) : InviteOutput {
-        return fakeInviteOutput
+    ) : CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = fakeInviteOutput.id
+        )
     }
     //tenant functions
     override suspend fun cancelTenantInvitation(authHeader: String, propertyId: String): retrofit2.Response<Unit> {

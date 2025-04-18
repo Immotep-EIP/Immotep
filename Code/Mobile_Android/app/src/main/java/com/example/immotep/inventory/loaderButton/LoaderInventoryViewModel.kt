@@ -90,13 +90,13 @@ class LoaderInventoryViewModel(
         }
     }
 
-    fun onClick(setIsLoading : (Boolean) -> Unit, propertyId : String) {
+    fun onClick(setIsLoading : (Boolean) -> Unit, propertyId : String, currentLeaseId : String) {
         viewModelScope.launch {
             _loadingMutex.withLock {
                 try {
                     setIsLoading(true)
                     setIsLoading(false)
-                    navController.navigate("inventory/${propertyId}")
+                    navController.navigate("inventory/${propertyId}/${currentLeaseId}")
                 } catch (e: Exception) {
                     setIsLoading(false)
                     println("Error occured on the onClick of LoaderInventoryButtonViewModel ${e.message}")

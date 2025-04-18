@@ -126,10 +126,10 @@ fun AboutPropertyTab(
     }
     if (property.value.status == PropertyStatus.unavailable) {
         LoaderInventoryButton(
-            navController,
-            property.value.id,
-            setIsLoading,
-            loaderInventoryViewModel
+            propertyId = property.value.id,
+            currentLeaseId = property.value.currentLeaseId,
+            setIsLoading = setIsLoading,
+            viewModel = loaderInventoryViewModel,
         )
     }
 }

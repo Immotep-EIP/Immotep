@@ -62,7 +62,7 @@ class RealPropertyDetailsViewModel(
         _property.value = newProperty
         viewModelScope.launch {
             try {
-                val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id) { }
+                val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id, newProperty.currentLeaseId)
                 _property.value = newProperty.copy(documents = propertyDocuments)
             } catch (e : Exception) {
                 println("Error loading property ${e.message}")
@@ -77,7 +77,8 @@ class RealPropertyDetailsViewModel(
         _apiError.value = ApiErrors.NONE
         setIsLoading(true)
         try {
-            _property.value = apiCaller.updateProperty(property, propertyId) { _apiError.value = ApiErrors.UPDATE_PROPERTY }
+            apiCaller.updateProperty(property, propertyId)
+            _property.value = property.toDetailedProperty(propertyId)
         } catch (e : Exception) {
             e.printStackTrace()
             _apiError.value = ApiErrors.UPDATE_PROPERTY

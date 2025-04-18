@@ -53,13 +53,15 @@ fun Navigation() {
         composable("register") { RegisterScreen(navController) }
         composable("profile") { ProfileScreen(navController) }
         composable("realProperty") { RealPropertyScreen(navController, loaderInventory) }
-        composable("inventory/{propertyId}") { navBackStackEntry ->
+        composable("inventory/{propertyId}/{leaseId}") { navBackStackEntry ->
             val propertyId = navBackStackEntry.arguments?.getString("propertyId")
-            propertyId?.let {
+            val currentLeaseId = navBackStackEntry.arguments?.getString("leaseId")
+            if (propertyId != null && currentLeaseId != null) {
                 InventoryScreen(
                     navController = navController,
                     propertyId = propertyId,
-                    loaderInventory
+                    loaderViewModel = loaderInventory,
+                    leaseId = currentLeaseId
                 )
             }
         }

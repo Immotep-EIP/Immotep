@@ -5,6 +5,7 @@ import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
+import com.example.immotep.apiCallerServices.CreatedInventoryReport
 import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.FurnitureInput
 import com.example.immotep.apiCallerServices.FurnitureOutput
@@ -35,6 +36,10 @@ import retrofit2.http.Path
 
 data class AddRoomInput(
     val name : String,
+)
+
+data class CreateOrUpdateResponse(
+    val id : String
 )
 
 const val API_PREFIX = "/v1"
@@ -76,25 +81,29 @@ interface ApiService {
     @GET("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun getProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): GetPropertyResponse
 
-    @GET("${API_PREFIX}/owner/properties/{propertyId}/documents")
-    suspend fun getPropertyDocuments(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): Array<Document>
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/docs/")
+    suspend fun getPropertyDocuments(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String
+    ): Array<Document>
 
     @POST("${API_PREFIX}/owner/properties")
-    suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : GetPropertyResponse
+    suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : CreateOrUpdateResponse
 
     @PUT("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun updateProperty(
         @Header("Authorization") authHeader : String,
         @Body addPropertyInput: AddPropertyInput,
         @Path("propertyId") propertyId: String
-    ) : GetPropertyResponse
+    ) : CreateOrUpdateResponse
 
     @PUT("${API_PREFIX}/owner/properties/{propertyId}/archive")
     suspend fun archiveProperty(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Body archive : ArchivePropertyInput
-    )
+    ) : CreateOrUpdateResponse
 
     //rooms functions
     @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms")
@@ -108,7 +117,7 @@ interface ApiService {
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Body room: AddRoomInput
-    ) : RoomOutput
+    ) : CreateOrUpdateResponse
 
     //furnitures functions
     @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/furnitures")
@@ -124,15 +133,16 @@ interface ApiService {
         @Path("propertyId") propertyId: String,
         @Path("roomId") roomId: String,
         @Body furniture: FurnitureInput
-    ) : FurnitureOutput
+    ) : CreateOrUpdateResponse
 
     //inventory report functions
-    @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/inventory-reports/")
     suspend fun inventoryReport(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String,
         @Body inventoryReportInput: InventoryReportInput
-    )
+    ) : CreatedInventoryReport
 
     @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")
     suspend fun getAllInventoryReports(
@@ -175,5 +185,5 @@ interface ApiService {
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Body invite: InviteInput
-    ) : InviteOutput
+    ) : CreateOrUpdateResponse
 }

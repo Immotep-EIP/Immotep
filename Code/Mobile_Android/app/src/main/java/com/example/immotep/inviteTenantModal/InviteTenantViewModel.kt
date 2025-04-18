@@ -90,10 +90,11 @@ class InviteTenantViewModel(
             try {
                 setIsLoading(true)
                 close()
-                callerService.invite(propertyId, _invitationForm.value.toInviteInput(), onError)
+                callerService.invite(propertyId, _invitationForm.value.toInviteInput())
                 onSubmit(_invitationForm.value.email, _invitationForm.value.startDate, _invitationForm.value.endDate)
                 reset()
             } catch(e: Exception) {
+                onError()
                 println(e)
             } finally {
                 setIsLoading(false)

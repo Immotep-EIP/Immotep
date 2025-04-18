@@ -2,6 +2,7 @@ package com.example.immotep.apiCallerServices
 
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.apiClient.CreateOrUpdateResponse
 import java.time.OffsetDateTime
 
 //enum classes
@@ -35,9 +36,41 @@ data class AddPropertyInput(
     val rental_price_per_month: Int = 0,
     val deposit_price: Int = 0,
     val apartment_number: String = ""
-)
+) {
+    fun toDetailedProperty(id : String) : DetailedProperty {
+        return DetailedProperty(
+            id = id,
+            address = address,
+            status  = PropertyStatus.available,
+            appartementNumber = apartment_number,
+            area = area_sqm.toInt(),
+            rent= rental_price_per_month,
+            deposit = deposit_price,
+            zipCode = postal_code,
+            city = city,
+            country = country,
+            name = name
+        )
+    }
+}
 
 //output api classes
+
+data class InvitePropertyResponse(
+    val end_date: String,
+    val start_date: String,
+    val tenant_email: String
+)
+
+data class LeasePropertyResponse(
+    val active: Boolean,
+    val end_date: String,
+    val id: String,
+    val start_date: String,
+    val tenant_email: String,
+    val tenant_name: String
+)
+
 
 data class GetPropertyResponse(
     val id: String,
@@ -56,8 +89,11 @@ data class GetPropertyResponse(
     val status: String,
     val nb_damage: Int,
     val tenant: String,
+    val picture_id: String?,
     val start_date: String?,
-    val end_date: String?
+    val end_date: String?,
+    val invite: InvitePropertyResponse,
+    val lease: LeasePropertyResponse
 ) {
 
     fun toDetailedProperty() = DetailedProperty(
@@ -76,6 +112,7 @@ data class GetPropertyResponse(
         area = this.area_sqm.toInt(),
         rent = this.rental_price_per_month,
         deposit = this.deposit_price,
+        currentLeaseId = lease.id,
         documents = arrayOf()
     )
 }
@@ -93,6 +130,7 @@ data class DetailedProperty(
      val id : String = "",
      val image : String = "",
      val address : String = "",
+     val currentLeaseId: String = "",
      val tenant : String? = null,
      val status: PropertyStatus = PropertyStatus.unavailable,
      val startDate : OffsetDateTime? = null,
@@ -143,11 +181,10 @@ class RealPropertyCallerService (
         }
     }
 
-    suspend fun addProperty(property: AddPropertyInput, onError: () -> Unit): DetailedProperty {
+    suspend fun addProperty(property: AddPropertyInput): CreateOrUpdateResponse {
         try {
-            return apiService.addProperty(getBearerToken(), property).toDetailedProperty()
+            return apiService.addProperty(getBearerToken(), property)
         } catch (e: Exception) {
-            onError()
             throw e
         }
     }
@@ -174,23 +211,18 @@ class RealPropertyCallerService (
     suspend fun updateProperty(
         property: AddPropertyInput,
         propertyId: String,
-        onError: () -> Unit
-    ): DetailedProperty {
+    ): CreateOrUpdateResponse {
         try {
             return apiService.updateProperty(getBearerToken(), property, propertyId)
-                .toDetailedProperty()
         } catch (e: Exception) {
-            onError()
             throw e
         }
     }
 
-    suspend fun getPropertyDocuments(propertyId: String, onError: () -> Unit): Array<Document> {
+    suspend fun getPropertyDocuments(propertyId: String, leaseId : String): Array<Document> {
         try {
-            val documents = apiService.getPropertyDocuments(getBearerToken(), propertyId)
-            return documents
+            return apiService.getPropertyDocuments(getBearerToken(), propertyId, leaseId)
         } catch (e: Exception) {
-            onError()
             throw e
         }
     }

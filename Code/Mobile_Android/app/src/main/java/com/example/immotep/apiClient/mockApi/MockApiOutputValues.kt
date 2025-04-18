@@ -5,6 +5,8 @@ import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.FurnitureOutput
 import com.example.immotep.apiCallerServices.GetPropertyResponse
 import com.example.immotep.apiCallerServices.InviteOutput
+import com.example.immotep.apiCallerServices.InvitePropertyResponse
+import com.example.immotep.apiCallerServices.LeasePropertyResponse
 import com.example.immotep.apiCallerServices.ProfileResponse
 import com.example.immotep.apiCallerServices.RoomOutput
 import com.example.immotep.authService.LoginResponse
@@ -17,6 +19,31 @@ import com.example.immotep.inventory.State
 import java.util.Vector
 
 const val baseDateStr = "2025-03-09T13:52:54.823Z"
+const val baseDateEndStr = "2026-03-09T13:52:54.823Z"
+
+val fakeInviteInsideProperty = InvitePropertyResponse(
+    end_date = baseDateStr,
+    start_date = baseDateEndStr,
+    tenant_email = "test@gmail.com"
+)
+
+val fakeLeaseInsidePropertyActive = LeasePropertyResponse(
+    id = "baseLease",
+    active = true,
+    end_date = baseDateEndStr,
+    start_date = baseDateStr,
+    tenant_email = "test@gmail.com",
+    tenant_name = "John Doe"
+)
+
+val fakeLeaseInsidePropertyNotActive = LeasePropertyResponse(
+    id = "baseLeaseNonActive",
+    active = false,
+    end_date = baseDateEndStr,
+    start_date = baseDateStr,
+    tenant_email = "test@gmail.com",
+    tenant_name = "John Doe"
+)
 
 val parisFakeProperty = GetPropertyResponse(
     id = "parisFakeProperty",
@@ -36,7 +63,10 @@ val parisFakeProperty = GetPropertyResponse(
     nb_damage = 0,
     tenant = "test@gmail.com",
     start_date = baseDateStr,
-    end_date = "2026-03-09T13:52:54.823Z",
+    end_date = baseDateEndStr,
+    picture_id = null,
+    invite = fakeInviteInsideProperty,
+    lease = fakeLeaseInsidePropertyActive
 )
 
 val marseilleFakeProperty = GetPropertyResponse(
@@ -57,7 +87,10 @@ val marseilleFakeProperty = GetPropertyResponse(
     nb_damage = 0,
     tenant = "crashbandicoot@gmail.com",
     start_date = baseDateStr,
-    end_date = "2026-03-09T13:52:54.823Z"
+    end_date = baseDateEndStr,
+    picture_id = null,
+    invite = fakeInviteInsideProperty,
+    lease = fakeLeaseInsidePropertyActive
 )
 
 val lyonFakeProperty = GetPropertyResponse(
@@ -77,8 +110,11 @@ val lyonFakeProperty = GetPropertyResponse(
     status = "Busy",
     nb_damage = 0,
     tenant = "tomnook@gmail.com",
+    picture_id = null,
     start_date = baseDateStr,
-    end_date = "2026-03-09T13:52:54.823Z"
+    end_date = baseDateEndStr,
+    invite = fakeInviteInsideProperty,
+    lease = fakeLeaseInsidePropertyActive
 )
 
 val emptyFakeProperty = GetPropertyResponse(
@@ -98,8 +134,11 @@ val emptyFakeProperty = GetPropertyResponse(
     status = "available",
     nb_damage = 0,
     tenant = "",
+    picture_id = null,
     start_date = null,
-    end_date = null
+    end_date = null,
+    invite = fakeInviteInsideProperty,
+    lease = fakeLeaseInsidePropertyNotActive
 )
 
 val fakeRoom = RoomOutput(

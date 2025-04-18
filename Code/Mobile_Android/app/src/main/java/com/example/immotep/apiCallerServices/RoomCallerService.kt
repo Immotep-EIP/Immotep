@@ -3,6 +3,7 @@ package com.example.immotep.apiCallerServices
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.apiClient.CreateOrUpdateResponse
 import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.RoomDetail
 
@@ -63,10 +64,9 @@ class RoomCallerService(
         return newRooms.toTypedArray()
     }
 
-    suspend fun addRoom(propertyId: String, room: AddRoomInput, onError : () -> Unit) : RoomOutput {
+    suspend fun addRoom(propertyId: String, room: AddRoomInput, onError : () -> Unit) : CreateOrUpdateResponse {
         try {
-            val createdRoom = apiService.addRoom(getBearerToken(), propertyId, room)
-            return createdRoom
+            return apiService.addRoom(getBearerToken(), propertyId, room)
         } catch (e: Exception) {
             onError()
             throw e

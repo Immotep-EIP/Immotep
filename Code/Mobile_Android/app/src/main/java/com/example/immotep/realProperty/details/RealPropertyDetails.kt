@@ -271,48 +271,6 @@ fun RealPropertyDetailsScreen(
                     2 -> Damages()
                 }
             }
-
-
-            /*
-            if (property.value.status == PropertyStatus.available) {
-                Button(
-                    onClick = { inviteTenantOpen = true },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .padding(5.dp)
-                        .fillMaxWidth()
-                        .testTag("inviteTenantBtn")
-                ) {
-                    Text(
-                        stringResource(R.string.invite_tenant),
-                        color = MaterialTheme.colorScheme.onTertiary
-                    )
-                }
-            }
-
-            AboutThePropertyBox(property, openEdit = { editOpen = true })
-            DocumentBox(
-                property = property,
-                openPdf = { viewModel.openPdf(it, context) }
-            )
-            if (property.value.status == PropertyStatus.unavailable) {
-                Button(
-                    onClick = { navController.navigate("inventory/${newProperty.id}") },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .padding(5.dp)
-                        .fillMaxWidth()
-                        .testTag("startInventory")
-                ) {
-                    Text(
-                        stringResource(R.string.start_inventory),
-                        color = MaterialTheme.colorScheme.onTertiary
-                    )
-                }
-            }
-             */
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.immotep.apiCallerServices
 
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.apiClient.CreateOrUpdateResponse
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.State
 
@@ -52,12 +53,10 @@ class FurnitureCallerService(
         propertyId: String,
         roomId: String,
         furniture: FurnitureInput,
-        onError : () -> Unit
-    ) : FurnitureOutput {
+    ) : CreateOrUpdateResponse {
         try {
             return apiService.addFurniture(getBearerToken(), propertyId, roomId, furniture)
         } catch(e : Exception) {
-            onError()
             throw e
         }
     }

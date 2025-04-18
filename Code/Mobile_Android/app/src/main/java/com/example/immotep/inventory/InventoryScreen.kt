@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -22,6 +24,7 @@ import com.example.immotep.inventory.rooms.RoomsScreen
 fun InventoryScreen(
     navController: NavController,
     propertyId: String,
+    leaseId: String,
     loaderViewModel: LoaderInventoryViewModel
 ) {
     val apiService = LocalApiService.current
@@ -40,7 +43,7 @@ fun InventoryScreen(
     val cannotAddDetailText = stringResource(R.string.cannot_add_detail)
 
     LaunchedEffect(propertyId, loaderViewModel, isLoading) {
-        viewModel.setPropertyId(propertyId)
+        viewModel.setPropertyIdAndLeaseId(propertyId, leaseId)
         if (!isLoading.value) {
             val rooms = loaderViewModel.getRooms()
             println("rooms length = ${rooms.size}")
@@ -49,9 +52,7 @@ fun InventoryScreen(
     }
 
     Column(
-        /*
-        testTag = "inventoryScreen", { navController.popBackStack() }
-         */
+        modifier = Modifier.testTag("inventoryScreen")
     ) {
         if (inventoryErrors.value.getAllRooms) {
             ErrorAlert(null, null, stringResource(R.string.error_get_all_rooms))

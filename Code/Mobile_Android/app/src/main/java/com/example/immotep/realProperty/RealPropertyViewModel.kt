@@ -61,9 +61,8 @@ class RealPropertyViewModel(
 
     suspend fun addProperty(propertyForm: AddPropertyInput) {
         try {
-            val newProperty =
-                apiCaller.addProperty(propertyForm) { _apiError.value = WhichApiError.ADD_PROPERTY }
-            properties.add(newProperty)
+            val newPropertyId = apiCaller.addProperty(propertyForm)
+            properties.add(propertyForm.toDetailedProperty(newPropertyId.id))
             closeError()
         } catch (e : Exception) {
             _apiError.value = WhichApiError.ADD_PROPERTY

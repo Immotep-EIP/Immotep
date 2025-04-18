@@ -11,6 +11,17 @@ data class InventoryReportInput(
     val rooms: Vector<InventoryReportRoom>
 )
 
+data class CreatedInventoryReport(
+    val date: String,
+    val errors : Array<String>,
+    val id: String,
+    val lease_id: String,
+    val pdf_data: String,
+    val pdf_name: String,
+    val property_id: String,
+    val type: String
+)
+
 class InventoryCallerService(
     apiService: ApiService,
     navController: NavController,
@@ -19,14 +30,13 @@ class InventoryCallerService(
     suspend fun createInventoryReport(
         propertyId: String,
         inventoryReportInput: InventoryReportInput,
-        onError : () -> Unit
-    ) {
+        leaseId : String,
+    ) : CreatedInventoryReport {
         try {
-            apiService.inventoryReport(getBearerToken(), propertyId, inventoryReportInput)
+            return apiService.inventoryReport(getBearerToken(), propertyId, leaseId, inventoryReportInput)
         } catch(e : Exception) {
             println("Error during create inventory report ${e.message}")
             e.printStackTrace()
-            onError()
             throw e
         }
     }

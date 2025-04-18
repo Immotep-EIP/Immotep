@@ -43,6 +43,7 @@ class InventoryViewModel(
     private val furnitureApiCaller = FurnitureCallerService(apiService, navController)
 
     private var _propertyId : String? = null
+    private var _leaseId: String? = null
     private val _inventoryErrors = MutableStateFlow(InventoryApiErrors())
 
     private val rooms = mutableStateListOf<Room>()
@@ -52,7 +53,6 @@ class InventoryViewModel(
     val inventoryErrors = _inventoryErrors.asStateFlow()
 
     fun loadInventoryFromRooms(rooms : Array<Room>) {
-        println("Loading inventory from rooms ${rooms.size}")
         this.rooms.clear()
         nonModifiedRooms.clear()
         this.rooms.addAll(rooms)
@@ -61,8 +61,9 @@ class InventoryViewModel(
         }
     }
 
-    fun setPropertyId(propertyId: String) {
+    fun setPropertyIdAndLeaseId(propertyId: String, leaseId: String) {
         _propertyId = propertyId
+        _leaseId = leaseId
     }
 
     /**
@@ -82,14 +83,14 @@ class InventoryViewModel(
             return null
         }
         try {
-            val createdRoom = roomApiCaller.addRoom(
+            val (id) = roomApiCaller.addRoom(
                 _propertyId!!,
                 AddRoomInput(name = name),
                 onError = onError
             )
-            val room = Room(id = createdRoom.id, name = name)
+            val room = Room(id = id, name = name)
             rooms.add(room)
-            return createdRoom.id
+            return id
         } catch (e: Exception) {
             println("Impossible to add a room ${e.message}")
             e.printStackTrace()
@@ -106,10 +107,10 @@ class InventoryViewModel(
                 _propertyId!!,
                 roomId,
                 FurnitureInput(name, 1),
-                onError
             )
             return createdFurniture.id
         } catch(e : Exception) {
+            onError()
             return null
         }
     }
@@ -160,22 +161,22 @@ class InventoryViewModel(
     }
 
     fun sendInventory(oldReportId : String?, setNewValueOfInventory : (Array<Room>, reportId : String) -> Unit) : Boolean {
-        if (!checkIfAllAreCompleted() || _propertyId == null) return false
+        if (!checkIfAllAreCompleted() || _propertyId == null || _leaseId == null) return false
         viewModelScope.launch {
             try {
                 val inventoryReport = roomsToInventoryReport(oldReportId)
-                val newReportId = "abc"
-                inventoryApiCaller.createInventoryReport(
+                val newReport = inventoryApiCaller.createInventoryReport(
                     _propertyId!!,
                     inventoryReport,
-                    { _inventoryErrors.value = _inventoryErrors.value.copy(createInventoryReport = true) }
+                    _leaseId!!
                 )
-                setNewValueOfInventory(rooms.toTypedArray(), newReportId)
+                setNewValueOfInventory(rooms.toTypedArray(), newReport.id)
                 onClose()
                 return@launch
             } catch (e : Exception) {
                 println("Error sending inventory ${e.message}")
                 e.printStackTrace()
+                _inventoryErrors.value = _inventoryErrors.value.copy(createInventoryReport = true)
             }
         }
         return true
