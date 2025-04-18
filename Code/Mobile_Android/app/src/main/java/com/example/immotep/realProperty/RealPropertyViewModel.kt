@@ -48,7 +48,7 @@ class RealPropertyViewModel(
             _isLoading.value = true
             try {
                 properties.clear()
-                properties.addAll(apiCaller.getPropertiesAsDetailedProperties { _apiError.value = WhichApiError.GET_PROPERTIES })
+                properties.addAll(apiCaller.getPropertiesAsDetailedProperties())
             } catch (e : Exception) {
                 _apiError.value = WhichApiError.GET_PROPERTIES
                 println("error getting properties ${e.message}")

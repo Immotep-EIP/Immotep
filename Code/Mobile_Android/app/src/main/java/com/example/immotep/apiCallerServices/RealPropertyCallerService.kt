@@ -3,6 +3,7 @@ package com.example.immotep.apiCallerServices
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.CreateOrUpdateResponse
+import retrofit2.HttpException
 import java.time.OffsetDateTime
 
 //enum classes
@@ -171,12 +172,12 @@ class RealPropertyCallerService (
     navController: NavController,
 ) : ApiCallerService(apiService, navController) {
 
-    suspend fun getPropertiesAsDetailedProperties(onError: () -> Unit):  Array<DetailedProperty> {
+    suspend fun getPropertiesAsDetailedProperties():  Array<DetailedProperty> {
         try {
             val properties = apiService.getProperties(getBearerToken())
             return properties.map { it.toDetailedProperty() }.toTypedArray()
-        } catch (e: Exception) {
-            onError()
+        } catch (e: HttpException) {
+            this.handleRetrofitExceptions(e)
             throw e
         }
     }

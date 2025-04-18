@@ -119,10 +119,7 @@ class AuthService(
         val expirationTime = dataStore.data.map { it[EXPIRES_IN] }.firstOrNull()
         val expTime = LocalDateTime.parse(expirationTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         val actTime = LocalDateTime.now()
-        if (expirationTime == null || actTime.isAfter(expTime)) {
-            return true
-        }
-        return false
+        return expirationTime == null || actTime.isAfter(expTime)
     }
 
     suspend fun register(registrationInput: RegistrationInput) : RegistrationResponse {

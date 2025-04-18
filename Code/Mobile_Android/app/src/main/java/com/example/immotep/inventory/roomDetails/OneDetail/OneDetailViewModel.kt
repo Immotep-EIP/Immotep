@@ -150,7 +150,6 @@ class OneDetailViewModel(
                         pictures = picturesInput,
                         type = if (isRoom) InventoryLocationsTypes.room else InventoryLocationsTypes.furniture
                     ),
-                    onError = onError
                 )
                 _detail.value = _detail.value.copy(
                     cleanliness = aiResponse.cleanliness ?: _detail.value.cleanliness,
@@ -159,6 +158,7 @@ class OneDetailViewModel(
                 )
                 _errors.value = RoomDetailsError()
             } catch (e : Exception) {
+                onError()
                 println("impossible to analyze ${e.message}")
                 e.printStackTrace()
             } finally {
@@ -183,15 +183,14 @@ class OneDetailViewModel(
                         pictures = picturesInput,
                         type = if (isRoom) InventoryLocationsTypes.room else InventoryLocationsTypes.furniture
                     ),
-                    onError = onError
                 )
                 _detail.value = _detail.value.copy(
                     cleanliness = aiResponse.cleanliness ?: _detail.value.cleanliness,
                     status = aiResponse.state ?: _detail.value.status,
                     comment = aiResponse.note ?: _detail.value.comment
                 )
-
             } catch (e : Exception) {
+                onError()
                 println("impossible to analyze ${e.message}")
                 e.printStackTrace()
             } finally {

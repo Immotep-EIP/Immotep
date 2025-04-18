@@ -24,21 +24,15 @@ class AICallerService(
     navController: NavController
 ) : ApiCallerService(apiService, navController) {
 
-    suspend fun summarize(input: AiCallInput, propertyId : String, onError : () -> Unit) : AiCallOutput {
-        try {
-            return apiService.aiSummarize(this.getBearerToken(), propertyId, input)
-        } catch(e : Exception) {
-            onError()
-            throw e
+    suspend fun summarize(input: AiCallInput, propertyId : String) : AiCallOutput {
+        return handleRetrofitExceptions {
+            apiService.aiSummarize(this.getBearerToken(), propertyId, input)
         }
     }
 
-    suspend fun compare(input: AiCallInput, propertyId: String, oldReportId : String, onError: () -> Unit) : AiCallOutput {
-        try {
-           return apiService.aiCompare(this.getBearerToken(), propertyId, oldReportId, input)
-        } catch(e : Exception) {
-            onError()
-            throw e
-        }
+    suspend fun compare(input: AiCallInput, propertyId: String, oldReportId : String) : AiCallOutput {
+       return handleRetrofitExceptions {
+           apiService.aiCompare(this.getBearerToken(), propertyId, oldReportId, input)
+       }
     }
 }
