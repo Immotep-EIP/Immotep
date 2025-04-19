@@ -1,3 +1,6 @@
+import { InviteTenant } from '../Tenant/InviteTenant'
+import { Lease } from './Lease/Lease'
+
 export interface CreatePropertyPayload {
   name: string
   apartment_number: string
@@ -25,15 +28,14 @@ export interface PropertyDetails {
   country: string
   created_at: string
   deposit_price: number
-  end_date: string
   id: string
+  invite: InviteTenant
+  lease: Lease
   name: string
   nb_damage: number
   owner_id: string
   picture_id: string
   postal_code: string
   rental_price_per_month: number
-  start_date: string
   status: string
-  tenant: string
 }

@@ -20,3 +20,10 @@ export interface CreateFurnitureResponse {
   quantity: number
   room_id: string
 }
+
+export interface AddFurnitureModalProps {
+  isOpen: boolean
+  onOk: () => void
+  onCancel: () => void
+  form: any
+}
