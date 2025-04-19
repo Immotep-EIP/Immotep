@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Badge, Button, Empty, Typography } from 'antd'
+import { Badge, Button, Empty, Typography, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import useNavigation from '@/hooks/Navigation/useNavigation'
@@ -94,7 +94,11 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
 
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
-  const { properties, loading, error, refreshProperties } = useProperties()
+  const [showArchived, setShowArchived] = useState(false)
+  const { properties, loading, error, refreshProperties } = useProperties(
+    null,
+    showArchived
+  )
   const [showModalCreate, setShowModalCreate] = useState(false)
   const [isPropertyCreated, setIsPropertyCreated] = useState(false)
 
@@ -119,9 +123,19 @@ const RealPropertyPage: React.FC = () => {
       <div className={style.pageContainer}>
         <div className={style.pageHeader}>
           <PageTitle title={t('pages.real_property.title')} size="title" />
-          <Button type="primary" onClick={() => setShowModalCreate(true)}>
-            {t('components.button.add_real_property')}
-          </Button>
+          <div className={style.headerActions}>
+            <div className={style.archiveFilter}>
+              <Switch
+                checked={showArchived}
+                onChange={setShowArchived}
+                checkedChildren={t('components.switch.show_archived')}
+                unCheckedChildren={t('components.switch.show_active')}
+              />
+            </div>
+            <Button type="primary" onClick={() => setShowModalCreate(true)}>
+              {t('components.button.add_real_property')}
+            </Button>
+          </div>
         </div>
 
         {loading && <CardPropertyLoader cards={12} />}

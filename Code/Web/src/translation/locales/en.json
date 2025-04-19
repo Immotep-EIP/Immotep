@@ -291,6 +291,10 @@
         "office": "Office",
         "other": "Other"
       }
+    },
+    "switch": {
+      "show_archived": "Archived",
+      "show_active": "Active"
     }
   },
   "pages": {

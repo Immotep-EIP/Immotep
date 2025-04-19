@@ -291,6 +291,10 @@
         "office": "Bureau",
         "other": "Autre"
       }
+    },
+    "switch": {
+      "show_archived": "Archivées",
+      "show_active": "Actives"
     }
   },
   "pages": {

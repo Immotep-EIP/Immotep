@@ -19,7 +19,10 @@ type CreatePropertyData = Omit<
   | 'end_date'
 >
 
-const useProperties = (propertyId: string | null = null) => {
+const useProperties = (
+  propertyId: string | null = null,
+  archive: boolean = false
+) => {
   const [properties, setProperties] = useState<PropertyDetails[]>([])
   const [propertyDetails, setPropertyDetails] =
     useState<PropertyDetails | null>(null)
@@ -95,7 +98,7 @@ const useProperties = (propertyId: string | null = null) => {
   const fetchProperties = async () => {
     try {
       setLoading(true)
-      const res = await GetProperties()
+      const res = await GetProperties(archive)
       setProperties(res)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Unknown error occurred.')
@@ -127,7 +130,7 @@ const useProperties = (propertyId: string | null = null) => {
     } else {
       getPropertyDetails(propertyId)
     }
-  }, [propertyId])
+  }, [propertyId, archive])
 
   return {
     properties,
