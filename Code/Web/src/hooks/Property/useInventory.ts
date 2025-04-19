@@ -32,7 +32,7 @@ const useInventory = (propertyId: string) => {
 
     setIsLoading(true)
     try {
-      const rooms = await GetRoomsByProperty(propertyId)
+      const rooms = await GetRoomsByProperty({ propertyId })
       const roomsData: Room[] = rooms.map(room => ({
         id: room.id || '',
         name: room.name || '',
@@ -44,7 +44,10 @@ const useInventory = (propertyId: string) => {
 
       const furniturePromises = rooms.map(async room => {
         try {
-          const furnitures = await GetFurnituresByRoom(propertyId, room.id)
+          const furnitures = await GetFurnituresByRoom({
+            propertyId,
+            roomId: room.id
+          })
           return furnitures.map(furniture => ({
             id: furniture.id,
             name: furniture.name,
