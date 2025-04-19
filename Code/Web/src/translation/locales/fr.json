@@ -133,6 +133,9 @@
         "label": "Document",
         "placeholder": "Choisissez un document",
         "error": "Veuillez sélectionner un document."
+      },
+      "search": {
+        "placeholder": "Rechercher des pièces et objets..."
       }
     },
     "messages": {
@@ -189,7 +192,9 @@
       "delete_property": "Supprimer la propriété",
       "download": "Télécharger",
       "update": "Mettre à jour",
-      "cancel_invitation": "Annuler l'invitation"
+      "cancel_invitation": "Annuler l'invitation",
+      "add_item": "Ajouter un Objet",
+      "delete_item": "Supprimer l'Objet"
     },
     "modal": {
       "end_contract": {
@@ -209,6 +214,82 @@
         "description": "Êtes-vous sûr de vouloir annuler l'invitation de ce locataire ?",
         "success": "Invitation annulée avec succès",
         "error": "Une erreur est survenue lors de l'annulation de l'invitation, veuillez réessayer."
+      }
+    },
+    "inventory": {
+      "view_mode": {
+        "plan": "Vue Plan",
+        "grid": "Vue Grille",
+        "list": "Vue Liste"
+      },
+      "room": {
+        "add": "Ajouter une Pièce",
+        "delete": "Supprimer la Pièce",
+        "name": "Nom de la Pièce",
+        "type": "Type de Pièce",
+        "types": {
+          "all": "Toutes les Pièces",
+          "bedroom": "Chambre",
+          "bathroom": "Salle de Bain",
+          "kitchen": "Cuisine",
+          "living": "Salon",
+          "other": "Autre"
+        }
+      },
+      "furniture": {
+        "name": "Nom de l'Objet",
+        "quantity": "Quantité",
+        "quantity_validation": "La quantité doit être comprise entre 1 et 1000"
+      },
+      "search": {
+        "placeholder": "Rechercher des pièces et objets..."
+      },
+      "empty": {
+        "no_rooms": "Aucune pièce dans l'inventaire",
+        "no_items": "Aucun objet dans cette pièce"
+      },
+      "grid": {
+        "edit_room": "Modifier la Pièce",
+        "delete_room": "Supprimer la Pièce",
+        "add_item": "Ajouter un Objet",
+        "delete_item": "Supprimer l'Objet",
+        "quantity": "Quantité"
+      },
+      "controls": {
+        "search": "Rechercher",
+        "filter": "Filtrer par type de pièce",
+        "view_mode": "Mode d'affichage",
+        "add_room": "Ajouter une Pièce"
+      }
+    },
+    "tooltip": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "plan_view": "Vue Plan",
+      "grid_view": "Vue Grille",
+      "list_view": "Vue Liste"
+    },
+    "select": {
+      "room_type": {
+        "placeholder": "Sélectionner le type de pièce",
+        "all": "Toutes les Pièces",
+        "bedroom": "Chambre",
+        "bathroom": "Salle de Bain",
+        "kitchen": "Cuisine",
+        "living": "Salon",
+        "dressing": "Dressing",
+        "laundryroom": "Buanderie",
+        "playroom": "Salle de Jeux",
+        "toilet": "Toilettes",
+        "livingroom": "Salon",
+        "diningroom": "Salle à Manger",
+        "hallway": "Couloir",
+        "balcony": "Balcon",
+        "cellar": "Cave",
+        "garage": "Garage",
+        "storage": "Rangement",
+        "office": "Bureau",
+        "other": "Autre"
       }
     }
   },
@@ -292,7 +373,7 @@
           "add_room_modal_title": "Ajouter une pièce",
           "add_stuff_modal_title": "Ajouter un objet",
           "list_object_name": "Objets dans la pièce",
-          "remove_room_confirmation": "Êtes-vous sûr de vouloir supprimer cet pièce ?",
+          "remove_room_confirmation": "Êtes-vous sûr de vouloir supprimer cette pièce ?",
           "remove_room_success": "Pièce supprimé avec succès",
           "remove_stuff_confirmation": "Êtes-vous sûr de vouloir supprimer cet élément ?",
           "remove_stuff_success": "Élément supprimé avec succès",

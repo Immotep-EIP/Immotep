@@ -133,6 +133,9 @@
         "label": "Document",
         "placeholder": "Choose a document",
         "error": "Please select a document."
+      },
+      "search": {
+        "placeholder": "Search rooms and items..."
       }
     },
     "messages": {
@@ -189,7 +192,9 @@
       "delete_property": "Delete property",
       "download": "Download",
       "update": "Update",
-      "cancel_invitation": "Cancel invitation"
+      "cancel_invitation": "Cancel invitation",
+      "add_item": "Add item",
+      "delete_item": "Delete item"
     },
     "modal": {
       "end_contract": {
@@ -209,6 +214,82 @@
         "description": "Are you sure you want to cancel this tenant's invitation?",
         "success": "Invitation canceled successfully",
         "error": "An error occurred while canceling the invitation, please try again."
+      }
+    },
+    "inventory": {
+      "view_mode": {
+        "plan": "Plan View",
+        "grid": "Grid View",
+        "list": "List View"
+      },
+      "room": {
+        "add": "Add Room",
+        "delete": "Delete Room",
+        "name": "Room Name",
+        "type": "Room Type",
+        "types": {
+          "all": "All Rooms",
+          "bedroom": "Bedroom",
+          "bathroom": "Bathroom",
+          "kitchen": "Kitchen",
+          "living": "Living Room",
+          "other": "Other"
+        }
+      },
+      "furniture": {
+        "name": "Item Name",
+        "quantity": "Quantity",
+        "quantity_validation": "Quantity must be between 1 and 1000"
+      },
+      "search": {
+        "placeholder": "Search rooms and items..."
+      },
+      "empty": {
+        "no_rooms": "No rooms in inventory",
+        "no_items": "No items in this room"
+      },
+      "grid": {
+        "edit_room": "Edit Room",
+        "delete_room": "Delete Room",
+        "add_item": "Add Item",
+        "delete_item": "Delete Item",
+        "quantity": "Quantity"
+      },
+      "controls": {
+        "search": "Search",
+        "filter": "Filter by room type",
+        "view_mode": "View Mode",
+        "add_room": "Add Room"
+      }
+    },
+    "tooltip": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "plan_view": "Plan View",
+      "grid_view": "Grid View",
+      "list_view": "List View"
+    },
+    "select": {
+      "room_type": {
+        "placeholder": "Select room type",
+        "all": "All Rooms",
+        "bedroom": "Bedroom",
+        "bathroom": "Bathroom",
+        "kitchen": "Kitchen",
+        "living": "Living Room",
+        "dressing": "Dressing Room",
+        "laundryroom": "Laundry Room",
+        "playroom": "Playroom",
+        "toilet": "Toilet",
+        "livingroom": "Living Room",
+        "diningroom": "Dining Room",
+        "hallway": "Hallway",
+        "balcony": "Balcony",
+        "cellar": "Cellar",
+        "garage": "Garage",
+        "storage": "Storage",
+        "office": "Office",
+        "other": "Other"
       }
     }
   },
