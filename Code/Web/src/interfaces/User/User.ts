@@ -39,7 +39,6 @@ export interface UserPictureResponse {
 }
 
 export interface UpdateUserInfoPayload {
-  email: string
   firstname: string
   lastname: string
 }

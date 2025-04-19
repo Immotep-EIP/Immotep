@@ -2,7 +2,7 @@ import callApi from '@/services/api/apiCaller'
 import {
   CreateFurniturePayload,
   CreateFurnitureResponse
-} from '@/interfaces/Property/Room/Furniture/Furniture'
+} from '@/interfaces/Property/Inventory/Room/Furniture/Furniture'
 import endpoints from '@/enums/EndPointEnum'
 
 const CreateFurnitureByRoom = async (
