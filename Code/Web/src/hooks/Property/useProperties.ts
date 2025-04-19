@@ -1,23 +1,13 @@
 import { useEffect, useState } from 'react'
 import GetProperties from '@/services/api/Owner/Properties/GetProperties.ts'
-import { PropertyDetails } from '@/interfaces/Property/Property.tsx'
+import {
+  PropertyDetails,
+  CreatePropertyPayload
+} from '@/interfaces/Property/Property.tsx'
 import CreatePropertyFunction from '@/services/api/Owner/Properties/CreateProperty'
 import UpdatePropertyPicture from '@/services/api/Owner/Properties/UpdatePropertyPicture'
 import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
 import UpdatePropertyFunction from '@/services/api/Owner/Properties/UpdateProperty'
-
-type CreatePropertyData = Omit<
-  PropertyDetails,
-  | 'id'
-  | 'owner_id'
-  | 'picture_id'
-  | 'created_at'
-  | 'nb_damage'
-  | 'status'
-  | 'tenant'
-  | 'start_date'
-  | 'end_date'
->
 
 const useProperties = (
   propertyId: string | null = null,
@@ -34,7 +24,7 @@ const useProperties = (
   const extractBase64Content = (base64: string) => base64.split(',')[1]
 
   const createProperty = async (
-    propertyData: CreatePropertyData,
+    propertyData: CreatePropertyPayload,
     imageBase64: string | null
   ) => {
     setLoading(true)
@@ -61,7 +51,7 @@ const useProperties = (
   }
 
   const updateProperty = async (
-    propertyData: CreatePropertyData,
+    propertyData: CreatePropertyPayload,
     imageBase64: string | null,
     propertyId: string
   ) => {
