@@ -64,7 +64,6 @@ describe('useProperties', () => {
       result.current.createProperty(
         {
           name: 'New Property',
-          archived: false,
           address: 'St Test',
           city: 'Test',
           postal_code: 'Test',
@@ -72,27 +71,7 @@ describe('useProperties', () => {
           area_sqm: 40,
           rental_price_per_month: 1000,
           deposit_price: 2000,
-          apartment_number: '640',
-          invite: {
-            tenant_email: 'test@example.com',
-            start_date: '2023-01-01T00:00:00Z',
-            end_date: '2023-12-31T00:00:00Z'
-          },
-          lease: {
-            active: false,
-            created_at: '2023-01-01T00:00:00Z',
-            start_date: '2023-01-01T00:00:00Z',
-            end_date: '2023-12-31T00:00:00Z',
-            id: '1',
-            owner_email: 'owner@example.com',
-            owner_id: '1',
-            owner_name: 'Owner Name',
-            property_id: '1',
-            property_name: 'Property Name',
-            tenant_email: 'tenant@example.com',
-            tenant_id: '1',
-            tenant_name: 'Tenant Name'
-          }
+          apartment_number: '640'
         },
         'data:image/jpeg;base64,...'
       )
@@ -100,7 +79,6 @@ describe('useProperties', () => {
 
     expect(CreatePropertyFunction).toHaveBeenCalledWith({
       name: 'New Property',
-      archived: false,
       address: 'St Test',
       city: 'Test',
       postal_code: 'Test',
@@ -108,27 +86,7 @@ describe('useProperties', () => {
       area_sqm: 40,
       rental_price_per_month: 1000,
       deposit_price: 2000,
-      apartment_number: '640',
-      invite: {
-        tenant_email: 'test@example.com',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z'
-      },
-      lease: {
-        active: false,
-        created_at: '2023-01-01T00:00:00Z',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z',
-        id: '1',
-        owner_email: 'owner@example.com',
-        owner_id: '1',
-        owner_name: 'Owner Name',
-        property_id: '1',
-        property_name: 'Property Name',
-        tenant_email: 'tenant@example.com',
-        tenant_id: '1',
-        tenant_name: 'Tenant Name'
-      }
+      apartment_number: '640'
     })
     expect(UpdatePropertyPicture).toHaveBeenCalledWith('3', '...')
     expect(result.current.properties).toContainEqual(newProperty)
@@ -157,7 +115,6 @@ describe('useProperties', () => {
       result.current.createProperty(
         {
           name: 'New Property',
-          archived: false,
           address: 'St Test',
           city: 'Test',
           postal_code: 'Test',
@@ -165,27 +122,7 @@ describe('useProperties', () => {
           area_sqm: 40,
           rental_price_per_month: 1000,
           deposit_price: 2000,
-          apartment_number: '640',
-          invite: {
-            tenant_email: 'test@example.com',
-            start_date: '2023-01-01T00:00:00Z',
-            end_date: '2023-12-31T00:00:00Z'
-          },
-          lease: {
-            active: false,
-            created_at: '2023-01-01T00:00:00Z',
-            start_date: '2023-01-01T00:00:00Z',
-            end_date: '2023-12-31T00:00:00Z',
-            id: '1',
-            owner_email: 'owner@example.com',
-            owner_id: '1',
-            owner_name: 'Owner Name',
-            property_id: '1',
-            property_name: 'Property Name',
-            tenant_email: 'tenant@example.com',
-            tenant_id: '1',
-            tenant_name: 'Tenant Name'
-          }
+          apartment_number: '640'
         },
         mockImageBase64
       )
@@ -194,7 +131,6 @@ describe('useProperties', () => {
     expect(CreatePropertyFunction).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'New Property',
-        archived: false,
         address: 'St Test',
         city: 'Test',
         postal_code: 'Test',
@@ -202,27 +138,7 @@ describe('useProperties', () => {
         area_sqm: 40,
         rental_price_per_month: 1000,
         deposit_price: 2000,
-        apartment_number: '640',
-        invite: {
-          tenant_email: 'test@example.com',
-          start_date: '2023-01-01T00:00:00Z',
-          end_date: '2023-12-31T00:00:00Z'
-        },
-        lease: {
-          active: false,
-          created_at: '2023-01-01T00:00:00Z',
-          start_date: '2023-01-01T00:00:00Z',
-          end_date: '2023-12-31T00:00:00Z',
-          id: '1',
-          owner_email: 'owner@example.com',
-          owner_id: '1',
-          owner_name: 'Owner Name',
-          property_id: '1',
-          property_name: 'Property Name',
-          tenant_email: 'tenant@example.com',
-          tenant_id: '1',
-          tenant_name: 'Tenant Name'
-        }
+        apartment_number: '640'
       })
     )
     expect(UpdatePropertyPicture).toHaveBeenCalledWith('3', '...')
@@ -260,34 +176,13 @@ describe('useProperties', () => {
     const mockPropertyData = {
       name: 'New Property',
       address: 'St Test',
-      archived: false,
       city: 'Test',
       postal_code: 'Test',
       country: 'Test',
       area_sqm: 40,
       rental_price_per_month: 1000,
       deposit_price: 2000,
-      apartment_number: '640',
-      invite: {
-        tenant_email: 'test@example.com',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z'
-      },
-      lease: {
-        active: false,
-        created_at: '2023-01-01T00:00:00Z',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z',
-        id: '1',
-        owner_email: 'owner@example.com',
-        owner_id: '1',
-        owner_name: 'Owner Name',
-        property_id: '1',
-        property_name: 'Property Name',
-        tenant_email: 'tenant@example.com',
-        tenant_id: '1',
-        tenant_name: 'Tenant Name'
-      }
+      apartment_number: '640'
     }
     const mockImageBase64 = 'data:image/png;base64,...'
     const mockCreatedProperty = { id: '3', ...mockPropertyData }
@@ -317,7 +212,6 @@ describe('useProperties', () => {
   it('should handle error if property creation fails', async () => {
     const mockPropertyData = {
       name: 'New Property',
-      archived: false,
       address: 'St Test',
       city: 'Test',
       postal_code: 'Test',
@@ -325,27 +219,7 @@ describe('useProperties', () => {
       area_sqm: 40,
       rental_price_per_month: 1000,
       deposit_price: 2000,
-      apartment_number: '640',
-      invite: {
-        tenant_email: 'test@example.com',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z'
-      },
-      lease: {
-        active: false,
-        created_at: '2023-01-01T00:00:00Z',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z',
-        id: '1',
-        owner_email: 'owner@example.com',
-        owner_id: '1',
-        owner_name: 'Owner Name',
-        property_id: '1',
-        property_name: 'Property Name',
-        tenant_email: 'tenant@example.com',
-        tenant_id: '1',
-        tenant_name: 'Tenant Name'
-      }
+      apartment_number: '640'
     }
 
     const mockError = new Error('Property creation failed.')
@@ -388,7 +262,6 @@ describe('useProperties', () => {
   it('should throw error when created property is falsy', async () => {
     const mockPropertyData = {
       name: 'New Property',
-      archived: false,
       address: 'St Test',
       city: 'Test',
       postal_code: 'Test',
@@ -396,27 +269,7 @@ describe('useProperties', () => {
       area_sqm: 40,
       rental_price_per_month: 1000,
       deposit_price: 2000,
-      apartment_number: '640',
-      invite: {
-        tenant_email: 'test@example.com',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z'
-      },
-      lease: {
-        active: false,
-        created_at: '2023-01-01T00:00:00Z',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z',
-        id: '1',
-        owner_email: 'owner@example.com',
-        owner_id: '1',
-        owner_name: 'Owner Name',
-        property_id: '1',
-        property_name: 'Property Name',
-        tenant_email: 'tenant@example.com',
-        tenant_id: '1',
-        tenant_name: 'Tenant Name'
-      }
+      apartment_number: '640'
     }
 
     ;(GetProperties as jest.Mock).mockResolvedValue([])
@@ -443,7 +296,6 @@ describe('useProperties', () => {
   it('should update a property and its picture', async () => {
     const mockPropertyData = {
       name: 'Updated Property',
-      archived: false,
       address: 'Updated St',
       city: 'Updated City',
       postal_code: 'Updated Code',
@@ -451,27 +303,7 @@ describe('useProperties', () => {
       area_sqm: 50,
       rental_price_per_month: 1200,
       deposit_price: 2400,
-      apartment_number: '641',
-      invite: {
-        tenant_email: 'test@example.com',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z'
-      },
-      lease: {
-        active: false,
-        created_at: '2023-01-01T00:00:00Z',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z',
-        id: '1',
-        owner_email: 'owner@example.com',
-        owner_id: '1',
-        owner_name: 'Owner Name',
-        property_id: '1',
-        property_name: 'Property Name',
-        tenant_email: 'tenant@example.com',
-        tenant_id: '1',
-        tenant_name: 'Tenant Name'
-      }
+      apartment_number: '641'
     }
     const mockImageBase64 = 'data:image/png;base64,updatedImage'
     const mockUpdatedProperty = { id: '1', ...mockPropertyData }
@@ -512,34 +344,13 @@ describe('useProperties', () => {
     const mockPropertyData = {
       name: 'Updated Property',
       address: 'Updated St',
-      archived: false,
       city: 'Updated City',
       postal_code: 'Updated Code',
       country: 'Updated Country',
       area_sqm: 50,
       rental_price_per_month: 1200,
       deposit_price: 2400,
-      apartment_number: '641',
-      invite: {
-        tenant_email: 'test@example.com',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z'
-      },
-      lease: {
-        active: false,
-        created_at: '2023-01-01T00:00:00Z',
-        start_date: '2023-01-01T00:00:00Z',
-        end_date: '2023-12-31T00:00:00Z',
-        id: '1',
-        owner_email: 'owner@example.com',
-        owner_id: '1',
-        owner_name: 'Owner Name',
-        property_id: '1',
-        property_name: 'Property Name',
-        tenant_email: 'tenant@example.com',
-        tenant_id: '1',
-        tenant_name: 'Tenant Name'
-      }
+      apartment_number: '641'
     }
     const mockError = new Error('Property update failed')
 
