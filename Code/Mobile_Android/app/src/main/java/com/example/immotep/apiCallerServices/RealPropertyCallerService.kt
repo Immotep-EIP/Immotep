@@ -173,59 +173,37 @@ class RealPropertyCallerService (
 ) : ApiCallerService(apiService, navController) {
 
     suspend fun getPropertiesAsDetailedProperties():  Array<DetailedProperty> {
-        try {
+        return changeRetrofitExceptionByApiCallerException {
             val properties = apiService.getProperties(getBearerToken())
-            return properties.map { it.toDetailedProperty() }.toTypedArray()
-        } catch (e: HttpException) {
-            this.handleRetrofitExceptions(e)
-            throw e
+            properties.map { it.toDetailedProperty() }.toTypedArray()
         }
     }
 
     suspend fun addProperty(property: AddPropertyInput): CreateOrUpdateResponse {
-        try {
-            return apiService.addProperty(getBearerToken(), property)
-        } catch (e: Exception) {
-            throw e
+        return changeRetrofitExceptionByApiCallerException {
+            apiService.addProperty(getBearerToken(), property)
         }
     }
 
-    suspend fun archiveProperty(propertyId: String, onError: () -> Unit) {
-        try {
+    suspend fun archiveProperty(propertyId: String) {
+        return changeRetrofitExceptionByApiCallerException {
             apiService.archiveProperty(getBearerToken(), propertyId, ArchivePropertyInput(true))
-        } catch (e: Exception) {
-            onError()
-            throw e
         }
     }
 
-    suspend fun getPropertyWithDetails(propertyId: String, onError: () -> Unit): DetailedProperty {
-        try {
-            val propertyWithDetails = apiService.getProperty(getBearerToken(), propertyId).toDetailedProperty()
-            return propertyWithDetails
-        } catch (e: Exception) {
-            onError()
-            throw e
-        }
+    suspend fun getPropertyWithDetails(propertyId: String): DetailedProperty = changeRetrofitExceptionByApiCallerException {
+        apiService.getProperty(getBearerToken(), propertyId).toDetailedProperty()
     }
 
     suspend fun updateProperty(
         property: AddPropertyInput,
         propertyId: String,
-    ): CreateOrUpdateResponse {
-        try {
-            return apiService.updateProperty(getBearerToken(), property, propertyId)
-        } catch (e: Exception) {
-            throw e
-        }
+    ): CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
+        apiService.updateProperty(getBearerToken(), property, propertyId)
     }
 
-    suspend fun getPropertyDocuments(propertyId: String, leaseId : String): Array<Document> {
-        try {
-            return apiService.getPropertyDocuments(getBearerToken(), propertyId, leaseId)
-        } catch (e: Exception) {
-            throw e
-        }
+    suspend fun getPropertyDocuments(propertyId: String, leaseId : String): Array<Document> = changeRetrofitExceptionByApiCallerException {
+        apiService.getPropertyDocuments(getBearerToken(), propertyId, leaseId)
     }
 
 

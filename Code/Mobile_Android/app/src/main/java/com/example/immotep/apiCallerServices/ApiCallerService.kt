@@ -31,7 +31,7 @@ sealed class ApiCallerService(
         }
     }
 
-    protected suspend fun <T>handleRetrofitExceptions(
+    protected suspend fun <T>changeRetrofitExceptionByApiCallerException(
         logoutOnUnauthorized : Boolean = false,
         fnToRun : suspend () -> T,
     ) : T {

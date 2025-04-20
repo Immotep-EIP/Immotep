@@ -57,13 +57,12 @@ class LoaderInventoryViewModel(
         try {
             val newRooms = roomApiCaller.getAllRoomsWithFurniture(
                 propertyId,
-                { _inventoryErrors.value = _inventoryErrors.value.copy(getAllRooms = true) },
                 { _inventoryErrors.value = _inventoryErrors.value.copy(errorRoomName = it) }
             )
             rooms.addAll(newRooms)
         } catch (e: Exception) {
             println("Error during get base rooms ${e.message}")
-            _inventoryErrors.value = _inventoryErrors.value.copy(getLastInventoryReport = true)
+            _inventoryErrors.value = _inventoryErrors.value.copy(getAllRooms = true, getLastInventoryReport = true)
             e.printStackTrace()
         }
     }

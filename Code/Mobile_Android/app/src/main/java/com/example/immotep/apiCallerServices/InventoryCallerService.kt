@@ -32,45 +32,30 @@ class InventoryCallerService(
         inventoryReportInput: InventoryReportInput,
         leaseId : String,
     ) : CreatedInventoryReport {
-        try {
-            return apiService.inventoryReport(getBearerToken(), propertyId, leaseId, inventoryReportInput)
-        } catch(e : Exception) {
-            println("Error during create inventory report ${e.message}")
-            e.printStackTrace()
-            throw e
+        return changeRetrofitExceptionByApiCallerException {
+            apiService.inventoryReport(getBearerToken(), propertyId, leaseId, inventoryReportInput)
         }
     }
 
-    suspend fun getAllInventoryReports(propertyId: String, onError : () -> Unit) : Array<InventoryReportOutput> {
-        try {
-            val inventoryReports = apiService.getAllInventoryReports(getBearerToken(), propertyId)
-            return inventoryReports
-        } catch (e : Exception) {
-            onError()
-            throw e
+    suspend fun getAllInventoryReports(propertyId: String) : Array<InventoryReportOutput> {
+        return changeRetrofitExceptionByApiCallerException{
+            apiService.getAllInventoryReports(getBearerToken(), propertyId)
         }
     }
 
     suspend fun getLastInventoryReport(propertyId: String) : InventoryReportOutput {
-        try {
-            val inventoryReport = apiService.getInventoryReportByIdOrLatest(getBearerToken(), propertyId, "latest")
-            return inventoryReport
-        } catch (e : Exception) {
-            throw e
+        return changeRetrofitExceptionByApiCallerException {
+            apiService.getInventoryReportByIdOrLatest(getBearerToken(), propertyId, "latest")
         }
     }
 
-    suspend fun getInventoryReportById(propertyId: String, reportId: String, onError : () -> Unit) : InventoryReportOutput {
-        try {
-            val inventoryReport = apiService.getInventoryReportByIdOrLatest(
+    suspend fun getInventoryReportById(propertyId: String, reportId: String) : InventoryReportOutput {
+        return changeRetrofitExceptionByApiCallerException {
+            apiService.getInventoryReportByIdOrLatest(
                 getBearerToken(),
                 propertyId,
                 reportId
             )
-            return inventoryReport
-        } catch (e: Exception) {
-            onError()
-            throw e
         }
     }
 }

@@ -25,22 +25,15 @@ class ProfileCallerService(
     navController: NavController,
 ) : ApiCallerService(apiService, navController) {
 
-    suspend fun getProfile(onError : () -> Unit) : ProfileResponse {
-        try {
-            val profile = apiService.getProfile(getBearerToken())
-            return profile
-        } catch (e : Exception) {
-            onError()
-            throw e
+    suspend fun getProfile() : ProfileResponse {
+        return changeRetrofitExceptionByApiCallerException {
+            apiService.getProfile(getBearerToken())
         }
     }
 
-    suspend fun updateProfile(profileUpdateInput: ProfileUpdateInput, onError : () -> Unit) {
-        try {
+    suspend fun updateProfile(profileUpdateInput: ProfileUpdateInput) {
+        return changeRetrofitExceptionByApiCallerException {
             apiService.updateProfile(getBearerToken(), profileUpdateInput)
-        } catch (e : Exception) {
-            onError()
-            throw e
         }
     }
 }

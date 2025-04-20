@@ -44,7 +44,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             _apiError.value = false
             try {
-                val profile = apiCaller.getProfile({ _apiError.value = true })
+                val profile = apiCaller.getProfile()
                 _infos.value = _infos.value.copy(
                     email = profile.email,
                     firstname = profile.firstname,
@@ -75,7 +75,7 @@ class ProfileViewModel(
             _apiError.value = false
             _isLoading.value = true
             try {
-                apiCaller.updateProfile(_infos.value.toProfileUpdateInput(), { _apiError.value = true })
+                apiCaller.updateProfile(_infos.value.toProfileUpdateInput())
             } catch (e: Exception) {
                 _apiError.value = true
                 println(e)

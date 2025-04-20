@@ -25,13 +25,13 @@ class AICallerService(
 ) : ApiCallerService(apiService, navController) {
 
     suspend fun summarize(input: AiCallInput, propertyId : String) : AiCallOutput {
-        return handleRetrofitExceptions {
+        return changeRetrofitExceptionByApiCallerException {
             apiService.aiSummarize(this.getBearerToken(), propertyId, input)
         }
     }
 
     suspend fun compare(input: AiCallInput, propertyId: String, oldReportId : String) : AiCallOutput {
-       return handleRetrofitExceptions {
+       return changeRetrofitExceptionByApiCallerException {
            apiService.aiCompare(this.getBearerToken(), propertyId, oldReportId, input)
        }
     }

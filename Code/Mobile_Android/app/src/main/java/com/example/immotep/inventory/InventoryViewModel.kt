@@ -86,12 +86,12 @@ class InventoryViewModel(
             val (id) = roomApiCaller.addRoom(
                 _propertyId!!,
                 AddRoomInput(name = name),
-                onError = onError
             )
             val room = Room(id = id, name = name)
             rooms.add(room)
             return id
         } catch (e: Exception) {
+            onError()
             println("Impossible to add a room ${e.message}")
             e.printStackTrace()
             return null

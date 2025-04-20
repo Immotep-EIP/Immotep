@@ -27,49 +27,43 @@ class RoomCallerService(
 ) : ApiCallerService(apiService, navController) {
     private val furnitureCaller = FurnitureCallerService(apiService, navController)
 
-    suspend fun getAllRooms(propertyId: String, onError : () -> Unit) : Array<RoomOutput> {
-        try {
-            val rooms = apiService.getAllRooms(getBearerToken(), propertyId)
-            return rooms
-        } catch (e: Exception) {
-            onError()
-            throw e
+    suspend fun getAllRooms(propertyId: String) : Array<RoomOutput> =
+        changeRetrofitExceptionByApiCallerException {
+            apiService.getAllRooms(getBearerToken(), propertyId)
         }
-    }
 
     suspend fun getAllRoomsWithFurniture(
         propertyId: String,
-        onError : () -> Unit,
         onErrorRoomFurniture : (String) -> Unit) : Array<Room>
     {
         val rooms = try {
-            this.getAllRooms(propertyId, onError)
-        } catch (e: Exception) {
-            onError()
+            this.getAllRooms(propertyId)
+        } catch (e: ApiCallerServiceException) {
             throw e
         }
-        val newRooms = mutableListOf<Room>()
-        rooms.forEach {
-            try {
-                val roomsDetails = furnitureCaller.getFurnituresByRoomId(
-                    propertyId,
-                    it.id
-                ) { onErrorRoomFurniture(it.name) }
-                val room = it.toRoom(roomsDetails.map { roomDetail -> roomDetail.toRoomDetail() }.toTypedArray())
-                newRooms.add(room)
-            } catch (e: Exception) {
-                println("Error during get all rooms with furniture ${e.message}")
+        changeRetrofitExceptionByApiCallerException {
+            val newRooms = mutableListOf<Room>()
+            rooms.forEach {
+                try {
+                    val roomsDetails = furnitureCaller.getFurnituresByRoomId(
+                        propertyId,
+                        it.id
+                    )
+                    val room =
+                        it.toRoom(roomsDetails.map { roomDetail -> roomDetail.toRoomDetail() }
+                            .toTypedArray())
+                    newRooms.add(room)
+                } catch (e: Exception) {
+                    onErrorRoomFurniture(it.name)
+                    println("Error during get all rooms with furniture ${e.message}")
+                }
             }
+            newRooms.toTypedArray()
         }
-        return newRooms.toTypedArray()
+        return arrayOf()
     }
 
-    suspend fun addRoom(propertyId: String, room: AddRoomInput, onError : () -> Unit) : CreateOrUpdateResponse {
-        try {
-            return apiService.addRoom(getBearerToken(), propertyId, room)
-        } catch (e: Exception) {
-            onError()
-            throw e
-        }
+    suspend fun addRoom(propertyId: String, room: AddRoomInput) : CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
+        apiService.addRoom(getBearerToken(), propertyId, room)
     }
 }

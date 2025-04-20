@@ -77,7 +77,7 @@ class RealPropertyViewModel(
         }
         viewModelScope.launch {
             try {
-                apiCaller.archiveProperty(propertyId, { _apiError.value = WhichApiError.DELETE_PROPERTY })
+                apiCaller.archiveProperty(propertyId)
                 properties.removeAt(index)
                 closeError()
             } catch (e : Exception) {

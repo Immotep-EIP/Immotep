@@ -39,13 +39,9 @@ class FurnitureCallerService(
     suspend fun getFurnituresByRoomId(
         propertyId: String,
         roomId: String,
-        onError : () -> Unit
     ) : Array<FurnitureOutput> {
-        try {
-            return apiService.getAllFurnitures(getBearerToken(), propertyId, roomId)
-        } catch(e : Exception) {
-            onError()
-            throw e
+        return changeRetrofitExceptionByApiCallerException {
+            apiService.getAllFurnitures(getBearerToken(), propertyId, roomId)
         }
     }
 
@@ -54,10 +50,8 @@ class FurnitureCallerService(
         roomId: String,
         furniture: FurnitureInput,
     ) : CreateOrUpdateResponse {
-        try {
-            return apiService.addFurniture(getBearerToken(), propertyId, roomId, furniture)
-        } catch(e : Exception) {
-            throw e
+        return changeRetrofitExceptionByApiCallerException {
+            apiService.addFurniture(getBearerToken(), propertyId, roomId, furniture)
         }
     }
 }

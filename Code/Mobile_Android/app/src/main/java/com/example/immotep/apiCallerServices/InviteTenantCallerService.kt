@@ -31,18 +31,14 @@ class InviteTenantCallerService(
 ) : ApiCallerService(apiService, navController) {
 
     suspend fun invite(propertyId : String, inviteInput: InviteInput) : CreateOrUpdateResponse {
-        try {
-            return this.apiService.inviteTenant(this.getBearerToken(), propertyId, inviteInput)
-        } catch (e: Exception) {
-            throw e
+        return changeRetrofitExceptionByApiCallerException {
+            this.apiService.inviteTenant(this.getBearerToken(), propertyId, inviteInput)
         }
     }
 
     suspend fun cancelInvite(propertyId: String) {
-        try {
+        return changeRetrofitExceptionByApiCallerException {
             this.apiService.cancelTenantInvitation(this.getBearerToken(), propertyId)
-        } catch (e: Exception) {
-            throw e
         }
     }
 }
