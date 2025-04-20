@@ -1,5 +1,5 @@
-import { Room } from '../Room/Room'
-import { Furniture } from '../Room/Furniture/Furniture'
+import { Room } from '../Inventory/Room/Room'
+import { Furniture } from '../Inventory/Room/Furniture/Furniture'
 
 export interface FurnitureInventoryReports extends Furniture {
   cleanliness: string

@@ -1,5 +1,5 @@
 import callApi from '@/services/api/apiCaller'
-import { Furniture } from '@/interfaces/Property/Room/Furniture/Furniture'
+import { Furniture } from '@/interfaces/Property/Inventory/Room/Furniture/Furniture'
 import endpoints from '@/enums/EndPointEnum'
 
 const GetFurnitureByRoomById = async (

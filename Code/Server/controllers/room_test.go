@@ -23,6 +23,7 @@ func BuildTestRoom(id string, propertyId string) db.RoomModel {
 		InnerRoom: db.InnerRoom{
 			ID:         id,
 			Name:       "Test",
+			Type:       db.RoomTypeOther,
 			PropertyID: propertyId,
 			Archived:   false,
 		},
@@ -50,7 +51,7 @@ func TestCreateRoom(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusCreated, w.Code)
-	var resp models.RoomResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, room.ID)
@@ -275,11 +276,10 @@ func TestArchiveRoom(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusOK, w.Code)
-	var resp models.RoomResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, room.ID)
-	assert.True(t, resp.Archived)
 }
 
 func TestArchiveRoom_NotFound(t *testing.T) {
@@ -318,7 +318,7 @@ func TestGetArchivedRoomsByProperty(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/?archive=true", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -339,7 +339,7 @@ func TestGetArchivedRoomsByProperty_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/?archive=true", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)

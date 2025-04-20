@@ -9,6 +9,7 @@ func CreateRoom(room db.RoomModel, proppertyId string) *db.RoomModel {
 	pdb := services.DBclient
 	newRoom, err := pdb.Client.Room.CreateOne(
 		db.Room.Name.Set(room.Name),
+		db.Room.Type.Set(room.Type),
 		db.Room.Property.Link(db.Property.ID.Equals(proppertyId)),
 	).Exec(pdb.Context)
 	if err != nil {
@@ -23,6 +24,7 @@ func CreateRoom(room db.RoomModel, proppertyId string) *db.RoomModel {
 func MockCreateRoom(c *services.PrismaDB, room db.RoomModel) db.RoomMockExpectParam {
 	return c.Client.Room.CreateOne(
 		db.Room.Name.Set(room.Name),
+		db.Room.Type.Set(room.Type),
 		db.Room.Property.Link(db.Property.ID.Equals("1")),
 	)
 }

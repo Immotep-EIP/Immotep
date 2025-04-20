@@ -6,6 +6,7 @@ jest.mock('@/services/api/apiCaller')
 describe('CreateRoomByProperty', () => {
   const mockPropertyId = '123'
   const mockRoomName = 'Living Room'
+  const mockRoomType = 'bedroom'
   const mockResponse = { id: '1', name: mockRoomName }
 
   beforeEach(() => {
@@ -15,12 +16,16 @@ describe('CreateRoomByProperty', () => {
   it('should create room successfully', async () => {
     ;(callApi as jest.Mock).mockResolvedValue(mockResponse)
 
-    const result = await CreateRoomByProperty(mockPropertyId, mockRoomName)
+    const result = await CreateRoomByProperty(
+      mockPropertyId,
+      mockRoomName,
+      mockRoomType
+    )
 
     expect(callApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: `owner/properties/${mockPropertyId}/rooms/`,
-      body: JSON.stringify({ name: mockRoomName })
+      body: JSON.stringify({ name: mockRoomName, type: mockRoomType })
     })
     expect(result).toEqual(mockResponse)
   })
@@ -33,12 +38,12 @@ describe('CreateRoomByProperty', () => {
     ;(callApi as jest.Mock).mockRejectedValue(mockError)
 
     await expect(
-      CreateRoomByProperty(mockPropertyId, mockRoomName)
+      CreateRoomByProperty(mockPropertyId, mockRoomName, mockRoomType)
     ).rejects.toThrow('Failed to create')
     expect(callApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: `owner/properties/${mockPropertyId}/rooms/`,
-      body: JSON.stringify({ name: mockRoomName })
+      body: JSON.stringify({ name: mockRoomName, type: mockRoomType })
     })
 
     consoleErrorSpy.mockRestore()

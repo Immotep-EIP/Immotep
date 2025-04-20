@@ -19,6 +19,25 @@ enum priority {
     urgent
 }
 
+enum roomType {
+    dressing
+    laundryroom
+    bedroom
+    playroom
+    bathroom
+    toilet
+    livingroom
+    diningroom
+    kitchen
+    hallway
+    balcony
+    cellar
+    garage
+    storage
+    office
+    other
+}
+
 enum reportType {
     start
     middle
@@ -162,6 +181,7 @@ model document {
 model room {
     id          String   @id @default(cuid())
     name        String
+    type        roomType
     archived    Boolean  @default(false)
 
     property    property @relation(fields: [property_id], references: [id])

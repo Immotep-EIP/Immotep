@@ -92,13 +92,15 @@ const callApi = async <TResponse, TBody = unknown>({
   method,
   endpoint,
   body,
-  headers
+  headers,
+  params
 }: ApiCallerParams<TResponse, TBody>): Promise<TResponse> => {
   try {
     const response = await api.request({
       method,
       url: `/${endpoint}`,
       data: body,
+      params,
       headers: {
         Accept: 'application/json',
         ...headers

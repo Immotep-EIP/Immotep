@@ -16,6 +16,7 @@ func BuildTestRoom(id string) db.RoomModel {
 		InnerRoom: db.InnerRoom{
 			ID:   id,
 			Name: "Test Room",
+			Type: db.RoomTypeOther,
 		},
 	}
 }

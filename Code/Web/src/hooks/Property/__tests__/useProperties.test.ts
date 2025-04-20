@@ -64,7 +64,6 @@ describe('useProperties', () => {
       result.current.createProperty(
         {
           name: 'New Property',
-          archived: false,
           address: 'St Test',
           city: 'Test',
           postal_code: 'Test',
@@ -80,7 +79,6 @@ describe('useProperties', () => {
 
     expect(CreatePropertyFunction).toHaveBeenCalledWith({
       name: 'New Property',
-      archived: false,
       address: 'St Test',
       city: 'Test',
       postal_code: 'Test',
@@ -117,7 +115,6 @@ describe('useProperties', () => {
       result.current.createProperty(
         {
           name: 'New Property',
-          archived: false,
           address: 'St Test',
           city: 'Test',
           postal_code: 'Test',
@@ -134,7 +131,6 @@ describe('useProperties', () => {
     expect(CreatePropertyFunction).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'New Property',
-        archived: false,
         address: 'St Test',
         city: 'Test',
         postal_code: 'Test',
@@ -180,7 +176,6 @@ describe('useProperties', () => {
     const mockPropertyData = {
       name: 'New Property',
       address: 'St Test',
-      archived: false,
       city: 'Test',
       postal_code: 'Test',
       country: 'Test',
@@ -217,7 +212,6 @@ describe('useProperties', () => {
   it('should handle error if property creation fails', async () => {
     const mockPropertyData = {
       name: 'New Property',
-      archived: false,
       address: 'St Test',
       city: 'Test',
       postal_code: 'Test',
@@ -268,7 +262,6 @@ describe('useProperties', () => {
   it('should throw error when created property is falsy', async () => {
     const mockPropertyData = {
       name: 'New Property',
-      archived: false,
       address: 'St Test',
       city: 'Test',
       postal_code: 'Test',
@@ -303,7 +296,6 @@ describe('useProperties', () => {
   it('should update a property and its picture', async () => {
     const mockPropertyData = {
       name: 'Updated Property',
-      archived: false,
       address: 'Updated St',
       city: 'Updated City',
       postal_code: 'Updated Code',
@@ -352,7 +344,6 @@ describe('useProperties', () => {
     const mockPropertyData = {
       name: 'Updated Property',
       address: 'Updated St',
-      archived: false,
       city: 'Updated City',
       postal_code: 'Updated Code',
       country: 'Updated Country',

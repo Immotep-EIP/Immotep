@@ -1,6 +1,7 @@
 export interface Lease {
   active: boolean
   created_at: string
+  start_date: string
   end_date: string
   id: string
   owner_email: string
@@ -8,7 +9,6 @@ export interface Lease {
   owner_name: string
   property_id: string
   property_name: string
-  start_date: string
   tenant_email: string
   tenant_id: string
   tenant_name: string

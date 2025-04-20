@@ -1,0 +1,53 @@
+.list-container {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.room-item {
+  transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.room-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #e6f7ff;
+}
+
+.furniture-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.furniture-item {
+  padding: 12px 16px;
+  border-radius: 6px;
+  background-color: white;
+  transition: all 0.3s ease;
+}
+
+.furniture-item:hover {
+  background-color: #f5f5f5;
+}
+
+.furniture-item .ant-tag {
+  font-size: 13px;
+  padding: 0 8px;
+  height: 24px;
+  line-height: 22px;
+}
+
+.action-button {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.action-button:hover {
+  opacity: 1;
+}
+
+.add-button {
+  margin-left: 8px;
+}

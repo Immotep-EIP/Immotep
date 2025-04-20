@@ -1,7 +1,7 @@
 import { PropertyDetails } from '../Property/Property'
 
 export interface InviteTenant {
-  propertyId: string
+  propertyId?: string
   end_date?: string
   start_date: string
   tenant_email: string

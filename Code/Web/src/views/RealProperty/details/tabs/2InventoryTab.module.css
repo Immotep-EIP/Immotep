@@ -5,6 +5,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  padding: 24px;
 }
 
 .buttonAddContainer {
@@ -13,23 +14,23 @@
   align-items: center;
   justify-content: flex-end;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .roomsContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 40px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
   width: 100%;
   box-sizing: border-box;
   justify-items: stretch;
 }
 
 .roomContainer {
-  background-color: white;
-  padding: 10px;
-  border: 1px solid #ddd;
+  background: #fff;
   border-radius: 8px;
+  border: 1px solid #f0f0f0;
+  padding: 16px;
   text-align: center;
   align-items: center;
   justify-content: center;
@@ -39,18 +40,15 @@
 
 .roomHeader {
   display: flex;
-  flex-direction: row;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 5px;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .stuffsContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
   width: 100%;
   box-sizing: border-box;
   justify-items: stretch;
@@ -58,18 +56,13 @@
 
 .stuffCard,
 .stuffCardAdd {
-  background-color: white;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  text-align: center;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  padding: 8px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  align-items: center;
 }
 
 .stuffCard span {
@@ -79,13 +72,22 @@
 }
 
 .stuffCardAdd {
+  background: #fafafa;
+  border: 1px dashed #d9d9d9;
+  border-radius: 4px;
+  padding: 8px;
+  display: flex;
   justify-content: center;
+  align-items: center;
   cursor: pointer;
+  transition: all 0.3s;
+}
+
+.stuffCardAdd:hover {
+  border-color: #1890ff;
 }
 
 .removeStuffIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #ff4d4f;
   cursor: pointer;
 }

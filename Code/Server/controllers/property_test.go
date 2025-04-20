@@ -310,7 +310,7 @@ func TestCreateProperty(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusCreated, w.Code)
-	var resp models.PropertyResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, property.ID)
@@ -396,8 +396,8 @@ func TestInviteTenant(t *testing.T) {
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
 
-	require.Equal(t, http.StatusOK, w.Code)
-	var resp models.InviteResponse
+	require.Equal(t, http.StatusCreated, w.Code)
+	var resp db.InnerLeaseInvite
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, leaseInvite.ID)
@@ -742,7 +742,7 @@ func TestUpdatePropertyPicture(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusOK, w.Code)
-	var resp models.PropertyResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.Equal(t, property.ID, resp.ID)
@@ -881,11 +881,10 @@ func TestArchiveProperty(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusOK, w.Code)
-	var resp models.PropertyResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, property.ID)
-	assert.True(t, resp.Archived)
 }
 
 func TestArchiveProperty_NotFound(t *testing.T) {
@@ -918,7 +917,7 @@ func TestGetAllArchivedProperties(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/?archive=true", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -963,11 +962,10 @@ func TestUpdateProperty(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusOK, w.Code)
-	var resp models.PropertyResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.Equal(t, updatedProperty.ID, resp.ID)
-	assert.Equal(t, updatedProperty.Name, resp.Name)
 }
 
 func TestUpdateProperty_NotFound(t *testing.T) {

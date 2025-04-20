@@ -300,3 +300,78 @@ func TestCheckLeaseTenantOwnership_TenantMismatch(t *testing.T) {
 	middlewares.CheckLeaseTenantOwnership("leaseId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
+
+func TestCheckDamageLeaseOwnership(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID: "1",
+		},
+	}
+	damage := db.DamageModel{
+		InnerDamage: db.InnerDamage{
+			ID:      "1",
+			LeaseID: "1",
+		},
+	}
+	m.Damage.Expect(database.MockGetDamageByID(c)).Returns(damage)
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", lease)
+	ctx.Params = gin.Params{gin.Param{Key: "damageId", Value: "1"}}
+
+	middlewares.CheckDamageLeaseOwnership("damageId")(ctx)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestCheckDamageLeaseOwnership_DamageNotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID: "1",
+		},
+	}
+	m.Damage.Expect(database.MockGetDamageByID(c)).Errors(db.ErrNotFound)
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", lease)
+	ctx.Params = gin.Params{gin.Param{Key: "damageId", Value: "1"}}
+
+	middlewares.CheckDamageLeaseOwnership("damageId")(ctx)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCheckDamageLeaseOwnership_LeaseMismatch(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	lease := db.LeaseModel{
+		InnerLease: db.InnerLease{
+			ID: "1",
+		},
+	}
+	damage := db.DamageModel{
+		InnerDamage: db.InnerDamage{
+			ID:      "1",
+			LeaseID: "2",
+		},
+	}
+	m.Damage.Expect(database.MockGetDamageByID(c)).Returns(damage)
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("lease", lease)
+	ctx.Params = gin.Params{gin.Param{Key: "damageId", Value: "1"}}
+
+	middlewares.CheckDamageLeaseOwnership("damageId")(ctx)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}

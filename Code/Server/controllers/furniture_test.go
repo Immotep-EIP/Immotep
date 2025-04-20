@@ -56,7 +56,7 @@ func TestCreateFurniture(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusCreated, w.Code)
-	var resp models.FurnitureResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, furniture.ID)
@@ -386,11 +386,10 @@ func TestArchiveFurniture(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusOK, w.Code)
-	var resp models.FurnitureResponse
+	var resp models.IdResponse
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, furniture.ID)
-	assert.True(t, resp.Archived)
 }
 
 func TestArchiveFurniture_MissingFields(t *testing.T) {
@@ -506,7 +505,7 @@ func TestGetArchivedFurnituresByRoom(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/?archive=true", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -530,7 +529,7 @@ func TestGetArchivedFurnituresByRoom_RoomNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/?archive=true", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -553,7 +552,7 @@ func TestGetArchivedFurnituresByRoom_WrongProperty(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/?archive=true", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
@@ -573,7 +572,7 @@ func TestGetArchivedFurnituresByRoom_PropertyNotFound(t *testing.T) {
 
 	r := router.TestRoutes()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/archived/", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/owner/properties/1/rooms/1/furnitures/?archive=true", nil)
 	req.Header.Set("Oauth.claims.id", "1")
 	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
 	r.ServeHTTP(w, req)
