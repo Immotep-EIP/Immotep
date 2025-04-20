@@ -305,12 +305,14 @@
             "intervention_date": "Date d'intervention",
             "room": "Pièce",
             "priority": "Priorité",
-            "pictures": "Images"
+            "pictures": "Images",
+            "available_pictures": "Images disponibles"
           },
           "priority": {
             "low": "Basse",
             "medium": "Moyenne",
-            "high": "Haute"
+            "high": "Haute",
+            "urgent": "Urgent"
           },
           "modal": {
             "title": "Image du dommage"

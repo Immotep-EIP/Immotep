@@ -60,6 +60,12 @@ const endpoints = {
           `owner/properties/${propertyId}/send-invite/`,
         cancelInvite: (propertyId: string) =>
           `owner/properties/${propertyId}/cancel-invite/`
+      },
+
+      // Damages endpoints
+      damages: {
+        list: (propertyId: string) =>
+          `owner/properties/${propertyId}/leases/current/damages/`
       }
     }
   },

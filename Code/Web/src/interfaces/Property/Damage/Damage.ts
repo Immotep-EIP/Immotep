@@ -1,0 +1,15 @@
+export interface Damage {
+  id: string
+  lease_id: string
+  tenant_name: string
+  room_id: string
+  room_name: string
+  comment: string
+  priority: string
+  read: string
+  created_at: string
+  updated_at: string
+  fix_status: string
+  fix_planned_at: string
+  pictures: string
+}

@@ -305,12 +305,14 @@
             "intervention_date": "Intervention date",
             "room": "Room",
             "priority": "Priority",
-            "pictures": "Pictures"
+            "pictures": "Pictures",
+            "available_pictures": "Available pictures"
           },
           "priority": {
             "low": "Low",
             "medium": "Medium",
-            "high": "High"
+            "high": "High",
+            "urgent": "Urgent"
           },
           "modal": {
             "title": "Damage image"
