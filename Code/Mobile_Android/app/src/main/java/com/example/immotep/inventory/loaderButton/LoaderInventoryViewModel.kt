@@ -47,7 +47,9 @@ class LoaderInventoryViewModel(
     val isLoading = _internalIsLoading.asStateFlow()
 
     private suspend fun tryLoadLastInventory(propertyId: String) {
+        println("try load last inventory")
         val inventoryReport = inventoryApiCaller.getLastInventoryReport(propertyId)
+        println("here is my last inventory...${inventoryReport}")
         val lastInventoryRoomsAsRooms = inventoryReport.getRoomsAsRooms(empty = true)
         _oldReportId.value = inventoryReport.id
         this.rooms.addAll(lastInventoryRoomsAsRooms)
@@ -55,10 +57,15 @@ class LoaderInventoryViewModel(
 
     private suspend fun tryGetBaseRooms(propertyId: String) {
         try {
+            println("try get base rooms")
             val newRooms = roomApiCaller.getAllRoomsWithFurniture(
                 propertyId,
                 { _inventoryErrors.value = _inventoryErrors.value.copy(errorRoomName = it) }
             )
+            println("new rooms length ${newRooms.size}")
+            newRooms.forEach {
+                println("room with name ${it.name}")
+            }
             rooms.addAll(newRooms)
         } catch (e: Exception) {
             println("Error during get base rooms ${e.message}")

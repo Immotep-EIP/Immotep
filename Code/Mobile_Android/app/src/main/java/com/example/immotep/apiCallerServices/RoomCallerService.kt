@@ -34,15 +34,16 @@ class RoomCallerService(
 
     suspend fun getAllRoomsWithFurniture(
         propertyId: String,
-        onErrorRoomFurniture : (String) -> Unit) : Array<Room>
+        onErrorRoomFurniture : (String) -> Unit
+    ) : Array<Room>
     {
         val rooms = try {
             this.getAllRooms(propertyId)
         } catch (e: ApiCallerServiceException) {
             throw e
         }
+        val newRooms = mutableListOf<Room>()
         changeRetrofitExceptionByApiCallerException {
-            val newRooms = mutableListOf<Room>()
             rooms.forEach {
                 try {
                     val roomsDetails = furnitureCaller.getFurnituresByRoomId(
@@ -58,9 +59,8 @@ class RoomCallerService(
                     println("Error during get all rooms with furniture ${e.message}")
                 }
             }
-            newRooms.toTypedArray()
         }
-        return arrayOf()
+        return newRooms.toTypedArray()
     }
 
     suspend fun addRoom(propertyId: String, room: AddRoomInput) : CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
