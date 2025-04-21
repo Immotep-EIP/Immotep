@@ -163,7 +163,7 @@ fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDel
                 model = property.image,
                 placeholder = painterResource(id = R.drawable.immotep_png_logo),
                 error = painterResource(id = R.drawable.immotep_png_logo),
-                contentDescription = "picture of the ${property.tenant} property",
+                contentDescription = "picture of the ${property.name} property",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
@@ -175,14 +175,6 @@ fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDel
             Text(property.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             PropertyBoxTextLine(property.address, Icons.Outlined.Place)
-            /*
-            PropertyBoxTextLine(property.tenant?: "", Icons.Outlined.AccountCircle)
-            PropertyBoxTextLine(
-                DateFormatter.formatOffsetDateTime(property.startDate)?: "---------------------",
-                Icons.Outlined.DateRange
-            )
-
-             */
         }
         PropertyStatusBox(property.status, modifier = Modifier.align(Alignment.TopEnd))
     }

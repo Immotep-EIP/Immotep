@@ -74,6 +74,16 @@ fun AboutPropertyTab(
     setIsLoading : (Boolean) -> Unit,
     loaderInventoryViewModel: LoaderInventoryViewModel
 ) {
+    val invite = if (property.value.status == PropertyStatus.invite_sent) {
+        property.value.invite
+    } else {
+        null
+    }
+    val lease = if (property.value.status == PropertyStatus.unavailable) {
+        property.value.lease
+    } else {
+        null
+    }
     Row(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(18.dp)
@@ -103,11 +113,7 @@ fun AboutPropertyTab(
         Column {
             Text("${stringResource(R.string.tenant)}:", fontWeight = FontWeight.Bold, fontSize = 15.sp)
             Text(
-                if (property.value.tenant != null && property.value.tenant!!.isNotEmpty()) {
-                    property.value.tenant.toString()
-                } else {
-                    "---------------------"
-                },
+                text = lease?.tenantName?: invite?.tenantEmail?: "---------------------",
                 fontSize = 15.sp
             )
         }
@@ -115,8 +121,10 @@ fun AboutPropertyTab(
         Column {
             Text("${stringResource(R.string.dates)}:", fontWeight = FontWeight.Bold, fontSize = 15.sp)
             Text(
-                if (property.value.startDate != null && property.value.endDate != null) {
-                    "${DateFormatter.formatOffsetDateTime(property.value.startDate)} - ${DateFormatter.formatOffsetDateTime(property.value.endDate)}"
+                if (lease != null) {
+                    "${DateFormatter.formatOffsetDateTime(lease.startDate)} - ${DateFormatter.formatOffsetDateTime(lease.endDate)}"
+                } else if (invite != null) {
+                    "${DateFormatter.formatOffsetDateTime(invite.startDate)} - ${DateFormatter.formatOffsetDateTime(invite.endDate)}"
                 }
                 else {
                     "---------------------"
@@ -124,10 +132,10 @@ fun AboutPropertyTab(
                 fontSize = 15.sp)
         }
     }
-    if (property.value.status == PropertyStatus.unavailable) {
+    if (property.value.status == PropertyStatus.unavailable && lease != null) {
         LoaderInventoryButton(
             propertyId = property.value.id,
-            currentLeaseId = property.value.currentLeaseId,
+            currentLeaseId = lease.id,
             setIsLoading = setIsLoading,
             viewModel = loaderInventoryViewModel,
         )

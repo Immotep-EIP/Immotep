@@ -61,7 +61,13 @@ data class InvitePropertyResponse(
     val end_date: String,
     val start_date: String,
     val tenant_email: String
-)
+) {
+    fun toInviteDetailedProperty() = InviteDetailedProperty(
+        startDate = OffsetDateTime.parse(this.start_date),
+        endDate = OffsetDateTime.parse(this.end_date),
+        tenantEmail = this.tenant_email
+    )
+}
 
 data class LeasePropertyResponse(
     val active: Boolean,
@@ -70,7 +76,15 @@ data class LeasePropertyResponse(
     val start_date: String,
     val tenant_email: String,
     val tenant_name: String
-)
+) {
+    fun toLeaseDetailedProperty() = LeaseDetailedProperty(
+        id = this.id,
+        startDate = OffsetDateTime.parse(this.start_date),
+        endDate = OffsetDateTime.parse(this.end_date),
+        tenantEmail = this.tenant_email,
+        tenantName = this.tenant_name
+    )
+}
 
 
 data class GetPropertyResponse(
@@ -89,33 +103,38 @@ data class GetPropertyResponse(
     val created_at: String,
     val status: String,
     val nb_damage: Int,
-    val tenant: String,
     val picture_id: String?,
-    val start_date: String?,
-    val end_date: String?,
-    val invite: InvitePropertyResponse,
-    val lease: LeasePropertyResponse
+    val invite: InvitePropertyResponse?,
+    val lease: LeasePropertyResponse?
 ) {
-
-    fun toDetailedProperty() = DetailedProperty(
-        id = this.id, 
-        image = "", 
-        name = this.name,
-        zipCode = this.postal_code,
-        city = this.city,
-        country = this.country,
-        address = this.address,
-        appartementNumber = this.apartment_number,
-        tenant = this.tenant,
-        status = stringToPropertyState(this.status),
-        startDate = if (this.start_date != null) OffsetDateTime.parse(this.start_date) else null,
-        endDate = if (this.end_date != null) OffsetDateTime.parse(this.end_date) else null,
-        area = this.area_sqm.toInt(),
-        rent = this.rental_price_per_month,
-        deposit = this.deposit_price,
-        currentLeaseId = lease.id,
-        documents = arrayOf()
-    )
+    fun toDetailedProperty() : DetailedProperty  {
+        val statusAsPropertyStatus = stringToPropertyState(this.status)
+        var currentLease : LeaseDetailedProperty? = null
+        var currentInvite : InviteDetailedProperty? = null
+        if (this.lease != null && this.lease.active && statusAsPropertyStatus == PropertyStatus.unavailable) {
+            currentLease = this.lease.toLeaseDetailedProperty()
+        }
+        if (this.invite != null && statusAsPropertyStatus == PropertyStatus.invite_sent) {
+            currentInvite = this.invite.toInviteDetailedProperty()
+        }
+        return DetailedProperty(
+            id = this.id,
+            image = "",
+            name = this.name,
+            zipCode = this.postal_code,
+            city = this.city,
+            country = this.country,
+            address = this.address,
+            appartementNumber = this.apartment_number,
+            status = stringToPropertyState(this.status),
+            area = this.area_sqm.toInt(),
+            rent = this.rental_price_per_month,
+            deposit = this.deposit_price,
+            documents = arrayOf(),
+            lease = currentLease,
+            invite = currentInvite
+        )
+    }
 }
 
 //custom properties class
@@ -127,15 +146,25 @@ data class Document(
     val created_at: String
 )
 
+data class InviteDetailedProperty(
+    val startDate: OffsetDateTime,
+    val endDate: OffsetDateTime,
+    val tenantEmail: String
+)
+
+data class LeaseDetailedProperty(
+    val id: String,
+    val startDate: OffsetDateTime,
+    val endDate: OffsetDateTime,
+    val tenantEmail: String,
+    val tenantName: String
+)
+
 data class DetailedProperty(
      val id : String = "",
      val image : String = "",
      val address : String = "",
-     val currentLeaseId: String = "",
-     val tenant : String? = null,
      val status: PropertyStatus = PropertyStatus.unavailable,
-     val startDate : OffsetDateTime? = null,
-     val endDate : OffsetDateTime? = null,
      val appartementNumber : String? = "",
      val area : Int = 0,
      val rent : Int = 0,
@@ -144,7 +173,9 @@ data class DetailedProperty(
      val zipCode : String = "",
      val city : String = "",
      val country : String = "",
-     val name : String = ""
+     val name : String = "",
+     val invite : InviteDetailedProperty? = null,
+     val lease : LeaseDetailedProperty? = null
 ) {
     fun toAddPropertyInput() : AddPropertyInput {
         return AddPropertyInput(
@@ -173,7 +204,7 @@ class RealPropertyCallerService (
 ) : ApiCallerService(apiService, navController) {
 
     suspend fun getPropertiesAsDetailedProperties():  Array<DetailedProperty> {
-        return changeRetrofitExceptionByApiCallerException {
+        return changeRetrofitExceptionByApiCallerException(logoutOnUnauthorized = true) {
             val properties = apiService.getProperties(getBearerToken())
             properties.map { it.toDetailedProperty() }.toTypedArray()
         }

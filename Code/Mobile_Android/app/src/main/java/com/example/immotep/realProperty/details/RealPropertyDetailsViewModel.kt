@@ -3,18 +3,15 @@ package com.example.immotep.realProperty.details
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.InviteDetailedProperty
 import com.example.immotep.apiCallerServices.InviteTenantCallerService
 import com.example.immotep.apiCallerServices.PropertyStatus
 import com.example.immotep.apiCallerServices.RealPropertyCallerService
-import com.example.immotep.apiClient.ApiClient
 import com.example.immotep.apiClient.ApiService
-import com.example.immotep.authService.AuthService
-import com.example.immotep.login.dataStore
 import com.example.immotep.utils.Base64Utils
 import com.example.immotep.utils.PdfsUtils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,10 +20,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.util.Date
 
 class RealPropertyDetailsViewModel(
     navController: NavController,
@@ -57,12 +52,15 @@ class RealPropertyDetailsViewModel(
     }
 
     fun loadProperty(newProperty: DetailedProperty) {
-        setIsLoading(true)
         _apiError.value = ApiErrors.NONE
         _property.value = newProperty
+        if (newProperty.lease?.id == null) {
+            return
+        }
         viewModelScope.launch {
             try {
-                val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id, newProperty.currentLeaseId)
+                setIsLoading(true)
+                val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id, newProperty.lease.id)
                 _property.value = newProperty.copy(documents = propertyDocuments)
             } catch (e : Exception) {
                 println("Error loading property ${e.message}")
@@ -100,10 +98,13 @@ class RealPropertyDetailsViewModel(
     }
 
     fun onSubmitInviteTenant(email: String, startDate: Long, endDate: Long) {
-        _property.value = _property.value.copy(
-            tenant = email,
+        val newInvite = InviteDetailedProperty(
             startDate = OffsetDateTime.ofInstant(Instant.ofEpochMilli(startDate), ZoneOffset.UTC),
             endDate = OffsetDateTime.ofInstant(Instant.ofEpochMilli(endDate), ZoneOffset.UTC),
+            tenantEmail = email
+        )
+        _property.value = _property.value.copy(
+            invite = newInvite,
             status = PropertyStatus.invite_sent
         )
     }
@@ -114,9 +115,7 @@ class RealPropertyDetailsViewModel(
             try {
                 inviteApiCaller.cancelInvite(_property.value.id)
                 _property.value = _property.value.copy(
-                    tenant = null,
-                    startDate = null,
-                    endDate = null,
+                    invite = null,
                     status = PropertyStatus.available
                 )
             } catch (e : Exception) {

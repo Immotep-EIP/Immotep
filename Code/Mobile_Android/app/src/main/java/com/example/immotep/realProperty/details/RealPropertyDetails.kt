@@ -106,7 +106,7 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
             model = property.value.image,
             placeholder = painterResource(id = R.drawable.immotep_png_logo),
             error = painterResource(id = R.drawable.immotep_png_logo),
-            contentDescription = "picture of the ${property.value.tenant} property",
+            contentDescription = "picture of the ${property.value.name} property",
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
@@ -185,7 +185,8 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
 
 @Composable
 fun RealPropertyDetailsScreen(
-    navController: NavController, newProperty : DetailedProperty,
+    navController: NavController,
+    newProperty : DetailedProperty,
     getBack: (DetailedProperty) -> Unit,
     loaderInventoryViewModel: LoaderInventoryViewModel
 ) {
@@ -216,6 +217,7 @@ fun RealPropertyDetailsScreen(
     }
 
     LaunchedEffect(newProperty) {
+        println("property name, ${newProperty.name}")
         viewModel.loadProperty(newProperty)
     }
 

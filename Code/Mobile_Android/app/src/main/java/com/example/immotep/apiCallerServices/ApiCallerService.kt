@@ -38,11 +38,13 @@ sealed class ApiCallerService(
         try {
             return fnToRun()
         } catch (e : HttpException) {
+            println("error code : ${e.code()}")
             if (e.code() == 401 && logoutOnUnauthorized) {
                 authService.onLogout(navController)
             }
             throw ApiCallerServiceException(e.code().toString())
         } catch (e : Exception) {
+            println("error : ${e.message}")
             throw ApiCallerServiceException("500")
         }
     }

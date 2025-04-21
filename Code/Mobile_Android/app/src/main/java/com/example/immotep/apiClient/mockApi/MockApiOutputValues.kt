@@ -61,12 +61,12 @@ val parisFakeProperty = GetPropertyResponse(
     deposit_price = 2000,
     status = "Busy",
     nb_damage = 0,
-    tenant = "test@gmail.com",
-    start_date = baseDateStr,
-    end_date = baseDateEndStr,
     picture_id = null,
-    invite = fakeInviteInsideProperty,
-    lease = fakeLeaseInsidePropertyActive
+    invite = null,
+    lease = fakeLeaseInsidePropertyActive.copy(
+        tenant_email = "test@gmail.com",
+        tenant_name = "test@gmail.com"
+    )
 )
 
 val marseilleFakeProperty = GetPropertyResponse(
@@ -85,12 +85,9 @@ val marseilleFakeProperty = GetPropertyResponse(
     deposit_price = 1000,
     status = "Busy",
     nb_damage = 0,
-    tenant = "crashbandicoot@gmail.com",
-    start_date = baseDateStr,
-    end_date = baseDateEndStr,
     picture_id = null,
-    invite = fakeInviteInsideProperty,
-    lease = fakeLeaseInsidePropertyActive
+    invite = null,
+    lease = fakeLeaseInsidePropertyActive.copy(tenant_email = "crashbandicoot@gmail.com", tenant_name = "crashbandicoot@gmail.com")
 )
 
 val lyonFakeProperty = GetPropertyResponse(
@@ -109,12 +106,12 @@ val lyonFakeProperty = GetPropertyResponse(
     deposit_price = 1000,
     status = "Busy",
     nb_damage = 0,
-    tenant = "tomnook@gmail.com",
     picture_id = null,
-    start_date = baseDateStr,
-    end_date = baseDateEndStr,
-    invite = fakeInviteInsideProperty,
-    lease = fakeLeaseInsidePropertyActive
+    invite = null,
+    lease = fakeLeaseInsidePropertyActive.copy(
+        tenant_email = "tomnook@gmail.com",
+        tenant_name = "tomnook@gmail.com"
+    )
 )
 
 val emptyFakeProperty = GetPropertyResponse(
@@ -133,12 +130,9 @@ val emptyFakeProperty = GetPropertyResponse(
     deposit_price = 900,
     status = "available",
     nb_damage = 0,
-    tenant = "",
     picture_id = null,
-    start_date = null,
-    end_date = null,
-    invite = fakeInviteInsideProperty,
-    lease = fakeLeaseInsidePropertyNotActive
+    invite = null,
+    lease = null
 )
 
 val fakeRoom = RoomOutput(
