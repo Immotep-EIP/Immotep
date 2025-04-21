@@ -162,7 +162,11 @@
     <string name="ai_call_error">There was on error on the ai call, please retry later</string>
     <string name="not_end_date_before_start">The end date cannot be before the starting date</string>
     <string name="about">About</string>
+    <string name="email">Email</string>
+    <string name="language">Language</string>
+    <string name="logout">Logout</string>
     <string name="damages">Damages</string>
+    <string name="user_infos">User\'s informations</string>
     <string name="add_tenant">Add a tenant</string>
     <string name="end_lease">End the lease</string>
     <string name="cancel_invitation">Cancel the invitation</string>
@@ -172,4 +176,5 @@
     <string name="detail_already_exists">A detail with this name already exists</string>
     <string name="room_already_exists">A room with this name already exists</string>
     <string name="impossible_to_add_room">Impossible to add the room, please retry later</string>
+    <string name="change_language">Change Language</string>
 </resources>

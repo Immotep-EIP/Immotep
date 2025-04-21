@@ -1,15 +1,22 @@
 package com.example.immotep.profile
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.ProfileCallerService
 import com.example.immotep.apiCallerServices.ProfileUpdateInput
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.authService.AuthService
+import com.example.immotep.login.dataStore
+import com.example.immotep.utils.LanguageSetter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 data class ProfileState(
     val email: String = "",
@@ -27,10 +34,11 @@ data class ProfileState(
 }
 
 class ProfileViewModel(
-    navController: NavController,
+    private val navController: NavController,
     apiService: ApiService
 ) : ViewModel() {
     private val apiCaller = ProfileCallerService(apiService, navController)
+    private val authApiCaller = AuthService(navController.context.dataStore, apiService)
     private val _infos = MutableStateFlow(ProfileState())
     private val _apiError = MutableStateFlow(false)
     private val _isLoading = MutableStateFlow(false)
@@ -85,5 +93,24 @@ class ProfileViewModel(
         }
     }
 
+    fun logout() {
+        viewModelScope.launch {
+            authApiCaller.onLogout(navController)
+        }
+    }
+
+    fun changeLanguageAndRestart(context: Context, language: String) {
+        val localeSetter = LanguageSetter(context.dataStore)
+        runBlocking {
+            localeSetter.setLanguage(language)
+        }
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+        if (context is Activity) {
+            context.finish()
+        }
+        Runtime.getRuntime().exit(0) // To ensure full restart
+    }
 }
 

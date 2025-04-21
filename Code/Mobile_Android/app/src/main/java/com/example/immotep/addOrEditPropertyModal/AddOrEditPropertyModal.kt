@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -75,7 +76,7 @@ fun AddOrEditPropertyModal(
             if (uri != null) {
                 viewModel.addPicture(uri)
             }
-        }
+        },
     )
     val onClose: () -> Unit = { viewModel.reset(baseValue); close() }
 

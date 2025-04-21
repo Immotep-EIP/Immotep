@@ -65,13 +65,14 @@ fun OneDetailScreen(
                 ErrorAlert(null, null, if (callError.value) stringResource(R.string.ai_call_error) else null)
                 if (isExit) {
                     Text(stringResource(R.string.entry_pictures))
-                    AddingPicturesCarousel(stringPictures = viewModel.entryPictures)
+                    AddingPicturesCarousel(stringPictures = viewModel.entryPictures, context = navController.context)
                 }
                 Text(if (isExit) stringResource(R.string.exit_pictures) else stringResource(R.string.pictures))
                 AddingPicturesCarousel(
                     uriPictures = viewModel.picture,
                     addPicture = { uri -> viewModel.addPicture(uri) },
-                    error = if (detailError.value.picture) stringResource(R.string.add_picture_error) else null
+                    error = if (detailError.value.picture) stringResource(R.string.add_picture_error) else null,
+                    context = navController.context
                 )
                 OutlinedTextField(
                     value = detailValue.value.comment,

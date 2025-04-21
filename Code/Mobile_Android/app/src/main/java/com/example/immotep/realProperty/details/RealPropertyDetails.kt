@@ -43,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -191,7 +190,7 @@ fun RealPropertyDetailsScreen(
     loaderInventoryViewModel: LoaderInventoryViewModel
 ) {
     val apiService = LocalApiService.current
-    val context = LocalContext.current
+    val context = navController.context
     val tabs = listOf(
         stringResource(R.string.about),
         stringResource(R.string.documents),

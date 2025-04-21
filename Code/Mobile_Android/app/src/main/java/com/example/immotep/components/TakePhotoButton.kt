@@ -43,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -59,16 +58,15 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TakePhotoButton(
     onAfterImageModalIsShow: () -> Unit,
     onImageCaptured: (Uri) -> Unit,
-    onError: (ImageCaptureException) -> Unit
+    onError: (ImageCaptureException) -> Unit,
+    context: Context
 ) {
     var cameraOpen by rememberSaveable { mutableStateOf(false) }
     val onClose : () -> Unit = { cameraOpen = false }
-    val context = LocalContext.current
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) {
@@ -88,7 +86,8 @@ fun TakePhotoButton(
         TakePhotoModal(
             onImageCaptured = { uri -> onImageCaptured(uri); onAfterImageModalIsShow() },
             onError = onError,
-            onClose = onClose
+            onClose = onClose,
+            context = context
         )
     } else {
         Button(onClick =
@@ -114,9 +113,9 @@ fun TakePhotoButton(
 fun TakePhotoModal(
     onImageCaptured: (Uri) -> Unit,
     onError: (ImageCaptureException) -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    context: Context
 ) {
-    val context = LocalContext.current
     val outputDirectory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
     val executor = Executors.newSingleThreadExecutor()
     val sheetState =

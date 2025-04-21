@@ -7,13 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.immotep.LocalApiService
-import com.example.immotep.layouts.InventoryLayout
 import com.example.immotep.R
 import com.example.immotep.components.ErrorAlert
 import com.example.immotep.inventory.loaderButton.LoaderInventoryViewModel
@@ -28,7 +26,7 @@ fun InventoryScreen(
     loaderViewModel: LoaderInventoryViewModel
 ) {
     val apiService = LocalApiService.current
-    val context = LocalContext.current
+    val context = navController.context
 
     val viewModel: InventoryViewModel =
         viewModel {

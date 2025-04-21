@@ -1,5 +1,6 @@
 package com.example.immotep.components
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.media.Image
 import android.net.Uri
@@ -53,7 +54,8 @@ fun AddingPicturesCarousel(
     addPicture : ((picture : Uri) -> Unit)? = null,
     stringPictures : List<String>? = null,
     maxPictures : Int = 10,
-    error : String? = null
+    error : String? = null,
+    context : Context,
 ) {
     var chooseOpen by rememberSaveable { mutableStateOf(false) }
     val onClose = { chooseOpen = false }
@@ -91,12 +93,15 @@ fun AddingPicturesCarousel(
                         )
                         onClose()
                     }) { Text(stringResource(R.string.add_picture_from_gallery)) }
-                    TakePhotoButton(onImageCaptured = { uri ->
-                        addPicture(uri)
-                        onClose()
-                    },
-                        onAfterImageModalIsShow = { onClose() }
-                        ) { }
+                    TakePhotoButton(
+                        onImageCaptured = { uri ->
+                            addPicture(uri)
+                            onClose()
+                        },
+                        onAfterImageModalIsShow = { onClose() },
+                        onError = {},
+                        context = context
+                        )
                 }
             }
         }
