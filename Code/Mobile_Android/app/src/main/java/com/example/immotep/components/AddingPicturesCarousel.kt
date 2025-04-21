@@ -53,7 +53,8 @@ import java.util.Base64
 fun DeleteOrSeePictureModal(
     currentImage: Pair<Uri, Int>?,
     onClose: () -> Unit,
-    removePicture: ((index: Int) -> Unit)?
+    removePicture: ((index: Int) -> Unit)?,
+    openImageInFullScreen: (uri: Uri) -> Unit
 ) {
     if (currentImage != null) {
 
@@ -70,6 +71,7 @@ fun DeleteOrSeePictureModal(
                 StyledButton(
                     onClick = {
                         onClose()
+                        openImageInFullScreen(currentImage.first)
                     },
                     text = stringResource(R.string.see_picture)
                 )
@@ -97,6 +99,7 @@ fun AddingPicturesCarousel(
 ) {
     var chooseOpen by rememberSaveable { mutableStateOf(false) }
     var pictureSelected by rememberSaveable { mutableStateOf<Pair<Uri, Int>?>(null) }
+    var pictureFullScreen by rememberSaveable { mutableStateOf<Uri?>(null) }
     val onClose = { chooseOpen = false }
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -146,8 +149,10 @@ fun AddingPicturesCarousel(
         DeleteOrSeePictureModal(
             currentImage = pictureSelected,
             onClose = { pictureSelected = null },
-            removePicture = removePicture
+            removePicture = removePicture,
+            openImageInFullScreen = { uri -> pictureFullScreen = uri }
         )
+        FullscreenZoomableImage(uri = pictureFullScreen, onClose = { pictureFullScreen = null })
         if (uriPictures != null && stringPictures == null) {
             HorizontalUncontainedCarousel(
                 state = rememberCarouselState {

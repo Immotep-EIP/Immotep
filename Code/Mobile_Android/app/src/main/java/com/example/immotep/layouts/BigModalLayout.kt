@@ -1,10 +1,12 @@
 package com.example.immotep.layouts
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -23,7 +26,13 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BigModalLayout(height: Float, open : Boolean, close : () -> Unit, testTag : String = "bigModalLayout", content: @Composable () -> Unit)
+fun BigModalLayout(
+    height: Float,
+    open : Boolean,
+    close : () -> Unit,
+    testTag : String = "bigModalLayout",
+    backgroundColor : Color = MaterialTheme.colorScheme.surface,
+    content: @Composable () -> Unit)
 {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -55,10 +64,12 @@ fun BigModalLayout(height: Float, open : Boolean, close : () -> Unit, testTag : 
             },
             sheetState = sheetState,
             modifier = Modifier.fillMaxWidth().heightIn(modalHeight).testTag(testTag),
+            containerColor = backgroundColor
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(backgroundColor)
                     .padding(bottom = 8.dp, top = 0.dp, start = 8.dp, end = 8.dp)
             ) {
                 content()
