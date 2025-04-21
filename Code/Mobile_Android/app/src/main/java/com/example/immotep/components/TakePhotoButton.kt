@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -63,8 +64,8 @@ fun TakePhotoButton(
     onAfterImageModalIsShow: () -> Unit,
     onImageCaptured: (Uri) -> Unit,
     onError: (ImageCaptureException) -> Unit,
-    context: Context
 ) {
+     val context = LocalContext.current
     var cameraOpen by rememberSaveable { mutableStateOf(false) }
     val onClose : () -> Unit = { cameraOpen = false }
     val permissionLauncher = rememberLauncherForActivityResult(

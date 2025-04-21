@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -43,21 +44,59 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.immotep.R
+import com.example.immotep.ui.components.StyledButton
 import com.example.immotep.utils.Base64Utils
 import java.util.Base64
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteOrSeePictureModal(
+    currentImage: Pair<Uri, Int>?,
+    onClose: () -> Unit,
+    removePicture: ((index: Int) -> Unit)?
+) {
+    if (currentImage != null) {
+
+        ModalBottomSheet(
+            onDismissRequest = onClose,
+            modifier = Modifier
+                .testTag("addRoomModal")
+
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 20.dp, bottom = 20.dp)
+            ) {
+                StyledButton(
+                    onClick = {
+                        onClose()
+                    },
+                    text = stringResource(R.string.see_picture)
+                )
+                StyledButton(
+                    onClick = {
+                        removePicture?.invoke(currentImage.second)
+                        onClose()
+                    },
+                    text = stringResource(R.string.delete_picture)
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddingPicturesCarousel(
     uriPictures : List<Uri>? = null,
     addPicture : ((picture : Uri) -> Unit)? = null,
+    removePicture : ((index : Int) -> Unit)? = null,
     stringPictures : List<String>? = null,
     maxPictures : Int = 10,
     error : String? = null,
-    context : Context,
 ) {
     var chooseOpen by rememberSaveable { mutableStateOf(false) }
+    var pictureSelected by rememberSaveable { mutableStateOf<Pair<Uri, Int>?>(null) }
     val onClose = { chooseOpen = false }
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -100,11 +139,15 @@ fun AddingPicturesCarousel(
                         },
                         onAfterImageModalIsShow = { onClose() },
                         onError = {},
-                        context = context
                         )
                 }
             }
         }
+        DeleteOrSeePictureModal(
+            currentImage = pictureSelected,
+            onClose = { pictureSelected = null },
+            removePicture = removePicture
+        )
         if (uriPictures != null && stringPictures == null) {
             HorizontalUncontainedCarousel(
                 state = rememberCarouselState {
@@ -124,7 +167,12 @@ fun AddingPicturesCarousel(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(1f)
-                            .padding(top = 10.dp),
+                            .padding(top = 10.dp)
+                            .clickable (
+                                onClick = {
+                                    pictureSelected = Pair(uriPictures[index], index)
+                                }
+                            ),
                         model = uriPictures[index],
                         contentDescription = "Preview of the added picture at index $index"
                     )

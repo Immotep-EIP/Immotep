@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.example.immotep.R
 import com.example.immotep.ui.components.OutlinedTextField
 import com.example.immotep.ui.components.StyledButton
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +54,7 @@ fun AddRoomOrDetailModal(
 
         LaunchedEffect(Unit) {
             try {
+                delay(500)
                 focusRequester.requestFocus()
             } catch (e : Exception) {
                 println("Impossible to request focus")
@@ -81,7 +84,8 @@ fun AddRoomOrDetailModal(
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(
                         shape = RoundedCornerShape(5.dp),

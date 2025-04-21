@@ -44,8 +44,8 @@
     <string name="gateway_timeout">Erreur, le serveur n\'est pas disponible, réessayez plus tard</string>
     <string name="unknown_error">Erreur, erreur inconnue, veuillez réessayer plus tard ou contactez un admin</string>
     <string name="login_error">Mot de passe ou email incorrect</string>
-    <string name="overview">Vue d\'ensemble</string>
-    <string name="RealProperty">Biens immobiliers</string>
+    <string name="overview">Accueil</string>
+    <string name="RealProperty">Logements</string>
     <string name="messages">Messages</string>
     <string name="settings">Paramètres</string>
     <string name="register_password_error">Le mot de passe doit faire au moins 8 charactères</string>
@@ -178,4 +178,6 @@
     <string name="room_already_exists">Une pièce avec ce nom existe déjà</string>
     <string name="impossible_to_add_room">Impossible d\'ajouter la pièce, veuillez réesayer plus tard</string>
     <string name="change_language">Changer la langue</string>
+    <string name="delete_picture">Supprimer la photo</string>
+    <string name="see_picture">Voir la photo</string>
 </resources>
