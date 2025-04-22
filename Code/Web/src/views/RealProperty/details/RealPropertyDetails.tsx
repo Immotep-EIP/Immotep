@@ -90,8 +90,8 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
 
   const removeProperty = async () => {
     Modal.confirm({
-      title: t('components.modal.delete_property.title'),
-      content: t('components.modal.delete_property.description'),
+      title: t('components.modal.archive_property.title'),
+      content: t('components.modal.archive_property.description'),
       okText: t('components.button.confirm'),
       cancelText: t('components.button.cancel'),
       okButtonProps: { danger: true },
@@ -102,11 +102,11 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         }
         try {
           await ArchiveProperty(propertyData.id)
-          message.success(t('components.modal.delete_property.success'))
+          message.success(t('components.modal.archive_property.success'))
           goToRealProperty()
         } catch (error) {
           console.error('Error deleting property:', error)
-          message.error(t('components.modal.delete_property.error'))
+          message.error(t('components.modal.archive_property.error'))
         }
       }
     })
@@ -199,7 +199,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
     },
     {
       key: '5',
-      label: t('components.button.delete_property'),
+      label: t('components.button.archive_property'),
       danger: true,
       onClick: () => {
         removeProperty()

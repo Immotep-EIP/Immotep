@@ -146,9 +146,9 @@
       "no_properties": "You have no properties at the moment",
       "no_properties_so_no_messages": "You have no properties at the moment, so no messages.",
       "delete_property_title": "Delete property",
-      "delete_property_description": "Are you sure you want to delete this property?",
-      "delete_property_success": "Property deleted successfully",
-      "delete_property_error": "Error deleting the property",
+      "delete_property_description": "Are you sure you want to archive this property?",
+      "delete_property_success": "Property archived successfully",
+      "delete_property_error": "Error archiving the property",
       "no_rooms_in_inventory": "You have no rooms in your inventory at the moment",
       "room_added": "Room added successfully",
       "room_added_error": "Error adding the room",
@@ -190,6 +190,7 @@
       "delete": "Delete",
       "edit_property": "Edit property",
       "delete_property": "Delete property",
+      "archive_property": "Archive property",
       "download": "Download",
       "update": "Update",
       "cancel_invitation": "Cancel invitation",
@@ -208,6 +209,12 @@
         "description": "Are you sure you want to delete this property?",
         "success": "Property deleted successfully",
         "error": "An error occurred while deleting the property, please try again."
+      },
+      "archive_property": {
+        "title": "Archive property",
+        "description": "Are you sure you want to archive this property?",
+        "success": "Property archived successfully",
+        "error": "An error occurred while archiving the property, please try again."
       },
       "cancel_invitation": {
         "title": "Cancel invitation",
