@@ -1,4 +1,4 @@
-### **BETA TEST PLAN**
+# **BETA TEST PLAN**
 
 ## **1. Core Functionalities for Beta Version**
 
@@ -29,11 +29,11 @@ The following roles will be involved in beta testing.
 | Property Owner | User who owns and manages properties (create, edit, delete, invite tenants).    |
 | Tenant         | User invited to rent a property, with limited access to property details and contract-related features. |
 
-### **2.2 Test Scenarios**
+## **2.2 Test Scenarios**
 
 For each core functionality, provide detailed test scenarios.
 
-## Web scenarios
+### Web scenarios
 
 #### **Scenario 1: Property Creation**
 
@@ -132,7 +132,7 @@ For each core functionality, provide detailed test scenarios.
   - Property disappears from the active property list
   - No errors are displayed
 
-## Mobile scenarios
+### Mobile scenarios
 
 #### **Scenario 1: Property Modification**
 
