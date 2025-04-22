@@ -56,49 +56,9 @@ For each core functionality, provide detailed test scenarios.
   - Property is successfully created
   - Property appears in user's property list
   - All property details are correctly saved
+  - Success message is displayed
 
-#### **Scenario 2: Inventory Report Creation**
-
-- **Role Involved:** Property Owner
-- **Objective:** Test the inventory report creation
-- **Preconditions:**
-  - User is logged in with appropriate permissions
-  - Property exists in the system
-- **Test Steps:**
-
-  1. Navigate to property page
-  2. Choose a property to which a inventory report will be created
-  3. Navigate to the inventory tab
-  4. Click on "Add Room" button and fill in the room name
-  5. Click on the "+" icon next to the room to add items
-  6. Fill in the name and number of items
-
-- **Expected Outcome:**
-
-  - Room is successfully created
-  - Item is successfully created
-
-#### **Scenario 3: Invite Tenant**
-
-- **Role Involved:** Property Owner
-- **Objective:** Test the invite tenant functionality
-- **Preconditions:**
-  - User is logged in with appropriate permissions
-  - Property exists in the system
-- **Test Steps:**
-
-  1. Navigate to property page
-  2. Choose a property to which a tenant will be invited
-  3. Click on the drop-down menu at the top right of the property and add a tenant
-  4. Fill in contract details (tenant email, start date of the contract, end date of the contract is optional)
-
-- **Expected Outcome:**
-
-  - Tenant is successfully invited
-  - The property badge changes to **invitation sent**.
-  - The tenant receives an e-mail affiliated with the property to create an Immotep account.
-
-#### **Scenario 4: Property Modification**
+#### **Scenario 2: Property Modification**
 
 - **Role Involved:** Property Owner
 - **Objective:** Test the modification of an existing property
@@ -117,8 +77,9 @@ For each core functionality, provide detailed test scenarios.
 
   - Modifications are saved successfully
   - Updated details (address, rent) and image (if uploaded) appear immediately in the property list
+  - Success message "Property updated successfully" is displayed
 
-#### **Scenario 5: Property Archiving**
+#### **Scenario 3: Property Archiving**
 
 - **Role Involved:** Property Owner
 - **Objective:** Test the archiving of a property
@@ -130,10 +91,397 @@ For each core functionality, provide detailed test scenarios.
   2. Choose a property to archived
   3. Click on the drop-down menu at the top right of the property and delete the property
   4. Confirm deletion in the alert dialog
+  5. Return to the properties page and click on the toggle switch to display archived properties
 - **Expected Outcome:**
+
   - Property is archived successfully
   - Property disappears from the active property list
+  - Property appears in the archived properties list
   - No errors are displayed
+  - Success message "Property archived successfully" is displayed
+
+#### **Scenario 4: Add Document**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the add document in a property
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+  - A lease exists for the property
+
+- **Test Steps:**
+  1. Select a lease (if not current lease)
+  2. Click on the "Add Document" button
+  3. Enter a name for the document
+  4. Select a PDF file to upload
+  5. Click on the "Add" button
+
+- **Expected Outcome:**
+
+  - Document appears with the given name 
+  - Document upload date is displayed
+  - PDF can be opened in the browser
+  - Success message "Document added successfully" is displayed
+
+#### **Scenario 5: Delete Document**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test to delete document in a property
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+  - A lease exists for the property
+  - A document exists in the property
+
+- **Test Steps:**
+  1. Select a lease (if not current lease)
+  2. Click on the delete icon next to the document
+  3. Confirm deletion in the alert dialog
+
+- **Expected Outcome:**
+
+  - Document is no longer visible on the page
+  - Success message "Document deleted successfully" is displayed
+
+#### **Scenario 6: Inventory Report Creation**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the inventory report creation
+- **Preconditions:**
+  - User is logged in with appropriate permissions
+  - Property exists in the system
+- **Test Steps:**
+
+  1. Navigate to property page
+  2. Choose a property to which a inventory report will be created
+  3. Navigate to the inventory tab
+  4. Click on "Add Room" button and fill in the room name 
+  5. Select a room template from the dropdown menu (e.g. bedroom, bathroom, kitchen, etc.) which will pre-fill common items for that room type
+  6. After adding the room, click on "Add Item" button in the room container to add items
+  7. Fill in the name and number of items
+
+- **Expected Outcome:**
+
+  - Room is successfully created
+  - Success message "Room created successfully" is displayed
+  - Item is successfully created
+  - Success message "Item added successfully" is displayed
+
+#### **Scenario 7: Update Room**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the modification of a room from an inventory
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+  - A room exist in the property
+
+- **Test Steps:**
+  1. Navigate to property page
+  2. Choose a property with a room
+  3. Navigate to the inventory tab
+  4. Click on the update icon next to the room name
+  5. Modify the room name and/or room type in the form
+  6. Click on the confirm button to save changes
+
+- **Expected Outcome:**
+
+  - Room name and/or type is updated in the inventory
+  - Success message appears confirming the modification
+
+#### **Scenario 8: Update Item**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the modification of an item from a room
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+  - A room exist in the property
+  - An item exist in a room
+
+- **Test Steps:**
+  1. Navigate to property page
+  2. Choose a property with a room
+  3. Navigate to the inventory tab
+  4. Click on the item you want to modify
+  5. Update the item name and/or quantity in the form
+  6. Click on the confirm button to save changes
+
+- **Expected Outcome:**
+
+  - Item name and/or quantity is updated in the room
+  - Success message appears confirming the modification
+
+#### **Scenario 9: Delete Room**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the deletion of a room from an inventory
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+  - A room exist in the property
+
+- **Test Steps:**
+  1. Navigate to property page
+  2. Choose a property with a room
+  3. Navigate to the inventory tab
+  4. Click on the delete icon next to the room
+  5. Confirm deletion in the alert dialog
+
+- **Expected Outcome:**
+
+  - Room is no longer visible in the inventory
+  - Success message appears confirming the deletion
+  
+#### **Scenario 10: Delete Item**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the deletion of an item from a room
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+  - A room exist in the property
+  - An item exist in a room
+
+- **Test Steps:**
+  1. Navigate to property page
+  2. Choose a property with a room and an item in it
+  3. Navigate to the inventory tab
+  4. Click on the delete icon next to the item
+  5. Confirm deletion in the alert dialog
+
+- **Expected Outcome:**
+
+  - Item is no longer visible in the room
+  - Success message appears confirming the deletion
+
+#### **Scenario 11: The owner can check damages of his property**
+
+**Role Involved:** Property Owner
+ - **Objective:** Check if the owner can see the damages of his property
+ - **Preconditions:**
+   - User is logged in with appropriate permissions
+   - Property exists in the system
+   - Damage exists in the property
+
+ - **Test Steps:**
+ 
+   1. Navigate to propety page
+   2. Choose a property with damages
+   3. Click on the damages tab 
+   
+ - **Expected Outcome:**
+ 
+   - The damage are loaded and well displayed
+   - There is no bugs
+
+#### **Scenario 12: The owner can set the expected fix date for a damage**
+
+**Role Involved:** Property Owner
+ - **Objective:** Check if the owner can see the damages of his property
+ - **Preconditions:**
+   - User is logged in with appropriate permissions
+   - Property exists in the system
+   - Damage exists in the property
+
+ - **Test Steps:**
+ 
+   1. Navigate to propety page
+   2. Choose a property with damages
+   3. Click on the damages tab 
+   4. Select a damage and click on the intervention date field
+   5. Choose a future date from the date picker
+   
+ - **Expected Outcome:**
+ 
+   - The damage is updated with the intervention date
+   - Success message "Intervention date updated successfully" is displayed
+   - There are no bugs
+
+#### **Scenario 13: The owner can mark a damage as fixed** // a faire !!!
+
+**Role Involved:** Property Owner
+ - **Objective:** Check if the owner can mark a damage as fixed
+ - **Preconditions:**
+   - User is logged in with appropriate permissions
+   - Property exists in the system
+   - Damage exists in the property
+
+ - **Test Steps:**
+ 
+   1. Navigate to propety page
+   2. Choose a property with damages
+   3. Click on the damages tab 
+   4. Select a damage and 
+   5. Choose a future date from the date picker
+   
+ - **Expected Outcome:**
+ 
+   - The damage is updated with the intervention date
+   - Success message "Intervention date updated successfully" is displayed
+   - There are no bugs
+
+#### **Scenario 14: Invite Tenant**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the invite tenant functionality
+- **Preconditions:**
+  - User is logged in with appropriate permissions
+  - Property exists in the system
+  - Property is available
+  - Property is not archived
+- **Test Steps:**
+
+  1. Navigate to property page
+  2. Choose a property to which a tenant will be invited
+  3. Click on the drop-down menu at the top right of the property and add a tenant
+  4. Fill in contract details (tenant email, start date of the contract, end date of the contract is optional)
+
+- **Expected Outcome:**
+
+  - Tenant is successfully invited
+  - The property badge changes to **invitation sent**
+  - The tenant receives an e-mail affiliated with the property to create an Keyz account
+  - Success message "Tenant invitation sent successfully" is displayed
+
+#### **Scenario 15: Cancel the Tenant invitation**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the cancel invite tenant functionality
+- **Preconditions:**
+  - User is logged in with appropriate permissions
+  - Property exists in the system
+  - Property has 'invitation sent' status
+  - Property is not archived
+- **Test Steps:**
+
+  1. Navigate to property page
+  2. Choose a property with the badge **invitation sent**
+  3. Click on the drop-down menu at the top right of the property and click on the "Cancel invitation" button
+  4. Click on confirm on the pop up
+
+- **Expected Outcome:**
+ 
+  - Invitation is successfully canceled
+  - The property badge changes to **available**, and all mentions of the tenant disappear from it
+  - The invitation email link is deactivated
+  - Success message "Tenant invitation canceled successfully" is displayed
+
+#### **Scenario 16: End a Lease**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test the ability to end an active lease for a property
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+  - A property exists in the system
+  - A current lease exists for the property (occupied)
+
+- **Test Steps:**
+  
+  1. Navigate to property page
+  2. Choose a property with the badge **occupied**
+  3. Click on the drop-down menu at the top right of the property and click on the "End lease" button
+  4. Click on confirm on the pop up
+
+- **Expected Outcome:**
+
+  - Property status changes to **available**
+  - Tenant information is no longer displayed in the property
+  - Success message "Lease ended successfully" is displayed
+
+#### **Scenario 17: See owner profile**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test if the owner can see his profile informations
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+
+- **Test Steps:**
+  1. Navigate to settings page
+  2. Check the profile informations
+
+- **Expected Outcome:**
+
+  - The informations are well displayed and good
+
+#### **Scenario 18: Change the profile picture**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test if the owner can change his profile picture
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+
+- **Test Steps:**
+  1. Navigate to settings page
+  2. Click on the user icon
+  3. Select a new profile picture from the device
+
+- **Expected Outcome:**
+
+  - Profile picture is updated
+  - Success message "Picture updated successfully" is displayed
+
+#### **Scenario 19: Change the app language**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test if the owner can change the language of the app
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+
+- **Test Steps:**
+  1. Navigate to settings page
+  2. Click on the desired language in the language section
+
+- **Expected Outcome:**
+
+  - The app change his language
+  - The UI is the same, no bugs
+
+#### **Scenario 20: View Messages and Contacts**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test if the owner can view their messages and contacts
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+  - A property exists in the system and is occupied by a tenant
+
+- **Test Steps:**
+  1. Navigate to messages page
+  2. Search for a contact in the search bar or click on an existing contact to view messages
+
+- **Expected Outcome:**
+
+  - Messages and contacts are loaded correctly
+
+#### **Scenario 21: Change the app language**
+
+- **Role Involved:** Property Owner
+- **Objective:** Test if the owner can send messages
+- **Preconditions:**
+
+  - User is logged in with appropriate permissions
+
+- **Test Steps:**
+  1. Navigate to messages page
+  2. Select a contact from the list or search for a specific contact
+  3. Click on the contact to open the chat
+  4. Type a message in the input field or click the attachment icon to send a file
+  5. Click the send button
+
+- **Expected Outcome:**
+
+  - Message is sent and displayed in the conversation
 
 ### Mobile scenarios
 
@@ -269,7 +617,7 @@ For each core functionality, provide detailed test scenarios.
 
   - Tenant is successfully invited
   - The property badge changes to **invitation sent**.
-  - The tenant receives an e-mail affiliated with the property to create an Immotep account.
+  - The tenant receives an e-mail affiliated with the property to create an Keyz account.
 
 #### **Scenario 8: Cancel the Tenant invitation**
 
@@ -462,13 +810,13 @@ The following criteria will be used to determine the success of the beta version
 
 ### **Limitations**
 
-- **Tenant Invitation Link Behavior:** If a tenant opens the invitation received by email on their phone, they will be directed to a web page rather than the Immotep application.
+- **Tenant Invitation Link Behavior:** If a tenant opens the invitation received by email on their phone, they will be directed to a web page rather than the Keyz application.
 
 ---
 
 ## **5. Conclusion**
 
-This Beta Test Plan represents a crucial phase in the development of Immotep, focusing on validating core functionalities essential for property management and tenant interactions. Through structured testing scenarios across both web and mobile platforms, we aim to:
+This Beta Test Plan represents a crucial phase in the development of Keyz, focusing on validating core functionalities essential for property management and tenant interactions. Through structured testing scenarios across both web and mobile platforms, we aim to:
 
 1. **Validate Core Features:** Ensure robust functionality of critical features including property creation, inventory management, and tenant invitation systems.
 
@@ -478,4 +826,4 @@ This Beta Test Plan represents a crucial phase in the development of Immotep, fo
 
 4. **Quality Assurance:** Identify and address potential issues before full release, with documented known limitations to guide future development priorities.
 
-The successful execution of this test plan will provide valuable insights for final refinements and ensure Immotep meets the high standards required for a professional property management solution. Feedback gathered during this beta phase will be instrumental in delivering a polished, user-friendly platform that effectively serves the needs of property owners and tenants alike.
+The successful execution of this test plan will provide valuable insights for final refinements and ensure Keyz meets the high standards required for a professional property management solution. Feedback gathered during this beta phase will be instrumental in delivering a polished, user-friendly platform that effectively serves the needs of property owners and tenants alike.
