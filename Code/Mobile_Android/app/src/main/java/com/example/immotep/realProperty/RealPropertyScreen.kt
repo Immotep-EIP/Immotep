@@ -1,5 +1,6 @@
 package com.example.immotep.realProperty
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -159,18 +160,31 @@ fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDel
                 .padding(15.dp)
                 .testTag("propertyBox ${property.id}")
         ) {
-            AsyncImage(
-                model = property.image,
-                placeholder = painterResource(id = R.drawable.immotep_png_logo),
-                error = painterResource(id = R.drawable.immotep_png_logo),
-                contentDescription = "picture of the ${property.name} property",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .clip(
-                        RoundedCornerShape(50.dp)
-                    )
-            )
+            if (property.picture == null) {
+                AsyncImage(
+                    model = null,
+                    placeholder = painterResource(id = R.drawable.immotep_png_logo),
+                    error = painterResource(id = R.drawable.immotep_png_logo),
+                    contentDescription = "picture of the ${property.name} property",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(
+                            RoundedCornerShape(50.dp)
+                        )
+                )
+            } else {
+                Image(
+                    property.picture,
+                    contentDescription = "picture of the ${property.name} property",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(
+                            RoundedCornerShape(50.dp)
+                        )
+                )
+            }
             Spacer(modifier = Modifier.height(10.dp))
             Text(property.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
@@ -267,7 +281,9 @@ fun RealPropertyScreen(
             onSubmit = { property -> viewModel.addProperty(property) },
             popupName = stringResource(R.string.create_new_property),
             submitButtonText = stringResource(R.string.add_prop),
-            submitButtonIcon = { Icon(Icons.Outlined.Add, contentDescription = "add") }
+            submitButtonIcon = { Icon(Icons.Outlined.Add, contentDescription = "add") },
+            navController = navController,
+            onSubmitPicture = { picture -> viewModel.setPropertyImage(propertySelectedDetails.value!!.id, picture) }
         )
     }
 }

@@ -38,9 +38,7 @@ sealed class ApiCallerService(
         try {
             return fnToRun()
         } catch (e : HttpException) {
-            println("error code : ${e.code()}")
-            println("error resp : ${e.response()}")
-            println("error message : ${e.message()}")
+            println("error response : ${e.response()}")
             if (e.code() == 401 && logoutOnUnauthorized) {
                 authService.onLogout(navController)
             }

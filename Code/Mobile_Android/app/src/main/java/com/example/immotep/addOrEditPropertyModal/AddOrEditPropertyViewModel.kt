@@ -1,14 +1,18 @@
 package com.example.immotep.addOrEditPropertyModal
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.AddPropertyInput
+import com.example.immotep.apiCallerServices.RealPropertyCallerService
 import com.example.immotep.apiClient.ApiClient
+import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
+import com.example.immotep.utils.Base64Utils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,10 +29,12 @@ data class PropertyFormError(
     var city: Boolean = false
 )
 
-class AddOrEditPropertyViewModel : ViewModel() {
+class AddOrEditPropertyViewModel(apiService: ApiService, navController: NavController) : ViewModel() {
+    private val _callerService = RealPropertyCallerService(apiService, navController)
     private val _propertyForm = MutableStateFlow(AddPropertyInput())
     private val _propertyFormError = MutableStateFlow(PropertyFormError())
-    val pictures = mutableStateListOf<Uri>()
+    private val _picture = MutableStateFlow<Uri?>(null)
+    val picture = _picture.asStateFlow()
     val propertyForm: StateFlow<AddPropertyInput> = _propertyForm.asStateFlow()
     val propertyFormError: StateFlow<PropertyFormError> = _propertyFormError.asStateFlow()
 
@@ -67,8 +73,8 @@ class AddOrEditPropertyViewModel : ViewModel() {
         _propertyForm.value = _propertyForm.value.copy(city = city)
     }
 
-    fun addPicture(picture: Uri) {
-        pictures.add(picture)
+    fun setPicture(picture: Uri) {
+        _picture.value = picture
     }
 
     fun setAppartementNumber(appartementNumber: String) {
@@ -83,7 +89,12 @@ class AddOrEditPropertyViewModel : ViewModel() {
         _propertyForm.value = AddPropertyInput()
     }
 
-    fun onSubmit(onClose : () -> Unit, sendFormFn : suspend (property : AddPropertyInput) -> Unit) {
+    fun onSubmit(
+        onClose : () -> Unit,
+        sendFormFn : suspend (property : AddPropertyInput) -> String,
+        updateUserPicture : (picture : String) -> Unit,
+        context : Context
+    ) {
         val newPropertyErrors = PropertyFormError()
         if (_propertyForm.value.address.length < 3) {
             newPropertyErrors.address = true
@@ -108,15 +119,23 @@ class AddOrEditPropertyViewModel : ViewModel() {
             println("ERROR $newPropertyErrors")
             return
         }
-            viewModelScope.launch {
-                try {
-                    sendFormFn(propertyForm.value)
-                    onClose()
-                    reset()
-                } catch (e: Exception) {
-                    println("Error during property creation: ${e.message}")
-                    e.printStackTrace()
+        viewModelScope.launch {
+            try {
+                val propertyId = sendFormFn(propertyForm.value)
+                if (picture.value != null) {
+                    val pictureBase64 = Base64Utils.encodeImageToBase64(
+                        fileUri = picture.value!!,
+                        context = context
+                    )
+                    _callerService.updatePropertyPicture(propertyId, pictureBase64)
+                    updateUserPicture(pictureBase64)
                 }
+                onClose()
+                reset()
+            } catch (e: Exception) {
+                println("Error during property creation: ${e.message}")
+                e.printStackTrace()
             }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.immotep.apiCallerServices
 
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.CreateOrUpdateResponse
@@ -71,6 +72,10 @@ data class DocumentInput(
 }
 
 
+data class UpdatePropertyPictureInput(
+    val data : String
+)
+
 //output api classes
 
 data class InvitePropertyResponse(
@@ -84,6 +89,12 @@ data class InvitePropertyResponse(
         tenantEmail = this.tenant_email
     )
 }
+
+data class PropertyPictureResponse(
+    val id: String,
+    val created_at: String,
+    val data: String,
+)
 
 data class LeasePropertyResponse(
     val active: Boolean,
@@ -135,7 +146,6 @@ data class GetPropertyResponse(
         }
         return DetailedProperty(
             id = this.id,
-            image = "",
             name = this.name,
             zipCode = this.postal_code,
             city = this.city,
@@ -178,7 +188,6 @@ data class LeaseDetailedProperty(
 
 data class DetailedProperty(
      val id : String = "",
-     val image : String = "",
      val address : String = "",
      val status: PropertyStatus = PropertyStatus.unavailable,
      val appartementNumber : String? = "",
@@ -190,8 +199,10 @@ data class DetailedProperty(
      val city : String = "",
      val country : String = "",
      val name : String = "",
+     val picture: ImageBitmap? = null,
      val invite : InviteDetailedProperty? = null,
-     val lease : LeaseDetailedProperty? = null
+     val lease : LeaseDetailedProperty? = null,
+
 ) {
     fun toAddPropertyInput() : AddPropertyInput {
         return AddPropertyInput(
@@ -224,6 +235,20 @@ class RealPropertyCallerService (
             val properties = apiService.getProperties(getBearerToken())
             properties.map { it.toDetailedProperty() }.toTypedArray()
         }
+    }
+
+    suspend fun getPropertyPicture(propertyId: String): String? = changeRetrofitExceptionByApiCallerException {
+        val response = apiService.getPropertyPicture(getBearerToken(), propertyId)
+
+        when {
+            response.code() == 204 -> null
+            response.isSuccessful -> response.body()?.data
+            else -> throw HttpException(response)
+        }
+    }
+
+    suspend fun updatePropertyPicture(propertyId: String, propertyPicture: String): CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
+        apiService.updatePropertyPicture(getBearerToken(), propertyId, UpdatePropertyPictureInput(data = propertyPicture))
     }
 
     suspend fun addProperty(property: AddPropertyInput): CreateOrUpdateResponse {

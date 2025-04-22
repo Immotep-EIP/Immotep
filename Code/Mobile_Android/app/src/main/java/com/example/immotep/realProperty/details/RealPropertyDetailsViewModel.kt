@@ -77,17 +77,31 @@ class RealPropertyDetailsViewModel(
         }
     }
 
-    suspend fun editProperty(property: AddPropertyInput, propertyId: String) {
+    suspend fun editProperty(property: AddPropertyInput, propertyId: String) : String {
         _apiError.value = ApiErrors.NONE
         setIsLoading(true)
         try {
-            apiCaller.updateProperty(property, propertyId)
+            val (id) = apiCaller.updateProperty(property, propertyId)
             _property.value = property.toDetailedProperty(propertyId)
+            return id
         } catch (e : Exception) {
             e.printStackTrace()
             _apiError.value = ApiErrors.UPDATE_PROPERTY
         } finally {
             setIsLoading(false)
+        }
+        return propertyId
+    }
+
+    fun onSubmitPicture(picture : String) {
+        try {
+            val pictureDecoded = Base64Utils.decodeBase64ToImage(picture)
+                ?: throw Exception("Picture is not a valid base64 string")
+            _property.value = _property.value.copy(
+                picture = pictureDecoded
+            )
+        } catch (e : Exception) {
+            e.printStackTrace()
         }
     }
 

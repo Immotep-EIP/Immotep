@@ -17,7 +17,9 @@ import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.InviteOutput
 import com.example.immotep.apiCallerServices.ProfileResponse
 import com.example.immotep.apiCallerServices.ProfileUpdateInput
+import com.example.immotep.apiCallerServices.PropertyPictureResponse
 import com.example.immotep.apiCallerServices.RoomOutput
+import com.example.immotep.apiCallerServices.UpdatePropertyPictureInput
 import com.example.immotep.authService.LoginResponse
 import com.example.immotep.authService.RegistrationInput
 import com.example.immotep.authService.RegistrationResponse
@@ -77,6 +79,16 @@ interface ApiService {
 
     @GET("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun getProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): GetPropertyResponse
+
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/picture/")
+    suspend fun getPropertyPicture(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): retrofit2.Response<PropertyPictureResponse>
+
+    @PUT("${API_PREFIX}/owner/properties/{propertyId}/picture/")
+    suspend fun updatePropertyPicture(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Body picture: UpdatePropertyPictureInput
+    ): CreateOrUpdateResponse
 
     @POST("${API_PREFIX}/owner/properties")
     suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : CreateOrUpdateResponse

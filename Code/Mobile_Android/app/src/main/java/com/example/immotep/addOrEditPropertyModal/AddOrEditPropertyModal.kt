@@ -52,29 +52,38 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.immotep.LocalApiService
 import com.example.immotep.R
 import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.layouts.BigModalLayout
 import com.example.immotep.ui.components.OutlinedTextField
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddOrEditPropertyModal(
     open : Boolean, close : () -> Unit,
-    onSubmit : suspend (property : AddPropertyInput) -> Unit,
+    onSubmit : suspend (property : AddPropertyInput) -> String,
+    onSubmitPicture : (String) -> Unit,
     popupName : String,
     submitButtonText : String,
     submitButtonIcon : @Composable () -> Unit,
     baseValue : AddPropertyInput? = null,
+    navController: NavController
 ) {
-    val viewModel: AddOrEditPropertyViewModel = viewModel()
+    val apiService = LocalApiService.current
+    val viewModel = viewModel {
+        AddOrEditPropertyViewModel(
+            apiService,
+            navController
+        )
+    }
     val surfaceColor = MaterialTheme.colors.onBackground
     val form = viewModel.propertyForm.collectAsState()
+    val picture = viewModel.picture.collectAsState()
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             if (uri != null) {
-                viewModel.addPicture(uri)
+                viewModel.setPicture(uri)
             }
         },
     )
@@ -258,30 +267,16 @@ fun AddOrEditPropertyModal(
                     Icon(Icons.Outlined.Add, contentDescription = "Add picture")
                     Text(stringResource(R.string.add_picture))
                 }
-                HorizontalUncontainedCarousel(
-                    state = rememberCarouselState {
-                        viewModel.pictures.size
-                    },
-                    itemWidth = 150.dp,
-                    itemSpacing = 12.dp,
-                    contentPadding = PaddingValues(start = 12.dp),
+                AsyncImage(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(top = 12.dp, bottom = 12.dp)
+                        .aspectRatio(1f)
+                        .padding(top = 10.dp),
+                    model = picture.value,
+                    contentDescription = "Preview of the added picture"
                 )
-                { index ->
-                    AsyncImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f)
-                            .padding(top = 10.dp),
-                        model = viewModel.pictures[index],
-                        contentDescription = "Preview of the added picture at index $index"
-                    )
-                }
                 Button(
-                    onClick = { viewModel.onSubmit(onClose, onSubmit) },
+                    onClick = { viewModel.onSubmit(onClose, onSubmit, onSubmitPicture, navController.context) },
                     colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary),
                     modifier = Modifier
                         .fillMaxWidth()

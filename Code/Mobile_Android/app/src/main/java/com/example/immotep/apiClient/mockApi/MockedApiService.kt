@@ -17,7 +17,9 @@ import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.InviteOutput
 import com.example.immotep.apiCallerServices.ProfileResponse
 import com.example.immotep.apiCallerServices.ProfileUpdateInput
+import com.example.immotep.apiCallerServices.PropertyPictureResponse
 import com.example.immotep.apiCallerServices.RoomOutput
+import com.example.immotep.apiCallerServices.UpdatePropertyPictureInput
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.CreateOrUpdateResponse
 import com.example.immotep.authService.LoginResponse
@@ -223,6 +225,27 @@ class MockedApiService : ApiService {
     ): CreateOrUpdateResponse {
         return CreateOrUpdateResponse(
             id = "newDocumentId"
+        )
+    }
+
+    override suspend fun getPropertyPicture(
+        authHeader: String,
+        propertyId: String
+    ): retrofit2.Response<PropertyPictureResponse> {
+        return retrofit2.Response.success(PropertyPictureResponse(
+            id = "pictureId",
+            created_at = baseDateStr,
+            data = "",
+        ))
+    }
+
+    override suspend fun updatePropertyPicture(
+        authHeader: String,
+        propertyId: String,
+        picture: UpdatePropertyPictureInput
+    ): CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = "pictureId"
         )
     }
 }

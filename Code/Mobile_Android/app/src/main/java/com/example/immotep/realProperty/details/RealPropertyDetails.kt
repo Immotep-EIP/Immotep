@@ -1,5 +1,6 @@
 package com.example.immotep.realProperty.details
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -101,18 +102,31 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxWidth()) {
-        AsyncImage(
-            model = property.value.image,
-            placeholder = painterResource(id = R.drawable.immotep_png_logo),
-            error = painterResource(id = R.drawable.immotep_png_logo),
-            contentDescription = "picture of the ${property.value.name} property",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clip(
-                    RoundedCornerShape(50.dp)
-                )
-        )
+        if (property.value.picture == null) {
+            AsyncImage(
+                model = null,
+                placeholder = painterResource(id = R.drawable.immotep_png_logo),
+                error = painterResource(id = R.drawable.immotep_png_logo),
+                contentDescription = "picture of the ${property.value.name} property",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(
+                        RoundedCornerShape(50.dp)
+                    )
+            )
+        } else {
+            Image(
+                property.value.picture!!,
+                contentDescription = "picture of the ${property.value.name} property",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(
+                        RoundedCornerShape(50.dp)
+                    )
+            )
+        }
         Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -227,7 +241,9 @@ fun RealPropertyDetailsScreen(
         popupName = stringResource(R.string.edit_property),
         baseValue = property.value.toAddPropertyInput(),
         submitButtonText = stringResource(R.string.save),
-        submitButtonIcon = { Icon(Icons.Outlined.EditNote, contentDescription = "Edit property") }
+        submitButtonIcon = { Icon(Icons.Outlined.EditNote, contentDescription = "Edit property") },
+        navController = navController,
+        onSubmitPicture = { viewModel.onSubmitPicture(it) }
     )
     InviteTenantModal(
         open = inviteTenantOpen,
