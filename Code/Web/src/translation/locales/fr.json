@@ -269,6 +269,12 @@
         "add_room": "Ajouter une Pièce"
       }
     },
+    "documents": {
+      "success_add": "Document ajouté avec succès",
+      "error_add": "Erreur lors de l'ajout du document",
+      "success_delete": "Document supprimé avec succès",
+      "error_delete": "Erreur lors de la suppression du document"
+    },
     "tooltip": {
       "edit": "Modifier",
       "delete": "Supprimer",

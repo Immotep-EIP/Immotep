@@ -269,6 +269,12 @@
         "add_room": "Add Room"
       }
     },
+    "documents": {
+      "success_add": "Document added successfully",
+      "error_add": "Error adding the document",
+      "success_delete": "Document deleted successfully",
+      "error_delete": "Error deleting the document"
+    },
     "tooltip": {
       "edit": "Edit",
       "delete": "Delete",
