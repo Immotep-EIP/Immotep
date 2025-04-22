@@ -12,7 +12,10 @@ Below are the essential features that must be available for beta testing, along 
 | Inventory report          | Guided and assisted inventory report based on property inventory.                                     | High   | - |
 | Image analysis            | Analize images taken during inventory report to auto-generate summary.                                | High   | On server rather than on device |
 | Damage report             | Tenant can report damages in a property and a follow-up of the fix is done by the owner.              | Medium | - |
+| Documents                 | Upload and manage documents related to the property (e.g., leases, reports, bills...).                | Medium | - |
 | General dashboard         | Overview of all properties, leases, messages and damages.                                             | Medium | - |
+| Inventory management      | Add rooms and items in the inventory. Pre-made templates to easily create properties.                 | Medium | - |
+| Import/export inventories | Import and export property inventory data in various formats (e.g., CSV, JSON).                       | Medium | - |
 | Messaging system          | Chat between tenants and owners.                                                                      | Low    | - |
 | Settings                  | User settings (profile, notifications, accessibility, etc).                                           | Low    | - |
 
@@ -220,12 +223,10 @@ The following criteria will be used to determine the success of the beta version
 | Web inventory item deletion | Deletion of an item (room or furniture) in the inventory is not working, has to be implemented with the archive system  | Medium | Yes |
 | Web end lease not updates page | When a lease is ended, the property page is not updated or refreshed to reflect the new state                        | High   | Yes |
 | Web no cancel invite | Owners unable to cancel an invitation to a tenant, has to be implemented with a button                                         | High   | Yes |
-| Can't add document | Owners unable to add new document in his property, has to be implemented                                                         | Medium | Yes |
-| Damage section not working | Damages has not been implemented yet                                                                                     | Medium | Yes |
 | Messaging system not working | Messaging system has not been implemented yet                                                                          | Low    | Yes |
-| General dashboard not displaying relevant info | General dashboard has not been implemented yet                                                       | Low    | Yes |
 
 ### **Limitations**
+
 - **Tenant Invitation Link Behavior:** If a tenant opens the invitation received by email on their phone, they will be directed to a web page rather than the Immotep application.
 
 ---
