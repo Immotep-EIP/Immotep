@@ -43,8 +43,8 @@ For each core functionality, provide detailed test scenarios.
 - **Role Involved:** Property Owner
 - **Objective:** Test the property creation functionality
 - **Preconditions:** User is logged in with appropriate permissions
-- **Test Steps:**
 
+- **Test Steps:**
   1. Navigate to property page
   2. Click on add property button
   3. Fill in property details (address, description, price, ...)
@@ -65,8 +65,8 @@ For each core functionality, provide detailed test scenarios.
 - **Preconditions:**
   - User is logged in with appropriate permissions
   - A property exists in the system
-- **Test Steps:**
 
+- **Test Steps:**
   1. Navigate to the property page
   2. Choose a property to updated
   3. Click on the drop-down menu at the top right of the property and update the property
@@ -86,12 +86,14 @@ For each core functionality, provide detailed test scenarios.
 - **Preconditions:**
   - User is logged in with appropriate permissions
   - A property exists in the system
+  
 - **Test Steps:**
   1. Navigate to the property page
   2. Choose a property to archived
   3. Click on the drop-down menu at the top right of the property and delete the property
   4. Confirm deletion in the alert dialog
   5. Return to the properties page and click on the toggle switch to display archived properties
+
 - **Expected Outcome:**
 
   - Property is archived successfully
@@ -152,8 +154,8 @@ For each core functionality, provide detailed test scenarios.
 - **Preconditions:**
   - User is logged in with appropriate permissions
   - Property exists in the system
+  
 - **Test Steps:**
-
   1. Navigate to property page
   2. Choose a property to which a inventory report will be created
   3. Navigate to the inventory tab
@@ -271,8 +273,7 @@ For each core functionality, provide detailed test scenarios.
    - Damage exists in the property
 
  - **Test Steps:**
- 
-   1. Navigate to propety page
+   1. Navigate to property page
    2. Choose a property with damages
    3. Click on the damages tab 
    
@@ -291,8 +292,7 @@ For each core functionality, provide detailed test scenarios.
    - Damage exists in the property
 
  - **Test Steps:**
- 
-   1. Navigate to propety page
+   1. Navigate to property page
    2. Choose a property with damages
    3. Click on the damages tab 
    4. Select a damage and click on the intervention date field
@@ -304,7 +304,7 @@ For each core functionality, provide detailed test scenarios.
    - Success message "Intervention date updated successfully" is displayed
    - There are no bugs
 
-#### **Scenario 13: The owner can mark a damage as fixed** // a faire !!!
+#### **Scenario 13: The owner can mark a damage as fixed**
 
 **Role Involved:** Property Owner
  - **Objective:** Check if the owner can mark a damage as fixed
@@ -314,18 +314,16 @@ For each core functionality, provide detailed test scenarios.
    - Damage exists in the property
 
  - **Test Steps:**
- 
-   1. Navigate to propety page
+   1. Navigate to property page
    2. Choose a property with damages
-   3. Click on the damages tab 
-   4. Select a damage and 
-   5. Choose a future date from the date picker
+   3. Click on the damages tab
+   4. Select a damage and click on the "Mark as Fixed" button
+   5. Click "Confirm" in the confirmation dialog
    
  - **Expected Outcome:**
  
-   - The damage is updated with the intervention date
-   - Success message "Intervention date updated successfully" is displayed
-   - There are no bugs
+   - Damage status changes to "pending tenant confirmation"
+   - Success message "Damage marked as fixed, waiting for tenant confirmation" is displayed
 
 #### **Scenario 14: Invite Tenant**
 
@@ -336,8 +334,8 @@ For each core functionality, provide detailed test scenarios.
   - Property exists in the system
   - Property is available
   - Property is not archived
-- **Test Steps:**
 
+- **Test Steps:**
   1. Navigate to property page
   2. Choose a property to which a tenant will be invited
   3. Click on the drop-down menu at the top right of the property and add a tenant
@@ -359,8 +357,8 @@ For each core functionality, provide detailed test scenarios.
   - Property exists in the system
   - Property has 'invitation sent' status
   - Property is not archived
-- **Test Steps:**
 
+- **Test Steps:**
   1. Navigate to property page
   2. Choose a property with the badge **invitation sent**
   3. Click on the drop-down menu at the top right of the property and click on the "Cancel invitation" button
@@ -384,7 +382,6 @@ For each core functionality, provide detailed test scenarios.
   - A current lease exists for the property (occupied)
 
 - **Test Steps:**
-  
   1. Navigate to property page
   2. Choose a property with the badge **occupied**
   3. Click on the drop-down menu at the top right of the property and click on the "End lease" button
@@ -680,7 +677,7 @@ For each core functionality, provide detailed test scenarios.
   - Property exists in the system
 - **Test Steps:**
 
-  1. Navigate to propety page and, for the owner click to a property with a tenant
+  1. Navigate to property page and, for the owner click to a property with a tenant
   2. Click on the damages tab
   
 - **Expected Outcome:**
@@ -697,7 +694,7 @@ For each core functionality, provide detailed test scenarios.
   - Property exists in the system
 - **Test Steps:**
 
-  1. Navigate to propety page
+  1. Navigate to property page
   2. Click on the damages tab
   3. Click on the reporting a claim button
   4. Fill the form and click confirm

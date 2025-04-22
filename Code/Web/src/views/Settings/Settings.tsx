@@ -92,13 +92,11 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
   const [editData, setEditData] = useState(false)
   const [oldData, setOldData] = useState({
     firstname: user?.firstname,
-    lastname: user?.lastname,
-    email: user?.email
+    lastname: user?.lastname
   })
   const [newData, setNewData] = useState({
     firstname: user?.firstname,
-    lastname: user?.lastname,
-    email: user?.email
+    lastname: user?.lastname
   })
 
   const saveNewData = async () => {
@@ -133,13 +131,11 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
     if (user) {
       setNewData({
         firstname: user.firstname,
-        lastname: user.lastname,
-        email: user.email
+        lastname: user.lastname
       })
       setOldData({
         firstname: user.firstname,
-        lastname: user.lastname,
-        email: user.email
+        lastname: user.lastname
       })
     }
   }, [user])
