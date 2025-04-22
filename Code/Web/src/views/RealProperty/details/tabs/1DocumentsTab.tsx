@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Modal, Form, message, Spin } from 'antd'
-import fileToBase64 from '@/utils/base64/fileToBase'
 import { usePropertyId } from '@/context/propertyIdContext'
 import useDocument from '@/hooks/Property/useDocument'
 import UploadForm from '@/components/RealProperty/details/tabs/Documents/UploadForm'

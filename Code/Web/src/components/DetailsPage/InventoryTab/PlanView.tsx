@@ -24,7 +24,6 @@ const PlanView: React.FC<PlanViewProps> = ({
   const getRoomClassName = (roomType: string) => {
     const baseClass = style.roomBlock
     if (roomType && isValidRoomType(roomType)) {
-      const color = getRoomColor(roomType)
       return `${baseClass} ${style.customRoom}`
     }
     return baseClass

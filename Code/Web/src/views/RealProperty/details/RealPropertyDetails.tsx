@@ -283,7 +283,9 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
               subtitleKey={t('pages.real_property_details.informations.tenant')}
             >
               <span className={style.detailsText}>
-                {propertyData?.tenant ? propertyData?.tenant : '-----------'}
+                {propertyData?.lease?.tenant_email
+                  ? propertyData?.lease.tenant_email
+                  : '-----------'}
               </span>
             </SubtitledElement>
           </div>
@@ -292,12 +294,12 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
               subtitleKey={t('pages.real_property_details.informations.dates')}
             >
               <span className={style.detailsText}>
-                {propertyData?.start_date
-                  ? `${new Date(propertyData?.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                {propertyData?.lease?.start_date
+                  ? `${new Date(propertyData.lease.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
                   : '...'}
                 {' - '}
-                {propertyData?.end_date
-                  ? `${new Date(propertyData?.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                {propertyData?.lease?.end_date
+                  ? `${new Date(propertyData.lease.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
                   : '...'}
               </span>
             </SubtitledElement>
@@ -399,7 +401,7 @@ const RealPropertyDetails: React.FC = () => {
             <InviteTenantModal
               isOpen={isModalOpen}
               onClose={handleCancel}
-              property={propertyData}
+              propertyId={id}
             />
             <RealPropertyUpdate
               isModalUpdateOpen={isModalUpdateOpen}

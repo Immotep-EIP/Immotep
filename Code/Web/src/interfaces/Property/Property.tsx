@@ -1,4 +1,3 @@
-import { InviteTenant } from '../Tenant/InviteTenant'
 import { Lease } from './Lease/Lease'
 
 export interface CreatePropertyPayload {
@@ -29,7 +28,6 @@ export interface PropertyDetails {
   created_at: string
   deposit_price: number
   id: string
-  invite: InviteTenant
   lease: Lease
   name: string
   nb_damage: number

@@ -1,5 +1,3 @@
-import { PropertyDetails } from '../Property/Property'
-
 export interface InviteTenant {
   propertyId?: string
   end_date?: string
@@ -19,5 +17,5 @@ export interface InviteTenantResponse {
 export interface InviteTenantModalProps {
   isOpen: boolean
   onClose: (invitationSent: boolean) => void
-  property: PropertyDetails
+  propertyId: string
 }

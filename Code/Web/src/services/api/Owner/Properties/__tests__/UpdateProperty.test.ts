@@ -31,9 +31,21 @@ describe('UpdatePropertyFunction', () => {
     picture_id: '1',
     nb_damage: 0,
     status: 'active',
-    tenant: 'test-tenant',
-    start_date: '2024-03-10T10:00:00Z',
-    end_date: '2024-03-10T11:00:00Z'
+    lease: {
+      active: true,
+      created_at: '2024-03-10T10:00:00Z',
+      start_date: '2024-03-10T10:00:00Z',
+      end_date: '2024-03-10T11:00:00Z',
+      id: 'lease123',
+      owner_email: 'owner@example.com',
+      owner_id: 'owner123',
+      owner_name: 'John Owner',
+      property_id: '1',
+      property_name: 'Test Property',
+      tenant_email: 'tenant123',
+      tenant_id: 'tenant123',
+      tenant_name: 'Jane Tenant'
+    }
   }
 
   let consoleErrorSpy: jest.SpyInstance
