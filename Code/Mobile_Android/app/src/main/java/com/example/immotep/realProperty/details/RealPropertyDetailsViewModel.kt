@@ -1,12 +1,16 @@
 package com.example.immotep.realProperty.details
 
 import android.content.Context
+import android.net.Uri
 import android.widget.Toast
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.DetailedProperty
+import com.example.immotep.apiCallerServices.Document
+import com.example.immotep.apiCallerServices.DocumentInput
 import com.example.immotep.apiCallerServices.InviteDetailedProperty
 import com.example.immotep.apiCallerServices.InviteTenantCallerService
 import com.example.immotep.apiCallerServices.PropertyStatus
@@ -40,6 +44,7 @@ class RealPropertyDetailsViewModel(
     private val _isLoadingMutex = Mutex()
 
     val property: StateFlow<DetailedProperty> = _property.asStateFlow()
+    val documents = mutableStateListOf<Document>()
     val apiError = _apiError.asStateFlow()
     val isLoading = _isLoading.asStateFlow()
 
@@ -54,6 +59,7 @@ class RealPropertyDetailsViewModel(
     fun loadProperty(newProperty: DetailedProperty) {
         _apiError.value = ApiErrors.NONE
         _property.value = newProperty
+        documents.clear()
         if (newProperty.lease?.id == null) {
             return
         }
@@ -61,9 +67,9 @@ class RealPropertyDetailsViewModel(
             try {
                 setIsLoading(true)
                 val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id, newProperty.lease.id)
-                _property.value = newProperty.copy(documents = propertyDocuments)
+                documents.addAll(propertyDocuments)
             } catch (e : Exception) {
-                println("Error loading property ${e.message}")
+                println("Error loading property documents ${e.message}")
                 e.printStackTrace()
             } finally {
                setIsLoading(false)
@@ -87,13 +93,36 @@ class RealPropertyDetailsViewModel(
 
     fun openPdf(documentId : String, context: Context) {
         try {
-            val document = _property.value.documents.find { it.id == documentId }
-            if (document == null) throw Exception("Document not found")
+            val document = documents.find { it.id == documentId }?: throw Exception("Document not found")
             val pdfFile = Base64Utils.saveBase64PdfToCache(context, document.data, document.name)
             pdfFile?.let { PdfsUtils.openPdfFile(context, it) }
         } catch (e : Exception) {
             println("Error opening pdf file: ${e.message}")
             Toast.makeText(context, "Error opening pdf file", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun addDocument(documentUri: Uri, context: Context) {
+        viewModelScope.launch {
+            try {
+                property.value.lease?.id?: throw Exception("Lease id is null")
+                val document = Base64Utils.convertPdfUriToBase64(context, documentUri)
+                    ?: throw Exception("Error converting uri to base64")
+                val documentName = Base64Utils.getFileNameFromUri(context, documentUri)?: "Document"
+                val input = DocumentInput(
+                    name = documentName,
+                    data = document
+                )
+                val (id) = apiCaller.uploadDocument(
+                    propertyId = property.value.id,
+                    leaseId = property.value.lease!!.id,
+                    document = input
+                )
+                documents.add(input.toDocument(id))
+            } catch (e: Exception) {
+                println("Error adding document: ${e.message}")
+                Toast.makeText(context, "Error adding document", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

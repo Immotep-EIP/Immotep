@@ -179,4 +179,5 @@
     <string name="change_language">Change Language</string>
     <string name="delete_picture">Delete the picture</string>
     <string name="see_picture">See the picture</string>
+    <string name="add_document">Add a document</string>
 </resources>

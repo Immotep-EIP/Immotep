@@ -7,6 +7,7 @@ import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
 import com.example.immotep.apiCallerServices.CreatedInventoryReport
 import com.example.immotep.apiCallerServices.Document
+import com.example.immotep.apiCallerServices.DocumentInput
 import com.example.immotep.apiCallerServices.FurnitureInput
 import com.example.immotep.apiCallerServices.FurnitureOutput
 import com.example.immotep.apiCallerServices.GetPropertyResponse
@@ -27,6 +28,9 @@ import com.example.immotep.inventory.InventoryReportOutput
 import com.example.immotep.inventory.State
 import okhttp3.Response
 import okhttp3.ResponseBody
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.Path
 
 
 class MockedApiService : ApiService {
@@ -211,4 +215,14 @@ class MockedApiService : ApiService {
         )
     }
 
+    override suspend fun uploadDocument(
+        authHeader : String,
+        propertyId: String,
+        leaseId: String,
+        document: DocumentInput
+    ): CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = "newDocumentId"
+        )
+    }
 }

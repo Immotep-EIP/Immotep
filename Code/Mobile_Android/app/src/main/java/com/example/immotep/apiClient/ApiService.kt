@@ -7,6 +7,7 @@ import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
 import com.example.immotep.apiCallerServices.CreatedInventoryReport
 import com.example.immotep.apiCallerServices.Document
+import com.example.immotep.apiCallerServices.DocumentInput
 import com.example.immotep.apiCallerServices.FurnitureInput
 import com.example.immotep.apiCallerServices.FurnitureOutput
 import com.example.immotep.apiCallerServices.GetPropertyResponse
@@ -81,13 +82,6 @@ interface ApiService {
     @GET("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun getProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): GetPropertyResponse
 
-    @GET("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/docs/")
-    suspend fun getPropertyDocuments(
-        @Header("Authorization") authHeader : String,
-        @Path("propertyId") propertyId: String,
-        @Path("leaseId") leaseId: String
-    ): Array<Document>
-
     @POST("${API_PREFIX}/owner/properties")
     suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : CreateOrUpdateResponse
 
@@ -104,6 +98,22 @@ interface ApiService {
         @Path("propertyId") propertyId: String,
         @Body archive : ArchivePropertyInput
     ) : CreateOrUpdateResponse
+
+
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/docs/")
+    suspend fun getPropertyDocuments(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String
+    ): Array<Document>
+
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/docs/")
+    suspend fun uploadDocument(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String,
+        @Body document: DocumentInput
+    ): CreateOrUpdateResponse
 
     //rooms functions
     @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms")

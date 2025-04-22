@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import java.io.File
@@ -156,6 +157,51 @@ class Base64Utils {
                 println("Impossible to save pdf file ${e.message}")
                 e.printStackTrace()
                 null
+            }
+        }
+
+        fun getFileNameFromUri(context: Context, uri: Uri): String? {
+            val contentResolver = context.contentResolver
+            var name: String? = null
+
+            if (uri.scheme == "content") {
+                val cursor = contentResolver.query(uri, null, null, null, null)
+                cursor?.use {
+                    val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (it.moveToFirst() && nameIndex != -1) {
+                        name = it.getString(nameIndex)
+                    }
+                }
+            }
+
+            if (name == null) {
+                name = uri.path?.substringAfterLast('/')
+            }
+
+            if (name != null && name!!.endsWith(".pdf")) {
+                name = name!!.substringBeforeLast(".pdf")
+            }
+
+            return name
+        }
+
+        fun convertPdfUriToBase64(
+            context: Context,
+            pdfUri: Uri,
+            withPrefix: Boolean = false
+        ): String? {
+            try {
+                val inputStream = context.contentResolver.openInputStream(pdfUri) ?: throw Exception("Input stream is null")
+                val bytes = inputStream.readBytes()
+                val base64 = Base64.getEncoder().encodeToString(bytes)
+                if (!withPrefix) {
+                    return base64
+                }
+                return "data:application/pdf;base64,$base64"
+            } catch (e : Exception) {
+                println("error during conversion of pdf file : ${e.message}")
+                e.printStackTrace()
+                return null
             }
         }
     }

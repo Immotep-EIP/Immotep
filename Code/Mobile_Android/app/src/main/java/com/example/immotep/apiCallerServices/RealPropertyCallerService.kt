@@ -3,6 +3,7 @@ package com.example.immotep.apiCallerServices
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.CreateOrUpdateResponse
+import com.example.immotep.utils.DateFormatter
 import retrofit2.HttpException
 import java.time.OffsetDateTime
 
@@ -54,6 +55,21 @@ data class AddPropertyInput(
         )
     }
 }
+
+data class DocumentInput(
+    val name: String = "",
+    val data: String = ""
+) {
+    fun toDocument(id : String) : Document {
+        return Document(
+            id = id,
+            name = name,
+            data = data,
+            created_at = DateFormatter.currentDateAsOffsetDateTimeString()
+        )
+    }
+}
+
 
 //output api classes
 
@@ -237,5 +253,11 @@ class RealPropertyCallerService (
         apiService.getPropertyDocuments(getBearerToken(), propertyId, leaseId)
     }
 
-
+    suspend fun uploadDocument(
+        propertyId: String,
+        leaseId : String,
+        document: DocumentInput
+    ): CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
+        apiService.uploadDocument(getBearerToken(), propertyId, leaseId, document)
+    }
 }

@@ -75,13 +75,15 @@ fun DeleteOrSeePictureModal(
                     },
                     text = stringResource(R.string.see_picture)
                 )
-                StyledButton(
-                    onClick = {
-                        removePicture?.invoke(currentImage.second)
-                        onClose()
-                    },
-                    text = stringResource(R.string.delete_picture)
-                )
+                if (removePicture != null) {
+                    StyledButton(
+                        onClick = {
+                            removePicture(currentImage.second)
+                            onClose()
+                        },
+                        text = stringResource(R.string.delete_picture)
+                    )
+                }
             }
         }
     }

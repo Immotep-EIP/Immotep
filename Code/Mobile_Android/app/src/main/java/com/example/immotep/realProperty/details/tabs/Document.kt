@@ -1,12 +1,17 @@
 package com.example.immotep.realProperty.details.tabs
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +21,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AttachFile
 import androidx.compose.material3.Icon
@@ -73,17 +79,43 @@ fun OneDocument(document: Document, openPdf: (String) -> Unit) {
     }
 }
 
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun DocumentBox(property : State<DetailedProperty>, openPdf: (String) -> Unit) {
+fun DocumentBox(
+    openPdf: (String) -> Unit,
+    documents : List<Document>,
+    addDocument: (Uri) -> Unit
+) {
+    val pdfLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri ->
+            if (uri != null) {
+                addDocument(uri)
+            }
+        }
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
         FlowRow(modifier = Modifier.defaultMinSize(minHeight = 125.dp)) {
-            property.value.documents.forEach { item ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    shape = RoundedCornerShape(5.dp),
+                    colors = androidx.compose.material.ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    modifier = Modifier.testTag("editInventoryButton"),
+                    onClick = { pdfLauncher.launch(arrayOf("application/pdf")) }) {
+                    androidx.compose.material.Text(stringResource(R.string.add_document))
+                }
+            }
+            documents.forEach { item ->
                 OneDocument(item, openPdf = { openPdf(it) })
             }
         }

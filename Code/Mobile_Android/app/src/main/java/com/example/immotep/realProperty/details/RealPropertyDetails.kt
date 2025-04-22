@@ -268,7 +268,11 @@ fun RealPropertyDetailsScreen(
             TabsLayout(tabIndex, tabs, { tabIndex = it }) {
                 when (tabIndex) {
                     0 -> AboutPropertyTab(property, navController, { viewModel.setIsLoading(it) }, loaderInventoryViewModel)
-                    1 -> DocumentBox(property = property, openPdf = { viewModel.openPdf(it, context)})
+                    1 -> DocumentBox(
+                        openPdf = { viewModel.openPdf(it, context)},
+                        documents = viewModel.documents.toList(),
+                        addDocument = { viewModel.addDocument(it, context) }
+                    )
                     2 -> Damages()
                 }
             }

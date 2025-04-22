@@ -180,4 +180,5 @@
     <string name="change_language">Changer la langue</string>
     <string name="delete_picture">Supprimer la photo</string>
     <string name="see_picture">Voir la photo</string>
+    <string name="add_document">Ajouter un document</string>
 </resources>
