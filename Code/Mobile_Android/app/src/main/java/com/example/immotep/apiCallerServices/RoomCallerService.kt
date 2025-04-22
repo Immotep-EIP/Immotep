@@ -1,11 +1,35 @@
 package com.example.immotep.apiCallerServices
 
 import androidx.navigation.NavController
-import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.CreateOrUpdateResponse
 import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.RoomDetail
+
+
+enum class RoomType {
+    dressing,
+    laundryroom,
+    bedroom,
+    playroom,
+    bathroom,
+    toilet,
+    livingroom,
+    diningroom,
+    kitchen,
+    hallway,
+    balcony,
+    cellar,
+    garage,
+    storage,
+    office,
+    other
+}
+
+data class AddRoomInput(
+    val name : String,
+    val type : RoomType
+)
 
 data class RoomOutput(
     val id : String,

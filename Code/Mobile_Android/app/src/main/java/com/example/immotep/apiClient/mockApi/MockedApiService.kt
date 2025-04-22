@@ -2,6 +2,7 @@ package com.example.immotep.apiClient.mockApi
 
 import androidx.annotation.Nullable
 import com.example.immotep.apiCallerServices.AddPropertyInput
+import com.example.immotep.apiCallerServices.AddRoomInput
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
@@ -17,7 +18,6 @@ import com.example.immotep.apiCallerServices.InviteOutput
 import com.example.immotep.apiCallerServices.ProfileResponse
 import com.example.immotep.apiCallerServices.ProfileUpdateInput
 import com.example.immotep.apiCallerServices.RoomOutput
-import com.example.immotep.apiClient.AddRoomInput
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.CreateOrUpdateResponse
 import com.example.immotep.authService.LoginResponse

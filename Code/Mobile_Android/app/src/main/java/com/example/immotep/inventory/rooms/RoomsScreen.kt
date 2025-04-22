@@ -31,6 +31,7 @@ import com.example.immotep.components.inventory.NextInventoryButton
 import com.example.immotep.inventory.Room
 import com.example.immotep.layouts.InventoryLayout
 import com.example.immotep.R
+import com.example.immotep.apiCallerServices.RoomType
 import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.components.InventoryCenterAddButton
 import com.example.immotep.components.inventory.AddRoomOrDetailModal
@@ -40,7 +41,7 @@ import com.example.immotep.inventory.roomDetails.RoomDetailsScreen
 @Composable
 fun RoomsScreen(
     getRooms: () -> Array<Room>,
-    addRoom: suspend (String) -> String?,
+    addRoom: suspend (String, RoomType) -> String?,
     addDetail: suspend (roomId : String, name : String) -> String?,
     removeRoom: (String) -> Unit,
     editRoom: (Room) -> Unit,
@@ -122,9 +123,15 @@ fun RoomsScreen(
             }
             AddRoomOrDetailModal(
                 open = addRoomModalOpen,
-                addRoomOrDetail = { viewModel.addARoom(it); addRoomModalOpen = false },
+                addRoomOrDetail =
+                { name, type ->
+                    type?: return@AddRoomOrDetailModal
+                    viewModel.addARoom(name, type)
+                    addRoomModalOpen = false
+                },
                 close = { addRoomModalOpen = false },
-                isRoom = true
+                isRoom = true,
+                addRoomType = true
             )
             InitialFadeIn {
                 Column {

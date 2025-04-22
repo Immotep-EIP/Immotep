@@ -180,4 +180,20 @@
     <string name="delete_picture">Delete the picture</string>
     <string name="see_picture">See the picture</string>
     <string name="add_document">Add a document</string>
+    <string name="dressing">Dressing</string>
+    <string name="laundryroom">Laundry Room</string>
+    <string name="bedroom">Bedroom</string>
+    <string name="playroom">Playroom</string>
+    <string name="bathroom">Bathroom</string>
+    <string name="toilet">Toilet</string>
+    <string name="livingroom">Living Room</string>
+    <string name="diningroom">Dining Room</string>
+    <string name="kitchen">Kitchen</string>
+    <string name="hallway">Hallway</string>
+    <string name="balcony">Balcony</string>
+    <string name="cellar">Cellar</string>
+    <string name="garage">Garage</string>
+    <string name="storage">Storage</string>
+    <string name="office">Office</string>
+    <string name="other">Other</string>
 </resources>

@@ -67,7 +67,11 @@ fun RoomDetailsScreen(
     }
     AddRoomOrDetailModal(
         open = addDetailModalOpen,
-        addRoomOrDetail = { viewModel.addDetailToRoomDetailPage(it, baseRoom.id); addDetailModalOpen = false },
+        addRoomOrDetail =
+        { name, _ ->
+            viewModel.addDetailToRoomDetailPage(name, baseRoom.id)
+            addDetailModalOpen = false
+        },
         close = { addDetailModalOpen = false },
         isRoom = false
     )

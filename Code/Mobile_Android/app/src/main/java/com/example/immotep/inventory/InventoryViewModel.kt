@@ -6,12 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.immotep.apiCallerServices.AddRoomInput
 import com.example.immotep.apiCallerServices.FurnitureCallerService
 import com.example.immotep.apiCallerServices.FurnitureInput
 import com.example.immotep.apiCallerServices.InventoryCallerService
 import com.example.immotep.apiCallerServices.InventoryReportInput
 import com.example.immotep.apiCallerServices.RoomCallerService
-import com.example.immotep.apiClient.AddRoomInput
+import com.example.immotep.apiCallerServices.RoomType
 import com.example.immotep.apiClient.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -78,14 +79,14 @@ class InventoryViewModel(
      * addRoom, made to add a room to the property
      *
      */
-    suspend fun addRoom(name: String, onError : () -> Unit) : String? {
+    suspend fun addRoom(name: String, roomType: RoomType, onError : () -> Unit) : String? {
         if (_propertyId == null) {
             return null
         }
         try {
             val (id) = roomApiCaller.addRoom(
                 _propertyId!!,
-                AddRoomInput(name = name),
+                AddRoomInput(name = name, type = roomType),
             )
             val room = Room(id = id, name = name)
             rooms.add(room)

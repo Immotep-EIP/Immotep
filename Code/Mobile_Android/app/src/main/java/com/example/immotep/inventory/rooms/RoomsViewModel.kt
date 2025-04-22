@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.immotep.apiCallerServices.RoomType
 import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.realProperty.RealPropertyViewModel
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class RoomsViewModel(
     private val getRooms: () -> Array<Room>,
-    private val addRoom: suspend (String) -> String?,
+    private val addRoom: suspend (String, RoomType) -> String?,
     private val removeRoom: (String) -> Unit,
     private val closeInventory: () -> Unit,
     private val editRoom: (Room) -> Unit,
@@ -45,9 +46,9 @@ class RoomsViewModel(
         this.onClose()
     }
 
-    suspend fun addARoom(name: String) {
+    suspend fun addARoom(name: String, type : RoomType) {
         if (allRooms.find { it.name == name } != null) throw Exception("room_already_exists")
-        val roomId = addRoom(name) ?: throw Exception("impossible_to_add_room")
+        val roomId = addRoom(name, type) ?: throw Exception("impossible_to_add_room")
         val room = Room(id = roomId, name = name, newItem = true)
         allRooms.add(room)
     }

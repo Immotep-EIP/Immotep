@@ -181,4 +181,20 @@
     <string name="delete_picture">Supprimer la photo</string>
     <string name="see_picture">Voir la photo</string>
     <string name="add_document">Ajouter un document</string>
+    <string name="dressing">Dressing</string>
+    <string name="laundryroom">Buanderie</string>
+    <string name="bedroom">Chambre</string>
+    <string name="playroom">Salle de jeux</string>
+    <string name="bathroom">Salle de bain</string>
+    <string name="toilet">Toilettes</string>
+    <string name="livingroom">Salon</string>
+    <string name="diningroom">Salle à manger</string>
+    <string name="kitchen">Cuisine</string>
+    <string name="hallway">Couloir</string>
+    <string name="balcony">Balcon</string>
+    <string name="cellar">Cave</string>
+    <string name="garage">Garage</string>
+    <string name="storage">Débarras</string>
+    <string name="office">Bureau</string>
+    <string name="other">Autre</string>
 </resources>

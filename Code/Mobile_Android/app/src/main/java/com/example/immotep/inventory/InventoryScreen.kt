@@ -64,34 +64,15 @@ fun InventoryScreen(
             Toast.makeText(context, inventoryErrors.value.errorRoomName, Toast.LENGTH_LONG)
                 .show()
         }
-        /*
-        if (cannotMakeExitInventory.value) {
-            AlertDialog(
-                shape = RoundedCornerShape(10.dp),
-                onDismissRequest = { viewModel.closeCannotMakeExitInventory() },
-                confirmButton = {
-                    TextButton(onClick = { viewModel.closeCannotMakeExitInventory() }) {
-                        Text(stringResource(R.string.understand))
-                    }
-                },
-                title = {
-                    Text(stringResource(R.string.cannot_make_exit_inventory))
-                },
-                text = {
-                    Text(stringResource(R.string.cannot_exit_inventory_text))
-                },
-
-                )
-        }
-         */
         RoomsScreen(
             getRooms = { viewModel.getRooms() },
-            addRoom = {
+            addRoom =
+            { name, type ->
                 viewModel.addRoom(
-                    it,
-                    {
-                        Toast.makeText(context, cannotAddRoomText, Toast.LENGTH_LONG).show()
-                    })
+                    name = name,
+                    roomType = type,
+                    onError = { Toast.makeText(context, cannotAddRoomText, Toast.LENGTH_LONG).show() }
+                )
             },
             removeRoom = { viewModel.removeRoom(it) },
             editRoom = { room -> viewModel.editRoom(room) },

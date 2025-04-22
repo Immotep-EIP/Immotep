@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.immotep.apiCallerServices.RoomType
 import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.RoomDetail
 import com.example.immotep.inventory.rooms.RoomsViewModel

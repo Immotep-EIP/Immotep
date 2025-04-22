@@ -2,6 +2,7 @@ package com.example.immotep.apiClient
 
 import androidx.annotation.Nullable
 import com.example.immotep.apiCallerServices.AddPropertyInput
+import com.example.immotep.apiCallerServices.AddRoomInput
 import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
@@ -33,11 +34,6 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-
-
-data class AddRoomInput(
-    val name : String,
-)
 
 data class CreateOrUpdateResponse(
     val id : String

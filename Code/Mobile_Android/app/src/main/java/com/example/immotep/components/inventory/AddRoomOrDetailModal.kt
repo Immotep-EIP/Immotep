@@ -27,31 +27,39 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.immotep.R
+import com.example.immotep.apiCallerServices.RoomType
+import com.example.immotep.inventory.Room
+import com.example.immotep.inventory.State
+import com.example.immotep.ui.components.DropDown
+import com.example.immotep.ui.components.DropDownItem
 import com.example.immotep.ui.components.OutlinedTextField
 import com.example.immotep.ui.components.StyledButton
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.enums.EnumEntries
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRoomOrDetailModal(
     open: Boolean,
-    addRoomOrDetail: suspend (name : String) -> Unit,
+    addRoomOrDetail: suspend (name : String, roomType : RoomType?) -> Unit,
+    addRoomType : Boolean = false,
     close: () -> Unit, isRoom : Boolean
 ) {
     if (open) {
         val focusRequester = remember { FocusRequester() }
         val scope = rememberCoroutineScope()
         var roomName by rememberSaveable { mutableStateOf("") }
+        var roomType by rememberSaveable { mutableStateOf(RoomType.bedroom) }
         var error by rememberSaveable { mutableStateOf<String?>(null) }
 
         val onSubmit = {
             scope.launch {
                 try {
                     error = null
-                    addRoomOrDetail(roomName)
+                    addRoomOrDetail(roomName, if (addRoomType) roomType else null)
                 } catch (e : Exception) {
                     error = e.message
                 }
@@ -88,6 +96,32 @@ fun AddRoomOrDetailModal(
                         else -> stringResource(R.string.basic_error)
                     }
                 )
+                if (addRoomType) {
+                    DropDown(
+                        items = listOf(
+                            DropDownItem(stringResource(R.string.bedroom), RoomType.bedroom),
+                            DropDownItem(stringResource(R.string.cellar), RoomType.cellar),
+                            DropDownItem(stringResource(R.string.garage), RoomType.garage),
+                            DropDownItem(stringResource(R.string.balcony), RoomType.balcony),
+                            DropDownItem(stringResource(R.string.bathroom), RoomType.bathroom),
+                            DropDownItem(stringResource(R.string.diningroom), RoomType.diningroom),
+                            DropDownItem(stringResource(R.string.dressing), RoomType.dressing),
+                            DropDownItem(stringResource(R.string.hallway), RoomType.hallway),
+                            DropDownItem(stringResource(R.string.kitchen), RoomType.kitchen),
+                            DropDownItem(stringResource(R.string.laundryroom), RoomType.laundryroom),
+                            DropDownItem(stringResource(R.string.livingroom), RoomType.livingroom),
+                            DropDownItem(stringResource(R.string.playroom), RoomType.playroom),
+                            DropDownItem(stringResource(R.string.storage), RoomType.storage),
+                            DropDownItem(stringResource(R.string.toilet), RoomType.toilet),
+                            DropDownItem(stringResource(R.string.office), RoomType.office),
+                            DropDownItem(stringResource(R.string.other), RoomType.other),
+                        ),
+                        selectedItem = roomType,
+                        onItemSelected = { newVal -> roomType = newVal },
+                        error = null,
+                        testTag = "dropDownRoomType"
+                    )
+                }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
