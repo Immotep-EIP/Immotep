@@ -80,7 +80,6 @@ class LoaderInventoryViewModel(
                 try {
                     tryLoadLastInventory(propertyId)
                 } catch (e: Exception) {
-                    println("Impossible to load the last inventory ${e.message}")
                     tryGetBaseRooms(propertyId)
                 } finally {
                     _internalIsLoading.value = false

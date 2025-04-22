@@ -44,7 +44,6 @@ fun InventoryScreen(
         viewModel.setPropertyIdAndLeaseId(propertyId, leaseId)
         if (!isLoading.value) {
             val rooms = loaderViewModel.getRooms()
-            println("rooms length = ${rooms.size}")
             viewModel.loadInventoryFromRooms(rooms)
         }
     }

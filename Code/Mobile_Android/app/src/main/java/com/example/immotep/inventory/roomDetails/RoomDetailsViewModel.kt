@@ -32,13 +32,11 @@ class RoomDetailsViewModel(
         details.clear()
     }
 
-    fun addDetailToRoomDetailPage(name : String, roomId: String) {
+    suspend fun addDetailToRoomDetailPage(name : String, roomId: String) {
         if (details.find { it.name == name } != null) throw Exception("detail_already_exists")
-        viewModelScope.launch {
-            val detailId = addDetail(roomId, name) ?: throw Exception("impossible_to_add_detail")
-            val newDetail = RoomDetail(id = detailId, name = name, newItem = true)
-            details.add(newDetail)
-        }
+        val detailId = addDetail(roomId, name) ?: throw Exception("impossible_to_add_detail")
+        val newDetail = RoomDetail(id = detailId, name = name, newItem = true)
+        details.add(newDetail)
     }
 
     fun removeDetail(detail: RoomDetail) {

@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -28,27 +29,32 @@ import androidx.compose.ui.unit.dp
 import com.example.immotep.R
 import com.example.immotep.ui.components.OutlinedTextField
 import com.example.immotep.ui.components.StyledButton
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRoomOrDetailModal(
     open: Boolean,
-    addRoomOrDetail: (name : String) -> Unit,
+    addRoomOrDetail: suspend (name : String) -> Unit,
     close: () -> Unit, isRoom : Boolean
 ) {
     if (open) {
         val focusRequester = remember { FocusRequester() }
+        val scope = rememberCoroutineScope()
         var roomName by rememberSaveable { mutableStateOf("") }
         var error by rememberSaveable { mutableStateOf<String?>(null) }
 
         val onSubmit = {
-            try {
-                error = null
-                addRoomOrDetail(roomName)
-            } catch (e : Exception) {
-                error = e.message
+            scope.launch {
+                try {
+                    error = null
+                    addRoomOrDetail(roomName)
+                } catch (e : Exception) {
+                    error = e.message
+                }
             }
         }
 
@@ -99,7 +105,7 @@ fun AddRoomOrDetailModal(
                         Text(stringResource(R.string.cancel))
                     }
                     StyledButton(
-                        onClick = onSubmit,
+                        onClick = { onSubmit() },
                         modifier = Modifier.testTag("addRoomModalConfirm"),
                         text = stringResource(if (isRoom) R.string.add_room else R.string.add_detail)
                     )
