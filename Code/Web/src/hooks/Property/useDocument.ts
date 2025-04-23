@@ -1,21 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Document } from '@/interfaces/Property/Document'
+import { Document, UseDocumentReturn } from '@/interfaces/Property/Document'
 import GetPropertyDocuments from '@/services/api/Owner/Properties/GetPropertyDocuments'
 import UploadDocument from '@/services/api/Owner/Properties/UploadDocument'
 import fileToBase64 from '@/utils/base64/fileToBase'
-
-interface UseDocumentReturn {
-  documents: Document[] | null
-  loading: boolean
-  error: string | null
-  refreshDocuments: (propertyId: string) => Promise<void>
-  uploadDocument: (
-    file: File,
-    documentName: string,
-    propertyId: string,
-    leaseId: string
-  ) => Promise<void>
-}
 
 const useDocument = (propertyId: string): UseDocumentReturn => {
   const [documents, setDocuments] = useState<Document[] | null>(null)

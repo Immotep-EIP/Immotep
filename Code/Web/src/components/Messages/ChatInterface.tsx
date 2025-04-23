@@ -4,15 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { Input, Button } from 'antd'
 import { SendOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { Contact } from '@/interfaces/Messages/Contact'
+import { Message } from '@/interfaces/Messages/Message'
 import defaultAvatar from '@/assets/images/DefaultProfile.png'
 import style from './ChatInterface.module.css'
-
-interface Message {
-  id: string
-  sender: 'me' | 'contact'
-  content: string
-  timestamp: Date
-}
 
 const ChatHeader: React.FC<{ contact: Contact }> = ({ contact }) => (
   <div className={style.chatHeader}>
@@ -56,7 +50,6 @@ const ChatInterface: React.FC<{ contact: Contact }> = ({ contact }) => {
 
   const handleSend = () => {
     if (message.trim()) {
-      console.log('Sending message:', message)
       setMessage('')
     }
   }

@@ -13,3 +13,10 @@ export interface Damage {
   fix_planned_at: string
   pictures: string
 }
+
+export interface UseDamagesReturn {
+  damages: Damage[] | null
+  loading: boolean
+  error: string | null
+  refreshDamages: (propertyId: string) => Promise<void>
+}

@@ -10,11 +10,7 @@ import DeleteRoomByPropertyById from '@/services/api/Owner/Properties/Rooms/Arch
 import DeleteFurnitureByRoom from '@/services/api/Owner/Properties/Rooms/Furnitures/ArchiveFurnitureByRoom'
 import { Inventory } from '@/interfaces/Property/Inventory/Inventory'
 import { Room } from '@/interfaces/Property/Inventory/Room/Room'
-
-interface FurnitureParams {
-  name: string
-  quantity: number
-}
+import { FurnitureParams } from '@/interfaces/Property/Inventory/Room/Furniture/Furniture'
 
 const useInventory = (propertyId: string) => {
   const [inventory, setInventory] = useState<Inventory>({

@@ -1,3 +1,4 @@
+import { UploadProps } from 'antd'
 import { Lease } from './Lease/Lease'
 
 export interface CreatePropertyPayload {
@@ -36,4 +37,8 @@ export interface PropertyDetails {
   postal_code: string
   rental_price_per_month: number
   status: string
+}
+
+export interface PropertyFormFieldsProps {
+  uploadProps: UploadProps
 }
