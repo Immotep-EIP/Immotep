@@ -21,7 +21,7 @@ import returnIcon from '@/assets/icons/retour.svg'
 
 import { PropertyIdProvider } from '@/context/propertyIdContext'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
-import useImageCache from '@/hooks/Property/useImageCache'
+import useImageCache from '@/hooks/Image/useImageCache'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import useProperties from '@/hooks/Property/useProperties'
 import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
