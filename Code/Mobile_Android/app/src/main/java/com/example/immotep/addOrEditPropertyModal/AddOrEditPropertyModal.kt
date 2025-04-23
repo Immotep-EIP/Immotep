@@ -267,14 +267,16 @@ fun AddOrEditPropertyModal(
                     Icon(Icons.Outlined.Add, contentDescription = "Add picture")
                     Text(stringResource(R.string.add_picture))
                 }
-                AsyncImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .padding(top = 10.dp),
-                    model = picture.value,
-                    contentDescription = "Preview of the added picture"
-                )
+                if (picture.value != null) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .padding(top = 10.dp),
+                        model = picture.value,
+                        contentDescription = "Preview of the added picture"
+                    )
+                }
                 Button(
                     onClick = { viewModel.onSubmit(onClose, onSubmit, onSubmitPicture, navController.context) },
                     colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary),

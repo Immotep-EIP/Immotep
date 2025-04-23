@@ -77,12 +77,22 @@ class RealPropertyDetailsViewModel(
         }
     }
 
-    suspend fun editProperty(property: AddPropertyInput, propertyId: String) : String {
+    suspend fun editProperty(propertyEdited: AddPropertyInput, propertyId: String) : String {
         _apiError.value = ApiErrors.NONE
         setIsLoading(true)
         try {
-            val (id) = apiCaller.updateProperty(property, propertyId)
-            _property.value = property.toDetailedProperty(propertyId)
+            val (id) = apiCaller.updateProperty(propertyEdited, propertyId)
+            _property.value = _property.value.copy(
+                name = propertyEdited.name,
+                address = propertyEdited.address,
+                zipCode = propertyEdited.postal_code,
+                city = propertyEdited.city,
+                area = propertyEdited.area_sqm.toInt(),
+                deposit = propertyEdited.deposit_price,
+                rent = propertyEdited.rental_price_per_month,
+                country = propertyEdited.country,
+                appartementNumber = propertyEdited.apartment_number
+            )
             return id
         } catch (e : Exception) {
             e.printStackTrace()

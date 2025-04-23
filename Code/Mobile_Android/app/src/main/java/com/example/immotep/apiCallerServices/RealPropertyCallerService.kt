@@ -40,7 +40,11 @@ data class AddPropertyInput(
     val deposit_price: Int = 0,
     val apartment_number: String = ""
 ) {
-    fun toDetailedProperty(id : String) : DetailedProperty {
+    fun toDetailedProperty(
+        id : String,
+        currentLease : LeaseDetailedProperty? = null,
+        currentInvite : InviteDetailedProperty? = null
+    ) : DetailedProperty {
         return DetailedProperty(
             id = id,
             address = address,
@@ -52,7 +56,9 @@ data class AddPropertyInput(
             zipCode = postal_code,
             city = city,
             country = country,
-            name = name
+            name = name,
+            lease = currentLease,
+            invite = currentInvite
         )
     }
 }
