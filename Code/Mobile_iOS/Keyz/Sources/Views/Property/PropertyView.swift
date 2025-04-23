@@ -9,10 +9,6 @@ import SwiftUI
 
 struct PropertyView: View {
     @EnvironmentObject var viewModel: PropertyViewModel
-    @State private var isCreatingProperty = false
-    @State private var showDeleteConfirmationAlert = false
-    @State private var propertyToDelete: Property?
-    @State private var navigateToEditId: String?
     @State private var listRefreshID = UUID()
 
     var body: some View {
@@ -41,42 +37,6 @@ struct PropertyView: View {
                         .accessibilityLabel("add_property")
                     }
                 }
-
-                if showDeleteConfirmationAlert {
-                    CustomAlertTwoButtons(
-                        isActive: $showDeleteConfirmationAlert,
-                        title: "Delete Property".localized(),
-                        message: propertyToDelete != nil ? "Are you sure you want to delete the property \(propertyToDelete!.name)?".localized() : "",
-                        buttonTitle: "Delete".localized(),
-                        secondaryButtonTitle: "Cancel".localized(),
-                        action: {
-                            if let propertyToDelete = propertyToDelete {
-                                Task {
-                                    await deleteProperty(propertyToDelete)
-                                }
-                            }
-                        },
-                        secondaryAction: {
-                            self.propertyToDelete = nil
-                        }
-                    )
-                }
-            }
-            .navigationDestination(isPresented: Binding(
-                get: { navigateToEditId != nil },
-                set: { if !$0 { navigateToEditId = nil } }
-            )) {
-                if let editId = navigateToEditId,
-                   let propertyToEdit = viewModel.properties.first(where: { $0.id == editId }) {
-                    EditPropertyView(viewModel: viewModel, property: Binding(
-                        get: { viewModel.properties.first(where: { $0.id == editId }) ?? propertyToEdit },
-                        set: { newValue in
-                            if let index = viewModel.properties.firstIndex(where: { $0.id == newValue.id }) {
-                                viewModel.properties[index] = newValue
-                            }
-                        }
-                    ))
-                }
             }
         }
         .onAppear {
@@ -89,13 +49,6 @@ struct PropertyView: View {
         }
         .onChange(of: viewModel.properties) {
             listRefreshID = UUID()
-        }
-        .onChange(of: navigateToEditId) {
-            if navigateToEditId == nil {
-                Task {
-                    await viewModel.fetchProperties()
-                }
-            }
         }
     }
 
@@ -123,19 +76,6 @@ struct PropertyView: View {
                                 .padding(.horizontal)
                         }
                         .accessibilityIdentifier("property_card_\(property.id)")
-                        .contextMenu {
-                            Button(action: {
-                                navigateToEditId = property.id
-                            }) {
-                                Label("Edit".localized(), systemImage: "pencil")
-                            }
-                            Button(role: .destructive, action: {
-                                propertyToDelete = property
-                                showDeleteConfirmationAlert = true
-                            }) {
-                                Label("Delete".localized(), systemImage: "trash")
-                            }
-                        }
                     }
                 } else {
                     Text("No properties available".localized())
@@ -144,16 +84,6 @@ struct PropertyView: View {
                 }
             }
             .padding(.vertical)
-        }
-    }
-
-    private func deleteProperty(_ property: Property) async {
-        do {
-            try await viewModel.deleteProperty(propertyId: property.id)
-            await viewModel.fetchProperties()
-            propertyToDelete = nil
-        } catch {
-            print("Error deleting property: \(error)")
         }
     }
 }
