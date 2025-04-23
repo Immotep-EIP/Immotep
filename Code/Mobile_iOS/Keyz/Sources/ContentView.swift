@@ -49,6 +49,7 @@ struct ContentView: View {
                     .tag(3)
             }
             .id(lang)
+            .accentColor(Color("LightBlue"))
         } else {
             LoginView()
                 .environmentObject(loginViewModel)
