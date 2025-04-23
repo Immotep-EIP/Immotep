@@ -18,78 +18,224 @@ struct PropertyDetailView: View {
     @State private var showDeletePropertyPopUp = false
     @State private var showEditPropertyPopUp = false
     @Environment(\.dismiss) var dismiss
+    @State private var selectedTab: String = "Details".localized()
+
+    private let tabs = ["Details".localized(), "Documents".localized(), "Damages".localized()]
 
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                TopBar(title: "Property Details".localized())
-                
-                Form {
-                    PropertyCardView(property: $property)
-                        .padding(.vertical, 4)
-                    
-                    Section(header: Text("About the property".localized())) {
-                        AboutCardView(property: $property)
-                    }
-                    
-                    Section(header: Text("Documents")
-                        .accessibilityIdentifier("documents_header")) {
-                            DocumentsGrid(documents: $property.documents)
+                TopBar(title: "Keyz".localized())
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ZStack(alignment: .topLeading) {
+                            if let uiImage = property.photo {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 200)
+                                    .clipped()
+                            } else {
+                                Image("DefaultImageProperty")
+                                    .accessibilityLabel("image_property")
+                            }
+
+                            Button(action: {
+                                dismiss()
+                            }) {
+                                Image(systemName: "chevron.left")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                                    .frame(width: 40, height: 40)
+                                    .background(Color.black.opacity(0.6))
+                                    .clipShape(Circle())
+                            }
+                            .padding(16)
+                            .accessibilityLabel("back_button")
+
+                            Menu {
+                                Button(action: {
+                                    showInviteTenantSheet = true
+                                }) {
+                                    Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
+                                }
+                                
+                                Button(action: {
+                                    showEndLeasePopUp = true
+                                }) {
+                                    Label("End Lease".localized(), systemImage: "xmark.circle")
+                                }
+                                
+                                Button(action: {
+                                    showCancelInvitePopUp = true
+                                }) {
+                                    Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
+                                }
+                                
+                                Button(action: {
+                                    showEditPropertyPopUp = true
+                                }) {
+                                    Label("Edit Property".localized(), systemImage: "pencil")
+                                }
+                                
+                                Button(action: {
+                                    showDeletePropertyPopUp = true
+                                }) {
+                                    Label("Delete Property".localized(), systemImage: "trash")
+                                }
+                            } label: {
+                                Image(systemName: "ellipsis")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                                    .frame(width: 40, height: 40)
+                                    .background(Color.black.opacity(0.6))
+                                    .clipShape(Circle())
+                            }
+                            .frame(maxWidth: .infinity, alignment: .topTrailing)
+                            .padding(16)
+                            .accessibilityLabel("options_button")
                         }
-                }
-                
-                Menu {
-                    Button(action: {
-                        showInviteTenantSheet = true
-                    }) {
-                        Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
-                    }
-                    
-                    Button(action: {
-                        showEndLeasePopUp = true
-                    }) {
-                        Label("End Lease".localized(), systemImage: "xmark.circle")
-                    }
-                    
-                    Button(action: {
-                        showCancelInvitePopUp = true
-                    }) {
-                        Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
-                    }
-                    
-                    Button(action: {
-                        showEditPropertyPopUp = true
-                    }) {
-                        Label("Edit Property".localized(), systemImage: "pencil")
-                    }
-                    
-                    Button(action: {
-                        showDeletePropertyPopUp = true
-                    }) {
-                        Label("Delete Property".localized(), systemImage: "trash")
-                    }
-                } label: {
-                    Text("Actions")
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text(property.name)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.black)
+
+                                Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
+                                    )
+                                    .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
+                            }
+                            HStack(spacing: 4) {
+                                Image(systemName: "mappin.and.ellipse.circle")
+                                    .font(.caption)
+                                    .foregroundColor(Color("LightBlue"))
+                                Text("\(property.address), \(property.city), \(property.country)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                    .lineLimit(1)
+                                    .accessibilityLabel("text_address")
+                            }
+                        }
+                        .padding(.horizontal)
+
+                        HStack(spacing: 10) {
+                            ForEach(tabs, id: \.self) { tab in
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        selectedTab = tab
+                                    }
+                                }) {
+                                    Text(tab)
+                                        .font(.system(size: 16, weight: .medium))
+                                        .foregroundColor(selectedTab == tab ? .white : .gray)
+                                        .padding(.vertical, 10)
+                                        .padding(.horizontal, 16)
+                                        .background(
+                                            selectedTab == tab
+                                                ? Color("LightBlue")
+                                                : Color.gray.opacity(0.1)
+                                        )
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        .scaleEffect(selectedTab == tab ? 1.05 : 1.0)
+                                        .shadow(
+                                            color: selectedTab == tab ? Color.black.opacity(0.2) : Color.clear,
+                                            radius: 4, x: 0, y: 2
+                                        )
+                                }
+                                .accessibilityLabel("tab_\(tab.lowercased())")
+                            }
+                        }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(10)
-                        .foregroundStyle(.blue)
+                        .padding(.vertical, 8)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 8)
+
+                        switch selectedTab {
+                        case "Details".localized():
+                            VStack(alignment: .leading, spacing: 16) {
+                                LazyVGrid(
+                                    columns: Array(repeating: GridItem(.flexible(), spacing: 15), count: 3),
+                                    spacing: 15
+                                ) {
+                                    DetailItem(
+                                        icon: "square.split.bottomrightquarter",
+                                        value: "\(formattedValue(property.surface))m2",
+                                        label: "Area".localized()
+                                    )
+                                    DetailItem(
+                                        icon: "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90",
+                                        value: "\(property.monthlyRent)$",
+                                        label: "Rent /month".localized()
+                                    )
+                                    DetailItem(
+                                        icon: "eurosign.bank.building",
+                                        value: "\(property.deposit)$",
+                                        label: "Deposit".localized()
+                                    )
+                                }
+                                .padding(.horizontal)
+
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Tenant(s)".localized())
+                                        .font(.headline)
+                                        .foregroundColor(.black)
+                                    Text(property.tenantName == nil ? "No tenant assigned".localized() : property.tenantName!)
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.horizontal)
+
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Dates".localized())
+                                        .font(.headline)
+                                        .foregroundColor(.black)
+                                    Text(formatLeaseDates())
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.horizontal)
+                            }
+
+                        case "Documents".localized():
+                            DocumentsGrid(documents: $property.documents)
+                                .padding(.horizontal)
+
+                        case "Damages".localized():
+                            VStack {
+                                Text("no_damages_reported".localized())
+                                    .foregroundColor(.gray)
+                                    .padding()
+                            }
+
+                        default:
+                            EmptyView()
+                        }
+                    }
+                    .padding(.bottom, 20)
                 }
-                .padding(.top, 20)
-                .padding(.horizontal)
-                
+
                 NavigationLink {
                     InventoryTypeView(property: $property)
                 } label: {
-                    Text("Start Inventory".localized())
+                    Text("Start the entry/exit inventory".localized())
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 15)
+                        .background(Color("LightBlue"))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                        .padding(.bottom, 10)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
-                .background(.blue)
-                .cornerRadius(10)
-                .padding()
-                .foregroundStyle(.white)
                 .accessibilityLabel("inventory_btn_start")
             }
             .navigationBarBackButtonHidden(true)
@@ -110,6 +256,7 @@ struct PropertyDetailView: View {
             .sheet(isPresented: $showInviteTenantSheet) {
                 InviteTenantView(tenantViewModel: tenantViewModel, property: property)
             }
+
             if showCancelInvitePopUp {
                 CustomAlertTwoButtons(
                     isActive: $showCancelInvitePopUp,
@@ -117,11 +264,8 @@ struct PropertyDetailView: View {
                     message: "Are you sure you want to cancel the pending invite?".localized(),
                     buttonTitle: "Confirm".localized(),
                     secondaryButtonTitle: "Cancel".localized(),
-                    action: {
-                        
-                    },
-                    secondaryAction: {
-                    }
+                    action: {},
+                    secondaryAction: {}
                 )
                 .accessibilityIdentifier("InviteTenantAlert")
             }
@@ -132,11 +276,8 @@ struct PropertyDetailView: View {
                     message: "Are you sure you want to end the current lease?".localized(),
                     buttonTitle: "Confirm".localized(),
                     secondaryButtonTitle: "Cancel".localized(),
-                    action: {
-                        
-                    },
-                    secondaryAction: {
-                    }
+                    action: {},
+                    secondaryAction: {}
                 )
                 .accessibilityIdentifier("EndLeaseAlert")
             }
@@ -147,75 +288,67 @@ struct PropertyDetailView: View {
                     message: "Are you sure you want to delete this property?".localized(),
                     buttonTitle: "Confirm".localized(),
                     secondaryButtonTitle: "Cancel".localized(),
-                    action: {
-                        
-                    },
-                    secondaryAction: {
-                    }
+                    action: {},
+                    secondaryAction: {}
                 )
                 .accessibilityIdentifier("DeletePropertyAlert")
             }
         }
     }
-}
-
-struct AboutCardView: View {
-    @Binding var property: Property
-
-    var body: some View {
-        Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 10) {
-            buildRow(
-                icon: "person",
-                leftText: property.tenantName ?? "No tenant assigned".localized(),
-                rightIcon: "square.split.bottomrightquarter",
-                rightText: String(format: "area".localized(), formattedValue(property.surface))
-            )
-
-            buildRow(
-                icon: "calendar",
-                leftText: String(
-                    format: "start_date".localized(),
-                    property.leaseStartDate != nil ? formatDateString(property.leaseStartDate!) : "No start date assigned".localized()
-                ),
-                rightIcon: "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90",
-                rightText: String(format: "rent_month".localized(), property.monthlyRent)
-            )
-            .accessibilityIdentifier("lease_start_date")
-
-            buildRow(
-                icon: "calendar",
-                leftText: String(
-                    format: "end_date".localized(),
-                    property.leaseEndDate != nil ? formatDateString(property.leaseEndDate!) : "No end date assigned".localized()
-                ),
-                rightIcon: "eurosign.bank.building",
-                rightText: String(format: "deposit_value".localized(), property.deposit)
-            )
-        }
-        .padding(.vertical, 10)
-    }
-
-    private func buildRow(icon: String, leftText: String, rightIcon: String, rightText: String) -> some View {
-        GridRow {
-            buildHStack(icon: icon, text: leftText)
-            buildHStack(icon: rightIcon, text: rightText)
-        }
-        .padding(.vertical, 10)
-    }
-
-    private func buildHStack(icon: String, text: String) -> some View {
-        HStack {
-            Image(systemName: icon)
-            Text(text)
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true)
-                .font(.system(size: 14))
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
 
     private func formattedValue(_ value: Double) -> String {
         value == Double(Int(value)) ? String(format: "%.0f", value) : String(format: "%.2f", value)
+    }
+
+    private func formatLeaseDates() -> String {
+        if property.leaseStartDate == nil && property.leaseEndDate == nil {
+            return "No active lease".localized()
+        }
+
+        let startDateText: String
+        if let startDateString = property.leaseStartDate {
+            startDateText = formatDateString(startDateString)
+        } else {
+            startDateText = "No start date assigned".localized()
+        }
+
+        let endDateText: String
+        if let endDateString = property.leaseEndDate {
+            endDateText = formatDateString(endDateString)
+        } else {
+            endDateText = "No end date assigned".localized()
+        }
+
+        if property.leaseStartDate == nil {
+            return startDateText
+        }
+
+        return "\(startDateText) - \(endDateText)"
+    }
+}
+
+struct DetailItem: View {
+    let icon: String
+    let value: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 5) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(Color("LightBlue"))
+            Text(value)
+                .font(.headline)
+                .foregroundColor(.black)
+            Text(label)
+                .font(.caption)
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 2)
     }
 }
 
@@ -251,39 +384,6 @@ struct DocumentsGrid: View {
     }
 }
 
-struct PDFViewer: View {
-    let base64String: String
-
-    var body: some View {
-        if let pdfData = pdfData(from: base64String),
-           let pdfDocument = PDFDocument(data: pdfData) {
-            PDFKitView(pdfDocument: pdfDocument)
-        } else {
-            Text("Unable to load PDF")
-        }
-    }
-
-    private func pdfData(from base64String: String) -> Data? {
-        let base64Content = base64String.replacingOccurrences(of: "data:application/pdf;base64,", with: "")
-        return Data(base64Encoded: base64Content)
-    }
-}
-
-struct PDFKitView: UIViewRepresentable {
-    let pdfDocument: PDFDocument
-
-    func makeUIView(context: Context) -> PDFView {
-        let pdfView = PDFView()
-        pdfView.document = pdfDocument
-        pdfView.autoScales = true
-        return pdfView
-    }
-
-    func updateUIView(_ uiView: PDFView, context: Context) {
-        uiView.document = pdfDocument
-    }
-}
-
 struct PropertyDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let property = Property(
@@ -300,8 +400,8 @@ struct PropertyDetailView_Previews: PreviewProvider {
             surface: 80.0,
             isAvailable: "Busy",
             tenantName: "John & Mary Doe",
-            leaseStartDate: "13/04/2025",
-            leaseEndDate: "13/04/2025",
+            leaseStartDate: "2025-04-08T22:00:00Z",
+            leaseEndDate: nil,
             documents: [],
             rooms: []
         )

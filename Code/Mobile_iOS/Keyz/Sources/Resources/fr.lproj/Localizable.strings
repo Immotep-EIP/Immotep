@@ -29,6 +29,7 @@
 "started_on" = "Commencé le %@";
 "Available" = "Disponible";
 "Busy" = "Occupé";
+"Unavailable" = "Indisponible";
 
 "New Property" = "Nouvelle propriété";
 "Click on the image to change" = "Cliquez sur l'image pour la changer";
@@ -43,12 +44,15 @@
 "Start Inventory" = "Commencer l'état des lieux";
 "No tenant assigned" = "Pas de locataire alloué";
 "area" = "Surface : %@ m²";
+"Area" = "Surface";
+"Rent /month" = "Loyer /mois";
+"Tenant(s)" = "Propriétaire(s)";
 "start_date" = "Date de début : %@";
 "No start date assigned" = "Pas de date renseignée";
-"rent_month" = "Loyer : %d€";
+"rent_month" = "Loyer : %d$";
 "end_date" = "Fin : %@";
 "No end date assigned" = "Pas de date renseignée";
-"deposit_value" = "Caution : %d€";
+"deposit_value" = "Caution : %d$";
 
 "Invite Tenant" = "Inviter un locataire";
 "End Lease" = "Mettre fin à la location";
@@ -120,3 +124,13 @@
 "You must agree to the terms and conditions." = "Vous devez accepter les termes et conditions.";
 "Please enter a valid email address." = "Veuillez entrer une adresse mail valide.";
 "Please enter both email and password." = "Veuillez entrer un mail et un mot de passe valides.";
+
+"Start the entry/exit inventory" = "Démarrer l'état des lieux d'entrée/sortie";
+"Tabs" = "Onglets";
+"Details" = "Détails";
+"Documents" = "Documents";
+"Damages" = "Sinistres";
+"no_data" = "----";
+"no_damages_reported" = "Aucun sinistre signalé";
+"Unable to load PDF" = "Impossible de charger le PDF";
+"Unable to load PDF" = "Impossible de charger le PDF";
