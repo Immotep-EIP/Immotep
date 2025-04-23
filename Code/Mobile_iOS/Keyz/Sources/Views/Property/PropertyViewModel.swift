@@ -52,11 +52,13 @@ class PropertyViewModel: ObservableObject {
         await fetchProperties()
         return "Property successfully created!"
     }
+
     func fetchProperties() async {
             let url = URL(string: "\(APIConfig.baseURL)/owner/properties/")!
 
             do {
                 let token = try await TokenStorage.getValidAccessToken()
+                print("token: \(token)")
 
                 var urlRequest = URLRequest(url: url)
                 urlRequest.httpMethod = "GET"
@@ -71,6 +73,8 @@ class PropertyViewModel: ObservableObject {
 
                 guard (200...299).contains(httpResponse.statusCode) else {
                     print("Error: Status code \(httpResponse.statusCode)")
+                    print("data: \(String(data: data, encoding: .utf8) ?? "No data")")
+                    print("response: \(String(describing: response))")
                     return
                 }
 

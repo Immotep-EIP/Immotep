@@ -19,9 +19,27 @@ struct PropertyView: View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 0) {
-                    TopBar(title: "Property".localized())
+                    TopBar(title: "Keyz".localized())
                     headerView
                     propertyListView
+                }
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        NavigationLink(destination: CreatePropertyView(viewModel: viewModel)) {
+                            Image(systemName: "plus")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .frame(width: 50, height: 50)
+                                .background(Color("LightBlue"))
+                                .clipShape(Circle())
+                                .shadow(radius: 4)
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 20)
+                        .accessibilityLabel("add_property")
+                    }
                 }
 
                 if showDeleteConfirmationAlert {
@@ -83,62 +101,50 @@ struct PropertyView: View {
 
     private var headerView: some View {
         HStack {
+            Text("Real property".localized())
+                .font(.title2)
+                .fontWeight(.bold)
+                .padding(.horizontal)
+                .padding(.vertical, 10)
             Spacer()
-            NavigationLink(destination: CreatePropertyView(viewModel: viewModel)) {
-                Text("Add a property".localized())
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                    .background(Color.blue)
-                    .cornerRadius(8)
-            }
-            .padding()
-            .accessibilityLabel("add_property")
         }
     }
 
     private var propertyListView: some View {
-        List {
-            if !viewModel.properties.isEmpty {
-                ForEach($viewModel.properties) { $property in
-                    NavigationLink(destination: PropertyDetailView(property: $property, viewModel: viewModel)) {
-                        PropertyCardView(property: $property)
-                    }
-                    .accessibilityIdentifier("property_card_\(property.id)") // Déplacé ici
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(action: {
-                            navigateToEditId = property.id
-                        }, label: {
-                            Label("Edit", systemImage: "pencil")
-                        })
-                        .tint(.blue)
-
-                        Button(role: .destructive) {
-                            propertyToDelete = property
-                            showDeleteConfirmationAlert = true
-                        } label: {
-                            Label("Delete", systemImage: "trash")
+        ScrollView {
+            VStack(spacing: 20) {
+                if !viewModel.properties.isEmpty {
+                    ForEach($viewModel.properties) { $property in
+                        NavigationLink(destination: PropertyDetailView(property: $property, viewModel: viewModel)) {
+                            PropertyCardView(property: $property)
+                                .background(Color.white)
+                                .cornerRadius(15)
+                                .shadow(radius: 2)
+                                .padding(.horizontal)
+                        }
+                        .accessibilityIdentifier("property_card_\(property.id)")
+                        .contextMenu {
+                            Button(action: {
+                                navigateToEditId = property.id
+                            }) {
+                                Label("Edit".localized(), systemImage: "pencil")
+                            }
+                            Button(role: .destructive, action: {
+                                propertyToDelete = property
+                                showDeleteConfirmationAlert = true
+                            }) {
+                                Label("Delete".localized(), systemImage: "trash")
+                            }
                         }
                     }
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                    )
-                    .padding(.horizontal)
-                    .padding(.vertical, 15)
+                } else {
+                    Text("No properties available".localized())
+                        .foregroundColor(.gray)
+                        .padding()
                 }
-            } else {
-                Text("No properties available".localized())
-                    .foregroundColor(.gray)
-                    .padding()
             }
+            .padding(.vertical)
         }
-        .listStyle(.plain)
-        .id(listRefreshID)
     }
 
     private func deleteProperty(_ property: Property) async {
@@ -156,82 +162,63 @@ struct PropertyCardView: View {
     @Binding var property: Property
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            VStack {
-                HStack {
-                    if let uiImage = property.photo {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.black, lineWidth: 1))
-                    } else {
-                        Image("DefaultImageProperty")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color("textColor"), lineWidth: 1))
-                            .accessibilityLabel("image_property")
-                    }
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(property.name)
-                            .font(.headline)
-                            .padding(.trailing, 25)
-                        Text(property.address)
-                            .font(.subheadline)
-                            .padding(.trailing, 25)
-                            .lineLimit(2)
-                            .accessibilityLabel("text_address")
-
-                        if let tenant = property.tenantName {
-                            Text(tenant)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .accessibilityLabel("text_tenant")
-                        }
-
-                        if let leaseStart = property.leaseStartDate {
-                            Text(String(format: "started_on".localized(), formatDateString(leaseStart)))
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .accessibilityLabel("text_started_on")
-                        }
-                    }
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .topTrailing) {
+                if let uiImage = property.photo {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 150)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                } else {
+                    Image("DefaultImageProperty")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 150)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                        .accessibilityLabel("image_property")
                 }
-                .padding(.trailing, 16)
+
+                Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
+                    )
+                    .padding(8)
+                    .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
             }
 
-            if property.isAvailable == "available" {
-                Text("Available".localized())
+            Text(property.name)
+                .font(.headline)
+                .foregroundColor(.black)
+
+            HStack(spacing: 4) {
+                Image(systemName: "mappin.and.ellipse.circle")
                     .font(.caption)
-                    .foregroundColor(.green)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Capsule().fill(Color.green.opacity(0.2)))
-                    .frame(maxWidth: .infinity, alignment: .topTrailing)
-                    .accessibilityLabel("text_available")
-            } else {
-                Text("Busy".localized())
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Capsule().fill(Color.red.opacity(0.2)))
-                    .frame(maxWidth: .infinity, alignment: .topTrailing)
-                    .accessibilityLabel("text_busy")
+                    .foregroundColor(Color("LightBlue"))
+                Text("\(property.address), \(property.city) \(property.postalCode)")
+                    .font(.subheadline)
+                    .foregroundColor(Color("LightBlue"))
+                    .lineLimit(1)
+                    .accessibilityLabel("text_address")
             }
         }
+        .padding()
     }
 }
-
-private let dateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .medium
-    return formatter
-}()
 
 struct PropertyView_Previews: PreviewProvider {
     static var previews: some View {
