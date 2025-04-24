@@ -1,10 +1,13 @@
 package com.example.immotep
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
@@ -20,7 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/*
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
     constructor() {
@@ -61,72 +64,25 @@ class ProfileInstrumentedTest {
     }
 
     @Test
-    fun layoutIsPresent() {
-        mainAct.onNodeWithTag("dashboardLayout").assertIsDisplayed()
+    fun profileContainsTheGoodDisplayAndButton() {
+        mainAct.onNodeWithTag("profile").assertIsDisplayed()
+        mainAct.onNodeWithTag("selectButtonLanguage").assertIsDisplayed()
+        mainAct.onNodeWithTag("profileLogoutBtn").assertIsDisplayed()
     }
 
     @Test
-    fun topBarIsPresent() {
-        mainAct.onNodeWithTag("loggedTopBar").assertIsDisplayed()
+    fun profileContainsGoodInfos() {
+        mainAct.onNodeWithText("User's informations").assertIsDisplayed()
+        mainAct.onNodeWithText("Test").assertIsDisplayed()
+        mainAct.onNodeWithText("User").assertIsDisplayed()
+        mainAct.onNodeWithText("robin.denni@epitech.eu").assertIsDisplayed()
+        mainAct.onNodeWithText("Language").assertIsDisplayed()
+        mainAct.onNodeWithText("Logout").assertIsDisplayed()
     }
 
     @Test
-    fun bottomBarIsPresent() {
-        mainAct.onNodeWithTag("loggedBottomBar").assertIsDisplayed()
-    }
-
-    @Test
-    fun lastNameTestFieldIsPresentAndClickable() {
-        mainAct.onNodeWithTag("profileLastName").assertIsDisplayed().performClick()
-    }
-
-    @Test
-    fun firstNameTestFieldIsPresentAndClickable() {
-        mainAct.onNodeWithTag("profileFirstName").assertIsDisplayed().performClick()
-    }
-
-    @Test
-    fun emailTestFieldIsPresentAndClickable() {
-        mainAct.onNodeWithTag("profileEmail").assertIsDisplayed().performClick()
-    }
-
-    @Test
-    fun lastNameTestFieldContainsGoodValue() {
-        mainAct.onNodeWithTag("profileLastName").assert(hasText("User"))
-    }
-
-    @Test
-    fun firstNameTestFieldContainsGoodValue() {
-        mainAct.onNodeWithTag("profileFirstName").assert(hasText("Test"))
-    }
-
-    @Test
-    fun emailTestFieldContainsGoodValue() {
-        mainAct.onNodeWithTag("profileEmail").assert(hasText("robin.denni@epitech.eu"))
-    }
-
-    @Test
-    fun updateProfileButtonIsPresent() {
-        mainAct.onNodeWithTag("updateProfile").assertIsDisplayed()
-    }
-
-    @Test
-    fun canUpdateUserProfile() {
-        mainAct.onNodeWithTag("profileLastName").assertIsDisplayed().performClick().performTextInput("T")
-        mainAct.onNodeWithTag("profileFirstName").assertIsDisplayed().performClick().performTextInput("S")
-        mainAct.onNodeWithTag("updateProfile").assertIsDisplayed().performClick()
-        mainAct.onNodeWithTag("profileLastName").assert(hasText("UserT"))
-        mainAct.onNodeWithTag("profileFirstName").assert(hasText("TestS"))
-    }
-
-    @Test
-    fun userProfileTriggersError() {
-        mainAct.onNodeWithTag("profileEmail").assertIsDisplayed().performTextClearance()
-        mainAct.onNodeWithTag("profileEmail").performClick().performTextInput("error@gmail.com")
-        mainAct.onNodeWithTag("updateProfile").assertIsDisplayed().performClick()
-        mainAct.onNodeWithTag("errorAlert").assertIsDisplayed()
+    fun canLogoutWithTheButton() {
+        mainAct.onNodeWithTag("profileLogoutBtn").performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("loginEmailInput"), 2000)
     }
 }
-
-
- */

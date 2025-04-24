@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -141,7 +142,9 @@ fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(stringResource(R.string.language))
-                        SingleChoiceSegmentedButtonRow {
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier.testTag("selectButtonLanguage")
+                        ) {
                             options.forEachIndexed { index, label ->
                                 SegmentedButton(
                                     shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
@@ -164,7 +167,10 @@ fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(stringResource(R.string.logout))
-                        IconButton(onClick = { viewModel.logout() }) {
+                        IconButton(
+                            onClick = { viewModel.logout() },
+                            modifier = Modifier.testTag("profileLogoutBtn")
+                        ) {
                             Icon(
                                 Icons.AutoMirrored.Outlined.ExitToApp,
                                 contentDescription = stringResource(R.string.logout),
