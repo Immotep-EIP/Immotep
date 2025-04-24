@@ -41,6 +41,7 @@ fun OneDetailScreen(
     oldReportId : String?,
     navController : NavController,
     propertyId : String,
+    leaseId : String,
     isRoom : Boolean = false,
 ) {
     val apiService = LocalApiService.current
@@ -124,6 +125,7 @@ fun OneDetailScreen(
                         onClick = { viewModel.summarizeOrCompare(
                             oldReportId = oldReportId,
                             propertyId = propertyId,
+                            leaseId = leaseId,
                             isRoom = isRoom
                         ) },
                     ) {

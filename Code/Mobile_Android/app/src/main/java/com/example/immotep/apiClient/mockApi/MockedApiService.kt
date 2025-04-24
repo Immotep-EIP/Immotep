@@ -173,6 +173,7 @@ class MockedApiService : ApiService {
     override suspend fun aiSummarize(
         authHeader : String,
         propertyId: String,
+        leaseId: String,
         summarizeInput: AiCallInput
     ) : AiCallOutput {
         return fakeAiCallOutput
@@ -181,6 +182,7 @@ class MockedApiService : ApiService {
     override suspend fun aiCompare(
         authHeader : String,
         propertyId: String,
+        leaseId: String,
         oldReportId: String,
         summarizeInput: AiCallInput
     ) : AiCallOutput {

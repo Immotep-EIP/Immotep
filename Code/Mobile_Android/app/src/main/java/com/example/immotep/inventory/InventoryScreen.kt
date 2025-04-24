@@ -96,7 +96,8 @@ fun InventoryScreen(
                     })
             },
             navController = navController,
-            propertyId = propertyId
+            propertyId = propertyId,
+            leaseId = leaseId
         )
     }
 }

@@ -167,9 +167,9 @@ class InventoryViewModel(
             try {
                 val inventoryReport = roomsToInventoryReport(oldReportId)
                 val newReport = inventoryApiCaller.createInventoryReport(
-                    _propertyId!!,
-                    inventoryReport,
-                    _leaseId!!
+                    propertyId = _propertyId!!,
+                    inventoryReportInput = inventoryReport,
+                    leaseId = _leaseId!!
                 )
                 setNewValueOfInventory(rooms.toTypedArray(), newReport.id)
                 onClose()

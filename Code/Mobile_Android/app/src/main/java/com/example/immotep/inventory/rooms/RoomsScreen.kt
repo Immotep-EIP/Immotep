@@ -49,7 +49,8 @@ fun RoomsScreen(
     confirmInventory: () -> Boolean,
     oldReportId : String?,
     navController: NavController,
-    propertyId: String
+    propertyId: String,
+    leaseId : String
 ) {
     val viewModel: RoomsViewModel = viewModel {
         RoomsViewModel(
@@ -190,7 +191,8 @@ fun RoomsScreen(
             oldReportId = oldReportId,
             addDetail = addDetail,
             navController = navController,
-            propertyId = propertyId
+            propertyId = propertyId,
+            leaseId = leaseId
         )
     }
 }

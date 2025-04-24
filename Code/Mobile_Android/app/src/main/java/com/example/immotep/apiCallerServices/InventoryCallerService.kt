@@ -33,7 +33,12 @@ class InventoryCallerService(
         leaseId : String,
     ) : CreatedInventoryReport {
         return changeRetrofitExceptionByApiCallerException {
-            apiService.inventoryReport(getBearerToken(), propertyId, leaseId, inventoryReportInput)
+            apiService.inventoryReport(
+                authHeader = getBearerToken(),
+                propertyId = propertyId,
+                leaseId = "current",
+                inventoryReportInput = inventoryReportInput
+            )
         }
     }
 

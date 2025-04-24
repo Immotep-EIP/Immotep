@@ -135,7 +135,12 @@ class OneDetailViewModel(
         reset(null)
     }
 
-    private fun summarize(propertyId: String, isRoom : Boolean, onError : () -> Unit) {
+    private fun summarize(
+        propertyId: String,
+        leaseId: String,
+        isRoom : Boolean,
+        onError : () -> Unit
+    ) {
         viewModelScope.launch {
             _aiLoading.value = true
             try {
@@ -145,6 +150,7 @@ class OneDetailViewModel(
                 }
                 val aiResponse = aiCaller.summarize(
                     propertyId = propertyId,
+                    leaseId = leaseId,
                     input = AiCallInput(
                         id = _detail.value.id,
                         pictures = picturesInput,
@@ -167,7 +173,13 @@ class OneDetailViewModel(
         }
     }
 
-    private fun compare(oldReportId : String, propertyId: String, isRoom: Boolean, onError: () -> Unit) {
+    private fun compare(
+        oldReportId : String,
+        propertyId: String,
+        leaseId : String,
+        isRoom: Boolean,
+        onError: () -> Unit
+    ) {
         viewModelScope.launch {
             _aiLoading.value = true
             try {
@@ -178,6 +190,7 @@ class OneDetailViewModel(
                 val aiResponse = aiCaller.compare(
                     propertyId = propertyId,
                     oldReportId = oldReportId,
+                    leaseId = leaseId,
                     input = AiCallInput(
                         id = _detail.value.id,
                         pictures = picturesInput,
@@ -199,7 +212,12 @@ class OneDetailViewModel(
         }
     }
 
-    fun summarizeOrCompare(oldReportId : String?, propertyId: String, isRoom: Boolean) {
+    fun summarizeOrCompare(
+        oldReportId : String?,
+        propertyId: String,
+        leaseId: String,
+        isRoom: Boolean
+    ) {
         _aiCallError.value = false
         if (picture.isEmpty()) {
             _errors.value = _errors.value.copy(picture = true)
@@ -207,8 +225,8 @@ class OneDetailViewModel(
             return
         }
         if (oldReportId == null) {
-            return summarize(propertyId, isRoom) { _aiCallError.value = true }
+            return summarize(propertyId, leaseId, isRoom) { _aiCallError.value = true }
         }
-        return compare(oldReportId, propertyId, isRoom) { _aiCallError.value = true }
+        return compare(oldReportId, propertyId, leaseId, isRoom) { _aiCallError.value = true }
     }
 }

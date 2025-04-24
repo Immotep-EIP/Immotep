@@ -12,6 +12,7 @@ fun EndRoomDetailsScreen(
     closeRoomPanel : (room: Room) -> Unit,
     oldReportId : String?,
     propertyId : String,
+    leaseId : String,
     newDetails : Array<RoomDetail>,
     navController : NavController,
     isOpen : Boolean,
@@ -31,7 +32,8 @@ fun EndRoomDetailsScreen(
             oldReportId = oldReportId,
             navController = navController,
             propertyId = propertyId,
-            isRoom = true
+            isRoom = true,
+            leaseId = leaseId
         )
     }
 }

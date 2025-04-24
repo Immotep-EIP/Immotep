@@ -230,7 +230,6 @@ fun RealPropertyDetailsScreen(
     }
 
     LaunchedEffect(newProperty) {
-        println("property name, ${newProperty.name}")
         viewModel.loadProperty(newProperty)
     }
 

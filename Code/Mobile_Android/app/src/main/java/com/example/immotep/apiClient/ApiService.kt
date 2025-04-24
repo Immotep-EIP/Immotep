@@ -176,18 +176,20 @@ interface ApiService {
     ) : InventoryReportOutput
 
     //ia functions
-    @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/summarize/")
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/inventory-reports/summarize/")
     suspend fun aiSummarize(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String,
         @Body summarizeInput: AiCallInput
     ) : AiCallOutput
 
-    @POST("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/compare/{old_report_id}")
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/inventory-reports/compare/{oldReportId}/")
     suspend fun aiCompare(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
-        @Path("old_report_id") oldReportId: String,
+        @Path("leaseId") leaseId: String,
+        @Path("oldReportId") oldReportId: String,
         @Body summarizeInput: AiCallInput
     ) : AiCallOutput
 

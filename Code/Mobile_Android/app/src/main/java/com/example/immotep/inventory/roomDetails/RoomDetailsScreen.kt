@@ -53,7 +53,8 @@ fun RoomDetailsScreen(
     addDetail: suspend (roomId : String, name : String) -> String?,
     oldReportId : String?,
     navController: NavController,
-    propertyId: String
+    propertyId: String,
+    leaseId : String
 ) {
     val viewModel: RoomDetailsViewModel = viewModel {
         RoomDetailsViewModel(closeRoomPanel, addDetail)
@@ -84,7 +85,8 @@ fun RoomDetailsScreen(
             navController = navController,
             isOpen = endRoomDetailsScreenOpen,
             setOpen = { endRoomDetailsScreenOpen = it },
-            newDetails = viewModel.details.toTypedArray()
+            newDetails = viewModel.details.toTypedArray(),
+            leaseId = leaseId
         )
         return
     }
@@ -149,7 +151,8 @@ fun RoomDetailsScreen(
             baseDetail = currentlyOpenDetail.value!!,
             oldReportId = oldReportId,
             navController = navController,
-            propertyId = propertyId
+            propertyId = propertyId,
+            leaseId = leaseId,
         )
     }
 }
