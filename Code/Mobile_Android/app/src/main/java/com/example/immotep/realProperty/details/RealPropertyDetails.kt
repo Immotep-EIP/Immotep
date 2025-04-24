@@ -76,7 +76,8 @@ fun RealPropertyDropDownMenuItem(
     onClick : (() -> Unit)?,
     disabled : Boolean = false,
     color : Color = MaterialTheme.colorScheme.onBackground,
-    closeDropDown : () -> Unit
+    closeDropDown : () -> Unit,
+    testTag : String
 ) {
     val endColor = if (disabled) color.copy(alpha = 0.4f) else color
     DropdownMenuItem(
@@ -85,7 +86,8 @@ fun RealPropertyDropDownMenuItem(
         } else {
             { onClick(); closeDropDown() }
         },
-        text = { Text(name, color = endColor) }
+        text = { Text(name, color = endColor) },
+        modifier = Modifier.testTag(testTag)
     )
 }
 
@@ -142,7 +144,7 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
                     IconButton(
                         onClick = { expanded = true },
                         colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.background),
-                        modifier = Modifier.testTag("backButton"),
+                        modifier = Modifier.testTag("moreVertOptions"),
                     ) {
                         Icon(
                             Icons.Outlined.MoreVert,
@@ -158,15 +160,16 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
                             name = stringResource(R.string.add_tenant),
                             onClick = openAddTenant,
                             disabled = openAddTenant == null,
-                            closeDropDown = { expanded = false }
+                            closeDropDown = { expanded = false },
+                            testTag = "inviteTenantBtn"
                         )
                         RealPropertyDropDownMenuItem(
                             name = stringResource(R.string.end_lease),
                             onClick = endLease,
                             disabled = endLease == null,
                             color = MaterialTheme.colorScheme.error,
-                            closeDropDown = { expanded = false }
-
+                            closeDropDown = { expanded = false },
+                            testTag = "endLeaseBtn"
                         )
                         RealPropertyDropDownMenuItem(
                             name = stringResource(R.string.cancel_invitation),
@@ -174,19 +177,21 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
                             disabled = cancelInvitation == null,
                             closeDropDown = {
                                 expanded = false
-                            }
-
+                            },
+                            testTag = "cancelInvitationBtn"
                         )
                         RealPropertyDropDownMenuItem(
                             name = stringResource(R.string.mod_property),
                             onClick = openEdit,
-                            closeDropDown = { expanded = false }
+                            closeDropDown = { expanded = false },
+                            testTag = "editPropertyBtn"
                         )
                         RealPropertyDropDownMenuItem(
                             name = stringResource(R.string.delete_property),
                             onClick = openDelete,
                             color = MaterialTheme.colorScheme.error,
-                            closeDropDown = { expanded = false }
+                            closeDropDown = { expanded = false },
+                            testTag = "deletePropertyBtn"
                         )
                     }
                 }

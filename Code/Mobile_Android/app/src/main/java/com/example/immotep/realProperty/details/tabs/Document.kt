@@ -98,6 +98,7 @@ fun DocumentBox(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .testTag("realPropertyDocumentsTab")
     ) {
         FlowRow(modifier = Modifier.defaultMinSize(minHeight = 125.dp)) {
             Row(

@@ -85,7 +85,7 @@ fun AboutPropertyTab(
         null
     }
     Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("realPropertyDetailsAboutTab"),
         horizontalArrangement = Arrangement.spacedBy(18.dp)
     ) {
         AboutThePropertyBox(

@@ -234,7 +234,7 @@ fun RealPropertyScreen(
             )
             Box(modifier = Modifier.fillMaxSize()) {
 
-                LazyColumn {
+                LazyColumn(modifier = Modifier.testTag("propertyBoxLazyColumn")) {
                     items(viewModel.properties) { item ->
                         InitialFadeIn {
                             PropertyBox(

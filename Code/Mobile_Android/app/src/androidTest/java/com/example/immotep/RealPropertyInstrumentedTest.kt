@@ -19,6 +19,7 @@ import androidx.navigation.activity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.immotep.apiClient.mockApi.MockedApiService
+import com.example.immotep.apiClient.mockApi.parisFakeProperty
 import com.example.immotep.authService.AuthService
 import com.example.immotep.login.dataStore
 import kotlinx.coroutines.runBlocking
@@ -30,7 +31,7 @@ import org.junit.runner.RunWith
 import java.time.LocalDate
 import java.time.ZoneOffset
 
-/*
+
 @RunWith(AndroidJUnit4::class)
 class RealPropertyInstrumentedTest {
     constructor() {
@@ -66,6 +67,9 @@ class RealPropertyInstrumentedTest {
     }
 
     private fun goToDetailsOfEmpty() {
+        mainAct.onNodeWithTag("propertyBoxLazyColumn").assertIsDisplayed().performScrollToNode(
+            hasTestTag("propertyBox emptyFakeProperty")
+        )
         mainAct.onNodeWithTag("propertyBox emptyFakeProperty").assertIsDisplayed().performClick()
     }
     @Test
@@ -101,26 +105,27 @@ class RealPropertyInstrumentedTest {
 
     @Test
     fun containAllTheTestProperties() {
-        mainAct.onAllNodesWithTag("propertyBoxRow").assertCountEquals(4)
+        mainAct.onAllNodesWithTag("propertyBoxRow").assertCountEquals(3)
     }
 
     @Test
     fun allTheTestInfosArePresent() {
         mainAct.onNodeWithText("19 rue de la paix").assertIsDisplayed()
-        mainAct.onNodeWithText("test@gmail.com").assertIsDisplayed()
+        mainAct.onNodeWithText("parisFake").assertIsDisplayed()
         mainAct.onNodeWithText("1 rue de la companie des indes").assertIsDisplayed()
-        mainAct.onNodeWithText("crashbandicoot@gmail.com").assertIsDisplayed()
-        mainAct.onNodeWithText("30 rue de la source").assertIsDisplayed()
-        mainAct.onNodeWithText("tomnook@gmail.com").assertIsDisplayed()
-        mainAct.onNodeWithText("30 rue du test").assertIsDisplayed()
-
+        mainAct.onNodeWithText("marsFake").assertIsDisplayed()
+        mainAct.onNodeWithText("lyonFake").assertIsDisplayed()
     }
 
     @Test
     fun asGoodCountOfTopLeftElementsAndGoodValues() {
-        mainAct.onAllNodesWithTag("topRightPropertyBoxInfo").assertCountEquals(4)
-        mainAct.onAllNodesWithText(res.getString(R.string.available)).assertCountEquals(1)
+        mainAct.onAllNodesWithTag("topRightPropertyBoxInfo").assertCountEquals(3)
         mainAct.onAllNodesWithText(res.getString(R.string.busy)).assertCountEquals(3)
+        mainAct.onNodeWithTag("propertyBoxLazyColumn").assertIsDisplayed().performScrollToNode(
+            hasTestTag("propertyBox emptyFakeProperty")
+        )
+        mainAct.onAllNodesWithTag("topRightPropertyBoxInfo").assertCountEquals(3)
+        mainAct.onAllNodesWithText(res.getString(R.string.available)).assertCountEquals(1)
     }
 
     @Test
@@ -145,27 +150,31 @@ class RealPropertyInstrumentedTest {
     @Test
     fun allTheInfosInDetailsBoxAreGoodAndDisplayed() {
         this.goToDetails()
-        mainAct.onNodeWithText("19 rue de la paix").assertIsDisplayed()
-        mainAct.onAllNodesWithText("test@gmail.com").assertCountEquals(2)
-        mainAct.onAllNodesWithText(res.getString(R.string.busy)).assertCountEquals(1)
-    }
-
-    @Test
-    fun aboutBoxIsPresentAndContainsGoodInfos() {
-        this.goToDetails()
-        mainAct.onNodeWithText(res.getString(R.string.about_the_property)).assertIsDisplayed()
+        mainAct.onNodeWithText("parisFake").assertIsDisplayed()
+        mainAct.onNodeWithText("19 rue de la paix, 75000 Paris, France").assertIsDisplayed()
+        mainAct.onNodeWithText("2025/03/09 - 2026/03/09").assertIsDisplayed()
+        mainAct.onNodeWithText(res.getString(R.string.busy)).assertIsDisplayed()
     }
 
     @Test
     fun aboutBoxContainsArea() {
         this.goToDetails()
-        mainAct.onNodeWithText("Area: 45 m²").assertIsDisplayed()
+        mainAct.onNodeWithText("45 m²").assertIsDisplayed()
+        mainAct.onNodeWithText("Area").assertIsDisplayed()
     }
 
     @Test
     fun aboutBoxContainsDeposit() {
         this.goToDetails()
-        mainAct.onNodeWithText("Deposit: 2000€").assertIsDisplayed()
+        mainAct.onNodeWithText("2000 €").assertIsDisplayed()
+        mainAct.onNodeWithText("Deposit").assertIsDisplayed()
+    }
+
+    @Test
+    fun aboutBoxContainsRent() {
+        this.goToDetails()
+        mainAct.onNodeWithText("1500 €").assertIsDisplayed()
+        mainAct.onNodeWithText("Rent / Month").assertIsDisplayed()
     }
 
     @Test
@@ -175,35 +184,48 @@ class RealPropertyInstrumentedTest {
     }
 
     @Test
-    fun detailsContainsTheDocuments() {
+    fun containsAllTheTabs() {
         this.goToDetails()
-        mainAct.onNodeWithTag("OneDocument test").assertIsDisplayed()
-        mainAct.onNodeWithText("testDocName").assertIsDisplayed()
+        mainAct.onNodeWithText("About").assertIsDisplayed()
+        mainAct.onNodeWithText("Documents").assertIsDisplayed()
+        mainAct.onNodeWithText("Damages").assertIsDisplayed()
+    }
+
+    @Test
+    fun canGoToDocumentTab() {
+        this.goToDetails()
+        mainAct.onNodeWithTag("tab 1").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("realPropertyDocumentsTab").assertIsDisplayed()
+    }
+
+    @Test
+    fun canGoToDamagesTab() {
+        this.goToDetails()
+        mainAct.onNodeWithTag("tab 2").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("realPropertyDetailsDamagesTab").assertIsDisplayed()
+    }
+
+    @Test
+    fun canGoBackToDetailsTab() {
+        this.goToDetails()
+        mainAct.onNodeWithTag("tab 1").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("tab 0").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("realPropertyDetailsAboutTab").assertIsDisplayed()
     }
 
     @Test
     fun canClickOnDocument() {
-        this.goToDetails()
-        //mainAct.onNodeWithTag("OneDocument test").assertIsDisplayed().performClick()
-    }
-
-    @Test
-    fun modifyModalButtonIsPresent() {
-        this.goToDetails()
-        mainAct.onNodeWithTag("editProperty").assertIsDisplayed()
-    }
-
-    @Test
-    fun modifyModalDoesOpen() {
-        this.goToDetails()
-        mainAct.onNodeWithTag("editProperty").assertIsDisplayed().performClick()
+        this.canGoToDocumentTab()
+        mainAct.onNodeWithTag("OneDocument test").assertIsDisplayed().performClick()
     }
 
     @ExperimentalTestApi
     @Test
     fun modifyModalContainsAllInfos() {
         this.goToDetails()
-        mainAct.onNodeWithTag("editProperty").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("moreVertOptions").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("editPropertyBtn"))
+        mainAct.onNodeWithTag("editPropertyBtn").assertIsDisplayed().performClick()
         mainAct.waitUntilAtLeastOneExists(hasTestTag("addOrEditDeposit"), timeoutMillis = 2000)
         mainAct.onNodeWithTag("addOrEditScrollContainer").assertIsDisplayed().performScrollToNode(
             hasTestTag("addOrEditDeposit")
@@ -227,22 +249,26 @@ class RealPropertyInstrumentedTest {
     @Test
     fun canModifyProperty() {
         this.goToDetails()
-        mainAct.onNodeWithTag("editProperty").assertIsDisplayed().performClick()
-        mainAct.onNodeWithTag("addOrEditAddress").assertIsDisplayed().performClick().performTextInput("ZZ")
+        mainAct.onNodeWithTag("moreVertOptions").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("editPropertyBtn"))
+        mainAct.onNodeWithTag("editPropertyBtn").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("addOrEditName").assertIsDisplayed().performClick().performTextInput("ZZ")
         mainAct.onNodeWithTag("addOrEditScrollContainer").assertIsDisplayed().performScrollToNode(
             hasTestTag("addOrEditSubmit")
         )
         mainAct.onNodeWithTag("addOrEditSubmit").assertIsDisplayed().performClick()
         mainAct.waitUntilDoesNotExist(hasTestTag("addOrEditPropertyModal"), timeoutMillis = 2000)
         mainAct.onNodeWithTag("addOrEditPropertyModal").assertIsNotDisplayed()
-        mainAct.onNodeWithText("19 rue de la paixZZ").assertIsDisplayed()
+        mainAct.onNodeWithText("parisFakeZZ").assertIsDisplayed()
     }
 
     @ExperimentalTestApi
     @Test
     fun modifyPropertyIsGoodOnRealPropertyView() {
         this.goToDetails()
-        mainAct.onNodeWithTag("editProperty").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("moreVertOptions").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("editPropertyBtn"))
+        mainAct.onNodeWithTag("editPropertyBtn").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("addOrEditAddress").assertIsDisplayed().performClick().performTextInput("ZZ")
         mainAct.onNodeWithTag("addOrEditScrollContainer").assertIsDisplayed().performScrollToNode(
             hasTestTag("addOrEditSubmit")
@@ -255,51 +281,58 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithText("19 rue de la paixZZ").assertIsDisplayed()
     }
 
+    @ExperimentalTestApi
     @Test
-    fun inviteUserButtonIsPresent() {
+    fun dropDownContainsAllTheOptionsOnEmpty() {
         this.goToDetailsOfEmpty()
-        mainAct.onNodeWithTag("inviteTenantBtn").assertIsDisplayed()
-    }
-
-    @Test
-    fun inviteUserModalDoesOpen() {
-        this.goToDetailsOfEmpty()
-        mainAct.onNodeWithTag("inviteTenantBtn").assertIsDisplayed().performClick()
-        mainAct.onNodeWithTag("inviteTenantModal").assertIsDisplayed()
-    }
-
-    @Test
-    fun inviteUserModalDoesContainsTheGoodInputsAndButton() {
-        this.goToDetailsOfEmpty()
-        mainAct.onNodeWithTag("inviteTenantBtn").assertIsDisplayed().performClick()
-        mainAct.onNodeWithTag("tenantEmail").assertIsDisplayed()
-        mainAct.onNodeWithTag( "textField startDateInput").assertIsDisplayed()
-        mainAct.onNodeWithTag("textField endDateInput").assertIsDisplayed()
+        mainAct.onNodeWithTag("moreVertOptions").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("inviteTenantBtn"))
+        mainAct.onNodeWithTag("endLeaseBtn").assertIsDisplayed()
+        mainAct.onNodeWithTag("cancelInvitationBtn").assertIsDisplayed()
+        mainAct.onNodeWithTag("editPropertyBtn").assertIsDisplayed()
+        mainAct.onNodeWithTag("deletePropertyBtn").assertIsDisplayed()
     }
 
     @ExperimentalTestApi
     @Test
     fun canInviteUser() {
         this.goToDetailsOfEmpty()
+        mainAct.onNodeWithTag("moreVertOptions").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("inviteTenantBtn"))
         mainAct.onNodeWithTag("inviteTenantBtn").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("tenantEmail").assertIsDisplayed().performClick().performTextInput("newTenant@gmail.com")
         mainAct.onNodeWithTag("sendInvitation").assertIsDisplayed().performClick()
         mainAct.waitUntilAtLeastOneExists(hasTestTag("realPropertyDetailsScreen"), timeoutMillis = 2000)
-        mainAct.onAllNodesWithText("newTenant@gmail.com").assertCountEquals(2)
+        mainAct.onNodeWithText("newTenant@gmail.com").assertIsDisplayed()
 
+    }
+
+    @ExperimentalTestApi
+    @Test
+    fun canCancelInvite() {
+        this.canInviteUser()
+        mainAct.onNodeWithTag("moreVertOptions").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("cancelInvitationBtn"))
+        mainAct.onNodeWithTag("cancelInvitationBtn").assertIsDisplayed().performClick()
+        //add confirm + other btns
     }
 
     @ExperimentalTestApi
     @Test
     fun inviteUserIsGoodOnRealPropertyView() {
         this.goToDetailsOfEmpty()
+        mainAct.onNodeWithTag("moreVertOptions").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("inviteTenantBtn"))
         mainAct.onNodeWithTag("inviteTenantBtn").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("tenantEmail").assertIsDisplayed().performClick().performTextInput("newTenant@gmail.com")
         mainAct.onNodeWithTag("sendInvitation").assertIsDisplayed().performClick()
         mainAct.waitUntilAtLeastOneExists(hasTestTag("backButton"), timeoutMillis = 2000)
         mainAct.onNodeWithTag("backButton").assertIsDisplayed().performClick()
         mainAct.waitUntilAtLeastOneExists(hasTestTag("realPropertyScreen"), timeoutMillis = 2000)
-        mainAct.onNodeWithText("newTenant@gmail.com").assertIsDisplayed()
+        mainAct.onNodeWithTag("propertyBoxLazyColumn").assertIsDisplayed().performScrollToNode(
+            hasTestTag("propertyBox emptyFakeProperty")
+        )
+        mainAct.onNodeWithText("Pending").assertIsDisplayed()
     }
 
 
@@ -309,4 +342,3 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithTag("startInventory").assertIsDisplayed()
     }
 }
-*/

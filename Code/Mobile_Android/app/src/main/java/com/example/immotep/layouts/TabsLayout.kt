@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 
 @Composable
 fun TabsLayout(
@@ -35,6 +36,7 @@ fun TabsLayout(
             tabs.forEachIndexed { index, title ->
                 Tab(
                     text = { Text(title) },
+                    modifier = Modifier.testTag("tab $index"),
                     selected = tabIndex == index,
                     onClick = { setTabIndex(index) },
                     selectedContentColor = MaterialTheme.colorScheme.secondary,

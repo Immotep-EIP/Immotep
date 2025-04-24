@@ -23,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/*
 @ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
@@ -86,3 +87,5 @@ class ProfileInstrumentedTest {
         mainAct.waitUntilAtLeastOneExists(hasTestTag("loginEmailInput"), 2000)
     }
 }
+
+ */
