@@ -2,10 +2,13 @@ package com.example.immotep
 
 import android.content.res.Resources
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -20,7 +23,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-/*
+
 @ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class InventoryInstrumentedTests {
@@ -61,10 +64,6 @@ class InventoryInstrumentedTests {
         }
     }
 
-    private fun goToEntryInventory() {
-        mainAct.onNodeWithTag("entryInventoryButton").assertIsDisplayed().performClick()
-    }
-
     @Test
     fun canGoToInventoryPage() {
         mainAct.onNodeWithTag("inventoryScreen").assertIsDisplayed()
@@ -73,8 +72,6 @@ class InventoryInstrumentedTests {
     @Test
     fun inventoryPageContainsAllGoodInfos() {
         mainAct.onNodeWithTag("inventoryScreen").assertIsDisplayed()
-        mainAct.onNodeWithTag("exitInventoryButton").assertIsDisplayed()
-        mainAct.onNodeWithTag("entryInventoryButton").assertIsDisplayed()
     }
 
     @Test
@@ -87,33 +84,28 @@ class InventoryInstrumentedTests {
     }
 
     @Test
-    fun canGoToEntryInventoryPage() {
-        mainAct.waitUntilAtLeastOneExists(hasTestTag("entryInventoryButton"), timeoutMillis = 15000)
-        mainAct.onNodeWithTag("entryInventoryButton").assertIsDisplayed().performClick()
+    fun isRoomsScreenDisplayed() {
         mainAct.waitUntilAtLeastOneExists(hasTestTag("roomsScreen"), timeoutMillis = 2000)
     }
 
     @Test
-    fun entryInventoryRoomPageContainsAllTheGoodInfos() {
-        this.canGoToEntryInventoryPage()
+    fun inventoryRoomPageContainsAllTheGoodInfos() {
         mainAct.onNodeWithTag("roomsScreen").assertIsDisplayed()
         mainAct.onNodeWithTag("addRoomButton").assertIsDisplayed()
         mainAct.onNodeWithTag("confirmInventoryButton").assertIsDisplayed()
         mainAct.onNodeWithTag("editInventoryButton").assertIsDisplayed()
         mainAct.onNodeWithTag("roomButton testRoom").assertIsDisplayed()
-        mainAct.onNodeWithText("testRoomName").assertIsDisplayed()
+        mainAct.onNodeWithText("BedRoom").assertIsDisplayed()
     }
 
     @Test
     fun doesAddRoomModalOpens() {
-        this.canGoToEntryInventoryPage()
         mainAct.onNodeWithTag("addRoomButton").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("addRoomModal").assertIsDisplayed()
     }
 
     @Test
     fun doesAddRoomModalContainsAllTheGoodInfos() {
-        this.canGoToEntryInventoryPage()
         mainAct.onNodeWithTag("addRoomButton").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("addRoomModal").assertIsDisplayed()
         mainAct.onNodeWithTag("roomNameTextField").assertIsDisplayed()
@@ -123,7 +115,6 @@ class InventoryInstrumentedTests {
 
     @Test
     fun canCloseAddRoomModal() {
-        this.canGoToEntryInventoryPage()
         mainAct.onNodeWithTag("addRoomButton").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("addRoomModalCancel").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("addRoomModal").assertDoesNotExist()
@@ -131,7 +122,6 @@ class InventoryInstrumentedTests {
 
     @Test
     fun canAddARoom() {
-        this.canGoToEntryInventoryPage()
         mainAct.onNodeWithTag("addRoomButton").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("roomNameTextField").assertIsDisplayed().performClick().performTextInput("new Test Room")
         mainAct.onNodeWithTag("addRoomModalConfirm").assertIsDisplayed().performClick()
@@ -141,7 +131,6 @@ class InventoryInstrumentedTests {
 
     @Test
     fun canGoToDetailsPage() {
-        this.canGoToEntryInventoryPage()
         mainAct.onNodeWithTag("roomButton testRoom").assertIsDisplayed().performClick()
         mainAct.waitUntilAtLeastOneExists(hasTestTag("roomsDetailsScreen"), timeoutMillis = 2000)
     }
@@ -150,7 +139,7 @@ class InventoryInstrumentedTests {
     fun detailsPageContainsAllTheGoodInfos() {
         this.canGoToDetailsPage()
         mainAct.onNodeWithTag("editRoomsDetails").assertIsDisplayed()
-        mainAct.onNodeWithTag("detailButton testFurniture").assertIsDisplayed()
+        mainAct.onNodeWithTag("detailButton testFurnitureBed").assertIsDisplayed()
         mainAct.onNodeWithTag("addDetailsButton").assertIsDisplayed()
 
     }
@@ -177,14 +166,14 @@ class InventoryInstrumentedTests {
     @Test
     fun canGoToOneDetailPage() {
         this.canGoToDetailsPage()
-        mainAct.onNodeWithTag("detailButton testFurniture").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("detailButton testFurnitureBed").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("oneDetailScreen").assertIsDisplayed()
     }
 
     @Test
     fun oneDetailPageContainsAllGoodInfos() {
         this.canGoToOneDetailPage()
-        mainAct.onNodeWithTag("addingPicturesCarousel").assertIsDisplayed()
+        mainAct.onAllNodesWithTag("addingPicturesCarousel").assertCountEquals(2)
         mainAct.onNodeWithTag("validateButton").assertIsDisplayed()
         mainAct.onNodeWithTag("aiCallButton").assertIsDisplayed()
         mainAct.onNodeWithTag("dropDownState").assertIsDisplayed()
@@ -195,7 +184,7 @@ class InventoryInstrumentedTests {
     @Test
     fun canFillOneDetailAllInfos() {
         this.canGoToOneDetailPage()
-        mainAct.onNodeWithTag("addingPicturesCarousel").assertIsDisplayed()
+        mainAct.onAllNodesWithTag("addingPicturesCarousel").assertCountEquals(2)
         mainAct.onNodeWithTag("validateButton").assertIsDisplayed()
         mainAct.onNodeWithTag("aiCallButton").assertIsDisplayed()
         mainAct.onNodeWithTag("dropDownState").assertIsDisplayed()
@@ -213,13 +202,9 @@ class InventoryInstrumentedTests {
     @Test
     fun canGoBack() {
         mainAct.onNodeWithTag("inventoryTopBarCloseIcon").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasText("Exit"), timeoutMillis = 2000)
+        mainAct.onNodeWithText("Exit").assertIsDisplayed().performClick()
         mainAct.waitUntilAtLeastOneExists(hasTestTag("realPropertyDetailsScreen"), timeoutMillis = 2000)
     }
 
-    @Test
-    fun exitInventoryIsBlocked() {
-        mainAct.onNodeWithTag("exitInventoryButton").assertIsDisplayed().performClick()
-        mainAct.onNodeWithTag("roomsScreen").assertDoesNotExist()
-    }
 }
- */

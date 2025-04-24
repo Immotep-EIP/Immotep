@@ -155,7 +155,7 @@ val fakeInventoryReportFurnitureBed = InventoryReportFurniture(
     cleanliness = Cleanliness.clean,
     state = State.good,
     note = "State good and clean for furniture",
-    pictures = Vector<String>(),
+    pictures = Vector(),
     quantity = 1
 )
 
@@ -165,7 +165,7 @@ val fakeInventoryReportFurnitureTable = InventoryReportFurniture(
     cleanliness = Cleanliness.clean,
     state = State.good,
     note = "State good and clean for furniture",
-    pictures = Vector<String>(),
+    pictures = Vector(),
     quantity = 1
 )
 

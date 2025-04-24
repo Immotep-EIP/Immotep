@@ -20,6 +20,7 @@ fun LoaderInventoryButton(
 
     StyledButton(
         onClick = { viewModel.onClick(setIsLoading, propertyId, currentLeaseId) },
-        text = stringResource(R.string.inventory_title)
+        text = stringResource(R.string.inventory_title),
+        testTag = "startInventory"
     )
 }
