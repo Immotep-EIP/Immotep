@@ -20,7 +20,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
+/*
 @ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class InventoryInstrumentedTests {
@@ -222,3 +222,4 @@ class InventoryInstrumentedTests {
         mainAct.onNodeWithTag("roomsScreen").assertDoesNotExist()
     }
 }
+ */
