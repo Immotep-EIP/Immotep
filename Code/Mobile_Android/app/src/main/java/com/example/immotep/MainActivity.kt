@@ -30,7 +30,7 @@ val LocalApiService = compositionLocalOf<ApiService> {
     error("ApiService not provided")
 }
 
-var isTesting = true
+var isTesting = false
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

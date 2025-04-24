@@ -20,7 +20,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.random.Random
 
-/*
 @RunWith(AndroidJUnit4::class)
 class RegisterInstrumentedTests {
     constructor() {
@@ -153,4 +152,3 @@ class RegisterInstrumentedTests {
     }
 }
 
- */
