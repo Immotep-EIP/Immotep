@@ -38,4 +38,7 @@ export interface PropertyDetails {
   postal_code: string
   rental_price_per_month: number
   status: string
+  start_date: string
+  end_date: string
+  tenant: string
 }

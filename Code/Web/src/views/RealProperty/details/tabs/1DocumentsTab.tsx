@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, Modal, Form, message, Spin } from 'antd'
-import fileToBase64 from '@/utils/base64/fileToBase'
+import { Button, Modal, Form, message, Spin, Empty, Typography } from 'antd'
 import { usePropertyId } from '@/context/propertyIdContext'
 import useDocument from '@/hooks/Property/useDocument'
 import UploadForm from '@/components/RealProperty/details/tabs/Documents/UploadForm'
@@ -65,6 +64,22 @@ const DocumentsTab: React.FC = () => {
     return (
       <div className={style.loadingContainer}>
         <Spin size="large" />
+      </div>
+    )
+  }
+
+  if (error === 'No tenant assigned to this property') {
+    return (
+      <div className={style.tabContentEmpty}>
+        <Empty
+          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+          styles={{ image: { height: 60 } }}
+          description={
+            <Typography.Text>
+              {t('pages.real_property.error.no_tenant_linked')}
+            </Typography.Text>
+          }
+        />
       </div>
     )
   }

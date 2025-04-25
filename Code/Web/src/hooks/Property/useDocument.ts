@@ -3,6 +3,7 @@ import { Document } from '@/interfaces/Property/Document'
 import GetPropertyDocuments from '@/services/api/Owner/Properties/GetPropertyDocuments'
 import UploadDocument from '@/services/api/Owner/Properties/UploadDocument'
 import fileToBase64 from '@/utils/base64/fileToBase'
+import useProperties from './useProperties'
 
 interface UseDocumentReturn {
   documents: Document[] | null
@@ -21,9 +22,18 @@ const useDocument = (propertyId: string): UseDocumentReturn => {
   const [documents, setDocuments] = useState<Document[] | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+  const { propertyDetails: propertyData } = useProperties(propertyId)
 
   const fetchDocuments = async (propertyId: string) => {
     try {
+      if (
+        !propertyId ||
+        propertyId === '' ||
+        propertyData?.status !== 'available'
+      ) {
+        setError('No tenant assigned to this property')
+        return
+      }
       setLoading(true)
       setError(null)
       const response = await GetPropertyDocuments(propertyId)

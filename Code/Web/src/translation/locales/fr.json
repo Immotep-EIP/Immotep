@@ -452,7 +452,8 @@
         "waiting": "Dommage(s) non résolu(s)"
       },
       "error": {
-        "error_fetching_data": "Erreur lors de la récupération des données"
+        "error_fetching_data": "Erreur lors de la récupération des données",
+        "no_tenant_linked": "Aucun locataire lié à cette propriété, veuillez en ajouter un pour bénéficier de cette fonctionnalité."
       }
     },
     "messages": {

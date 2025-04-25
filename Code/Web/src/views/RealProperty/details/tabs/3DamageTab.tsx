@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Table, Tag } from 'antd'
+import { Empty, Spin, Table, Tag, Typography } from 'antd'
 import type { TableProps } from 'antd'
 import style from './3DamageTab.module.css'
 import useDamages from '@/hooks/Property/useDamages'
@@ -98,8 +98,30 @@ const DamageTab: React.FC = () => {
     }
   ]
 
-  if (loading) return <div>{t('loading')}</div>
-  if (error) return <div>{t('error')}</div>
+  if (loading) {
+    return (
+      <div className={style.loadingContainer}>
+        <Spin size="large" />
+      </div>
+    )
+  }
+
+  if (error === 'No tenant assigned to this property') {
+    return (
+      <div className={style.tabContentEmpty}>
+        <Empty
+          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+          styles={{ image: { height: 60 } }}
+          description={
+            <Typography.Text>
+              {t('pages.real_property.error.no_tenant_linked')}
+            </Typography.Text>
+          }
+        />
+      </div>
+    )
+  }
+  if (error) return <div>{error}</div>
 
   return (
     <div className={style.tabContent}>
