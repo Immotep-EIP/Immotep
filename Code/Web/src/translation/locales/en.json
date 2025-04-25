@@ -465,7 +465,8 @@
         "waiting": "Unresolved damage(s)"
       },
       "error": {
-        "error_fetching_data": "Error fetching data"
+        "error_fetching_data": "Error fetching data",
+        "no_tenant_linked": "No tenants linked to this property, please add one to benefit from this feature."
       }
     },
     "messages": {
