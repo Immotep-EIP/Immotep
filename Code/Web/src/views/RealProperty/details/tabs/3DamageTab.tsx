@@ -16,10 +16,14 @@ interface DataType {
   pictures: number
 }
 
-const DamageTab: React.FC = () => {
+interface DamageTabProps {
+  status?: string
+}
+
+const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
   const { t } = useTranslation()
   const propertyId = usePropertyId()
-  const { damages, loading, error } = useDamages(propertyId || '')
+  const { damages, loading, error } = useDamages(propertyId || '', status || '')
 
   const transformedData: DataType[] =
     damages?.map(item => ({
@@ -106,7 +110,7 @@ const DamageTab: React.FC = () => {
     )
   }
 
-  if (error === 'No tenant assigned to this property') {
+  if (status === 'available') {
     return (
       <div className={style.tabContentEmpty}>
         <Empty

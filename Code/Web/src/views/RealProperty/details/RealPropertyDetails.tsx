@@ -39,14 +39,15 @@ import RealPropertyUpdate from '../update/RealPropertyUpdate'
 
 interface ChildrenComponentProps {
   t: (key: string) => string
+  status: PropertyDetails['status'] | undefined
 }
 
-const ChildrenComponent: React.FC<ChildrenComponentProps> = ({ t }) => {
+const ChildrenComponent: React.FC<ChildrenComponentProps> = ({ t, status }) => {
   const items: TabsProps['items'] = [
     {
       key: '1',
       label: t('components.button.documents'),
-      children: <DocumentsTab />
+      children: <DocumentsTab status={status} />
     },
     {
       key: '2',
@@ -56,7 +57,7 @@ const ChildrenComponent: React.FC<ChildrenComponentProps> = ({ t }) => {
     {
       key: '3',
       label: t('components.button.damage'),
-      children: <DamageTab />
+      children: <DamageTab status={status} />
     }
   ]
 
@@ -336,7 +337,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         </div>
       </div>
       <PropertyIdProvider id={propertyId}>
-        <ChildrenComponent t={t} />
+        <ChildrenComponent t={t} status={propertyData?.status} />
       </PropertyIdProvider>
     </div>
   )

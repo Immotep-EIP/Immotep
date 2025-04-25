@@ -7,11 +7,15 @@ import UploadForm from '@/components/RealProperty/details/tabs/Documents/UploadF
 import DocumentList from '@/components/RealProperty/details/tabs/Documents/DocumentList'
 import style from './1DocumentsTab.module.css'
 
-const DocumentsTab: React.FC = () => {
+interface DocumentsTabProps {
+  status?: string
+}
+
+const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
   const { t } = useTranslation()
   const propertyId = usePropertyId()
   const { documents, loading, error, refreshDocuments, uploadDocument } =
-    useDocument(propertyId || '')
+    useDocument(propertyId || '', status || '')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form] = Form.useForm()
 
@@ -68,7 +72,7 @@ const DocumentsTab: React.FC = () => {
     )
   }
 
-  if (error === 'No tenant assigned to this property') {
+  if (status === 'available') {
     return (
       <div className={style.tabContentEmpty}>
         <Empty

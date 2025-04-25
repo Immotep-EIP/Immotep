@@ -1,24 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Damage, UseDamagesReturn } from '@/interfaces/Property/Damage/Damage'
 import GetPropertyDamages from '@/services/api/Owner/Properties/GetPropertyDamages'
-import useProperties from './useProperties'
 
-const useDamages = (propertyId: string): UseDamagesReturn => {
+const useDamages = (propertyId: string, status: string): UseDamagesReturn => {
   const [damages, setDamages] = useState<Damage[] | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
-  const { propertyDetails: propertyData } = useProperties(propertyId)
 
   const fetchDamages = async (propertyId: string) => {
     try {
-      if (
-        !propertyId ||
-        propertyId === '' ||
-        propertyData?.status !== 'available'
-      ) {
-        setError('No tenant assigned to this property')
-        return
-      }
       setLoading(true)
       setError(null)
       const response = await GetPropertyDamages(propertyId)
@@ -36,7 +26,7 @@ const useDamages = (propertyId: string): UseDamagesReturn => {
   }
 
   useEffect(() => {
-    if (propertyId) {
+    if (propertyId && status !== 'available') {
       fetchDamages(propertyId)
     }
   }, [propertyId])
