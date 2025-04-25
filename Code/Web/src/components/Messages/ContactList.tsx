@@ -3,15 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { Input } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 
-import { Contact } from '@/interfaces/Messages/Contact'
+import { ContactListProps } from '@/interfaces/Messages/Contact'
 import defaultAvatar from '@/assets/images/DefaultProfile.png'
 import style from './ContactList.module.css'
-
-interface ContactListProps {
-  contacts: Contact[]
-  onSelectContact: (contact: Contact) => void
-  selectedContact: Contact | null
-}
 
 const ContactList: React.FC<ContactListProps> = ({
   contacts,

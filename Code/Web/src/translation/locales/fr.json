@@ -146,9 +146,9 @@
       "no_properties": "Vous n'avez aucune propriété pour le moment",
       "no_properties_so_no_messages": "Vous n'avez aucune propriété pour le moment, vous n'avez donc aucun message.",
       "delete_property_title": "Supprimer la propriété",
-      "delete_property_description": "Êtes-vous sûr de vouloir supprimer cette propriété ?",
-      "delete_property_success": "Propriété supprimée avec succès",
-      "delete_property_error": "Erreur lors de la suppression de la propriété",
+      "delete_property_description": "Êtes-vous sûr de vouloir archiver cette propriété ?",
+      "delete_property_success": "Propriété archivée avec succès",
+      "delete_property_error": "Erreur lors de l'archivage de la propriété",
       "no_rooms_in_inventory": "Vous n'avez aucune pièce dans votre inventaire pour le moment",
       "room_added": "Pièce ajoutée avec succès",
       "room_added_error": "Erreur lors de l'ajout de la pièce",
@@ -190,6 +190,7 @@
       "delete": "Supprimer",
       "edit_property": "Modifier la propriété",
       "delete_property": "Supprimer la propriété",
+      "archive_property": "Archiver la propriété",
       "download": "Télécharger",
       "update": "Mettre à jour",
       "cancel_invitation": "Annuler l'invitation",
@@ -208,6 +209,12 @@
         "description": "Êtes-vous sûr de vouloir supprimer cette propriété ?",
         "success": "Propriété supprimée avec succès",
         "error": "Une erreur est survenue lors de la suppression de la propriété, veuillez réessayer."
+      },
+      "archive_property": {
+        "title": "Archiver la propriété",
+        "description": "Êtes-vous sûr de vouloir archiver cette propriété ?",
+        "success": "Propriété archivée avec succès",
+        "error": "Une erreur est survenue lors de l'archivage de la propriété, veuillez réessayer."
       },
       "cancel_invitation": {
         "title": "Annuler l'invitation",
@@ -261,6 +268,12 @@
         "view_mode": "Mode d'affichage",
         "add_room": "Ajouter une Pièce"
       }
+    },
+    "documents": {
+      "success_add": "Document ajouté avec succès",
+      "error_add": "Erreur lors de l'ajout du document",
+      "success_delete": "Document supprimé avec succès",
+      "error_delete": "Erreur lors de la suppression du document"
     },
     "tooltip": {
       "edit": "Modifier",

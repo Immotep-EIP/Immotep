@@ -20,7 +20,7 @@ import InviteTenants from '@/services/api/Tenant/InviteTenant.ts'
 const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
   isOpen,
   onClose,
-  property
+  propertyId
 }) => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
@@ -33,7 +33,7 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
       const { start_date, end_date } = tenantInfo
       const formattedTenantInfo = {
         ...tenantInfo,
-        propertyId: property.id
+        propertyId
       }
       if (dayjs(start_date).isAfter(dayjs(end_date))) {
         message.error(t('pages.real_property_details.dateError'))

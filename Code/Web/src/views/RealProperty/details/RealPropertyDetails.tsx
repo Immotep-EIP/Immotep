@@ -21,7 +21,7 @@ import returnIcon from '@/assets/icons/retour.svg'
 
 import { PropertyIdProvider } from '@/context/propertyIdContext'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
-import useImageCache from '@/hooks/Property/useImageCache'
+import useImageCache from '@/hooks/Image/useImageCache'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import useProperties from '@/hooks/Property/useProperties'
 import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
@@ -90,8 +90,8 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
 
   const removeProperty = async () => {
     Modal.confirm({
-      title: t('components.modal.delete_property.title'),
-      content: t('components.modal.delete_property.description'),
+      title: t('components.modal.archive_property.title'),
+      content: t('components.modal.archive_property.description'),
       okText: t('components.button.confirm'),
       cancelText: t('components.button.cancel'),
       okButtonProps: { danger: true },
@@ -102,11 +102,11 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         }
         try {
           await ArchiveProperty(propertyData.id)
-          message.success(t('components.modal.delete_property.success'))
+          message.success(t('components.modal.archive_property.success'))
           goToRealProperty()
         } catch (error) {
           console.error('Error deleting property:', error)
-          message.error(t('components.modal.delete_property.error'))
+          message.error(t('components.modal.archive_property.error'))
         }
       }
     })
@@ -199,7 +199,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
     },
     {
       key: '5',
-      label: t('components.button.delete_property'),
+      label: t('components.button.archive_property'),
       danger: true,
       onClick: () => {
         removeProperty()
@@ -283,7 +283,9 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
               subtitleKey={t('pages.real_property_details.informations.tenant')}
             >
               <span className={style.detailsText}>
-                {propertyData?.tenant ? propertyData?.tenant : '-----------'}
+                {propertyData?.lease?.tenant_email
+                  ? propertyData?.lease.tenant_email
+                  : '-----------'}
               </span>
             </SubtitledElement>
           </div>
@@ -292,12 +294,12 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
               subtitleKey={t('pages.real_property_details.informations.dates')}
             >
               <span className={style.detailsText}>
-                {propertyData?.start_date
-                  ? `${new Date(propertyData?.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                {propertyData?.lease?.start_date
+                  ? `${new Date(propertyData.lease.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
                   : '...'}
                 {' - '}
-                {propertyData?.end_date
-                  ? `${new Date(propertyData?.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                {propertyData?.lease?.end_date
+                  ? `${new Date(propertyData.lease.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
                   : '...'}
               </span>
             </SubtitledElement>
@@ -399,7 +401,7 @@ const RealPropertyDetails: React.FC = () => {
             <InviteTenantModal
               isOpen={isModalOpen}
               onClose={handleCancel}
-              property={propertyData}
+              propertyId={id}
             />
             <RealPropertyUpdate
               isModalUpdateOpen={isModalUpdateOpen}

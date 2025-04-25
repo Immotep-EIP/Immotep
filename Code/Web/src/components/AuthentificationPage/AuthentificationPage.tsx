@@ -1,13 +1,8 @@
 import React from 'react'
 import logo from '@/assets/icons/KeyzLogo.svg'
 import PageTitle from '@/components/PageText/Title.tsx'
+import { AuthentificationPageProps } from '@/interfaces/Auth/Auth'
 import style from './AuthentificationPage.module.css'
-
-interface AuthentificationPageProps {
-  title: string
-  subtitle: string
-  children: React.ReactNode
-}
 
 const AuthentificationPage: React.FC<AuthentificationPageProps> = ({
   title,

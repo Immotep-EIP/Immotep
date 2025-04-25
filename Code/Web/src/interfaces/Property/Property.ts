@@ -1,4 +1,4 @@
-import { InviteTenant } from '../Tenant/InviteTenant'
+import { UploadProps } from 'antd'
 import { Lease } from './Lease/Lease'
 
 export interface CreatePropertyPayload {
@@ -29,7 +29,6 @@ export interface PropertyDetails {
   created_at: string
   deposit_price: number
   id: string
-  invite: InviteTenant
   lease: Lease
   name: string
   nb_damage: number
@@ -41,4 +40,8 @@ export interface PropertyDetails {
   start_date: string
   end_date: string
   tenant: string
+}
+
+export interface PropertyFormFieldsProps {
+  uploadProps: UploadProps
 }

@@ -31,10 +31,22 @@ describe('CreatePropertyFunction', () => {
       created_at: new Date().toDateString(),
       nb_damage: 0,
       status: 'available',
-      tenant: 'tenant123',
-      start_date: '2023-01-01',
-      end_date: '2023-12-31',
-      apartment_number: '914'
+      apartment_number: '914',
+      lease: {
+        active: true,
+        created_at: new Date().toDateString(),
+        start_date: '2023-01-01',
+        end_date: '2023-12-31',
+        id: 'lease123',
+        owner_email: 'owner@example.com',
+        owner_id: 'owner123',
+        owner_name: 'John Owner',
+        property_id: '1',
+        property_name: 'Test Property',
+        tenant_email: 'tenant123',
+        tenant_id: 'tenant123',
+        tenant_name: 'Jane Tenant'
+      }
     }
     mockedCallApi.mockResolvedValueOnce(mockResponse)
 

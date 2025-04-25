@@ -27,3 +27,8 @@ export interface AddFurnitureModalProps {
   onCancel: () => void
   form: any
 }
+
+export interface FurnitureParams {
+  name: string
+  quantity: number
+}

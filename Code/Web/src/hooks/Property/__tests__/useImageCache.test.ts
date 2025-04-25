@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import base64ToFile from '@/utils/base64/baseToFile'
-import useImageCache from '../useImageCache'
+import useImageCache from '../../Image/useImageCache'
 
 jest.mock('@/utils/base64/baseToFile', () => jest.fn())
 

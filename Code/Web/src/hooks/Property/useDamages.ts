@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Damage } from '@/interfaces/Property/Damage/Damage'
+import { Damage, UseDamagesReturn } from '@/interfaces/Property/Damage/Damage'
 import GetPropertyDamages from '@/services/api/Owner/Properties/GetPropertyDamages'
 import useProperties from './useProperties'
-
-interface UseDamagesReturn {
-  damages: Damage[] | null
-  loading: boolean
-  error: string | null
-  refreshDamages: (propertyId: string) => Promise<void>
-}
 
 const useDamages = (propertyId: string): UseDamagesReturn => {
   const [damages, setDamages] = useState<Damage[] | null>(null)
