@@ -211,18 +211,20 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
   return (
     <div className={style.mainContainer}>
       <div className={style.moreInfosContainer}>
-        <div
-          className={style.returnButtonContainer}
-          onClick={() => window.history.back()}
-          tabIndex={0}
-          role="button"
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              window.history.back()
-            }
-          }}
-        >
-          <img src={returnIcon} alt="Return" className={style.returnIcon} />
+        <div className={style.returnButtonContainer}>
+          <div
+            className={style.returnButtonContainer}
+            onClick={() => window.history.back()}
+            tabIndex={0}
+            role="button"
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                window.history.back()
+              }
+            }}
+          >
+            <img src={returnIcon} alt="Return" className={style.returnIcon} />
+          </div>
           <PageTitle
             title={t('pages.real_property_details.title')}
             size="title"
