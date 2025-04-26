@@ -113,7 +113,7 @@ const PropertyFormFields: React.FC<PropertyFormFieldsProps> = ({
         label={t('components.input.picture.label')}
         name="picture"
       >
-        <Upload {...uploadProps}>
+        <Upload {...uploadProps} fileList={uploadProps.fileList}>
           <Button icon={<UploadOutlined />}>
             {t('components.input.picture.placeholder')}
           </Button>
