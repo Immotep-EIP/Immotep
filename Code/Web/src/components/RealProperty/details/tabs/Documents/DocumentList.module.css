@@ -1,10 +1,13 @@
 .documentsContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
   width: 100%;
-  box-sizing: border-box;
-  justify-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  background-color: white;
 }
 
 .documentContainer {
@@ -18,10 +21,11 @@
   cursor: pointer;
   transition: all 0.3s ease;
   outline: none;
+  width: calc(25% - 15px);
+  min-height: 200px;
 }
 
 .documentContainer:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
