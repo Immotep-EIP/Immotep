@@ -1279,97 +1279,6 @@ paths:
       summary: Get inventory report by ID
       tags:
       - inventory-report
-  /owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/:
-    post:
-      consumes:
-      - application/json
-      description: Generate comparison from photo for last inventory report
-      parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
-      - description: Previous report ID to compare with
-        in: path
-        name: old_report_id
-        required: true
-        type: string
-      - description: Compare data
-        in: body
-        name: aiData
-        required: true
-        schema:
-          $ref: '#/definitions/models.SummarizeRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created inventory report data
-          schema:
-            $ref: '#/definitions/models.InventoryReportResponse'
-        "400":
-          description: Missing fields
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Property or old report not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Generate comparison from photo
-      tags:
-      - ai
-  /owner/properties/{property_id}/inventory-reports/summarize/:
-    post:
-      consumes:
-      - application/json
-      description: Generate summary from photo for first inventory report
-      parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
-      - description: Summarize data
-        in: body
-        name: aiData
-        required: true
-        schema:
-          $ref: '#/definitions/models.SummarizeRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Summarize data
-          schema:
-            $ref: '#/definitions/models.SummarizeResponse'
-        "400":
-          description: Missing fields
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Property not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Generate summary from photo
-      tags:
-      - ai
   /owner/properties/{property_id}/inventory/:
     get:
       consumes:
@@ -1961,6 +1870,97 @@ paths:
       summary: Get inventory report by ID
       tags:
       - inventory-report
+  /owner/properties/{property_id}/leases/{lease_id}/inventory-reports/compare/{old_report_id}/:
+    post:
+      consumes:
+      - application/json
+      description: Generate comparison from photo for last inventory report
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Previous report ID to compare with
+        in: path
+        name: old_report_id
+        required: true
+        type: string
+      - description: Compare data
+        in: body
+        name: aiData
+        required: true
+        schema:
+          $ref: '#/definitions/models.SummarizeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created inventory report data
+          schema:
+            $ref: '#/definitions/models.InventoryReportResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property or old report not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Generate comparison from photo
+      tags:
+      - ai
+  /owner/properties/{property_id}/leases/{lease_id}/inventory-reports/summarize/:
+    post:
+      consumes:
+      - application/json
+      description: Generate summary from photo for first inventory report
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Summarize data
+        in: body
+        name: aiData
+        required: true
+        schema:
+          $ref: '#/definitions/models.SummarizeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Summarize data
+          schema:
+            $ref: '#/definitions/models.SummarizeResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Generate summary from photo
+      tags:
+      - ai
   /owner/properties/{property_id}/picture/:
     get:
       consumes:
