@@ -40,3 +40,4 @@ struct PDFKitView: UIViewRepresentable {
         uiView.document = pdfDocument
     }
 }
+ 
