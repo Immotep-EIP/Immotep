@@ -19,6 +19,7 @@ struct PropertyDetailView: View {
     @State private var showEditPropertyPopUp = false
     @Environment(\.dismiss) var dismiss
     @State private var selectedTab: String = "Details".localized()
+    @State private var isLoading = false
 
     private let tabs = ["Details".localized(), "Documents".localized(), "Damages".localized()]
 
@@ -30,7 +31,11 @@ struct PropertyDetailView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         ZStack(alignment: .topLeading) {
-                            if let uiImage = property.photo {
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .frame(height: 200)
+                            } else if let uiImage = property.photo {
                                 Image(uiImage: uiImage)
                                     .resizable()
                                     .scaledToFill()
@@ -38,6 +43,10 @@ struct PropertyDetailView: View {
                                     .clipped()
                             } else {
                                 Image("DefaultImageProperty")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 200)
+                                    .clipped()
                                     .accessibilityLabel("image_property")
                             }
 
@@ -191,7 +200,7 @@ struct PropertyDetailView: View {
                                     Text("Tenant(s)".localized())
                                         .font(.headline)
                                         .foregroundColor(.black)
-                                    Text(property.tenantName == nil ? "No tenant assigned".localized() : property.tenantName!)
+                                    Text(property.tenantName ?? "No tenant assigned".localized())
                                         .foregroundColor(.gray)
                                 }
                                 .padding(.horizontal)
@@ -243,13 +252,20 @@ struct PropertyDetailView: View {
                 Task {
                     if !CommandLine.arguments.contains("-skipLogin") {
                         do {
-                            try await viewModel.fetchPropertyDocuments(propertyId: property.id)
+                            isLoading = true
+                            await viewModel.fetchProperties()
                             if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
                                 property = updatedProperty
                             }
+                            try await viewModel.fetchPropertyDocuments(propertyId: property.id)
+                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                property = updatedProperty
+//                                print("Property \(property.id) updated with documents: \(updatedProperty.documents.count)")
+                            }
                         } catch {
-                            print("Error fetching documents: \(error.localizedDescription)")
+                            print("Error fetching property data: \(error.localizedDescription)")
                         }
+                        isLoading = false
                     }
                 }
             }
@@ -288,7 +304,16 @@ struct PropertyDetailView: View {
                     message: "Are you sure you want to delete this property?".localized(),
                     buttonTitle: "Confirm".localized(),
                     secondaryButtonTitle: "Cancel".localized(),
-                    action: {},
+                    action: {
+                        Task {
+                            do {
+                                try await viewModel.deleteProperty(propertyId: property.id)
+                                dismiss()
+                            } catch {
+                                print("Error deleting property: \(error.localizedDescription)")
+                            }
+                        }
+                    },
                     secondaryAction: {}
                 )
                 .accessibilityIdentifier("DeletePropertyAlert")
@@ -324,6 +349,17 @@ struct PropertyDetailView: View {
         }
 
         return "\(startDateText) - \(endDateText)"
+    }
+
+    private func formatDateString(_ dateString: String) -> String {
+        let formatter = ISO8601DateFormatter()
+        if let date = formatter.date(from: dateString) {
+            let displayFormatter = DateFormatter()
+            displayFormatter.dateStyle = .medium
+            displayFormatter.timeStyle = .none
+            return displayFormatter.string(from: date)
+        }
+        return dateString
     }
 }
 

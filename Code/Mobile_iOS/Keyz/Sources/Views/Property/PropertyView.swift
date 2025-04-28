@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PropertyView: View {
     @EnvironmentObject var viewModel: PropertyViewModel
-    @State private var listRefreshID = UUID()
+    @State private var isLoading = false
 
     var body: some View {
         NavigationStack {
@@ -38,17 +38,23 @@ struct PropertyView: View {
                     }
                 }
             }
+            .overlay(
+                isLoading ? ProgressView("Loading properties...".localized())
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .padding()
+                    .background(Color.white.opacity(0.8))
+                    .cornerRadius(10)
+                    : nil
+            )
         }
         .onAppear {
             if !CommandLine.arguments.contains("-skipLogin") {
                 Task {
+                    isLoading = true
                     await viewModel.fetchProperties()
-                    listRefreshID = UUID()
+                    isLoading = false
                 }
             }
-        }
-        .onChange(of: viewModel.properties) {
-            listRefreshID = UUID()
         }
     }
 
@@ -66,7 +72,11 @@ struct PropertyView: View {
     private var propertyListView: some View {
         ScrollView {
             VStack(spacing: 20) {
-                if !viewModel.properties.isEmpty {
+                if viewModel.properties.isEmpty && !isLoading {
+                    Text("No properties available".localized())
+                        .foregroundColor(.gray)
+                        .padding()
+                } else {
                     ForEach($viewModel.properties) { $property in
                         NavigationLink(destination: PropertyDetailView(property: $property, viewModel: viewModel)) {
                             PropertyCardView(property: $property)
@@ -77,10 +87,6 @@ struct PropertyView: View {
                         }
                         .accessibilityIdentifier("property_card_\(property.id)")
                     }
-                } else {
-                    Text("No properties available".localized())
-                        .foregroundColor(.gray)
-                        .padding()
                 }
             }
             .padding(.vertical)
@@ -154,7 +160,6 @@ struct PropertyView_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = PropertyViewModel()
         viewModel.properties = exampleDataProperty2
-        print("Properties in preview: \(viewModel.properties.count)")
         return PropertyView()
             .environmentObject(viewModel)
             .onAppear {

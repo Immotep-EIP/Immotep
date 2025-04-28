@@ -21,7 +21,7 @@ struct CreatePropertyView: View {
     @State private var deposit: NSNumber?
     @State private var surface: NSNumber?
 
-    @State private var image = UIImage(named: "DefaultImageProperty") ?? UIImage()
+    @State private var propertyImage = UIImage(named: "DefaultImageProperty") ?? UIImage()
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
 
@@ -32,7 +32,7 @@ struct CreatePropertyView: View {
             Form {
                 Section {
                     VStack {
-                        Image(uiImage: self.image)
+                        Image(uiImage: photo!)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 100, height: 100)
