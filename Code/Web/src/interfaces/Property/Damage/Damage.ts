@@ -11,7 +11,7 @@ export interface Damage {
   updated_at: string
   fix_status: string
   fix_planned_at: string
-  pictures: string
+  pictures: string[]
 }
 
 export interface UseDamagesReturn {

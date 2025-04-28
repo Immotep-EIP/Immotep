@@ -1,10 +1,12 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Empty, Spin, Table, Tag, Typography } from 'antd'
+import { Empty, Image, Spin, Table, Tag, Typography } from 'antd'
 import type { TableProps } from 'antd'
+import { EyeOutlined } from '@ant-design/icons'
 import style from './3DamageTab.module.css'
 import useDamages from '@/hooks/Property/useDamages'
 import { usePropertyId } from '@/context/propertyIdContext'
+import base64ToFileAsString from '@/utils/base64/baseToFileAsString'
 
 interface DataType {
   key: string
@@ -13,7 +15,7 @@ interface DataType {
   intervention_date: string
   room: string
   priority: string
-  pictures: number
+  pictures: string[]
 }
 
 interface DamageTabProps {
@@ -38,7 +40,7 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
         item.room_name ||
         t('pages.real_property_details.tabs.damage.unknown_room'),
       priority: item.priority.charAt(0).toUpperCase() + item.priority.slice(1),
-      pictures: item.pictures.length
+      pictures: item.pictures.map(picture => picture)
     })) || []
 
   const getPriorityColor = (priority: string): string => {
@@ -91,12 +93,21 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       title: t('pages.real_property_details.tabs.damage.table.pictures'),
       dataIndex: 'pictures',
       key: 'pictures',
-      render: text => (
-        <div>
-          {text}{' '}
-          {t(
-            'pages.real_property_details.tabs.damage.table.available_pictures'
-          )}
+      render: record => (
+        <div className={style.imagesContainer}>
+          {record.map((file: string) => (
+            <div className={style.imgContainer} key={file}>
+              <Image
+                height="100%"
+                width={50}
+                className={style.image}
+                src={base64ToFileAsString(file)}
+                preview={{
+                  mask: <EyeOutlined />
+                }}
+              />
+            </div>
+          ))}
         </div>
       )
     }
@@ -135,13 +146,6 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
         pagination={false}
         bordered
         style={{ width: '100%' }}
-        // onRow={(record, rowIndex) => {
-        //   return {
-        //     onClick: event => {
-        //       console.log('Row clicked:', record)
-        //     }
-        //   }
-        // }}
       />
     </div>
   )
