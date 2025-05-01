@@ -104,12 +104,12 @@ class InventoryViewModel(
             return null
         }
         try {
-            val createdFurniture = furnitureApiCaller.addFurniture(
+            val (id) = furnitureApiCaller.addFurniture(
                 _propertyId!!,
                 roomId,
                 FurnitureInput(name, 1),
             )
-            return createdFurniture.id
+            return id
         } catch(e : Exception) {
             onError()
             return null

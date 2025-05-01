@@ -1,6 +1,6 @@
 package com.example.immotep
 
-/*
+
 import androidx.compose.runtime.mutableStateListOf
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.FurnitureCallerService
@@ -9,11 +9,13 @@ import com.example.immotep.apiCallerServices.InventoryCallerService
 import com.example.immotep.apiCallerServices.InventoryReportInput
 import com.example.immotep.apiCallerServices.RoomCallerService
 import com.example.immotep.apiCallerServices.RoomOutput
-import com.example.immotep.apiClient.AddRoomInput
+import com.example.immotep.apiCallerServices.RoomType
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.mockApi.fakeFurniture
+import com.example.immotep.apiClient.mockApi.fakeFurnitureOutputValue
 import com.example.immotep.apiClient.mockApi.fakeInventoryReport
 import com.example.immotep.apiClient.mockApi.fakeRoom
+import com.example.immotep.apiClient.mockApi.fakeRoomOutputValue
 import com.example.immotep.inventory.InventoryOpenValues
 import com.example.immotep.inventory.InventoryReportOutput
 import com.example.immotep.inventory.InventoryViewModel
@@ -36,6 +38,7 @@ import org.junit.Before
 import org.junit.Test
 import java.util.Vector
 
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class InventoryViewModelTest {
 
@@ -51,7 +54,7 @@ class InventoryViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         every { navController.context } returns mockk(relaxed = true)
-        viewModel = InventoryViewModel(navController, "1", apiService)
+        viewModel = InventoryViewModel(navController, apiService)
         viewModel.javaClass.getDeclaredField("inventoryApiCaller").apply {
             isAccessible = true
             set(viewModel, inventoryCallerService)
@@ -64,6 +67,10 @@ class InventoryViewModelTest {
             isAccessible = true
             set(viewModel, furnitureCallerService)
         }
+        viewModel.setPropertyIdAndLeaseId(
+            "1",
+            "1"
+        )
     }
 
     @After
@@ -71,40 +78,6 @@ class InventoryViewModelTest {
         Dispatchers.resetMain()
     }
 
-    @Test
-    fun `setInventoryOpen with errors`() = runTest {
-        viewModel.getBaseRooms("1")
-        viewModel.inventoryErrors.first()
-        viewModel.setInventoryOpen(InventoryOpenValues.ENTRY)
-        coVerify(exactly = 0) { inventoryCallerService.getLastInventoryReport(any(), any()) }
-    }
-
-    @Test
-    fun `setInventoryOpen with exit and no old report`() = runTest {
-        coEvery { inventoryCallerService.getLastInventoryReport(any(), any()) } throws Exception()
-        viewModel.setInventoryOpen(InventoryOpenValues.EXIT)
-        assert(viewModel.cannotMakeExitInventory.value)
-    }
-
-    @Test
-    fun `setInventoryOpen with exit and empty last inventory`() = runTest {
-        coEvery { inventoryCallerService.getLastInventoryReport(any(), any()) } returns fakeInventoryReport
-        viewModel.setInventoryOpen(InventoryOpenValues.EXIT)
-        assert(viewModel.cannotMakeExitInventory.first())
-    }
-
-    @Test
-    fun `setInventoryOpen with exit and error on last inventory`() = runTest {
-        coEvery { inventoryCallerService.getLastInventoryReport(any(), any()) } throws Exception()
-        viewModel.setInventoryOpen(InventoryOpenValues.EXIT)
-        assert(viewModel.cannotMakeExitInventory.first())
-    }
-
-    @Test
-    fun closeCannotMakeExitInventory() = runTest {
-        viewModel.closeCannotMakeExitInventory()
-        assert(!viewModel.cannotMakeExitInventory.first())
-    }
     /*
     @Test
     fun `getRooms with exit`() = runTest {
@@ -119,42 +92,41 @@ class InventoryViewModelTest {
 
     @Test
     fun addRoom() = runTest {
-        coEvery { roomCallerService.addRoom(any(), any(), any()) } returns fakeRoom
-        viewModel.addRoom("testRoom") { }
+        coEvery { roomCallerService.addRoom(any(), any()) } returns fakeRoomOutputValue
+        viewModel.addRoom("testRoom", RoomType.playroom) { }
         assert(viewModel.getRooms().isNotEmpty())
         assert(viewModel.getRooms().find { it.id == "testRoom" } != null)
     }
 
     @Test
     fun addFurniture() = runTest {
-        coEvery { furnitureCallerService.addFurniture(any(), any(), any(), any()) } returns fakeFurniture
-        coEvery { roomCallerService.addRoom(any(), any(), any()) } returns fakeRoom
-        viewModel.addRoom("testRoom") { }
+        coEvery { furnitureCallerService.addFurniture(any(), any(), any()) } returns fakeFurnitureOutputValue
+        coEvery { roomCallerService.addRoom(any(), any()) } returns fakeRoomOutputValue
+        viewModel.addRoom("testRoom", RoomType.playroom) { }
         assert(viewModel.addFurnitureCall("testRoom", "testFurniture", {}) == "testFurniture")
-        coVerify { furnitureCallerService.addFurniture(any(), any(), any(), any()) }
+        coVerify { furnitureCallerService.addFurniture(any(), any(), any()) }
     }
 
     @Test
     fun removeRoom() = runTest {
-        coEvery { roomCallerService.addRoom(any(), any(), any()) } returns fakeRoom
-        viewModel.addRoom("testRoom") { }
+        coEvery { roomCallerService.addRoom(any(), any()) } returns fakeRoomOutputValue
+        viewModel.addRoom("testRoom", RoomType.bedroom) { }
         viewModel.removeRoom("testRoom")
         assert(viewModel.getRooms().isEmpty())
     }
 
     @Test
     fun editRoom() = runTest {
-        coEvery { roomCallerService.addRoom(any(), any(), any()) } returns fakeRoom
-        viewModel.addRoom("fakeRoom") { }
+        coEvery { roomCallerService.addRoom(any(), any()) } returns fakeRoomOutputValue
+        viewModel.addRoom("fakeRoom", RoomType.bedroom) { }
         viewModel.editRoom(Room(id = "testRoom", name = "room2"))
         assert(viewModel.getRooms()[0].name == "room2")
     }
 
     @Test
     fun `onClose with entry`() = runTest {
-        coEvery { roomCallerService.addRoom(any(), any(), any()) } returns fakeRoom
-        viewModel.addRoom("room1") { }
-        viewModel.setInventoryOpen(InventoryOpenValues.ENTRY)
+        coEvery { roomCallerService.addRoom(any(), any()) } returns fakeRoomOutputValue
+        viewModel.addRoom("room1", RoomType.bedroom) { }
         viewModel.onClose()
         assert(viewModel.getRooms().isEmpty())
     }
@@ -173,10 +145,7 @@ class InventoryViewModelTest {
 
     @Test
     fun getBaseRooms() = runTest {
-        coEvery { roomCallerService.getAllRoomsWithFurniture(any(), any(), any()) } returns arrayOf(fakeRoom.toRoom(arrayOf(fakeFurniture.toRoomDetail())))
-        viewModel.getBaseRooms("1")
-        testDispatcher.scheduler.advanceUntilIdle()
-        coVerify { roomCallerService.getAllRoomsWithFurniture(any(), any(), any()) }
+        viewModel.loadInventoryFromRooms(arrayOf(fakeRoom.toRoom(arrayOf(fakeFurniture.toRoomDetail()))))
         assert(viewModel.getRooms().isNotEmpty())
         assert(viewModel.getRooms().size == 1)
     }
@@ -195,55 +164,39 @@ class InventoryViewModelTest {
 
      */
 
-    @Test
-    fun `getBaseRooms with error`() = runTest {
-        coEvery { roomCallerService.getAllRoomsWithFurniture(any(), any(), any()) } throws Exception()
-        viewModel.getBaseRooms("1")
-        testDispatcher.scheduler.advanceUntilIdle()
-        assert(viewModel.getRooms().isEmpty())
-    }
-
-    @Test
-    fun `getLastInventory with error`() = runTest {
-        coEvery { inventoryCallerService.getLastInventoryReport(any(), any()) } throws Exception()
-        viewModel.getBaseRooms("1")
-        testDispatcher.scheduler.advanceUntilIdle()
-        assert(!viewModel.cannotMakeExitInventory.first())
-    }
 
     @Test
     fun `addRoom with error`() = runTest {
-        coEvery { roomCallerService.addRoom(any(), any(), any()) } throws Exception()
-        viewModel.addRoom("room1") { }
+        coEvery { roomCallerService.addRoom(any(), any()) } throws Exception()
+        viewModel.addRoom("room1", RoomType.office) { }
         assert(viewModel.getRooms().isEmpty())
     }
 
     @Test
     fun `addFurniture with error`() = runTest {
-        coEvery { furnitureCallerService.addFurniture(any(), any(), any(), any()) } throws Exception()
+        coEvery { furnitureCallerService.addFurniture(any(), any(), any()) } throws Exception()
         assert(viewModel.addFurnitureCall("testRoom", "furniture1") {} == null)
-        coVerify { furnitureCallerService.addFurniture(any(), any(), any(), any()) }
+        coVerify { furnitureCallerService.addFurniture(any(), any(), any()) }
     }
 
     @Test
     fun `removeRoom with wrong id`() = runTest {
-        coEvery { roomCallerService.addRoom(any(), any(), any()) } returns fakeRoom
-        viewModel.addRoom("testRoom") { }
+        coEvery { roomCallerService.addRoom(any(), any()) } returns fakeRoomOutputValue
+        viewModel.addRoom("testRoom", RoomType.bedroom) { }
         viewModel.removeRoom("2")
         assert(viewModel.getRooms().isNotEmpty())
     }
 
     @Test
     fun `editRoom with wrong id`() = runTest {
-        coEvery { roomCallerService.addRoom(any(), any(), any()) } returns fakeRoom
-        viewModel.addRoom("fakeRoomName") { }
+        coEvery { roomCallerService.addRoom(any(), any()) } returns fakeRoomOutputValue
+        viewModel.addRoom("fakeRoomName", RoomType.garage) { }
         viewModel.editRoom(Room(id = "2", name = "room2"))
         assert(viewModel.getRooms()[0].name == "fakeRoomName")
     }
 
     @Test
     fun `onClose with entry and no rooms`() = runTest {
-        viewModel.setInventoryOpen(InventoryOpenValues.ENTRY)
         viewModel.onClose()
         assert(viewModel.getRooms().isEmpty())
     }
@@ -270,5 +223,3 @@ class InventoryViewModelTest {
     }
      */
 }
-
- */
