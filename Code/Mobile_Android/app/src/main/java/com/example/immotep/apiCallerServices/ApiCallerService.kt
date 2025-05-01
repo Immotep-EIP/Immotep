@@ -48,4 +48,8 @@ sealed class ApiCallerService(
             throw ApiCallerServiceException("500")
         }
     }
+
+    protected suspend fun isOwner() : Boolean {
+        return this.authService.isUserOwner()
+    }
 }

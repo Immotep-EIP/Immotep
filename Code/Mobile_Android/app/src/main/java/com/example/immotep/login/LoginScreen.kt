@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.immotep.LocalApiService
+import com.example.immotep.LocalIsOwner
 import com.example.immotep.R
 import com.example.immotep.components.CheckBoxWithLabel
 import com.example.immotep.components.ErrorAlert
@@ -39,6 +40,7 @@ import com.example.immotep.ui.components.PasswordInput
 fun LoginScreen(
     navController: NavController,
 ) {
+    val isOwner = LocalIsOwner.current
     val apiService = LocalApiService.current
     val viewModel: LoginViewModel = viewModel {
         LoginViewModel(navController, apiService)
@@ -112,7 +114,7 @@ fun LoginScreen(
                 )
             }
             Button(
-                onClick = { viewModel.login() },
+                onClick = { viewModel.login({ isOwner.value = it }) },
                 modifier = Modifier.testTag("loginButton"),
             ) { Text(stringResource(R.string.login_button)) }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {

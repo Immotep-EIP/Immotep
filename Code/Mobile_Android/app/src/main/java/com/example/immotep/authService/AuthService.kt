@@ -55,6 +55,20 @@ class AuthService(
                 throw Exception("Failed to login,$code")
             }
         this.store(response.access_token, response.refresh_token, response.expires_in)
+        try {
+            val profile = apiService.getProfile(this.getBearerToken())
+            if (profile.role != "owner") {
+                dataStore.edit {
+                    it[IS_OWNER] = "false"
+                }
+            } else {
+                dataStore.edit {
+                    it[IS_OWNER] = "true"
+                }
+            }
+        } catch (e : Exception) {
+            e.printStackTrace()
+        }
     }
     
     private suspend fun store(
@@ -130,10 +144,20 @@ class AuthService(
             throw Exception("Failed to register,$code")
         }
     }
+
+    suspend fun isUserOwner() : Boolean {
+        val isOwner = dataStore.data
+            .map { it[IS_OWNER] }
+            .firstOrNull()
+            ?: return true
+        return isOwner == "true"
+    }
+
     companion object {
         val ACCESS_TOKEN = stringPreferencesKey("access_token")
         val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
         val EXPIRES_IN = stringPreferencesKey("expires_in")
+        val IS_OWNER = stringPreferencesKey("is_owner")
     }
 }
 

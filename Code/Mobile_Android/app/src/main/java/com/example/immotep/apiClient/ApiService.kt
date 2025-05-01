@@ -206,4 +206,5 @@ interface ApiService {
         @Path("propertyId") propertyId: String,
         @Body invite: InviteInput
     ) : CreateOrUpdateResponse
+
 }

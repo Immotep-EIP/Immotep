@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
@@ -30,6 +31,12 @@ val LocalApiService = compositionLocalOf<ApiService> {
     error("ApiService not provided")
 }
 
+val LocalIsOwner = compositionLocalOf<MutableState<Boolean>> {
+    error("No local is owner provided")
+}
+
+
+
 var isTesting = false
 
 class MainActivity : ComponentActivity() {
@@ -50,8 +57,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 val apiService = if (isTesting) MockedApiService() else ApiClient.apiService
+                val isOwner = remember { mutableStateOf(false) }
                 CompositionLocalProvider(
-                    LocalApiService provides apiService
+                    LocalApiService provides apiService,
+                    LocalIsOwner provides isOwner
                 ) {
                     Box(Modifier.safeDrawingPadding()) {
                         Navigation()

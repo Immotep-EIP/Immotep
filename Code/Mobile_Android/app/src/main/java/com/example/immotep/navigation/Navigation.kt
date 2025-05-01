@@ -3,6 +3,7 @@ package com.example.immotep.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -11,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.immotep.LocalApiService
+import com.example.immotep.LocalIsOwner
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.authService.AuthService
 import com.example.immotep.dashboard.DashBoardScreen
@@ -23,7 +25,7 @@ import com.example.immotep.realProperty.RealPropertyScreen
 import com.example.immotep.register.RegisterScreen
 import kotlinx.coroutines.runBlocking
 
-fun checkIfTokenIsPresent(navController: NavController, apiService: ApiService) {
+fun checkIfTokenIsPresent(navController: NavController, apiService: ApiService, isOwner: MutableState<Boolean>) {
     val authServ = AuthService(navController.context.dataStore, apiService)
     val currentRoute = navController.currentBackStackEntry?.destination?.route
     if (currentRoute != null && currentRoute != "dashboard")
@@ -31,6 +33,7 @@ fun checkIfTokenIsPresent(navController: NavController, apiService: ApiService) 
     runBlocking {
         try {
             authServ.getToken()
+            isOwner.value = authServ.isUserOwner()
         } catch (e: Exception) {
             authServ.onLogout(navController)
         }
@@ -41,11 +44,12 @@ fun checkIfTokenIsPresent(navController: NavController, apiService: ApiService) 
 fun Navigation() {
     val navController = rememberNavController()
     val apiService = LocalApiService.current
+    val isOwner = LocalIsOwner.current
     val loaderInventory = viewModel {
         LoaderInventoryViewModel(navController, apiService)
     }
     LaunchedEffect(Unit) {
-        checkIfTokenIsPresent(navController, apiService)
+        checkIfTokenIsPresent(navController, apiService, isOwner)
     }
     NavHost(navController = navController, startDestination = "dashboard") {
         composable("login") { LoginScreen(navController) }

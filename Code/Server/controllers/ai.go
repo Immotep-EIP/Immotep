@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/chatgpt"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 func imagesToBase64Strings(images []db.ImageModel) []string {

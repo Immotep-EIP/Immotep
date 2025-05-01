@@ -48,7 +48,7 @@ class LoginViewModel(
                 keepSigned = keepSigned ?: _emailAndPassword.value.keepSigned,
             )
     }
-    fun login() {
+    fun login(setIsOwner: (Boolean) -> Unit) {
         var noError = true
         _errors.value = _errors.value.copy(email = false, password = false, apiError = null)
         if (!RegexUtils.isValidEmail(_emailAndPassword.value.email)) {
@@ -65,6 +65,7 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 authService.onLogin(username = _emailAndPassword.value.email, password = _emailAndPassword.value.password)
+                setIsOwner(authService.isUserOwner())
                 navController.navigate("dashboard")
                 return@launch
             } catch (e: Exception) {
