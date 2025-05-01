@@ -459,6 +459,8 @@
       "status": {
         "available": "Disponible",
         "unavailable": "Occupée",
+        "avalables": "Disponibles",
+        "unavailables": "Occupées",
         "invitation_sent": "Invitation envoyée"
       },
       "damage": {
@@ -482,11 +484,9 @@
   "widgets": {
     "document_title": "Widgets",
     "document_description": "Gérez vos widgets facilement. Ajoutez, modifiez ou supprimez vos widgets.",
-    "user_info": {
-      "title": "Bienvenue",
-      "properties_number": "Voici un aperçu de vos",
-      "real_properties": "propriétés",
-      "error_fetching": "Erreur de récupération des données"
+    "properties_number": {
+      "properties_number": "Nombre de propriétés",
+      "real_properties": "Propriétés"
     },
     "maintenance": {
       "title": "Maintenance",

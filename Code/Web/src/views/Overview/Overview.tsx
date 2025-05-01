@@ -6,8 +6,9 @@ import { UserOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import PageTitle from '@/components/PageText/Title.tsx'
 import AddWidgetModal from '@/components/Overview/AddWidgetModal.tsx'
-import UserInfoWidget from '@/components/Widgets/UserInfoWidget.tsx'
 import MaintenanceWidget from '@/components/Widgets/MaintenanceWidget.tsx'
+import PropertiesNumber from '@/components/Widgets/PropertiesNumber.tsx'
+import PropertiesRepartition from '@/components/Widgets/PropertiesRepartition.tsx'
 import { Layout, Widget, addWidgetType } from '@/interfaces/Widgets/Widgets.ts'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import style from './Overview.module.css'
@@ -17,11 +18,9 @@ import '@/../node_modules/react-resizable/css/styles.css'
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
 const WidgetTemplate: React.FC<{
-  logo?: React.ReactElement
   children: React.ReactNode
-}> = ({ logo, children }) => (
+}> = ({ children }) => (
   <div className={style.widgetContainer}>
-    <div className={style.widgetHeader}>{logo}</div>
     <div className={style.widgetContent}>{children}</div>
   </div>
 )
@@ -33,33 +32,39 @@ const Overview: React.FC = () => {
   const layouts: { lg: Widget[] } = {
     lg: [
       {
-        i: '0',
-        name: 'Widget 1',
-        logo: <UserOutlined />,
+        i: '1',
+        name: 'Properties',
         x: 0,
         y: 0,
-        w: 2,
-        h: 2,
-        children: <UserInfoWidget height={2} />,
-        minW: 2,
-        maxW: 3,
-        minH: 2,
-        maxH: 3
+        w: 1,
+        h: 1,
+        children: <PropertiesNumber height={1} />
       },
       {
-        i: '1',
-        name: 'Maintenance',
-        logo: <UserOutlined />,
-        x: 2,
+        i: '2',
+        name: 'PropertiesRepartition',
+        x: 1,
         y: 0,
-        w: 3,
-        h: 4,
-        children: <MaintenanceWidget height={4} />,
-        minW: 3,
-        maxW: 6,
-        minH: 4,
-        maxH: 6
+        w: 1,
+        h: 1,
+        children: <PropertiesRepartition height={1} />
       }
+      // {
+      //   i: '2',
+      //   name: 'Maintenance',
+      //   logo: (
+      //     <img
+      //       src={MoveWidgetIcon}
+      //       alt="move widget"
+      //       style={{ width: '23px' }}
+      //     />
+      //   ),
+      //   x: 0,
+      //   y: 2,
+      //   w: 3,
+      //   h: 4,
+      //   children: <MaintenanceWidget height={4} />,
+      // }
     ]
   }
 
@@ -72,8 +77,8 @@ const Overview: React.FC = () => {
     let widgetContent: React.ReactNode = null
 
     switch (widget.types) {
-      case 'UserInfoWidget':
-        widgetContent = <UserInfoWidget height={widget.height} />
+      case 'PropertiesNumber':
+        widgetContent = <PropertiesNumber height={widget.height} />
         break
       case 'MaintenanceWidget':
         widgetContent = <MaintenanceWidget height={widget.height} />
@@ -140,24 +145,26 @@ const Overview: React.FC = () => {
             {t('components.button.add_widget')}
           </Button>
         </div>
-        <ResponsiveGridLayout
-          className={style.gridLayout}
-          layouts={{ lg: widgets }}
-          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-          cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-          rowHeight={80}
-          isResizable
-          onResize={handleLayoutChange}
-          draggableHandle={`.${style.widgetHeader}`}
-        >
-          {widgets.map((widget: Widget) => (
-            <div key={widget.i} data-grid={widget}>
-              <WidgetTemplate logo={widget.logo}>
-                {widget.children}
-              </WidgetTemplate>
-            </div>
-          ))}
-        </ResponsiveGridLayout>
+        <div className={style.contentContainer}>
+          <ResponsiveGridLayout
+            className={style.gridLayout}
+            layouts={{ lg: widgets }}
+            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+            rowHeight={120}
+            isResizable={false}
+            onResize={handleLayoutChange}
+            draggableHandle={`.${style.widgetContainer}`}
+            preventCollision
+            compactType={null}
+          >
+            {widgets.map((widget: Widget) => (
+              <div key={widget.i} data-grid={widget}>
+                <WidgetTemplate>{widget.children}</WidgetTemplate>
+              </div>
+            ))}
+          </ResponsiveGridLayout>
+        </div>
         <AddWidgetModal
           isOpen={isModalOpen}
           onClose={handleCancel}
