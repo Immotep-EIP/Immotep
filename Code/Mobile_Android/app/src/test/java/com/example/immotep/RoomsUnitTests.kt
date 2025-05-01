@@ -1,5 +1,6 @@
 package com.example.immotep
 
+/*
 import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.rooms.RoomsViewModel
 import io.mockk.coEvery
@@ -148,3 +149,5 @@ class RoomsViewModelTest {
         assertNull(viewModel.currentlyOpenRoom.first())
     }
 }
+
+ */

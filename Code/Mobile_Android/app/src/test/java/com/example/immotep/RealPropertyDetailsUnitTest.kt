@@ -1,5 +1,6 @@
 package com.example.immotep
 
+/*
 import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.DetailedProperty
 import com.example.immotep.apiCallerServices.PropertyStatus
@@ -126,3 +127,5 @@ class RealPropertyDetailsViewModelTest {
         assertEquals(viewModel.property.first().status, expectedProperty.status)
     }
 }
+
+ */

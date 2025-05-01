@@ -84,11 +84,13 @@ class RoomDetailsViewModelTest {
         val newDetailName = "Table"
         val roomId = "1"
         coEvery { addDetail(roomId, newDetailName) } returns null
-
-        viewModel.addDetailToRoomDetailPage(newDetailName, roomId)
-
-        coVerify { addDetail(roomId, newDetailName) }
-        assertTrue(viewModel.details.isEmpty())
+        try {
+            viewModel.addDetailToRoomDetailPage(newDetailName, roomId)
+            assertTrue(false)
+        } catch (e: Exception) {
+            coVerify { addDetail(roomId, newDetailName) }
+            assertTrue(viewModel.details.isEmpty())
+        }
     }
 
     @Test

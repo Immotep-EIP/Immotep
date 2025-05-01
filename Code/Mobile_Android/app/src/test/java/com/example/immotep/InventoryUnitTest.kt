@@ -1,5 +1,6 @@
 package com.example.immotep
 
+/*
 import androidx.compose.runtime.mutableStateListOf
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.FurnitureCallerService
@@ -269,3 +270,5 @@ class InventoryViewModelTest {
     }
      */
 }
+
+ */

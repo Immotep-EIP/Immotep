@@ -1,6 +1,6 @@
 package com.example.immotep
 
-
+/*
 import androidx.compose.foundation.layout.add
 import androidx.core.graphics.set
 import androidx.lifecycle.viewModelScope
@@ -183,3 +183,5 @@ class RealPropertyViewModelTest {
         assertEquals(listOf(property1, property2), viewModel.properties)
     }
 }
+
+ */

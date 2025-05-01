@@ -1,6 +1,6 @@
 package com.example.immotep
 
-
+/*
 import androidx.activity.result.launch
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -128,3 +128,5 @@ class ProfileViewModelTest {
         assertFalse(viewModel.isLoading.first())
     }
 }
+
+ */

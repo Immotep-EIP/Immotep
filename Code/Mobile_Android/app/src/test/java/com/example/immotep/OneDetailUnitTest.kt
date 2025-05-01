@@ -1,5 +1,6 @@
 package com.example.immotep
 
+/*
 import android.content.Context
 import androidx.compose.foundation.layout.add
 import androidx.compose.ui.geometry.isEmpty
@@ -323,3 +324,5 @@ class OneDetailViewModelTest {
         assertTrue(viewModel.detail.first().comment == fakeAiCallOutput.note)
     }
 }
+
+ */

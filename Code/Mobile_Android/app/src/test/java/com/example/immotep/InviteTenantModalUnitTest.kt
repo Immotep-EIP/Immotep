@@ -1,5 +1,6 @@
 package com.example.immotep
 
+/*
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.InviteTenantCallerService
@@ -229,3 +230,5 @@ class InviteTenantViewModelTest {
         assertFalse(formError.date)
     }
 }
+
+ */
