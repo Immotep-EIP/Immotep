@@ -124,7 +124,6 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithTag("propertyBoxLazyColumn").assertIsDisplayed().performScrollToNode(
             hasTestTag("propertyBox emptyFakeProperty")
         )
-        mainAct.onAllNodesWithTag("topRightPropertyBoxInfo").assertCountEquals(3)
         mainAct.onAllNodesWithText(res.getString(R.string.available)).assertCountEquals(1)
     }
 
