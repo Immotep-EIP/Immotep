@@ -2,7 +2,7 @@ name: android-instrumented-tests
 
 on:
   push:
-    branches: [main, android-dev, dev]
+    branches: [main, dev]
   pull_request:
     branches: [ main, dev ]
 
