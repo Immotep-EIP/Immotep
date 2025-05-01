@@ -162,7 +162,6 @@ data class GetPropertyResponse(
             area = this.area_sqm.toInt(),
             rent = this.rental_price_per_month,
             deposit = this.deposit_price,
-            documents = arrayOf(),
             lease = currentLease,
             invite = currentInvite
         )
@@ -200,7 +199,6 @@ data class DetailedProperty(
      val area : Int = 0,
      val rent : Int = 0,
      val deposit : Int = 0,
-     val documents : Array<Document> = arrayOf(),
      val zipCode : String = "",
      val city : String = "",
      val country : String = "",

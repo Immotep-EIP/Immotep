@@ -1,6 +1,5 @@
 package com.example.immotep
 
-/*
 import androidx.compose.foundation.layout.add
 import androidx.core.graphics.set
 import androidx.lifecycle.viewModelScope
@@ -9,7 +8,9 @@ import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.DetailedProperty
 import com.example.immotep.apiCallerServices.RealPropertyCallerService
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.apiClient.CreateOrUpdateResponse
 import com.example.immotep.apiClient.mockApi.fakeProperties
+import com.example.immotep.login.dataStore
 import com.example.immotep.realProperty.RealPropertyViewModel
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -50,6 +51,8 @@ class RealPropertyViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { navController.context.dataStore } returns mockk(relaxed = true)
+        every { navController.context } returns mockk(relaxed = true)
         viewModel = RealPropertyViewModel(navController, apiService)
 
         val apiCallerField = viewModel::class.java.getDeclaredField("apiCaller")
@@ -68,11 +71,11 @@ class RealPropertyViewModelTest {
         val propertiesList = fakeProperties.map {
             it.toDetailedProperty()
         }.toTypedArray()
-        coEvery { apiCaller.getPropertiesAsDetailedProperties(any()) } returns propertiesList
+        coEvery { apiCaller.getPropertiesAsDetailedProperties() } returns propertiesList
 
         viewModel.getProperties()
 
-        coVerify { apiCaller.getPropertiesAsDetailedProperties(any()) }
+        coVerify { apiCaller.getPropertiesAsDetailedProperties() }
         assertEquals(propertiesList.size, viewModel.properties.size)
         assertEquals(propertiesList.first().id, viewModel.properties.first().id)
         assertFalse(viewModel.isLoading.first())
@@ -81,44 +84,47 @@ class RealPropertyViewModelTest {
 
     @Test
     fun `getProperties api error sets apiError and isLoading`() = runTest {
-        coEvery { apiCaller.getPropertiesAsDetailedProperties(any()) } throws Exception()
+        coEvery { apiCaller.getPropertiesAsDetailedProperties() } throws Exception()
 
         viewModel.getProperties()
 
-        coVerify { apiCaller.getPropertiesAsDetailedProperties(any()) }
+        coVerify { apiCaller.getPropertiesAsDetailedProperties() }
         assertTrue(viewModel.apiError.first() == RealPropertyViewModel.WhichApiError.GET_PROPERTIES)
         assertFalse(viewModel.isLoading.first())
     }
 
     @Test
     fun `addProperty success adds property and clears error`() = runTest {
-        coEvery { apiCaller.addProperty(addPropertyInput, any()) } returns property1
+        coEvery { apiCaller.addProperty(addPropertyInput) } returns CreateOrUpdateResponse(
+            id = property1.id
+        )
 
         viewModel.addProperty(addPropertyInput)
 
-        coVerify { apiCaller.addProperty(addPropertyInput, any()) }
-        assertEquals(listOf(property1), viewModel.properties)
+        coVerify { apiCaller.addProperty(addPropertyInput) }
+        assertEquals(1, viewModel.properties.size)
+        assertEquals(property1.id, viewModel.properties.first().id)
         assertEquals(RealPropertyViewModel.WhichApiError.NONE, viewModel.apiError.first())
     }
 
     @Test
     fun `addProperty api error sets apiError`() = runTest {
-        coEvery { apiCaller.addProperty(any(), any()) } throws Exception()
+        coEvery { apiCaller.addProperty(any()) } throws Exception()
 
         viewModel.addProperty(addPropertyInput)
 
-        coVerify { apiCaller.addProperty(any(), any()) }
+        coVerify { apiCaller.addProperty(any()) }
         assertTrue(viewModel.apiError.first() == RealPropertyViewModel.WhichApiError.ADD_PROPERTY)
     }
 
     @Test
     fun `deleteProperty success removes property and clears error`() = runTest {
         viewModel.properties.addAll(listOf(property1, property2))
-        coEvery { apiCaller.archiveProperty("1", any()) } just Runs
+        coEvery { apiCaller.archiveProperty("1") } just Runs
 
         viewModel.deleteProperty("1")
 
-        coVerify { apiCaller.archiveProperty("1", any()) }
+        coVerify { apiCaller.archiveProperty("1") }
         assertEquals(listOf(property2), viewModel.properties)
         assertEquals(RealPropertyViewModel.WhichApiError.NONE, viewModel.apiError.first())
     }
@@ -126,11 +132,11 @@ class RealPropertyViewModelTest {
     @Test
     fun `deleteProperty api error sets apiError`() = runTest {
         viewModel.properties.add(property1)
-        coEvery { apiCaller.archiveProperty("1", any()) } throws Exception()
+        coEvery { apiCaller.archiveProperty("1") } throws Exception()
 
         viewModel.deleteProperty("1")
 
-        coVerify { apiCaller.archiveProperty("1", any()) }
+        coVerify { apiCaller.archiveProperty("1") }
         assertTrue(viewModel.apiError.first() == RealPropertyViewModel.WhichApiError.DELETE_PROPERTY)
     }
 
@@ -140,7 +146,7 @@ class RealPropertyViewModelTest {
 
         viewModel.deleteProperty("999")
 
-        coVerify(exactly = 0) { apiCaller.archiveProperty(any(), any()) }
+        coVerify(exactly = 0) { apiCaller.archiveProperty(any()) }
         assertEquals(listOf(property1, property2), viewModel.properties)
     }
 
@@ -183,5 +189,3 @@ class RealPropertyViewModelTest {
         assertEquals(listOf(property1, property2), viewModel.properties)
     }
 }
-
- */
