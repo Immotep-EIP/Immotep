@@ -332,6 +332,7 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithTag("propertyBoxLazyColumn").assertIsDisplayed().performScrollToNode(
             hasTestTag("propertyBox emptyFakeProperty")
         )
+        mainAct.onNodeWithTag("propertyBox emptyFakeProperty").assertIsDisplayed()
         mainAct.onNodeWithText("Pending").assertIsDisplayed()
     }
 

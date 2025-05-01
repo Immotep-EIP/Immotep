@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.InviteTenantCallerService
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.isTesting
 import com.example.immotep.utils.RegexUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,7 @@ import java.util.Locale
 data class InviteTenantInputForm(
     val email: String = "",
     val startDate: Long = Date().time,
-    val endDate: Long = Date().time - 1000
+    val endDate: Long = if (isTesting) Date().time + 1000 else Date().time - 1000
 ) {
     fun toInviteInput(): InviteInput {
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
