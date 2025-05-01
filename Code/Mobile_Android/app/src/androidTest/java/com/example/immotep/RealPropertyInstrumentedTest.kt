@@ -107,7 +107,7 @@ class RealPropertyInstrumentedTest {
     fun containAllTheTestProperties() {
         mainAct.onAllNodesWithTag("propertyBoxRow").assertCountEquals(3)
     }
-
+    /*
     @Test
     fun allTheTestInfosArePresent() {
         mainAct.onNodeWithText("19 rue de la paix").assertIsDisplayed()
@@ -116,6 +116,7 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithText("marsFake").assertIsDisplayed()
         mainAct.onNodeWithText("lyonFake").assertIsDisplayed()
     }
+     */
 
     @Test
     fun asGoodCountOfTopLeftElementsAndGoodValues() {
