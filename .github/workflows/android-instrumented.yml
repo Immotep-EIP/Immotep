@@ -1,11 +1,10 @@
-name: check-build
+name: android-instrumented-tests
 
 on:
   push:
-    branches:
-      - main
-      - dev
-      - android-dev
+    branches: [main, android-dev, dev]
+  pull_request:
+    branches: [ main, dev ]
 
 jobs:
   instrumented-tests-android:
