@@ -75,39 +75,30 @@ class InviteTenantViewModelTest {
 
     @Test
     fun `setStartDate should update invitationForm`() = runTest {
-        // Arrange
         val newStartDate = Date().time + 1000
 
-        // Act
         viewModel.setStartDate(newStartDate)
 
-        // Assert
         val form = viewModel.invitationForm.first()
         assertEquals(newStartDate, form.startDate)
     }
 
     @Test
     fun `setEndDate should update invitationForm`() = runTest {
-        // Arrange
         val newEndDate = Date().time + 2000
 
-        // Act
         viewModel.setEndDate(newEndDate)
 
-        // Assert
         val form = viewModel.invitationForm.first()
         assertEquals(newEndDate, form.endDate)
     }
 
     @Test
     fun `setEmail should update invitationForm`() = runTest {
-        // Arrange
         val newEmail = "test@example.com"
 
-        // Act
         viewModel.setEmail(newEmail)
 
-        // Assert
         val form = viewModel.invitationForm.first()
         assertEquals(newEmail, form.email)
     }

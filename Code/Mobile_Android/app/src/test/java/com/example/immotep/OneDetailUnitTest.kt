@@ -1,6 +1,6 @@
 package com.example.immotep
 
-/*
+
 import android.content.Context
 import androidx.compose.foundation.layout.add
 import androidx.compose.ui.geometry.isEmpty
@@ -237,7 +237,7 @@ class OneDetailViewModelTest {
 
     @Test
     fun `summarizeOrCompare with empty pictures sets picture error`() = runTest {
-        viewModel.summarizeOrCompare(null, "propertyId", true)
+        viewModel.summarizeOrCompare(null, "propertyId", "leaseId", true)
 
         assertTrue(viewModel.errors.first().picture)
     }
@@ -245,17 +245,18 @@ class OneDetailViewModelTest {
     @Test
     fun `summarizeOrCompare with oldReportId null calls summarize`() = runTest {
         val propertyId = "propertyId"
+        val leaseId = "leaseId"
         val isRoom = true
         viewModel.addPicture(uri1)
         coEvery { aiCallerService.summarize(any(), any(), any()) } returns fakeAiCallOutput
 
-        viewModel.summarizeOrCompare(null, propertyId, isRoom)
+        viewModel.summarizeOrCompare(null, propertyId, leaseId, isRoom)
 
         coVerify {
             aiCallerService.summarize(
                 propertyId = propertyId,
+                leaseId = leaseId,
                 input = any(),
-                onError = any()
             )
         }
     }
@@ -264,18 +265,19 @@ class OneDetailViewModelTest {
     fun `summarizeOrCompare with oldReportId not null calls compare`() = runTest {
         val oldReportId = "oldReportId"
         val propertyId = "propertyId"
+        val leaseId = "leaseId"
         val isRoom = false
         viewModel.addPicture(uri1)
         coEvery { aiCallerService.compare(any(), any(), any(), any()) } returns fakeAiCallOutput
 
-        viewModel.summarizeOrCompare(oldReportId, propertyId, isRoom)
+        viewModel.summarizeOrCompare(oldReportId, propertyId, leaseId, isRoom)
 
         coVerify {
             aiCallerService.compare(
                 propertyId = propertyId,
                 oldReportId = oldReportId,
+                leaseId = leaseId,
                 input = any(),
-                onError = any()
             )
         }
     }
@@ -290,7 +292,7 @@ class OneDetailViewModelTest {
             fakeAiCallOutput
         }
 
-        viewModel.summarizeOrCompare(null, propertyId, isRoom)
+        viewModel.summarizeOrCompare(null, propertyId, "leaseId", isRoom)
 
         assertTrue(viewModel.aiCallError.first())
     }
@@ -302,7 +304,7 @@ class OneDetailViewModelTest {
         viewModel.addPicture(uri1)
         coEvery { aiCallerService.summarize(any(), any(), any()) } returns aiResponse
 
-        viewModel.summarizeOrCompare(null, propertyId, true)
+        viewModel.summarizeOrCompare(null, propertyId, "leaseId",true)
 
         assertTrue(viewModel.detail.first().status == fakeAiCallOutput.state)
         assertTrue(viewModel.detail.first().cleanliness == fakeAiCallOutput.cleanliness)
@@ -317,12 +319,10 @@ class OneDetailViewModelTest {
         viewModel.addPicture(uri1)
         coEvery { aiCallerService.compare(any(), any(), any(), any()) } returns fakeAiCallOutput
 
-        viewModel.summarizeOrCompare(oldReportId, propertyId, false)
+        viewModel.summarizeOrCompare(oldReportId, propertyId, "leaseId",false)
 
         assertTrue(viewModel.detail.first().status == fakeAiCallOutput.state)
         assertTrue(viewModel.detail.first().cleanliness == fakeAiCallOutput.cleanliness)
         assertTrue(viewModel.detail.first().comment == fakeAiCallOutput.note)
     }
 }
-
- */
