@@ -1,18 +1,20 @@
 package com.example.immotep
 
-/*
+
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.InviteInput
 import com.example.immotep.apiCallerServices.InviteTenantCallerService
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.mockApi.fakeInventoryReport
 import com.example.immotep.apiClient.mockApi.fakeInviteOutput
+import com.example.immotep.apiClient.mockApi.fakeInviteOutputValue
 import com.example.immotep.inventory.InventoryViewModel
 import com.example.immotep.inviteTenantModal.InviteTenantViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -27,9 +29,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -59,20 +58,17 @@ class InviteTenantViewModelTest {
 
     @Test
     fun `reset should clear invitationForm and invitationFormError`() = runTest {
-        // Arrange
         viewModel.setEmail("test@example.com")
         viewModel.setStartDate(Date().time + 1000)
         viewModel.setEndDate(Date().time + 2000)
 
-        // Act
         viewModel.reset()
 
-        // Assert
         val form = viewModel.invitationForm.first()
         val formError = viewModel.invitationFormError.first()
         assertEquals("", form.email)
         assertTrue(Date().time == form.startDate || Date().time + 1 == form.startDate || Date().time - 1 == form.startDate)
-        assertEquals(Date().time, form.endDate)
+        assertEquals(Date().time - 1000, form.endDate)
         assertFalse(formError.email)
         assertFalse(formError.date)
     }
@@ -119,14 +115,13 @@ class InviteTenantViewModelTest {
     @Test
     fun `inviteTenantValidator should return false if email is invalid`() = runTest {
         viewModel.setEmail("invalid-email")
-
         viewModel.inviteTenant(
             close = {},
             propertyId = "1",
             onError = {},
-            onSubmit = { _, _, _ -> }
+            onSubmit = { _, _, _ -> },
+            setIsLoading = {}
         )
-
         val formError = viewModel.invitationFormError.first()
         assertTrue(formError.email)
     }
@@ -135,6 +130,7 @@ class InviteTenantViewModelTest {
     fun `inviteTenantValidator should return false if startDate is after endDate`() = runTest {
         val startDate = Date().time + 2000
         val endDate = Date().time + 1000
+
         viewModel.setEmail("test@example.com")
         viewModel.setStartDate(startDate)
         viewModel.setEndDate(endDate)
@@ -143,28 +139,28 @@ class InviteTenantViewModelTest {
             close = {},
             propertyId = "1",
             onError = {},
-            onSubmit = { _, _, _ -> }
+            onSubmit = { _, _, _ -> },
+            setIsLoading = {}
         )
-
         val formError = viewModel.invitationFormError.first()
         assertTrue(formError.date)
     }
 
     @Test
     fun `inviteTenantValidator should return true if email and dates are valid`() = runTest {
-        // Arrange
         val startDate = Date().time + 1000
         val endDate = Date().time + 2000
         viewModel.setEmail("test@example.com")
         viewModel.setStartDate(startDate)
         viewModel.setEndDate(endDate)
 
-        // Act
+
         viewModel.inviteTenant(
             close = {},
             propertyId = "1",
             onError = {},
-            onSubmit = { _, _, _ -> }
+            onSubmit = { _, _, _ -> },
+            setIsLoading = {}
         )
 
         val formError = viewModel.invitationFormError.first()
@@ -174,9 +170,10 @@ class InviteTenantViewModelTest {
 
     @Test
     fun `inviteTenant should call callerService invite and onSubmit with correct data`() = runTest {
-        coEvery { callerService.invite(any(), any()) { } } returns fakeInviteOutput
-        val startDate = Date().time + 1000
-        val endDate = Date().time + 2000
+        coEvery { callerService.invite(any(), any()) } returns fakeInviteOutputValue
+        val now = Date().time
+        val startDate = now + 1000
+        val endDate = now + 2000
         val email = "test@example.com"
         val propertyId = "1"
         viewModel.setEmail(email)
@@ -193,9 +190,15 @@ class InviteTenantViewModelTest {
         val close: () -> Unit = {}
         val onError: () -> Unit = {}
 
-        viewModel.inviteTenant(close, propertyId, onError, onSubmit)
+        viewModel.inviteTenant(
+            close = close,
+            propertyId = propertyId,
+            onError = onError,
+            onSubmit = onSubmit,
+            setIsLoading = {}
+        )
         testDispatcher.scheduler.advanceUntilIdle()
-        coVerify { callerService.invite(any(), any(), any()) }
+        coVerify { callerService.invite(any(), any()) }
         assertTrue(email == submittedEmail)
         assertTrue(startDate == submittedStartDate)
         assertTrue(endDate == submittedEndDate)
@@ -203,7 +206,7 @@ class InviteTenantViewModelTest {
 
     @Test
     fun `inviteTenant should call close and reset`() = runTest {
-        coEvery { callerService.invite(any(), any()) { } } returns fakeInviteOutput
+        coEvery { callerService.invite(any(), any()) } returns fakeInviteOutputValue
         val time = Date().time
         val startDate = time + 1000
         val endDate = time + 2000
@@ -217,7 +220,7 @@ class InviteTenantViewModelTest {
         val onError: () -> Unit = {}
         val onSubmit: (String, Long, Long) -> Unit = { _, _, _ -> }
 
-        viewModel.inviteTenant(close, propertyId, onError, onSubmit)
+        viewModel.inviteTenant(close, propertyId, onError, onSubmit, {})
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(closeCalled)
@@ -225,10 +228,8 @@ class InviteTenantViewModelTest {
         val formError = viewModel.invitationFormError.first()
         assertEquals("", form.email)
         assertTrue(startDate < form.startDate + 1000)
-        assertTrue(endDate < form.endDate + 2000)
+        assertTrue(endDate < form.endDate + 3000)
         assertFalse(formError.email)
         assertFalse(formError.date)
     }
 }
-
- */

@@ -10,6 +10,7 @@ import com.example.immotep.utils.RegexUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -17,7 +18,7 @@ import java.util.Locale
 data class InviteTenantInputForm(
     val email: String = "",
     val startDate: Long = Date().time,
-    val endDate: Long = Date().time
+    val endDate: Long = Date().time - 1000
 ) {
     fun toInviteInput(): InviteInput {
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
@@ -88,11 +89,12 @@ class InviteTenantViewModel(
         }
         viewModelScope.launch {
             try {
+                val invitationFormCopy = _invitationForm.value.copy()
                 setIsLoading(true)
                 close()
-                callerService.invite(propertyId, _invitationForm.value.toInviteInput())
-                onSubmit(_invitationForm.value.email, _invitationForm.value.startDate, _invitationForm.value.endDate)
                 reset()
+                callerService.invite(propertyId, invitationFormCopy.toInviteInput())
+                onSubmit(invitationFormCopy.email, invitationFormCopy.startDate, invitationFormCopy.endDate)
             } catch(e: Exception) {
                 onError()
                 println(e)

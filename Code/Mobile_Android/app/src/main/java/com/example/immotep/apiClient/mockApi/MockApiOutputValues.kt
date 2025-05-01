@@ -220,6 +220,10 @@ val fakeInviteOutput = InviteOutput(
     created_at = "test"
 )
 
+val fakeInviteOutputValue = CreateOrUpdateResponse(
+    id = fakeInviteOutput.id
+)
+
 val fakeProfileResponse =  ProfileResponse(
     id = "test123",
     email = "robin.denni@epitech.eu",
