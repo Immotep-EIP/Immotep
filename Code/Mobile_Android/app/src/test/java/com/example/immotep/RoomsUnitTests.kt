@@ -1,6 +1,7 @@
 package com.example.immotep
 
-/*
+
+import com.example.immotep.apiCallerServices.RoomType
 import com.example.immotep.inventory.Room
 import com.example.immotep.inventory.rooms.RoomsViewModel
 import io.mockk.coEvery
@@ -25,7 +26,7 @@ import org.junit.Test
 class RoomsViewModelTest {
 
     private val getRooms: () -> Array<Room> = mockk()
-    private val addRoom: suspend (String) -> String? = mockk()
+    private val addRoom: suspend (String, RoomType) -> String? = mockk()
     private val removeRoom: (String) -> Unit = mockk()
     private val closeInventory: () -> Unit = mockk()
     private val editRoom: (Room) -> Unit = mockk()
@@ -95,12 +96,13 @@ class RoomsViewModelTest {
     @Test
     fun `addARoom adds a room to allRooms`() = runTest {
         val newRoomName = "Kitchen"
+        val roomType = RoomType.kitchen
         val newRoomId = "3"
-        coEvery { addRoom(newRoomName) } returns newRoomId
+        coEvery { addRoom(newRoomName, roomType) } returns newRoomId
 
-        viewModel.addARoom(newRoomName)
+        viewModel.addARoom(newRoomName, roomType)
         testDispatcher.scheduler.advanceUntilIdle()
-        coVerify { addRoom(newRoomName) }
+        coVerify { addRoom(newRoomName, roomType) }
         assertEquals(1, viewModel.allRooms.size)
         assertTrue(viewModel.allRooms.first().name == newRoomName)
         assertTrue(viewModel.allRooms.first().id == newRoomId)
@@ -109,12 +111,17 @@ class RoomsViewModelTest {
     @Test
     fun `addARoom with null roomId does not add a room`() = runTest {
         val newRoomName = "Kitchen"
-        coEvery { addRoom(newRoomName) } returns null
+        val roomType = RoomType.kitchen
+        coEvery { addRoom(newRoomName, roomType) } returns null
 
-        viewModel.addARoom(newRoomName)
-
-        coVerify { addRoom(newRoomName) }
-        assertTrue(viewModel.allRooms.isEmpty())
+        try {
+            viewModel.addARoom(newRoomName, roomType)
+            assertTrue(false)
+        } catch (e : Exception) {
+            assertEquals("impossible_to_add_room", e.message)
+            coVerify { addRoom(newRoomName, roomType) }
+            assertTrue(viewModel.allRooms.isEmpty())
+        }
     }
 
     @Test
@@ -149,5 +156,3 @@ class RoomsViewModelTest {
         assertNull(viewModel.currentlyOpenRoom.first())
     }
 }
-
- */
