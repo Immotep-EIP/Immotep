@@ -66,33 +66,6 @@ class ProfileViewModel(
         }
     }
 
-    fun setEmail(email: String) {
-        _infos.value = _infos.value.copy(email = email)
-    }
-
-    fun setFirstName(firstName: String) {
-        _infos.value = _infos.value.copy(firstname = firstName)
-    }
-
-    fun setLastName(lastName: String) {
-        _infos.value = _infos.value.copy(lastname = lastName)
-    }
-
-    fun updateProfile() {
-        viewModelScope.launch {
-            _apiError.value = false
-            _isLoading.value = true
-            try {
-                apiCaller.updateProfile(_infos.value.toProfileUpdateInput())
-            } catch (e: Exception) {
-                _apiError.value = true
-                println(e)
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
     fun logout() {
         viewModelScope.launch {
             authApiCaller.onLogout(navController)

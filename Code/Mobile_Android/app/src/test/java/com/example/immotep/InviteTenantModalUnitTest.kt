@@ -67,8 +67,9 @@ class InviteTenantViewModelTest {
         val form = viewModel.invitationForm.first()
         val formError = viewModel.invitationFormError.first()
         assertEquals("", form.email)
-        assertTrue(Date().time == form.startDate || Date().time + 1 == form.startDate || Date().time - 1 == form.startDate)
-        assertEquals(Date().time - 1000, form.endDate)
+        val testDate = Date().time
+        assertTrue(testDate == form.startDate || testDate + 1 == form.startDate || testDate - 1 == form.startDate)
+        assertTrue(testDate - 1000 == form.endDate || testDate - 999 == form.endDate || testDate - 1001 == form.endDate)
         assertFalse(formError.email)
         assertFalse(formError.date)
     }

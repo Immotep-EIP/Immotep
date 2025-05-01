@@ -1,6 +1,6 @@
 package com.example.immotep
 
-/*
+
 import androidx.activity.result.launch
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -9,6 +9,7 @@ import com.example.immotep.apiCallerServices.ProfileCallerService
 import com.example.immotep.apiCallerServices.ProfileResponse
 import com.example.immotep.apiClient.ApiService
 import com.example.immotep.apiClient.mockApi.fakeProfileResponse
+import com.example.immotep.login.dataStore
 import com.example.immotep.profile.ProfileState
 import com.example.immotep.profile.ProfileViewModel
 import io.mockk.Runs
@@ -43,9 +44,10 @@ class ProfileViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { navController.context.dataStore } returns mockk(relaxed = true)
+        every { navController.context } returns mockk(relaxed = true)
         viewModel = ProfileViewModel(navController, apiService)
 
-        // Mock the private apiCaller
         val apiCallerField = viewModel::class.java.getDeclaredField("apiCaller")
         apiCallerField.isAccessible = true
         apiCallerField.set(viewModel, apiCaller)
@@ -53,11 +55,11 @@ class ProfileViewModelTest {
 
     @Test
     fun `initProfile success updates infos`() = runTest {
-        coEvery { apiCaller.getProfile(any()) } returns fakeProfileResponse
+        coEvery { apiCaller.getProfile() } returns fakeProfileResponse
 
         viewModel.initProfile()
 
-        coVerify { apiCaller.getProfile(any()) }
+        coVerify { apiCaller.getProfile() }
 
         assertTrue(viewModel.infos.first().email == fakeProfileResponse.email)
         assertTrue(viewModel.infos.first().firstname == fakeProfileResponse.firstname)
@@ -68,65 +70,12 @@ class ProfileViewModelTest {
 
     @Test
     fun `initProfile api error sets apiError`() = runTest {
-        coEvery { apiCaller.getProfile(any()) } throws Exception()
+        coEvery { apiCaller.getProfile() } throws Exception()
 
         viewModel.initProfile()
 
-        coVerify { apiCaller.getProfile(any()) }
+        coVerify { apiCaller.getProfile() }
         assertTrue(viewModel.apiError.first())
     }
 
-    @Test
-    fun `setEmail updates email in infos`() = runTest {
-        viewModel.setEmail("newemail@example.com")
-
-        assertEquals("newemail@example.com", viewModel.infos.first().email)
-    }
-
-    @Test
-    fun `setFirstName updates firstname in infos`() = runTest {
-        viewModel.setFirstName("Jane")
-
-        assertEquals("Jane", viewModel.infos.first().firstname)
-    }
-
-    @Test
-    fun `setLastName updates lastname in infos`() = runTest {
-        viewModel.setLastName("Smith")
-
-        assertEquals("Smith", viewModel.infos.first().lastname)
-    }
-
-    @Test
-    fun `updateProfile success calls apiCaller updateProfile`() = runTest {
-        coEvery { apiCaller.updateProfile(any(), any()) } returns Unit
-        val initialState = ProfileState(
-            email = "test@example.com",
-            firstname = "John",
-            lastname = "Doe",
-            role = "user"
-        )
-        viewModel.setEmail(initialState.email)
-        viewModel.setFirstName(initialState.firstname)
-        viewModel.setLastName(initialState.lastname)
-
-        viewModel.updateProfile()
-
-        coVerify { apiCaller.updateProfile(initialState.toProfileUpdateInput(), any()) }
-        assertFalse(viewModel.apiError.first())
-        assertFalse(viewModel.isLoading.first())
-    }
-
-    @Test
-    fun `updateProfile api error sets apiError`() = runTest {
-        coEvery { apiCaller.updateProfile(any(), any()) } throws Exception()
-
-        viewModel.updateProfile()
-
-        coVerify { apiCaller.updateProfile(any(), any()) }
-        assertTrue(viewModel.apiError.first())
-        assertFalse(viewModel.isLoading.first())
-    }
 }
-
- */
