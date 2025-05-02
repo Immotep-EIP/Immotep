@@ -9,6 +9,7 @@ import AddWidgetModal from '@/components/Overview/AddWidgetModal.tsx'
 import MaintenanceWidget from '@/components/Widgets/MaintenanceWidget.tsx'
 import PropertiesNumber from '@/components/Widgets/PropertiesNumber.tsx'
 import PropertiesRepartition from '@/components/Widgets/PropertiesRepartition.tsx'
+import PropertiesDamages from '@/components/Widgets/PropertiesDamages.tsx'
 import { Layout, Widget, addWidgetType } from '@/interfaces/Widgets/Widgets.ts'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import style from './Overview.module.css'
@@ -33,7 +34,7 @@ const Overview: React.FC = () => {
     lg: [
       {
         i: '1',
-        name: 'Properties',
+        name: 'PropertiesNumber',
         x: 0,
         y: 0,
         w: 1,
@@ -48,6 +49,15 @@ const Overview: React.FC = () => {
         w: 1,
         h: 1,
         children: <PropertiesRepartition height={1} />
+      },
+      {
+        i: '3',
+        name: 'PropertiesDamages',
+        x: 0,
+        y: 1,
+        w: 2,
+        h: 2,
+        children: <PropertiesDamages height={2} />
       }
       // {
       //   i: '2',
@@ -82,6 +92,12 @@ const Overview: React.FC = () => {
         break
       case 'MaintenanceWidget':
         widgetContent = <MaintenanceWidget height={widget.height} />
+        break
+      case 'PropertiesRepartition':
+        widgetContent = <PropertiesRepartition height={widget.height} />
+        break
+      case 'PropertiesDamages':
+        widgetContent = <PropertiesDamages height={widget.height} />
         break
       default:
         widgetContent = <div> </div>
