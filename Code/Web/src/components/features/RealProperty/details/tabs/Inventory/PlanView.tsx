@@ -61,6 +61,10 @@ const PlanView: React.FC<PlanViewProps> = ({
       y: Math.floor(index / 3) * 4,
       w: 4,
       h: 4,
+      minW: 3,
+      maxW: 6,
+      minH: 3,
+      maxH: 6,
       static: false
     }))
   }
