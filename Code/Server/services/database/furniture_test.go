@@ -173,3 +173,25 @@ func TestArchiveFurniture_NoConnection(t *testing.T) {
 		database.ToggleArchiveFurniture("1", true)
 	})
 }
+
+// #############################################################################
+
+func TestDeleteFurniture(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Furniture.Expect(database.MockDeleteFurniture(c)).Returns(BuildTestFurniture("1"))
+
+	database.DeleteFurniture("1")
+}
+
+func TestDeleteFurniture_NotFound(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Furniture.Expect(database.MockDeleteFurniture(c)).Errors(db.ErrNotFound)
+
+	assert.Panics(t, func() {
+		database.DeleteFurniture("1")
+	})
+}

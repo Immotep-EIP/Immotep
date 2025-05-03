@@ -583,3 +583,91 @@ func TestGetArchivedFurnituresByRoom_PropertyNotFound(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, utils.PropertyNotFound, resp.Code)
 }
+
+func TestDeleteFurniture(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	room := BuildTestRoom("1", "1")
+	furniture := BuildTestFurniture("1", "1")
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomByID(c)).Returns(room)
+	m.Furniture.Expect(database.MockGetFurnitureByID(c)).Returns(furniture)
+	m.Furniture.Expect(database.MockDeleteFurniture(c)).Returns(furniture)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNoContent, w.Code)
+}
+
+func TestDeleteFurniture_NotFound(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	room := BuildTestRoom("1", "1")
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomByID(c)).Returns(room)
+	m.Furniture.Expect(database.MockGetFurnitureByID(c)).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.FurnitureNotFound, resp.Code)
+}
+
+func TestDeleteFurniture_RoomNotFound(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Room.Expect(database.MockGetRoomByID(c)).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.RoomNotFound, resp.Code)
+}
+
+func TestDeleteFurniture_PropertyNotFound(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Property.Expect(database.MockGetPropertyByID(c)).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/rooms/1/furnitures/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var resp utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.PropertyNotFound, resp.Code)
+}
