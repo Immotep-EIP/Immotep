@@ -283,3 +283,92 @@ func TestUploadDocument_NotYours(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, utils.PropertyNotYours, errorResponse.Code)
 }
+
+func TestDeleteDocument(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	activeLease := BuildTestLease("1")
+	document := BuildTestDocument()
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{activeLease})
+	m.Document.Expect(database.MockGetDocumentByID(c)).Returns(document)
+	m.Document.Expect(database.MockDeleteDocument(c)).Returns(document)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/leases/current/docs/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNoContent, w.Code)
+}
+
+func TestDeleteDocument_NotYours(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/leases/current/docs/1/", nil)
+	req.Header.Set("Oauth.claims.id", "2")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusForbidden, w.Code)
+	var errorResponse utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.PropertyNotYours, errorResponse.Code)
+}
+
+func TestDeleteDocument_NotFound(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	activeLease := BuildTestLease("1")
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).ReturnsMany([]db.LeaseModel{activeLease})
+	m.Document.Expect(database.MockGetDocumentByID(c)).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/leases/current/docs/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var errorResponse utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.DocumentNotFound, errorResponse.Code)
+}
+
+func TestDeleteDocument_NoActiveLease(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	m.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+	m.Lease.Expect(database.MockGetCurrentActiveLeaseByProperty(c)).Errors(db.ErrNotFound)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/v1/owner/properties/1/leases/current/docs/1/", nil)
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	var errorResponse utils.Error
+	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	require.NoError(t, err)
+	assert.Equal(t, utils.NoActiveLease, errorResponse.Code)
+}
