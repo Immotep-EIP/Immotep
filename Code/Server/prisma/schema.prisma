@@ -108,7 +108,7 @@ model damage {
 
     lease       lease   @relation(fields: [lease_id], references: [id])
     lease_id    String
-    room        room    @relation(fields: [room_id], references: [id])
+    room        room    @relation(fields: [room_id], references: [id], onDelete: Cascade)
     room_id     String
 
     pictures    image[]
@@ -184,7 +184,7 @@ model room {
     type        roomType
     archived    Boolean  @default(false)
 
-    property    property @relation(fields: [property_id], references: [id])
+    property    property @relation(fields: [property_id], references: [id], onDelete: Cascade)
     property_id String
 
     furnitures  furniture[]
@@ -200,7 +200,7 @@ model furniture {
     quantity  Int    @default(1)
     archived  Boolean  @default(false)
 
-    room      room   @relation(fields: [room_id], references: [id])
+    room      room   @relation(fields: [room_id], references: [id], onDelete: Cascade)
     room_id   String
 
     furnitureStates furnitureState[]
@@ -226,9 +226,9 @@ model roomState {
     state       state
     note        String
 
-    report    inventoryReport @relation(fields: [report_id], references: [id])
+    report    inventoryReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
     report_id String
-    room      room            @relation(fields: [room_id], references: [id])
+    room      room            @relation(fields: [room_id], references: [id], onDelete: Cascade)
     room_id   String
 
     pictures image[]
@@ -242,9 +242,9 @@ model furnitureState {
     state       state
     note        String
 
-    report         inventoryReport @relation(fields: [report_id], references: [id])
+    report         inventoryReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
     report_id      String
-    furniture      furniture       @relation(fields: [furniture_id], references: [id])
+    furniture      furniture       @relation(fields: [furniture_id], references: [id], onDelete: Cascade)
     furniture_id   String
 
     pictures image[]

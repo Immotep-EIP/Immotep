@@ -91,3 +91,19 @@ func MockArchiveRoom(c *services.PrismaDB) db.RoomMockExpectParam {
 		db.Room.Archived.Set(true),
 	)
 }
+
+func DeleteRoom(id string) {
+	pdb := services.DBclient
+	_, err := pdb.Client.Room.FindUnique(
+		db.Room.ID.Equals(id),
+	).Delete().Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func MockDeleteRoom(c *services.PrismaDB) db.RoomMockExpectParam {
+	return c.Client.Room.FindUnique(
+		db.Room.ID.Equals("1"),
+	).Delete()
+}

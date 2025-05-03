@@ -2129,6 +2129,43 @@ paths:
       tags:
       - inventory
   /owner/properties/{property_id}/rooms/{room_id}/:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a room by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Deleted room ID
+          schema:
+            $ref: '#/definitions/models.IdResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Delete room by ID
+      tags:
+      - inventory
     get:
       consumes:
       - application/json
@@ -2307,6 +2344,48 @@ paths:
       tags:
       - inventory
   /owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a furniture by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      - description: Furniture ID
+        in: path
+        name: furniture_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Deleted furniture ID
+          schema:
+            $ref: '#/definitions/models.IdResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Furniture not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Delete furniture by ID
+      tags:
+      - inventory
     get:
       consumes:
       - application/json
