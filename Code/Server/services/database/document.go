@@ -60,3 +60,19 @@ func MockCreateDocument(c *services.PrismaDB, document db.DocumentModel) db.Docu
 		db.Document.Lease.Link(db.Lease.ID.Equals(document.LeaseID)),
 	)
 }
+
+func DeleteDocument(id string) {
+	pdb := services.DBclient
+	_, err := pdb.Client.Document.FindUnique(
+		db.Document.ID.Equals(id),
+	).Delete().Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func MockDeleteDocument(c *services.PrismaDB) db.DocumentMockExpectParam {
+	return c.Client.Document.FindUnique(
+		db.Document.ID.Equals("1"),
+	).Delete()
+}

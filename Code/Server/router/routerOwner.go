@@ -77,7 +77,7 @@ func registerOwnerLeaseRoutes(leases *gin.RouterGroup) {
 			{
 				docId.Use(middlewares.CheckDocumentLeaseOwnership("doc_id"))
 				docId.GET("/", controllers.GetDocument)
-				// document.DELETE("/:doc_id/", controllers.DeleteDocument)
+				docId.DELETE("/", controllers.DeleteDocument)
 			}
 		}
 

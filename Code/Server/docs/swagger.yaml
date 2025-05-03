@@ -1663,6 +1663,48 @@ paths:
       tags:
       - document
   /owner/properties/{property_id}/leases/{lease_id}/docs/{doc_id}/:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a document by its ID
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Lease ID or `current`
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Document ID
+        in: path
+        name: doc_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Document deleted
+          schema:
+            $ref: '#/definitions/models.DocumentResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Document not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Delete document
+      tags:
+      - document
     get:
       consumes:
       - application/json

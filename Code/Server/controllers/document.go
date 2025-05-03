@@ -89,3 +89,25 @@ func GetDocument(c *gin.Context) {
 	doc, _ := c.MustGet("document").(db.DocumentModel)
 	c.JSON(http.StatusOK, models.DbDocumentToResponse(doc))
 }
+
+// DeleteDocument godoc
+//
+//	@Summary		Delete document
+//	@Description	Delete a document by its ID
+//	@Tags			document
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Param			lease_id	path		string					true	"Lease ID or `current`"
+//	@Param			doc_id		path		string					true	"Document ID"
+//	@Success		204			{object}	models.DocumentResponse	"Document deleted"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"Document not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/docs/{doc_id}/ [delete]
+func DeleteDocument(c *gin.Context) {
+	doc, _ := c.MustGet("document").(db.DocumentModel)
+	database.DeleteDocument(doc.ID)
+	c.JSON(http.StatusNoContent, nil)
+}
