@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
 import { Button } from 'antd'
 
@@ -7,7 +7,7 @@ import MoveWidgetIcon from '@/assets/icons/move.png'
 import PageTitle from '@/components/PageText/Title.tsx'
 import PropertiesNumber from '@/components/Widgets/PropertiesNumber.tsx'
 import PropertiesRepartition from '@/components/Widgets/PropertiesRepartition.tsx'
-import PropertiesDamages from '@/components/Widgets/PropertiesDamages.tsx'
+import LastMessages from '@/components/Widgets/LastMessages.tsx'
 import { Layout, Widget } from '@/interfaces/Widgets/Widgets.ts'
 import PageMeta from '@/components/PageMeta/PageMeta'
 import style from './Overview.module.css'
@@ -56,12 +56,12 @@ const Overview: React.FC = () => {
       },
       {
         i: '3',
-        name: 'PropertiesDamages',
+        name: 'LastMessages',
         x: 0,
         y: 1,
         w: 2,
         h: 2,
-        children: <PropertiesDamages height={2} />
+        children: <LastMessages height={2} />
       }
     ]
   }

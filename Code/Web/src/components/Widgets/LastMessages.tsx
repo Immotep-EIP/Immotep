@@ -1,13 +1,16 @@
 import React from 'react'
 
 import { Badge } from 'antd'
+import { useNavigate } from 'react-router-dom'
 import ArrowRight from '@/assets/icons/arrowRight.png'
 import { WidgetProps } from '@/interfaces/Widgets/Widgets.ts'
-import style from './PropertiesDamages.module.css'
+import NavigationEnum from '@/enums/NavigationEnum'
+import style from './LastMessages.module.css'
 
-const PropertiesDamages: React.FC<WidgetProps> = ({ height }) => {
+const LastMessages: React.FC<WidgetProps> = ({ height }) => {
   const rowHeight = 120
   const pixelHeight = height * rowHeight
+  const navigate = useNavigate()
 
   const messages = [
     {
@@ -40,6 +43,16 @@ const PropertiesDamages: React.FC<WidgetProps> = ({ height }) => {
           <div
             key={`${message.expeditor}-${message}`}
             className={style.messageContainer}
+            onClick={() => {
+              navigate(NavigationEnum.MESSAGES)
+            }}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === 'Enter') {
+                navigate(NavigationEnum.MESSAGES)
+              }
+            }}
+            role="button"
+            tabIndex={0}
           >
             <div className={style.messageInfosContainer}>
               <span className={style.expeditorText}>{message.expeditor}</span>
@@ -77,4 +90,4 @@ const PropertiesDamages: React.FC<WidgetProps> = ({ height }) => {
   )
 }
 
-export default PropertiesDamages
+export default LastMessages
