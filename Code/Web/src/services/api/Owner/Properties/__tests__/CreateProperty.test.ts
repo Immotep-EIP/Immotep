@@ -32,6 +32,9 @@ describe('CreatePropertyFunction', () => {
       nb_damage: 0,
       status: 'available',
       apartment_number: '914',
+      start_date: '2023-01-01',
+      end_date: '2023-12-31',
+      tenant: 'tenant123',
       lease: {
         active: true,
         created_at: new Date().toDateString(),

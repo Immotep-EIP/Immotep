@@ -1,4 +1,3 @@
-import { UploadProps } from 'antd'
 import { Lease } from './Lease/Lease'
 
 export interface CreatePropertyPayload {
@@ -29,6 +28,7 @@ export interface PropertyDetails {
   created_at: string
   deposit_price: number
   id: string
+  // invite
   lease: Lease
   name: string
   nb_damage: number
@@ -42,6 +42,42 @@ export interface PropertyDetails {
   tenant: string
 }
 
-export interface PropertyFormFieldsProps {
-  uploadProps: UploadProps
+export interface CardComponentProps {
+  realProperty: any
+  t: (key: string) => string
+}
+
+export interface RealPropertyCreateProps {
+  showModalCreate: boolean
+  setShowModalCreate: (show: boolean) => void
+  setIsPropertyCreated: (isCreated: boolean) => void
+}
+
+export interface RealPropertyUpdateProps {
+  propertyData: PropertyDetails
+  isModalUpdateOpen: boolean
+  setIsModalUpdateOpen: (show: boolean) => void
+  setIsPropertyUpdated: (isCreated: boolean) => void
+}
+
+export interface DetailsPartProps {
+  propertyData: PropertyDetails
+  showModal: () => void
+  propertyId: string
+  showModalUpdate: () => void
+}
+
+export interface PropertyImageProps {
+  status: string
+  picture: string | null
+  isLoading: boolean
+}
+
+export interface PropertyHeaderProps {
+  onShowModal: () => void
+  onShowModalUpdate: () => void
+  onEndContract: () => void
+  onCancelInvitation: () => void
+  onRemoveProperty: () => void
+  propertyStatus: string
 }

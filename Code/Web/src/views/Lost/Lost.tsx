@@ -3,7 +3,7 @@ import { Button, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import useNavigation from '@/hooks/Navigation/useNavigation'
-import PageMeta from '@/components/PageMeta/PageMeta'
+import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import styles from './Lost.module.css'
 
 const { Title, Text } = Typography

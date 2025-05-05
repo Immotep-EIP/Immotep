@@ -1,4 +1,3 @@
-import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { message } from 'antd'
@@ -37,11 +36,36 @@ describe('RealPropertyUpdate Component', () => {
     country: 'Test Country',
     area_sqm: 100,
     rental_price_per_month: 1000,
-    deposit_price: 2000
+    deposit_price: 2000,
+    archived: false,
+    created_at: '2024-03-10T10:00:00Z',
+    owner_id: '1',
+    picture_id: '1',
+    nb_damage: 0,
+    status: 'active',
+    start_date: '2024-03-10T10:00:00Z',
+    end_date: '2024-03-10T11:00:00Z',
+    tenant: 'tenant123',
+    lease: {
+      active: true,
+      created_at: '2024-03-10T10:00:00Z',
+      start_date: '2024-03-10T10:00:00Z',
+      end_date: '2024-03-10T11:00:00Z',
+      id: 'lease123',
+      owner_email: 'owner@example.com',
+      owner_id: 'owner123',
+      owner_name: 'John Owner',
+      property_id: '1',
+      property_name: 'Test Property',
+      tenant_email: 'tenant123',
+      tenant_id: 'tenant123',
+      tenant_name: 'Jane Tenant'
+    }
   }
 
   const mockSetIsModalUpdateOpen = jest.fn()
   const mockSetIsPropertyUpdated = jest.fn()
+  const mockUpdateCache = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -53,9 +77,11 @@ describe('RealPropertyUpdate Component', () => {
       uploadProps: {},
       imageBase64: 'mocked-image-base64'
     })
-    ;(useImageCache as jest.Mock).mockReturnValue({
-      updateCache: jest.fn()
-    })
+    ;(useImageCache as jest.Mock).mockImplementation(() => ({
+      updateCache: mockUpdateCache,
+      data: null,
+      isLoading: false
+    }))
   })
 
   const renderComponent = () =>
@@ -117,9 +143,7 @@ describe('RealPropertyUpdate Component', () => {
         'mocked-image-base64',
         '1'
       )
-      expect(useImageCache().updateCache).toHaveBeenCalledWith(
-        'mocked-image-base64'
-      )
+      expect(mockUpdateCache).toHaveBeenCalledWith('mocked-image-base64')
       expect(mockSetIsModalUpdateOpen).toHaveBeenCalledWith(false)
       expect(message.success).toHaveBeenCalledWith(
         'pages.real_property.update_real_property.property_updated'

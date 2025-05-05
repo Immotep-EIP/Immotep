@@ -3,16 +3,11 @@ import { Form, Button, Modal, message } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import useProperties from '@/hooks/Property/useProperties'
-import PropertyFormFields from '@/components/RealProperty/PropertyForm/PropertyFormFields'
+import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import useImageUpload from '@/hooks/Image/useImageUpload'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
+import { RealPropertyCreateProps } from '@/interfaces/Property/Property'
 import style from './RealPropertyCreate.module.css'
-
-interface RealPropertyCreateProps {
-  showModalCreate: boolean
-  setShowModalCreate: (show: boolean) => void
-  setIsPropertyCreated: (isCreated: boolean) => void
-}
 
 const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
   showModalCreate,

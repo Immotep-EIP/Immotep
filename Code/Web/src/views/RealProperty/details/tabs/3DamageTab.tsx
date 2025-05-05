@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { Empty, Image, Spin, Table, Tag, Typography } from 'antd'
 import type { TableProps } from 'antd'
 import { EyeOutlined } from '@ant-design/icons'
-import style from './3DamageTab.module.css'
 import useDamages from '@/hooks/Property/useDamages'
 import { usePropertyId } from '@/context/propertyIdContext'
 import base64ToFileAsString from '@/utils/base64/baseToFileAsString'
+import style from './3DamageTab.module.css'
 
 interface DataType {
   key: string
@@ -126,7 +126,7 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       <div className={style.tabContentEmpty}>
         <Empty
           image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          styles={{ image: { height: 60 } }}
+          imageStyle={{ height: 60 }}
           description={
             <Typography.Text>
               {t('pages.real_property.error.no_tenant_linked')}
