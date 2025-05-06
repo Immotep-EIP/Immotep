@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Button, Modal, Form, message, Spin, Empty, Typography } from 'antd'
 import { usePropertyId } from '@/context/propertyIdContext'
 import useDocument from '@/hooks/Property/useDocument'
-import UploadForm from '@/components/RealProperty/details/tabs/Documents/UploadForm'
-import DocumentList from '@/components/RealProperty/details/tabs/Documents/DocumentList'
+import UploadForm from '@/components/features/RealProperty/details/tabs/Documents/UploadForm'
+import DocumentList from '@/components/features/RealProperty/details/tabs/Documents/DocumentList'
 import style from './1DocumentsTab.module.css'
 
 interface DocumentsTabProps {
@@ -77,7 +77,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       <div className={style.tabContentEmpty}>
         <Empty
           image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          styles={{ image: { height: 60 } }}
+          imageStyle={{ height: 60 }}
           description={
             <Typography.Text>
               {t('pages.real_property.error.no_tenant_linked')}

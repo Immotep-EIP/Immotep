@@ -31,6 +31,9 @@ describe('UpdatePropertyFunction', () => {
     picture_id: '1',
     nb_damage: 0,
     status: 'active',
+    start_date: '2024-03-10T10:00:00Z',
+    end_date: '2024-03-10T11:00:00Z',
+    tenant: 'tenant123',
     lease: {
       active: true,
       created_at: '2024-03-10T10:00:00Z',

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import AuthentificationPage from '@/components/AuthentificationPage/AuthentificationPage'
+import AuthentificationPage from '@/components/features/authentication/AuthentificationPage/AuthentificationPage'
 
 jest.mock('@/assets/icons/KeyzLogo.svg', () => 'mockedLogoPath')
 

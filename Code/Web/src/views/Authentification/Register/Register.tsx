@@ -9,9 +9,9 @@ import useNavigation from '@/hooks/Navigation/useNavigation'
 import '@/App.css'
 import { register } from '@/services/api/Authentification/AuthApi'
 import { UserRegisterPayload } from '@/interfaces/User/User'
-import PageMeta from '@/components/PageMeta/PageMeta'
-import DividedPage from '@/components/DividedPage/DividedPage'
-import PageTitle from '@/components/PageText/Title'
+import PageMeta from '@/components/ui/PageMeta/PageMeta'
+import DividedPage from '@/components/layout/DividedPage/DividedPage'
+import PageTitle from '@/components/ui/PageText/Title'
 import style from './Register.module.css'
 
 const Register: React.FC = () => {

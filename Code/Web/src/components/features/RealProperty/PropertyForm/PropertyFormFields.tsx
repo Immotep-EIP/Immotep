@@ -1,13 +1,9 @@
-import React from 'react'
-import { Form, Input, InputNumber, Upload, Button } from 'antd'
+import { Form, Input, InputNumber, Upload, Button, UploadProps } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { PropertyFormFieldsProps } from '@/interfaces/Property/Property'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
 
-const PropertyFormFields: React.FC<PropertyFormFieldsProps> = ({
-  uploadProps
-}) => {
+const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
   const { t } = useTranslation()
 
   return (
@@ -113,7 +109,7 @@ const PropertyFormFields: React.FC<PropertyFormFieldsProps> = ({
         label={t('components.input.picture.label')}
         name="picture"
       >
-        <Upload {...uploadProps} fileList={uploadProps.fileList}>
+        <Upload {...uploadProps}>
           <Button icon={<UploadOutlined />}>
             {t('components.input.picture.placeholder')}
           </Button>

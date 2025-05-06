@@ -1,96 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Badge, Button, Empty, Typography, Switch } from 'antd'
+import { Button, Empty, Typography, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
 
-import useNavigation from '@/hooks/Navigation/useNavigation'
 import useProperties from '@/hooks/Property/useProperties'
-
-import locationIcon from '@/assets/icons/location.svg'
-
-import PageTitle from '@/components/PageText/Title.tsx'
-import defaultHouse from '@/assets/images/DefaultHouse.jpg'
-import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
-import useImageCache from '@/hooks/Image/useImageCache'
-import CardPropertyLoader from '@/components/Loader/CardPropertyLoader'
-import PageMeta from '@/components/PageMeta/PageMeta'
-import { TenantStatusEnum } from '@/enums/PropertyEnum'
-import style from './RealProperty.module.css'
+import PageTitle from '@/components/ui/PageText/Title'
+import CardPropertyLoader from '@/components/ui/Loader/CardPropertyLoader'
+import PageMeta from '@/components/ui/PageMeta/PageMeta'
+import CardComponent from '@/components/features/RealProperty/PropertyCard'
 import RealPropertyCreate from './create/RealPropertyCreate'
-
-interface CardComponentProps {
-  realProperty: any
-  t: (key: string) => string
-}
-
-const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
-  const { goToRealPropertyDetails } = useNavigation()
-
-  const { data: picture, isLoading } = useImageCache(
-    realProperty.id,
-    GetPropertyPicture
-  )
-
-  return (
-    <div
-      className={style.card}
-      key={realProperty.id}
-      role="button"
-      tabIndex={0}
-      onClick={() => goToRealPropertyDetails(realProperty.id)}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          goToRealPropertyDetails(realProperty.id)
-        }
-      }}
-    >
-      <div className={style.cardContentContainer}>
-        <Badge.Ribbon
-          text={t(
-            TenantStatusEnum[
-              realProperty!.status as keyof typeof TenantStatusEnum
-            ].text || ''
-          )}
-          color={
-            TenantStatusEnum[
-              realProperty!.status as keyof typeof TenantStatusEnum
-            ].color || 'default'
-          }
-        >
-          <div className={style.cardPictureContainer}>
-            <img
-              src={isLoading ? defaultHouse : picture || defaultHouse}
-              alt="property"
-              className={style.cardPicture}
-            />
-          </div>
-        </Badge.Ribbon>
-        <div className={style.cardInfoContainer}>
-          <b className={style.cardText}>{realProperty.name}</b>
-          <div className={style.cardAddressContainer}>
-            <img src={locationIcon} alt="location" className={style.icon} />
-            <span className={style.cardText}>
-              {realProperty.address &&
-              realProperty.postal_code &&
-              realProperty.city
-                ? (() => {
-                    let fullAddress = ''
-                    if (realProperty.apartment_number) {
-                      fullAddress = `N° ${realProperty.apartment_number} - ${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
-                    } else {
-                      fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
-                    }
-                    return fullAddress.length > 40
-                      ? `${fullAddress.substring(0, 40)}...`
-                      : fullAddress
-                  })()
-                : '-----------'}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import style from './RealProperty.module.css'
 
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()

@@ -1,8 +1,7 @@
-import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { message } from 'antd'
-import RealPropertyCreate from '@/views/RealProperty/create/RealPropertyCreate' // Assurez-vous que le chemin est correct
+import RealPropertyCreate from '@/views/RealProperty/create/RealPropertyCreate'
 import useProperties from '@/hooks/Property/useProperties'
 import useImageUpload from '@/hooks/Image/useImageUpload'
 

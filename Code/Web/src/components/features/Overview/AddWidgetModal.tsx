@@ -14,8 +14,10 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
   const { t } = useTranslation()
 
   const widgetTypes = [
-    { label: 'User Info', value: 'UserInfoWidget' },
-    { label: 'Maintenance', value: 'MaintenanceWidget' }
+    { label: 'Maintenance', value: 'MaintenanceWidget' },
+    { label: 'Properties Number', value: 'PropertiesNumberWidget' },
+    { label: 'Properties Repartition', value: 'PropertiesRepartitionWidget' },
+    { label: 'Properties Damages', value: 'PropertiesDamagesWidget' }
   ]
 
   const onFinish = (values: addWidgetType) => {

@@ -5,7 +5,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import './translation/i18n.tsx'
 
 import NavigationEnum from '@/enums/NavigationEnum'
-import MainLayout from '@/components/MainLayout/MainLayout.tsx'
+import MainLayout from '@/components/layout/MainLayout/MainLayout'
 
 // ! AUTHENTIFICATION
 import { AuthProvider } from '@/context/authContext'
@@ -21,11 +21,11 @@ import MessagesContent from '@/views/Messages/Messages'
 
 // ! MAIN LAYOUT - HEADER
 import Settings from '@/views/Settings/Settings'
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
+import ProtectedRoute from '@/components/features/authentication/ProtectedRoute/ProtectedRoute'
 
-import Lost from './views/Lost/Lost.tsx'
-import SuccesPageRegisterTenant from './components/SuccesPage/SuccesPageRegisterTenant.tsx'
-import SuccesPageLoginTenant from './components/SuccesPage/SuccesPageLoginTenant.tsx'
+import Lost from '@/views/Lost/Lost'
+import SuccesPageRegisterTenant from '@/components/ui/SuccesPage/SuccesPageRegisterTenant'
+import SuccesPageLoginTenant from '@/components/ui/SuccesPage/SuccesPageLoginTenant'
 
 if ('serviceWorker' in navigator) {
   ;(async () => {
