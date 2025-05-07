@@ -84,7 +84,7 @@ class LoginViewModelTest {
         viewModel.updateEmailAndPassword("invalid-email", "password", false)
 
         // Act
-        viewModel.login()
+        viewModel.login({})
         advanceUntilIdle()
 
         // Assert
@@ -98,7 +98,7 @@ class LoginViewModelTest {
     fun `login should set password error if password is too short`() = runTest {
         viewModel.updateEmailAndPassword("test@example.com", "12", false)
 
-        viewModel.login()
+        viewModel.login({})
         advanceUntilIdle()
 
         val errorState = viewModel.errors.first()
@@ -116,7 +116,7 @@ class LoginViewModelTest {
             authService.onLogin(username = email, password = password)
         } returns Unit
 
-        viewModel.login()
+        viewModel.login({})
         advanceUntilIdle()
 
         coVerify {
@@ -135,7 +135,7 @@ class LoginViewModelTest {
             authService.onLogin(username = email, password = password)
         } throws Exception(errorMessage)
 
-        viewModel.login()
+        viewModel.login({})
         advanceUntilIdle()
 
         val errorState = viewModel.errors.first()
@@ -148,7 +148,7 @@ class LoginViewModelTest {
     fun `login should not call AuthService onLogin if there are errors`() = runTest {
         viewModel.updateEmailAndPassword("invalid-email", "12", false)
 
-        viewModel.login()
+        viewModel.login({})
         advanceUntilIdle()
 
         coVerify(exactly = 0) {

@@ -121,10 +121,23 @@ interface ApiService {
         @Path("leaseId") leaseId: String
     ): Array<Document>
 
+    @GET("${API_PREFIX}/tenant/leases/{leaseId}/docs/")
+    suspend fun getPropertyDocumentsTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("leaseId") leaseId: String
+    ): Array<Document>
+
     @POST("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/docs/")
     suspend fun uploadDocument(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String,
+        @Body document: DocumentInput
+    ): CreateOrUpdateResponse
+
+    @POST("${API_PREFIX}/tenant/leases/{leaseId}/docs/")
+    suspend fun uploadDocumentTenant(
+        @Header("Authorization") authHeader : String,
         @Path("leaseId") leaseId: String,
         @Body document: DocumentInput
     ): CreateOrUpdateResponse

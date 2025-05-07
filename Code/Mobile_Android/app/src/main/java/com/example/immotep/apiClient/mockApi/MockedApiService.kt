@@ -81,6 +81,13 @@ class MockedApiService : ApiService {
         return arrayOf(fakeDocument)
     }
 
+    override suspend fun getPropertyDocumentsTenant(
+        authHeader: String,
+        leaseId: String
+    ): Array<Document> {
+        return arrayOf(fakeDocument)
+    }
+
     override suspend fun updateProperty(
         authHeader : String,
         addPropertyInput: AddPropertyInput,
@@ -222,6 +229,16 @@ class MockedApiService : ApiService {
     override suspend fun uploadDocument(
         authHeader : String,
         propertyId: String,
+        leaseId: String,
+        document: DocumentInput
+    ): CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = "newDocumentId"
+        )
+    }
+
+    override suspend fun uploadDocumentTenant(
+        authHeader : String,
         leaseId: String,
         document: DocumentInput
     ): CreateOrUpdateResponse {

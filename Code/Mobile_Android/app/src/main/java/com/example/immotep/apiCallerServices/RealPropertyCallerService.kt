@@ -270,9 +270,13 @@ class RealPropertyCallerService (
     suspend fun getPropertyWithDetails(propertyId: String? = null): DetailedProperty = changeRetrofitExceptionByApiCallerException {
         if (this.isOwner()) {
             if (propertyId == null) throw Exception("Property id is null")
-            return@changeRetrofitExceptionByApiCallerException apiService.getProperty(getBearerToken(), propertyId).toDetailedProperty()
+            apiService.getProperty(getBearerToken(), propertyId).toDetailedProperty()
+        } else {
+            apiService.getPropertyTenant(
+                getBearerToken(),
+                "current"
+            ).toDetailedProperty()
         }
-        return@changeRetrofitExceptionByApiCallerException apiService.getPropertyTenant(getBearerToken(), "current").toDetailedProperty()
     }
 
     suspend fun updateProperty(
@@ -283,7 +287,11 @@ class RealPropertyCallerService (
     }
 
     suspend fun getPropertyDocuments(propertyId: String, leaseId : String): Array<Document> = changeRetrofitExceptionByApiCallerException {
-        apiService.getPropertyDocuments(getBearerToken(), propertyId, leaseId)
+        if (this.isOwner()) {
+            apiService.getPropertyDocuments(getBearerToken(), propertyId, leaseId)
+        } else {
+            apiService.getPropertyDocumentsTenant(getBearerToken(), "current")
+        }
     }
 
     suspend fun uploadDocument(
@@ -291,6 +299,10 @@ class RealPropertyCallerService (
         leaseId : String,
         document: DocumentInput
     ): CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
-        apiService.uploadDocument(getBearerToken(), propertyId, leaseId, document)
+        if (this.isOwner()) {
+            apiService.uploadDocument(getBearerToken(), propertyId, leaseId, document)
+        } else {
+            apiService.uploadDocumentTenant(getBearerToken(), "current", document)
+        }
     }
 }
