@@ -3331,6 +3331,74 @@ paths:
       summary: Get property's picture
       tags:
       - property
+  /tenant/leases/{lease_id}/property/rooms/:
+    get:
+      consumes:
+      - application/json
+      description: Get all rooms for a specific property, optionally filtered by archive
+        status
+      parameters:
+      - description: 'Archive status (default: false)'
+        in: query
+        name: archive
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of rooms
+          schema:
+            items:
+              $ref: '#/definitions/models.RoomResponse'
+            type: array
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get rooms by property ID
+      tags:
+      - inventory
+  /tenant/leases/{lease_id}/property/rooms/{room_id}/:
+    get:
+      consumes:
+      - application/json
+      description: Get room information by its ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Room data
+          schema:
+            $ref: '#/definitions/models.RoomResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get room by ID
+      tags:
+      - inventory
   /users/:
     get:
       description: Get all users information

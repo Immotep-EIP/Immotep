@@ -27,6 +27,8 @@ func registerTenantRoutes(tenant *gin.RouterGroup) {
 				property.GET("/", controllers.GetProperty)
 				property.GET("/picture/", controllers.GetPropertyPicture)
 				property.GET("/inventory/", controllers.GetPropertyInventory)
+				property.GET("/rooms/", controllers.GetRoomsByProperty)
+				property.GET("/rooms/:room_id/", middlewares.CheckRoomPropertyOwnership("room_id"), controllers.GetRoom)
 			}
 
 			damages := leaseId.Group("/damages/")

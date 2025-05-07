@@ -42,10 +42,11 @@ func GetPropertyByLease() gin.HandlerFunc {
 	}
 }
 
-func CheckRoomPropertyOwnership(propertyIdUrlParam string, roomIdUrlParam string) gin.HandlerFunc {
+func CheckRoomPropertyOwnership(roomIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		property, _ := c.MustGet("property").(db.PropertyModel)
 		room := database.GetRoomByID(c.Param(roomIdUrlParam))
-		if room == nil || room.PropertyID != c.Param(propertyIdUrlParam) {
+		if room == nil || room.PropertyID != property.ID {
 			utils.AbortSendError(c, http.StatusNotFound, utils.RoomNotFound, nil)
 			return
 		}
