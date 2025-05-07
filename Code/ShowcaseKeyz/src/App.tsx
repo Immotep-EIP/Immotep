@@ -1,6 +1,6 @@
 import { BrowserRouter as Router } from "react-router-dom";
-import HomePage from "./pages/Home/Home";
 import "./App.css";
+import HomePage from "./pages/Home/Home";
 import Navbar from "./components/Navbar/Navbar";
 import FeaturesPage from "./pages/Features/Features";
 import OurApplicationPage from "./pages/OurApplication/OurApplication";
@@ -28,9 +28,6 @@ function App() {
         <ContactUsPage />
       </div>
       <Footer />
-      {/* <button onClick={() => changeLanguage("en")}>EN</button>
-      <button onClick={() => changeLanguage("fr")}>FR</button>
-      <button onClick={() => changeLanguage("de")}>DE</button> */}
     </Router>
   );
 }

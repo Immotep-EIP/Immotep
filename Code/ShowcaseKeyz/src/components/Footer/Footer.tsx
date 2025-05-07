@@ -1,4 +1,7 @@
 import { useTranslation } from "react-i18next";
+import InstagramIcon from "../../assets/Instagram.png";
+import FacebookIcon from "../../assets/Facebook.png";
+import LinkedinIcon from "../../assets/Linkedin.png";
 import style from "./Footer.module.css";
 
 const Footer = () => {
@@ -10,9 +13,42 @@ const Footer = () => {
         <span className={style.appTitle}>{t("footer.title")}</span>
         <span className={style.appDesc}>{t("footer.description")}</span>
         <div className={style.iconsContainer}>
-          <div className={style.iconContainer}>Icon1</div>
-          <div className={style.iconContainer}>Icon2</div>
-          <div className={style.iconContainer}>Icon3</div>
+          <div className={style.iconContainer}>
+            <img
+              src={InstagramIcon}
+              alt="Instagram"
+              className={style.icon}
+              onClick={() =>
+                window.open("https://www.instagram.com/app.keyz/", "_blank")
+              }
+            />
+          </div>
+          <div className={style.iconContainer}>
+            <img
+              src={FacebookIcon}
+              alt="Facebook"
+              className={style.icon}
+              onClick={() =>
+                window.open(
+                  "https://www.facebook.com/profile.php?id=61575702764536",
+                  "_blank"
+                )
+              }
+            />
+          </div>
+          <div className={style.iconContainer}>
+            <img
+              src={LinkedinIcon}
+              alt="LinkedIn"
+              className={style.icon}
+              onClick={() =>
+                window.open(
+                  "https://www.linkedin.com/company/keyz-app/",
+                  "_blank"
+                )
+              }
+            />
+          </div>
         </div>
       </div>
 
