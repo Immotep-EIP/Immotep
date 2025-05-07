@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import styles from "./Navbar.module.css";
 import { useTranslation } from "react-i18next"; // Utilisation de i18next pour les traductions
+import LanguageSelector from "./LanguageSelector";
 
 export default function Navbar() {
   const { t } = useTranslation(); // Fonction de traduction fournie par i18next
@@ -70,6 +71,7 @@ export default function Navbar() {
           <a href="/demo" className={styles.demoButton}>
             {t("topbar.demo")}
           </a>
+          <LanguageSelector />
         </div>
 
         {/* Mobile menu button */}
@@ -128,6 +130,7 @@ export default function Navbar() {
         >
           {t("topbar.demo")}
         </a>
+        <LanguageSelector />
       </div>
     </nav>
   );
