@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router } from "react-router-dom";
+import HomePage from "./pages/Home/Home";
+import "./App.css";
+import Navbar from "./components/Navbar/Navbar";
+import { useTranslation } from "react-i18next";
+import FeaturesPage from "./pages/Features/Features";
+import OurApplicationPage from "./pages/OurApplication/OurApplication";
+import PricingPage from "./pages/Pricing/Pricing";
+import ContactUsPage from "./pages/ContactUs/ContactUs";
+import Footer from "./components/Footer/Footer";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router>
+      <Navbar />
+      <div id="home">
+        <HomePage />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div id="features">
+        <FeaturesPage />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <div id="our_app">
+        <OurApplicationPage />
+      </div>
+      <div id="pricing">
+        <PricingPage />
+      </div>
+      <div id="contact_us">
+        <ContactUsPage />
+      </div>
+      <Footer />
+      {/* <button onClick={() => changeLanguage("en")}>EN</button>
+      <button onClick={() => changeLanguage("fr")}>FR</button>
+      <button onClick={() => changeLanguage("de")}>DE</button> */}
+    </Router>
+  );
 }
 
-export default App
+export default App;
