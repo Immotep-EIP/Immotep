@@ -489,11 +489,8 @@
       "properties_number": "Nombre de propriétés",
       "real_properties": "Propriétés"
     },
-    "maintenance": {
-      "title": "Maintenance",
-      "no_maintenance": "Aucune maintenance en cours",
-      "no_maintenance_description": "Vous n'avez aucune maintenance en cours pour le moment",
-      "complete_button": "Confirmer"
+    "reminders": {
+      "no_reminders": "Vous n'avez pas de rappels pour le moment"
     }
   }
 }
