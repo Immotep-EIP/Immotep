@@ -77,7 +77,7 @@ func registerOwnerLeaseRoutes(leases *gin.RouterGroup) {
 			{
 				docId.Use(middlewares.CheckDocumentLeaseOwnership("doc_id"))
 				docId.GET("/", controllers.GetDocument)
-				// document.DELETE("/:doc_id/", controllers.DeleteDocument)
+				docId.DELETE("/", controllers.DeleteDocument)
 			}
 		}
 
@@ -111,6 +111,7 @@ func registerOwnerInventoryRoutes(propertyId *gin.RouterGroup) {
 		{
 			roomId.Use(middlewares.CheckRoomPropertyOwnership("property_id", "room_id"))
 			roomId.GET("/", controllers.GetRoom)
+			roomId.DELETE("/", controllers.DeleteRoom)
 			roomId.PUT("/archive/", controllers.ArchiveRoom)
 
 			furnitures := roomId.Group("/furnitures/")
@@ -122,6 +123,7 @@ func registerOwnerInventoryRoutes(propertyId *gin.RouterGroup) {
 				{
 					furnitureId.Use(middlewares.CheckFurnitureRoomOwnership("room_id", "furniture_id"))
 					furnitureId.GET("/", controllers.GetFurniture)
+					furnitureId.DELETE("/", controllers.DeleteFurniture)
 					furnitureId.PUT("/archive/", controllers.ArchiveFurniture)
 				}
 			}

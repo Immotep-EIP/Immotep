@@ -125,3 +125,25 @@ func TestCreateDocument_NoConnection(t *testing.T) {
 		database.CreateDocument(document, document.LeaseID)
 	})
 }
+
+// #############################################################################
+
+func TestDeleteDocument(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Document.Expect(database.MockDeleteDocument(c)).Returns(BuildTestDocument("1"))
+
+	database.DeleteDocument("1")
+}
+
+func TestDeleteDocument_NotFound(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Document.Expect(database.MockDeleteDocument(c)).Errors(db.ErrNotFound)
+
+	assert.Panics(t, func() {
+		database.DeleteDocument("1")
+	})
+}
