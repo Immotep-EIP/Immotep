@@ -5,9 +5,10 @@ import (
 	"strconv"
 
 	"immotep/backend/prisma/db"
+	"immotep/backend/services/minio"
 )
 
-func NewInventoryReportPDF(invReport db.InventoryReportModel, lease db.LeaseModel) ([]byte, error) {
+func NewInventoryReportPDF(invReport db.InventoryReportModel, lease db.LeaseModel) (*File, error) {
 	report := NewPDF()
 
 	report.AddCenteredTitle("Inventory Report", H1)
@@ -30,12 +31,13 @@ func NewInventoryReportPDF(invReport db.InventoryReportModel, lease db.LeaseMode
 
 	addRooms(&report, invReport)
 
-	bytes, err := report.Output()
+	f, err := report.Output()
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
-	return bytes, nil
+	f.Filename = "inventory_report_" + invReport.Date.Format("2006-01-02") + "_" + invReport.ID + ".pdf"
+	return f, nil
 }
 
 func addRooms(report *PDF, invReport db.InventoryReportModel) {
@@ -48,7 +50,7 @@ func addRooms(report *PDF, invReport db.InventoryReportModel) {
 		report.AddText("Cleanliness: " + string(roomState.Cleanliness))
 		report.AddMultiLineText("Note: " + roomState.Note)
 		report.Ln(5)
-		report.AddImages(roomState.Pictures())
+		report.AddImages(minio.GetImageObjs(roomState.Pictures))
 
 		for _, furnitureState := range invReport.FurnitureStates() {
 			if furnitureState.Furniture().RoomID != roomState.RoomID {
@@ -59,7 +61,7 @@ func addRooms(report *PDF, invReport db.InventoryReportModel) {
 			report.AddText("Cleanliness: " + string(furnitureState.Cleanliness))
 			report.AddMultiLineText("Note: " + furnitureState.Note)
 			report.Ln(5)
-			report.AddImages(furnitureState.Pictures())
+			report.AddImages(minio.GetImageObjs(furnitureState.Pictures))
 		}
 	}
 }

@@ -30,29 +30,29 @@ type UserUpdateRequest struct {
 }
 
 type UserResponse struct {
-	ID               string      `json:"id"`
-	ProfilePictureID *string     `json:"profile_picture_id,omitempty"`
-	Email            string      `json:"email"`
-	Firstname        string      `json:"firstname"`
-	Lastname         string      `json:"lastname"`
-	Role             db.Role     `json:"role"`
-	CreatedAt        db.DateTime `json:"created_at"`
-	UpdatedAt        db.DateTime `json:"updated_at"`
+	ID                string      `json:"id"`
+	Email             string      `json:"email"`
+	Firstname         string      `json:"firstname"`
+	Lastname          string      `json:"lastname"`
+	Role              db.Role     `json:"role"`
+	ProfilePictureURL string      `json:"profile_picture_url"`
+	CreatedAt         db.DateTime `json:"created_at"`
+	UpdatedAt         db.DateTime `json:"updated_at"`
 }
 
-func (u *UserResponse) FromDbUser(model db.UserModel) {
+func (u *UserResponse) FromDbUser(model db.UserModel, ppURL string) {
 	u.ID = model.ID
-	u.ProfilePictureID = model.InnerUser.ProfilePictureID
 	u.Email = model.Email
 	u.Firstname = model.Firstname
 	u.Lastname = model.Lastname
 	u.Role = model.Role
+	u.ProfilePictureURL = ppURL
 	u.CreatedAt = model.CreatedAt
 	u.UpdatedAt = model.UpdatedAt
 }
 
-func DbUserToResponse(user db.UserModel) UserResponse {
+func DbUserToResponse(user db.UserModel, ppURL string) UserResponse {
 	var resp UserResponse
-	resp.FromDbUser(user)
+	resp.FromDbUser(user, ppURL)
 	return resp
 }

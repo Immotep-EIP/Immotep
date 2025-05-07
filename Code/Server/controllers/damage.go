@@ -1,30 +1,16 @@
 package controllers
 
 import (
-	"errors"
+	"mime/multipart"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
+	"immotep/backend/services/minio"
 	"immotep/backend/utils"
 )
-
-func getPictures(pics []string) ([]string, error) {
-	picturesId := make([]string, 0, len(pics))
-
-	for i, pic := range pics {
-		dbImage := models.StringToDbImage(pic)
-		if dbImage == nil {
-			return nil, errors.New("invalid base64 string at index " + strconv.Itoa(i))
-		}
-		newImage := database.CreateImage(*dbImage)
-		picturesId = append(picturesId, newImage.ID)
-	}
-	return picturesId, nil
-}
 
 // CreateDamage godoc
 //
@@ -56,14 +42,8 @@ func CreateDamage(c *gin.Context) {
 		return
 	}
 
-	picturesIds, imgErr := getPictures(req.Pictures)
-	if imgErr != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, imgErr)
-		return
-	}
-
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
-	res := database.CreateDamage(damage, lease.ID, picturesIds)
+	res := database.CreateDamage(damage, lease.ID)
 	c.JSON(http.StatusCreated, models.IdResponse{ID: res.ID})
 }
 
@@ -85,7 +65,9 @@ func CreateDamage(c *gin.Context) {
 func GetDamagesByProperty(c *gin.Context) {
 	fixed := c.DefaultQuery("fixed", "false") == utils.Strue
 	damages := database.GetDamagesByPropertyID(c.Param("property_id"), fixed)
-	c.JSON(http.StatusOK, utils.Map(damages, models.DbDamageToResponse))
+	c.JSON(http.StatusOK, utils.Map(damages, func(damage db.DamageModel) models.DamageResponse {
+		return models.DbDamageToResponse(damage, minio.GetImageURLs(damage.Pictures))
+	}))
 }
 
 // GetDamagesByLease godoc
@@ -109,7 +91,9 @@ func GetDamagesByLease(c *gin.Context) {
 	fixed := c.DefaultQuery("fixed", "false") == utils.Strue
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
 	damages := database.GetDamagesByLeaseID(lease.ID, fixed)
-	c.JSON(http.StatusOK, utils.Map(damages, models.DbDamageToResponse))
+	c.JSON(http.StatusOK, utils.Map(damages, func(damage db.DamageModel) models.DamageResponse {
+		return models.DbDamageToResponse(damage, minio.GetImageURLs(damage.Pictures))
+	}))
 }
 
 // GetDamage godoc
@@ -131,7 +115,7 @@ func GetDamagesByLease(c *gin.Context) {
 //	@Router			/tenant/leases/{lease_id}/damages/{damage_id}/ [get]
 func GetDamage(c *gin.Context) {
 	damage, _ := c.MustGet("damage").(db.DamageModel)
-	c.JSON(http.StatusOK, models.DbDamageToResponse(damage))
+	c.JSON(http.StatusOK, models.DbDamageToResponse(damage, minio.GetImageURLs(damage.Pictures)))
 }
 
 // UpdateDamageOwner godoc
@@ -180,7 +164,6 @@ func UpdateDamageOwner(c *gin.Context) {
 //	@Tags			damage
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string								true	"Property ID"
 //	@Param			lease_id	path		string								true	"Lease ID"
 //	@Param			damage_id	path		string								true	"Damage ID"
 //	@Param			damages		body		models.DamageTenantUpdateRequest	true	"Damage update request"
@@ -204,18 +187,62 @@ func UpdateDamageTenant(c *gin.Context) {
 		return
 	}
 
-	picturesIds, imgErr := getPictures(req.AddPictures)
-	if imgErr != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, imgErr)
-		return
-	}
-
-	newDamage := database.UpdateDamageTenant(damage, req, picturesIds)
+	newDamage := database.UpdateDamageTenant(damage, req)
 	if newDamage == nil {
 		utils.SendError(c, http.StatusConflict, utils.DamageAlreadyExists, nil)
 		return
 	}
 	c.JSON(http.StatusOK, models.IdResponse{ID: newDamage.ID})
+}
+
+// AddPicturesToDamage godoc
+//
+//	@Summary		Add pictures to damage
+//	@Description	Add pictures to a damage. Only tenant can add pictures.
+//	@Tags			damage
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Param			lease_id	path		string				true	"Lease ID"
+//	@Param			damage_id	path		string				true	"Damage ID"
+//	@Param			pictures	formData	[]file				true	"Files to upload"
+//	@Success		200			{object}	models.IdResponse	"Updated damage ID"
+//	@Failure		400			{object}	utils.Error			"Missing fields"
+//	@Failure		403			{object}	utils.Error			"Lease not yours"
+//	@Failure		404			{object}	utils.Error			"Damage not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/tenant/leases/{lease_id}/damages/{damage_id}/pictures/ [post]
+func AddPicturesToDamage(c *gin.Context) {
+	damage, _ := c.MustGet("damage").(db.DamageModel)
+	if damage.IsFixed() {
+		utils.SendError(c, http.StatusBadRequest, utils.CannotUpdateFixedDamage, nil)
+		return
+	}
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFile, err)
+		return
+	}
+
+	files := form.File["pictures"]
+	if len(files) == 0 {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFile, err)
+		return
+	}
+
+	picturePaths := getDamagePicturesPath(damage, files)
+	newDamage := database.AddPicturesToDamage(damage, picturePaths)
+	c.JSON(http.StatusOK, models.IdResponse{ID: newDamage.ID})
+}
+
+func getDamagePicturesPath(damage db.DamageModel, files []*multipart.FileHeader) []string {
+	picturePaths := make([]string, len(files))
+	for i, file := range files {
+		fileInfo := minio.UploadDamageImage(damage.ID, file)
+		picturePaths[i] = fileInfo.Key
+	}
+	return picturePaths
 }
 
 // FixDamage godoc

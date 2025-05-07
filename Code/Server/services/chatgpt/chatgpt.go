@@ -28,7 +28,7 @@ func buildImageContent(picture string) map[string]any {
 	return map[string]any{
 		"type": "image_url",
 		"image_url": map[string]any{
-			"url": "data:image/jpeg;base64," + picture,
+			"url": picture,
 		},
 	}
 }

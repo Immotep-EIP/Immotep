@@ -21,7 +21,6 @@ func registerOwnerRoutes(owner *gin.RouterGroup) {
 			propertyId.GET("/", controllers.GetProperty)
 			propertyId.PUT("/", controllers.UpdateProperty)
 			propertyId.PUT("/archive/", controllers.ArchiveProperty)
-			propertyId.GET("/picture/", controllers.GetPropertyPicture)
 			propertyId.PUT("/picture/", controllers.UpdatePropertyPicture)
 
 			// TODO: move to lease routes
@@ -70,14 +69,13 @@ func registerOwnerLeaseRoutes(leases *gin.RouterGroup) {
 
 		docs := leaseId.Group("/docs/")
 		{
-			docs.POST("/", controllers.UploadDocument)
+			docs.POST("/", controllers.UploadLeaseDocument)
 			docs.GET("/", controllers.GetAllDocumentsByLease)
 
-			docId := docs.Group("/:doc_id/")
+			docId := docs.Group("/:doc_name/")
 			{
-				docId.Use(middlewares.CheckDocumentLeaseOwnership("doc_id"))
-				docId.GET("/", controllers.GetDocument)
-				docId.DELETE("/", controllers.DeleteDocument)
+				// docId.GET("/", controllers.GetDocument)
+				docId.DELETE("/", controllers.DeleteLeaseDocument)
 			}
 		}
 
@@ -85,9 +83,15 @@ func registerOwnerLeaseRoutes(leases *gin.RouterGroup) {
 		{
 			reports.POST("/", controllers.CreateInventoryReport)
 			reports.GET("/", controllers.GetInventoryReportsByLease)
-			reports.GET("/:report_id/",
-				middlewares.CheckInventoryReportLeaseOwnership("report_id"),
-				controllers.GetInventoryReport)
+
+			reportId := reports.Group("/:report_id/")
+			{
+				reportId.Use(middlewares.CheckInventoryReportLeaseOwnership("report_id"))
+				reportId.POST("/rooms/", controllers.AddRoomStateToInventoryReport)
+				reportId.POST("/furnitures/", controllers.AddFurnitureStateToInventoryReport)
+				reportId.POST("/submit/", controllers.SubmitInventoryReport)
+				reportId.GET("/", controllers.GetInventoryReport)
+			}
 
 			// AI
 			reports.POST("/summarize/", controllers.GenerateSummary)

@@ -9,19 +9,13 @@ import (
 	"immotep/backend/utils"
 )
 
-func CreateDamage(damage db.DamageModel, leaseId string, picturesId []string) db.DamageModel {
-	params := make([]db.DamageSetParam, 0, len(picturesId))
-	for _, id := range picturesId {
-		params = append(params, db.Damage.Pictures.Link(db.Image.ID.Equals(id)))
-	}
-
+func CreateDamage(damage db.DamageModel, leaseId string) db.DamageModel {
 	pdb := services.DBclient
 	newDamage, err := pdb.Client.Damage.CreateOne(
 		db.Damage.Comment.Set(damage.Comment),
 		db.Damage.Priority.Set(damage.Priority),
 		db.Damage.Lease.Link(db.Lease.ID.Equals(leaseId)),
 		db.Damage.Room.Link(db.Room.ID.Equals(damage.RoomID)),
-		params...,
 	).Exec(pdb.Context)
 	if err != nil {
 		panic(err)
@@ -29,18 +23,12 @@ func CreateDamage(damage db.DamageModel, leaseId string, picturesId []string) db
 	return *newDamage
 }
 
-func MockCreateDamage(c *services.PrismaDB, damage db.DamageModel, leaseId string, picturesId []string) db.DamageMockExpectParam {
-	params := make([]db.DamageSetParam, 0, len(picturesId))
-	for _, id := range picturesId {
-		params = append(params, db.Damage.Pictures.Link(db.Image.ID.Equals(id)))
-	}
-
+func MockCreateDamage(c *services.PrismaDB, damage db.DamageModel, leaseId string) db.DamageMockExpectParam {
 	return c.Client.Damage.CreateOne(
 		db.Damage.Comment.Set(damage.Comment),
 		db.Damage.Priority.Set(damage.Priority),
 		db.Damage.Lease.Link(db.Lease.ID.Equals(leaseId)),
 		db.Damage.Room.Link(db.Room.ID.Equals(damage.RoomID)),
-		params...,
 	)
 }
 
@@ -57,7 +45,6 @@ func GetDamagesByPropertyID(propertyID string, fixed bool) []db.DamageModel {
 	).With(
 		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -80,7 +67,6 @@ func MockGetDamagesByPropertyID(c *services.PrismaDB, fixed bool) db.DamageMockE
 	).With(
 		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
 	)
 }
 
@@ -97,7 +83,6 @@ func GetDamagesByLeaseID(leaseID string, fixed bool) []db.DamageModel {
 	).With(
 		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -120,7 +105,6 @@ func MockGetDamagesByLeaseID(c *services.PrismaDB, fixed bool) db.DamageMockExpe
 	).With(
 		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
 	)
 }
 
@@ -131,7 +115,6 @@ func GetDamageByID(damageID string) *db.DamageModel {
 	).With(
 		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if db.IsErrNotFound(err) {
@@ -148,25 +131,37 @@ func MockGetDamageByID(c *services.PrismaDB) db.DamageMockExpectParam {
 	).With(
 		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
 		db.Damage.Room.Fetch(),
-		db.Damage.Pictures.Fetch(),
 	)
 }
 
-func UpdateDamageTenant(damage db.DamageModel, req models.DamageTenantUpdateRequest, picturesId []string) *db.DamageModel {
+func AddPicturesToDamage(damage db.DamageModel, picturePaths []string) db.DamageModel {
 	pdb := services.DBclient
-
-	updates := []db.DamageSetParam{
-		db.Damage.Comment.SetIfPresent(req.Comment),
-		db.Damage.Priority.SetIfPresent(req.Priority),
-	}
-	for _, picId := range picturesId {
-		updates = append(updates, db.Damage.Pictures.Link(db.Image.ID.Equals(picId)))
-	}
-
 	dmg, err := pdb.Client.Damage.FindUnique(
 		db.Damage.ID.Equals(damage.ID),
 	).Update(
-		updates...,
+		db.Damage.Pictures.Push(picturePaths),
+	).Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
+	return *dmg
+}
+
+func MockAddPicturesToDamage(c *services.PrismaDB, picturePaths []string) db.DamageMockExpectParam {
+	return c.Client.Damage.FindUnique(
+		db.Damage.ID.Equals("1"),
+	).Update(
+		db.Damage.Pictures.Push(picturePaths),
+	)
+}
+
+func UpdateDamageTenant(damage db.DamageModel, req models.DamageTenantUpdateRequest) *db.DamageModel {
+	pdb := services.DBclient
+	dmg, err := pdb.Client.Damage.FindUnique(
+		db.Damage.ID.Equals(damage.ID),
+	).Update(
+		db.Damage.Comment.SetIfPresent(req.Comment),
+		db.Damage.Priority.SetIfPresent(req.Priority),
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {
@@ -177,19 +172,12 @@ func UpdateDamageTenant(damage db.DamageModel, req models.DamageTenantUpdateRequ
 	return dmg
 }
 
-func MockUpdateDamageTenant(c *services.PrismaDB, req models.DamageTenantUpdateRequest, picturesId []string) db.DamageMockExpectParam {
-	updates := []db.DamageSetParam{
-		db.Damage.Comment.SetIfPresent(req.Comment),
-		db.Damage.Priority.SetIfPresent(req.Priority),
-	}
-	for _, picId := range picturesId {
-		updates = append(updates, db.Damage.Pictures.Link(db.Image.ID.Equals(picId)))
-	}
-
+func MockUpdateDamageTenant(c *services.PrismaDB, req models.DamageTenantUpdateRequest) db.DamageMockExpectParam {
 	return c.Client.Damage.FindUnique(
 		db.Damage.ID.Equals("1"),
 	).Update(
-		updates...,
+		db.Damage.Comment.SetIfPresent(req.Comment),
+		db.Damage.Priority.SetIfPresent(req.Priority),
 	)
 }
 

@@ -69,9 +69,7 @@ model user {
     created_at  DateTime @default(now())
     updated_at  DateTime @updatedAt
 
-    profile_picture    image?   @relation(fields: [profile_picture_id], references: [id])
-    profile_picture_id String?
-
+    profile_picture    String?
     owned_properties   property[]
     rented_properties  lease[]
 }
@@ -88,7 +86,7 @@ model lease {
     property    property  @relation(fields: [property_id], references: [id])
     property_id String
 
-    documents   document[]
+    documents   String[]
     damages     damage[]
     reports     inventoryReport[]
 }
@@ -111,7 +109,7 @@ model damage {
     room        room    @relation(fields: [room_id], references: [id], onDelete: Cascade)
     room_id     String
 
-    pictures    image[]
+    pictures    String[]
 
     @@index([lease_id])
     @@index([fixed_at])
@@ -131,8 +129,7 @@ model property {
     created_at  DateTime @default(now())
     archived    Boolean  @default(false)
 
-    picture    image?   @relation(fields: [picture_id], references: [id])
-    picture_id String?
+    picture    String?
 
     owner       user     @relation(fields: [owner_id], references: [id])
     owner_id    String
@@ -154,28 +151,6 @@ model leaseInvite {
 
     property     property  @relation(fields: [property_id], references: [id])
     property_id  String    @unique
-}
-
-model image {
-    id         String    @id @default(cuid())
-    data       Bytes
-    created_at DateTime  @default(now())
-
-    users           user[]
-    properties      property[]
-    roomstates      roomState[]
-    furniturestates furnitureState[]
-    damages         damage[]
-}
-
-model document {
-    id          String   @id @default(cuid())
-    name        String
-    data        Bytes
-    created_at  DateTime @default(now())
-
-    lease    lease @relation(fields: [lease_id], references: [id])
-    lease_id String
 }
 
 model room {
@@ -209,9 +184,10 @@ model furniture {
 }
 
 model inventoryReport {
-    id      String     @id @default(cuid())
-    date    DateTime   @default(now())
-    type    reportType
+    id        String     @id @default(cuid())
+    date      DateTime   @default(now())
+    type      reportType
+    submitted Boolean   @default(false)
 
     lease    lease  @relation(fields: [lease_id], references: [id])
     lease_id String
@@ -231,7 +207,7 @@ model roomState {
     room      room            @relation(fields: [room_id], references: [id], onDelete: Cascade)
     room_id   String
 
-    pictures image[]
+    pictures String[]
 
     @@unique([report_id, room_id])
 }
@@ -247,7 +223,7 @@ model furnitureState {
     furniture      furniture       @relation(fields: [furniture_id], references: [id], onDelete: Cascade)
     furniture_id   String
 
-    pictures image[]
+    pictures String[]
 
     @@unique([report_id, furniture_id])
 }

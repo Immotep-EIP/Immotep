@@ -3,9 +3,11 @@ package pdf
 import (
 	"bytes"
 	"io"
+	"strings"
 
 	"github.com/go-pdf/fpdf"
-	"immotep/backend/prisma/db"
+	"github.com/minio/minio-go/v7"
+	minioservice "immotep/backend/services/minio"
 	"immotep/backend/utils"
 )
 
@@ -20,17 +22,28 @@ const (
 	H4 Header = 14.0
 )
 
-type CaptureWriter struct {
+type File struct {
 	io.Writer
-	buffer bytes.Buffer
+	minioservice.File
+
+	Filename string
+	buffer   bytes.Buffer
 }
 
-func (cw *CaptureWriter) Write(p []byte) (int, error) {
+func (cw *File) Write(p []byte) (int, error) {
 	return cw.buffer.Write(p)
 }
 
-func (cw *CaptureWriter) GetData() []byte {
-	return cw.buffer.Bytes()
+func (cw *File) Read(p []byte) (int, error) {
+	return cw.buffer.Read(p)
+}
+
+func (cw *File) GetName() string {
+	return cw.Filename
+}
+
+func (cw *File) GetSize() int64 {
+	return int64(cw.buffer.Len())
 }
 
 type PDF struct {
@@ -56,13 +69,13 @@ func (irp *PDF) Save(name string) error {
 	return irp.pdf.OutputFileAndClose(name)
 }
 
-func (irp *PDF) Output() ([]byte, error) {
-	w := &CaptureWriter{}
-	err := irp.pdf.Output(w)
+func (irp *PDF) Output() (*File, error) {
+	c := &File{}
+	err := irp.pdf.Output(c)
 	if err != nil {
 		return nil, err
 	}
-	return w.GetData(), nil
+	return c, nil
 }
 
 func (irp *PDF) GetWidth() float64 {
@@ -112,7 +125,7 @@ func (irp *PDF) AddLine() {
 	irp.pdf.Line(marginL, irp.pdf.GetY(), docW-marginR, irp.pdf.GetY())
 }
 
-func (irp *PDF) AddImages(images []db.ImageModel) {
+func (irp *PDF) AddImages(pictures []minio.Object) {
 	docW, docH := irp.pdf.GetPageSize()
 	marginL, _, marginR, marginB := irp.pdf.GetMargins()
 
@@ -120,12 +133,13 @@ func (irp *PDF) AddImages(images []db.ImageModel) {
 	imageHeight := 69.35
 	currentX := irp.pdf.GetX()
 	currentY := irp.pdf.GetY()
-	for _, picture := range images {
+	for _, p := range pictures {
+		stat, _ := p.Stat()
 		imageOptions := fpdf.ImageOptions{
 			ReadDpi:   true,
-			ImageType: "JPG",
+			ImageType: strings.Split(stat.ContentType, "/")[1],
 		}
-		info := irp.pdf.RegisterImageOptionsReader(picture.ID, imageOptions, bytes.NewReader(picture.Data))
+		info := irp.pdf.RegisterImageOptionsReader(stat.Key, imageOptions, &p)
 		imageWidth := info.Width() * imageHeight / info.Height()
 		if currentX+imageWidth > maxWidth {
 			currentX = marginL
@@ -135,7 +149,7 @@ func (irp *PDF) AddImages(images []db.ImageModel) {
 			irp.pdf.AddPage()
 			currentY = irp.pdf.GetY()
 		}
-		irp.pdf.ImageOptions(picture.ID, currentX, currentY, 0, imageHeight, false, imageOptions, 0, "")
+		irp.pdf.ImageOptions(stat.Key, currentX, currentY, 0, imageHeight, false, imageOptions, 0, "")
 		currentX += imageWidth + 5
 	}
 	irp.pdf.SetY(currentY + imageHeight + 5)

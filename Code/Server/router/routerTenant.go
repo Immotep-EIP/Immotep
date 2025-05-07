@@ -25,7 +25,6 @@ func registerTenantRoutes(tenant *gin.RouterGroup) {
 			{
 				property.Use(middlewares.GetPropertyByLease())
 				property.GET("/", controllers.GetProperty)
-				property.GET("/picture/", controllers.GetPropertyPicture)
 				property.GET("/inventory/", controllers.GetPropertyInventory)
 			}
 
@@ -39,20 +38,20 @@ func registerTenantRoutes(tenant *gin.RouterGroup) {
 					damageId.Use(middlewares.CheckDamageLeaseOwnership("damage_id"))
 					damageId.GET("/", controllers.GetDamage)
 					damageId.PUT("/", controllers.UpdateDamageTenant)
+					damageId.POST("/pictures/", controllers.AddPicturesToDamage)
 					damageId.PUT("/fix/", controllers.FixDamage)
 				}
 			}
 
 			docs := leaseId.Group("/docs/")
 			{
-				docs.POST("/", controllers.UploadDocument)
+				docs.POST("/", controllers.UploadLeaseDocument)
 				docs.GET("/", controllers.GetAllDocumentsByLease)
 
-				docId := docs.Group("/:doc_id/")
-				{
-					docId.Use(middlewares.CheckDocumentLeaseOwnership("doc_id"))
-					docId.GET("/", controllers.GetDocument)
-				}
+				// docId := docs.Group("/:doc_name/")
+				// {
+				// 	docId.GET("/", controllers.GetDocument)
+				// }
 			}
 
 			reports := leaseId.Group("/inventory-reports/")

@@ -74,7 +74,7 @@ type propertyInviteResponse struct {
 type PropertyResponse struct {
 	ID                  string      `json:"id"`
 	OwnerID             string      `json:"owner_id"`
-	PictureID           *string     `json:"picture_id,omitempty"`
+	PictureURL          string      `json:"picture_url"`
 	Name                string      `json:"name"`
 	Address             string      `json:"address"`
 	ApartmentNumber     *string     `json:"apartment_number,omitempty"`
@@ -95,10 +95,10 @@ type PropertyResponse struct {
 	Invite   *propertyInviteResponse `json:"invite,omitempty"`
 }
 
-func (p *PropertyResponse) FromDbProperty(model db.PropertyModel, leaseId string) {
+func (p *PropertyResponse) FromDbProperty(model db.PropertyModel, leaseId string, pictureURL string) {
 	p.ID = model.ID
 	p.OwnerID = model.OwnerID
-	p.PictureID = model.InnerProperty.PictureID
+	p.PictureURL = pictureURL
 	p.Name = model.Name
 	p.Address = model.Address
 	p.ApartmentNumber = model.InnerProperty.ApartmentNumber
@@ -147,9 +147,9 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel, leaseId string
 	}
 }
 
-func DbPropertyToResponse(pc db.PropertyModel, leaseId string) PropertyResponse {
+func DbPropertyToResponse(pc db.PropertyModel, leaseId string, pictureURL string) PropertyResponse {
 	var resp PropertyResponse
-	resp.FromDbProperty(pc, leaseId)
+	resp.FromDbProperty(pc, leaseId, pictureURL)
 	return resp
 }
 
@@ -173,8 +173,8 @@ type PropertyInventoryResponse struct {
 	Rooms []roomResponse `json:"rooms"`
 }
 
-func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel, leaseId string) {
-	p.PropertyResponse.FromDbProperty(model, leaseId)
+func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel, leaseId string, pictureURL string) {
+	p.PropertyResponse.FromDbProperty(model, leaseId, pictureURL)
 
 	p.Rooms = make([]roomResponse, len(model.Rooms()))
 	for i, room := range model.Rooms() {
@@ -192,8 +192,8 @@ func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel, lease
 	}
 }
 
-func DbPropertyInventoryToResponse(pc db.PropertyModel, leaseId string) PropertyInventoryResponse {
+func DbPropertyInventoryToResponse(pc db.PropertyModel, leaseId string, pictureURL string) PropertyInventoryResponse {
 	var resp PropertyInventoryResponse
-	resp.FromDbProperty(pc, leaseId)
+	resp.FromDbProperty(pc, leaseId, pictureURL)
 	return resp
 }

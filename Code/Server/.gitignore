@@ -27,4 +27,5 @@ go.work.sum
 .env.docker
 password.txt
 
+uploads/
 backend

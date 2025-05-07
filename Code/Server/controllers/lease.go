@@ -8,6 +8,7 @@ import (
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
+	"immotep/backend/services/minio"
 	"immotep/backend/utils"
 )
 
@@ -96,4 +97,82 @@ func EndLease(c *gin.Context) {
 	now := time.Now().Truncate(time.Minute)
 	database.EndLease(currentActive.ID, utils.Ternary(ok, nil, &now))
 	c.Status(http.StatusNoContent)
+}
+
+// UploadLeaseDocument godoc
+//
+//	@Summary		Upload document
+//	@Description	Upload a document to a lease
+//	@Tags			document
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Param			property_id	path		string				true	"Property ID"
+//	@Param			lease_id	path		string				true	"Lease ID or `current`"
+//	@Param			document	formData	file				true	"Document file"
+//	@Success		201			{object}	models.IdResponse	"Updated lease ID"
+//	@Failure		400			{object}	utils.Error			"Missing fields"
+//	@Failure		403			{object}	utils.Error			"Property not yours"
+//	@Failure		404			{object}	utils.Error			"No active lease"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/docs/ [post]
+//	@Router			/tenant/leases/{lease_id}/docs/ [post]
+func UploadLeaseDocument(c *gin.Context) {
+	lease, _ := c.MustGet("lease").(db.LeaseModel)
+	file, err := c.FormFile("document")
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFile, err)
+		return
+	}
+
+	fileInfo := minio.UploadLeaseDocument(lease.ID, file)
+	newLease := database.AddDocumentToLease(lease, fileInfo.Key)
+	c.JSON(http.StatusOK, models.IdResponse{ID: newLease.ID})
+}
+
+// GetAllDocumentsByLease godoc
+//
+//	@Summary		Get lease documents
+//	@Description	Get all documents of a lease related to a property
+//	@Tags			document
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Param			lease_id	path		string					true	"Lease ID or `current`"
+//	@Success		200			{array}		models.DocumentResponse	"List of documents"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"No active lease"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/docs/ [get]
+//	@Router			/tenant/leases/{lease_id}/docs/ [get]
+func GetAllDocumentsByLease(c *gin.Context) {
+	lease, _ := c.MustGet("lease").(db.LeaseModel)
+	docs := minio.GetDocuments(lease.Documents)
+	c.JSON(http.StatusOK, docs)
+}
+
+// DeleteLeaseDocument godoc
+//
+//	@Summary		Delete document
+//	@Description	Delete a document by its name
+//	@Tags			document
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Param			lease_id	path		string					true	"Lease ID or `current`"
+//	@Param			doc_name	path		string					true	"Document name"
+//	@Success		204			{object}	models.DocumentResponse	"Document deleted"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		404			{object}	utils.Error				"Document not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/docs/{doc_name}/ [delete]
+func DeleteLeaseDocument(c *gin.Context) {
+	lease, _ := c.MustGet("lease").(db.LeaseModel)
+	if minio.DeleteLeaseDocument(lease.ID, c.Param("doc_name")) {
+		c.Status(http.StatusNoContent)
+	} else {
+		utils.SendError(c, http.StatusNotFound, utils.DocumentNotFound, nil)
+	}
 }

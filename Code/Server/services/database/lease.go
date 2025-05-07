@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"slices"
 	"time"
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
@@ -207,6 +208,31 @@ func MockDeleteLeaseInviteById(c *services.PrismaDB) db.LeaseInviteMockExpectPar
 	return c.Client.LeaseInvite.FindUnique(
 		db.LeaseInvite.ID.Equals("1"),
 	).Delete()
+}
+
+func AddDocumentToLease(lease db.LeaseModel, documentPath string) db.LeaseModel {
+	if slices.Contains(lease.Documents, documentPath) {
+		return lease
+	}
+
+	pdb := services.DBclient
+	l, err := pdb.Client.Lease.FindUnique(
+		db.Lease.ID.Equals(lease.ID),
+	).Update(
+		db.Lease.Documents.Push([]string{documentPath}),
+	).Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
+	return *l
+}
+
+func MockAddDocumentToLease(c *services.PrismaDB, documentPath string) db.LeaseMockExpectParam {
+	return c.Client.Lease.FindUnique(
+		db.Lease.ID.Equals("1"),
+	).Update(
+		db.Lease.Documents.Push([]string{documentPath}),
+	)
 }
 
 func EndLease(id string, endDate *db.DateTime) *db.LeaseModel {

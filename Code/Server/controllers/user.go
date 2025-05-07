@@ -5,23 +5,19 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
+	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
+	"immotep/backend/services/minio"
 	"immotep/backend/utils"
 )
 
-// GetAllUsers godoc
-//
-//	@Summary		Get all users
-//	@Description	Get all users information
-//	@Tags			user
-//	@Produce		json
-//	@Success		200	{array}	models.UserResponse	"List of users"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/users/ [get]
-func GetAllUsers(c *gin.Context) {
-	allUsers := database.GetAllUsers()
-	c.JSON(http.StatusOK, utils.Map(allUsers, models.DbUserToResponse))
+func getProfilePicture(user db.UserModel) string {
+	ppURL := ""
+	ppPath, ok := user.ProfilePicture()
+	if ok {
+		ppURL = minio.GetImageURL(ppPath)
+	}
+	return ppURL
 }
 
 // GetUserByID godoc
@@ -44,42 +40,7 @@ func GetUserByID(c *gin.Context) {
 		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.DbUserToResponse(*user))
-}
-
-// GetUserProfilePicture godoc
-//
-//	@Summary		Get user's picture
-//	@Description	Get user's picture
-//	@Tags			user
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path		string					true	"User ID"
-//	@Success		200	{object}	models.ImageResponse	"Image data"
-//	@Success		204	"No picture associated"
-//	@Failure		401	{object}	utils.Error	"Unauthorized"
-//	@Failure		404	{object}	utils.Error	"User not found"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/users/{id}/picture/ [get]
-func GetUserProfilePicture(c *gin.Context) {
-	user := database.GetUserByID(c.Param("id"))
-	if user == nil {
-		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
-		return
-	}
-
-	pictureId, ok := user.ProfilePictureID()
-	if !ok {
-		c.Status(http.StatusNoContent)
-		return
-	}
-	image := database.GetImageByID(pictureId)
-	if image == nil {
-		utils.SendError(c, http.StatusNotFound, utils.UserProfilePictureNotFound, nil)
-		return
-	}
-	c.JSON(http.StatusOK, models.DbImageToResponse(*image))
+	c.JSON(http.StatusOK, models.DbUserToResponse(*user, getProfilePicture(*user)))
 }
 
 // GetCurrentUserProfile godoc
@@ -102,7 +63,7 @@ func GetCurrentUserProfile(c *gin.Context) {
 		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.DbUserToResponse(*user))
+	c.JSON(http.StatusOK, models.DbUserToResponse(*user, getProfilePicture(*user)))
 }
 
 // UpdateCurrentUserProfile godoc
@@ -113,7 +74,7 @@ func GetCurrentUserProfile(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		models.UserUpdateRequest	true	"User update info"
-//	@Success		200		{object}	models.UserResponse			"User data"
+//	@Success		200		{object}	models.IdResponse			"Updated user ID"
 //	@Failure		400		{object}	utils.Error					"Missing fields"
 //	@Failure		404		{object}	utils.Error					"User not found"
 //	@Failure		409		{object}	utils.Error					"Email already exists"
@@ -140,43 +101,7 @@ func UpdateCurrentUserProfile(c *gin.Context) {
 		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusOK, models.DbUserToResponse(*newUser))
-}
-
-// GetCurrentUserProfilePicture godoc
-//
-//	@Summary		Get current user's profile picture
-//	@Description	Get current user's profile picture
-//	@Tags			user
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path		string					true	"User ID"
-//	@Success		200	{object}	models.ImageResponse	"Image data"
-//	@Success		204	"No picture associated"
-//	@Failure		401	{object}	utils.Error	"Unauthorized"
-//	@Failure		404	{object}	utils.Error	"User not found"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/profile/picture/ [get]
-func GetCurrentUserProfilePicture(c *gin.Context) {
-	claims := utils.GetClaims(c)
-	user := database.GetUserByID(claims["id"])
-	if user == nil {
-		utils.SendError(c, http.StatusNotFound, utils.UserNotFound, nil)
-		return
-	}
-
-	pictureId, ok := user.ProfilePictureID()
-	if !ok {
-		c.Status(http.StatusNoContent)
-		return
-	}
-	image := database.GetImageByID(pictureId)
-	if image == nil {
-		utils.SendError(c, http.StatusNotFound, utils.UserProfilePictureNotFound, nil)
-		return
-	}
-	c.JSON(http.StatusOK, models.DbImageToResponse(*image))
+	c.JSON(http.StatusOK, models.IdResponse{ID: newUser.ID})
 }
 
 // UpdateCurrentUserProfilePicture godoc
@@ -184,11 +109,11 @@ func GetCurrentUserProfilePicture(c *gin.Context) {
 //	@Summary		Update current user's profile picture
 //	@Description	Update current user's profile picture
 //	@Tags			user
-//	@Accept			json
+//	@Accept			multipart/form-data
 //	@Produce		json
 //	@Param			id		path		string				true	"User ID"
-//	@Param			picture	body		models.ImageRequest	true	"Picture data as a Base64 string"
-//	@Success		201		{object}	models.UserResponse	"Updated user data"
+//	@Param			picture	formData	file				true	"Profile picture"
+//	@Success		201		{object}	models.IdResponse	"Updated user ID"
 //	@Failure		400		{object}	utils.Error			"Missing fields or bad base64 string"
 //	@Failure		401		{object}	utils.Error			"Unauthorized"
 //	@Failure		404		{object}	utils.Error			"User not found"
@@ -203,24 +128,13 @@ func UpdateCurrentUserProfilePicture(c *gin.Context) {
 		return
 	}
 
-	var req models.ImageRequest
-	err := c.ShouldBindBodyWithJSON(&req)
+	file, err := c.FormFile("picture")
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFile, err)
 		return
 	}
 
-	image := req.ToDbImage()
-	if image == nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
-		return
-	}
-	newImage := database.CreateImage(*image)
-
-	newUser := database.UpdateUserPicture(*user, newImage)
-	if newUser == nil {
-		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)
-		return
-	}
-	c.JSON(http.StatusOK, models.DbUserToResponse(*newUser))
+	fileInfo := minio.UploadUserProfileImage(user.ID, file)
+	newUser := database.UpdateUserPicture(*user, fileInfo.Key)
+	c.JSON(http.StatusOK, models.IdResponse{ID: newUser.ID})
 }

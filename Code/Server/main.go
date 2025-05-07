@@ -63,9 +63,17 @@ func mainFunc() int {
 		log.Println(err)
 		return 1
 	}
-	log.Println("Connected to database, starting server...")
+	log.Println("Connected to database")
 	defer func() { _ = db.Client.Disconnect() }()
 
+	err = services.ConnectMinIO()
+	if err != nil {
+		log.Println(err)
+		return 1
+	}
+	log.Println("Connected to MinIO")
+
+	log.Println("Starting server on port " + os.Getenv("PORT"))
 	err = router.Routes().Run(":" + os.Getenv("PORT"))
 	if err != nil {
 		log.Println(err)

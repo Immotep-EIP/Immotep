@@ -68,20 +68,20 @@ func CheckLeaseTenantOwnership(leaseIdUrlParam string) gin.HandlerFunc {
 	}
 }
 
-func CheckDocumentLeaseOwnership(docIdUrlParam string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		lease, _ := c.MustGet("lease").(db.LeaseModel)
+// func CheckDocumentLeaseOwnership(docIdUrlParam string) gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		lease, _ := c.MustGet("lease").(db.LeaseModel)
 
-		doc := database.GetDocumentByID(c.Param(docIdUrlParam))
-		if doc == nil || doc.LeaseID != lease.ID {
-			utils.AbortSendError(c, http.StatusNotFound, utils.DocumentNotFound, nil)
-			return
-		}
+// 		doc := database.GetDocumentByID(c.Param(docIdUrlParam))
+// 		if doc == nil || doc.LeaseID != lease.ID {
+// 			utils.AbortSendError(c, http.StatusNotFound, utils.DocumentNotFound, nil)
+// 			return
+// 		}
 
-		c.Set("document", *doc)
-		c.Next()
-	}
-}
+// 		c.Set("document", *doc)
+// 		c.Next()
+// 	}
+// }
 
 func CheckDamageLeaseOwnership(damageIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {

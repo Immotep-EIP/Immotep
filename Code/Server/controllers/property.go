@@ -9,8 +9,18 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/brevo"
 	"immotep/backend/services/database"
+	"immotep/backend/services/minio"
 	"immotep/backend/utils"
 )
+
+func getPropertyPicture(property db.PropertyModel) string {
+	pictureURL := ""
+	picturePath, ok := property.Picture()
+	if ok {
+		pictureURL = minio.GetImageURL(picturePath)
+	}
+	return pictureURL
+}
 
 // GetPropertiesByOwner godoc
 //
@@ -30,7 +40,7 @@ func GetPropertiesByOwner(c *gin.Context) {
 	archive := c.DefaultQuery("archive", "false") == utils.Strue
 	allProperties := database.GetPropertiesByOwnerId(claims["id"], archive)
 	c.JSON(http.StatusOK, utils.Map(allProperties, func(property db.PropertyModel) models.PropertyResponse {
-		return models.DbPropertyToResponse(property, "current")
+		return models.DbPropertyToResponse(property, "current", getPropertyPicture(property))
 	}))
 }
 
@@ -63,7 +73,7 @@ func GetProperty(c *gin.Context) {
 	}
 
 	property, _ := c.MustGet("property").(db.PropertyModel)
-	c.JSON(http.StatusOK, models.DbPropertyToResponse(property, leaseId))
+	c.JSON(http.StatusOK, models.DbPropertyToResponse(property, leaseId, getPropertyPicture(property)))
 }
 
 // GetPropertyInventory godoc
@@ -96,7 +106,7 @@ func GetPropertyInventory(c *gin.Context) {
 
 	property, _ := c.MustGet("property").(db.PropertyModel)
 	propertyInv := database.GetPropertyInventory(property.ID)
-	c.JSON(http.StatusOK, models.DbPropertyInventoryToResponse(*propertyInv, leaseId))
+	c.JSON(http.StatusOK, models.DbPropertyInventoryToResponse(*propertyInv, leaseId, getPropertyPicture(property)))
 }
 
 // CreateProperty godoc
@@ -164,49 +174,15 @@ func UpdateProperty(c *gin.Context) {
 	c.JSON(http.StatusOK, models.IdResponse{ID: newProperty.ID})
 }
 
-// GetPropertyPicture godoc
-//
-//	@Summary		Get property's picture
-//	@Description	Get property's picture
-//	@Tags			property
-//	@Accept			json
-//	@Produce		json
-//	@Param			property_id	path		string					true	"Property ID"
-//	@Param			lease_id	path		string					true	"Lease ID or `current`"
-//	@Success		201			{object}	models.ImageResponse	"Image data"
-//	@Success		204			"No picture associated"
-//	@Failure		401			{object}	utils.Error	"Unauthorized"
-//	@Failure		403			{object}	utils.Error	"Property not yours"
-//	@Failure		404			{object}	utils.Error	"Property not found"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/picture/ [get]
-//	@Router			/tenant/leases/{lease_id}/property/picture/ [get]
-func GetPropertyPicture(c *gin.Context) {
-	property, _ := c.MustGet("property").(db.PropertyModel)
-	pictureId, ok := property.PictureID()
-	if !ok {
-		c.Status(http.StatusNoContent)
-		return
-	}
-
-	image := database.GetImageByID(pictureId)
-	if image == nil {
-		utils.SendError(c, http.StatusNotFound, utils.PropertyPictureNotFound, nil)
-		return
-	}
-	c.JSON(http.StatusOK, models.DbImageToResponse(*image))
-}
-
 // UpdatePropertyPicture godoc
 //
 //	@Summary		Update property's picture
 //	@Description	Update property's picture
 //	@Tags			property
-//	@Accept			json
+//	@Accept			multipart/form-data
 //	@Produce		json
 //	@Param			property_id	path		string				true	"Property ID"
-//	@Param			picture		body		models.ImageRequest	true	"Picture data as a Base64 string"
+//	@Param			picture		formData	file				true	"Property picture"
 //	@Success		201			{object}	models.IdResponse	"Updated property ID"
 //	@Failure		400			{object}	utils.Error			"Missing fields or bad base64 string"
 //	@Failure		401			{object}	utils.Error			"Unauthorized"
@@ -216,26 +192,15 @@ func GetPropertyPicture(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/picture/ [put]
 func UpdatePropertyPicture(c *gin.Context) {
-	var req models.ImageRequest
-	err := c.ShouldBindBodyWithJSON(&req)
-	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
-		return
-	}
-
-	image := req.ToDbImage()
-	if image == nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
-		return
-	}
-	newImage := database.CreateImage(*image)
-
 	property, _ := c.MustGet("property").(db.PropertyModel)
-	newProperty := database.UpdatePropertyPicture(property, newImage)
-	if newProperty == nil {
-		utils.SendError(c, http.StatusInternalServerError, utils.FailedLinkImage, nil)
+	file, err := c.FormFile("picture")
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFile, err)
 		return
 	}
+
+	fileInfo := minio.UploadPropertyImage(property.ID, file)
+	newProperty := database.UpdatePropertyPicture(property, fileInfo.Key)
 	c.JSON(http.StatusOK, models.IdResponse{ID: newProperty.ID})
 }
 

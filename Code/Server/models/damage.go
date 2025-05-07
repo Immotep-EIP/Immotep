@@ -5,10 +5,9 @@ import (
 )
 
 type DamageRequest struct {
-	Comment  string      `binding:"required"             json:"comment"`
-	Priority db.Priority `binding:"required,priority"    json:"priority"`
-	RoomID   string      `binding:"required"             json:"room_id"`
-	Pictures []string    `binding:"dive,required,base64" json:"pictures"`
+	Comment  string      `binding:"required"          json:"comment"`
+	Priority db.Priority `binding:"required,priority" json:"priority"`
+	RoomID   string      `binding:"required"          json:"room_id"`
 }
 
 func (r *DamageRequest) ToDbDamage() db.DamageModel {
@@ -27,9 +26,8 @@ type DamageOwnerUpdateRequest struct {
 }
 
 type DamageTenantUpdateRequest struct {
-	Comment     *string      `json:"comment,omitempty"`
-	Priority    *db.Priority `json:"priority,omitempty"`
-	AddPictures []string     `binding:"dive,required,base64" json:"add_pictures,omitempty"`
+	Comment  *string      `json:"comment,omitempty"`
+	Priority *db.Priority `json:"priority,omitempty"`
 }
 
 type DamageResponse struct {
@@ -48,10 +46,10 @@ type DamageResponse struct {
 	FixPlannedAt *db.DateTime `json:"fix_planned_at"`
 	FixedAt      *db.DateTime `json:"fixed_at,omitempty"`
 
-	Pictures []string `json:"pictures"`
+	PictureUrls []string `json:"picture_urls"`
 }
 
-func (i *DamageResponse) FromDbDamage(model db.DamageModel) {
+func (i *DamageResponse) FromDbDamage(model db.DamageModel, pictureURLs []string) {
 	i.ID = model.ID
 	i.LeaseID = model.LeaseID
 	i.TenantName = model.Lease().Tenant().Name()
@@ -68,13 +66,11 @@ func (i *DamageResponse) FromDbDamage(model db.DamageModel) {
 	i.FixPlannedAt = model.InnerDamage.FixPlannedAt
 	i.FixedAt = model.InnerDamage.FixedAt
 
-	for _, picture := range model.Pictures() {
-		i.Pictures = append(i.Pictures, DbImageToResponse(picture).Data)
-	}
+	i.PictureUrls = pictureURLs
 }
 
-func DbDamageToResponse(pc db.DamageModel) DamageResponse {
+func DbDamageToResponse(pc db.DamageModel, pictureURLs []string) DamageResponse {
 	var resp DamageResponse
-	resp.FromDbDamage(pc)
+	resp.FromDbDamage(pc, pictureURLs)
 	return resp
 }

@@ -115,15 +115,11 @@ definitions:
     properties:
       date:
         type: string
-      errors:
-        items:
-          type: string
-        type: array
       id:
         type: string
       lease_id:
         type: string
-      pdf_data:
+      pdf_link:
         type: string
       pdf_name:
         type: string
@@ -143,17 +139,12 @@ definitions:
     properties:
       comment:
         type: string
-      pictures:
-        items:
-          type: string
-        type: array
       priority:
         $ref: '#/definitions/db.Priority'
       room_id:
         type: string
     required:
     - comment
-    - pictures
     - priority
     - room_id
     type: object
@@ -173,7 +164,7 @@ definitions:
         type: string
       lease_id:
         type: string
-      pictures:
+      picture_urls:
         items:
           type: string
         type: array
@@ -192,34 +183,14 @@ definitions:
     type: object
   models.DamageTenantUpdateRequest:
     properties:
-      add_pictures:
-        items:
-          type: string
-        type: array
       comment:
         type: string
       priority:
         $ref: '#/definitions/db.Priority'
-    required:
-    - add_pictures
-    type: object
-  models.DocumentRequest:
-    properties:
-      data:
-        type: string
-      name:
-        type: string
-    required:
-    - data
-    - name
     type: object
   models.DocumentResponse:
     properties:
-      created_at:
-        type: string
-      data:
-        type: string
-      id:
+      link:
         type: string
       name:
         type: string
@@ -248,28 +219,6 @@ definitions:
       room_id:
         type: string
     type: object
-  models.FurnitureStateRequest:
-    properties:
-      cleanliness:
-        $ref: '#/definitions/db.Cleanliness'
-      id:
-        type: string
-      note:
-        type: string
-      pictures:
-        items:
-          type: string
-        minItems: 1
-        type: array
-      state:
-        $ref: '#/definitions/db.State'
-    required:
-    - cleanliness
-    - id
-    - note
-    - pictures
-    - state
-    type: object
   models.FurnitureStateResponse:
     properties:
       cleanliness:
@@ -294,32 +243,11 @@ definitions:
       id:
         type: string
     type: object
-  models.ImageRequest:
-    properties:
-      data:
-        type: string
-    required:
-    - data
-    type: object
-  models.ImageResponse:
-    properties:
-      created_at:
-        type: string
-      data:
-        type: string
-      id:
-        type: string
-    type: object
   models.InventoryReportRequest:
     properties:
-      rooms:
-        items:
-          $ref: '#/definitions/models.RoomStateRequest'
-        type: array
       type:
         $ref: '#/definitions/db.ReportType'
     required:
-    - rooms
     - type
     type: object
   models.InventoryReportResponse:
@@ -410,7 +338,7 @@ definitions:
         type: integer
       owner_id:
         type: string
-      picture_id:
+      picture_url:
         type: string
       postal_code:
         type: string
@@ -483,7 +411,7 @@ definitions:
         type: integer
       owner_id:
         type: string
-      picture_id:
+      picture_url:
         type: string
       postal_code:
         type: string
@@ -545,33 +473,6 @@ definitions:
         type: string
       type:
         $ref: '#/definitions/db.RoomType'
-    type: object
-  models.RoomStateRequest:
-    properties:
-      cleanliness:
-        $ref: '#/definitions/db.Cleanliness'
-      furnitures:
-        items:
-          $ref: '#/definitions/models.FurnitureStateRequest'
-        type: array
-      id:
-        type: string
-      note:
-        type: string
-      pictures:
-        items:
-          type: string
-        minItems: 1
-        type: array
-      state:
-        $ref: '#/definitions/db.State'
-    required:
-    - cleanliness
-    - furnitures
-    - id
-    - note
-    - pictures
-    - state
     type: object
   models.RoomStateResponse:
     properties:
@@ -651,7 +552,7 @@ definitions:
         type: string
       lastname:
         type: string
-      profile_picture_id:
+      profile_picture_url:
         type: string
       role:
         $ref: '#/definitions/db.Role'
@@ -731,6 +632,7 @@ definitions:
     - no-claims
     - cannot-decode-user
     - missing-fields
+    - missing-file
     - cannot-hash-password
     - email-already-exists
     - test-error
@@ -757,19 +659,23 @@ definitions:
     - damage-already-exists
     - cannot-update-fixed-damage
     - damage-already-fixed
-    - failed-to-link-image
+    - failed-upload-file
+    - failed-delete-file
     - bad-base64-string
     - property-picture-not-found
     - user-profile-picture-not-found
-    - room-already-exists
     - room-not-found
+    - room-already-exists
+    - room-not-in-this-property
     - furniture-not-found
     - furniture-already-exists
-    - furniture-not-in-this-room
+    - furniture-not-in-this-property
     - inventory-report-already-exists
+    - cannot-modify-inventory-report
     - inventory-report-not-found
     - room-state-already-exists
     - furniture-state-already-exists
+    - invalid-object-type
     - error-request-chatgpt-api
     - failed-send-email
     type: string
@@ -781,6 +687,7 @@ definitions:
     - NoClaims
     - CannotDecodeUser
     - MissingFields
+    - MissingFile
     - CannotHashPassword
     - EmailAlreadyExists
     - TestError
@@ -807,19 +714,23 @@ definitions:
     - DamageAlreadyExists
     - CannotUpdateFixedDamage
     - DamageAlreadyFixed
-    - FailedLinkImage
+    - FailedUploadFile
+    - FailedDeleteFile
     - BadBase64String
     - PropertyPictureNotFound
     - UserProfilePictureNotFound
-    - RoomAlreadyExists
     - RoomNotFound
+    - RoomAlreadyExists
+    - RoomNotInThisProperty
     - FurnitureNotFound
     - FurnitureAlreadyExists
-    - FurnitureNotInThisRoom
+    - FurnitureNotInThisProperty
     - InventoryReportAlreadyExists
+    - CannotModifyInventoryReport
     - InventoryReportNotFound
     - RoomStateAlreadyExists
     - FurnitureStateAlreadyExists
+    - InvalidObjectType
     - ErrorRequestChatGPTAPI
     - FailedSendEmail
 host: localhost:3001
@@ -1612,12 +1523,12 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Get property documents
+      summary: Get lease documents
       tags:
       - document
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Upload a document to a lease
       parameters:
       - description: Property ID
@@ -1630,17 +1541,16 @@ paths:
         name: lease_id
         required: true
         type: string
-      - description: Document to upload
-        in: body
-        name: doc
+      - description: Document file
+        in: formData
+        name: document
         required: true
-        schema:
-          $ref: '#/definitions/models.DocumentRequest'
+        type: file
       produces:
       - application/json
       responses:
         "201":
-          description: Created document ID
+          description: Updated lease ID
           schema:
             $ref: '#/definitions/models.IdResponse'
         "400":
@@ -1662,11 +1572,11 @@ paths:
       summary: Upload document
       tags:
       - document
-  /owner/properties/{property_id}/leases/{lease_id}/docs/{doc_id}/:
+  /owner/properties/{property_id}/leases/{lease_id}/docs/{doc_name}/:
     delete:
       consumes:
       - application/json
-      description: Delete a document by its ID
+      description: Delete a document by its name
       parameters:
       - description: Property ID
         in: path
@@ -1678,9 +1588,9 @@ paths:
         name: lease_id
         required: true
         type: string
-      - description: Document ID
+      - description: Document name
         in: path
-        name: doc_id
+        name: doc_name
         required: true
         type: string
       produces:
@@ -1703,48 +1613,6 @@ paths:
       security:
       - Bearer: []
       summary: Delete document
-      tags:
-      - document
-    get:
-      consumes:
-      - application/json
-      description: Get a document by its ID
-      parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
-      - description: Lease ID or `current`
-        in: path
-        name: lease_id
-        required: true
-        type: string
-      - description: Document ID
-        in: path
-        name: doc_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Document
-          schema:
-            $ref: '#/definitions/models.DocumentResponse'
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Document not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Get document by ID
       tags:
       - document
   /owner/properties/{property_id}/leases/{lease_id}/end/:
@@ -1852,9 +1720,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created inventory report data
+          description: Created inventory report ID
           schema:
-            $ref: '#/definitions/models.CreateInventoryReportResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -1910,6 +1778,192 @@ paths:
       security:
       - Bearer: []
       summary: Get inventory report by ID
+      tags:
+      - inventory-report
+  /owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/furnitures/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Add a furniture state to an inventory report
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Report ID
+        in: path
+        name: report_id
+        required: true
+        type: string
+      - description: Furniture ID
+        in: formData
+        name: furniture_id
+        required: true
+        type: string
+      - description: Furniture state
+        in: formData
+        name: state
+        required: true
+        type: string
+      - description: Furniture cleanliness
+        in: formData
+        name: cleanliness
+        required: true
+        type: string
+      - description: Furniture note
+        in: formData
+        name: note
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Furniture pictures
+        in: formData
+        items:
+          type: file
+        name: pictures
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created furniture state ID
+          schema:
+            $ref: '#/definitions/models.IdResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property or furniture not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Furniture state already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Add a furniture state to an inventory report
+      tags:
+      - inventory-report
+  /owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/rooms/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Add a room state to an inventory report
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Report ID
+        in: path
+        name: report_id
+        required: true
+        type: string
+      - description: Room ID
+        in: formData
+        name: room_id
+        required: true
+        type: string
+      - description: Room state
+        in: formData
+        name: state
+        required: true
+        type: string
+      - description: Room cleanliness
+        in: formData
+        name: cleanliness
+        required: true
+        type: string
+      - description: Room note
+        in: formData
+        name: note
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Room pictures
+        in: formData
+        items:
+          type: file
+        name: pictures
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created room state ID
+          schema:
+            $ref: '#/definitions/models.IdResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property or room not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "409":
+          description: Room state already exists
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Add a room state to an inventory report
+      tags:
+      - inventory-report
+  /owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/submit/:
+    post:
+      consumes:
+      - application/json
+      description: Submit an inventory report
+      parameters:
+      - description: Property ID
+        in: path
+        name: property_id
+        required: true
+        type: string
+      - description: Report ID
+        in: path
+        name: report_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Inventory report data with PDF
+          schema:
+            $ref: '#/definitions/models.CreateInventoryReportResponse'
+        "403":
+          description: Property not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Property or inventory report not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Submit an inventory report
       tags:
       - inventory-report
   /owner/properties/{property_id}/leases/{lease_id}/inventory-reports/compare/{old_report_id}/:
@@ -2004,47 +2058,9 @@ paths:
       tags:
       - ai
   /owner/properties/{property_id}/picture/:
-    get:
-      consumes:
-      - application/json
-      description: Get property's picture
-      parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Image data
-          schema:
-            $ref: '#/definitions/models.ImageResponse'
-        "204":
-          description: No picture associated
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Property not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Get property's picture
-      tags:
-      - property
     put:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Update property's picture
       parameters:
       - description: Property ID
@@ -2052,12 +2068,11 @@ paths:
         name: property_id
         required: true
         type: string
-      - description: Picture data as a Base64 string
-        in: body
+      - description: Property picture
+        in: formData
         name: picture
         required: true
-        schema:
-          $ref: '#/definitions/models.ImageRequest'
+        type: file
       produces:
       - application/json
       responses:
@@ -2612,9 +2627,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: User data
+          description: Updated user ID
           schema:
-            $ref: '#/definitions/models.UserResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields
           schema:
@@ -2635,43 +2650,9 @@ paths:
       tags:
       - user
   /profile/picture/:
-    get:
-      consumes:
-      - application/json
-      description: Get current user's profile picture
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Image data
-          schema:
-            $ref: '#/definitions/models.ImageResponse'
-        "204":
-          description: No picture associated
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: User not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Get current user's profile picture
-      tags:
-      - user
     put:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Update current user's profile picture
       parameters:
       - description: User ID
@@ -2679,19 +2660,18 @@ paths:
         name: id
         required: true
         type: string
-      - description: Picture data as a Base64 string
-        in: body
+      - description: Profile picture
+        in: formData
         name: picture
         required: true
-        schema:
-          $ref: '#/definitions/models.ImageRequest'
+        type: file
       produces:
       - application/json
       responses:
         "201":
-          description: Updated user data
+          description: Updated user ID
           schema:
-            $ref: '#/definitions/models.UserResponse'
+            $ref: '#/definitions/models.IdResponse'
         "400":
           description: Missing fields or bad base64 string
           schema:
@@ -2935,11 +2915,6 @@ paths:
       description: Update damage on tenant side. Tenant can only update comment, priority
         and add new pictures.
       parameters:
-      - description: Property ID
-        in: path
-        name: property_id
-        required: true
-        type: string
       - description: Lease ID
         in: path
         name: lease_id
@@ -3025,6 +3000,56 @@ paths:
       summary: Fix damage for one user
       tags:
       - damage
+  /tenant/leases/{lease_id}/damages/{damage_id}/pictures/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Add pictures to a damage. Only tenant can add pictures.
+      parameters:
+      - description: Lease ID
+        in: path
+        name: lease_id
+        required: true
+        type: string
+      - description: Damage ID
+        in: path
+        name: damage_id
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Files to upload
+        in: formData
+        items:
+          type: file
+        name: pictures
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated damage ID
+          schema:
+            $ref: '#/definitions/models.IdResponse'
+        "400":
+          description: Missing fields
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "403":
+          description: Lease not yours
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Damage not found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Add pictures to damage
+      tags:
+      - damage
   /tenant/leases/{lease_id}/docs/:
     get:
       consumes:
@@ -3057,12 +3082,12 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
-      summary: Get property documents
+      summary: Get lease documents
       tags:
       - document
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Upload a document to a lease
       parameters:
       - description: Lease ID or `current`
@@ -3070,17 +3095,16 @@ paths:
         name: lease_id
         required: true
         type: string
-      - description: Document to upload
-        in: body
-        name: doc
+      - description: Document file
+        in: formData
+        name: document
         required: true
-        schema:
-          $ref: '#/definitions/models.DocumentRequest'
+        type: file
       produces:
       - application/json
       responses:
         "201":
-          description: Created document ID
+          description: Updated lease ID
           schema:
             $ref: '#/definitions/models.IdResponse'
         "400":
@@ -3100,44 +3124,6 @@ paths:
       security:
       - Bearer: []
       summary: Upload document
-      tags:
-      - document
-  /tenant/leases/{lease_id}/docs/{doc_id}/:
-    get:
-      consumes:
-      - application/json
-      description: Get a document by its ID
-      parameters:
-      - description: Lease ID or `current`
-        in: path
-        name: lease_id
-        required: true
-        type: string
-      - description: Document ID
-        in: path
-        name: doc_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Document
-          schema:
-            $ref: '#/definitions/models.DocumentResponse'
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Document not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Get document by ID
       tags:
       - document
   /tenant/leases/{lease_id}/inventory-reports/:
@@ -3292,64 +3278,6 @@ paths:
       tags:
       - property
       - inventory
-  /tenant/leases/{lease_id}/property/picture/:
-    get:
-      consumes:
-      - application/json
-      description: Get property's picture
-      parameters:
-      - description: Lease ID or `current`
-        in: path
-        name: lease_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Image data
-          schema:
-            $ref: '#/definitions/models.ImageResponse'
-        "204":
-          description: No picture associated
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "403":
-          description: Property not yours
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Property not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Get property's picture
-      tags:
-      - property
-  /users/:
-    get:
-      description: Get all users information
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of users
-          schema:
-            items:
-              $ref: '#/definitions/models.UserResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Get all users
-      tags:
-      - user
   /users/{id}/:
     get:
       consumes:
@@ -3381,41 +3309,6 @@ paths:
       security:
       - Bearer: []
       summary: Get user by ID
-      tags:
-      - user
-  /users/{id}/picture/:
-    get:
-      consumes:
-      - application/json
-      description: Get user's picture
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Image data
-          schema:
-            $ref: '#/definitions/models.ImageResponse'
-        "204":
-          description: No picture associated
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: User not found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-      security:
-      - Bearer: []
-      summary: Get user's picture
       tags:
       - user
 securityDefinitions:

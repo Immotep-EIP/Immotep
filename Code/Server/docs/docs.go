@@ -1178,7 +1178,7 @@ const docTemplate = `{
                 "tags": [
                     "document"
                 ],
-                "summary": "Get property documents",
+                "summary": "Get lease documents",
                 "parameters": [
                     {
                         "type": "string",
@@ -1230,7 +1230,7 @@ const docTemplate = `{
                 ],
                 "description": "Upload a document to a lease",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -1255,18 +1255,16 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Document to upload",
-                        "name": "doc",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.DocumentRequest"
-                        }
+                        "type": "file",
+                        "description": "Document file",
+                        "name": "document",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created document ID",
+                        "description": "Updated lease ID",
                         "schema": {
                             "$ref": "#/definitions/models.IdResponse"
                         }
@@ -1295,78 +1293,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/leases/{lease_id}/docs/{doc_id}/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a document by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "document"
-                ],
-                "summary": "Get document by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property ID",
-                        "name": "property_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
-                        "name": "lease_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Document ID",
-                        "name": "doc_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Document",
-                        "schema": {
-                            "$ref": "#/definitions/models.DocumentResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Property not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Document not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
+        "/owner/properties/{property_id}/leases/{lease_id}/docs/{doc_name}/": {
             "delete": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Delete a document by its ID",
+                "description": "Delete a document by its name",
                 "consumes": [
                     "application/json"
                 ],
@@ -1394,8 +1328,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Document ID",
-                        "name": "doc_id",
+                        "description": "Document name",
+                        "name": "doc_name",
                         "in": "path",
                         "required": true
                     }
@@ -1592,9 +1526,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created inventory report data",
+                        "description": "Created inventory report ID",
                         "schema": {
-                            "$ref": "#/definitions/models.CreateInventoryReportResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -1821,24 +1755,24 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/picture/": {
-            "get": {
+        "/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/furnitures/": {
+            "post": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Get property's picture",
+                "description": "Add a furniture state to an inventory report",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "property"
+                    "inventory-report"
                 ],
-                "summary": "Get property's picture",
+                "summary": "Add a furniture state to an inventory report",
                 "parameters": [
                     {
                         "type": "string",
@@ -1846,20 +1780,63 @@ const docTemplate = `{
                         "name": "property_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Report ID",
+                        "name": "report_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Furniture ID",
+                        "name": "furniture_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Furniture state",
+                        "name": "state",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Furniture cleanliness",
+                        "name": "cleanliness",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Furniture note",
+                        "name": "note",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "file"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Furniture pictures",
+                        "name": "pictures",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Image data",
+                        "description": "Created furniture state ID",
                         "schema": {
-                            "$ref": "#/definitions/models.ImageResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
-                    "204": {
-                        "description": "No picture associated"
-                    },
-                    "401": {
-                        "description": "Unauthorized",
+                    "400": {
+                        "description": "Missing fields",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -1871,7 +1848,13 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Property not found",
+                        "description": "Property or furniture not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Furniture state already exists",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -1880,7 +1863,178 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/rooms/": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Add a room state to an inventory report",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Add a room state to an inventory report",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Report ID",
+                        "name": "report_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "room_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room state",
+                        "name": "state",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room cleanliness",
+                        "name": "cleanliness",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room note",
+                        "name": "note",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "file"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Room pictures",
+                        "name": "pictures",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created room state ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.IdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property or room not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Room state already exists",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/submit/": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Submit an inventory report",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "inventory-report"
+                ],
+                "summary": "Submit an inventory report",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property ID",
+                        "name": "property_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Report ID",
+                        "name": "report_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inventory report data with PDF",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateInventoryReportResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Property not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Property or inventory report not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/properties/{property_id}/picture/": {
             "put": {
                 "security": [
                     {
@@ -1889,7 +2043,7 @@ const docTemplate = `{
                 ],
                 "description": "Update property's picture",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -1907,13 +2061,11 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Picture data as a Base64 string",
+                        "type": "file",
+                        "description": "Property picture",
                         "name": "picture",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ImageRequest"
-                        }
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2765,9 +2917,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "User data",
+                        "description": "Updated user ID",
                         "schema": {
-                            "$ref": "#/definitions/models.UserResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -2795,59 +2947,6 @@ const docTemplate = `{
             }
         },
         "/profile/picture/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get current user's profile picture",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Get current user's profile picture",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Image data",
-                        "schema": {
-                            "$ref": "#/definitions/models.ImageResponse"
-                        }
-                    },
-                    "204": {
-                        "description": "No picture associated"
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
             "put": {
                 "security": [
                     {
@@ -2856,7 +2955,7 @@ const docTemplate = `{
                 ],
                 "description": "Update current user's profile picture",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -2874,20 +2973,18 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Picture data as a Base64 string",
+                        "type": "file",
+                        "description": "Profile picture",
                         "name": "picture",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ImageRequest"
-                        }
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Updated user data",
+                        "description": "Updated user ID",
                         "schema": {
-                            "$ref": "#/definitions/models.UserResponse"
+                            "$ref": "#/definitions/models.IdResponse"
                         }
                     },
                     "400": {
@@ -3270,13 +3367,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Property ID",
-                        "name": "property_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "Lease ID",
                         "name": "lease_id",
                         "in": "path",
@@ -3395,6 +3485,82 @@ const docTemplate = `{
                 }
             }
         },
+        "/tenant/leases/{lease_id}/damages/{damage_id}/pictures/": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Add pictures to a damage. Only tenant can add pictures.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "damage"
+                ],
+                "summary": "Add pictures to damage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lease ID",
+                        "name": "lease_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Damage ID",
+                        "name": "damage_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "file"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Files to upload",
+                        "name": "pictures",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated damage ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.IdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Lease not yours",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Damage not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/tenant/leases/{lease_id}/docs/": {
             "get": {
                 "security": [
@@ -3412,7 +3578,7 @@ const docTemplate = `{
                 "tags": [
                     "document"
                 ],
-                "summary": "Get property documents",
+                "summary": "Get lease documents",
                 "parameters": [
                     {
                         "type": "string",
@@ -3457,7 +3623,7 @@ const docTemplate = `{
                 ],
                 "description": "Upload a document to a lease",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -3475,18 +3641,16 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Document to upload",
-                        "name": "doc",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.DocumentRequest"
-                        }
+                        "type": "file",
+                        "description": "Document file",
+                        "name": "document",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created document ID",
+                        "description": "Updated lease ID",
                         "schema": {
                             "$ref": "#/definitions/models.IdResponse"
                         }
@@ -3505,65 +3669,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "No active lease",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/tenant/leases/{lease_id}/docs/{doc_id}/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a document by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "document"
-                ],
-                "summary": "Get document by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
-                        "name": "lease_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Document ID",
-                        "name": "doc_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Document",
-                        "schema": {
-                            "$ref": "#/definitions/models.DocumentResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Property not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Document not found",
                         "schema": {
                             "$ref": "#/definitions/utils.Error"
                         }
@@ -3810,98 +3915,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/tenant/leases/{lease_id}/property/picture/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get property's picture",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Get property's picture",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Lease ID or ` + "`" + `current` + "`" + `",
-                        "name": "lease_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Image data",
-                        "schema": {
-                            "$ref": "#/definitions/models.ImageResponse"
-                        }
-                    },
-                    "204": {
-                        "description": "No picture associated"
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "403": {
-                        "description": "Property not yours",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Property not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/users/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get all users information",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Get all users",
-                "responses": {
-                    "200": {
-                        "description": "List of users",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.UserResponse"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
         "/users/{id}/": {
             "get": {
                 "security": [
@@ -3935,61 +3948,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.UserResponse"
                         }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/users/{id}/picture/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get user's picture",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Get user's picture",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Image data",
-                        "schema": {
-                            "$ref": "#/definitions/models.ImageResponse"
-                        }
-                    },
-                    "204": {
-                        "description": "No picture associated"
                     },
                     "401": {
                         "description": "Unauthorized",
@@ -4152,19 +4110,13 @@ const docTemplate = `{
                 "date": {
                     "type": "string"
                 },
-                "errors": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "id": {
                     "type": "string"
                 },
                 "lease_id": {
                     "type": "string"
                 },
-                "pdf_data": {
+                "pdf_link": {
                     "type": "string"
                 },
                 "pdf_name": {
@@ -4193,19 +4145,12 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "comment",
-                "pictures",
                 "priority",
                 "room_id"
             ],
             "properties": {
                 "comment": {
                     "type": "string"
-                },
-                "pictures": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "priority": {
                     "$ref": "#/definitions/db.Priority"
@@ -4239,7 +4184,7 @@ const docTemplate = `{
                 "lease_id": {
                     "type": "string"
                 },
-                "pictures": {
+                "picture_urls": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -4267,16 +4212,7 @@ const docTemplate = `{
         },
         "models.DamageTenantUpdateRequest": {
             "type": "object",
-            "required": [
-                "add_pictures"
-            ],
             "properties": {
-                "add_pictures": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "comment": {
                     "type": "string"
                 },
@@ -4285,31 +4221,10 @@ const docTemplate = `{
                 }
             }
         },
-        "models.DocumentRequest": {
-            "type": "object",
-            "required": [
-                "data",
-                "name"
-            ],
-            "properties": {
-                "data": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "models.DocumentResponse": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "string"
-                },
-                "id": {
+                "link": {
                     "type": "string"
                 },
                 "name": {
@@ -4354,37 +4269,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.FurnitureStateRequest": {
-            "type": "object",
-            "required": [
-                "cleanliness",
-                "id",
-                "note",
-                "pictures",
-                "state"
-            ],
-            "properties": {
-                "cleanliness": {
-                    "$ref": "#/definitions/db.Cleanliness"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "note": {
-                    "type": "string"
-                },
-                "pictures": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "state": {
-                    "$ref": "#/definitions/db.State"
-                }
-            }
-        },
         "models.FurnitureStateResponse": {
             "type": "object",
             "properties": {
@@ -4422,44 +4306,12 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ImageRequest": {
-            "type": "object",
-            "required": [
-                "data"
-            ],
-            "properties": {
-                "data": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ImageResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
         "models.InventoryReportRequest": {
             "type": "object",
             "required": [
-                "rooms",
                 "type"
             ],
             "properties": {
-                "rooms": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.RoomStateRequest"
-                    }
-                },
                 "type": {
                     "$ref": "#/definitions/db.ReportType"
                 }
@@ -4598,7 +4450,7 @@ const docTemplate = `{
                 "owner_id": {
                     "type": "string"
                 },
-                "picture_id": {
+                "picture_url": {
                     "type": "string"
                 },
                 "postal_code": {
@@ -4705,7 +4557,7 @@ const docTemplate = `{
                 "owner_id": {
                     "type": "string"
                 },
-                "picture_id": {
+                "picture_url": {
                     "type": "string"
                 },
                 "postal_code": {
@@ -4796,44 +4648,6 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/db.RoomType"
-                }
-            }
-        },
-        "models.RoomStateRequest": {
-            "type": "object",
-            "required": [
-                "cleanliness",
-                "furnitures",
-                "id",
-                "note",
-                "pictures",
-                "state"
-            ],
-            "properties": {
-                "cleanliness": {
-                    "$ref": "#/definitions/db.Cleanliness"
-                },
-                "furnitures": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.FurnitureStateRequest"
-                    }
-                },
-                "id": {
-                    "type": "string"
-                },
-                "note": {
-                    "type": "string"
-                },
-                "pictures": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "state": {
-                    "$ref": "#/definitions/db.State"
                 }
             }
         },
@@ -4952,7 +4766,7 @@ const docTemplate = `{
                 "lastname": {
                     "type": "string"
                 },
-                "profile_picture_id": {
+                "profile_picture_url": {
                     "type": "string"
                 },
                 "role": {
@@ -5072,6 +4886,7 @@ const docTemplate = `{
                 "no-claims",
                 "cannot-decode-user",
                 "missing-fields",
+                "missing-file",
                 "cannot-hash-password",
                 "email-already-exists",
                 "test-error",
@@ -5098,19 +4913,23 @@ const docTemplate = `{
                 "damage-already-exists",
                 "cannot-update-fixed-damage",
                 "damage-already-fixed",
-                "failed-to-link-image",
+                "failed-upload-file",
+                "failed-delete-file",
                 "bad-base64-string",
                 "property-picture-not-found",
                 "user-profile-picture-not-found",
-                "room-already-exists",
                 "room-not-found",
+                "room-already-exists",
+                "room-not-in-this-property",
                 "furniture-not-found",
                 "furniture-already-exists",
-                "furniture-not-in-this-room",
+                "furniture-not-in-this-property",
                 "inventory-report-already-exists",
+                "cannot-modify-inventory-report",
                 "inventory-report-not-found",
                 "room-state-already-exists",
                 "furniture-state-already-exists",
+                "invalid-object-type",
                 "error-request-chatgpt-api",
                 "failed-send-email"
             ],
@@ -5122,6 +4941,7 @@ const docTemplate = `{
                 "NoClaims",
                 "CannotDecodeUser",
                 "MissingFields",
+                "MissingFile",
                 "CannotHashPassword",
                 "EmailAlreadyExists",
                 "TestError",
@@ -5148,19 +4968,23 @@ const docTemplate = `{
                 "DamageAlreadyExists",
                 "CannotUpdateFixedDamage",
                 "DamageAlreadyFixed",
-                "FailedLinkImage",
+                "FailedUploadFile",
+                "FailedDeleteFile",
                 "BadBase64String",
                 "PropertyPictureNotFound",
                 "UserProfilePictureNotFound",
-                "RoomAlreadyExists",
                 "RoomNotFound",
+                "RoomAlreadyExists",
+                "RoomNotInThisProperty",
                 "FurnitureNotFound",
                 "FurnitureAlreadyExists",
-                "FurnitureNotInThisRoom",
+                "FurnitureNotInThisProperty",
                 "InventoryReportAlreadyExists",
+                "CannotModifyInventoryReport",
                 "InventoryReportNotFound",
                 "RoomStateAlreadyExists",
                 "FurnitureStateAlreadyExists",
+                "InvalidObjectType",
                 "ErrorRequestChatGPTAPI",
                 "FailedSendEmail"
             ]

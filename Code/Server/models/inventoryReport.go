@@ -1,31 +1,49 @@
 package models
 
 import (
-	"encoding/base64"
-
 	"immotep/backend/prisma/db"
+	"immotep/backend/utils"
 )
 
 type FurnitureStateRequest struct {
-	ID          string         `binding:"required"                            json:"id"`
-	State       db.State       `binding:"required,state"                      json:"state"`
-	Cleanliness db.Cleanliness `binding:"required,cleanliness"                json:"cleanliness"`
-	Note        string         `binding:"required"                            json:"note"`
-	Pictures    []string       `binding:"required,min=1,dive,required,base64" json:"pictures"`
+	FurnitureID string         `binding:"required"             json:"furniture_id"`
+	State       db.State       `binding:"required,state"       json:"state"`
+	Cleanliness db.Cleanliness `binding:"required,cleanliness" json:"cleanliness"`
+	Note        string         `binding:"required"             json:"note"`
 }
 
+func (f *FurnitureStateRequest) ToDbFurnitureState() db.FurnitureStateModel {
+	return db.FurnitureStateModel{
+		InnerFurnitureState: db.InnerFurnitureState{
+			FurnitureID: f.FurnitureID,
+			State:       f.State,
+			Cleanliness: f.Cleanliness,
+			Note:        f.Note,
+		},
+	}
+}
+
+
 type RoomStateRequest struct {
-	ID          string                  `binding:"required"                            json:"id"`
-	State       db.State                `binding:"required,state"                      json:"state"`
-	Cleanliness db.Cleanliness          `binding:"required,cleanliness"                json:"cleanliness"`
-	Note        string                  `binding:"required"                            json:"note"`
-	Pictures    []string                `binding:"required,min=1,dive,required,base64" json:"pictures"`
-	Furnitures  []FurnitureStateRequest `binding:"required,dive"                       json:"furnitures"`
+	RoomID      string         `binding:"required"             json:"room_id"`
+	State       db.State       `binding:"required,state"       json:"state"`
+	Cleanliness db.Cleanliness `binding:"required,cleanliness" json:"cleanliness"`
+	Note        string         `binding:"required"             json:"note"`
+}
+
+func (r *RoomStateRequest) ToDbRoomState() db.RoomStateModel {
+	return db.RoomStateModel{
+		InnerRoomState: db.InnerRoomState{
+			RoomID:      r.RoomID,
+			State:       r.State,
+			Cleanliness: r.Cleanliness,
+			Note:        r.Note,
+		},
+	}
 }
 
 type InventoryReportRequest struct {
-	Type  db.ReportType      `binding:"required,reportType" json:"type"`
-	Rooms []RoomStateRequest `binding:"required,dive"       json:"rooms"`
+	Type db.ReportType `binding:"required,reportType" json:"type"`
 }
 
 type FurnitureStateResponse struct {
@@ -35,7 +53,7 @@ type FurnitureStateResponse struct {
 	State       db.State       `json:"state"`
 	Cleanliness db.Cleanliness `json:"cleanliness"`
 	Note        string         `json:"note"`
-	Pictures    []string       `json:"pictures"`
+	PictureUrls []string       `json:"picture_urls"`
 }
 
 type RoomStateResponse struct {
@@ -44,7 +62,7 @@ type RoomStateResponse struct {
 	State       db.State                 `json:"state"`
 	Cleanliness db.Cleanliness           `json:"cleanliness"`
 	Note        string                   `json:"note"`
-	Pictures    []string                 `json:"pictures"`
+	PictureUrls []string                 `json:"picture_urls"`
 	Furnitures  []FurnitureStateResponse `json:"furnitures"`
 }
 
@@ -57,49 +75,45 @@ type InventoryReportResponse struct {
 	Rooms      []RoomStateResponse `json:"rooms"`
 }
 
-func (i *InventoryReportResponse) FromDbInventoryReport(model db.InventoryReportModel) {
+func (i *InventoryReportResponse) FromDbInventoryReport(model db.InventoryReportModel, pictureLinks map[string]string) {
 	i.ID = model.ID
 	i.PropertyID = model.Lease().PropertyID
 	i.LeaseID = model.LeaseID
 	i.Date = model.Date
 	i.Type = model.Type
-	for _, room := range model.RoomStates() {
+	for _, rs := range model.RoomStates() {
 		var r RoomStateResponse
-		r.ID = room.RoomID
-		r.Name = room.Room().Name
-		r.State = room.State
-		r.Cleanliness = room.Cleanliness
-		r.Note = room.Note
-		for _, picture := range room.Pictures() {
-			r.Pictures = append(r.Pictures, DbImageToResponse(picture).Data)
-		}
-		addFurnitureStatesToRoomState(model, room, &r)
+		r.ID = rs.RoomID
+		r.Name = rs.Room().Name
+		r.State = rs.State
+		r.Cleanliness = rs.Cleanliness
+		r.Note = rs.Note
+		r.PictureUrls = utils.Map(rs.Pictures, func(path string) string { return pictureLinks[path] })
+		addFurnitureStatesToRoomState(model, rs, &r, pictureLinks)
 		i.Rooms = append(i.Rooms, r)
 	}
 }
 
-func addFurnitureStatesToRoomState(model db.InventoryReportModel, room db.RoomStateModel, r *RoomStateResponse) {
-	for _, furniture := range model.FurnitureStates() {
-		if furniture.Furniture().RoomID != room.RoomID {
+func addFurnitureStatesToRoomState(model db.InventoryReportModel, room db.RoomStateModel, r *RoomStateResponse, pictureLinks map[string]string) {
+	for _, fs := range model.FurnitureStates() {
+		if fs.Furniture().RoomID != room.RoomID {
 			continue
 		}
 		var f FurnitureStateResponse
-		f.ID = furniture.FurnitureID
-		f.Name = furniture.Furniture().Name
-		f.Quantity = furniture.Furniture().Quantity
-		f.State = furniture.State
-		f.Cleanliness = furniture.Cleanliness
-		f.Note = furniture.Note
-		for _, picture := range furniture.Pictures() {
-			f.Pictures = append(f.Pictures, DbImageToResponse(picture).Data)
-		}
+		f.ID = fs.FurnitureID
+		f.Name = fs.Furniture().Name
+		f.Quantity = fs.Furniture().Quantity
+		f.State = fs.State
+		f.Cleanliness = fs.Cleanliness
+		f.Note = fs.Note
+		f.PictureUrls = utils.Map(fs.Pictures, func(path string) string { return pictureLinks[path] })
 		r.Furnitures = append(r.Furnitures, f)
 	}
 }
 
-func DbInventoryReportToResponse(pc db.InventoryReportModel) InventoryReportResponse {
+func DbInventoryReportToResponse(pc db.InventoryReportModel, pictureLinks map[string]string) InventoryReportResponse {
 	var resp InventoryReportResponse
-	resp.FromDbInventoryReport(pc)
+	resp.FromDbInventoryReport(pc, pictureLinks)
 	return resp
 }
 
@@ -110,25 +124,21 @@ type CreateInventoryReportResponse struct {
 	Date       db.DateTime   `json:"date"`
 	Type       db.ReportType `json:"type"`
 	PdfName    string        `json:"pdf_name"`
-	PdfData    string        `json:"pdf_data"`
-	Errors     []string      `json:"errors,omitempty"`
+	PdfLink    string        `json:"pdf_link"`
 }
 
-func (c *CreateInventoryReportResponse) FromDbInventoryReport(model db.InventoryReportModel, pdf *db.DocumentModel, errors []string) {
+func (c *CreateInventoryReportResponse) FromDbInventoryReport(model db.InventoryReportModel, pdf DocumentResponse) {
 	c.ID = model.ID
 	c.PropertyID = model.Lease().PropertyID
 	c.LeaseID = model.LeaseID
 	c.Date = model.Date
 	c.Type = model.Type
-	if pdf != nil {
-		c.PdfName = pdf.Name
-		c.PdfData = "data:application/pdf;base64," + base64.StdEncoding.EncodeToString(pdf.Data)
-	}
-	c.Errors = errors
+	c.PdfName = pdf.Name
+	c.PdfLink = pdf.Link
 }
 
-func DbInventoryReportToCreateResponse(pc db.InventoryReportModel, pdf *db.DocumentModel, errors []string) CreateInventoryReportResponse {
+func DbInventoryReportToCreateResponse(pc db.InventoryReportModel, pdf DocumentResponse) CreateInventoryReportResponse {
 	var resp CreateInventoryReportResponse
-	resp.FromDbInventoryReport(pc, pdf, errors)
+	resp.FromDbInventoryReport(pc, pdf)
 	return resp
 }

@@ -181,17 +181,14 @@ func MockUpdateProperty(c *services.PrismaDB, uProperty models.PropertyUpdateReq
 	)
 }
 
-func UpdatePropertyPicture(property db.PropertyModel, image db.ImageModel) *db.PropertyModel {
+func UpdatePropertyPicture(property db.PropertyModel, picturePath string) *db.PropertyModel {
 	pdb := services.DBclient
 	newProperty, err := pdb.Client.Property.FindUnique(
 		db.Property.ID.Equals(property.ID),
 	).Update(
-		db.Property.Picture.Link(db.Image.ID.Equals(image.ID)),
+		db.Property.Picture.Set(picturePath),
 	).Exec(pdb.Context)
 	if err != nil {
-		if db.IsErrNotFound(err) {
-			return nil
-		}
 		panic(err)
 	}
 	return newProperty
@@ -201,7 +198,7 @@ func MockUpdatePropertyPicture(c *services.PrismaDB) db.PropertyMockExpectParam 
 	return c.Client.Property.FindUnique(
 		db.Property.ID.Equals("1"),
 	).Update(
-		db.Property.Picture.Link(db.Image.ID.Equals("1")),
+		db.Property.Picture.Set("/path/to/picture.jpg"),
 	)
 }
 

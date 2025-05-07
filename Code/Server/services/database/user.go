@@ -109,17 +109,14 @@ func MockUpdateUser(c *services.PrismaDB, uUser models.UserUpdateRequest) db.Use
 	)
 }
 
-func UpdateUserPicture(user db.UserModel, image db.ImageModel) *db.UserModel {
+func UpdateUserPicture(user db.UserModel, picturePath string) *db.UserModel {
 	pdb := services.DBclient
 	newUser, err := pdb.Client.User.FindUnique(
 		db.User.ID.Equals(user.ID),
 	).Update(
-		db.User.ProfilePicture.Link(db.Image.ID.Equals(image.ID)),
+		db.User.ProfilePicture.Set(picturePath),
 	).Exec(pdb.Context)
 	if err != nil {
-		if db.IsErrNotFound(err) {
-			return nil
-		}
 		panic(err)
 	}
 	return newUser
@@ -129,6 +126,6 @@ func MockUpdateUserPicture(c *services.PrismaDB) db.UserMockExpectParam {
 	return c.Client.User.FindUnique(
 		db.User.ID.Equals("1"),
 	).Update(
-		db.User.ProfilePicture.Link(db.Image.ID.Equals("1")),
+		db.User.ProfilePicture.Set("/path/to/picture.jpg"),
 	)
 }
