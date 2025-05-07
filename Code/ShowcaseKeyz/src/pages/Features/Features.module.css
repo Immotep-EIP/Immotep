@@ -8,7 +8,7 @@
   background-color: #f8fafc;
   color: black;
   position: relative;
-  overflow: hidden; /* Pour contenir les éléments décoratifs */
+  overflow: hidden;
 }
 
 /* Éléments décoratifs */
@@ -75,7 +75,7 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  z-index: 1; /* Au-dessus des décorations */
+  z-index: 1;
 }
 
 .title {
@@ -116,11 +116,11 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 30px; /* Réduit l'écart pour une meilleure disposition */
+  gap: 50px;
   margin: 50px 0;
   padding: 0 15px;
   position: relative;
-  z-index: 1; /* Au-dessus des décorations */
+  z-index: 1;
 }
 
 .featureCard {
