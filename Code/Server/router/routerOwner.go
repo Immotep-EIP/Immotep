@@ -109,7 +109,7 @@ func registerOwnerInventoryRoutes(propertyId *gin.RouterGroup) {
 
 		roomId := rooms.Group("/:room_id/")
 		{
-			roomId.Use(middlewares.CheckRoomPropertyOwnership("property_id", "room_id"))
+			roomId.Use(middlewares.CheckRoomPropertyOwnership("room_id"))
 			roomId.GET("/", controllers.GetRoom)
 			roomId.DELETE("/", controllers.DeleteRoom)
 			roomId.PUT("/archive/", controllers.ArchiveRoom)

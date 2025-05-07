@@ -56,9 +56,11 @@ func CreateRoom(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/ [get]
+//	@Router			/tenant/leases/{lease_id}/property/rooms/ [get]
 func GetRoomsByProperty(c *gin.Context) {
+	property, _ := c.MustGet("property").(db.PropertyModel)
 	archive := c.DefaultQuery("archive", "false") == utils.Strue
-	rooms := database.GetRoomsByPropertyID(c.Param("property_id"), archive)
+	rooms := database.GetRoomsByPropertyID(property.ID, archive)
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 
@@ -77,6 +79,7 @@ func GetRoomsByProperty(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [get]
+//	@Router			/tenant/leases/{lease_id}/property/rooms/{room_id}/ [get]
 func GetRoom(c *gin.Context) {
 	room, _ := c.MustGet("room").(db.RoomModel)
 	c.JSON(http.StatusOK, models.DbRoomToResponse(room))
