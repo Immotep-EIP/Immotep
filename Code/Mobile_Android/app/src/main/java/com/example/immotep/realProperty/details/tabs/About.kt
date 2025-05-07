@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.immotep.LocalIsOwner
 import com.example.immotep.R
 import com.example.immotep.apiCallerServices.DetailedProperty
 import com.example.immotep.apiCallerServices.PropertyStatus
@@ -74,6 +75,7 @@ fun AboutPropertyTab(
     setIsLoading : (Boolean) -> Unit,
     loaderInventoryViewModel: LoaderInventoryViewModel
 ) {
+    val isOwner = LocalIsOwner.current.value
     val invite = if (property.value.status == PropertyStatus.invite_sent) {
         property.value.invite
     } else {
@@ -132,7 +134,7 @@ fun AboutPropertyTab(
                 fontSize = 15.sp)
         }
     }
-    if (property.value.status == PropertyStatus.unavailable && lease != null) {
+    if (isOwner && property.value.status == PropertyStatus.unavailable && lease != null) {
         LoaderInventoryButton(
             propertyId = property.value.id,
             currentLeaseId = lease.id,

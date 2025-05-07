@@ -12,8 +12,6 @@ fun DashBoardScreen(
     navController: NavController,
     viewModel: DashBoardViewModel = viewModel()
 ) {
-    val isOwner = LocalIsOwner.current.value
-    println("is owner : $isOwner")
     DashBoardLayout(navController, "dashboardScreen") {
         Button(onClick = {
             navController.navigate("login")

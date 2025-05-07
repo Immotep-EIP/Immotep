@@ -80,6 +80,12 @@ interface ApiService {
     @GET("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun getProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): GetPropertyResponse
 
+    @GET("${API_PREFIX}/tenant/leases/{leaseId}/property/")
+    suspend fun getPropertyTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("leaseId") leaseId: String
+    ): GetPropertyResponse
+
     @GET("${API_PREFIX}/owner/properties/{propertyId}/picture/")
     suspend fun getPropertyPicture(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): retrofit2.Response<PropertyPictureResponse>
 

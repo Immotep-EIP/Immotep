@@ -54,6 +54,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.LocalApiService
+import com.example.immotep.LocalIsOwner
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.apiCallerServices.DetailedProperty
@@ -93,13 +94,14 @@ fun RealPropertyDropDownMenuItem(
 
 @Composable
 fun RealPropertyImageWithTopButtonsAndDropdown(
-    getBack : (DetailedProperty) -> Unit,
+    getBack : ((DetailedProperty) -> Unit)?,
     property : State<DetailedProperty>,
     openAddTenant:  (() -> Unit)?,
     endLease : (() -> Unit)?,
     cancelInvitation : (() -> Unit)?,
     openEdit : () -> Unit,
-    openDelete : () -> Unit
+    openDelete : () -> Unit,
+    isOwner : Boolean
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -129,70 +131,74 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
                     )
             )
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 5.dp, start = 5.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        if (isOwner) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(top = 5.dp, start = 5.dp)
             ) {
-                BackButton { getBack(property.value) }
-                Box {
-                    IconButton(
-                        onClick = { expanded = true },
-                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.background),
-                        modifier = Modifier.testTag("moreVertOptions"),
-                    ) {
-                        Icon(
-                            Icons.Outlined.MoreVert,
-                            contentDescription = "More options",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (getBack != null) {
+                        BackButton { getBack(property.value) }
                     }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        RealPropertyDropDownMenuItem(
-                            name = stringResource(R.string.add_tenant),
-                            onClick = openAddTenant,
-                            disabled = openAddTenant == null,
-                            closeDropDown = { expanded = false },
-                            testTag = "inviteTenantBtn"
-                        )
-                        RealPropertyDropDownMenuItem(
-                            name = stringResource(R.string.end_lease),
-                            onClick = endLease,
-                            disabled = endLease == null,
-                            color = MaterialTheme.colorScheme.error,
-                            closeDropDown = { expanded = false },
-                            testTag = "endLeaseBtn"
-                        )
-                        RealPropertyDropDownMenuItem(
-                            name = stringResource(R.string.cancel_invitation),
-                            onClick = cancelInvitation,
-                            disabled = cancelInvitation == null,
-                            closeDropDown = {
-                                expanded = false
-                            },
-                            testTag = "cancelInvitationBtn"
-                        )
-                        RealPropertyDropDownMenuItem(
-                            name = stringResource(R.string.mod_property),
-                            onClick = openEdit,
-                            closeDropDown = { expanded = false },
-                            testTag = "editPropertyBtn"
-                        )
-                        RealPropertyDropDownMenuItem(
-                            name = stringResource(R.string.delete_property),
-                            onClick = openDelete,
-                            color = MaterialTheme.colorScheme.error,
-                            closeDropDown = { expanded = false },
-                            testTag = "deletePropertyBtn"
-                        )
+                    Box {
+                        IconButton(
+                            onClick = { expanded = true },
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.background),
+                            modifier = Modifier.testTag("moreVertOptions"),
+                        ) {
+                            Icon(
+                                Icons.Outlined.MoreVert,
+                                contentDescription = "More options",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            RealPropertyDropDownMenuItem(
+                                name = stringResource(R.string.add_tenant),
+                                onClick = openAddTenant,
+                                disabled = openAddTenant == null,
+                                closeDropDown = { expanded = false },
+                                testTag = "inviteTenantBtn"
+                            )
+                            RealPropertyDropDownMenuItem(
+                                name = stringResource(R.string.end_lease),
+                                onClick = endLease,
+                                disabled = endLease == null,
+                                color = MaterialTheme.colorScheme.error,
+                                closeDropDown = { expanded = false },
+                                testTag = "endLeaseBtn"
+                            )
+                            RealPropertyDropDownMenuItem(
+                                name = stringResource(R.string.cancel_invitation),
+                                onClick = cancelInvitation,
+                                disabled = cancelInvitation == null,
+                                closeDropDown = {
+                                    expanded = false
+                                },
+                                testTag = "cancelInvitationBtn"
+                            )
+                            RealPropertyDropDownMenuItem(
+                                name = stringResource(R.string.mod_property),
+                                onClick = openEdit,
+                                closeDropDown = { expanded = false },
+                                testTag = "editPropertyBtn"
+                            )
+                            RealPropertyDropDownMenuItem(
+                                name = stringResource(R.string.delete_property),
+                                onClick = openDelete,
+                                color = MaterialTheme.colorScheme.error,
+                                closeDropDown = { expanded = false },
+                                testTag = "deletePropertyBtn"
+                            )
+                        }
                     }
                 }
             }
@@ -205,9 +211,10 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
 fun RealPropertyDetailsScreen(
     navController: NavController,
     newProperty : DetailedProperty,
-    getBack: (DetailedProperty) -> Unit,
+    getBack: ((DetailedProperty) -> Unit)? = null,
     loaderInventoryViewModel: LoaderInventoryViewModel
 ) {
+    val isOwner = LocalIsOwner.current.value
     val apiService = LocalApiService.current
     val context = navController.context
     val tabs = listOf(
@@ -215,7 +222,6 @@ fun RealPropertyDetailsScreen(
         stringResource(R.string.documents),
         stringResource(R.string.damages)
     )
-
 
     val viewModel: RealPropertyDetailsViewModel = viewModel {
         RealPropertyDetailsViewModel(navController, apiService)
@@ -272,7 +278,8 @@ fun RealPropertyDetailsScreen(
                     { viewModel.onCancelInviteTenant() }
                 } else null,
                 openEdit = { editOpen = true },
-                openDelete = { }
+                openDelete = { },
+                isOwner = isOwner
             )
             ErrorAlert(null, null, errorAlertVal)
             Column(modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(20.dp)) {

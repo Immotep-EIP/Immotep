@@ -267,8 +267,12 @@ class RealPropertyCallerService (
         }
     }
 
-    suspend fun getPropertyWithDetails(propertyId: String): DetailedProperty = changeRetrofitExceptionByApiCallerException {
-        apiService.getProperty(getBearerToken(), propertyId).toDetailedProperty()
+    suspend fun getPropertyWithDetails(propertyId: String? = null): DetailedProperty = changeRetrofitExceptionByApiCallerException {
+        if (this.isOwner()) {
+            if (propertyId == null) throw Exception("Property id is null")
+            return@changeRetrofitExceptionByApiCallerException apiService.getProperty(getBearerToken(), propertyId).toDetailedProperty()
+        }
+        return@changeRetrofitExceptionByApiCallerException apiService.getPropertyTenant(getBearerToken(), "current").toDetailedProperty()
     }
 
     suspend fun updateProperty(

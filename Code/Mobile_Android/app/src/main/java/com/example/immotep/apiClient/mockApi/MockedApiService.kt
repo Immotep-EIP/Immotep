@@ -250,4 +250,8 @@ class MockedApiService : ApiService {
             id = "pictureId"
         )
     }
+
+    override suspend fun getPropertyTenant(authHeader: String, leaseId: String): GetPropertyResponse {
+        return parisFakeProperty
+    }
 }

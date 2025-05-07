@@ -61,6 +61,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.immotep.LocalApiService
+import com.example.immotep.LocalIsOwner
 import com.example.immotep.R
 import com.example.immotep.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.immotep.apiCallerServices.DetailedProperty
@@ -71,6 +72,7 @@ import com.example.immotep.components.InitialFadeIn
 import com.example.immotep.dashboard.DashBoardLayout
 import com.example.immotep.inventory.loaderButton.LoaderInventoryViewModel
 import com.example.immotep.realProperty.details.RealPropertyDetailsScreen
+import com.example.immotep.realProperty.tenant.RealPropertyTenant
 import com.example.immotep.utils.DateFormatter
 
 @Composable
@@ -195,7 +197,7 @@ fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDel
 }
 
 @Composable
-fun RealPropertyScreen(
+fun RealPropertyOwnerScreen(
     navController: NavController,
     loaderInventoryViewModel: LoaderInventoryViewModel
 ) {
@@ -285,5 +287,19 @@ fun RealPropertyScreen(
             navController = navController,
             onSubmitPicture = { picture -> viewModel.setPropertyImage(propertySelectedDetails.value!!.id, picture) }
         )
+    }
+}
+
+
+@Composable
+fun RealPropertyScreen(
+    navController: NavController,
+    loaderInventoryViewModel: LoaderInventoryViewModel
+) {
+    val isOwner = LocalIsOwner.current
+    if (isOwner.value) {
+        RealPropertyOwnerScreen(navController, loaderInventoryViewModel)
+    } else {
+        RealPropertyTenant(navController, loaderInventoryViewModel)
     }
 }
