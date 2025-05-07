@@ -1688,8 +1688,6 @@ paths:
       responses:
         "204":
           description: Document deleted
-          schema:
-            $ref: '#/definitions/models.DocumentResponse'
         "403":
           description: Property not yours
           schema:
@@ -2191,8 +2189,6 @@ paths:
       responses:
         "204":
           description: Deleted room ID
-          schema:
-            $ref: '#/definitions/models.IdResponse'
         "403":
           description: Property not yours
           schema:
@@ -2411,8 +2407,6 @@ paths:
       responses:
         "204":
           description: Deleted furniture ID
-          schema:
-            $ref: '#/definitions/models.IdResponse'
         "403":
           description: Property not yours
           schema:

@@ -1402,10 +1402,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "Document deleted",
-                        "schema": {
-                            "$ref": "#/definitions/models.DocumentResponse"
-                        }
+                        "description": "Document deleted"
                     },
                     "403": {
                         "description": "Property not yours",
@@ -2172,10 +2169,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "Deleted room ID",
-                        "schema": {
-                            "$ref": "#/definitions/models.IdResponse"
-                        }
+                        "description": "Deleted room ID"
                     },
                     "403": {
                         "description": "Property not yours",
@@ -2516,10 +2510,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "Deleted furniture ID",
-                        "schema": {
-                            "$ref": "#/definitions/models.IdResponse"
-                        }
+                        "description": "Deleted furniture ID"
                     },
                     "403": {
                         "description": "Property not yours",

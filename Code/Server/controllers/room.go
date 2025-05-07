@@ -120,16 +120,16 @@ func ArchiveRoom(c *gin.Context) {
 //	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string				true	"Property ID"
-//	@Param			room_id		path		string				true	"Room ID"
-//	@Success		204			{object}	models.IdResponse	"Deleted room ID"
-//	@Failure		403			{object}	utils.Error			"Property not yours"
-//	@Failure		404			{object}	utils.Error			"Room not found"
+//	@Param			property_id	path	string	true	"Property ID"
+//	@Param			room_id		path	string	true	"Room ID"
+//	@Success		204			"Deleted room ID"
+//	@Failure		403			{object}	utils.Error	"Property not yours"
+//	@Failure		404			{object}	utils.Error	"Room not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [delete]
 func DeleteRoom(c *gin.Context) {
 	room, _ := c.MustGet("room").(db.RoomModel)
 	database.DeleteRoom(room.ID)
-	c.JSON(http.StatusNoContent, nil)
+	c.Status(http.StatusNoContent)
 }
