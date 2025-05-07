@@ -72,6 +72,10 @@ function FeaturesPage() {
 
   return (
     <div className={style.pageContainer}>
+      <div className={style.decorShape1}></div>
+      <div className={style.decorShape2}></div>
+      <div className={style.decorDots}></div>
+      <div className={style.decorTriangle}></div>
       <div className={style.titleContainer}>
         <h1 ref={titleRef} className={style.title}>
           {t("features.title")}
