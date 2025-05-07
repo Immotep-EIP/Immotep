@@ -56,10 +56,9 @@ const RealPropertyPage: React.FC = () => {
           </div>
         </div>
 
-        {loading && <CardPropertyLoader cards={12} />}
-
         <div className={style.cardsContainer}>
-          {properties.length === 0 && (
+          {loading && <CardPropertyLoader cards={12} />}
+          {!loading && properties.length === 0 && (
             <div className={style.emptyContainer}>
               <Empty
                 image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
