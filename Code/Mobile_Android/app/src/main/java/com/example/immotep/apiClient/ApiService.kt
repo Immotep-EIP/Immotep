@@ -7,6 +7,7 @@ import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
 import com.example.immotep.apiCallerServices.CreatedInventoryReport
+import com.example.immotep.apiCallerServices.DamageOutput
 import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.DocumentInput
 import com.example.immotep.apiCallerServices.FurnitureInput
@@ -80,12 +81,6 @@ interface ApiService {
     @GET("${API_PREFIX}/owner/properties/{propertyId}")
     suspend fun getProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): GetPropertyResponse
 
-    @GET("${API_PREFIX}/tenant/leases/{leaseId}/property/")
-    suspend fun getPropertyTenant(
-        @Header("Authorization") authHeader : String,
-        @Path("leaseId") leaseId: String
-    ): GetPropertyResponse
-
     @GET("${API_PREFIX}/owner/properties/{propertyId}/picture/")
     suspend fun getPropertyPicture(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): retrofit2.Response<PropertyPictureResponse>
 
@@ -121,11 +116,7 @@ interface ApiService {
         @Path("leaseId") leaseId: String
     ): Array<Document>
 
-    @GET("${API_PREFIX}/tenant/leases/{leaseId}/docs/")
-    suspend fun getPropertyDocumentsTenant(
-        @Header("Authorization") authHeader : String,
-        @Path("leaseId") leaseId: String
-    ): Array<Document>
+
 
     @POST("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/docs/")
     suspend fun uploadDocument(
@@ -135,12 +126,40 @@ interface ApiService {
         @Body document: DocumentInput
     ): CreateOrUpdateResponse
 
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/damages/")
+    suspend fun getPropertyDamages(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String
+    ): Array<DamageOutput>
+
+
+
+    //tenant-specific property functions
+    @GET("${API_PREFIX}/tenant/leases/{leaseId}/property/")
+    suspend fun getPropertyTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("leaseId") leaseId: String
+    ): GetPropertyResponse
+
     @POST("${API_PREFIX}/tenant/leases/{leaseId}/docs/")
     suspend fun uploadDocumentTenant(
         @Header("Authorization") authHeader : String,
         @Path("leaseId") leaseId: String,
         @Body document: DocumentInput
     ): CreateOrUpdateResponse
+
+    @GET("${API_PREFIX}/tenant/leases/{leaseId}/docs/")
+    suspend fun getPropertyDocumentsTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("leaseId") leaseId: String
+    ): Array<Document>
+
+    @GET("${API_PREFIX}/tenant/leases/{leaseId}/damages/")
+    suspend fun getPropertyDamagesTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("leaseId") leaseId: String,
+    ): Array<DamageOutput>
 
     //rooms functions
     @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms")

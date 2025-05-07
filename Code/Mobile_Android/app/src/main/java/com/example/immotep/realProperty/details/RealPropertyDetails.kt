@@ -300,7 +300,10 @@ fun RealPropertyDetailsScreen(
                         documents = viewModel.documents.toList(),
                         addDocument = { viewModel.addDocument(it, context) }
                     )
-                    2 -> Damages()
+                    2 -> Damages(
+                        damageList = viewModel.damages.toList(),
+                        addDamage = { viewModel.addDamage(it) }
+                    )
                 }
             }
         }

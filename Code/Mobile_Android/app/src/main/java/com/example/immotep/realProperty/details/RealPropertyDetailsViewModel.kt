@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.AddPropertyInput
+import com.example.immotep.apiCallerServices.Damage
+import com.example.immotep.apiCallerServices.DamageInput
 import com.example.immotep.apiCallerServices.DetailedProperty
 import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.DocumentInput
@@ -45,6 +47,7 @@ class RealPropertyDetailsViewModel(
 
     val property: StateFlow<DetailedProperty> = _property.asStateFlow()
     val documents = mutableStateListOf<Document>()
+    val damages = mutableStateListOf<Damage>()
     val apiError = _apiError.asStateFlow()
     val isLoading = _isLoading.asStateFlow()
 
@@ -60,6 +63,7 @@ class RealPropertyDetailsViewModel(
         _apiError.value = ApiErrors.NONE
         _property.value = newProperty
         documents.clear()
+        damages.clear()
         if (newProperty.lease?.id == null) {
             return
         }
@@ -67,7 +71,9 @@ class RealPropertyDetailsViewModel(
             try {
                 setIsLoading(true)
                 val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id, newProperty.lease.id)
+                val propertyDamages = apiCaller.getPropertyDamages(newProperty.id, newProperty.lease.id)
                 documents.addAll(propertyDocuments)
+                damages.addAll(propertyDamages)
             } catch (e : Exception) {
                 println("Error loading property documents ${e.message}")
                 e.printStackTrace()
@@ -178,5 +184,9 @@ class RealPropertyDetailsViewModel(
                 setIsLoading(false)
             }
         }
+    }
+
+    fun addDamage(damage: DamageInput) {
+
     }
 }
