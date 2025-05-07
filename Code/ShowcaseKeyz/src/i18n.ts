@@ -26,6 +26,7 @@ const resources = {
       },
       pricing: {
         title: "Nos abonnements",
+        subtitle: "Choisissez l'abonnement qui vous convient le mieux",
       },
       contact_us: {
         title: "Nous contacter",
@@ -80,6 +81,7 @@ const resources = {
       },
       pricing: {
         title: "Pricing",
+        subtitle: "Choose the plan that suits you best",
       },
       contact_us: {
         title: "Contact Us",
@@ -133,6 +135,7 @@ const resources = {
       },
       pricing: {
         title: "Preise",
+        subtitle: "Wählen Sie den Plan, der am besten zu Ihnen passt",
       },
       contact_us: {
         title: "Kontaktiere uns",

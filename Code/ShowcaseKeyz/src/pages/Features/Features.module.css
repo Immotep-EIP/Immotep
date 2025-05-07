@@ -51,7 +51,6 @@
 .featuresContainer {
   width: 100%;
   flex: 1;
-  padding: 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

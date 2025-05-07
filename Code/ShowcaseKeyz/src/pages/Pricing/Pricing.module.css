@@ -5,28 +5,70 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  background-color: #ecf0f1;
-  color: black;
+  background-color: #f8fafc;
+  color: #1e293b;
+  position: relative;
+  overflow: hidden;
+}
+
+.decorCircle1 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: linear-gradient(
+    to right,
+    rgba(44, 62, 80, 0.05),
+    rgba(52, 152, 219, 0.05)
+  );
+  top: -50px;
+  left: -100px;
+  z-index: 0;
+}
+
+.decorCircle2 {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: linear-gradient(
+    to right,
+    rgba(52, 152, 219, 0.03),
+    rgba(44, 62, 80, 0.03)
+  );
+  bottom: -200px;
+  right: -200px;
+  z-index: 0;
 }
 
 .titleContainer {
-  margin-top: 60px;
+  margin-top: 40px;
   width: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 600px;
+  margin: 16px auto 40px;
 }
 
 .titleUnderline {
   height: 3px;
   width: 0;
-  background: linear-gradient(to right, #2c3e50, #646cff);
+  background: linear-gradient(to right, #2c3e50, #3498db);
   transition: width 2.5s ease-in-out;
   margin-top: 0.5rem;
   border-radius: 2px;
@@ -36,12 +78,229 @@
   width: 150px;
 }
 
-@media (min-width: 768px) {
-  .titleUnderline.animate {
-    width: 200px;
+.pricingContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 60px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 40px auto 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.priceCard {
+  background: white;
+  border-radius: 16px;
+  padding: 20px 10px;
+  width: 280px;
+  min-width: 0;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transform-origin: center;
+  flex-shrink: 1;
+}
+
+.priceCard.popular {
+  transform: scale(1.07);
+  box-shadow: 0 20px 40px rgba(52, 152, 219, 0.1);
+  border: 2px solid #3498db;
+  z-index: 2;
+}
+
+.priceCard.hovered {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.priceCard.popular.hovered {
+  transform: translateY(-10px) scale(1.07);
+}
+
+.popularBadge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #3498db;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.iconContainer {
+  margin-top: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(52, 152, 219, 0.1);
+  margin-bottom: 20px;
+  color: #3498db;
+  transition: all 0.3s ease;
+}
+
+.priceCard:hover .iconContainer {
+  transform: rotate(10deg);
+  background: #3498db;
+  color: white;
+}
+
+.planIcon {
+  width: 30px;
+  height: 30px;
+}
+
+.priceTitle {
+  font-size: 1.6rem;
+  margin-bottom: 14px;
+  color: #2c3e50;
+}
+
+.priceAmount {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.priceWrapper {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.pricePeriod {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin-left: 4px;
+}
+
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+  width: 100%;
+  text-align: left;
+}
+
+.featureItem {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  color: #4b5563;
+  font-size: 1rem;
+}
+
+.checkIcon {
+  width: 18px;
+  height: 18px;
+  color: #3498db;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.ctaButton {
+  padding: 12px 30px;
+  background: transparent;
+  color: #3498db;
+  border: 2px solid #3498db;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: auto;
+  width: 80%;
+}
+
+.ctaButton:hover {
+  background: #3498db;
+  color: white;
+  transform: scale(1.05);
+}
+
+.priceCard.popular .ctaButton {
+  background: #3498db;
+  color: white;
+}
+
+.priceCard.popular .ctaButton:hover {
+  background: #2c3e50;
+  border-color: #2c3e50;
+}
+
+@media (max-width: 1024px) {
+  .pricingContainer {
+    gap: 16px;
+  }
+
+  .priceCard {
+    width: 260px;
+    padding: 20px 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  .pricingContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .priceCard,
+  .priceCard.popular {
+    width: 100%;
+    max-width: 320px;
+    transform: scale(1);
+  }
+
+  .priceCard.hovered,
+  .priceCard.popular.hovered {
+    transform: translateY(-5px);
   }
 
   .title {
     font-size: 2rem;
+  }
+
+  .iconContainer {
+    margin-top: 10px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .planIcon {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+@media (max-width: 400px) {
+  .priceCard {
+    padding: 15px 10px;
+  }
+
+  .priceAmount {
+    font-size: 2.2rem;
+  }
+
+  .priceTitle {
+    font-size: 1.4rem;
+  }
+
+  .featureItem {
+    font-size: 0.9rem;
+    padding: 8px 0;
   }
 }
