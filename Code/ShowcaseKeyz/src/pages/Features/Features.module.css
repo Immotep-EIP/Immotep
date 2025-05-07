@@ -45,3 +45,65 @@
     font-size: 2rem;
   }
 }
+
+/* BODY */
+
+.featuresContainer {
+  width: 100%;
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  margin-bottom: 50px;
+}
+
+.featureCard {
+  width: 300px;
+  height: 200px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.featureCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, #2c3e50, #3498db);
+  transition: left 0.8s ease;
+  z-index: 1;
+}
+
+.featureCard:hover::before {
+  left: 0;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.featureTitle {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.featureDescription {
+  font-size: 1rem;
+  text-align: center;
+  color: #555;
+}
