@@ -51,7 +51,7 @@ export default function Navbar() {
             {t("topbar.features")}
           </a>
           <a
-            href="#our_app"
+            href="#application"
             className={scrolled ? styles.navLinkScrolled : styles.navLink}
           >
             {t("topbar.our_app")}
@@ -63,7 +63,7 @@ export default function Navbar() {
             {t("topbar.pricing")}
           </a>
           <a
-            href="#contact_us"
+            href="#contact-us"
             className={scrolled ? styles.navLinkScrolled : styles.navLink}
           >
             {t("topbar.contact_us")}
@@ -103,7 +103,7 @@ export default function Navbar() {
           {t("topbar.features")}
         </a>
         <a
-          href="#our_app"
+          href="#application"
           className={styles.mobileNavLink}
           onClick={() => setIsMenuOpen(false)}
         >
@@ -117,7 +117,7 @@ export default function Navbar() {
           {t("topbar.pricing")}
         </a>
         <a
-          href="#contact_us"
+          href="#contact-us"
           className={styles.mobileNavLink}
           onClick={() => setIsMenuOpen(false)}
         >

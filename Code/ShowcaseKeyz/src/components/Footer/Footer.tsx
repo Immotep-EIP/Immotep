@@ -18,11 +18,21 @@ const Footer = () => {
 
       <div className={style.columnContainer}>
         <span className={style.colTitle}>{t("footer.pages.title")}</span>
-        <span className={style.colDesc}>{t("footer.pages.home")}</span>
-        <span className={style.colDesc}>{t("footer.pages.features")}</span>
-        <span className={style.colDesc}>{t("footer.pages.our_app")}</span>
-        <span className={style.colDesc}>{t("footer.pages.pricing")}</span>
-        <span className={style.colDesc}>{t("footer.pages.contact_us")}</span>
+        <a href="#home" className={style.colDesc}>
+          {t("footer.pages.home")}
+        </a>
+        <a href="#features" className={style.colDesc}>
+          {t("footer.pages.features")}
+        </a>
+        <a href="#application" className={style.colDesc}>
+          {t("footer.pages.our_app")}
+        </a>
+        <a href="#pricing" className={style.colDesc}>
+          {t("footer.pages.pricing")}
+        </a>
+        <a href="#contact-us" className={style.colDesc}>
+          {t("footer.pages.contact_us")}
+        </a>
       </div>
       <div className={style.columnContainer}>
         <span className={style.colTitle}>{t("footer.legal.title")}</span>
