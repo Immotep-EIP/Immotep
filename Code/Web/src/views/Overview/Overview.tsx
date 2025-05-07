@@ -41,16 +41,16 @@ const Overview: React.FC = () => {
         name: 'PropertiesNumber',
         x: 0,
         y: 0,
-        w: 1,
+        w: 2,
         h: 1,
         children: <PropertiesNumber height={1} />
       },
       {
         i: '2',
         name: 'PropertiesRepartition',
-        x: 1,
+        x: 2,
         y: 0,
-        w: 1,
+        w: 2,
         h: 1,
         children: <PropertiesRepartition height={1} />
       },
@@ -59,7 +59,7 @@ const Overview: React.FC = () => {
         name: 'LastMessages',
         x: 0,
         y: 1,
-        w: 2,
+        w: 4,
         h: 2,
         children: <LastMessages height={2} />
       }
