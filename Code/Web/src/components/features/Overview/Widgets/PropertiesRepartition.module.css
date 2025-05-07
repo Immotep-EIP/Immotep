@@ -44,7 +44,7 @@
 }
 
 .propertiesNumber {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 500;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -53,7 +53,7 @@
 }
 
 .propertiesNumberText {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   text-overflow: ellipsis;
   overflow: hidden;

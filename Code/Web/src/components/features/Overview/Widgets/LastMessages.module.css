@@ -76,6 +76,7 @@
 .messageText {
   width: 85%;
   font-size: 14px;
+  text-align: left;
   color: #555555;
   white-space: nowrap;
   overflow: hidden;

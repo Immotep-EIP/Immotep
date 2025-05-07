@@ -460,7 +460,7 @@
       "status": {
         "available": "Available",
         "unavailable": "Occupied",
-        "avalables": "Available",
+        "availables": "Available",
         "unavailables": "Occupied",
         "invitation_sent": "Invitation sent"
       },

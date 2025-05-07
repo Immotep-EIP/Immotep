@@ -76,7 +76,7 @@ const PropertiesRepartition: React.FC<WidgetProps> = ({ height }) => {
             className={style.propertiesNumberText}
             style={{ color: '#f44336' }}
           >
-            {availableProperties > 1
+            {unavailableProperties > 1
               ? t('pages.real_property.status.unavailables')
               : t('pages.real_property.status.unavailable')}
           </span>
