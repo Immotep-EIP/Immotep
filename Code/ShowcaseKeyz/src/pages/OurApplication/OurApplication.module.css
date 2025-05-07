@@ -1,0 +1,47 @@
+.pageContainer {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #fff;
+  color: black;
+}
+
+.titleContainer {
+  margin-top: 60px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.titleUnderline {
+  height: 3px;
+  width: 0;
+  background: linear-gradient(to right, #2c3e50, #646cff);
+  transition: width 2.5s ease-in-out;
+  margin-top: 0.5rem;
+  border-radius: 2px;
+}
+
+.titleUnderline.animate {
+  width: 150px;
+}
+
+@media (min-width: 768px) {
+  .titleUnderline.animate {
+    width: 200px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+}

@@ -460,7 +460,7 @@
       "status": {
         "available": "Available",
         "unavailable": "Occupied",
-        "avalables": "Available",
+        "availables": "Available",
         "unavailables": "Occupied",
         "invitation_sent": "Invitation sent"
       },
@@ -489,11 +489,8 @@
       "properties_number": "Number of properties",
       "real_properties": "Properties"
     },
-    "maintenance": {
-      "title": "Maintenance",
-      "no_maintenance": "No maintenance in progress",
-      "no_maintenance_description": "You have no maintenance in progress at the moment",
-      "complete_button": "Confirm"
+    "reminders": {
+      "no_reminders": "No reminders yet"
     }
   }
 }

@@ -1,0 +1,125 @@
+.pageContainer {
+  min-height: 100vh;
+  min-width: 100vw;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background-image: url("/placeholder.svg?height=1080&width=1920");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: black;
+}
+
+.pageContent {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.title {
+  font-size: 5rem;
+  font-weight: bold;
+  color: white;
+}
+
+.description {
+  font-size: 1.5rem;
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 90%;
+  font-weight: 300;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 4rem;
+  }
+
+  .description {
+    font-size: 1.2rem;
+  }
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #3498db;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.button:hover {
+  background-color: #2980b9;
+  color: white;
+}
+
+.button:active {
+  background-color: #2a76a9;
+  color: white;
+}
+
+.shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.shape1 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(
+    135deg,
+    rgba(52, 152, 219, 0.4) 0%,
+    rgba(52, 152, 219, 0) 70%
+  );
+  border-radius: 50%;
+  top: 10%;
+  left: 5%;
+  animation: float 8s ease-in-out infinite;
+}
+
+.shape2 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(
+    135deg,
+    rgba(52, 152, 219, 0.3) 0%,
+    rgba(52, 152, 219, 0) 70%
+  );
+  border-radius: 50%;
+  bottom: 10%;
+  right: 5%;
+  animation: float 12s ease-in-out infinite reverse;
+}
+
+.shape3 {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(
+    135deg,
+    rgba(236, 240, 241, 0.2) 0%,
+    rgba(236, 240, 241, 0) 70%
+  );
+  border-radius: 50%;
+  top: 40%;
+  right: 20%;
+  animation: float 10s ease-in-out infinite 1s;
+}

@@ -15,7 +15,8 @@ const LastMessages: React.FC<WidgetProps> = ({ height }) => {
   const messages = [
     {
       expeditor: 'Expeditor tenant 1',
-      lastMessage: 'This is the last message sent by the expeditor',
+      lastMessage:
+        'This is the last message sent by the expeditor, with a very long text to test the overflow',
       date: '2023-10-01',
       read: false
     },

@@ -5,14 +5,15 @@ import { Button } from 'antd'
 import { useTranslation } from 'react-i18next'
 import MoveWidgetIcon from '@/assets/icons/move.png'
 import PageTitle from '@/components/ui/PageText/Title.tsx'
-import PropertiesNumber from '@/components/features/Overview/Widgets/PropertiesNumber.tsx'
-import PropertiesRepartition from '@/components/features/Overview/Widgets/PropertiesRepartition.tsx'
-import LastMessages from '@/components/features/Overview/Widgets/LastMessages.tsx'
+import PropertiesNumber from '@/components/features/Overview/Widgets/PropertiesNumber/PropertiesNumber'
+import PropertiesRepartition from '@/components/features/Overview/Widgets/PropertiesRepartition/PropertiesRepartition'
+import LastMessages from '@/components/features/Overview/Widgets/LastMessages/LastMessages'
 import { Layout, Widget } from '@/interfaces/Widgets/Widgets.ts'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import style from './Overview.module.css'
 import '@/../node_modules/react-grid-layout/css/styles.css'
 import '@/../node_modules/react-resizable/css/styles.css'
+import Reminders from '@/components/features/Overview/Widgets/Reminders/Reminders'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -41,16 +42,16 @@ const Overview: React.FC = () => {
         name: 'PropertiesNumber',
         x: 0,
         y: 0,
-        w: 1,
+        w: 2,
         h: 1,
         children: <PropertiesNumber height={1} />
       },
       {
         i: '2',
         name: 'PropertiesRepartition',
-        x: 1,
+        x: 2,
         y: 0,
-        w: 1,
+        w: 2,
         h: 1,
         children: <PropertiesRepartition height={1} />
       },
@@ -59,9 +60,18 @@ const Overview: React.FC = () => {
         name: 'LastMessages',
         x: 0,
         y: 1,
-        w: 2,
+        w: 4,
         h: 2,
         children: <LastMessages height={2} />
+      },
+      {
+        i: '4',
+        name: 'Reminders',
+        x: 7,
+        y: 0,
+        w: 4,
+        h: 2,
+        children: <Reminders height={2} />
       }
     ]
   }
@@ -111,6 +121,7 @@ const Overview: React.FC = () => {
             <Button
               type="primary"
               onClick={() => setAreWidgetsMovable(!areWidgetsMovable)}
+              className={style.editButtonsContainer}
             >
               {t('components.button.edit_widgets_position')}
             </Button>
