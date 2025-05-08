@@ -14,136 +14,131 @@ function PrivacyPolicyPage() {
 
         <div className={style.contentSection}>
           <div className={style.section}>
-            <h2 className={style.sectionTitle}>1. Introduction</h2>
+            <h2 className={style.sectionTitle}>
+              {t("privacy_policy.section1.title")}
+            </h2>
             <p className={style.paragraph}>
-              Chez Keyz, nous prenons la protection de vos données personnelles
-              très au sérieux. Cette politique de confidentialité explique
-              comment nous collectons, utilisons, partageons et protégeons vos
-              informations lorsque vous utilisez notre site web et notre
-              application.
+              {t("privacy_policy.section1.paragraph1")}
             </p>
             <p className={style.paragraph}>
-              En utilisant nos services, vous acceptez les pratiques décrites
-              dans cette politique de confidentialité. Nous vous encourageons à
-              la lire attentivement.
+              {t("privacy_policy.section1.paragraph2")}
             </p>
           </div>
 
           <div className={style.section}>
-            <h2 className={style.sectionTitle}>2. Données collectées</h2>
+            <h2 className={style.sectionTitle}>
+              {t("privacy_policy.section2.title")}
+            </h2>
             <p className={style.paragraph}>
-              Nous collectons les informations suivantes :
+              {t("privacy_policy.section2.paragraph1")}
             </p>
             <ul className={style.list}>
               <li className={style.listItem}>
-                Informations d'identification : nom, prénom, adresse email,
-                numéro de téléphone
+                {t("privacy_policy.section2.list.item1")}
               </li>
               <li className={style.listItem}>
-                Informations relatives à vos biens immobiliers : adresse,
-                caractéristiques, photos, documents
+                {t("privacy_policy.section2.list.item2")}
               </li>
               <li className={style.listItem}>
-                Informations sur les locataires : coordonnées, documents
-                administratifs
+                {t("privacy_policy.section2.list.item3")}
               </li>
               <li className={style.listItem}>
-                Données de paiement : pour la facturation de nos services
+                {t("privacy_policy.section2.list.item4")}
               </li>
               <li className={style.listItem}>
-                Données d'utilisation : comment vous interagissez avec notre
-                plateforme
+                {t("privacy_policy.section2.list.item5")}
               </li>
             </ul>
           </div>
 
           <div className={style.section}>
-            <h2 className={style.sectionTitle}>3. Utilisation des données</h2>
+            <h2 className={style.sectionTitle}>
+              {t("privacy_policy.section3.title")}
+            </h2>
             <p className={style.paragraph}>
-              Nous utilisons vos données personnelles pour :
+              {t("privacy_policy.section3.paragraph1")}
             </p>
             <ul className={style.list}>
               <li className={style.listItem}>
-                Fournir, maintenir et améliorer nos services
+                {t("privacy_policy.section3.list.item1")}
               </li>
               <li className={style.listItem}>
-                Traiter vos transactions et gérer votre compte
+                {t("privacy_policy.section3.list.item2")}
               </li>
               <li className={style.listItem}>
-                Vous envoyer des notifications importantes concernant nos
-                services
+                {t("privacy_policy.section3.list.item3")}
               </li>
               <li className={style.listItem}>
-                Vous proposer un support client personnalisé
+                {t("privacy_policy.section3.list.item4")}
               </li>
               <li className={style.listItem}>
-                Améliorer et personnaliser votre expérience utilisateur
+                {t("privacy_policy.section3.list.item5")}
               </li>
             </ul>
           </div>
 
           <div className={style.section}>
-            <h2 className={style.sectionTitle}>4. Partage des données</h2>
+            <h2 className={style.sectionTitle}>
+              {t("privacy_policy.section4.title")}
+            </h2>
             <p className={style.paragraph}>
-              Nous ne vendons pas vos données personnelles à des tiers. Nous
-              pouvons les partager dans les situations suivantes :
+              {t("privacy_policy.section4.paragraph1")}
             </p>
             <ul className={style.list}>
               <li className={style.listItem}>
-                Avec nos prestataires de services qui nous aident à fournir nos
-                services
+                {t("privacy_policy.section4.list.item1")}
               </li>
               <li className={style.listItem}>
-                Pour respecter la loi, les réglementations applicables ou les
-                procédures légales
+                {t("privacy_policy.section4.list.item2")}
               </li>
               <li className={style.listItem}>
-                Pour protéger la sécurité de nos utilisateurs et du public
+                {t("privacy_policy.section4.list.item3")}
               </li>
               <li className={style.listItem}>
-                Dans le cadre d'une transaction d'entreprise (fusion,
-                acquisition, etc.)
+                {t("privacy_policy.section4.list.item4")}
               </li>
             </ul>
           </div>
 
           <div className={style.section}>
-            <h2 className={style.sectionTitle}>5. Vos droits</h2>
+            <h2 className={style.sectionTitle}>
+              {t("privacy_policy.section5.title")}
+            </h2>
             <p className={style.paragraph}>
-              Conformément au Règlement Général sur la Protection des Données
-              (RGPD), vous disposez des droits suivants :
+              {t("privacy_policy.section5.paragraph1")}
             </p>
             <ul className={style.list}>
               <li className={style.listItem}>
-                Droit d'accès à vos données personnelles
+                {t("privacy_policy.section5.list.item1")}
               </li>
               <li className={style.listItem}>
-                Droit de rectification des informations inexactes
+                {t("privacy_policy.section5.list.item2")}
               </li>
               <li className={style.listItem}>
-                Droit à l'effacement de vos données dans certaines conditions
+                {t("privacy_policy.section5.list.item3")}
               </li>
               <li className={style.listItem}>
-                Droit à la limitation du traitement
+                {t("privacy_policy.section5.list.item4")}
               </li>
               <li className={style.listItem}>
-                Droit à la portabilité de vos données
+                {t("privacy_policy.section5.list.item5")}
               </li>
               <li className={style.listItem}>
-                Droit d'opposition au traitement
+                {t("privacy_policy.section5.list.item6")}
               </li>
             </ul>
           </div>
 
           <div className={style.section}>
-            <h2 className={style.sectionTitle}>6. Contact</h2>
+            <h2 className={style.sectionTitle}>
+              {t("privacy_policy.section6.title")}
+            </h2>
             <p className={style.paragraph}>
-              Pour toute question concernant cette politique de confidentialité
-              ou pour exercer vos droits, veuillez nous contacter :
+              {t("privacy_policy.section6.paragraph1")}
             </p>
             <div className={style.contactInfo}>
-              <span>Par email : contact@keyz-app.fr</span>
-              <span>Par courrier : /</span>
+              <span>{t("privacy_policy.section6.email")}</span>
+              <span>{t("privacy_policy.section6.mail")}</span>
             </div>
           </div>
         </div>
