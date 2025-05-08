@@ -196,4 +196,11 @@
     <string name="storage">Storage</string>
     <string name="office">Office</string>
     <string name="other">Other</string>
+    <string name="urgent">Urgent</string>
+    <string name="high">High</string>
+    <string name="medium">Medium</string>
+    <string name="low">Low</string>
+    <string name="submit">Submit</string>
+    <string name="priority">Priority</string>
+    <string name="room">Room</string>
 </resources>

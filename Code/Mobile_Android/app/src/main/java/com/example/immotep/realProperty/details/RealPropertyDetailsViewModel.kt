@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.immotep.apiCallerServices.AddPropertyInput
 import com.example.immotep.apiCallerServices.Damage
+import com.example.immotep.apiCallerServices.DamageCallerService
 import com.example.immotep.apiCallerServices.DamageInput
 import com.example.immotep.apiCallerServices.DetailedProperty
 import com.example.immotep.apiCallerServices.Document
@@ -39,6 +40,7 @@ class RealPropertyDetailsViewModel(
         NONE
     }
     private val apiCaller = RealPropertyCallerService(apiService, navController)
+    private val damageApiCaller = DamageCallerService(apiService, navController)
     private val inviteApiCaller = InviteTenantCallerService(apiService, navController)
     private var _property = MutableStateFlow(DetailedProperty())
     private val _apiError = MutableStateFlow(ApiErrors.NONE)
@@ -71,7 +73,7 @@ class RealPropertyDetailsViewModel(
             try {
                 setIsLoading(true)
                 val propertyDocuments = apiCaller.getPropertyDocuments(newProperty.id, newProperty.lease.id)
-                val propertyDamages = apiCaller.getPropertyDamages(newProperty.id, newProperty.lease.id)
+                val propertyDamages = damageApiCaller.getPropertyDamages(newProperty.id, newProperty.lease.id)
                 documents.addAll(propertyDocuments)
                 damages.addAll(propertyDamages)
             } catch (e : Exception) {

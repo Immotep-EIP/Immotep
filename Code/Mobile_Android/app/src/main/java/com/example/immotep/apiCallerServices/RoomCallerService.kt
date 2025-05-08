@@ -35,6 +35,8 @@ data class RoomOutput(
     val id : String,
     val name : String,
     val property_id : String,
+    val type: String,
+    val archived : Boolean
 ) {
     fun toRoom(details : Array<RoomDetail>?) : Room {
         return Room(
@@ -53,7 +55,11 @@ class RoomCallerService(
 
     suspend fun getAllRooms(propertyId: String) : Array<RoomOutput> =
         changeRetrofitExceptionByApiCallerException {
-            apiService.getAllRooms(getBearerToken(), propertyId)
+            if (this.isOwner()) {
+                apiService.getAllRooms(getBearerToken(), propertyId)
+            } else {
+                apiService.getAllRoomsTenant(getBearerToken(), "current")
+            }
         }
 
     suspend fun getAllRoomsWithFurniture(

@@ -126,13 +126,6 @@ interface ApiService {
         @Body document: DocumentInput
     ): CreateOrUpdateResponse
 
-    @GET("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/damages/")
-    suspend fun getPropertyDamages(
-        @Header("Authorization") authHeader : String,
-        @Path("propertyId") propertyId: String,
-        @Path("leaseId") leaseId: String
-    ): Array<DamageOutput>
-
 
 
     //tenant-specific property functions
@@ -155,9 +148,18 @@ interface ApiService {
         @Path("leaseId") leaseId: String
     ): Array<Document>
 
+    //damages function
+
     @GET("${API_PREFIX}/tenant/leases/{leaseId}/damages/")
     suspend fun getPropertyDamagesTenant(
         @Header("Authorization") authHeader : String,
+        @Path("leaseId") leaseId: String,
+    ): Array<DamageOutput>
+
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/leases/{leaseId}/damages/")
+    suspend fun getPropertyDamages(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
         @Path("leaseId") leaseId: String,
     ): Array<DamageOutput>
 
@@ -174,6 +176,13 @@ interface ApiService {
         @Path("propertyId") propertyId: String,
         @Body room: AddRoomInput
     ) : CreateOrUpdateResponse
+
+    //room tenant specific functions
+    @GET("${API_PREFIX}/tenant/leases/{leaseId}/property/rooms/")
+    suspend fun getAllRoomsTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("leaseId") leaseId: String,
+    ) : Array<RoomOutput>
 
     //furnitures functions
     @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/furnitures")

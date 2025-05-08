@@ -302,7 +302,8 @@ fun RealPropertyDetailsScreen(
                     )
                     2 -> Damages(
                         damageList = viewModel.damages.toList(),
-                        addDamage = { viewModel.addDamage(it) }
+                        addDamage = { viewModel.addDamage(it) },
+                        navController = navController
                     )
                 }
             }

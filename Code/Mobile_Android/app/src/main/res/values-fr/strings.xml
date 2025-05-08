@@ -197,4 +197,11 @@
     <string name="storage">Débarras</string>
     <string name="office">Bureau</string>
     <string name="other">Autre</string>
+    <string name="urgent">Urgent</string>
+    <string name="high">Haut</string>
+    <string name="medium">Moyen</string>
+    <string name="low">Bas</string>
+    <string name="submit">Envoyer</string>
+    <string name="priority">Prioritée</string>
+    <string name="room">Chambre</string>
 </resources>

@@ -9,6 +9,7 @@ import com.example.immotep.apiCallerServices.InvitePropertyResponse
 import com.example.immotep.apiCallerServices.LeasePropertyResponse
 import com.example.immotep.apiCallerServices.ProfileResponse
 import com.example.immotep.apiCallerServices.RoomOutput
+import com.example.immotep.apiCallerServices.RoomType
 import com.example.immotep.apiClient.CreateOrUpdateResponse
 import com.example.immotep.authService.LoginResponse
 import com.example.immotep.authService.RegistrationResponse
@@ -140,6 +141,8 @@ val fakeRoom = RoomOutput(
     id = "testRoom",
     name = "testRoomName",
     property_id = "test",
+    type = RoomType.bedroom.toString(),
+    archived = false
 )
 
 val fakeRoomOutputValue = CreateOrUpdateResponse(

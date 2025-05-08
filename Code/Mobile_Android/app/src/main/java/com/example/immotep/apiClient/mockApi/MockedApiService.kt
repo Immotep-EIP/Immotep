@@ -287,4 +287,8 @@ class MockedApiService : ApiService {
     ): Array<DamageOutput> {
         return arrayOf()
     }
+
+    override suspend fun getAllRoomsTenant(authHeader: String, leaseId: String): Array<RoomOutput> {
+        return arrayOf(fakeRoom)
+    }
 }

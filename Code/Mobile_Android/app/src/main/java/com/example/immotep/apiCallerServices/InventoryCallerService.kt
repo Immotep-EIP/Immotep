@@ -22,6 +22,8 @@ data class CreatedInventoryReport(
     val type: String
 )
 
+
+
 class InventoryCallerService(
     apiService: ApiService,
     navController: NavController,
