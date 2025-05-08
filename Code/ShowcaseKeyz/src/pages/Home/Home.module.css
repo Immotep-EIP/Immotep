@@ -6,10 +6,7 @@
   flex-direction: row;
   align-items: flex-start;
   justify-content: flex-start;
-  background-image: url("/placeholder.svg?height=1080&width=1920");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-color: rgb(36, 36, 36);
   color: black;
 }
 
