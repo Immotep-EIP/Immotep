@@ -76,12 +76,12 @@ const Footer = () => {
         <span className={style.colDesc}>{t("footer.legal.privacy_pol")}</span>
         <span className={style.colDesc}>{t("footer.legal.terms_of_ser")}</span>
       </div>
-      <div className={style.columnContainer}>
+      {/* <div className={style.columnContainer}>
         <span className={style.colTitle}>{t("footer.support.title")}</span>
         <span className={style.colDesc}>{t("footer.support.help")}</span>
         <span className={style.colDesc}>{t("footer.support.contact_us")}</span>
         <span className={style.colDesc}>{t("footer.support.faq")}</span>
-      </div>
+      </div> */}
     </div>
   );
 };

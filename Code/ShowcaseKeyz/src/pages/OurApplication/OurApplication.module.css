@@ -1,6 +1,8 @@
 .pageContainer {
   min-height: 100vh;
-  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -258,7 +260,7 @@
 }
 
 .ctaSection {
-  margin-bottom: 60px;
+  /* margin-bottom: 60px; */
   text-align: center;
   padding: 40px;
   background-color: #f8fafc;
@@ -293,6 +295,7 @@
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+  max-width: 300px;
 }
 
 .ctaButton:hover {
