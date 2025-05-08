@@ -27,7 +27,7 @@ import com.example.immotep.ui.components.StyledButton
 @Composable
 fun Damages(
     damageList : List<Damage>,
-    addDamage : ((DamageInput) -> Unit)?,
+    addDamage : ((Damage) -> Unit)?,
     navController: NavController
 ) {
     var addDamageOpen by rememberSaveable { mutableStateOf(false) }

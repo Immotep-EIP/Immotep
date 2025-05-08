@@ -43,18 +43,18 @@ fun stringToDamageStatus(str : String) : DamageStatus {
 }
 
 enum class DamagePriority {
-    LOW,
-    MEDIUM,
-    HIGH,
-    URGENT
+    low,
+    medium,
+    high,
+    urgent
 }
 
 fun stringToDamagePriority(str : String) : DamagePriority {
     return when (str) {
-        "urgent" -> DamagePriority.URGENT
-        "medium" -> DamagePriority.MEDIUM
-        "high" -> DamagePriority.HIGH
-        else -> DamagePriority.LOW
+        "urgent" -> DamagePriority.urgent
+        "medium" -> DamagePriority.medium
+        "high" -> DamagePriority.high
+        else -> DamagePriority.low
     }
 }
 

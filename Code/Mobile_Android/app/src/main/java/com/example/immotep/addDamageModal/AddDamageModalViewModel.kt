@@ -6,19 +6,21 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.immotep.apiCallerServices.Damage
 import com.example.immotep.apiCallerServices.DamageCallerService
 import com.example.immotep.apiCallerServices.DamageInput
 import com.example.immotep.apiCallerServices.DamagePriority
 import com.example.immotep.apiCallerServices.RealPropertyCallerService
 import com.example.immotep.apiCallerServices.RoomCallerService
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.utils.Base64Utils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
 
-class AddDamageModalViewModel(apiService: ApiService, navController: NavController) : ViewModel() {
+class AddDamageModalViewModel(apiService: ApiService, private val navController: NavController) : ViewModel() {
     data class DamageInputError(
         var comment: Boolean = false,
         var pictures: Boolean = false,
@@ -97,12 +99,23 @@ class AddDamageModalViewModel(apiService: ApiService, navController: NavControll
         return (error.comment || error.pictures || error.room)
     }
 
-    fun submit() {
+    fun submit(addDamage : (Damage) -> Unit, tenantName: String) {
         if (checkBeforeSubmit()) {
             return
         }
         viewModelScope.launch {
             try {
+                val roomName = rooms.find { it.id == _form.value.room_id }?.name
+                if (roomName == null) {
+                    throw Exception("room_not_found")
+                }
+                val imagesAsBase64 = pictures.map {
+                    Base64Utils.encodeImageToBase64(it, navController.context)
+                }
+                _form.value.pictures.addAll(imagesAsBase64)
+                val (id) = _apiCaller.addDamage(_form.value)
+                addDamage(_form.value.toDamage(id, roomName, tenantName))
+                reset()
             } catch (e : Exception) {
                 e.printStackTrace()
             }

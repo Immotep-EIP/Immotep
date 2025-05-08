@@ -188,7 +188,11 @@ class RealPropertyDetailsViewModel(
         }
     }
 
-    fun addDamage(damage: DamageInput) {
-
+    fun addDamage(damage: Damage) {
+        try {
+            this.damages.add(damage)
+        } catch (e : Exception) {
+            e.printStackTrace()
+        }
     }
 }

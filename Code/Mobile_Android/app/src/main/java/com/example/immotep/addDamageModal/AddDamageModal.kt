@@ -22,12 +22,13 @@ import com.example.immotep.ui.components.DropDown
 import com.example.immotep.ui.components.DropDownItem
 import com.example.immotep.ui.components.StyledButton
 import com.example.immotep.R
+import com.example.immotep.apiCallerServices.Damage
 
 @Composable
 fun AddDamageModal(
     open : Boolean,
     onClose : () -> Unit,
-    addDamage : (DamageInput) -> Unit,
+    addDamage : (Damage) -> Unit,
     navController: NavController
 ) {
     val apiService = LocalApiService.current
@@ -60,10 +61,10 @@ fun AddDamageModal(
         Text(stringResource(R.string.priority), modifier = Modifier.padding(top = 10.dp))
         DropDown(
             items = listOf(
-                DropDownItem(stringResource(R.string.low), DamagePriority.LOW),
-                DropDownItem(stringResource(R.string.medium), DamagePriority.MEDIUM),
-                DropDownItem(stringResource(R.string.high), DamagePriority.HIGH),
-                DropDownItem(stringResource(R.string.urgent), DamagePriority.URGENT)
+                DropDownItem(stringResource(R.string.low), DamagePriority.low),
+                DropDownItem(stringResource(R.string.medium), DamagePriority.medium),
+                DropDownItem(stringResource(R.string.high), DamagePriority.high),
+                DropDownItem(stringResource(R.string.urgent), DamagePriority.urgent)
             ),
             selectedItem = form.value.priority,
             onItemSelected = { viewModel.setPriority(it) }
@@ -78,7 +79,13 @@ fun AddDamageModal(
         StyledButton(
             text = stringResource(R.string.submit),
             onClick = {
-                viewModel.submit()
+                viewModel.submit(
+                    addDamage = {
+                        addDamage(it)
+                        onClose()
+                    },
+                    tenantName = ""
+                )
             }
         )
     }

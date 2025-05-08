@@ -2,12 +2,14 @@ package com.example.immotep.apiCallerServices
 
 import androidx.navigation.NavController
 import com.example.immotep.apiClient.ApiService
+import com.example.immotep.apiClient.CreateOrUpdateResponse
 import java.time.OffsetDateTime
+import java.util.Vector
 
 data class DamageInput(
     val comment: String = "",
-    val pictures: Array<String> = arrayOf(),
-    val priority: DamagePriority = DamagePriority.LOW,
+    val pictures: ArrayList<String> = ArrayList(),
+    val priority: DamagePriority = DamagePriority.low,
     val room_id: String? = null
 ) {
     fun toDamage(id : String, roomName: String, tenantName: String) : Damage {
@@ -19,7 +21,7 @@ data class DamageInput(
             fixStatus = DamageStatus.PENDING,
             fixedAt = null,
             leaseId = "",
-            pictures = pictures,
+            pictures = pictures.toTypedArray(),
             priority = priority,
             read = false,
             roomId = room_id.let { "" },
@@ -96,5 +98,9 @@ class DamageCallerService (
         } else {
             apiService.getPropertyDamagesTenant(getBearerToken(), "current").map { it.toDamage() }.toTypedArray()
         }
+    }
+
+    suspend fun addDamage(damageInput: DamageInput) : CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
+        apiService.addDamage(getBearerToken(), "current", damage = damageInput)
     }
 }

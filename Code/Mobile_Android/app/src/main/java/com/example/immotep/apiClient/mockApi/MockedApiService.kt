@@ -7,6 +7,7 @@ import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
 import com.example.immotep.apiCallerServices.CreatedInventoryReport
+import com.example.immotep.apiCallerServices.DamageInput
 import com.example.immotep.apiCallerServices.DamageOutput
 import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.DocumentInput
@@ -290,5 +291,13 @@ class MockedApiService : ApiService {
 
     override suspend fun getAllRoomsTenant(authHeader: String, leaseId: String): Array<RoomOutput> {
         return arrayOf(fakeRoom)
+    }
+
+    override suspend fun addDamage(
+        authHeader: String,
+        leaseId: String,
+        damage: DamageInput
+    ): CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(id = "newDamage")
     }
 }

@@ -7,6 +7,7 @@ import com.example.immotep.apiCallerServices.AiCallInput
 import com.example.immotep.apiCallerServices.AiCallOutput
 import com.example.immotep.apiCallerServices.ArchivePropertyInput
 import com.example.immotep.apiCallerServices.CreatedInventoryReport
+import com.example.immotep.apiCallerServices.DamageInput
 import com.example.immotep.apiCallerServices.DamageOutput
 import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.DocumentInput
@@ -162,6 +163,13 @@ interface ApiService {
         @Path("propertyId") propertyId: String,
         @Path("leaseId") leaseId: String,
     ): Array<DamageOutput>
+
+    @POST("${API_PREFIX}/tenant/leases/{lease_id}/damages/")
+    suspend fun addDamage(
+        @Header("Authorization") authHeader : String,
+        @Path("lease_id") leaseId: String,
+        @Body damage: DamageInput
+    ) : CreateOrUpdateResponse
 
     //rooms functions
     @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms")
