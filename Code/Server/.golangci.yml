@@ -153,6 +153,7 @@ linters:
         use-field-name: true
         ignored-fields:
           - TemplateId
+          - ReplyTo
   exclusions:
     generated: lax
     presets:

@@ -32,6 +32,15 @@ func registerAPIRoutes(r *gin.Engine, test bool) {
 
 	v1 := r.Group("/v1")
 	{
+		contact := v1.Group("/contact/")
+		{
+			contact.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), limiter.Rate{
+				Period: 1 * time.Hour,
+				Limit:  1,
+			})))
+			contact.POST("/", controllers.CreateContactMessage)
+		}
+
 		auth := v1.Group("/auth/")
 		{
 			auth.POST("/register/", controllers.RegisterOwner)
@@ -79,11 +88,6 @@ func registerValidators() {
 }
 
 func Routes() *gin.Engine {
-	rate := limiter.Rate{
-		Period: 1 * time.Hour,
-		Limit:  3000,
-	}
-
 	var allowOrigins []string
 	if gin.Mode() == gin.ReleaseMode {
 		allowOrigins = []string{os.Getenv("WEB_PUBLIC_URL")}
@@ -111,7 +115,10 @@ func Routes() *gin.Engine {
 	}))
 	r.Use(gin.Logger())
 	r.Use(gin.CustomRecovery(middlewares.PanicRecovery))
-	r.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), rate)))
+	r.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), limiter.Rate{
+		Period: 1 * time.Hour,
+		Limit:  3000,
+	})))
 
 	registerValidators()
 

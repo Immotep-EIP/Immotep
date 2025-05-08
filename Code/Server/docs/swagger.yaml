@@ -111,6 +111,25 @@ definitions:
       archive:
         type: boolean
     type: object
+  models.ContactMessageRequest:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+      message:
+        type: string
+      subject:
+        type: string
+    required:
+    - email
+    - firstname
+    - lastname
+    - message
+    - subject
+    type: object
   models.CreateInventoryReportResponse:
     properties:
       date:
@@ -946,6 +965,36 @@ paths:
       summary: Authenticate user
       tags:
       - auth
+  /contact/:
+    post:
+      consumes:
+      - application/json
+      description: Create a contact message to a lease
+      parameters:
+      - description: Message to create
+        in: body
+        name: contactMessages
+        required: true
+        schema:
+          $ref: '#/definitions/models.ContactMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created message ID
+          schema:
+            $ref: '#/definitions/models.IdResponse'
+        "400":
+          description: Missing fields or bad base64 string
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create contact message
+      tags:
+      - contact-message
   /owner/properties/:
     get:
       consumes:
