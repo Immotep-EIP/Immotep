@@ -2,104 +2,6 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import style from "./Pricing.module.css";
 
-const prices = [
-  {
-    title: "Basic",
-    price: "$10",
-    period: "/month",
-    features: [
-      "1 property",
-      "Basic tenant management",
-      "Document storage",
-      "Email support",
-    ],
-    cta: "Get Started",
-    popular: false,
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
-        <path
-          d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M9 22V12h6v10"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    title: "Enterprise",
-    price: "$30",
-    period: "/month",
-    features: [
-      "Unlimited properties",
-      "Advanced tenant management",
-      "Financial analytics",
-      "Document storage & automation",
-      "Priority support 24/7",
-    ],
-    cta: "Get Started",
-    popular: true,
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
-        <path
-          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0v-5a2 2 0 012-2h2a2 2 0 012 2v5m0 0h-6"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    title: "Pro",
-    price: "$20",
-    period: "/month",
-    features: [
-      "5 properties",
-      "Advanced tenant management",
-      "Basic analytics",
-      "Document storage",
-      "Email & chat support",
-    ],
-    cta: "Get Started",
-    popular: false,
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
-        <path
-          d="M2 9a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V9z"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M16 13a2 2 0 100-4 2 2 0 000 4z"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M22 9V7a2 2 0 00-2-2H4a2 2 0 00-2 2v2"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
-  },
-];
-
 function PricingPage() {
   const { t } = useTranslation();
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -130,6 +32,106 @@ function PricingPage() {
     };
   }, []);
 
+  const prices = [
+    {
+      title: t("pricing.plans.basic.title"),
+      price: "4,99€",
+      period: t("pricing.period"),
+      features: [
+        t("pricing.plans.basic.features.feature1"),
+        t("pricing.plans.basic.features.feature2"),
+        t("pricing.plans.basic.features.feature3"),
+        t("pricing.plans.basic.features.feature4"),
+        t("pricing.plans.basic.features.feature5"),
+      ],
+      cta: t("pricing.cta"),
+      popular: false,
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
+          <path
+            d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M9 22V12h6v10"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: t("pricing.plans.premium.title"),
+      price: "4,99€",
+      period: t("pricing.period"),
+      features: [
+        t("pricing.plans.premium.features.feature1"),
+        t("pricing.plans.premium.features.feature2"),
+        t("pricing.plans.premium.features.feature3"),
+        t("pricing.plans.premium.features.feature4"),
+        t("pricing.plans.premium.features.feature5"),
+      ],
+      cta: t("pricing.cta"),
+      popular: true,
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
+          <path
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0v-5a2 2 0 012-2h2a2 2 0 012 2v5m0 0h-6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: t("pricing.plans.pro.title"),
+      price: "28,99€",
+      period: t("pricing.period"),
+      features: [
+        t("pricing.plans.pro.features.feature1"),
+        t("pricing.plans.pro.features.feature2"),
+        t("pricing.plans.pro.features.feature3"),
+        t("pricing.plans.pro.features.feature4"),
+        t("pricing.plans.pro.features.feature5"),
+        t("pricing.plans.pro.features.feature6"),
+      ],
+      cta: t("pricing.contact_us"),
+      popular: false,
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
+          <path
+            d="M2 9a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V9z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M16 13a2 2 0 100-4 2 2 0 000 4z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M22 9V7a2 2 0 00-2-2H4a2 2 0 00-2 2v2"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
+  ];
+
   return (
     <div className={style.pageContainer}>
       <div className={style.decorCircle1}></div>
@@ -158,14 +160,24 @@ function PricingPage() {
             onMouseLeave={() => setHoveredCard(null)}
           >
             {price.popular && (
-              <div className={style.popularBadge}>{t("pricing.most_popular")}</div>
+              <div className={style.popularBadge}>
+                {t("pricing.most_popular")}
+              </div>
             )}
             <div className={style.iconContainer}>{price.icon}</div>
             <h2 className={style.priceTitle}>{price.title}</h2>
-            <div className={style.priceWrapper}>
-              <span className={style.priceAmount}>{price.price}</span>
-              <span className={style.pricePeriod}>{price.period}</span>
-            </div>
+            {price.price && (
+              <div className={style.priceWrapper}>
+                <span className={style.pricePrefix}>{t("pricing.from")} </span>
+                <span className={style.priceAmount}>{price.price}</span>
+                <span className={style.pricePeriod}>{price.period}</span>
+              </div>
+            )}
+            {index === 1 && (
+              <div className={style.additionalInfo}>
+                {t("pricing.plans.premium.additional_info")}
+              </div>
+            )}
             <ul className={style.featuresList}>
               {price.features.map((feature, idx) => (
                 <li key={idx} className={style.featureItem}>

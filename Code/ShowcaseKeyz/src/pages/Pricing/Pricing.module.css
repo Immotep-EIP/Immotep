@@ -191,7 +191,7 @@
 .featuresList {
   list-style: none;
   padding: 0;
-  margin: 0 0 30px 0;
+  margin: 10px 0 20px 0;
   width: 100%;
   text-align: left;
 }
@@ -304,4 +304,24 @@
     font-size: 0.9rem;
     padding: 8px 0;
   }
+}
+
+.additionalInfo {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.priceAddon {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #3498db;
+}
+
+.pricePrefix {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-right: 4px;
 }

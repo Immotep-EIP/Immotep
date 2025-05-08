@@ -71,9 +71,49 @@ const resources = {
         contact_us_now: "Nous contacter dès maintenant",
       },
       pricing: {
-        title: "Nos abonnements",
-        subtitle: "Choisissez l'abonnement qui vous convient le mieux",
+        title: "Nos Tarifs",
+        subtitle:
+          "Des tarifs simples et transparents pour tous vos besoins immobiliers",
+        period: "/mois",
+        cta: "Commencer",
+        contact_us: "Nous contacter",
         most_popular: "Le plus populaire",
+        from: "À partir de",
+        plans: {
+          basic: {
+            title: "Basic",
+            features: {
+              feature1: "Limité à 1 seul logement",
+              feature2: "1 compte locataire par logement",
+              feature3: "États des lieux guidés par IA",
+              feature4: "5 Go de stockage par logement",
+              feature5: "Toutes les fonctionnalités de notre solution",
+            },
+          },
+          premium: {
+            title: "Premium",
+            features: {
+              feature1: "1 logement inclus",
+              feature2: "1 compte locataire par logement",
+              feature3: "États des lieux guidés par IA",
+              feature4: "5 Go de stockage par logement",
+              feature5: "Toutes les fonctionnalités de notre solution",
+            },
+            additional_info: "(+2,49€ par logement supplémentaire)",
+          },
+          pro: {
+            title: "Pro",
+            features: {
+              feature1: "À partir de 10 logements",
+              feature2: "1 compte locataire par logement",
+              feature3: "États des lieux guidés par IA",
+              feature4: "8 Go de stockage par logement",
+              feature5: "Toutes les fonctionnalités de notre solution",
+              feature6: "Devis personnalisé sur mesure",
+            },
+            price_note: "Sur demande",
+          },
+        },
       },
       contact_us: {
         title: "Nous contacter",
@@ -286,9 +326,49 @@ const resources = {
         contact_us_now: "Contact us now",
       },
       pricing: {
-        title: "Pricing",
-        subtitle: "Choose the plan that suits you best",
+        title: "Our Pricing",
+        subtitle:
+          "Simple and transparent pricing for all your real estate needs",
+        period: "/month",
+        cta: "Get Started",
+        contact_us: "Contact Us",
         most_popular: "Most popular",
+        from: "From",
+        plans: {
+          basic: {
+            title: "Basic",
+            features: {
+              feature1: "Limited to 1 property",
+              feature2: "1 tenant account per property",
+              feature3: "AI-guided property inspections",
+              feature4: "5 GB storage per property",
+              feature5: "All features of our solution",
+            },
+          },
+          premium: {
+            title: "Premium",
+            features: {
+              feature1: "1 property included",
+              feature2: "1 tenant account per property",
+              feature3: "AI-guided property inspections",
+              feature4: "5 GB storage per property",
+              feature5: "All features of our solution",
+            },
+            additional_info: "(+€2.49 per additional property)",
+          },
+          pro: {
+            title: "Pro",
+            features: {
+              feature1: "Starting from 10 properties",
+              feature2: "1 tenant account per property",
+              feature3: "AI-guided property inspections",
+              feature4: "8 GB storage per property",
+              feature5: "All features of our solution",
+              feature6: "Custom pricing on demand",
+            },
+            price_note: "Custom pricing",
+          },
+        },
       },
       contact_us: {
         title: "Contact Us",
@@ -497,9 +577,49 @@ const resources = {
         contact_us_now: "Jetzt kontaktieren",
       },
       pricing: {
-        title: "Preise",
-        subtitle: "Wählen Sie den Plan, der am besten zu Ihnen passt",
+        title: "Unsere Preise",
+        subtitle:
+          "Einfache und transparente Preise für alle Ihre Immobilienbedürfnisse",
+        period: "/Monat",
+        cta: "Jetzt starten",
+        contact_us: "Kontaktieren Sie uns",
         most_popular: "Am beliebtesten",
+        from: "Ab",
+        plans: {
+          basic: {
+            title: "Basic",
+            features: {
+              feature1: "Begrenzt auf 1 Immobilie",
+              feature2: "1 Mieterkonto pro Immobilie",
+              feature3: "KI-gestützte Wohnungsübergaben",
+              feature4: "5 GB Speicher pro Immobilie",
+              feature5: "Alle Funktionen unserer Lösung",
+            },
+          },
+          premium: {
+            title: "Premium",
+            features: {
+              feature1: "1 Immobilie inklusive",
+              feature2: "1 Mieterkonto pro Immobilie",
+              feature3: "KI-gestützte Wohnungsübergaben",
+              feature4: "5 GB Speicher pro Immobilie",
+              feature5: "Alle Funktionen unserer Lösung",
+            },
+            additional_info: "(+2,49€ pro zusätzliche Immobilie)",
+          },
+          pro: {
+            title: "Pro",
+            features: {
+              feature1: "Ab 10 Immobilien",
+              feature2: "1 Mieterkonto pro Immobilie",
+              feature3: "KI-gestützte Wohnungsübergaben",
+              feature4: "8 GB Speicher pro Immobilie",
+              feature5: "Alle Funktionen unserer Lösung",
+              feature6: "Individuelles Angebot auf Anfrage",
+            },
+            price_note: "Auf Anfrage",
+          },
+        },
       },
       contact_us: {
         title: "Kontaktiere uns",
