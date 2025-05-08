@@ -59,6 +59,7 @@ class AddDamageModalViewModel(apiService: ApiService, navController: NavControll
     }
 
     fun setComment(comment : String) {
+        _formError.value = _formError.value.copy(comment = false)
         _form.value = _form.value.copy(comment = comment)
     }
 
@@ -67,10 +68,12 @@ class AddDamageModalViewModel(apiService: ApiService, navController: NavControll
     }
 
     fun setRoomId(roomId : String) {
+        _formError.value = _formError.value.copy(room = false)
         _form.value = _form.value.copy(room_id = roomId)
     }
 
     fun addPicture(picture : Uri) {
+        _formError.value = _formError.value.copy(pictures = false)
         pictures.add(picture)
     }
 

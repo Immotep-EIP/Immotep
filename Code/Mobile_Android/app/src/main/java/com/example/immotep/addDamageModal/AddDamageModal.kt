@@ -35,6 +35,7 @@ fun AddDamageModal(
         AddDamageModalViewModel(apiService, navController)
     }
     val form = viewModel.form.collectAsState()
+    val errors = viewModel.formError.collectAsState()
     LaunchedEffect(open) {
         viewModel.reset()
     }
@@ -46,13 +47,15 @@ fun AddDamageModal(
         AddingPicturesCarousel(
             uriPictures = viewModel.pictures,
             addPicture = { viewModel.addPicture(it) },
-            removePicture = { viewModel.removePicture(it) }
+            removePicture = { viewModel.removePicture(it) },
+            error = if (errors.value.pictures) stringResource(R.string.add_picture_error) else null
         )
         OutlinedTextField(
             value = form.value.comment,
             onValueChange = { viewModel.setComment(it) },
             label = stringResource(R.string.comment),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            errorMessage = if (errors.value.comment) stringResource(R.string.comment_error) else null
         )
         Text(stringResource(R.string.priority), modifier = Modifier.padding(top = 10.dp))
         DropDown(
@@ -69,7 +72,8 @@ fun AddDamageModal(
         DropDown(
             items = viewModel.rooms.map { DropDownItem(it.name, it.id) },
             selectedItem = form.value.room_id,
-            onItemSelected = { it?.let { viewModel.setRoomId(it) } }
+            onItemSelected = { it?.let { viewModel.setRoomId(it) } },
+            error = if (errors.value.room) stringResource(R.string.select_an_element) else null
         )
         StyledButton(
             text = stringResource(R.string.submit),
