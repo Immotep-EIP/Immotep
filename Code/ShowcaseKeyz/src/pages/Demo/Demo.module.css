@@ -144,7 +144,7 @@
   background: linear-gradient(90deg, #3498db, #646cff);
   background-clip: text;
   -webkit-background-clip: text;
-  color: transparent;
+  color: white;
   position: relative;
 }
 
