@@ -20,21 +20,47 @@ const resources = {
       },
       features: {
         title: "Nos fonctionnalités",
+        feature1: {
+          title: "État des lieux assisté par IA",
+          description:
+            "États des lieux précis guidés par IA avec pré-diagnostics.",
+        },
+        feature2: {
+          title: "Générateur de documents",
+          description: "Modèles légaux de quittances et baux personnalisables.",
+        },
+        feature3: {
+          title: "Gestion documentaire",
+          description: "Stockage sécurisé avec e-signature pour vos contrats.",
+        },
+        feature4: {
+          title: "Messagerie sécurisée",
+          description: "Communication cryptée avec archivage automatique.",
+        },
+        feature5: {
+          title: "Gestion des sinistres",
+          description:
+            "Déclaration et suivi des sinistres avec preuves photos.",
+        },
+        feature6: {
+          title: "Tableau de bord intégré",
+          description: "Vue d'ensemble en temps réel de vos locations.",
+        },
       },
       our_application: {
         title: "Notre Application",
         subtitle:
-          "Une solution complète pour la gestion locative, accessible depuis n'importe quel appareil",
-        image_alt: "Application Keyz en action",
-        showcase_title: "Simplifiez votre gestion immobilière",
+          "La plateforme tout-en-un pour propriétaires et gestionnaires immobiliers, disponible sur mobile et ordinateur",
+        image_alt: "Capture d'écran de l'interface Keyz",
+        showcase_title: "Révolutionnez votre gestion locative",
         showcase_text_1:
-          "Keyz transforme votre façon de gérer vos propriétés en unifiant toutes les fonctionnalités essentielles dans une interface intuitive et puissante. Que vous soyez propriétaire d'un seul bien ou gestionnaire d'un portefeuille immobilier, notre solution s'adapte à vos besoins.",
+          "Keyz centralise l'ensemble du processus locatif dans une seule application : état des lieux numérique, gestion des documents, suivi des paiements et communication avec les locataires. Adapté aussi bien aux particuliers qu'aux professionnels de l'immobilier.",
         showcase_text_2:
-          "Grâce à des outils de suivi financier, de gestion locative et de communication centralisés, vous économiserez du temps et réduirez les erreurs tout en augmentant la satisfaction de vos locataires.",
+          "Notre technologie vous permet d'automatiser les tâches répétitives, de garantir la conformité légale et d'améliorer la relation avec vos locataires - le tout avec un gain de temps considérable.",
         highlight_1: "Interface intuitive",
         highlight_2: "Données sécurisées",
         highlight_3: "Mises à jour régulières",
-        highlight_4: "Support réactif",
+        highlight_4: "Outil tout-en-un",
         devices_title: "Disponible sur tous vos appareils",
         device_mobile: "Mobile",
         device_computer: "Ordinateur",
@@ -47,6 +73,7 @@ const resources = {
       pricing: {
         title: "Nos abonnements",
         subtitle: "Choisissez l'abonnement qui vous convient le mieux",
+        most_popular: "Le plus populaire",
       },
       contact_us: {
         title: "Nous contacter",
@@ -210,21 +237,45 @@ const resources = {
       },
       features: {
         title: "Features",
+        feature1: {
+          title: "AI-Assisted Property Inspection",
+          description: "Precise inspections guided by AI with pre-diagnostics.",
+        },
+        feature2: {
+          title: "Document Generator",
+          description: "Customizable legal templates for leases and receipts.",
+        },
+        feature3: {
+          title: "Document Management",
+          description: "Secure storage with e-signature for contracts.",
+        },
+        feature4: {
+          title: "Secure Messaging",
+          description: "Encrypted communication with auto-archiving.",
+        },
+        feature5: {
+          title: "Damage Reporting",
+          description: "Report and track damages with photo evidence.",
+        },
+        feature6: {
+          title: "Dashboard",
+          description: "Real-time overview of your rentals.",
+        },
       },
       our_application: {
         title: "Our Application",
         subtitle:
-          "A complete solution for property management, accessible from any device",
-        image_alt: "Keyz application in action",
-        showcase_title: "Simplify your property management",
+          "The all-in-one platform for landlords and property managers, available on mobile and computer",
+        image_alt: "Keyz interface screenshot",
+        showcase_title: "Revolutionize your rental management",
         showcase_text_1:
-          "Keyz transforms how you manage your properties by unifying all essential features in an intuitive and powerful interface. Whether you own a single property or manage a real estate portfolio, our solution adapts to your needs.",
+          "Keyz centralizes the entire rental process in one app: digital inspections, document management, payment tracking, and tenant communication. Suitable for both individual owners and real estate professionals.",
         showcase_text_2:
-          "With centralized financial tracking, rental management, and communication tools, you'll save time, reduce errors, and increase tenant satisfaction.",
+          "Our technology helps you automate repetitive tasks, ensure legal compliance, and improve tenant relationships - all while saving significant time.",
         highlight_1: "Intuitive interface",
         highlight_2: "Secure data",
         highlight_3: "Regular updates",
-        highlight_4: "Responsive support",
+        highlight_4: "All-in-one tool",
         devices_title: "Available on all your devices",
         device_mobile: "Mobile",
         device_computer: "Computer",
@@ -237,6 +288,7 @@ const resources = {
       pricing: {
         title: "Pricing",
         subtitle: "Choose the plan that suits you best",
+        most_popular: "Most popular",
       },
       contact_us: {
         title: "Contact Us",
@@ -396,21 +448,45 @@ const resources = {
       },
       features: {
         title: "Funktionen",
+        feature1: {
+          title: "KI-gestützte Wohnungsübergabe",
+          description: "Präzise Übergaben mit KI-Anleitung und Vorab-Checks.",
+        },
+        feature2: {
+          title: "Dokumentengenerator",
+          description: "Anpassbare Vorlagen für Mietverträge und Quittungen.",
+        },
+        feature3: {
+          title: "Dokumentenverwaltung",
+          description: "Sichere Aufbewahrung mit E-Signatur für Verträge.",
+        },
+        feature4: {
+          title: "Sichere Kommunikation",
+          description: "Verschlüsselter Nachrichtenaustausch mit Archivierung.",
+        },
+        feature5: {
+          title: "Schadensmeldung",
+          description: "Schäden melden und verfolgen mit Fotobeweis.",
+        },
+        feature6: {
+          title: "Dashboard",
+          description: "Echtzeit-Überblick über Ihre Mietobjekte.",
+        },
       },
       our_application: {
         title: "Unsere Anwendung",
         subtitle:
-          "Eine komplette Lösung für die Immobilienverwaltung, von jedem Gerät aus zugänglich",
-        image_alt: "Keyz-Anwendung in Aktion",
-        showcase_title: "Vereinfachen Sie Ihre Immobilienverwaltung",
+          "Die All-in-One-Plattform für Vermieter und Immobilienverwalter, verfügbar auf Mobilgeräten und Computern",
+        image_alt: "Keyz Interface-Screenshot",
+        showcase_title: "Revolutionieren Sie Ihre Mietverwaltung",
         showcase_text_1:
-          "Keyz verändert die Art und Weise, wie Sie Ihre Immobilien verwalten, indem es alle wesentlichen Funktionen in einer intuitiven und leistungsstarken Benutzeroberfläche vereint. Ob Sie Eigentümer einer einzelnen Immobilie sind oder ein Immobilienportfolio verwalten, unsere Lösung passt sich Ihren Bedürfnissen an.",
+          "Keyz bündelt den gesamten Mietprozess in einer App: digitale Übergabeprotokolle, Dokumentenverwaltung, Zahlungsverfolgung und Mieterkommunikation. Geeignet für private Eigentümer und Immobilienprofis.",
         showcase_text_2:
-          "Mit zentralisierten Tools für Finanzverfolgung, Mietverwaltung und Kommunikation sparen Sie Zeit, reduzieren Fehler und erhöhen die Zufriedenheit Ihrer Mieter.",
+          "Unsere Technologie automatisiert repetitive Aufgaben, gewährleistet Rechtskonformität und verbessert die Mieterbeziehung - mit erheblicher Zeitersparnis.",
         highlight_1: "Intuitive Benutzeroberfläche",
         highlight_2: "Sichere Daten",
         highlight_3: "Regelmäßige Updates",
-        highlight_4: "Reaktionsschneller Support",
+        highlight_4: "All-in-One-Tool",
         devices_title: "Verfügbar auf allen Ihren Geräten",
         device_mobile: "Mobiltelefon",
         device_computer: "Computer",
@@ -423,6 +499,7 @@ const resources = {
       pricing: {
         title: "Preise",
         subtitle: "Wählen Sie den Plan, der am besten zu Ihnen passt",
+        most_popular: "Am beliebtesten",
       },
       contact_us: {
         title: "Kontaktiere uns",

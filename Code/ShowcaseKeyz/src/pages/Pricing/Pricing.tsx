@@ -158,7 +158,7 @@ function PricingPage() {
             onMouseLeave={() => setHoveredCard(null)}
           >
             {price.popular && (
-              <div className={style.popularBadge}>Most Popular</div>
+              <div className={style.popularBadge}>{t("pricing.most_popular")}</div>
             )}
             <div className={style.iconContainer}>{price.icon}</div>
             <h2 className={style.priceTitle}>{price.title}</h2>

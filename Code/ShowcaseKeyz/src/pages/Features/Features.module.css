@@ -13,7 +13,6 @@
   overflow: hidden;
 }
 
-/* Éléments décoratifs */
 .decorShape1 {
   position: absolute;
   width: 400px;
@@ -126,8 +125,9 @@
 }
 
 .featureCard {
-  width: 300px;
-  height: 200px;
+  width: 350px;
+  max-width: 100%;
+  min-height: 200px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -139,6 +139,7 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .featureCard:hover {
@@ -163,10 +164,11 @@
 }
 
 .icon {
-  width: 50px;
-  height: 50px;
-  margin-bottom: 10px;
+  width: 35px;
+  height: 35px;
   transition: transform 0.3s ease;
+  filter: brightness(0) saturate(100%) invert(50%) sepia(80%) saturate(1800%)
+    hue-rotate(185deg) brightness(96%) contrast(90%);
 }
 
 .featureCard:hover .icon {
@@ -174,10 +176,10 @@
 }
 
 .featureTitle {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
+  font-size: 1.3rem;
   color: #2c3e50;
   transition: color 0.3s ease;
+  text-align: center;
 }
 
 .featureCard:hover .featureTitle {
@@ -190,7 +192,6 @@
   color: #555;
 }
 
-/* Responsive design amélioré */
 @media (max-width: 768px) {
   .featureCard {
     width: 280px;
@@ -212,6 +213,14 @@
     border-left: 30px solid transparent;
     border-right: 30px solid transparent;
     border-bottom: 52px solid rgba(44, 62, 80, 0.03);
+  }
+
+  .featureTitle {
+    font-size: 1.2rem;
+  }
+
+  .featureDescription {
+    font-size: 0.9rem;
   }
 }
 

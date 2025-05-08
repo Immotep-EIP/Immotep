@@ -1,45 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
+import IA from "../../assets/ia.svg";
+import Generator from "../../assets/generator.svg";
+import Documents from "../../assets/documents.svg";
+import Messages from "../../assets/messages.svg";
+import Damage from "../../assets/damage.svg";
+import Dashboard from "../../assets/dashboard.svg";
 import style from "./Features.module.css";
-
-const features = [
-  {
-    title: "Feature 1",
-    description:
-      "This description must make around 2 or 3 lines. It is a long description.",
-    icon: "https://simpleicons.org/icons/github.svg",
-  },
-  {
-    title: "Feature 2",
-    description:
-      "This description must make around 2 or 3 lines. It is a long description.",
-    icon: "https://simpleicons.org/icons/github.svg",
-  },
-  {
-    title: "Feature 3",
-    description:
-      "This description must make around 2 or 3 lines. It is a long description.",
-    icon: "https://simpleicons.org/icons/github.svg",
-  },
-  {
-    title: "Feature 4",
-    description:
-      "This description must make around 2 or 3 lines. It is a long description.",
-    icon: "https://simpleicons.org/icons/github.svg",
-  },
-  {
-    title: "Feature 5",
-    description:
-      "This description must make around 2 or 3 lines. It is a long description.",
-    icon: "https://simpleicons.org/icons/github.svg",
-  },
-  {
-    title: "Feature 6",
-    description:
-      "This description must make around 2 or 3 lines. It is a long description.",
-    icon: "https://simpleicons.org/icons/github.svg",
-  },
-];
 
 function FeaturesPage() {
   const { t } = useTranslation();
@@ -70,6 +37,39 @@ function FeaturesPage() {
     };
   }, []);
 
+  const features = [
+    {
+      title: t("features.feature1.title"),
+      description: t("features.feature1.description"),
+      icon: IA,
+    },
+    {
+      title: t("features.feature2.title"),
+      description: t("features.feature2.description"),
+      icon: Generator,
+    },
+    {
+      title: t("features.feature3.title"),
+      description: t("features.feature3.description"),
+      icon: Documents,
+    },
+    {
+      title: t("features.feature4.title"),
+      description: t("features.feature4.description"),
+      icon: Messages,
+    },
+    {
+      title: t("features.feature5.title"),
+      description: t("features.feature5.description"),
+      icon: Damage,
+    },
+    {
+      title: t("features.feature6.title"),
+      description: t("features.feature6.description"),
+      icon: Dashboard,
+    },
+  ];
+
   return (
     <div className={style.pageContainer}>
       <div className={style.decorShape1}></div>
@@ -89,11 +89,13 @@ function FeaturesPage() {
       <div className={style.featuresContainer}>
         {features.map((feature, index) => (
           <div key={index} className={style.featureCard}>
-            <img
-              src={feature.icon}
-              alt={feature.title}
-              className={style.icon}
-            />
+            <div className={style.iconContainer}>
+              <img
+                src={feature.icon}
+                alt={`${feature.title} icon`}
+                className={style.icon}
+              />
+            </div>
             <h2 className={style.featureTitle}>{feature.title}</h2>
             <p className={style.featureDescription}>{feature.description}</p>
           </div>
