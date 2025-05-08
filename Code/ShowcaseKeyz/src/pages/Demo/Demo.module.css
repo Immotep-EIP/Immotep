@@ -1,0 +1,222 @@
+.pageContainer {
+  min-height: 100vh;
+  min-width: 100vw;
+  padding-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #2c3e50;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid #3498db;
+}
+
+/* Éléments décoratifs */
+.decorShape1 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(44, 62, 80, 0.03),
+    rgba(52, 152, 219, 0.03)
+  );
+  top: -150px;
+  right: -100px;
+  z-index: 0;
+}
+
+.decorShape2 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(52, 152, 219, 0.04),
+    rgba(44, 62, 80, 0.04)
+  );
+  bottom: 50px;
+  left: -100px;
+  z-index: 0;
+}
+
+.decorDots {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-image: radial-gradient(circle, #3498db 1px, transparent 1px);
+  background-size: 15px 15px;
+  opacity: 0.2;
+  top: 20%;
+  left: 5%;
+  z-index: 0;
+}
+
+.decorTriangle {
+  position: absolute;
+  right: 10%;
+  bottom: 15%;
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-bottom: 86px solid rgba(44, 62, 80, 0.03);
+  transform: rotate(15deg);
+  z-index: 0;
+}
+
+.titleContainer {
+  margin-top: 60px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.titleUnderline {
+  height: 3px;
+  width: 0;
+  background: linear-gradient(to right, #ffffff, #646cff);
+  transition: width 2.5s ease-in-out;
+  margin-top: 0.5rem;
+  border-radius: 2px;
+}
+
+.titleUnderline.animate {
+  width: 150px;
+}
+
+@media (min-width: 768px) {
+  .titleUnderline.animate {
+    width: 200px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+}
+
+/* BODY */
+
+.contentContainer {
+  width: 100%;
+  flex: 1;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 1;
+  gap: 30px;
+}
+
+.comingSoonWrapper {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.comingSoonTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #3498db, #646cff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  position: relative;
+}
+
+.comingSoonText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.progressContainer {
+  width: 80%;
+  max-width: 400px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin: 40px auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressBar {
+  height: 100%;
+  width: 75%;
+  background: linear-gradient(90deg, #3498db, #646cff);
+  border-radius: 10px;
+  position: relative;
+  animation: pulse 2s infinite;
+}
+
+.progressBar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+.percentageText {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #3498db;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .comingSoonWrapper {
+    padding: 30px 20px;
+  }
+
+  .comingSoonTitle {
+    font-size: 2rem;
+  }
+}

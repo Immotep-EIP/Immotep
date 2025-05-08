@@ -10,6 +10,7 @@ import Footer from "./components/Footer/Footer";
 import NavigationEnum from "./enums/NavigationEnum";
 import PrivacyPolicyPage from "./pages/Legal/PrivacyPolicy";
 import LegalMentionsPage from "./pages/Legal/LegalMentions";
+import DemoPage from "./pages/Demo/Demo";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           path={NavigationEnum.PRIVACY_POLICY}
           element={<PrivacyPolicyPage />}
         />
+        <Route path={NavigationEnum.DEMO} element={<DemoPage />} />
       </Routes>
       <Footer />
     </Router>

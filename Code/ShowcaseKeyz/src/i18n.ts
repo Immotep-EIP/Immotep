@@ -184,6 +184,13 @@ const resources = {
           mail: "Par courrier : /",
         },
       },
+      demo: {
+        title: "Démonstration",
+        coming_soon: "Bientôt disponible",
+        development_message:
+          "Notre démo interactive est en cours de développement. Notre équipe travaille activement pour vous offrir une expérience immersive qui vous permettra de découvrir toutes les fonctionnalités de Keyz.",
+        completed: "complété",
+      },
     },
   },
   en: {
@@ -362,6 +369,13 @@ const resources = {
           email: "By email: contact@keyz-app.fr",
           mail: "By mail: /",
         },
+      },
+      demo: {
+        title: "Demo",
+        coming_soon: "Coming Soon",
+        development_message:
+          "Our interactive demo is currently under development. Our team is actively working to provide you with an immersive experience that will allow you to discover all the features of Keyz.",
+        completed: "completed",
       },
     },
   },
@@ -547,6 +561,13 @@ const resources = {
           email: "Per E-Mail: contact@keyz-app.fr",
           mail: "Per Post: /",
         },
+      },
+      demo: {
+        title: "Demo",
+        coming_soon: "Demnächst verfügbar",
+        development_message:
+          "Unsere interaktive Demo wird derzeit entwickelt. Unser Team arbeitet aktiv daran, Ihnen ein immersives Erlebnis zu bieten, das Ihnen alle Funktionen von Keyz zeigen wird.",
+        completed: "abgeschlossen",
       },
     },
   },

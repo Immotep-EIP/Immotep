@@ -16,7 +16,8 @@ export default function Navbar() {
     const path = window.location.pathname;
     if (
       path === NavigationEnum.LEGAL_MENTIONS ||
-      path === NavigationEnum.PRIVACY_POLICY
+      path === NavigationEnum.PRIVACY_POLICY ||
+      path === NavigationEnum.DEMO
     ) {
       setScrolled(true);
     }
