@@ -76,14 +76,17 @@ const resources = {
           title: "Légal",
           mentions_leg: "Mentions légales",
           privacy_pol: "Politique de confidentialité",
-          terms_of_ser: "CGU",
         },
-        support: {
-          title: "Support",
-          help: "Aide",
-          contact_us: "Nous contacter",
-          faq: "FAQ",
-        },
+      },
+      privacy_policy: {
+        title: "Politique de confidentialité",
+        content:
+          "Cette politique de confidentialité décrit comment Keyz collecte, utilise et protège vos informations personnelles lorsque vous utilisez notre application. Nous nous engageons à respecter votre vie privée et à protéger vos données.",
+      },
+      legal_mentions: {
+        title: "Mentions légales",
+        content:
+          "Les mentions légales de Keyz incluent des informations sur l'éditeur du site, l'hébergeur, et les conditions d'utilisation. Pour toute question, veuillez nous contacter.",
       },
     },
   },
@@ -159,14 +162,17 @@ const resources = {
           title: "Legal",
           mentions_leg: "Legal Notice",
           privacy_pol: "Privacy Policy",
-          terms_of_ser: "Terms of Service",
         },
-        support: {
-          title: "Support",
-          help: "Help",
-          contact_us: "Contact Us",
-          faq: "FAQ",
-        },
+      },
+      privacy_policy: {
+        title: "Privacy Policy",
+        content:
+          "This privacy policy describes how Keyz collects, uses, and protects your personal information when you use our application. We are committed to respecting your privacy and protecting your data.",
+      },
+      legal_mentions: {
+        title: "Legal Notice",
+        content:
+          "The legal notice of Keyz includes information about the publisher of the site, the host, and the terms of use. For any questions, please contact us.",
       },
     },
   },
@@ -242,14 +248,17 @@ const resources = {
           title: "Rechtliches",
           mentions_leg: "Impressum",
           privacy_pol: "Datenschutzrichtlinie",
-          terms_of_ser: "Nutzungsbedingungen",
         },
-        support: {
-          title: "Support",
-          help: "Hilfe",
-          contact_us: "Kontaktiere uns",
-          faq: "FAQ",
-        },
+      },
+      privacy_policy: {
+        title: "Datenschutzrichtlinie",
+        content:
+          "Diese Datenschutzrichtlinie beschreibt, wie Keyz Ihre persönlichen Informationen sammelt, verwendet und schützt, wenn Sie unsere Anwendung nutzen. Wir verpflichten uns, Ihre Privatsphäre zu respektieren und Ihre Daten zu schützen.",
+      },
+      legal_mentions: {
+        title: "Impressum",
+        content:
+          "Das Impressum von Keyz enthält Informationen über den Herausgeber der Website, den Host und die Nutzungsbedingungen. Bei Fragen kontaktieren Sie uns bitte.",
       },
     },
   },

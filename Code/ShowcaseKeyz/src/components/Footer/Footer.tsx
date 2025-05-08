@@ -3,6 +3,7 @@ import InstagramIcon from "../../assets/Instagram.png";
 import FacebookIcon from "../../assets/Facebook.png";
 import LinkedinIcon from "../../assets/Linkedin.png";
 import style from "./Footer.module.css";
+import NavigationEnum from "../../enums/NavigationEnum";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -54,34 +55,31 @@ const Footer = () => {
 
       <div className={style.columnContainer}>
         <span className={style.colTitle}>{t("footer.pages.title")}</span>
-        <a href="#home" className={style.colDesc}>
+        <a href="/#home" className={style.colDesc}>
           {t("footer.pages.home")}
         </a>
-        <a href="#features" className={style.colDesc}>
+        <a href="/#features" className={style.colDesc}>
           {t("footer.pages.features")}
         </a>
-        <a href="#application" className={style.colDesc}>
+        <a href="/#application" className={style.colDesc}>
           {t("footer.pages.our_app")}
         </a>
-        <a href="#pricing" className={style.colDesc}>
+        <a href="/#pricing" className={style.colDesc}>
           {t("footer.pages.pricing")}
         </a>
-        <a href="#contact-us" className={style.colDesc}>
+        <a href="/#contact-us" className={style.colDesc}>
           {t("footer.pages.contact_us")}
         </a>
       </div>
       <div className={style.columnContainer}>
         <span className={style.colTitle}>{t("footer.legal.title")}</span>
-        <span className={style.colDesc}>{t("footer.legal.mentions_leg")}</span>
-        <span className={style.colDesc}>{t("footer.legal.privacy_pol")}</span>
-        <span className={style.colDesc}>{t("footer.legal.terms_of_ser")}</span>
+        <a href={NavigationEnum.LEGAL_MENTIONS} className={style.colDesc}>
+          {t("footer.legal.mentions_leg")}
+        </a>
+        <a href={NavigationEnum.PRIVACY_POLICY} className={style.colDesc}>
+          {t("footer.legal.privacy_pol")}
+        </a>
       </div>
-      {/* <div className={style.columnContainer}>
-        <span className={style.colTitle}>{t("footer.support.title")}</span>
-        <span className={style.colDesc}>{t("footer.support.help")}</span>
-        <span className={style.colDesc}>{t("footer.support.contact_us")}</span>
-        <span className={style.colDesc}>{t("footer.support.faq")}</span>
-      </div> */}
     </div>
   );
 };

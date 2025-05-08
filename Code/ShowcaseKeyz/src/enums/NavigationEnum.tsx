@@ -1,10 +1,7 @@
 const NavigationEnum = {
-  HOME: "",
-  FEATURES: "features",
-  OUR_APP: "our-app",
-  PRICING: "pricing",
-  CONTACT_US: "contact-us",
-  DEMO: "demo",
+  HOME: "/",
+  LEGAL_MENTIONS: "/legal-mentions",
+  PRIVACY_POLICY: "/privacy-policy",
 };
 
 export default NavigationEnum;

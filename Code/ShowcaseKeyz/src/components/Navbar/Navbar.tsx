@@ -1,16 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import styles from "./Navbar.module.css";
-import { useTranslation } from "react-i18next"; // Utilisation de i18next pour les traductions
+import { useTranslation } from "react-i18next";
 import LanguageSelector from "./LanguageSelector";
+import NavigationEnum from "../../enums/NavigationEnum";
 
 export default function Navbar() {
-  const { t } = useTranslation(); // Fonction de traduction fournie par i18next
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (
+      path === NavigationEnum.LEGAL_MENTIONS ||
+      path === NavigationEnum.PRIVACY_POLICY
+    ) {
+      setScrolled(true);
+    }
+  }, [scrolled]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,38 +42,41 @@ export default function Navbar() {
   return (
     <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}>
       <div className={styles.container}>
-        <Link to="/" className={scrolled ? styles.logoScrolled : styles.logo}>
+        <a
+          href="/#home"
+          className={scrolled ? styles.logoScrolled : styles.logo}
+        >
           Keyz
-        </Link>
+        </a>
 
         {/* Desktop Navigation */}
         <div className={styles.desktopNav}>
           <a
-            href="#home"
+            href="/#home"
             className={scrolled ? styles.navLinkScrolled : styles.navLink}
           >
             {t("topbar.home")}
           </a>
           <a
-            href="#features"
+            href="/#features"
             className={scrolled ? styles.navLinkScrolled : styles.navLink}
           >
             {t("topbar.features")}
           </a>
           <a
-            href="#application"
+            href="/#application"
             className={scrolled ? styles.navLinkScrolled : styles.navLink}
           >
             {t("topbar.our_app")}
           </a>
           <a
-            href="#pricing"
+            href="/#pricing"
             className={scrolled ? styles.navLinkScrolled : styles.navLink}
           >
             {t("topbar.pricing")}
           </a>
           <a
-            href="#contact-us"
+            href="/#contact-us"
             className={scrolled ? styles.navLinkScrolled : styles.navLink}
           >
             {t("topbar.contact_us")}
@@ -89,35 +102,35 @@ export default function Navbar() {
       {/* Mobile Navigation */}
       <div className={`${styles.mobileNav} ${isMenuOpen ? styles.open : ""}`}>
         <a
-          href="#home"
+          href="/#home"
           className={styles.mobileNavLink}
           onClick={() => setIsMenuOpen(false)}
         >
           {t("topbar.home")}
         </a>
         <a
-          href="#features"
+          href="/#features"
           className={styles.mobileNavLink}
           onClick={() => setIsMenuOpen(false)}
         >
           {t("topbar.features")}
         </a>
         <a
-          href="#application"
+          href="/#application"
           className={styles.mobileNavLink}
           onClick={() => setIsMenuOpen(false)}
         >
           {t("topbar.our_app")}
         </a>
         <a
-          href="#pricing"
+          href="/#pricing"
           className={styles.mobileNavLink}
           onClick={() => setIsMenuOpen(false)}
         >
           {t("topbar.pricing")}
         </a>
         <a
-          href="#contact-us"
+          href="/#contact-us"
           className={styles.mobileNavLink}
           onClick={() => setIsMenuOpen(false)}
         >

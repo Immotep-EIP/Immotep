@@ -1,0 +1,129 @@
+.pageContainer {
+  min-height: 100vh;
+  width: 100vw;
+  padding-top: 120px;
+  padding-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f8fafc;
+  color: #2c3e50;
+  position: relative;
+  overflow: hidden;
+}
+
+.contentWrapper {
+  max-width: 900px;
+  width: 100%;
+}
+
+.titleContainer {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.titleUnderline {
+  height: 3px;
+  width: 80px;
+  background: linear-gradient(to right, #2c3e50, #3498db);
+  margin-top: 5px;
+  border-radius: 2px;
+}
+
+.contentSection {
+  padding: 40px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.sectionTitle {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.paragraph {
+  margin-bottom: 20px;
+  line-height: 1.7;
+  color: #4a5568;
+}
+
+.listItem {
+  margin-bottom: 10px;
+  line-height: 1.7;
+  color: #4a5568;
+  padding-left: 20px;
+  position: relative;
+}
+
+.listItem::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #3498db;
+}
+
+.link {
+  color: #3498db;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .contentSection {
+    padding: 25px;
+  }
+
+  .sectionTitle {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageContainer {
+    padding-top: 100px;
+    padding-bottom: 40px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .contentSection {
+    padding: 20px;
+  }
+}

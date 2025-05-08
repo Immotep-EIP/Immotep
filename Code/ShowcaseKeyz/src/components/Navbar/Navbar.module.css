@@ -41,6 +41,11 @@
   color: #2c3e50;
 }
 
+.logo:hover,
+.logoScrolled:hover {
+  color: #2c3e50;
+}
+
 .desktopNav {
   display: none;
 }
