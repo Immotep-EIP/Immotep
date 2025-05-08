@@ -169,6 +169,16 @@
   color: white;
   font-size: 1rem;
   transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  font-family: inherit;
+  font-size: 1rem;
+  opacity: 0.7;
 }
 
 .input:focus,
@@ -196,7 +206,7 @@
 
 .input:invalid,
 .textarea:invalid {
-  border-color: rgba(231, 76, 60, 0.5);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .input:valid,

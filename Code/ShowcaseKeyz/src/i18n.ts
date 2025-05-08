@@ -55,6 +55,10 @@ const resources = {
         your_email: "Adresse e-mail",
         message: "Votre message",
         send_message: "Envoyer le message",
+        firstname_placeholder: "Votre prénom",
+        lastname_placeholder: "Votre nom",
+        your_email_placeholder: "Votre adresse e-mail",
+        message_placeholder: "Veuillez saisir votre message",
       },
       footer: {
         title: "Keyz",
@@ -135,6 +139,10 @@ const resources = {
         your_email: "Your Email",
         message: "Your Message",
         send_message: "Send Message",
+        firstname_placeholder: "Your first name",
+        lastname_placeholder: "Your last name",
+        your_email_placeholder: "Your email address",
+        message_placeholder: "Please enter your message",
       },
       footer: {
         title: "Keyz",
@@ -214,6 +222,10 @@ const resources = {
         your_email: "Ihre E-Mail",
         message: "Ihre Nachricht",
         send_message: "Nachricht senden",
+        firstname_placeholder: "Ihr Vorname",
+        lastname_placeholder: "Ihr Nachname",
+        your_email_placeholder: "Ihre E-Mail-Adresse",
+        message_placeholder: "Bitte geben Sie Ihre Nachricht ein",
       },
       footer: {
         title: "Keyz",

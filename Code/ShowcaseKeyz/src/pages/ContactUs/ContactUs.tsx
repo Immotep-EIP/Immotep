@@ -132,6 +132,7 @@ function ContactUsPage() {
                     errors.firstname ? style.inputError : ""
                   }`}
                   required
+                  placeholder={t("contact_us.firstname_placeholder")}
                 />
                 {errors.firstname && formTouched && (
                   <span className={style.errorMessage}>
@@ -153,6 +154,7 @@ function ContactUsPage() {
                     errors.lastname ? style.inputError : ""
                   }`}
                   required
+                  placeholder={t("contact_us.lastname_placeholder")}
                 />
                 {errors.lastname && formTouched && (
                   <span className={style.errorMessage}>
@@ -175,6 +177,7 @@ function ContactUsPage() {
                   errors.email ? style.inputError : ""
                 }`}
                 required
+                placeholder={t("contact_us.your_email_placeholder")}
               />
               {errors.email && formTouched && (
                 <span className={style.errorMessage}>
@@ -195,6 +198,7 @@ function ContactUsPage() {
                   errors.message ? style.inputError : ""
                 }`}
                 required
+                placeholder={t("contact_us.message_placeholder")}
               ></textarea>
               {errors.message && formTouched && (
                 <span className={style.errorMessage}>
