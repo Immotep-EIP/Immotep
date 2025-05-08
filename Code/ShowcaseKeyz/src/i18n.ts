@@ -30,6 +30,11 @@ const resources = {
       },
       contact_us: {
         title: "Nous contacter",
+        firstname: "Prénom",
+        lastname: "Nom",
+        your_email: "Adresse e-mail",
+        message: "Votre message",
+        send_message: "Envoyer le message",
       },
       footer: {
         title: "Keyz",
@@ -85,6 +90,11 @@ const resources = {
       },
       contact_us: {
         title: "Contact Us",
+        firstname: "First Name",
+        lastname: "Last Name",
+        your_email: "Your Email",
+        message: "Your Message",
+        send_message: "Send Message",
       },
       footer: {
         title: "Keyz",
@@ -139,6 +149,11 @@ const resources = {
       },
       contact_us: {
         title: "Kontaktiere uns",
+        firstname: "Vorname",
+        lastname: "Nachname",
+        your_email: "Ihre E-Mail",
+        message: "Ihre Nachricht",
+        send_message: "Nachricht senden",
       },
       footer: {
         title: "Keyz",
