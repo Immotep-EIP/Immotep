@@ -7,7 +7,6 @@ function ContactUsPage() {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  // État du formulaire
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -15,10 +14,8 @@ function ContactUsPage() {
     message: "",
   });
 
-  // État pour suivre si le formulaire a été modifié
   const [formTouched, setFormTouched] = useState(false);
 
-  // État pour les erreurs de validation
   const [errors, setErrors] = useState({
     firstname: false,
     lastname: false,
@@ -26,7 +23,6 @@ function ContactUsPage() {
     message: false,
   });
 
-  // Fonction pour vérifier si tous les champs sont remplis
   const isFormValid = () => {
     return (
       formData.firstname.trim() !== "" &&
@@ -36,33 +32,27 @@ function ContactUsPage() {
     );
   };
 
-  // Gestionnaire de changement pour les champs
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
-    // Mise à jour du state du formulaire
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
 
-    // Marquer le formulaire comme modifié
     setFormTouched(true);
 
-    // Mise à jour des erreurs (champ vide ou non)
     setErrors((prev) => ({
       ...prev,
       [name]: value.trim() === "",
     }));
   };
 
-  // Gestionnaire de soumission du formulaire
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation finale avant envoi
     const newErrors = {
       firstname: formData.firstname.trim() === "",
       lastname: formData.lastname.trim() === "",
@@ -72,11 +62,8 @@ function ContactUsPage() {
 
     setErrors(newErrors);
 
-    // Si le formulaire est valide, on peut "envoyer" (console.log)
     if (isFormValid()) {
       console.log("Form data submitted:", formData);
-
-      // Réinitialisation du formulaire après envoi
       setFormData({
         firstname: "",
         lastname: "",
@@ -84,8 +71,6 @@ function ContactUsPage() {
         message: "",
       });
       setFormTouched(false);
-
-      // Facultatif: message de confirmation
       alert("Votre message a été envoyé avec succès!");
     } else {
       console.log("Form validation failed");
