@@ -218,7 +218,7 @@
 }
 
 .submitButton {
-  align-self: flex-start;
+  align-self: flex-end;
   padding: 12px 24px;
   background: linear-gradient(to right, #2c3e50, #3498db);
   color: white;
