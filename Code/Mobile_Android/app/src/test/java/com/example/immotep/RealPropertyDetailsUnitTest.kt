@@ -7,6 +7,7 @@ import com.example.immotep.apiCallerServices.PropertyStatus
 import com.example.immotep.apiCallerServices.RealPropertyCallerService
 import com.example.immotep.apiClient.ApiService
 import androidx.navigation.NavController
+import com.example.immotep.apiCallerServices.DamageCallerService
 import com.example.immotep.apiCallerServices.Document
 import com.example.immotep.apiCallerServices.InviteDetailedProperty
 import com.example.immotep.apiCallerServices.LeaseDetailedProperty
@@ -38,6 +39,7 @@ class RealPropertyDetailsViewModelTest {
     private val navController: NavController = mockk()
     private val apiService: ApiService = mockk()
     private val apiCaller: RealPropertyCallerService = mockk()
+    private val damageApiCaller: DamageCallerService = mockk()
     private lateinit var viewModel: RealPropertyDetailsViewModel
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -60,11 +62,15 @@ class RealPropertyDetailsViewModelTest {
         val apiCallerField = viewModel::class.java.getDeclaredField("apiCaller")
         apiCallerField.isAccessible = true
         apiCallerField.set(viewModel, apiCaller)
+        val damageApiCallerField = viewModel::class.java.getDeclaredField("damageApiCaller")
+        damageApiCallerField.isAccessible = true
+        damageApiCallerField.set(viewModel, damageApiCaller)
     }
 
     @Test
     fun `loadProperty success updates property with documents and sets isLoading`() = runTest {
         coEvery { apiCaller.getPropertyDocuments("1", any()) } returns arrayOf(fakeDocument)
+        coEvery { damageApiCaller.getPropertyDamages(any(), any()) } returns arrayOf()
 
         viewModel.loadProperty(property1.copy(lease = LeaseDetailedProperty(
             id = "1",
