@@ -8,7 +8,7 @@ import (
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
-	"immotep/backend/services/minio"
+	"immotep/backend/services/filesystem"
 	"immotep/backend/utils"
 )
 
@@ -125,7 +125,7 @@ func UploadLeaseDocument(c *gin.Context) {
 		return
 	}
 
-	fileInfo := minio.UploadLeaseDocument(lease.ID, file)
+	fileInfo := filesystem.UploadLeaseDocument(lease.ID, file)
 	newLease := database.AddDocumentToLease(lease, fileInfo.Key)
 	c.JSON(http.StatusOK, models.IdResponse{ID: newLease.ID})
 }
@@ -148,7 +148,7 @@ func UploadLeaseDocument(c *gin.Context) {
 //	@Router			/tenant/leases/{lease_id}/docs/ [get]
 func GetAllDocumentsByLease(c *gin.Context) {
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
-	docs := minio.GetDocuments(lease.Documents)
+	docs := filesystem.GetDocuments(lease.Documents)
 	c.JSON(http.StatusOK, docs)
 }
 
@@ -170,7 +170,7 @@ func GetAllDocumentsByLease(c *gin.Context) {
 //	@Router			/owner/properties/{property_id}/leases/{lease_id}/docs/{doc_name}/ [delete]
 func DeleteLeaseDocument(c *gin.Context) {
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
-	if minio.DeleteLeaseDocument(lease.ID, c.Param("doc_name")) {
+	if filesystem.DeleteLeaseDocument(lease.ID, c.Param("doc_name")) {
 		c.Status(http.StatusNoContent)
 	} else {
 		utils.SendError(c, http.StatusNotFound, utils.DocumentNotFound, nil)

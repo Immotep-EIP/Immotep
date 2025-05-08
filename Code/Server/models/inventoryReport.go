@@ -23,7 +23,6 @@ func (f *FurnitureStateRequest) ToDbFurnitureState() db.FurnitureStateModel {
 	}
 }
 
-
 type RoomStateRequest struct {
 	RoomID      string         `binding:"required"             json:"room_id"`
 	State       db.State       `binding:"required,state"       json:"state"`

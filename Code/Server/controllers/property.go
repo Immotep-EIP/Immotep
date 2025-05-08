@@ -9,7 +9,7 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/brevo"
 	"immotep/backend/services/database"
-	"immotep/backend/services/minio"
+	"immotep/backend/services/filesystem"
 	"immotep/backend/utils"
 )
 
@@ -17,7 +17,7 @@ func getPropertyPicture(property db.PropertyModel) string {
 	pictureURL := ""
 	picturePath, ok := property.Picture()
 	if ok {
-		pictureURL = minio.GetImageURL(picturePath)
+		pictureURL = filesystem.GetImageURL(picturePath)
 	}
 	return pictureURL
 }
@@ -199,7 +199,7 @@ func UpdatePropertyPicture(c *gin.Context) {
 		return
 	}
 
-	fileInfo := minio.UploadPropertyImage(property.ID, file)
+	fileInfo := filesystem.UploadPropertyImage(property.ID, file)
 	newProperty := database.UpdatePropertyPicture(property, fileInfo.Key)
 	c.JSON(http.StatusOK, models.IdResponse{ID: newProperty.ID})
 }

@@ -7,7 +7,7 @@ import (
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
-	"immotep/backend/services/minio"
+	"immotep/backend/services/filesystem"
 	"immotep/backend/utils"
 )
 
@@ -15,7 +15,7 @@ func getProfilePicture(user db.UserModel) string {
 	ppURL := ""
 	ppPath, ok := user.ProfilePicture()
 	if ok {
-		ppURL = minio.GetImageURL(ppPath)
+		ppURL = filesystem.GetImageURL(ppPath)
 	}
 	return ppURL
 }
@@ -134,7 +134,7 @@ func UpdateCurrentUserProfilePicture(c *gin.Context) {
 		return
 	}
 
-	fileInfo := minio.UploadUserProfileImage(user.ID, file)
+	fileInfo := filesystem.UploadUserProfileImage(user.ID, file)
 	newUser := database.UpdateUserPicture(*user, fileInfo.Key)
 	c.JSON(http.StatusOK, models.IdResponse{ID: newUser.ID})
 }

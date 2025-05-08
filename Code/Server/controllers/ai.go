@@ -10,7 +10,7 @@ import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/chatgpt"
 	"immotep/backend/services/database"
-	"immotep/backend/services/minio"
+	"immotep/backend/services/filesystem"
 	"immotep/backend/utils"
 )
 
@@ -120,7 +120,7 @@ func handleRoomComparison(c *gin.Context, req models.CompareRequest, oldReport *
 	for _, rs := range oldReport.RoomStates() {
 		if rs.RoomID == req.Id {
 			room := database.GetRoomByID(req.Id)
-			chatGPTres, err := chatgpt.CompareRoom(room.Name, rs, minio.GetImageURLs(rs.Pictures), req.Pictures)
+			chatGPTres, err := chatgpt.CompareRoom(room.Name, rs, filesystem.GetImageURLs(rs.Pictures), req.Pictures)
 			if err != nil {
 				utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
 				return
@@ -143,7 +143,7 @@ func handleFurnitureComparison(c *gin.Context, req models.CompareRequest, oldRep
 	for _, fs := range oldReport.FurnitureStates() {
 		if fs.FurnitureID == req.Id {
 			furniture := database.GetFurnitureByID(req.Id)
-			chatGPTres, err := chatgpt.CompareFurniture(furniture.Name, fs, minio.GetImageURLs(fs.Pictures), req.Pictures)
+			chatGPTres, err := chatgpt.CompareFurniture(furniture.Name, fs, filesystem.GetImageURLs(fs.Pictures), req.Pictures)
 			if err != nil {
 				utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
 				return

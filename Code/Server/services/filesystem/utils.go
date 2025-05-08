@@ -1,4 +1,4 @@
-package minio
+package filesystem
 
 import (
 	"io"
@@ -6,8 +6,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/minio/minio-go/v7"
 	"immotep/backend/services"
+
+	"github.com/minio/minio-go/v7"
 )
 
 type File interface {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-pdf/fpdf"
 	"github.com/minio/minio-go/v7"
-	minioservice "immotep/backend/services/minio"
+	"immotep/backend/services/filesystem"
 	"immotep/backend/utils"
 )
 
@@ -24,7 +24,7 @@ const (
 
 type File struct {
 	io.Writer
-	minioservice.File
+	filesystem.File
 
 	Filename string
 	buffer   bytes.Buffer

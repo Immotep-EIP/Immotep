@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"immotep/backend/prisma/db"
-	"immotep/backend/services/minio"
+	"immotep/backend/services/filesystem"
 )
 
 func NewInventoryReportPDF(invReport db.InventoryReportModel, lease db.LeaseModel) (*File, error) {
@@ -50,7 +50,7 @@ func addRooms(report *PDF, invReport db.InventoryReportModel) {
 		report.AddText("Cleanliness: " + string(roomState.Cleanliness))
 		report.AddMultiLineText("Note: " + roomState.Note)
 		report.Ln(5)
-		report.AddImages(minio.GetImageObjs(roomState.Pictures))
+		report.AddImages(filesystem.GetImageObjs(roomState.Pictures))
 
 		for _, furnitureState := range invReport.FurnitureStates() {
 			if furnitureState.Furniture().RoomID != roomState.RoomID {
@@ -61,7 +61,7 @@ func addRooms(report *PDF, invReport db.InventoryReportModel) {
 			report.AddText("Cleanliness: " + string(furnitureState.Cleanliness))
 			report.AddMultiLineText("Note: " + furnitureState.Note)
 			report.Ln(5)
-			report.AddImages(minio.GetImageObjs(furnitureState.Pictures))
+			report.AddImages(filesystem.GetImageObjs(furnitureState.Pictures))
 		}
 	}
 }

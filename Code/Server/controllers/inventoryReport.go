@@ -10,7 +10,7 @@ import (
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
-	"immotep/backend/services/minio"
+	"immotep/backend/services/filesystem"
 	"immotep/backend/services/pdf"
 	"immotep/backend/utils"
 )
@@ -21,10 +21,10 @@ func createInvReportPDF(invrep db.InventoryReportModel, lease db.LeaseModel) (*m
 		return nil, err
 	}
 
-	fileInfo := minio.UploadLeasePDF(lease.ID, file)
+	fileInfo := filesystem.UploadLeasePDF(lease.ID, file)
 	database.AddDocumentToLease(lease, fileInfo.Key)
 
-	res := minio.GetDocument(fileInfo.Key)
+	res := filesystem.GetDocument(fileInfo.Key)
 	if res == nil {
 		panic("error getting document")
 	}
@@ -180,7 +180,7 @@ func checkRoom(roomId string, propertyId string) error {
 func getRoomStatePicturesPath(roomState db.RoomStateModel, files []*multipart.FileHeader) []string {
 	picturePaths := make([]string, len(files))
 	for i, file := range files {
-		fileInfo := minio.UploadRoomStateImage(roomState.ID, file)
+		fileInfo := filesystem.UploadRoomStateImage(roomState.ID, file)
 		picturePaths[i] = fileInfo.Key
 	}
 	return picturePaths
@@ -263,7 +263,7 @@ func checkFurniture(furnitureId string, propertyId string) error {
 func getFurnitureStatePicturesPath(furnitureState db.FurnitureStateModel, files []*multipart.FileHeader) []string {
 	picturePaths := make([]string, len(files))
 	for i, file := range files {
-		fileInfo := minio.UploadFurnitureStateImage(furnitureState.ID, file)
+		fileInfo := filesystem.UploadFurnitureStateImage(furnitureState.ID, file)
 		picturePaths[i] = fileInfo.Key
 	}
 	return picturePaths
@@ -341,12 +341,12 @@ func fetchImageURLs(report db.InventoryReportModel) map[string]string {
 	res := make(map[string]string)
 	for _, rs := range report.RoomStates() {
 		for _, path := range rs.Pictures {
-			res[path] = minio.GetImageURL(path)
+			res[path] = filesystem.GetImageURL(path)
 		}
 	}
 	for _, fs := range report.FurnitureStates() {
 		for _, path := range fs.Pictures {
-			res[path] = minio.GetImageURL(path)
+			res[path] = filesystem.GetImageURL(path)
 		}
 	}
 	return res

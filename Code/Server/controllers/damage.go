@@ -8,7 +8,7 @@ import (
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
-	"immotep/backend/services/minio"
+	"immotep/backend/services/filesystem"
 	"immotep/backend/utils"
 )
 
@@ -66,7 +66,7 @@ func GetDamagesByProperty(c *gin.Context) {
 	fixed := c.DefaultQuery("fixed", "false") == utils.Strue
 	damages := database.GetDamagesByPropertyID(c.Param("property_id"), fixed)
 	c.JSON(http.StatusOK, utils.Map(damages, func(damage db.DamageModel) models.DamageResponse {
-		return models.DbDamageToResponse(damage, minio.GetImageURLs(damage.Pictures))
+		return models.DbDamageToResponse(damage, filesystem.GetImageURLs(damage.Pictures))
 	}))
 }
 
@@ -92,7 +92,7 @@ func GetDamagesByLease(c *gin.Context) {
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
 	damages := database.GetDamagesByLeaseID(lease.ID, fixed)
 	c.JSON(http.StatusOK, utils.Map(damages, func(damage db.DamageModel) models.DamageResponse {
-		return models.DbDamageToResponse(damage, minio.GetImageURLs(damage.Pictures))
+		return models.DbDamageToResponse(damage, filesystem.GetImageURLs(damage.Pictures))
 	}))
 }
 
@@ -115,7 +115,7 @@ func GetDamagesByLease(c *gin.Context) {
 //	@Router			/tenant/leases/{lease_id}/damages/{damage_id}/ [get]
 func GetDamage(c *gin.Context) {
 	damage, _ := c.MustGet("damage").(db.DamageModel)
-	c.JSON(http.StatusOK, models.DbDamageToResponse(damage, minio.GetImageURLs(damage.Pictures)))
+	c.JSON(http.StatusOK, models.DbDamageToResponse(damage, filesystem.GetImageURLs(damage.Pictures)))
 }
 
 // UpdateDamageOwner godoc
@@ -239,7 +239,7 @@ func AddPicturesToDamage(c *gin.Context) {
 func getDamagePicturesPath(damage db.DamageModel, files []*multipart.FileHeader) []string {
 	picturePaths := make([]string, len(files))
 	for i, file := range files {
-		fileInfo := minio.UploadDamageImage(damage.ID, file)
+		fileInfo := filesystem.UploadDamageImage(damage.ID, file)
 		picturePaths[i] = fileInfo.Key
 	}
 	return picturePaths

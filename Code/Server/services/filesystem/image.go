@@ -1,4 +1,4 @@
-package minio
+package filesystem
 
 import (
 	"mime/multipart"
