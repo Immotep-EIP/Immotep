@@ -93,10 +93,22 @@ function ContactUsPage() {
       setIsLoading(true);
 
       try {
-        // Simulate API call with a delay
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        // Appel API
+        const response = await fetch("http://localhost:3001/v1/contact/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
 
-        console.log("Form data submitted:", formData);
+        if (!response.ok) {
+          throw new Error("Failed to send message");
+        }
+
+        const result = await response.json();
+        console.log("API response:", result);
+
         setFormData({
           firstname: "",
           lastname: "",
