@@ -9,12 +9,12 @@ plugins {
 val cameraXVersion = "1.0.1"
 
 android {
-    namespace = "com.example.immotep"
+    namespace = "com.example.keyz"
     compileSdk = 35
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.immotep"
+        applicationId = "com.example.keyz"
         minSdk = 27
         targetSdk = 35
         targetSdk = 35
