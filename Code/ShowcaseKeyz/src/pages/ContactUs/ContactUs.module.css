@@ -360,3 +360,109 @@
     opacity: 1;
   }
 }
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification.success {
+  background-color: #ebf7ed;
+  border-left: 4px solid #28a745;
+}
+
+.notification.error {
+  background-color: #fbeaea;
+  border-left: 4px solid #dc3545;
+}
+
+.notificationContent {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  color: #333;
+}
+
+.notificationIcon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.success .notificationIcon {
+  color: #28a745;
+}
+
+.error .notificationIcon {
+  color: #dc3545;
+}
+
+.notificationClose {
+  margin-left: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.notificationClose:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.notificationClose svg {
+  width: 16px;
+  height: 16px;
+  color: #666;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.submitButton.loading {
+  padding: 10px 20px;
+  justify-content: center;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.input:disabled,
+.textarea:disabled {
+  background-color: #f8f8f8;
+  cursor: not-allowed;
+}

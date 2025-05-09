@@ -6,11 +6,22 @@ function ContactUsPage() {
   const { t } = useTranslation();
   const titleRef = useRef<HTMLHeadingElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState<{
+    show: boolean;
+    type: "success" | "error";
+    message: string;
+  }>({
+    show: false,
+    type: "success",
+    message: "",
+  });
 
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
     email: "",
+    subject: "",
     message: "",
   });
 
@@ -20,6 +31,7 @@ function ContactUsPage() {
     firstname: false,
     lastname: false,
     email: false,
+    subject: false,
     message: false,
   });
 
@@ -28,6 +40,7 @@ function ContactUsPage() {
       formData.firstname.trim() !== "" &&
       formData.lastname.trim() !== "" &&
       formData.email.trim() !== "" &&
+      formData.subject.trim() !== "" &&
       formData.message.trim() !== ""
     );
   };
@@ -50,41 +63,65 @@ function ContactUsPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const showNotification = (type: "success" | "error", message: string) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+
+    // Auto hide notification after 5 seconds
+    setTimeout(() => {
+      setNotification((prev) => ({ ...prev, show: false }));
+    }, 5000);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors = {
       firstname: formData.firstname.trim() === "",
       lastname: formData.lastname.trim() === "",
       email: formData.email.trim() === "",
+      subject: formData.subject.trim() === "",
       message: formData.message.trim() === "",
     };
 
     setErrors(newErrors);
 
     if (isFormValid()) {
-      console.log("Form data submitted:", formData);
-      setFormData({
-        firstname: "",
-        lastname: "",
-        email: "",
-        message: "",
-      });
-      setFormTouched(false);
-      alert("Votre message a été envoyé avec succès!");
+      setIsLoading(true);
+
+      try {
+        // Simulate API call with a delay
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        console.log("Form data submitted:", formData);
+        setFormData({
+          firstname: "",
+          lastname: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+        setFormTouched(false);
+        showNotification("success", t("contact_us.success_message"));
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        showNotification("error", t("contact_us.error_message"));
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       console.log("Form validation failed");
+      showNotification("error", t("contact_us.validation_error"));
     }
   };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        } else {
-          setIsVisible(false);
-        }
+        setIsVisible(entry.isIntersecting);
       },
       {
         threshold: 0.3,
@@ -114,6 +151,73 @@ function ContactUsPage() {
         />
       </div>
 
+      {notification.show && (
+        <div className={`${style.notification} ${style[notification.type]}`}>
+          <div className={style.notificationContent}>
+            {notification.type === "success" ? (
+              <svg
+                className={style.notificationIcon}
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M22 11.08V12a10 10 0 1 1-5.93-9.14"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M22 4L12 14.01l-3-3"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : (
+              <svg
+                className={style.notificationIcon}
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M12 8v4M12 16h.01"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
+            <span>{notification.message}</span>
+            <button
+              className={style.notificationClose}
+              onClick={() =>
+                setNotification((prev) => ({ ...prev, show: false }))
+              }
+            >
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M18 6L6 18M6 6l12 12"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className={style.contentContainer}>
         <div className={style.formContainer}>
           <form className={style.form} onSubmit={handleSubmit}>
@@ -133,6 +237,7 @@ function ContactUsPage() {
                   }`}
                   required
                   placeholder={t("contact_us.firstname_placeholder")}
+                  disabled={isLoading}
                 />
                 {errors.firstname && formTouched && (
                   <span className={style.errorMessage}>
@@ -155,6 +260,7 @@ function ContactUsPage() {
                   }`}
                   required
                   placeholder={t("contact_us.lastname_placeholder")}
+                  disabled={isLoading}
                 />
                 {errors.lastname && formTouched && (
                   <span className={style.errorMessage}>
@@ -178,8 +284,32 @@ function ContactUsPage() {
                 }`}
                 required
                 placeholder={t("contact_us.your_email_placeholder")}
+                disabled={isLoading}
               />
               {errors.email && formTouched && (
+                <span className={style.errorMessage}>
+                  {t("contact_us.field_required")}
+                </span>
+              )}
+            </div>
+            <div className={style.inputGroup}>
+              <label htmlFor="subject" className={style.label}>
+                {t("contact_us.subject")}
+              </label>
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                className={`${style.input} ${
+                  errors.subject ? style.inputError : ""
+                }`}
+                required
+                placeholder={t("contact_us.subject_placeholder")}
+                disabled={isLoading}
+              />
+              {errors.subject && formTouched && (
                 <span className={style.errorMessage}>
                   {t("contact_us.field_required")}
                 </span>
@@ -199,6 +329,7 @@ function ContactUsPage() {
                 }`}
                 required
                 placeholder={t("contact_us.message_placeholder")}
+                disabled={isLoading}
               ></textarea>
               {errors.message && formTouched && (
                 <span className={style.errorMessage}>
@@ -209,27 +340,39 @@ function ContactUsPage() {
             <button
               type="submit"
               className={`${style.submitButton} ${
-                !isFormValid() || !formTouched ? style.submitDisabled : ""
-              }`}
-              disabled={!isFormValid() || !formTouched}
+                !isFormValid() || !formTouched || isLoading
+                  ? style.submitDisabled
+                  : ""
+              } ${isLoading ? style.loading : ""}`}
+              disabled={!isFormValid() || !formTouched || isLoading}
             >
-              <span>{t("contact_us.send_message")}</span>
-              <svg className={style.sendIcon} viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M22 2L11 13"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M22 2l-7 20-4-9-9-4 20-7z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              {isLoading ? (
+                <div className={style.spinner}></div>
+              ) : (
+                <>
+                  <span>{t("contact_us.send_message")}</span>
+                  <svg
+                    className={style.sendIcon}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M22 2L11 13"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M22 2l-7 20-4-9-9-4 20-7z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </>
+              )}
             </button>
           </form>
         </div>
