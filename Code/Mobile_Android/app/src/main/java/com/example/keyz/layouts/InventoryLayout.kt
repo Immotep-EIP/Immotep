@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -31,10 +32,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.keyz.R
+import com.example.keyz.utils.ThemeUtils
 
 
 @Composable
 fun InventoryTopBar(onExit: () -> Unit) {
+    val darkTheme =
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -52,7 +55,7 @@ fun InventoryTopBar(onExit: () -> Unit) {
             }
     ) {
         Image(
-            painter = painterResource(id = R.drawable.keyz_png_logo_blue),
+            painter = painterResource(id = ThemeUtils.getIcon(isSystemInDarkTheme())),
             contentDescription = stringResource(id = R.string.immotep_logo_desc),
             modifier = Modifier
                 .size(35.dp)

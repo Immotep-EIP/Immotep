@@ -267,11 +267,6 @@ fun AppTheme(
         @Composable()
         () -> Unit,
 ) {
-    val systemUiController = rememberSystemUiController()
-    when {
-        darkTheme -> systemUiController.setSystemBarsColor(color = Color.Black)
-        else -> systemUiController.setSystemBarsColor(color = Color.White)
-    }
     val colorScheme =
         when {
             darkTheme -> darkScheme
@@ -281,6 +276,7 @@ fun AppTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
+
         content = content,
     )
 }

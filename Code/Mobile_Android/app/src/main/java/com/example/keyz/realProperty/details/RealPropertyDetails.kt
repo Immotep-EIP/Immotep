@@ -2,6 +2,7 @@ package com.example.keyz.realProperty.details
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,6 +61,7 @@ import com.example.keyz.realProperty.details.tabs.AboutPropertyTab
 import com.example.keyz.realProperty.details.tabs.Damages
 import com.example.keyz.realProperty.details.tabs.DocumentBox
 import com.example.keyz.ui.components.BackButton
+import com.example.keyz.utils.ThemeUtils
 
 @Composable
 fun RealPropertyDropDownMenuItem(
@@ -99,8 +101,8 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
         if (property.value.picture == null) {
             AsyncImage(
                 model = null,
-                placeholder = painterResource(id = R.drawable.keyz_png_logo_blue),
-                error = painterResource(id = R.drawable.keyz_png_logo_blue),
+                placeholder = painterResource(id = ThemeUtils.getIcon(isSystemInDarkTheme())),
+                error = painterResource(id = ThemeUtils.getIcon(isSystemInDarkTheme())),
                 contentDescription = "picture of the ${property.value.name} property",
                 modifier = Modifier
                     .fillMaxWidth()

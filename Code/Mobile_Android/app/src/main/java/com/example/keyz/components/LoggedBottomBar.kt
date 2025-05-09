@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import com.example.keyz.R
 @Composable
 fun LoggedBottomBarElement(navController: NavController, name: String, icon: ImageVector, iconDescription: String, pageName: String) {
     val selected = navController.currentBackStackEntry?.destination?.route == pageName
+    val lineColor = MaterialTheme.colorScheme.tertiary
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -40,7 +42,7 @@ fun LoggedBottomBarElement(navController: NavController, name: String, icon: Ima
                 }
                 val y = size.height + 2.dp.toPx()
                 drawLine(
-                    Color.Magenta,
+                    lineColor,
                     Offset(size.width / 2 + size.width / 6, y),
                     Offset(size.width / 3, y),
                     2.dp.toPx()
@@ -55,21 +57,24 @@ fun LoggedBottomBarElement(navController: NavController, name: String, icon: Ima
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = iconDescription
+            contentDescription = iconDescription,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer
         )
         Text(
             text = name,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
 }
 
 @Composable
 fun LoggedBottomBar(navController: NavController) {
+    val lineColor = MaterialTheme.colorScheme.primary
     Spacer(
         modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp).height(1.dp).drawBehind {
             val y = size.height - 2.dp.toPx() / 2
             drawLine(
-                Color.LightGray,
+                lineColor,
                 Offset(0f, y),
                 Offset(size.width, y),
                 2.dp.toPx()

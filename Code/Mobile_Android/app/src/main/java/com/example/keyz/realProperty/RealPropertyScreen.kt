@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,6 +65,7 @@ import com.example.keyz.dashboard.DashBoardLayout
 import com.example.keyz.inventory.loaderButton.LoaderInventoryViewModel
 import com.example.keyz.realProperty.details.RealPropertyDetailsScreen
 import com.example.keyz.realProperty.tenant.RealPropertyTenant
+import com.example.keyz.utils.ThemeUtils
 
 @Composable
 fun PropertyBoxTextLine(text: String, icon: ImageVector) {
@@ -155,8 +157,8 @@ fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDel
             if (property.picture == null) {
                 AsyncImage(
                     model = null,
-                    placeholder = painterResource(id = R.drawable.keyz_png_logo_blue),
-                    error = painterResource(id = R.drawable.keyz_png_logo_blue),
+                    placeholder = painterResource(id = ThemeUtils.getIcon(isSystemInDarkTheme())),
+                    error = painterResource(id = ThemeUtils.getIcon(isSystemInDarkTheme())),
                     contentDescription = "picture of the ${property.name} property",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -178,7 +180,7 @@ fun PropertyBox(property: DetailedProperty, onClick: (() -> Unit)? = null, onDel
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Text(property.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(property.name, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
             Spacer(modifier = Modifier.height(8.dp))
             PropertyBoxTextLine(property.address, Icons.Outlined.Place)
         }

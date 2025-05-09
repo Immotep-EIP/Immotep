@@ -2,6 +2,7 @@ package com.example.keyz.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -34,6 +35,7 @@ import com.example.keyz.LocalApiService
 import com.example.keyz.authService.AuthService
 import com.example.keyz.R
 import com.example.keyz.login.dataStore
+import com.example.keyz.utils.ThemeUtils
 import kotlinx.coroutines.launch
 
 class LoggedTopBarViewModel : ViewModel()
@@ -59,7 +61,7 @@ fun LoggedTopBar(navController: NavController) {
             }
     ) {
         Image(
-            painter = painterResource(id = R.drawable.keyz_png_logo_blue),
+            painter = painterResource(id = ThemeUtils.getIcon(isSystemInDarkTheme())),
             contentDescription = stringResource(id = R.string.immotep_logo_desc),
             modifier = Modifier
                 .size(35.dp)

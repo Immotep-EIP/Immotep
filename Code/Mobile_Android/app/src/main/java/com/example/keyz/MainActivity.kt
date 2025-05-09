@@ -3,8 +3,10 @@ package com.example.keyz
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
@@ -57,7 +59,7 @@ class MainActivity : ComponentActivity() {
                     LocalApiService provides apiService,
                     LocalIsOwner provides isOwner
                 ) {
-                    Box(Modifier.safeDrawingPadding()) {
+                    Box(Modifier.background(color = MaterialTheme.colorScheme.onPrimary).safeDrawingPadding()) {
                         Navigation()
                     }
                 }
