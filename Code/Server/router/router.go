@@ -93,7 +93,7 @@ func Routes() *gin.Engine {
 		allowOrigins = []string{os.Getenv("WEB_PUBLIC_URL")}
 		log.Println("Running in release mode")
 	} else {
-		allowOrigins = []string{"https://*", "http://*", "http://localhost:4242", "http://localhost:3002"}
+		allowOrigins = []string{"https://*", "http://*", "http://localhost:4242", "http://localhost:3002", "http://localhost:3000"}
 		log.Println("Running in debug mode")
 	}
 

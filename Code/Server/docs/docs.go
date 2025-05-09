@@ -191,11 +191,6 @@ const docTemplate = `{
         },
         "/contact/": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Create a contact message to a lease",
                 "consumes": [
                     "application/json"

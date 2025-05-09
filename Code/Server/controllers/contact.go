@@ -22,7 +22,6 @@ import (
 //	@Success		201				{object}	models.IdResponse				"Created message ID"
 //	@Failure		400				{object}	utils.Error						"Missing fields or bad base64 string"
 //	@Failure		500
-//	@Security		Bearer
 //	@Router			/contact/ [post]
 func CreateContactMessage(c *gin.Context) {
 	var req models.ContactMessageRequest

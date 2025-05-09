@@ -990,8 +990,6 @@ paths:
             $ref: '#/definitions/utils.Error'
         "500":
           description: Internal Server Error
-      security:
-      - Bearer: []
       summary: Create contact message
       tags:
       - contact-message
