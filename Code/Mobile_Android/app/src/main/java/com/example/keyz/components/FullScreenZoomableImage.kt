@@ -47,7 +47,7 @@ fun FullscreenZoomableImage(uri: Uri?, onClose: () -> Unit) {
             }
         }
     BigModalLayout(
-        height = 0.95f,
+        height = 0.90f,
         open = uri != null,
         close = onClose,
         testTag = "fullscreenZoomableImage",

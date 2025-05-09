@@ -37,7 +37,6 @@ import com.example.keyz.utils.ThemeUtils
 
 @Composable
 fun InventoryTopBar(onExit: () -> Unit) {
-    val darkTheme =
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -76,7 +75,11 @@ fun InventoryTopBar(onExit: () -> Unit) {
             onClick = onExit,
             modifier = Modifier.testTag("inventoryTopBarCloseIcon")
         ) {
-            Icon(Icons.Outlined.Close, contentDescription = "Close inventory page")
+            Icon(
+                Icons.Outlined.Close,
+                contentDescription = "Close inventory page",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
 }

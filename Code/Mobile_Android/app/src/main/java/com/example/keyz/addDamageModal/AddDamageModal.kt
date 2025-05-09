@@ -3,6 +3,7 @@ package com.example.keyz.addDamageModal
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,7 +57,7 @@ fun AddDamageModal(
             modifier = Modifier.fillMaxWidth(),
             errorMessage = if (errors.value.comment) stringResource(R.string.comment_error) else null
         )
-        Text(stringResource(R.string.priority), modifier = Modifier.padding(top = 10.dp))
+        Text(stringResource(R.string.priority), modifier = Modifier.padding(top = 10.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
         DropDown(
             items = listOf(
                 DropDownItem(stringResource(R.string.low), DamagePriority.low),
@@ -67,7 +68,7 @@ fun AddDamageModal(
             selectedItem = form.value.priority,
             onItemSelected = { viewModel.setPriority(it) }
         )
-        Text(stringResource(R.string.room), modifier = Modifier.padding(top = 10.dp))
+        Text(stringResource(R.string.room), modifier = Modifier.padding(top = 10.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
         DropDown(
             items = viewModel.rooms.map { DropDownItem(it.name, it.id) },
             selectedItem = form.value.room_id,

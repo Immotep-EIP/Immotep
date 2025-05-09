@@ -24,6 +24,7 @@ import com.example.keyz.layouts.BigModalLayout
 import com.example.keyz.ui.components.DateRangeInput
 import com.example.keyz.R
 import com.example.keyz.ui.components.OutlinedTextField
+import com.example.keyz.ui.components.StyledButton
 
 @Composable
 fun InviteTenantModal(
@@ -72,7 +73,7 @@ fun InviteTenantModal(
             globalTestTag = "endDateInput"
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(
+        StyledButton(
             onClick = { viewModel.inviteTenant(
                 close = close,
                 propertyId = propertyId,
@@ -80,18 +81,9 @@ fun InviteTenantModal(
                 onSubmit = onSubmit,
                 setIsLoading = setIsLoading
             ) },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
-            modifier = Modifier
-                .clip(RoundedCornerShape(5.dp))
-                .padding(5.dp)
-                .fillMaxWidth()
-                .testTag("sendInvitation")
-        ) {
-            Text(
-                stringResource(R.string.send_invitation),
-                color = MaterialTheme.colorScheme.onTertiary
-            )
-        }
+            text = stringResource(R.string.send_invitation),
+            testTag = "sendInvitation"
+        )
     }
 }
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +52,6 @@ fun DeleteOrSeePictureModal(
     openImageInFullScreen: (uri: Uri) -> Unit
 ) {
     if (currentImage != null) {
-
         ModalBottomSheet(
             onDismissRequest = onClose,
             modifier = Modifier
@@ -182,9 +182,9 @@ fun AddingPicturesCarousel(
                         onClick = {
                             chooseOpen = true
                         },
-                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.surfaceDim
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         ),
                         modifier = Modifier
                             .fillMaxWidth()

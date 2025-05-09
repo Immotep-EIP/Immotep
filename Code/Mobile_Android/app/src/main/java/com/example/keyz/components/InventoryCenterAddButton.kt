@@ -30,7 +30,11 @@ fun InventoryCenterAddButton(onClick: () -> Unit, testTag: String) {
             .testTag(testTag)
     )  {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.AddCircleOutline, contentDescription = "Add Icon")
+            Icon(
+                Icons.Outlined.AddCircleOutline,
+                contentDescription = "Add Icon",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
 }

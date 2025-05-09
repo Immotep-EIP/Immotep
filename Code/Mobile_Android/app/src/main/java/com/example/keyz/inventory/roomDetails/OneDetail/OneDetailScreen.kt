@@ -86,7 +86,10 @@ fun OneDetailScreen(
                         .testTag("oneDetailComment"),
                     errorMessage = if (detailError.value.comment) stringResource(R.string.comment_error) else null
                 )
-                Text(stringResource(R.string.status), modifier = Modifier.padding(top = 10.dp))
+                Text(
+                    stringResource(R.string.status), modifier = Modifier.padding(top = 10.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
                 DropDown(
                     items = listOf(
                         DropDownItem(stringResource(R.string.new_state), State.new),
@@ -101,7 +104,10 @@ fun OneDetailScreen(
                     error = if (detailError.value.status) stringResource(R.string.status_error) else null,
                     testTag = "dropDownState"
                 )
-                Text(stringResource(R.string.cleaniness), modifier = Modifier.padding(top = 10.dp))
+                Text(
+                    stringResource(R.string.cleaniness), modifier = Modifier.padding(top = 10.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
                 DropDown(
                     items = listOf(
                         DropDownItem(stringResource(R.string.clean), Cleanliness.clean),
@@ -129,7 +135,10 @@ fun OneDetailScreen(
                             isRoom = isRoom
                         ) },
                     ) {
-                        Text(stringResource(if (isExit) R.string.compare_images else R.string.analyze_pictures))
+                        Text(
+                            stringResource(if (isExit) R.string.compare_images else R.string.analyze_pictures),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     }
                     Button(
                         shape = RoundedCornerShape(5.dp),
@@ -140,7 +149,10 @@ fun OneDetailScreen(
                         ),
                         onClick = { viewModel.onConfirm(onModifyDetail, isExit) },
                     ) {
-                        Text(stringResource(if (isRoom) R.string.validate_room else  R.string.validate_detail))
+                        Text(
+                            stringResource(if (isRoom) R.string.validate_room else  R.string.validate_detail),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     }
                 }
             }

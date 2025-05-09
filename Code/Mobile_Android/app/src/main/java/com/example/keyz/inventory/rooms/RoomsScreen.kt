@@ -79,22 +79,35 @@ fun RoomsScreen(
             if (exitPopUpOpen) {
                 AlertDialog(
                     shape = RoundedCornerShape(10.dp),
+                    backgroundColor = MaterialTheme.colorScheme.background,
                     onDismissRequest = { exitPopUpOpen = false },
                     confirmButton = {
                         TextButton(onClick = { exitPopUpOpen = false; viewModel.onClose()}) {
-                            Text(stringResource(R.string.exit))
+                            Text(
+                                stringResource(R.string.exit),
+                                color = MaterialTheme.colorScheme.secondary
+                            )
                         }
                                     },
                     dismissButton = {
                         TextButton(onClick = { exitPopUpOpen = false }) {
-                            Text(stringResource(R.string.cancel))
+                            Text(
+                                stringResource(R.string.cancel),
+                                color = MaterialTheme.colorScheme.secondary
+                            )
                         }
                     },
                     title = {
-                        Text(stringResource(R.string.are_you_sure_exit))
+                        Text(
+                            stringResource(R.string.are_you_sure_exit),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     },
                     text = {
-                        Text(stringResource(R.string.not_saved_modifications))
+                        Text(
+                            stringResource(R.string.not_saved_modifications),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     },
 
                 )
@@ -103,21 +116,34 @@ fun RoomsScreen(
                 AlertDialog(
                     shape = RoundedCornerShape(10.dp),
                     onDismissRequest = { confirmPopUpOpen = false },
+                    backgroundColor = MaterialTheme.colorScheme.background,
                     confirmButton = {
                         TextButton(onClick = { confirmPopUpOpen = false; viewModel.onConfirmInventory() }) {
-                            Text(stringResource(R.string.confirm))
+                            Text(
+                                stringResource(R.string.confirm),
+                                color = MaterialTheme.colorScheme.secondary
+                                )
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { confirmPopUpOpen = false }) {
-                            Text(stringResource(R.string.cancel))
+                            Text(
+                                stringResource(R.string.cancel),
+                                color = MaterialTheme.colorScheme.secondary
+                            )
                         }
                     },
                     title = {
-                        Text(stringResource(R.string.confirm_inventory_end))
+                        Text(
+                            stringResource(R.string.confirm_inventory_end),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     },
                     text = {
-                        Text(stringResource(R.string.not_forget))
+                        Text(
+                            stringResource(R.string.not_forget),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     },
 
                     )
@@ -149,7 +175,10 @@ fun RoomsScreen(
                             onClick = { confirmPopUpOpen = true },
                             modifier = Modifier.testTag("confirmInventoryButton")
                             ) {
-                            Text(stringResource(R.string.confirm_inventory))
+                            Text(
+                                stringResource(R.string.confirm_inventory),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
                         }
                         Button(
                             shape = RoundedCornerShape(5.dp),
@@ -159,7 +188,10 @@ fun RoomsScreen(
                             ),
                             modifier = Modifier.testTag("editInventoryButton"),
                             onClick = { }) {
-                            Text(stringResource(R.string.edit))
+                            Text(
+                                stringResource(R.string.edit),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
                         }
                     }
                     Column {

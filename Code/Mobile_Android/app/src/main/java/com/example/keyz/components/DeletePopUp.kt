@@ -36,6 +36,7 @@ fun DeletePopUp(
         if (confirmOpen) {
             AlertDialog(
                 shape = RoundedCornerShape(10.dp),
+                backgroundColor = MaterialTheme.colorScheme.background,
                 onDismissRequest = { confirmOpen = false;close() },
                 confirmButton = {
                     TextButton(onClick = { delete(); confirmOpen = false; close() }) {
@@ -43,10 +44,16 @@ fun DeletePopUp(
                     }
                 },
                 title = {
-                    Text("${stringResource(R.string.delete)} $globalName ?")
+                    Text(
+                        "${stringResource(R.string.delete)} $globalName ?",
+                        color = MaterialTheme.colorScheme.secondary
+                    )
                 },
                 text = {
-                    Text("${stringResource(R.string.sure_to_delete)} $detailedName ?")
+                    Text(
+                        "${stringResource(R.string.sure_to_delete)} $detailedName ?",
+                        color = MaterialTheme.colorScheme.secondary
+                    )
                 },
 
                 )

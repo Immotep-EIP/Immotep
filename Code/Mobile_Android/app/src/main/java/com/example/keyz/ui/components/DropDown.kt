@@ -11,7 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
@@ -46,7 +46,7 @@ fun <T>DropDown(
         .padding(top = 10.dp)
         .border(
             width = 2.dp,
-            color = if (error == null) MaterialTheme.colors.onSurface else MaterialTheme.colors.error,
+            color = if (error == null) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.error,
             shape = RoundedCornerShape(8.dp)
         )
         .padding(10.dp)
@@ -61,8 +61,8 @@ fun <T>DropDown(
                 isDropDownExpanded.value = true
             }.fillMaxWidth()
         ) {
-            Text(text = items.find { it.value == selectedItem }?.label ?: stringResource(R.string.select_an_element))
-            Icon(Icons.Outlined.ArrowDropDown, contentDescription = "Drop Down")
+            Text(text = items.find { it.value == selectedItem }?.label ?: stringResource(R.string.select_an_element), color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Icon(Icons.Outlined.ArrowDropDown, contentDescription = "Drop Down", tint = MaterialTheme.colorScheme.onPrimaryContainer)
         }
         DropdownMenu(
             expanded = isDropDownExpanded.value,
@@ -72,7 +72,7 @@ fun <T>DropDown(
             items.forEach { item ->
                 DropdownMenuItem(
                     content = {
-                        Text(text = item.label)
+                        Text(text = item.label, color = MaterialTheme.colorScheme.onPrimaryContainer)
                     },
                     onClick = {
                         isDropDownExpanded.value = false
@@ -85,6 +85,6 @@ fun <T>DropDown(
         Text(
             error,
             modifier = Modifier.padding(top = 10.dp),
-            color = androidx.compose.material3.MaterialTheme.colorScheme.error)
+            color = MaterialTheme.colorScheme.error)
     }
 }
