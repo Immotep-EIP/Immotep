@@ -270,14 +270,14 @@ class MockedApiService : ApiService {
         propertyId: String,
         leaseId: String
     ): Array<DamageOutput> {
-        return arrayOf()
+        return arrayOf(fakeDamageOutput)
     }
 
     override suspend fun getPropertyDamagesTenant(
         authHeader : String,
         leaseId: String
     ): Array<DamageOutput> {
-        return arrayOf()
+        return arrayOf(fakeDamageOutput)
     }
 
     override suspend fun getAllRoomsTenant(authHeader: String, leaseId: String): Array<RoomOutput> {

@@ -1,6 +1,8 @@
 package com.example.keyz.apiClient.mockApi
 
 import com.example.keyz.apiCallerServices.AiCallOutput
+import com.example.keyz.apiCallerServices.DamageOutput
+import com.example.keyz.apiCallerServices.DamagePriority
 import com.example.keyz.apiCallerServices.Document
 import com.example.keyz.apiCallerServices.FurnitureOutput
 import com.example.keyz.apiCallerServices.GetPropertyResponse
@@ -232,7 +234,7 @@ val fakeProfileResponse =  ProfileResponse(
     email = "robin.denni@epitech.eu",
     firstname = "Test",
     lastname = "User",
-    role = "test",
+    role = "owner",
     created_at = "2025-03-09T13:52:54Z+0000",
     updated_at = "2025-03-09T13:52:54Z+0000"
 )
@@ -256,3 +258,20 @@ val fakeLoginResponse = LoginResponse(
 )
 
 val fakeProperties = arrayOf(parisFakeProperty, lyonFakeProperty, marseilleFakeProperty)
+
+val fakeDamageOutput = DamageOutput(
+    id = "fakeDamage",
+    comment = "fakeComment",
+    tenant_name = "fakeTenant",
+    lease_id = fakeLeaseInsidePropertyActive.id,
+    fix_status = "",
+    fixed_at = null,
+    created_at = baseDateStr,
+    fix_planned_at = baseDateEndStr,
+    pictures = arrayOf(),
+    priority = DamagePriority.low.toString(),
+    read = true,
+    updated_at = baseDateStr,
+    room_id = fakeRoom.id,
+    room_name = fakeRoom.name
+)
