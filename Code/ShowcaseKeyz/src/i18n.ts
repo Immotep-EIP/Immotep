@@ -54,7 +54,7 @@ const resources = {
         image_alt: "Capture d'écran de l'interface Keyz",
         showcase_title: "Révolutionnez votre gestion locative",
         showcase_text_1:
-          "Keyz centralise l'ensemble du processus locatif dans une seule application : état des lieux numérique, gestion des documents, suivi des paiements et communication avec les locataires. Adapté aussi bien aux particuliers qu'aux professionnels de l'immobilier.",
+          "Keyz centralise l'ensemble du processus locatif dans une seule application : état des lieux numérique avec intelligence artificielle, gestion des documents et communication avec les locataires. Adapté aussi bien aux particuliers qu'aux professionnels de l'immobilier.",
         showcase_text_2:
           "Notre technologie vous permet d'automatiser les tâches répétitives, de garantir la conformité légale et d'améliorer la relation avec vos locataires - le tout avec un gain de temps considérable.",
         highlight_1: "Interface intuitive",
@@ -64,7 +64,6 @@ const resources = {
         devices_title: "Disponible sur tous vos appareils",
         device_mobile: "Mobile",
         device_computer: "Ordinateur",
-        device_tablet: "Tablette",
         cta_title: "Prêt à simplifier votre gestion locative ?",
         cta_text: "Contactez-nous pour en savoir plus",
         cta_button: "Commencer maintenant",
@@ -309,7 +308,7 @@ const resources = {
         image_alt: "Keyz interface screenshot",
         showcase_title: "Revolutionize your rental management",
         showcase_text_1:
-          "Keyz centralizes the entire rental process in one app: digital inspections, document management, payment tracking, and tenant communication. Suitable for both individual owners and real estate professionals.",
+          "Keyz centralizes the entire rental process in one app: digital property inspections with AI, document management, and tenant communication. Suitable for both private owners and real estate professionals.",
         showcase_text_2:
           "Our technology helps you automate repetitive tasks, ensure legal compliance, and improve tenant relationships - all while saving significant time.",
         highlight_1: "Intuitive interface",
@@ -319,7 +318,6 @@ const resources = {
         devices_title: "Available on all your devices",
         device_mobile: "Mobile",
         device_computer: "Computer",
-        device_tablet: "Tablet",
         cta_title: "Ready to simplify your property management?",
         cta_text: "Contact us to learn more",
         cta_button: "Get started now",
@@ -560,7 +558,7 @@ const resources = {
         image_alt: "Keyz Interface-Screenshot",
         showcase_title: "Revolutionieren Sie Ihre Mietverwaltung",
         showcase_text_1:
-          "Keyz bündelt den gesamten Mietprozess in einer App: digitale Übergabeprotokolle, Dokumentenverwaltung, Zahlungsverfolgung und Mieterkommunikation. Geeignet für private Eigentümer und Immobilienprofis.",
+          "Keyz zentralisiert den gesamten Mietprozess in einer einzigen App: digitale Wohnungsübergaben mit KI, Dokumentenverwaltung und Kommunikation mit Mietern. Geeignet für private Eigentümer und Immobilienprofis.",
         showcase_text_2:
           "Unsere Technologie automatisiert repetitive Aufgaben, gewährleistet Rechtskonformität und verbessert die Mieterbeziehung - mit erheblicher Zeitersparnis.",
         highlight_1: "Intuitive Benutzeroberfläche",
@@ -570,7 +568,6 @@ const resources = {
         devices_title: "Verfügbar auf allen Ihren Geräten",
         device_mobile: "Mobiltelefon",
         device_computer: "Computer",
-        device_tablet: "Tablet",
         cta_title: "Bereit, Ihre Immobilienverwaltung zu vereinfachen?",
         cta_text: "Kontaktieren Sie uns, um mehr zu erfahren",
         cta_button: "Jetzt starten",
