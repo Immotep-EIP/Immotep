@@ -302,7 +302,7 @@ fun RealPropertyDetailsScreen(
                     )
                     2 -> Damages(
                         damageList = viewModel.damages.toList(),
-                        addDamage = if (!isOwner) {{ viewModel.addDamage(it) }} else null,
+                        addDamage = { viewModel.addDamage(it) },
                         navController = navController
                     )
                 }

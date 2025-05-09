@@ -204,4 +204,5 @@
     <string name="submit">Envoyer</string>
     <string name="priority">Prioritée</string>
     <string name="room">Chambre</string>
+    <string name="report_claim">Faire une réclamation</string>
 </resources>
