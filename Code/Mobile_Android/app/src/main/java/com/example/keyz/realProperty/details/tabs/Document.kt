@@ -62,7 +62,8 @@ fun OneDocument(document: Document, openPdf: (String) -> Unit) {
             Icon(
                 Icons.Outlined.AttachFile,
                 contentDescription = "document icon",
-                modifier = Modifier.size(50.dp)
+                modifier = Modifier.size(50.dp),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
         Text(
@@ -70,7 +71,8 @@ fun OneDocument(document: Document, openPdf: (String) -> Unit) {
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(start = 10.dp, end = 10.dp).fillMaxWidth(),
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
 }
@@ -105,7 +107,7 @@ fun DocumentBox(
                     shape = RoundedCornerShape(5.dp),
                     colors = androidx.compose.material.ButtonDefaults.buttonColors(
                         backgroundColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     modifier = Modifier.testTag("editInventoryButton"),
                     onClick = { pdfLauncher.launch(arrayOf("application/pdf")) }) {

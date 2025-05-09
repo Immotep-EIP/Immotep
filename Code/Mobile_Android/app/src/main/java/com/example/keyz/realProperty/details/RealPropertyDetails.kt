@@ -278,10 +278,11 @@ fun RealPropertyDetailsScreen(
                 Box(modifier = Modifier.fillMaxWidth()) {
                     PropertyStatusBox(property.value.status, modifier = Modifier.padding(end = 5.dp).align(Alignment.TopEnd))
                 }
-                Text(property.value.name, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                Text(property.value.name, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 Text("${property.value.address}, ${property.value.zipCode} ${property.value.city}, ${property.value.country}",
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Thin
+                    fontWeight = FontWeight.Light,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
             TabsLayout(tabIndex, tabs, { tabIndex = it }) {

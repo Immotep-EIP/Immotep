@@ -52,8 +52,8 @@ fun AboutThePropertyBox(name : String, value : String, icon : ImageVector, modif
             .padding(3.dp)
     ) {
         Icon(icon, contentDescription = "$name box icon", tint = MaterialTheme.colorScheme.secondary)
-        Text(value, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-        Text(name, fontWeight = FontWeight.Thin, fontSize = 12.sp)
+        Text(value, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+        Text(name, fontWeight = FontWeight.Thin, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
     }
 }
 
@@ -103,15 +103,26 @@ fun AboutPropertyTab(
         modifier = Modifier.fillMaxWidth().padding(16.dp)
     ) {
         Column {
-            Text("${stringResource(R.string.tenant)}:", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            Text(
+                "${stringResource(R.string.tenant)}:",
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
             Text(
                 text = lease?.tenantName?: invite?.tenantEmail?: "---------------------",
-                fontSize = 15.sp
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
         Spacer(Modifier.width(15.dp))
         Column {
-            Text("${stringResource(R.string.dates)}:", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            Text(
+                "${stringResource(R.string.dates)}:",
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
             Text(
                 if (lease != null) {
                     "${DateFormatter.formatOffsetDateTime(lease.startDate)} - ${DateFormatter.formatOffsetDateTime(lease.endDate)}"
@@ -121,7 +132,10 @@ fun AboutPropertyTab(
                 else {
                     "---------------------"
                 },
-                fontSize = 15.sp)
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+
         }
     }
     if (isOwner && property.value.status == PropertyStatus.unavailable && lease != null) {

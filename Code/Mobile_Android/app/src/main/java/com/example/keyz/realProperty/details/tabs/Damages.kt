@@ -63,10 +63,19 @@ fun OneDamage(damage: Damage) {
         }
     ) {
         Column(modifier = Modifier.fillMaxWidth(0.7f).padding(top = 5.dp, bottom = 5.dp, end = 5.dp)) {
-            Text(damage.roomName, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-            Text(damage.comment, fontSize = 10.sp, color = MaterialTheme.colorScheme.onTertiary)
+            Text(
+                damage.roomName,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Text(
+                damage.comment,
+                fontSize = 10.sp,
+                color = MaterialTheme.colorScheme.onTertiary
+            )
         }
-        Column(modifier = Modifier.fillMaxWidth(),
+        Column(modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Text(dateCreationAsString?: "", fontSize = 12.sp, color = MaterialTheme.colorScheme.onTertiary)
             if (bitmap != null) {
