@@ -70,7 +70,6 @@ function ContactUsPage() {
       message,
     });
 
-    // Auto hide notification after 5 seconds
     setTimeout(() => {
       setNotification((prev) => ({ ...prev, show: false }));
     }, 5000);
@@ -93,7 +92,6 @@ function ContactUsPage() {
       setIsLoading(true);
 
       try {
-        // Appel API
         const response = await fetch("http://localhost:3001/v1/contact/", {
           method: "POST",
           headers: {

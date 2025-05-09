@@ -128,6 +128,8 @@ const resources = {
         message_placeholder: "Veuillez saisir votre message",
         subject_placeholder: "Objet de votre message",
         success_message: "Votre message a été envoyé avec succès !",
+        error_message:
+          "Une erreur s'est produite lors de l'envoi de votre message.",
       },
       footer: {
         title: "Keyz",
@@ -385,6 +387,8 @@ const resources = {
         message_placeholder: "Please enter your message",
         subject_placeholder: "Subject of your message",
         success_message: "Your message has been sent successfully!",
+        error_message:
+          "An error occurred while sending your message. Please try again.",
       },
       footer: {
         title: "Keyz",
@@ -638,6 +642,8 @@ const resources = {
         message_placeholder: "Bitte geben Sie Ihre Nachricht ein",
         subject_placeholder: "Betreff Ihrer Nachricht",
         success_message: "Ihre Nachricht wurde erfolgreich gesendet!",
+        error_message:
+          "Bei der Übermittlung Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
       },
       footer: {
         title: "Keyz",
