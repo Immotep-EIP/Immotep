@@ -102,7 +102,7 @@ fun RoomDetailsScreen(
                             shape = RoundedCornerShape(5.dp),
                             colors = androidx.compose.material.ButtonDefaults.buttonColors(
                                 backgroundColor = MaterialTheme.colorScheme.secondary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
+                                contentColor = MaterialTheme.colorScheme.onSecondary
                             ),
                             modifier = Modifier.testTag("editRoomsDetails"),
                             onClick = { }) {
@@ -132,7 +132,7 @@ fun RoomDetailsScreen(
                                 modifier = Modifier.padding(top = 10.dp),
                                 colors = androidx.compose.material.ButtonDefaults.buttonColors(
                                     backgroundColor = MaterialTheme.colorScheme.secondary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                    contentColor = MaterialTheme.colorScheme.onSecondary
                                 ),
                                 onClick = { endRoomDetailsScreenOpen = true },
                             ) {

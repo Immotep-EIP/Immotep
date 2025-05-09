@@ -22,7 +22,9 @@ fun StyledButton(
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondary
+        ),
         modifier = modifier
             .clip(RoundedCornerShape(5.dp))
             .padding(5.dp)
@@ -31,7 +33,7 @@ fun StyledButton(
     ) {
         Text(
             text,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = MaterialTheme.colorScheme.onSecondary,
         )
     }
 }

@@ -170,7 +170,7 @@ fun RoomsScreen(
                             shape = RoundedCornerShape(5.dp),
                             colors = androidx.compose.material.ButtonDefaults.buttonColors(
                                 backgroundColor = MaterialTheme.colorScheme.secondary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
+                                contentColor = MaterialTheme.colorScheme.onSecondary
                             ),
                             onClick = { confirmPopUpOpen = true },
                             modifier = Modifier.testTag("confirmInventoryButton")
@@ -184,7 +184,7 @@ fun RoomsScreen(
                             shape = RoundedCornerShape(5.dp),
                             colors = androidx.compose.material.ButtonDefaults.buttonColors(
                                 backgroundColor = MaterialTheme.colorScheme.secondary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
+                                contentColor = MaterialTheme.colorScheme.onSecondary
                             ),
                             modifier = Modifier.testTag("editInventoryButton"),
                             onClick = { }) {

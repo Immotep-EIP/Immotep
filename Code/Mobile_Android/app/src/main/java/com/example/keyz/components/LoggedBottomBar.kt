@@ -12,6 +12,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.HomeWork
 import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Settings
@@ -32,7 +33,7 @@ import com.example.keyz.R
 @Composable
 fun LoggedBottomBarElement(navController: NavController, name: String, icon: ImageVector, iconDescription: String, pageName: String) {
     val selected = navController.currentBackStackEntry?.destination?.route == pageName
-    val lineColor = MaterialTheme.colorScheme.tertiary
+    val lineColor = MaterialTheme.colorScheme.secondary
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -69,12 +70,11 @@ fun LoggedBottomBarElement(navController: NavController, name: String, icon: Ima
 
 @Composable
 fun LoggedBottomBar(navController: NavController) {
-    val lineColor = MaterialTheme.colorScheme.primary
     Spacer(
         modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp).height(1.dp).drawBehind {
             val y = size.height - 2.dp.toPx() / 2
             drawLine(
-                lineColor,
+                Color.LightGray,
                 Offset(0f, y),
                 Offset(size.width, y),
                 2.dp.toPx()
@@ -89,7 +89,7 @@ fun LoggedBottomBar(navController: NavController) {
     ) {
 
         LoggedBottomBarElement(navController, stringResource(R.string.overview), Icons.Outlined.Home, "Home icon, go to the dashboard", "dashboard")
-        LoggedBottomBarElement(navController, stringResource(R.string.RealProperty), Icons.Outlined.Place, "Place icon, go to the real property page", "realProperty")
+        LoggedBottomBarElement(navController, stringResource(R.string.RealProperty), Icons.Outlined.HomeWork, "Place icon, go to the real property page", "realProperty")
         LoggedBottomBarElement(navController, stringResource(R.string.messages), Icons.Outlined.MailOutline, "Message icon, go to the messages page", "messages")
         LoggedBottomBarElement(navController, stringResource(R.string.settings), Icons.Outlined.Settings, "Settings icon, go to the settings page", "settings")
     }

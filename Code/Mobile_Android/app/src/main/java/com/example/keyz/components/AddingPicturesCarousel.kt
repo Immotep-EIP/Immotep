@@ -184,7 +184,7 @@ fun AddingPicturesCarousel(
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            contentColor = MaterialTheme.colorScheme.onSecondary
                         ),
                         modifier = Modifier
                             .fillMaxWidth()

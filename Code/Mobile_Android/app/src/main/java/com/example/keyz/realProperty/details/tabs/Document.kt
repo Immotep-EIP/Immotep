@@ -107,7 +107,7 @@ fun DocumentBox(
                     shape = RoundedCornerShape(5.dp),
                     colors = androidx.compose.material.ButtonDefaults.buttonColors(
                         backgroundColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        contentColor = MaterialTheme.colorScheme.onSecondary
                     ),
                     modifier = Modifier.testTag("editInventoryButton"),
                     onClick = { pdfLauncher.launch(arrayOf("application/pdf")) }) {
