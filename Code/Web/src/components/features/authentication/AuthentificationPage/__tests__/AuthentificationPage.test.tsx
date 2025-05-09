@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import AuthentificationPage from '@/components/features/authentication/AuthentificationPage/AuthentificationPage'
 
-jest.mock('@/assets/icons/KeyzLogo.svg', () => 'mockedLogoPath')
+jest.mock('@/assets/images/KeyzLogo.svg', () => 'mockedLogoPath')
 
 describe('AuthentificationPage', () => {
   const title = 'Login'

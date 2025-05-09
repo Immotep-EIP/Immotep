@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from '@/assets/icons/KeyzLogo.svg'
+import logo from '@/assets/images/KeyzLogo.svg'
 import style from './DividedPage.module.css'
 
 interface DividedPageProps {
