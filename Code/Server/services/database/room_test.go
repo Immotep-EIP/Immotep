@@ -173,3 +173,25 @@ func TestArchiveRoom_NoConnection(t *testing.T) {
 		database.ToggleArchiveRoom("1", true)
 	})
 }
+
+// #############################################################################
+
+func TestDeleteRoom(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Room.Expect(database.MockDeleteRoom(c)).Returns(BuildTestRoom("1"))
+
+	database.DeleteRoom("1")
+}
+
+func TestDeleteRoom_NotFound(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Room.Expect(database.MockDeleteRoom(c)).Errors(db.ErrNotFound)
+
+	assert.Panics(t, func() {
+		database.DeleteRoom("1")
+	})
+}

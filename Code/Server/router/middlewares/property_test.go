@@ -140,12 +140,13 @@ func TestCheckRoomOwnership(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
 	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "roomId", Value: "1"},
 	}
 
-	middlewares.CheckRoomPropertyOwnership("propertyId", "roomId")(ctx)
+	middlewares.CheckRoomPropertyOwnership("roomId")(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -158,12 +159,13 @@ func TestCheckRoomOwnership_NotFound(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
 	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "roomId", Value: "1"},
 	}
 
-	middlewares.CheckRoomPropertyOwnership("propertyId", "roomId")(ctx)
+	middlewares.CheckRoomPropertyOwnership("roomId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
@@ -182,12 +184,13 @@ func TestCheckRoomOwnership_NotYours(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
+	ctx.Set("property", BuildTestProperty("1"))
 	ctx.Params = gin.Params{
 		{Key: "propertyId", Value: "1"},
 		{Key: "roomId", Value: "1"},
 	}
 
-	middlewares.CheckRoomPropertyOwnership("propertyId", "roomId")(ctx)
+	middlewares.CheckRoomPropertyOwnership("roomId")(ctx)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 

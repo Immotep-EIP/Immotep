@@ -99,3 +99,19 @@ func MockArchiveFurniture(c *services.PrismaDB) db.FurnitureMockExpectParam {
 		db.Furniture.Archived.Set(true),
 	)
 }
+
+func DeleteFurniture(id string) {
+	pdb := services.DBclient
+	_, err := pdb.Client.Furniture.FindUnique(
+		db.Furniture.ID.Equals(id),
+	).Delete().Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func MockDeleteFurniture(c *services.PrismaDB) db.FurnitureMockExpectParam {
+	return c.Client.Furniture.FindUnique(
+		db.Furniture.ID.Equals("1"),
+	).Delete()
+}

@@ -56,9 +56,11 @@ func CreateRoom(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/ [get]
+//	@Router			/tenant/leases/{lease_id}/property/rooms/ [get]
 func GetRoomsByProperty(c *gin.Context) {
+	property, _ := c.MustGet("property").(db.PropertyModel)
 	archive := c.DefaultQuery("archive", "false") == utils.Strue
-	rooms := database.GetRoomsByPropertyID(c.Param("property_id"), archive)
+	rooms := database.GetRoomsByPropertyID(property.ID, archive)
 	c.JSON(http.StatusOK, utils.Map(rooms, models.DbRoomToResponse))
 }
 
@@ -77,6 +79,7 @@ func GetRoomsByProperty(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [get]
+//	@Router			/tenant/leases/{lease_id}/property/rooms/{room_id}/ [get]
 func GetRoom(c *gin.Context) {
 	room, _ := c.MustGet("room").(db.RoomModel)
 	c.JSON(http.StatusOK, models.DbRoomToResponse(room))
@@ -108,4 +111,25 @@ func ArchiveRoom(c *gin.Context) {
 
 	room := database.ToggleArchiveRoom(c.Param("room_id"), req.Archive)
 	c.JSON(http.StatusOK, models.IdResponse{ID: room.ID})
+}
+
+// DeleteRoom godoc
+//
+//	@Summary		Delete room by ID
+//	@Description	Delete a room by its ID
+//	@Tags			inventory
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path	string	true	"Property ID"
+//	@Param			room_id		path	string	true	"Room ID"
+//	@Success		204			"Deleted room ID"
+//	@Failure		403			{object}	utils.Error	"Property not yours"
+//	@Failure		404			{object}	utils.Error	"Room not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/ [delete]
+func DeleteRoom(c *gin.Context) {
+	room, _ := c.MustGet("room").(db.RoomModel)
+	database.DeleteRoom(room.ID)
+	c.Status(http.StatusNoContent)
 }
