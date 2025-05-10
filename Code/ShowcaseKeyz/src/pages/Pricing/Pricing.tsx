@@ -32,6 +32,17 @@ function PricingPage() {
     };
   }, []);
 
+  const handleCtaClick = () => {
+    // Option 1: Pour naviguer vers la page de contact dans une SPA
+    const contactElement = document.getElementById("contact-us");
+    if (contactElement) {
+      contactElement.scrollIntoView({ behavior: "smooth" });
+    } else {
+      // Option 2: Si le contact est sur une autre page, naviguer vers cette page avec l'ancre
+      window.location.href = "/#contact-us";
+    }
+  };
+
   const prices = [
     {
       title: t("pricing.plans.basic.title"),
@@ -44,7 +55,8 @@ function PricingPage() {
         t("pricing.plans.basic.features.feature4"),
         t("pricing.plans.basic.features.feature5"),
       ],
-      cta: t("pricing.cta"),
+      // cta: t("pricing.cta"), // ! TODO : Uncomment this and remove the next line when the CTA is ready
+      cta: t("pricing.contact_us"),
       popular: false,
       icon: (
         <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
@@ -76,7 +88,8 @@ function PricingPage() {
         t("pricing.plans.premium.features.feature4"),
         t("pricing.plans.premium.features.feature5"),
       ],
-      cta: t("pricing.cta"),
+      // cta: t("pricing.cta"), // ! TODO : Uncomment this and remove the next line when the CTA is ready
+      cta: t("pricing.contact_us"),
       popular: true,
       icon: (
         <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
@@ -198,7 +211,9 @@ function PricingPage() {
                 </li>
               ))}
             </ul>
-            <button className={style.ctaButton}>{price.cta}</button>
+            <button onClick={handleCtaClick} className={style.ctaButton}>
+              {price.cta}
+            </button>
           </div>
         ))}
       </div>
