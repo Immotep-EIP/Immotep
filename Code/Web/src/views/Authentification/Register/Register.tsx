@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
-import backgroundImg from '@/assets/images/buildingBackground.png'
+import backgroundImg from '@/assets/images/building.jpg'
 import useNavigation from '@/hooks/Navigation/useNavigation'
 import '@/App.css'
 import { register } from '@/services/api/Authentification/AuthApi'
