@@ -21,13 +21,13 @@ const resources = {
       features: {
         title: "Nos fonctionnalités",
         feature1: {
-          title: "État des lieux assisté par IA",
+          title: "États des lieux assistés par IA",
           description:
-            "États des lieux précis guidés par IA avec pré-diagnostics.",
+            "États des lieux guidés et assistés par intelligence artificielle.",
         },
         feature2: {
           title: "Générateur de documents",
-          description: "Modèles légaux de quittances et baux personnalisables.",
+          description: "Modèles de quittances et baux personnalisables.",
         },
         feature3: {
           title: "Gestion documentaire",
@@ -35,16 +35,17 @@ const resources = {
         },
         feature4: {
           title: "Messagerie sécurisée",
-          description: "Communication cryptée avec archivage automatique.",
+          description: "Communication sécurisée entre les différentes parties.",
         },
         feature5: {
           title: "Gestion des sinistres",
           description:
-            "Déclaration et suivi des sinistres avec preuves photos.",
+            "Déclaration simplifiée des sinistres avec modèles prédéfinis, rappels automatiques et suivi dans la messagerie.",
         },
         feature6: {
           title: "Tableau de bord intégré",
-          description: "Vue d'ensemble en temps réel de vos locations.",
+          description:
+            "Vue d'ensemble en temps réel de différentes informations concernant vos biens.",
         },
       },
       our_application: {
@@ -276,34 +277,37 @@ const resources = {
       },
       home: {
         title: "Keyz",
-        description: "Simplified rental management for owners and tenants.",
-        button: "Find out more",
+        description: "Simplified rental management for landlords and tenants.",
+        button: "Learn more",
       },
       features: {
-        title: "Features",
+        title: "Our Features",
         feature1: {
-          title: "AI-Assisted Property Inspection",
-          description: "Precise inspections guided by AI with pre-diagnostics.",
+          title: "AI-assisted property inspections",
+          description:
+            "Guided property inspections assisted by artificial intelligence.",
         },
         feature2: {
-          title: "Document Generator",
-          description: "Customizable legal templates for leases and receipts.",
+          title: "Document generator",
+          description: "Customizable lease and receipt templates.",
         },
         feature3: {
-          title: "Document Management",
-          description: "Secure storage with e-signature for contracts.",
+          title: "Document management",
+          description: "Secure storage with e-signature for your contracts.",
         },
         feature4: {
-          title: "Secure Messaging",
-          description: "Encrypted communication with auto-archiving.",
+          title: "Secure messaging",
+          description: "Secure communication between all parties.",
         },
         feature5: {
-          title: "Damage Reporting",
-          description: "Report and track damages with photo evidence.",
+          title: "Claims management",
+          description:
+            "Simplified claims reporting with predefined templates, automatic reminders and tracking in messaging.",
         },
         feature6: {
-          title: "Dashboard",
-          description: "Real-time overview of your rentals.",
+          title: "Integrated dashboard",
+          description:
+            "Real-time overview of various information about your properties.",
         },
       },
       our_application: {
@@ -313,9 +317,9 @@ const resources = {
         image_alt: "Keyz interface screenshot",
         showcase_title: "Revolutionize your rental management",
         showcase_text_1:
-          "Keyz centralizes the entire rental process in one app: digital property inspections with AI, document management, and tenant communication. Suitable for both private owners and real estate professionals.",
+          "Keyz centralizes the entire rental process in one application: digital property inspections with artificial intelligence, document management and communication with tenants. Suitable for both individuals and real estate professionals.",
         showcase_text_2:
-          "Our technology helps you automate repetitive tasks, ensure legal compliance, and improve tenant relationships - all while saving significant time.",
+          "Our technology allows you to automate repetitive tasks, ensure legal compliance and improve relationships with your tenants - all with significant time savings.",
         highlight_1: "Intuitive interface",
         highlight_2: "Secure data",
         highlight_3: "Regular updates",
@@ -323,7 +327,7 @@ const resources = {
         devices_title: "Available on all your devices",
         device_mobile: "Mobile",
         device_computer: "Computer",
-        cta_title: "Ready to simplify your property management?",
+        cta_title: "Ready to simplify your rental management?",
         cta_text: "Contact us to learn more",
         cta_button: "Get started now",
         contact_us_now: "Contact us now",
@@ -333,8 +337,8 @@ const resources = {
         subtitle:
           "Simple and transparent pricing for all your real estate needs",
         period: "/month",
-        cta: "Get Started",
-        contact_us: "Contact Us",
+        cta: "Get started",
+        contact_us: "Contact us",
         most_popular: "Most popular",
         from: "From",
         plans: {
@@ -362,37 +366,36 @@ const resources = {
           pro: {
             title: "Pro",
             features: {
-              feature1: "Starting from 10 properties",
+              feature1: "From 10 properties",
               feature2: "1 tenant account per property",
               feature3: "AI-guided property inspections",
               feature4: "8 GB storage per property",
               feature5: "All features of our solution",
-              feature6: "Custom pricing on demand",
+              feature6: "Custom quote available",
             },
-            price_note: "Custom pricing",
+            price_note: "On request",
           },
         },
       },
       contact_us: {
         title: "Contact Us",
-        firstname: "First Name*",
-        lastname: "Last Name*",
-        your_email: "Your Email*",
-        subject: "Subject*",
-        message: "Your Message*",
-        send_message: "Send Message",
+        firstname: "First name",
+        lastname: "Last name",
+        your_email: "Email address",
+        subject: "Subject",
+        message: "Your message*",
+        send_message: "Send message",
         firstname_placeholder: "Your first name",
         lastname_placeholder: "Your last name",
         your_email_placeholder: "Your email address",
         message_placeholder: "Please enter your message",
-        subject_placeholder: "Subject of your message",
+        subject_placeholder: "Message subject",
         success_message: "Your message has been sent successfully!",
-        error_message:
-          "An error occurred while sending your message. Please try again.",
+        error_message: "An error occurred while sending your message.",
       },
       footer: {
         title: "Keyz",
-        description: "Simplified rental management for owners and tenants.",
+        description: "Simplified rental management for landlords and tenants.",
         pages: {
           title: "Navigation",
           home: "Home",
@@ -403,39 +406,39 @@ const resources = {
         },
         legal: {
           title: "Legal",
-          mentions_leg: "Legal Notice",
-          privacy_pol: "Privacy Policy",
+          mentions_leg: "Legal notices",
+          privacy_pol: "Privacy policy",
         },
       },
       legal_mentions: {
-        title: "Legal Notice",
+        title: "Legal notices",
         section1: {
-          title: "1. Publisher Information",
+          title: "1. Publisher information",
           paragraph1: "This website is published by Keyz.",
-          paragraph2: "VAT identification number: /",
-          paragraph3: "Publication Director: Oscar FRANK, Co Founder",
+          paragraph2: "VAT number: /",
+          paragraph3: "Publication director: Oscar FRANK, Co Founder",
         },
         section2: {
           title: "2. Hosting",
           paragraph1:
-            "This site is hosted by LWS, a company located at 2, rue Jules Ferry, 88190 Golbey, France",
+            "This site is hosted by LWS, located at 2, rue Jules Ferry, 88190 Golbey",
         },
         section3: {
-          title: "3. Intellectual Property",
+          title: "3. Intellectual property",
           paragraph1:
-            "All elements on this site (texts, images, logos, etc.) are protected by French and international laws relating to intellectual property. Any reproduction or representation, in whole or in part, of this site or any of its elements is strictly prohibited without the prior authorization of Keyz SAS.",
+            "All elements on this site (texts, images, logos, etc.) are protected by French and international intellectual property laws. Any total or partial reproduction or representation of this site or any of its elements is strictly prohibited without prior authorization from Keyz SAS.",
         },
         section4: {
-          title: "4. Personal Data",
+          title: "4. Personal data",
           paragraph1:
-            "The information collected on this site is subject to computer processing intended for Keyz for customer and prospect management. In accordance with the French Data Protection Act of January 6, 1978, as amended, and the General Data Protection Regulation (GDPR), you have the right to access, rectify, and object to information concerning you.",
+            "The information collected on this site is processed by Keyz for customer and prospect management. In accordance with the French Data Protection Act of January 6, 1978 as amended and the General Data Protection Regulation (GDPR), you have the right to access, rectify and oppose your personal data.",
           paragraph2:
             "To exercise these rights, please contact us at: contact@keyz-app.fr",
         },
         section5: {
           title: "5. Contact",
           paragraph1:
-            "For any questions regarding this legal notice, you can contact us:",
+            "For any questions regarding these legal notices, you can contact us:",
           email: "By email: contact@keyz-app.fr",
           phone: "By phone: /",
           mail: "By mail: /",
@@ -446,57 +449,57 @@ const resources = {
         section1: {
           title: "1. Introduction",
           paragraph1:
-            "At Keyz, we take the protection of your personal data very seriously. This privacy policy explains how we collect, use, share, and protect your information when you use our website and application.",
+            "At Keyz, we take the protection of your personal data very seriously. This privacy policy explains how we collect, use, share and protect your information when you use our website and application.",
           paragraph2:
-            "By using our services, you accept the practices described in this privacy policy. We encourage you to read it carefully.",
+            "By using our services, you agree to the practices described in this privacy policy. We encourage you to read it carefully.",
         },
         section2: {
-          title: "2. Data Collected",
+          title: "2. Data collected",
           paragraph1: "We collect the following information:",
           list: {
             item1:
-              "Identification information: name, surname, email address, phone number",
+              "Identification information: name, first name, email address, phone number",
             item2:
-              "Information relating to your properties: address, characteristics, photos, documents",
+              "Property information: address, characteristics, photos, documents",
             item3:
-              "Information about tenants: contact details, administrative documents",
+              "Tenant information: contact details, administrative documents",
             item4: "Payment data: for billing our services",
             item5: "Usage data: how you interact with our platform",
           },
         },
         section3: {
-          title: "3. Use of Data",
+          title: "3. Data use",
           paragraph1: "We use your personal data to:",
           list: {
-            item1: "Provide, maintain, and improve our services",
+            item1: "Provide, maintain and improve our services",
             item2: "Process your transactions and manage your account",
-            item3: "Send you important notifications regarding our services",
-            item4: "Offer you personalized customer support",
+            item3: "Send you important notifications about our services",
+            item4: "Provide personalized customer support",
             item5: "Improve and personalize your user experience",
           },
         },
         section4: {
-          title: "4. Data Sharing",
+          title: "4. Data sharing",
           paragraph1:
             "We do not sell your personal data to third parties. We may share it in the following situations:",
           list: {
             item1:
               "With our service providers who help us provide our services",
             item2:
-              "To comply with laws, applicable regulations, or legal proceedings",
+              "To comply with applicable laws, regulations or legal procedures",
             item3: "To protect the safety of our users and the public",
             item4:
               "As part of a business transaction (merger, acquisition, etc.)",
           },
         },
         section5: {
-          title: "5. Your Rights",
+          title: "5. Your rights",
           paragraph1:
             "In accordance with the General Data Protection Regulation (GDPR), you have the following rights:",
           list: {
             item1: "Right to access your personal data",
             item2: "Right to rectify inaccurate information",
-            item3: "Right to erase your data under certain conditions",
+            item3: "Right to erasure under certain conditions",
             item4: "Right to restriction of processing",
             item5: "Right to data portability",
             item6: "Right to object to processing",
@@ -512,9 +515,9 @@ const resources = {
       },
       demo: {
         title: "Demo",
-        coming_soon: "Coming Soon",
+        coming_soon: "Coming soon",
         development_message:
-          "Our interactive demo is currently under development. Our team is actively working to provide you with an immersive experience that will allow you to discover all the features of Keyz.",
+          "Our interactive demo is under development. Our team is actively working to provide you with an immersive experience that will allow you to discover all the features of Keyz.",
         completed: "completed",
       },
     },
@@ -526,60 +529,64 @@ const resources = {
         features: "Funktionen",
         our_app: "Unsere App",
         pricing: "Preise",
-        contact_us: "Kontaktiere uns",
+        contact_us: "Kontakt",
         demo: "Demo",
       },
       home: {
         title: "Keyz",
-        description: "Vereinfachte Mietverwaltung für Eigentümer und Mieter.",
+        description:
+          "Vereinfachte Immobilienverwaltung für Vermieter und Mieter.",
         button: "Mehr erfahren",
       },
       features: {
-        title: "Funktionen",
+        title: "Unsere Funktionen",
         feature1: {
-          title: "KI-gestützte Wohnungsübergabe",
-          description: "Präzise Übergaben mit KI-Anleitung und Vorab-Checks.",
+          title: "KI-gestützte Wohnungsübergaben",
+          description:
+            "Geführte Wohnungsübergaben mit Unterstützung durch künstliche Intelligenz.",
         },
         feature2: {
           title: "Dokumentengenerator",
-          description: "Anpassbare Vorlagen für Mietverträge und Quittungen.",
+          description: "Anpassbare Mietvertrags- und Quittungsvorlagen.",
         },
         feature3: {
           title: "Dokumentenverwaltung",
-          description: "Sichere Aufbewahrung mit E-Signatur für Verträge.",
+          description: "Sichere Aufbewahrung mit E-Signatur für Ihre Verträge.",
         },
         feature4: {
           title: "Sichere Kommunikation",
-          description: "Verschlüsselter Nachrichtenaustausch mit Archivierung.",
+          description: "Sichere Nachrichten zwischen allen Parteien.",
         },
         feature5: {
-          title: "Schadensmeldung",
-          description: "Schäden melden und verfolgen mit Fotobeweis.",
+          title: "Schadenmanagement",
+          description:
+            "Vereinfachte Schadenmeldung mit vordefinierten Vorlagen, automatischen Erinnerungen und Nachverfolgung in der Nachrichtenfunktion.",
         },
         feature6: {
-          title: "Dashboard",
-          description: "Echtzeit-Überblick über Ihre Mietobjekte.",
+          title: "Integriertes Dashboard",
+          description:
+            "Echtzeit-Überblick über verschiedene Informationen zu Ihren Immobilien.",
         },
       },
       our_application: {
         title: "Unsere Anwendung",
         subtitle:
           "Die All-in-One-Plattform für Vermieter und Immobilienverwalter, verfügbar auf Mobilgeräten und Computern",
-        image_alt: "Keyz Interface-Screenshot",
-        showcase_title: "Revolutionieren Sie Ihre Mietverwaltung",
+        image_alt: "Keyz Benutzeroberfläche Screenshot",
+        showcase_title: "Revolutionieren Sie Ihre Immobilienverwaltung",
         showcase_text_1:
-          "Keyz zentralisiert den gesamten Mietprozess in einer einzigen App: digitale Wohnungsübergaben mit KI, Dokumentenverwaltung und Kommunikation mit Mietern. Geeignet für private Eigentümer und Immobilienprofis.",
+          "Keyz zentralisiert den gesamten Mietprozess in einer Anwendung: digitale Wohnungsübergaben mit künstlicher Intelligenz, Dokumentenverwaltung und Kommunikation mit Mietern. Geeignet für Privatpersonen und Immobilienprofis.",
         showcase_text_2:
-          "Unsere Technologie automatisiert repetitive Aufgaben, gewährleistet Rechtskonformität und verbessert die Mieterbeziehung - mit erheblicher Zeitersparnis.",
+          "Unsere Technologie ermöglicht es Ihnen, repetitive Aufgaben zu automatisieren, die gesetzliche Compliance zu gewährleisten und die Beziehung zu Ihren Mietern zu verbessern - alles mit erheblicher Zeitersparnis.",
         highlight_1: "Intuitive Benutzeroberfläche",
         highlight_2: "Sichere Daten",
         highlight_3: "Regelmäßige Updates",
-        highlight_4: "All-in-One-Tool",
+        highlight_4: "All-in-One Lösung",
         devices_title: "Verfügbar auf allen Ihren Geräten",
-        device_mobile: "Mobiltelefon",
+        device_mobile: "Mobil",
         device_computer: "Computer",
         cta_title: "Bereit, Ihre Immobilienverwaltung zu vereinfachen?",
-        cta_text: "Kontaktieren Sie uns, um mehr zu erfahren",
+        cta_text: "Kontaktieren Sie uns für weitere Informationen",
         cta_button: "Jetzt starten",
         contact_us_now: "Jetzt kontaktieren",
       },
@@ -588,8 +595,8 @@ const resources = {
         subtitle:
           "Einfache und transparente Preise für alle Ihre Immobilienbedürfnisse",
         period: "/Monat",
-        cta: "Jetzt starten",
-        contact_us: "Kontaktieren Sie uns",
+        cta: "Starten",
+        contact_us: "Kontakt",
         most_popular: "Am beliebtesten",
         from: "Ab",
         plans: {
@@ -622,18 +629,18 @@ const resources = {
               feature3: "KI-gestützte Wohnungsübergaben",
               feature4: "8 GB Speicher pro Immobilie",
               feature5: "Alle Funktionen unserer Lösung",
-              feature6: "Individuelles Angebot auf Anfrage",
+              feature6: "Maßgeschneidertes Angebot",
             },
             price_note: "Auf Anfrage",
           },
         },
       },
       contact_us: {
-        title: "Kontaktiere uns",
-        firstname: "Vorname*",
-        lastname: "Nachname*",
-        your_email: "Ihre E-Mail*",
-        subject: "Betreff*",
+        title: "Kontakt",
+        firstname: "Vorname",
+        lastname: "Nachname",
+        your_email: "E-Mail-Adresse",
+        subject: "Betreff",
         message: "Ihre Nachricht*",
         send_message: "Nachricht senden",
         firstname_placeholder: "Ihr Vorname",
@@ -641,123 +648,116 @@ const resources = {
         your_email_placeholder: "Ihre E-Mail-Adresse",
         message_placeholder: "Bitte geben Sie Ihre Nachricht ein",
         subject_placeholder: "Betreff Ihrer Nachricht",
-        success_message: "Ihre Nachricht wurde erfolgreich gesendet!",
+        success_message: "Ihre Nachricht wurde erfolgreich versendet!",
         error_message:
-          "Bei der Übermittlung Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+          "Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten.",
       },
       footer: {
         title: "Keyz",
-        description: "Vereinfachte Mietverwaltung für Eigentümer und Mieter.",
+        description:
+          "Vereinfachte Immobilienverwaltung für Vermieter und Mieter.",
         pages: {
           title: "Navigation",
           home: "Startseite",
           features: "Funktionen",
           our_app: "Unsere App",
           pricing: "Preise",
-          contact_us: "Kontaktiere uns",
+          contact_us: "Kontakt",
         },
         legal: {
           title: "Rechtliches",
           mentions_leg: "Impressum",
-          privacy_pol: "Datenschutzrichtlinie",
+          privacy_pol: "Datenschutzerklärung",
         },
       },
       legal_mentions: {
         title: "Impressum",
         section1: {
           title: "1. Herausgeberinformationen",
-          paragraph1: "Diese Website wird von Keyz veröffentlicht.",
+          paragraph1: "Diese Website wird herausgegeben von Keyz.",
           paragraph2: "Umsatzsteuer-Identifikationsnummer: /",
-          paragraph3: "Veröffentlichungsdirektor: Oscar FRANK, Mitbegründer",
+          paragraph3: "Verantwortlicher Redakteur: Oscar FRANK, Mitgründer",
         },
         section2: {
           title: "2. Hosting",
           paragraph1:
-            "Diese Website wird von LWS gehostet, einem Unternehmen mit Sitz in 2, rue Jules Ferry, 88190 Golbey, Frankreich",
+            "Diese Seite wird gehostet von LWS, 2, rue Jules Ferry, 88190 Golbey",
         },
         section3: {
           title: "3. Geistiges Eigentum",
           paragraph1:
-            "Alle Elemente auf dieser Website (Texte, Bilder, Logos usw.) sind durch französische und internationale Gesetze zum geistigen Eigentum geschützt. Jede Reproduktion oder Darstellung, ganz oder teilweise, dieser Website oder eines ihrer Elemente ist ohne vorherige Genehmigung von Keyz SAS strengstens untersagt.",
+            "Alle Elemente dieser Website (Texte, Bilder, Logos etc.) sind durch französisches und internationales Urheberrecht geschützt. Jede Vervielfältigung oder Darstellung dieser Website oder ihrer Elemente ist ohne vorherige Genehmigung von Keyz SAS strikt untersagt.",
         },
         section4: {
           title: "4. Persönliche Daten",
           paragraph1:
-            "Die auf dieser Website gesammelten Informationen unterliegen einer computergestützten Verarbeitung, die für Keyz zur Verwaltung von Kunden und Interessenten bestimmt ist. Gemäß dem französischen Datenschutzgesetz vom 6. Januar 1978 in seiner geänderten Fassung und der Datenschutz-Grundverordnung (DSGVO) haben Sie das Recht auf Zugang, Berichtigung und Widerspruch gegen Informationen, die Sie betreffen.",
+            "Die auf dieser Website gesammelten Informationen werden von Keyz zur Kunden- und Interessentenverwaltung verarbeitet. Gemäß der französischen Datenschutzgesetzgebung vom 6. Januar 1978 in der geänderten Fassung und der DSGVO haben Sie das Recht auf Auskunft, Berichtigung und Widerspruch Ihrer personenbezogenen Daten.",
           paragraph2:
             "Um diese Rechte auszuüben, kontaktieren Sie uns bitte unter: contact@keyz-app.fr",
         },
         section5: {
           title: "5. Kontakt",
           paragraph1:
-            "Bei Fragen zu diesem Impressum können Sie uns kontaktieren:",
+            "Bei Fragen zu diesen rechtlichen Hinweisen können Sie uns kontaktieren:",
           email: "Per E-Mail: contact@keyz-app.fr",
-          phone: "Per Telefon: /",
+          phone: "Telefonisch: /",
           mail: "Per Post: /",
         },
       },
       privacy_policy: {
-        title: "Datenschutzrichtlinie",
+        title: "Datenschutzerklärung",
         section1: {
           title: "1. Einführung",
           paragraph1:
-            "Bei Keyz nehmen wir den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzrichtlinie erklärt, wie wir Ihre Informationen sammeln, verwenden, teilen und schützen, wenn Sie unsere Website und Anwendung nutzen.",
+            "Bei Keyz nehmen wir den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung erklärt, wie wir Ihre Informationen sammeln, verwenden, teilen und schützen, wenn Sie unsere Website und Anwendung nutzen.",
           paragraph2:
-            "Durch die Nutzung unserer Dienste akzeptieren Sie die in dieser Datenschutzrichtlinie beschriebenen Praktiken. Wir empfehlen Ihnen, sie sorgfältig zu lesen.",
+            "Durch die Nutzung unserer Dienste akzeptieren Sie die in dieser Datenschutzerklärung beschriebenen Praktiken. Wir empfehlen Ihnen, sie sorgfältig zu lesen.",
         },
         section2: {
-          title: "2. Gesammelte Daten",
+          title: "2. Erhobene Daten",
           paragraph1: "Wir sammeln folgende Informationen:",
           list: {
             item1:
-              "Identifikationsinformationen: Name, Vorname, E-Mail-Adresse, Telefonnummer",
-            item2:
-              "Informationen zu Ihren Immobilien: Adresse, Eigenschaften, Fotos, Dokumente",
-            item3:
-              "Informationen über Mieter: Kontaktdaten, Verwaltungsdokumente",
-            item4: "Zahlungsdaten: für die Abrechnung unserer Dienstleistungen",
-            item5: "Nutzungsdaten: wie Sie mit unserer Plattform interagieren",
+              "Identifikationsdaten: Name, Vorname, E-Mail-Adresse, Telefonnummer",
+            item2: "Immobiliendaten: Adresse, Eigenschaften, Fotos, Dokumente",
+            item3: "Mieterdaten: Kontaktdaten, Verwaltungsdokumente",
+            item4: "Zahlungsdaten: Für die Abrechnung unserer Dienstleistungen",
+            item5: "Nutzungsdaten: Wie Sie mit unserer Plattform interagieren",
           },
         },
         section3: {
           title: "3. Verwendung der Daten",
-          paragraph1: "Wir verwenden Ihre persönlichen Daten, um:",
+          paragraph1: "Wir verwenden Ihre persönlichen Daten für:",
           list: {
-            item1:
-              "Unsere Dienste bereitzustellen, zu erhalten und zu verbessern",
-            item2:
-              "Ihre Transaktionen zu verarbeiten und Ihr Konto zu verwalten",
-            item3:
-              "Ihnen wichtige Benachrichtigungen bezüglich unserer Dienste zu senden",
-            item4: "Ihnen personalisierten Kundensupport anzubieten",
-            item5:
-              "Ihre Benutzererfahrung zu verbessern und zu personalisieren",
+            item1: "Bereitstellung, Wartung und Verbesserung unserer Dienste",
+            item2: "Abwicklung Ihrer Transaktionen und Verwaltung Ihres Kontos",
+            item3: "Versand wichtiger Benachrichtigungen über unsere Dienste",
+            item4: "Personalisierten Kundenservice",
+            item5: "Verbesserung und Personalisierung Ihrer Nutzererfahrung",
           },
         },
         section4: {
-          title: "4. Datenweitergabe",
+          title: "4. Weitergabe der Daten",
           paragraph1:
-            "Wir verkaufen Ihre persönlichen Daten nicht an Dritte. Wir können sie in folgenden Situationen teilen:",
+            "Wir verkaufen Ihre persönlichen Daten nicht an Dritte. Wir können sie in folgenden Situationen weitergeben:",
           list: {
             item1:
-              "Mit unseren Dienstleistern, die uns bei der Bereitstellung unserer Dienste helfen",
+              "An unsere Dienstleister, die uns bei der Erbringung unserer Dienste helfen",
             item2:
-              "Um Gesetze, geltende Vorschriften oder rechtliche Verfahren einzuhalten",
+              "Zur Einhaltung geltender Gesetze, Vorschriften oder gerichtlicher Verfahren",
             item3:
-              "Um die Sicherheit unserer Benutzer und der Öffentlichkeit zu schützen",
+              "Zum Schutz der Sicherheit unserer Nutzer und der Öffentlichkeit",
             item4:
-              "Im Rahmen einer Unternehmenstransaktion (Fusion, Übernahme usw.)",
+              "Im Rahmen einer Geschäftstransaktion (Fusion, Übernahme etc.)",
           },
         },
         section5: {
           title: "5. Ihre Rechte",
-          paragraph1:
-            "Gemäß der Datenschutz-Grundverordnung (DSGVO) haben Sie folgende Rechte:",
+          paragraph1: "Gemäß der DSGVO haben Sie folgende Rechte:",
           list: {
-            item1: "Recht auf Zugang zu Ihren persönlichen Daten",
-            item2: "Recht auf Berichtigung ungenauer Informationen",
-            item3:
-              "Recht auf Löschung Ihrer Daten unter bestimmten Bedingungen",
+            item1: "Recht auf Auskunft über Ihre persönlichen Daten",
+            item2: "Recht auf Berichtigung unrichtiger Informationen",
+            item3: "Recht auf Löschung unter bestimmten Bedingungen",
             item4: "Recht auf Einschränkung der Verarbeitung",
             item5: "Recht auf Datenübertragbarkeit",
             item6: "Recht auf Widerspruch gegen die Verarbeitung",
@@ -766,7 +766,7 @@ const resources = {
         section6: {
           title: "6. Kontakt",
           paragraph1:
-            "Bei Fragen zu dieser Datenschutzrichtlinie oder zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte:",
+            "Bei Fragen zu dieser Datenschutzerklärung oder zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte:",
           email: "Per E-Mail: contact@keyz-app.fr",
           mail: "Per Post: /",
         },
@@ -775,7 +775,7 @@ const resources = {
         title: "Demo",
         coming_soon: "Demnächst verfügbar",
         development_message:
-          "Unsere interaktive Demo wird derzeit entwickelt. Unser Team arbeitet aktiv daran, Ihnen ein immersives Erlebnis zu bieten, das Ihnen alle Funktionen von Keyz zeigen wird.",
+          "Unsere interaktive Demo befindet sich in der Entwicklung. Unser Team arbeitet aktiv daran, Ihnen ein immersives Erlebnis zu bieten, das Ihnen alle Funktionen von Keyz zeigt.",
         completed: "abgeschlossen",
       },
     },

@@ -105,7 +105,7 @@ function PricingPage() {
     },
     {
       title: t("pricing.plans.pro.title"),
-      price: "28,99€",
+      price: "24,99€",
       period: t("pricing.period"),
       features: [
         t("pricing.plans.pro.features.feature1"),
