@@ -6,6 +6,14 @@
   width: 100%;
 }
 
+.noDocuments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 .documentContainer {
   background-color: white;
   padding: 10px;
