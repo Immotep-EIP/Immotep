@@ -6,6 +6,7 @@ import returnIcon from '@/assets/icons/retour.svg'
 import PageTitle from '@/components/ui/PageText/Title'
 import { PropertyHeaderProps } from '@/interfaces/Property/Property'
 import style from './DetailsPart.module.css'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   onShowModal,
@@ -25,8 +26,8 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
       label: t('components.button.add_tenant'),
       onClick: onShowModal,
       disabled:
-        propertyStatus === 'UNAVAILABLE' ||
-        propertyStatus === 'INVITATION_SENT' ||
+        propertyStatus === PropertyStatusEnum.UNAVAILABLE ||
+        propertyStatus === PropertyStatusEnum.INVITATION_SENT ||
         propertyArchived
     },
     {
@@ -34,14 +35,16 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
       label: t('components.button.end_contract'),
       onClick: onEndContract,
       danger: true,
-      disabled: propertyStatus !== 'UNAVAILABLE' || propertyArchived
+      disabled: propertyStatus !== PropertyStatusEnum.UNAVAILABLE
     },
     {
       key: '3',
       label: t('components.button.cancel_invitation'),
       onClick: onCancelInvitation,
       danger: true,
-      disabled: propertyStatus !== 'INVITATION_SENT' || propertyArchived
+      disabled:
+        propertyStatus !== PropertyStatusEnum.INVITATION_SENT ||
+        propertyArchived
     },
     {
       key: '4',
@@ -54,7 +57,8 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
         ? t('components.button.unarchive_property')
         : t('components.button.archive_property'),
       danger: true,
-      onClick: propertyArchived ? onRecoverProperty : onRemoveProperty
+      onClick: propertyArchived ? onRecoverProperty : onRemoveProperty,
+      disabled: propertyStatus === PropertyStatusEnum.UNAVAILABLE
     }
   ]
 

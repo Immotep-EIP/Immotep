@@ -5,15 +5,15 @@ const PropertyStatusEnum = {
 }
 
 const TenantStatusEnum = {
-  available: {
+  [PropertyStatusEnum.AVAILABLE]: {
     text: 'pages.real_property.status.available',
     color: 'green'
   },
-  unavailable: {
+  [PropertyStatusEnum.UNAVAILABLE]: {
     text: 'pages.real_property.status.unavailable',
     color: 'red'
   },
-  'invite sent': {
+  [PropertyStatusEnum.INVITATION_SENT]: {
     text: 'pages.real_property.status.invitation_sent',
     color: 'orange'
   }
