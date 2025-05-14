@@ -3,6 +3,7 @@ import { Document, UseDocumentReturn } from '@/interfaces/Property/Document'
 import GetPropertyDocuments from '@/services/api/Owner/Properties/GetPropertyDocuments'
 import UploadDocument from '@/services/api/Owner/Properties/UploadDocument'
 import fileToBase64 from '@/utils/base64/fileToBase'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
   const [documents, setDocuments] = useState<Document[] | null>(null)
@@ -57,7 +58,7 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
   }
 
   useEffect(() => {
-    if (propertyId && status !== 'available') {
+    if (propertyId && status === PropertyStatusEnum.UNAVAILABLE) {
       fetchDocuments(propertyId)
     }
   }, [propertyId, status])

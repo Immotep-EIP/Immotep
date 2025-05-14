@@ -22,14 +22,18 @@ import UnarchiveProperty from '@/services/api/Owner/Properties/UnarchiveProperty
 
 interface ChildrenComponentProps {
   t: (key: string) => string
+  propertyStatus: string
 }
 
-const ChildrenComponent: React.FC<ChildrenComponentProps> = ({ t }) => {
+const ChildrenComponent: React.FC<ChildrenComponentProps> = ({
+  t,
+  propertyStatus
+}) => {
   const items = [
     {
       key: '1',
       label: t('components.button.documents'),
-      children: <DocumentsTab />
+      children: <DocumentsTab status={propertyStatus} />
     },
     {
       key: '2',
@@ -39,7 +43,7 @@ const ChildrenComponent: React.FC<ChildrenComponentProps> = ({ t }) => {
     {
       key: '3',
       label: t('components.button.damage'),
-      children: <DamageTab />
+      children: <DamageTab status={propertyStatus} />
     }
   ]
 
@@ -181,7 +185,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         <PropertyInfo propertyData={propertyData} />
       </div>
       <PropertyIdProvider id={propertyId}>
-        <ChildrenComponent t={t} />
+        <ChildrenComponent t={t} propertyStatus={propertyData.status} />
       </PropertyIdProvider>
     </div>
   )

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Damage, UseDamagesReturn } from '@/interfaces/Property/Damage/Damage'
 import GetPropertyDamages from '@/services/api/Owner/Properties/GetPropertyDamages'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 const useDamages = (propertyId: string, status: string): UseDamagesReturn => {
   const [damages, setDamages] = useState<Damage[] | null>(null)
@@ -26,7 +27,7 @@ const useDamages = (propertyId: string, status: string): UseDamagesReturn => {
   }
 
   useEffect(() => {
-    if (propertyId && status !== 'available') {
+    if (propertyId && status === PropertyStatusEnum.UNAVAILABLE) {
       fetchDamages(propertyId)
     }
   }, [propertyId])
