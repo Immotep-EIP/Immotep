@@ -192,6 +192,7 @@
       "edit_property": "Modifier la propriété",
       "delete_property": "Supprimer la propriété",
       "archive_property": "Archiver la propriété",
+      "unarchive_property": "Désarchiver la propriété",
       "download": "Télécharger",
       "update": "Mettre à jour",
       "cancel_invitation": "Annuler l'invitation",
@@ -216,6 +217,12 @@
         "description": "Êtes-vous sûr de vouloir archiver cette propriété ?",
         "success": "Propriété archivée avec succès",
         "error": "Une erreur est survenue lors de l'archivage de la propriété, veuillez réessayer."
+      },
+      "unarchive_property": {
+        "title": "Désarchiver la propriété",
+        "description": "Êtes-vous sûr de vouloir désarchiver cette propriété ?",
+        "success": "Propriété désarchivée avec succès",
+        "error": "Une erreur est survenue lors de la désarchivage de la propriété, veuillez réessayer."
       },
       "cancel_invitation": {
         "title": "Annuler l'invitation",

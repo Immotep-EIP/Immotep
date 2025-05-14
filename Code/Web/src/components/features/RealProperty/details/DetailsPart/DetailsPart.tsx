@@ -18,6 +18,7 @@ import PropertyHeader from './PropertyHeader'
 import PropertyImage from './PropertyImage'
 import PropertyInfo from './PropertyInfo'
 import style from './DetailsPart.module.css'
+import UnarchiveProperty from '@/services/api/Owner/Properties/UnarchiveProperty'
 
 interface ChildrenComponentProps {
   t: (key: string) => string
@@ -87,6 +88,30 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
     })
   }
 
+  const recoverProperty = async () => {
+    Modal.confirm({
+      title: t('components.modal.unarchive_property.title'),
+      content: t('components.modal.unarchive_property.description'),
+      okText: t('components.button.confirm'),
+      cancelText: t('components.button.cancel'),
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        if (!propertyData) {
+          message.error('Property ID is missing.')
+          return
+        }
+        try {
+          await UnarchiveProperty(propertyData.id)
+          message.success(t('components.modal.unarchive_property.success'))
+          goToRealProperty()
+        } catch (error) {
+          console.error('Error deleting property:', error)
+          message.error(t('components.modal.unarchive_property.error'))
+        }
+      }
+    })
+  }
+
   const endContract = async () => {
     Modal.confirm({
       title: t('components.modal.end_contract.title'),
@@ -143,7 +168,9 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         onEndContract={endContract}
         onCancelInvitation={cancelInvitation}
         onRemoveProperty={removeProperty}
+        onRecoverProperty={recoverProperty}
         propertyStatus={propertyData.status}
+        propertyArchived={propertyData.archived || false}
       />
       <div className={style.headerInformationContainer}>
         <PropertyImage

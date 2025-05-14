@@ -13,7 +13,9 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   onEndContract,
   onCancelInvitation,
   onRemoveProperty,
-  propertyStatus
+  onRecoverProperty,
+  propertyStatus,
+  propertyArchived
 }) => {
   const { t } = useTranslation()
 
@@ -23,21 +25,23 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
       label: t('components.button.add_tenant'),
       onClick: onShowModal,
       disabled:
-        propertyStatus === 'UNAVAILABLE' || propertyStatus === 'INVITATION_SENT'
+        propertyStatus === 'UNAVAILABLE' ||
+        propertyStatus === 'INVITATION_SENT' ||
+        propertyArchived
     },
     {
       key: '2',
       label: t('components.button.end_contract'),
       onClick: onEndContract,
       danger: true,
-      disabled: propertyStatus !== 'UNAVAILABLE'
+      disabled: propertyStatus !== 'UNAVAILABLE' || propertyArchived
     },
     {
       key: '3',
       label: t('components.button.cancel_invitation'),
       onClick: onCancelInvitation,
       danger: true,
-      disabled: propertyStatus !== 'INVITATION_SENT'
+      disabled: propertyStatus !== 'INVITATION_SENT' || propertyArchived
     },
     {
       key: '4',
@@ -46,9 +50,11 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
     },
     {
       key: '5',
-      label: t('components.button.archive_property'),
+      label: propertyArchived
+        ? t('components.button.unarchive_property')
+        : t('components.button.archive_property'),
       danger: true,
-      onClick: onRemoveProperty
+      onClick: propertyArchived ? onRecoverProperty : onRemoveProperty
     }
   ]
 

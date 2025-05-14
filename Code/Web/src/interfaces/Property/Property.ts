@@ -80,5 +80,7 @@ export interface PropertyHeaderProps {
   onEndContract: () => void
   onCancelInvitation: () => void
   onRemoveProperty: () => void
+  onRecoverProperty: () => void
   propertyStatus: string
+  propertyArchived: boolean
 }

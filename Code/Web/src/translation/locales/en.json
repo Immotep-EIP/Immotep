@@ -192,6 +192,7 @@
       "edit_property": "Edit property",
       "delete_property": "Delete property",
       "archive_property": "Archive property",
+      "unarchive_property": "Unarchive property",
       "download": "Download",
       "update": "Update",
       "cancel_invitation": "Cancel invitation",
@@ -216,6 +217,12 @@
         "description": "Are you sure you want to archive this property?",
         "success": "Property archived successfully",
         "error": "An error occurred while archiving the property, please try again."
+      },
+      "unarchive_property": {
+        "title": "Unarchive property",
+        "description": "Are you sure you want to unarchive this property?",
+        "success": "Property unarchived successfully",
+        "error": "An error occurred while unarchiving the property, please try again."
       },
       "cancel_invitation": {
         "title": "Cancel invitation",
