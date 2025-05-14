@@ -1,10 +1,9 @@
 .documentsContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: flex-start;
   width: 100%;
-  box-sizing: border-box;
-  justify-items: stretch;
 }
 
 .documentContainer {
@@ -13,11 +12,12 @@
   border: 0.1px solid #ddd;
   border-radius: 8px;
   text-align: center;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
   outline: none;
+  flex: 1 1 calc(25% - 20px);
+  max-width: calc(25% - 20px);
+  min-width: 200px;
 }
 
 .documentContainer:hover {
