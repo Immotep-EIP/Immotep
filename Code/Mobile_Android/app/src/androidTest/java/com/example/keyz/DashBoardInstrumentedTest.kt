@@ -42,7 +42,7 @@ class DashBoardInstrumentedTest {
                 mainAct.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
                 mainAct.onNodeWithTag("loginPasswordInput").performClick().performTextInput("Ttest99&")
                 mainAct.onNodeWithTag("loginButton").performClick()
-                Thread.sleep(10000)
+                mainAct.waitUntilAtLeastOneExists(hasTestTag("dashboardScreen"), 2000)
             }
         }
     }
@@ -50,7 +50,7 @@ class DashBoardInstrumentedTest {
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.immotep", appContext.packageName)
+        assertEquals("com.example.keyz", appContext.packageName)
     }
 
     @Test

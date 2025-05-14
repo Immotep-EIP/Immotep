@@ -56,7 +56,7 @@ class InventoryInstrumentedTests {
                 mainAct.onNodeWithTag("loginPasswordInput").performClick()
                     .performTextInput("Ttest99&")
                 mainAct.onNodeWithTag("loginButton").performClick()
-                Thread.sleep(2000)
+                mainAct.waitUntilAtLeastOneExists(hasTestTag("loggedBottomBarElement realProperty"), 2000)
                 mainAct.onNodeWithTag("loggedBottomBarElement realProperty").assertIsDisplayed()
                     .performClick()
                 mainAct.onNodeWithTag("propertyBox parisFakeProperty").assertIsDisplayed().performClick()

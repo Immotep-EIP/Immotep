@@ -35,6 +35,11 @@ class MockedApiService : ApiService {
         if (username == "error@gmail.com" || password == "testError") {
             throw Exception("Unknown user,401")
         }
+        if (username == "tenant@gmail.com") {
+            return fakeLoginResponse.copy(
+                access_token = "tenantAccessToken",
+            )
+        }
         return fakeLoginResponse
     }
 
@@ -48,6 +53,11 @@ class MockedApiService : ApiService {
 
     //profile functions
     override suspend fun getProfile(authHeader : String): ProfileResponse {
+        if (authHeader == "Bearer tenantAccessToken") {
+            return fakeProfileResponse.copy(
+                role = "tenant"
+            )
+        }
         return fakeProfileResponse
     }
 

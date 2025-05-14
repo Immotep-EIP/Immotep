@@ -42,7 +42,7 @@ class RegisterInstrumentedTests {
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.immotep", appContext.packageName)
+        assertEquals("com.example.keyz", appContext.packageName)
     }
 
     @Test

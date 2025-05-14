@@ -57,6 +57,7 @@ class AuthService(
         this.store(response.access_token, response.refresh_token, response.expires_in)
         try {
             val profile = apiService.getProfile(this.getBearerToken())
+            println("profile role ${profile.role}")
             if (profile.role != "owner") {
                 dataStore.edit {
                     it[IS_OWNER] = "false"

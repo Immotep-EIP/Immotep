@@ -1,8 +1,10 @@
 package com.example.keyz
 
 import android.content.res.Resources
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -16,6 +18,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class LoginInstrumentedTest {
     constructor() {
@@ -124,7 +127,7 @@ class LoginInstrumentedTest {
         composeTestRule.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
         composeTestRule.onNodeWithTag("loginPasswordInput").performClick().performTextInput("Ttest99&")
         composeTestRule.onNodeWithTag("loginButton").performClick()
-        Thread.sleep(2000)
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("dashboardScreen"), 2000)
         composeTestRule.onNodeWithTag("dashboardScreen").assertIsDisplayed()
     }
 

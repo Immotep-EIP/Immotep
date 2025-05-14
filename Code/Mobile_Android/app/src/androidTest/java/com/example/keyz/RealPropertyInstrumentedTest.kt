@@ -26,7 +26,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class RealPropertyInstrumentedTest {
     constructor() {
@@ -51,7 +51,7 @@ class RealPropertyInstrumentedTest {
                 mainAct.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
                 mainAct.onNodeWithTag("loginPasswordInput").performClick().performTextInput("Ttest99&")
                 mainAct.onNodeWithTag("loginButton").performClick()
-                Thread.sleep(2000)
+                mainAct.waitUntilAtLeastOneExists(hasTestTag("loggedBottomBarElement realProperty"), 2000)
                 mainAct.onNodeWithTag("loggedBottomBarElement realProperty").assertIsDisplayed().performClick()
             }
         }
@@ -70,7 +70,7 @@ class RealPropertyInstrumentedTest {
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.immotep", appContext.packageName)
+        assertEquals("com.example.keyz", appContext.packageName)
     }
 
     @Test
