@@ -46,7 +46,7 @@ const useImageCache = (
       }
 
       const response = await fetchImage(id)
-      if (response) {
+      if (response && response.data) {
         const file = base64ToFile(response.data, 'image.jpg', 'image/jpeg')
         await imageCache.setImage(id, file)
 
