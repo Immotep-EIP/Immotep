@@ -65,8 +65,10 @@ struct PropertyView: View {
                 .fontWeight(.bold)
                 .padding(.horizontal)
                 .padding(.vertical, 10)
+                .foregroundStyle(Color("textColor"))
             Spacer()
         }
+        .background(Color("primaryBackgroundColor"))
     }
 
     private var propertyListView: some View {
@@ -91,6 +93,7 @@ struct PropertyView: View {
             }
             .padding(.vertical)
         }
+        .background(Color("primaryBackgroundColor"))
     }
 }
 
@@ -139,7 +142,7 @@ struct PropertyCardView: View {
 
             Text(property.name)
                 .font(.headline)
-                .foregroundColor(.black)
+                .foregroundColor(Color("textColor"))
 
             HStack(spacing: 4) {
                 Image(systemName: "mappin.and.ellipse.circle")
@@ -153,6 +156,7 @@ struct PropertyCardView: View {
             }
         }
         .padding()
+        .background(Color("basicWhiteBlack"))
     }
 }
 

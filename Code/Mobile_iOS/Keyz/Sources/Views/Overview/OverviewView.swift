@@ -14,7 +14,7 @@ struct OverviewView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                TopBar(title: "Immotep")
+                TopBar(title: "Keyz")
                 ScrollView {
                     VStack(spacing: 30) {
                         OverviewBox(

@@ -41,17 +41,17 @@ struct SettingsView: View {
                                 .foregroundStyle(Color("textColor"))
                                 .padding(.vertical, 10)
                             
-                            Text("Informations utilisateur".localized())
+                            Text("User information".localized())
                                 .font(.headline)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            CustomTextInput(title: "Prénom", placeholder: "", text: $editableFirstname, isSecure: false)
+                            CustomTextInput(title: "First Name".localized(), placeholder: "", text: $editableFirstname, isSecure: false)
                                 .disabled(!isEditing)
                                 .onTapGesture {
                                     if isEditing {
                                     }
                                 }
-                            CustomTextInput(title: "Nom", placeholder: "", text: $editableLastname, isSecure: false)
+                            CustomTextInput(title: "Name".localized(), placeholder: "", text: $editableLastname, isSecure: false)
                                 .disabled(!isEditing)
                                 .onTapGesture {
                                     if isEditing {
@@ -84,7 +84,7 @@ struct SettingsView: View {
                         }
                         
                         VStack {
-                            Text("Langue".localized())
+                            Text("Language".localized())
                                 .font(.headline)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             

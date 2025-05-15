@@ -111,7 +111,7 @@ struct PropertyDetailView: View {
                                 Text(property.name)
                                     .font(.title2)
                                     .fontWeight(.bold)
-                                    .foregroundColor(.black)
+                                    .foregroundColor(Color("textColor"))
 
                                 Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
                                     .font(.caption)
@@ -167,7 +167,7 @@ struct PropertyDetailView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
-                        .background(Color.white)
+                        .background(Color("basicWhiteBlack"))
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                         .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 8)
 
@@ -199,7 +199,7 @@ struct PropertyDetailView: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Tenant(s)".localized())
                                         .font(.headline)
-                                        .foregroundColor(.black)
+                                        .foregroundColor(Color("textColor"))
                                     Text(property.tenantName ?? "No tenant assigned".localized())
                                         .foregroundColor(.gray)
                                 }
@@ -208,7 +208,7 @@ struct PropertyDetailView: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Dates".localized())
                                         .font(.headline)
-                                        .foregroundColor(.black)
+                                        .foregroundColor(Color("textColor"))
                                     Text(formatLeaseDates())
                                         .foregroundColor(.gray)
                                 }
@@ -260,7 +260,6 @@ struct PropertyDetailView: View {
                             try await viewModel.fetchPropertyDocuments(propertyId: property.id)
                             if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
                                 property = updatedProperty
-//                                print("Property \(property.id) updated with documents: \(updatedProperty.documents.count)")
                             }
                         } catch {
                             print("Error fetching property data: \(error.localizedDescription)")
@@ -375,14 +374,14 @@ struct DetailItem: View {
                 .foregroundColor(Color("LightBlue"))
             Text(value)
                 .font(.headline)
-                .foregroundColor(.black)
+                .foregroundColor(Color("textColor"))
             Text(label)
                 .font(.caption)
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
         }
         .padding()
-        .background(Color.white)
+        .background(Color("basicWhiteBlack"))
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 2)
     }
