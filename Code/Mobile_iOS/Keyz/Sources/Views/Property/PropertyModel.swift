@@ -130,3 +130,17 @@ struct PropertyResponse: Codable {
         case endDate = "end_date"
     }
 }
+
+struct LeaseResponse: Codable {
+    let id: String
+    let propertyId: String
+    let startDate: String?
+    let endDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case propertyId = "property_id"
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
+}

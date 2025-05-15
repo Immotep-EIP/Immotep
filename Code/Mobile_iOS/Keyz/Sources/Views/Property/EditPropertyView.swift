@@ -42,7 +42,7 @@ struct EditPropertyView: View {
 
     var body: some View {
         VStack {
-            TopBar(title: "Edit Property".localized())
+//            TopBar(title: "Edit Property".localized())
 
             Form {
                 Section {

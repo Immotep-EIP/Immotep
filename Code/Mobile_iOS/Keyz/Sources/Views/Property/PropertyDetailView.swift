@@ -4,7 +4,6 @@
 //
 //  Created by Liebenguth Alessio on 25/11/2024.
 //
-
 import SwiftUI
 import PDFKit
 
@@ -17,6 +16,8 @@ struct PropertyDetailView: View {
     @State private var showCancelInvitePopUp = false
     @State private var showDeletePropertyPopUp = false
     @State private var showEditPropertyPopUp = false
+    @State private var errorMessage: String?
+
     @Environment(\.dismiss) var dismiss
     @State private var selectedTab: String = "Details".localized()
     @State private var isLoading = false
@@ -32,9 +33,13 @@ struct PropertyDetailView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         ZStack(alignment: .topLeading) {
                             if isLoading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle())
-                                    .frame(height: 200)
+                                VStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                    Spacer()
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: 200)
                             } else if let uiImage = property.photo {
                                 Image(uiImage: uiImage)
                                     .resizable()
@@ -246,6 +251,12 @@ struct PropertyDetailView: View {
                         .padding(.bottom, 10)
                 }
                 .accessibilityLabel("inventory_btn_start")
+                
+                if let errorMessage = errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding()
+                }
             }
             .navigationBarBackButtonHidden(true)
             .onAppear {
@@ -253,9 +264,11 @@ struct PropertyDetailView: View {
                     if !CommandLine.arguments.contains("-skipLogin") {
                         do {
                             isLoading = true
-                            await viewModel.fetchProperties()
-                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                property = updatedProperty
+                            if property.photo == nil {
+                                await viewModel.fetchProperties()
+                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                    property = updatedProperty
+                                }
                             }
                             try await viewModel.fetchPropertyDocuments(propertyId: property.id)
                             if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
@@ -263,15 +276,18 @@ struct PropertyDetailView: View {
                             }
                         } catch {
                             print("Error fetching property data: \(error.localizedDescription)")
+//                            errorMessage = "Error fetching property data: \(error.localizedDescription)" // handle no document error
                         }
                         isLoading = false
                     }
                 }
             }
+            .sheet(isPresented: $showEditPropertyPopUp) {
+                EditPropertyView(viewModel: viewModel, property: $property)
+            }
             .sheet(isPresented: $showInviteTenantSheet) {
                 InviteTenantView(tenantViewModel: tenantViewModel, property: property)
             }
-
             if showCancelInvitePopUp {
                 CustomAlertTwoButtons(
                     isActive: $showCancelInvitePopUp,
@@ -279,7 +295,21 @@ struct PropertyDetailView: View {
                     message: "Are you sure you want to cancel the pending invite?".localized(),
                     buttonTitle: "Confirm".localized(),
                     secondaryButtonTitle: "Cancel".localized(),
-                    action: {},
+                    action: {
+                        Task {
+                            do {
+                                let token = try await TokenStorage.getValidAccessToken()
+                                try await viewModel.cancelInvite(propertyId: property.id, token: token)
+                                await viewModel.fetchProperties()
+                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                    property = updatedProperty
+                                }
+                            } catch {
+                                errorMessage = "Error cancelling invite: \(error.localizedDescription)"
+                                print("Error cancelling invite: \(error.localizedDescription)")
+                            }
+                        }
+                    },
                     secondaryAction: {}
                 )
                 .accessibilityIdentifier("InviteTenantAlert")
@@ -291,7 +321,26 @@ struct PropertyDetailView: View {
                     message: "Are you sure you want to end the current lease?".localized(),
                     buttonTitle: "Confirm".localized(),
                     secondaryButtonTitle: "Cancel".localized(),
-                    action: {},
+                    action: {
+                        Task {
+                            do {
+                                let token = try await TokenStorage.getValidAccessToken()
+                                if let leaseId = try await viewModel.fetchActiveLease(propertyId: property.id, token: token) {
+                                    try await viewModel.endLease(propertyId: property.id, leaseId: leaseId, token: token)
+                                    await viewModel.fetchProperties()
+                                    if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                        property = updatedProperty
+                                    }
+                                } else {
+                                    errorMessage = "No active lease found.".localized()
+                                    print("No active lease found for property \(property.id)")
+                                }
+                            } catch {
+                                errorMessage = "Error ending lease: \(error.localizedDescription)".localized()
+                                print("Error ending lease: \(error.localizedDescription)")
+                            }
+                        }
+                    },
                     secondaryAction: {}
                 )
                 .accessibilityIdentifier("EndLeaseAlert")
@@ -309,6 +358,7 @@ struct PropertyDetailView: View {
                                 try await viewModel.deleteProperty(propertyId: property.id)
                                 dismiss()
                             } catch {
+                                errorMessage = "Error deleting property: \(error.localizedDescription)".localized()
                                 print("Error deleting property: \(error.localizedDescription)")
                             }
                         }
