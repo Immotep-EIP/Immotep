@@ -12,7 +12,7 @@ struct TopBar: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Image("immotepLogo")
+                Image("KeyzLogo")
                     .resizable()
                     .frame(width: 50, height: 50)
 

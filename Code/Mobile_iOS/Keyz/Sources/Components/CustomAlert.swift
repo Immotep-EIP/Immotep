@@ -42,8 +42,11 @@ struct CustomAlert: View {
                     .foregroundStyle(Color("textColor"))
 
                 TextField("".localized(), text: $textFieldInput)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .frame(height: 35)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
                     .padding(.horizontal)
+
+
 
                 HStack {
                     if let secondaryButtonTitle = secondaryButtonTitle {
@@ -84,7 +87,7 @@ struct CustomAlert: View {
             }
             .fixedSize(horizontal: false, vertical: true)
             .padding()
-            .background(Color("primaryBackgroundColor"))
+            .background(Color("basicWhiteBlack"))
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .overlay(alignment: .topTrailing) {
                 Button {
@@ -189,7 +192,7 @@ struct CustomAlertTwoButtons: View {
             }
             .fixedSize(horizontal: false, vertical: true)
             .padding()
-            .background(Color("primaryBackgroundColor"))
+            .background(Color("basicWhiteBlack"))
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .overlay(alignment: .topTrailing) {
                 Button {
