@@ -9,7 +9,7 @@ const NavigationEnum = {
   // ! MAIN LAYOUT - SIDEBAR
   OVERVIEW: '/overview',
   REAL_PROPERTY: '/real-property',
-  REAL_PROPERTY_DETAILS: '/real-property/details',
+  REAL_PROPERTY_DETAILS: '/real-property/details/:id',
   MESSAGES: '/messages',
 
   // ! MAIN LAYOUT - HEADER

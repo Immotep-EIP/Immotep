@@ -126,7 +126,11 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       <div className={style.tabContentEmpty}>
         <Empty
           image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          imageStyle={{ height: 60 }}
+          styles={{
+            image: {
+              height: 60
+            }
+          }}
           description={
             <Typography.Text>
               {t('pages.real_property.error.no_tenant_linked')}
@@ -146,6 +150,13 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
         pagination={false}
         bordered
         style={{ width: '100%' }}
+        // onRow={record => {
+        //   return {
+        //     onClick: event => {
+        //       console.log('Row clicked:', record)
+        //     }
+        //   }
+        // }}
       />
     </div>
   )

@@ -25,7 +25,7 @@ const useNavigation = () => {
   }
 
   const goToRealPropertyDetails = (id: string) => {
-    navigate(NavigationEnum.REAL_PROPERTY_DETAILS, {
+    navigate(NavigationEnum.REAL_PROPERTY_DETAILS.replace(':id', id), {
       state: { id }
     })
   }

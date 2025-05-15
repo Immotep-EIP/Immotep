@@ -77,7 +77,11 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       <div className={style.tabContentEmpty}>
         <Empty
           image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          imageStyle={{ height: 60 }}
+          styles={{
+            image: {
+              height: 60
+            }
+          }}
           description={
             <Typography.Text>
               {t('pages.real_property.error.no_tenant_linked')}
