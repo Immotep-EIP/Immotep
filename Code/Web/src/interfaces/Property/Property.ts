@@ -1,3 +1,4 @@
+import { DBSchema } from 'idb'
 import { InviteTenant } from '../Tenant/InviteTenant'
 import { Lease } from './Lease/Lease'
 
@@ -83,4 +84,15 @@ export interface PropertyHeaderProps {
   onRecoverProperty: () => void
   propertyStatus: string
   propertyArchived: boolean
+}
+
+export interface ImageDBSchema extends DBSchema {
+  images: {
+    key: string
+    value: {
+      id: string
+      blob: Blob
+      timestamp: number
+    }
+  }
 }
