@@ -76,14 +76,17 @@
 "Messages" = "Messages";
 
 "Settings" = "Settings";
+"User information" = "User information";
 "Language" = "Language";
 "Select Language" = "Select Language";
 "English" = "English";
 "Français" = "Français";
 "Logout" = "Logout";
+"Edit" = "Edit";
 "theme_system" = "System";
 "theme_light" = "Light";
 "theme_dark" = "Dark";
+"Theme" = "Theme";
 
 "First name*" = "First name*";
 "Name*" = "Name*";
@@ -98,6 +101,7 @@
 "Enter your password confirmation" = "Enter your password confirmation";
 
 "Name" = "Name";
+"First Name" = "First Name";
 "Address" = "Address";
 "City" = "City";
 "Postal Code" = "Postal Code";

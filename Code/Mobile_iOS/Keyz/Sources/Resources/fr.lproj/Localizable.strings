@@ -76,14 +76,17 @@
 "Messages" = "Messages";
 
 "Settings" = "Paramètres";
-"Language" = "Langage";
+"User information" = "Informations utilisateur";
+"Language" = "Langue";
 "Select Language" = "Selectionner une langue";
 "English" = "English";
 "Français" = "Français";
 "Logout" = "Se déconnecter";
+"Edit" = "Modifier";
 "theme_system" = "Système";
 "theme_light" = "Clair";
 "theme_dark" = "Sombre";
+"Theme" = "Thème";
 
 "First name*" = "Prénom*";
 "Name*" = "Nom*";
@@ -98,6 +101,7 @@
 "Enter your password confirmation" = "Confirmez votre mot de passe";
 
 "Name" = "Nom";
+"First Name" = "Prénom";
 "Address" = "Adresse";
 "City" = "Ville";
 "Postal Code" = "Code postal";
