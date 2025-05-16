@@ -109,7 +109,11 @@ const GridView: React.FC<GridViewProps> = ({
                 <div key={stuff.id} className="furniture-item">
                   <Row align="middle" justify="space-between">
                     <Col flex="auto">
-                      <Text>{stuff.name}</Text>
+                      <Text>
+                        {t(`components.inventory.furniture.${stuff.name}`, {
+                          defaultValue: stuff.name
+                        })}
+                      </Text>
                     </Col>
                     <Col flex="100px" style={{ textAlign: 'right' }}>
                       <Tag

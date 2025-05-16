@@ -14,6 +14,7 @@ import getUserProfile from '@/services/api/User/GetUserProfile'
 import { saveData, deleteData } from '@/utils/cache/localStorage'
 import { AuthContextType, AuthProviderProps } from '@/interfaces/Auth/Auth'
 import NavigationEnum from '@/enums/NavigationEnum'
+import imageCache from '@/utils/cache/ImageCache'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -84,16 +85,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(registration => {
-        if (registration.active) {
-          registration.active.postMessage({
-            type: 'LOGOUT'
-          })
-        }
-      })
-    }
     deleteData()
+    imageCache.clearCache()
     navigate(NavigationEnum.LOGIN)
   }
 

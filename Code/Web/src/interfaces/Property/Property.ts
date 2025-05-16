@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from 'react'
 import { DBSchema } from 'idb'
 import { InviteTenant } from '../Tenant/InviteTenant'
 import { Lease } from './Lease/Lease'
@@ -95,4 +96,21 @@ export interface ImageDBSchema extends DBSchema {
       timestamp: number
     }
   }
+}
+
+export interface PropertyFilterCardProps {
+  filters: {
+    searchQuery: string
+    surfaceRange: string
+    status: string
+  }
+  setFilters: Dispatch<
+    SetStateAction<{
+      searchQuery: string
+      surfaceRange: string
+      status: string
+    }>
+  >
+  surfaceRangeOptions: { value: string; label: string }[]
+  statusOptions: { value: string; label: string }[]
 }

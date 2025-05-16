@@ -16,7 +16,7 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
 }) => {
   const { t } = useTranslation()
   const { loading, createProperty } = useProperties()
-  const { uploadProps, imageBase64 } = useImageUpload()
+  const { uploadProps, imageBase64, resetImage } = useImageUpload()
   const [form] = Form.useForm()
 
   const onFinish = async (values: PropertyFormFieldsType) => {
@@ -27,6 +27,8 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
         t('pages.real_property.add_real_property.property_created')
       )
       setIsPropertyCreated(true)
+      form.resetFields()
+      resetImage()
     } catch (err) {
       message.error(
         t('pages.real_property.add_real_property.error_property_created')
@@ -38,13 +40,19 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
     message.error(t('pages.real_property.add_real_property.fill_all_fields'))
   }
 
+  const handleCancel = () => {
+    setShowModalCreate(false)
+    form.resetFields()
+    resetImage()
+  }
+
   return (
     <Modal
       title={t('pages.real_property.add_real_property.document_title')}
       open={showModalCreate}
-      onCancel={() => setShowModalCreate(false)}
+      onCancel={handleCancel}
       footer={[
-        <Button key="back" onClick={() => setShowModalCreate(false)}>
+        <Button key="back" onClick={handleCancel}>
           {t('components.button.cancel')}
         </Button>,
         <Button

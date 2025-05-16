@@ -71,17 +71,18 @@ const InventoryControls: React.FC<InventoryControlsProps> = ({
         >
           <Radio.Button value="plan">
             <Tooltip title={t('components.tooltip.plan_view')}>
-              <BorderOuterOutlined /> Plan
+              <BorderOuterOutlined /> {t('components.inventory.view_mode.plan')}
             </Tooltip>
           </Radio.Button>
           <Radio.Button value="grid">
             <Tooltip title={t('components.tooltip.grid_view')}>
-              <AppstoreOutlined /> Grid
+              <AppstoreOutlined /> {t('components.inventory.view_mode.grid')}
             </Tooltip>
           </Radio.Button>
           <Radio.Button value="list">
             <Tooltip title={t('components.tooltip.list_view')}>
-              <UnorderedListOutlined /> List
+              <UnorderedListOutlined />{' '}
+              {t('components.inventory.view_mode.list')}
             </Tooltip>
           </Radio.Button>
         </Radio.Group>

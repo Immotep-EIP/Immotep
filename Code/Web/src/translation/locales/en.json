@@ -136,6 +136,9 @@
       },
       "search": {
         "placeholder": "Search rooms and items..."
+      },
+      "search_property": {
+        "placeholder": "Search a property..."
       }
     },
     "messages": {
@@ -233,9 +236,12 @@
     },
     "inventory": {
       "view_mode": {
-        "plan": "Plan View",
-        "grid": "Grid View",
-        "list": "List View"
+        "plan_view": "Plan View",
+        "grid_view": "Grid View",
+        "list_view": "List View",
+        "plan": "Plan",
+        "grid": "Grid",
+        "list": "List"
       },
       "room": {
         "add": "Add Room",
@@ -254,7 +260,43 @@
       "furniture": {
         "name": "Item Name",
         "quantity": "Quantity",
-        "quantity_validation": "Quantity must be between 1 and 1000"
+        "quantity_validation": "Quantity must be between 1 and 1000",
+        "suggested_items": "Suggested items for this room",
+        "Bed": "Bed",
+        "Wardrobe": "Wardrobe",
+        "Nightstand": "Nightstand",
+        "Table": "Table",
+        "Chair": "Chair",
+        "Fridge": "Fridge",
+        "Oven": "Oven",
+        "Sink": "Sink",
+        "Coffee Table": "Coffee Table",
+        "TV Stand": "TV Stand",
+        "Armchair": "Armchair",
+        "Mirror": "Mirror",
+        "Desk": "Desk",
+        "Bookshelf": "Bookshelf",
+        "Lamp": "Lamp",
+        "Dining Table": "Dining Table",
+        "Buffet": "Buffet",
+        "Toy Box": "Toy Box",
+        "Play Mat": "Play Mat",
+        "Washing Machine": "Washing Machine",
+        "Dryer": "Dryer",
+        "Laundry Basket": "Laundry Basket",
+        "Coat Rack": "Coat Rack",
+        "Shoe Cabinet": "Shoe Cabinet",
+        "Shelf": "Shelf",
+        "Storage Box": "Storage Box",
+        "Wine Rack": "Wine Rack",
+        "Workbench": "Workbench",
+        "Tool Cabinet": "Tool Cabinet",
+        "Outdoor Chair": "Outdoor Chair",
+        "Small Table": "Small Table",
+        "Sofa": "Sofa",
+        "Shower": "Shower",
+        "Toilet": "Toilet",
+        "Custom Item": "Custom Item"
       },
       "search": {
         "placeholder": "Search rooms and items..."
@@ -291,6 +333,17 @@
       "list_view": "List View"
     },
     "select": {
+      "status": {
+        "placeholder": "Select status",
+        "all": "All statuses",
+        "available": "Available",
+        "unavailable": "Occupied",
+        "invitation_sent": "Invitation sent"
+      },
+      "surface": {
+        "placeholder": "Select surface",
+        "all": "All surfaces"
+      },
       "room_type": {
         "placeholder": "Select room type",
         "all": "All Rooms",
