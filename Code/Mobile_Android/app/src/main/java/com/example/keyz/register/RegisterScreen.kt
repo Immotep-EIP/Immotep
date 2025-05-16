@@ -1,5 +1,6 @@
 package com.example.keyz.register
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,10 @@ fun RegisterScreen(
     val registerForm = viewModel.regForm.collectAsState()
     val registerConfirm = viewModel.regConfirm.collectAsState()
     val errors = viewModel.regFormError.collectAsState()
+
+    BackHandler {
+        navController.navigate("login")
+    }
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)

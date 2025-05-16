@@ -1,5 +1,6 @@
 package com.example.keyz.login
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +50,7 @@ fun LoginScreen(
     val errors = viewModel.errors.collectAsState()
     val columnPaddingApiError = if (errors.value.apiError == null) 40.dp else 20.dp
 
+    BackHandler {}
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)

@@ -1,5 +1,6 @@
 package com.example.keyz.inventory.rooms
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -69,6 +70,10 @@ fun RoomsScreen(
     var addRoomModalOpen by rememberSaveable { mutableStateOf(false) }
 
     val showNotCompletedRooms = viewModel.showNotCompletedRooms.collectAsState()
+
+    BackHandler {
+        exitPopUpOpen = true
+    }
 
     LaunchedEffect(Unit) {
         viewModel.handleBaseRooms()

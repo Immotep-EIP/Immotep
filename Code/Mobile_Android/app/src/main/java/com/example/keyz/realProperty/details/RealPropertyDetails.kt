@@ -1,5 +1,6 @@
 package com.example.keyz.realProperty.details
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -106,7 +107,7 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
                 contentDescription = "picture of the ${property.value.name} property",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(150.dp)
                     .clip(
                         RoundedCornerShape(50.dp)
                     )
@@ -117,7 +118,7 @@ fun RealPropertyImageWithTopButtonsAndDropdown(
                 contentDescription = "picture of the ${property.value.name} property",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(150.dp)
                     .clip(
                         RoundedCornerShape(50.dp)
                     )
@@ -232,6 +233,12 @@ fun RealPropertyDetailsScreen(
         else -> null
     }
 
+
+    BackHandler {
+        if (getBack != null) {
+            getBack(property.value)
+        }
+    }
     LaunchedEffect(newProperty) {
         viewModel.loadProperty(newProperty)
     }

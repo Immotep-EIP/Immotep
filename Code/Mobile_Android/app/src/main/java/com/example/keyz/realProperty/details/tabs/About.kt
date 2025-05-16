@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.RequestQuote
@@ -76,74 +79,88 @@ fun AboutPropertyTab(
     } else {
         null
     }
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("realPropertyDetailsAboutTab"),
-        horizontalArrangement = Arrangement.spacedBy(18.dp)
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState()
+        )
     ) {
-        AboutThePropertyBox(
-            stringResource(R.string.area),
-            "${property.value.area} m²",
-            Icons.Outlined.Straighten,
-            modifier = Modifier.weight(1f)
-        )
-        AboutThePropertyBox(
-            stringResource(R.string.rentPerMonth),
-            "${property.value.rent} €",
-            Icons.Outlined.RequestQuote,
-            modifier = Modifier.weight(1f)
-        )
-        AboutThePropertyBox(
-            stringResource(R.string.deposit),
-            "${property.value.deposit} €",
-            Icons.Outlined.AccountBalanceWallet,
-            modifier = Modifier.weight(1f)
-        )
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
-    ) {
-        Column {
-            Text(
-                "${stringResource(R.string.tenant)}:",
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+                .testTag("realPropertyDetailsAboutTab"),
+            horizontalArrangement = Arrangement.spacedBy(18.dp)
+        ) {
+            AboutThePropertyBox(
+                stringResource(R.string.area),
+                "${property.value.area} m²",
+                Icons.Outlined.Straighten,
+                modifier = Modifier.weight(1f)
             )
-            Text(
-                text = lease?.tenantName?: invite?.tenantEmail?: "---------------------",
-                fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+            AboutThePropertyBox(
+                stringResource(R.string.rentPerMonth),
+                "${property.value.rent} €",
+                Icons.Outlined.RequestQuote,
+                modifier = Modifier.weight(1f)
+            )
+            AboutThePropertyBox(
+                stringResource(R.string.deposit),
+                "${property.value.deposit} €",
+                Icons.Outlined.AccountBalanceWallet,
+                modifier = Modifier.weight(1f)
             )
         }
-        Spacer(Modifier.width(15.dp))
-        Column {
-            Text(
-                "${stringResource(R.string.dates)}:",
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Text(
-                if (lease != null) {
-                    "${DateFormatter.formatOffsetDateTime(lease.startDate)} - ${DateFormatter.formatOffsetDateTime(lease.endDate)}"
-                } else if (invite != null) {
-                    "${DateFormatter.formatOffsetDateTime(invite.startDate)} - ${DateFormatter.formatOffsetDateTime(invite.endDate)}"
-                }
-                else {
-                    "---------------------"
-                },
-                fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        ) {
+            Column {
+                Text(
+                    "${stringResource(R.string.tenant)}:",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    text = lease?.tenantName ?: invite?.tenantEmail ?: "---------------------",
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            Spacer(Modifier.width(15.dp))
+            Column {
+                Text(
+                    "${stringResource(R.string.dates)}:",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    if (lease != null) {
+                        "${DateFormatter.formatOffsetDateTime(lease.startDate)} - ${
+                            DateFormatter.formatOffsetDateTime(
+                                lease.endDate
+                            )
+                        }"
+                    } else if (invite != null) {
+                        "${DateFormatter.formatOffsetDateTime(invite.startDate)} - ${
+                            DateFormatter.formatOffsetDateTime(
+                                invite.endDate
+                            )
+                        }"
+                    } else {
+                        "---------------------"
+                    },
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
 
+            }
         }
-    }
-    if (isOwner && property.value.status == PropertyStatus.unavailable && lease != null) {
-        LoaderInventoryButton(
-            propertyId = property.value.id,
-            currentLeaseId = lease.id,
-            setIsLoading = setIsLoading,
-            viewModel = loaderInventoryViewModel,
-        )
+        if (isOwner && property.value.status == PropertyStatus.unavailable && lease != null) {
+            LoaderInventoryButton(
+                propertyId = property.value.id,
+                currentLeaseId = lease.id,
+                setIsLoading = setIsLoading,
+                viewModel = loaderInventoryViewModel,
+            )
+        }
     }
 }
