@@ -41,6 +41,8 @@
 .imagesContainer {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
   height: 60px;
   gap: 5px;
 }

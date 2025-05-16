@@ -197,7 +197,8 @@
       "update": "Mettre à jour",
       "cancel_invitation": "Annuler l'invitation",
       "add_item": "Ajouter un Objet",
-      "delete_item": "Supprimer l'Objet"
+      "delete_item": "Supprimer l'Objet",
+      "add_intervention_date": "Ajouter une date d'intervention"
     },
     "modal": {
       "end_contract": {
@@ -405,6 +406,9 @@
           "error_fetching_data": "Erreur lors de la récupération des données"
         },
         "damage": {
+          "pictures": "Image(s)",
+          "no_pictures": "Aucune image",
+          "no_intervention_date": "Aucune date d'intervention définie",
           "table": {
             "date": "Date",
             "comment": "Commentaire",
@@ -420,11 +424,32 @@
             "high": "Haute",
             "urgent": "Urgent"
           },
+          "status": {
+            "pending": "En attente",
+            "planned": "Planifié",
+            "awaiting_owner_confirmation": "En attente de confirmation du propriétaire",
+            "awaiting_tenant_confirmation": "En attente de confirmation du locataire",
+            "fixed": "Réparé"
+          },
           "modal": {
             "title": "Image du dommage"
           }
         }
       }
+    },
+    "damage_details": {
+      "title": "Détails du dommage",
+      "pictures": "Images",
+      "comment": "Commentaire",
+      "created_at": "Créé le",
+      "room_name": "Nom de la pièce",
+      "priority": "Priorité",
+      "tenant_name": "Nom du locataire",
+      "fix_planned_at": "Date d'intervention",
+      "fix_status": "Statut de l'intervention",
+      "update_success": "Dommage mis à jour avec succès",
+      "update_error": "Erreur lors de la mise à jour du dommage",
+      "at": "à"
     },
     "overview": {
       "document_title": "Aperçu",

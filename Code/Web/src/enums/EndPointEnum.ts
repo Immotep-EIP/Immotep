@@ -65,7 +65,11 @@ const endpoints = {
       // Damages endpoints
       damages: {
         list: (propertyId: string) =>
-          `owner/properties/${propertyId}/leases/current/damages/`
+          `owner/properties/${propertyId}/leases/current/damages/`,
+        byId: (propertyId: string, damageId: string) =>
+          `owner/properties/${propertyId}/leases/current/damages/${damageId}/`,
+        update: (propertyId: string, damageId: string) =>
+          `owner/properties/${propertyId}/leases/current/damages/${damageId}/`
       }
     }
   },

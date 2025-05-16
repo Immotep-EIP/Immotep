@@ -1,13 +1,12 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Empty, Image, Spin, Table, Tag, Typography } from 'antd'
+import { Empty, Spin, Table, Typography } from 'antd'
 import type { TableProps } from 'antd'
-import { EyeOutlined } from '@ant-design/icons'
 import useDamages from '@/hooks/Property/useDamages'
 import { usePropertyId } from '@/context/propertyIdContext'
-import base64ToFileAsString from '@/utils/base64/baseToFileAsString'
 import style from './3DamageTab.module.css'
 import useNavigation from '@/hooks/Navigation/useNavigation'
+import DamagePriorityTag from '@/components/common/DamagePriorityTag'
 
 interface DataType {
   key: string
@@ -45,17 +44,6 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       pictures: item.pictures.map(picture => picture)
     })) || []
 
-  const getPriorityColor = (priority: string): string => {
-    switch (priority) {
-      case 'High':
-        return 'red'
-      case 'Medium':
-        return 'yellow'
-      default:
-        return 'green'
-    }
-  }
-
   const columns: TableProps<DataType>['columns'] = [
     {
       title: t('pages.real_property_details.tabs.damage.table.date'),
@@ -83,13 +71,7 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       title: t('pages.real_property_details.tabs.damage.table.priority'),
       dataIndex: 'priority',
       key: 'priority',
-      render: text => (
-        <Tag color={getPriorityColor(text)}>
-          {t(
-            `pages.real_property_details.tabs.damage.priority.${text.toLowerCase()}`
-          )}
-        </Tag>
-      )
+      render: text => <DamagePriorityTag priority={text} />
     },
     {
       title: t('pages.real_property_details.tabs.damage.table.pictures'),
@@ -97,19 +79,16 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       key: 'pictures',
       render: record => (
         <div className={style.imagesContainer}>
-          {record.map((file: string) => (
-            <div className={style.imgContainer} key={file}>
-              <Image
-                height="100%"
-                width={50}
-                className={style.image}
-                src={base64ToFileAsString(file)}
-                preview={{
-                  mask: <EyeOutlined />
-                }}
-              />
-            </div>
-          ))}
+          {record.length === 0 ? (
+            <Typography.Text>
+              {t('pages.real_property_details.tabs.damage.no_pictures')}
+            </Typography.Text>
+          ) : (
+            <Typography.Text>
+              {record.length}{' '}
+              {t('pages.real_property_details.tabs.damage.pictures')}
+            </Typography.Text>
+          )}
         </div>
       )
     }

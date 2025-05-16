@@ -14,9 +14,21 @@ export interface Damage {
   pictures: string[]
 }
 
+export interface DamageDetails {
+  read?: string
+  fix_planned_at?: string
+}
+
 export interface UseDamagesReturn {
   damages: Damage[] | null
   loading: boolean
   error: string | null
   refreshDamages: (propertyId: string) => Promise<void>
+  damage: Damage | null
+  getDamageByID: (propertyId: string, damageId: string) => Promise<void>
+  updateDamage: (
+    propertyId: string,
+    damageId: string,
+    data: DamageDetails
+  ) => Promise<void>
 }

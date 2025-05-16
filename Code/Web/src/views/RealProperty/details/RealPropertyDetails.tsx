@@ -59,15 +59,13 @@ const RealPropertyDetails: React.FC = () => {
 
       <div className={style.pageContainer}>
         {propertyData && (
-          <DetailsPart
-            propertyData={propertyData}
-            showModal={showModal}
-            propertyId={id}
-            showModalUpdate={showModalUpdate}
-          />
-        )}
-        {propertyData && (
           <>
+            <DetailsPart
+              propertyData={propertyData}
+              showModal={showModal}
+              propertyId={id}
+              showModalUpdate={showModalUpdate}
+            />
             <InviteTenantModal
               isOpen={isModalOpen}
               onClose={handleCancel}
