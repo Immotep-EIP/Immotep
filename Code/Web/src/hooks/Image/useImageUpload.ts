@@ -6,6 +6,11 @@ const useImageUpload = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [imageBase64, setImageBase64] = useState<string | null>(null)
 
+  const resetImage = () => {
+    setImageBase64(null)
+    setFileList([])
+  }
+
   const uploadProps: UploadProps = {
     name: 'propertyPicture',
     maxCount: 1,
@@ -31,7 +36,8 @@ const useImageUpload = () => {
     imageBase64,
     setImageBase64,
     fileList,
-    setFileList
+    setFileList,
+    resetImage
   }
 }
 
