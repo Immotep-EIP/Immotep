@@ -91,7 +91,7 @@ fun LoggedBottomBar(navController: NavController) {
         LoggedBottomBarElement(navController, stringResource(R.string.overview), Icons.Outlined.Home, "Home icon, go to the dashboard", "dashboard")
         LoggedBottomBarElement(navController, stringResource(R.string.RealProperty), Icons.Outlined.HomeWork, "Place icon, go to the real property page", "realProperty")
         LoggedBottomBarElement(navController, stringResource(R.string.messages), Icons.Outlined.MailOutline, "Message icon, go to the messages page", "messages")
-        LoggedBottomBarElement(navController, stringResource(R.string.settings), Icons.Outlined.Settings, "Settings icon, go to the settings page", "settings")
+        LoggedBottomBarElement(navController, stringResource(R.string.settings), Icons.Outlined.Settings, "Settings icon, go to the profile page", "profile")
     }
     Spacer(modifier = Modifier.height(10.dp))
 }

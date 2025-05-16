@@ -147,13 +147,13 @@ class TenantInstrumentedTests {
 
     @Test
     fun canGoToProfile() {
-        mainAct.onNodeWithTag("loggedTopBarClickableIcon").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("loggedBottomBarElement profile").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("profile").assertIsDisplayed()
     }
 
     @Test
     fun profileContainsGoodInfos() {
-        mainAct.onNodeWithTag("loggedTopBarClickableIcon").assertIsDisplayed().performClick()
+        mainAct.onNodeWithTag("loggedBottomBarElement profile").assertIsDisplayed().performClick()
         mainAct.onNodeWithText("User's informations").assertIsDisplayed()
         mainAct.onNodeWithText("Test").assertIsDisplayed()
         mainAct.onNodeWithText("User").assertIsDisplayed()

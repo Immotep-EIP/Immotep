@@ -81,17 +81,5 @@ fun LoggedTopBar(navController: NavController) {
             modifier = Modifier.testTag("loggedTopBarText")
         )
         Spacer(Modifier.weight(1f).fillMaxHeight())
-        IconButton(
-            onClick = {
-                if (navController.currentDestination?.route != "profile") {
-                    navController.navigate("profile")
-                } else {
-                    navController.popBackStack()
-                }
-            },
-            modifier = Modifier.testTag("loggedTopBarClickableIcon")
-        ) {
-            Icon(Icons.Outlined.AccountCircle, contentDescription = "Account circle, go back to the login page")
-        }
     }
 }

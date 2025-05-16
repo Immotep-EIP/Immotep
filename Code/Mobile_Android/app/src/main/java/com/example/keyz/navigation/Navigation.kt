@@ -17,6 +17,7 @@ import com.example.keyz.inventory.InventoryScreen
 import com.example.keyz.inventory.loaderButton.LoaderInventoryViewModel
 import com.example.keyz.login.LoginScreen
 import com.example.keyz.login.dataStore
+import com.example.keyz.messages.Messages
 import com.example.keyz.profile.ProfileScreen
 import com.example.keyz.realProperty.RealPropertyScreen
 import com.example.keyz.register.RegisterScreen
@@ -53,6 +54,7 @@ fun Navigation() {
         composable("dashboard") { DashBoardScreen(navController) }
         composable("register") { RegisterScreen(navController) }
         composable("profile") { ProfileScreen(navController) }
+        composable("messages") { Messages(navController) }
         composable("realProperty") { RealPropertyScreen(navController, loaderInventory) }
         composable("inventory/{propertyId}/{leaseId}") { navBackStackEntry ->
             val propertyId = navBackStackEntry.arguments?.getString("propertyId")

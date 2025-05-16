@@ -24,7 +24,6 @@ class RealPropertyTenantViewModel(apiService: ApiService, navController: NavCont
     val isLoading = _isLoading.asStateFlow()
     val loadingError = _loadingError.asStateFlow()
 
-    //todo handle the error and display it
     fun loadProperty() {
         _loadingError.value = null
         viewModelScope.launch {

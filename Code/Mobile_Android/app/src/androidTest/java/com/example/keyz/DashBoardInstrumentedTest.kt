@@ -79,11 +79,6 @@ class DashBoardInstrumentedTest {
     }
 
     @Test
-    fun headerContainsClickableIcons() {
-        mainAct.onNodeWithTag("loggedTopBarClickableIcon").assertIsDisplayed()
-    }
-
-    @Test
     fun canDisconnect() {
         mainAct.onNodeWithTag("loggedTopBarImage").assertIsDisplayed().performClick()
         mainAct.waitUntilAtLeastOneExists(hasTestTag("loginEmailInput"), 2000)
@@ -100,7 +95,7 @@ class DashBoardInstrumentedTest {
         mainAct.onNodeWithTag("loggedBottomBarElement dashboard").assertIsDisplayed()
         mainAct.onNodeWithTag("loggedBottomBarElement realProperty").assertIsDisplayed()
         mainAct.onNodeWithTag("loggedBottomBarElement messages").assertIsDisplayed()
-        mainAct.onNodeWithTag("loggedBottomBarElement settings").assertIsDisplayed()
+        mainAct.onNodeWithTag("loggedBottomBarElement profile").assertIsDisplayed()
     }
 
     @Test

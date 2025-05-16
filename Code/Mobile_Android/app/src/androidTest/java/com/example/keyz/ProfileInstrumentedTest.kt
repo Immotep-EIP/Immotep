@@ -36,15 +36,15 @@ class ProfileInstrumentedTest {
         try {
             runBlocking {
                 authServ.getToken()
-                mainAct.onNodeWithTag("loggedTopBarClickableIcon").assertIsDisplayed().performClick()
+                mainAct.onNodeWithTag("loggedBottomBarElement profile").assertIsDisplayed().performClick()
             }
         } catch (e: Exception) {
             runBlocking {
                 mainAct.onNodeWithTag("loginEmailInput").performClick().performTextInput("robin.denni@epitech.eu")
                 mainAct.onNodeWithTag("loginPasswordInput").performClick().performTextInput("Ttest99&")
                 mainAct.onNodeWithTag("loginButton").performClick()
-                mainAct.waitUntilAtLeastOneExists(hasTestTag("loggedTopBarClickableIcon"), 2000)
-                mainAct.onNodeWithTag("loggedTopBarClickableIcon").assertIsDisplayed().performClick()
+                mainAct.waitUntilAtLeastOneExists(hasTestTag("loggedBottomBarElement profile"), 2000)
+                mainAct.onNodeWithTag("loggedBottomBarElement profile").assertIsDisplayed().performClick()
             }
         }
     }
