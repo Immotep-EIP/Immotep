@@ -54,6 +54,12 @@ class LoginViewModelTest {
         unmockkAll()
     }
 
+
+    @Test
+    fun isTestingMustBeSetToFalse() = runTest {
+        assertFalse(isTesting)
+    }
+
     @Test
     fun `updateEmailAndPassword should update emailAndPassword state`() = runTest {
         // Arrange

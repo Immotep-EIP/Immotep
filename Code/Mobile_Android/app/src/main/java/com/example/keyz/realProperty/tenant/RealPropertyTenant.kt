@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.keyz.LocalApiService
+import com.example.keyz.components.ErrorAlert
 import com.example.keyz.components.InternalLoading
 import com.example.keyz.dashboard.DashBoardLayout
 import com.example.keyz.inventory.loaderButton.LoaderInventoryViewModel
@@ -19,6 +20,7 @@ fun RealPropertyTenant(navController: NavController, loaderInventoryViewModel: L
     }
     val property = viewModel.property.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
+    val errorLoading = viewModel.loadingError.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.loadProperty()
     }
@@ -30,6 +32,9 @@ fun RealPropertyTenant(navController: NavController, loaderInventoryViewModel: L
                 loaderInventoryViewModel = loaderInventoryViewModel,
                 newProperty = property.value!!
             )
+        }
+        else if (!isLoading.value && errorLoading.value != null) {
+            ErrorAlert(errorLoading.value, null)
         } else {
             InternalLoading()
         }
