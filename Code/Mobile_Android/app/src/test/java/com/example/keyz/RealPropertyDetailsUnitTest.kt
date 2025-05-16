@@ -7,12 +7,17 @@ import com.example.keyz.apiCallerServices.PropertyStatus
 import com.example.keyz.apiCallerServices.RealPropertyCallerService
 import com.example.keyz.apiClient.ApiService
 import androidx.navigation.NavController
+import com.example.keyz.apiCallerServices.ApiCallerServiceException
+import com.example.keyz.apiCallerServices.Damage
 import com.example.keyz.apiCallerServices.DamageCallerService
+import com.example.keyz.apiCallerServices.DamagePriority
+import com.example.keyz.apiCallerServices.DamageStatus
 import com.example.keyz.apiCallerServices.Document
 import com.example.keyz.apiCallerServices.InviteDetailedProperty
 import com.example.keyz.apiCallerServices.LeaseDetailedProperty
 import com.example.keyz.apiClient.CreateOrUpdateResponse
 import com.example.keyz.apiClient.mockApi.baseDateStr
+import com.example.keyz.apiClient.mockApi.fakeDamagesArray
 import com.example.keyz.apiClient.mockApi.fakeDocument
 import com.example.keyz.login.dataStore
 import com.example.keyz.realProperty.details.RealPropertyDetailsViewModel
@@ -26,6 +31,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -153,4 +159,78 @@ class RealPropertyDetailsViewModelTest {
         assertEquals(viewModel.property.first().invite?.endDate, expectedProperty.invite?.endDate)
         assertEquals(viewModel.property.first().status, expectedProperty.status)
     }
+
+    @Test
+    fun `loadProperty success updates property with documents and damages and sets isLoading`() = runTest {
+        val propertyWithLease = property1.copy(lease = LeaseDetailedProperty(
+            id = "lease1", // Make sure lease has an ID
+            startDate = OffsetDateTime.now(),
+            endDate = OffsetDateTime.now().plusMonths(1),
+            tenantEmail = "tenant@example.com",
+            tenantName = "John Doe"
+        ))
+
+        val fakeDamagesArrayToTest = fakeDamagesArray.map { it.toDamage() }.toTypedArray()
+        coEvery { apiCaller.getPropertyDocuments(propertyWithLease.id, propertyWithLease.lease!!.id) } returns arrayOf(fakeDocument)
+        coEvery { damageApiCaller.getPropertyDamages(propertyWithLease.id, propertyWithLease.lease!!.id) } returns fakeDamagesArrayToTest
+
+        viewModel.loadProperty(propertyWithLease)
+
+        coVerify { apiCaller.getPropertyDocuments(propertyWithLease.id, propertyWithLease.lease!!.id) }
+        coVerify { damageApiCaller.getPropertyDamages(propertyWithLease.id, propertyWithLease.lease!!.id) }
+
+        assertEquals(fakeDocument.id, viewModel.documents.first().id)
+        assertEquals(fakeDamagesArrayToTest.first().id, viewModel.damages.first().id)
+        assertEquals(fakeDamagesArrayToTest.first().comment, viewModel.damages.first().comment)
+        assertEquals(RealPropertyDetailsViewModel.ApiErrors.NONE, viewModel.apiError.value)
+    }
+
+    @Test
+    fun `loadProperty with damages api error does not crash and sets isLoading`() = runTest {
+        val propertyWithLease = property1.copy(lease = LeaseDetailedProperty(
+            id = "lease1",
+            startDate = OffsetDateTime.now(),
+            endDate = OffsetDateTime.now().plusMonths(1),
+            tenantEmail = "tenant@example.com",
+            tenantName = "John Doe"
+        ))
+        coEvery { apiCaller.getPropertyDocuments(propertyWithLease.id, propertyWithLease.lease!!.id) } returns emptyArray()
+        coEvery { damageApiCaller.getPropertyDamages(propertyWithLease.id, propertyWithLease.lease!!.id) } throws ApiCallerServiceException("400")
+
+        viewModel.loadProperty(propertyWithLease)
+
+        coVerify { damageApiCaller.getPropertyDamages(propertyWithLease.id, propertyWithLease.lease!!.id) }
+        assertEquals(propertyWithLease.id, viewModel.property.value.id)
+        Assert.assertTrue(viewModel.damages.isEmpty())
+        assertEquals(RealPropertyDetailsViewModel.ApiErrors.NONE, viewModel.apiError.value)
+    }
+
+    @Test
+    fun `addDamage successfully adds damage to the list`() {
+        val initialDamageCount = viewModel.damages.size
+        val newDamage = Damage(
+            id = "newDamageId",
+            comment = "Test damage",
+            createdAt = OffsetDateTime.now(),
+            fixPlannedAt = null,
+            fixStatus = DamageStatus.PENDING,
+            fixedAt = null,
+            leaseId = "lease123",
+            pictures = emptyArray(),
+            priority = DamagePriority.medium,
+            read = false,
+            roomId = "room1",
+            roomName = "Living Room",
+            tenantName = "Test Tenant",
+            updatedAt = OffsetDateTime.now()
+        )
+
+        viewModel.addDamage(newDamage)
+
+        assertEquals(initialDamageCount + 1, viewModel.damages.size)
+        Assert.assertTrue(viewModel.damages.contains(newDamage))
+        assertEquals(newDamage.id, viewModel.damages.last().id)
+        assertEquals(newDamage.comment, viewModel.damages.last().comment)
+    }
+
 }

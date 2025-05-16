@@ -21,8 +21,6 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class TenantUnitTest {
-
-
     private val navController: NavController = mockk()
     private val apiService: ApiService = mockk()
     private val apiCaller: RealPropertyCallerService = mockk()
