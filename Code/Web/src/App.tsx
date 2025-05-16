@@ -28,25 +28,6 @@ import SuccesPageRegisterTenant from '@/components/ui/SuccesPage/SuccesPageRegis
 import SuccesPageLoginTenant from '@/components/ui/SuccesPage/SuccesPageLoginTenant'
 import DamageDetails from './views/Damages/details/DamageDetails.tsx'
 
-if ('serviceWorker' in navigator) {
-  ;(async () => {
-    try {
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: './'
-      })
-      if (registration.installing) {
-        // console.log('Service worker installing')
-      } else if (registration.waiting) {
-        // console.log('Service worker installed')
-      } else if (registration.active) {
-        // console.log('Service worker active')
-      }
-    } catch (error) {
-      console.error(`Registration failed with ${error}`)
-    }
-  })()
-}
-
 const App: React.FC = () => (
   <HelmetProvider>
     <Router>

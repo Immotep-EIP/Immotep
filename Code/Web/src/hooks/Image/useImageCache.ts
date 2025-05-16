@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import base64ToFile from '@/utils/base64/baseToFile'
+import imageCache from '@/utils/cache/ImageCache'
 
 const useImageCache = (
   id: string | undefined,
@@ -18,9 +19,7 @@ const useImageCache = (
       'image/jpeg'
     )
 
-    const cache = await caches.open('keyz-cache-v1')
-    await cache.put(`/images/${id}`, new Response(file))
-
+    await imageCache.setImage(id, file)
     const url = URL.createObjectURL(file)
     objectUrlRef.current = url
     setData(url)
@@ -35,23 +34,21 @@ const useImageCache = (
 
     setIsLoading(true)
 
-    const cachedResponse = await caches.match(`/images/${id}`)
-    if (cachedResponse) {
-      const blob = await cachedResponse.blob()
-      const url = URL.createObjectURL(blob)
-      objectUrlRef.current = url
-      setData(url)
-      setIsLoading(false)
-      return
-    }
-
     try {
-      const response = await fetchImage(id)
-      if (response) {
-        const file = base64ToFile(response.data, 'image.jpg', 'image/jpeg')
+      const cachedBlob = await imageCache.getImage(id)
 
-        const cache = await caches.open('keyz-cache-v1')
-        await cache.put(`/images/${id}`, new Response(file))
+      if (cachedBlob) {
+        const url = URL.createObjectURL(cachedBlob)
+        objectUrlRef.current = url
+        setData(url)
+        setIsLoading(false)
+        return
+      }
+
+      const response = await fetchImage(id)
+      if (response && response.data) {
+        const file = base64ToFile(response.data, 'image.jpg', 'image/jpeg')
+        await imageCache.setImage(id, file)
 
         const fileUrl = URL.createObjectURL(file)
         objectUrlRef.current = fileUrl
