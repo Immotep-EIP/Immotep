@@ -136,6 +136,9 @@
       },
       "search": {
         "placeholder": "Search rooms and items..."
+      },
+      "search_property": {
+        "placeholder": "Search a property..."
       }
     },
     "messages": {
@@ -330,6 +333,17 @@
       "list_view": "List View"
     },
     "select": {
+      "status": {
+        "placeholder": "Select status",
+        "all": "All statuses",
+        "available": "Available",
+        "unavailable": "Occupied",
+        "invitation_sent": "Invitation sent"
+      },
+      "surface": {
+        "placeholder": "Select surface",
+        "all": "All surfaces"
+      },
       "room_type": {
         "placeholder": "Select room type",
         "all": "All Rooms",

@@ -136,6 +136,9 @@
       },
       "search": {
         "placeholder": "Rechercher des pièces et objets..."
+      },
+      "search_property": {
+        "placeholder": "Rechercher une propriété..."
       }
     },
     "messages": {
@@ -327,6 +330,17 @@
       "list_view": "Vue Liste"
     },
     "select": {
+      "status": {
+        "placeholder": "Sélectionner le statut",
+        "all": "Tous les statuts",
+        "available": "Disponible",
+        "unavailable": "Occupée",
+        "invitation_sent": "Invitation envoyée"
+      },
+      "surface": {
+        "placeholder": "Sélectionner la surface",
+        "all": "Toutes les surfaces"
+      },
       "room_type": {
         "placeholder": "Sélectionner le type de pièce",
         "all": "Toutes les Pièces",
