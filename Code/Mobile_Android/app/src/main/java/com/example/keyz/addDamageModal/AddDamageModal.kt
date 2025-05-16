@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,20 +43,21 @@ fun AddDamageModal(
     BigModalLayout(
         height = 0.8f,
         open = open,
-        close = onClose
+        close = onClose,
+        testTag = "addDamageModal"
     ) {
         AddingPicturesCarousel(
             uriPictures = viewModel.pictures,
             addPicture = { viewModel.addPicture(it) },
             removePicture = { viewModel.removePicture(it) },
-            error = if (errors.value.pictures) stringResource(R.string.add_picture_error) else null
+            error = if (errors.value.pictures) stringResource(R.string.add_picture_error) else null,
         )
         OutlinedTextField(
             value = form.value.comment,
             onValueChange = { viewModel.setComment(it) },
             label = stringResource(R.string.comment),
-            modifier = Modifier.fillMaxWidth(),
-            errorMessage = if (errors.value.comment) stringResource(R.string.comment_error) else null
+            modifier = Modifier.fillMaxWidth().testTag("addDamageCommentInput"),
+            errorMessage = if (errors.value.comment) stringResource(R.string.comment_error) else null,
         )
         Text(stringResource(R.string.priority), modifier = Modifier.padding(top = 10.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
         DropDown(
@@ -66,14 +68,16 @@ fun AddDamageModal(
                 DropDownItem(stringResource(R.string.urgent), DamagePriority.urgent)
             ),
             selectedItem = form.value.priority,
-            onItemSelected = { viewModel.setPriority(it) }
+            onItemSelected = { viewModel.setPriority(it) },
+            testTag = "addDamagePriorityDropDown"
         )
         Text(stringResource(R.string.room), modifier = Modifier.padding(top = 10.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
         DropDown(
             items = viewModel.rooms.map { DropDownItem(it.name, it.id) },
             selectedItem = form.value.room_id,
             onItemSelected = { it?.let { viewModel.setRoomId(it) } },
-            error = if (errors.value.room) stringResource(R.string.select_an_element) else null
+            error = if (errors.value.room) stringResource(R.string.select_an_element) else null,
+            testTag = "addDamageRoomDropDown"
         )
         StyledButton(
             text = stringResource(R.string.submit),
@@ -85,7 +89,8 @@ fun AddDamageModal(
                     },
                     tenantName = ""
                 )
-            }
+            },
+            testTag = "addDamageSubmitButton"
         )
     }
 }

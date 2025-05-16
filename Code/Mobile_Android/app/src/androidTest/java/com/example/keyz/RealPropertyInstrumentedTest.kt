@@ -338,4 +338,3 @@ class RealPropertyInstrumentedTest {
         mainAct.onNodeWithTag("startInventory").assertIsDisplayed()
     }
 }
-

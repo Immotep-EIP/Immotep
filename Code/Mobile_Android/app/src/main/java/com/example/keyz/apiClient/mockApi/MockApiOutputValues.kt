@@ -275,3 +275,5 @@ val fakeDamageOutput = DamageOutput(
     room_id = fakeRoom.id,
     room_name = fakeRoom.name
 )
+
+val fakeDamagesArray = arrayOf(fakeDamageOutput, fakeDamageOutput.copy(id = "secFakeDamage", room_name = "fakeRoom2"))

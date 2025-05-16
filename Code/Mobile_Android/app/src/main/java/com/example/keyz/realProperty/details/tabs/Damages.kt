@@ -51,7 +51,10 @@ fun OneDamage(damage: Damage) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().clickable {
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("oneDamage ${damage.id}")
+            .clickable {
         }.padding(5.dp).drawBehind {
             val y = size.height - 2.dp.toPx() / 2
             drawLine(
@@ -62,7 +65,10 @@ fun OneDamage(damage: Damage) {
             )
         }
     ) {
-        Column(modifier = Modifier.fillMaxWidth(0.7f).padding(top = 5.dp, bottom = 5.dp, end = 5.dp)) {
+        Column(modifier = Modifier
+            .fillMaxWidth(0.7f)
+            .padding(top = 5.dp, bottom = 5.dp, end = 5.dp)
+        ) {
             Text(
                 damage.roomName,
                 fontSize = 15.sp,
@@ -71,7 +77,7 @@ fun OneDamage(damage: Damage) {
             )
             Text(
                 damage.comment,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onTertiary
             )
         }
@@ -124,6 +130,7 @@ fun Damages(
             StyledButton(
                 onClick = { addDamageOpen = true },
                 text = stringResource(R.string.report_claim),
+                testTag = "reportClaimButton"
             )
         }
         damageList.forEach { item ->

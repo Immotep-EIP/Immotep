@@ -32,8 +32,6 @@ val LocalIsOwner = compositionLocalOf<MutableState<Boolean>> {
     error("No local is owner provided")
 }
 
-
-
 var isTesting = true
 
 class MainActivity : ComponentActivity() {

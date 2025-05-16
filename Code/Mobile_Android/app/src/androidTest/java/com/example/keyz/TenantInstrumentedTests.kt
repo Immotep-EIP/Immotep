@@ -1,6 +1,7 @@
 package com.example.keyz
 
 import android.content.res.Resources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
@@ -16,6 +17,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.keyz.apiClient.mockApi.MockedApiService
+import com.example.keyz.apiClient.mockApi.fakeDamagesArray
 import com.example.keyz.authService.AuthService
 import com.example.keyz.login.dataStore
 import kotlinx.coroutines.runBlocking
@@ -42,6 +44,11 @@ class TenantInstrumentedTests {
         try {
             runBlocking {
                 authServ.getToken()
+                if (authServ.isUserOwner()) {
+                    mainAct.onNodeWithTag("loggedTopBarImage").performClick()
+                    mainAct.waitUntilAtLeastOneExists(hasTestTag("loginEmailInput"))
+                    throw Exception("User is not a tenant")
+                }
                 mainAct.onNodeWithTag("loggedBottomBarElement realProperty").assertIsDisplayed().performClick()
             }
         } catch (e: Exception) {
@@ -134,6 +141,11 @@ class TenantInstrumentedTests {
     }
 
     @Test
+    fun startInventoryButtonIsNotPresent() {
+        mainAct.onNodeWithTag("startInventory").assertIsNotDisplayed()
+    }
+
+    @Test
     fun canGoToProfile() {
         mainAct.onNodeWithTag("loggedTopBarClickableIcon").assertIsDisplayed().performClick()
         mainAct.onNodeWithTag("profile").assertIsDisplayed()
@@ -147,5 +159,42 @@ class TenantInstrumentedTests {
         mainAct.onNodeWithText("User").assertIsDisplayed()
         mainAct.onNodeWithText("Language").assertIsDisplayed()
         mainAct.onNodeWithText("Logout").assertIsDisplayed()
+    }
+
+    @Test
+    fun goodNumberOfDamage() {
+        this.canGoToDamagesTab()
+        fakeDamagesArray.forEach {
+            mainAct.onNodeWithTag("oneDamage ${it.id}").assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun damageContainsGoodInfos() {
+        this.canGoToDamagesTab()
+        fakeDamagesArray.forEach {
+            mainAct.onNodeWithText(it.room_name).assertIsDisplayed()
+        }
+        mainAct.onAllNodesWithText("fakeComment").assertCountEquals(2)
+        mainAct.onAllNodesWithText("2025/03/09").assertCountEquals(2)
+    }
+
+    @Test
+    fun buttonToReportAClaimIsPresentAndClickable() {
+        this.canGoToDamagesTab()
+        mainAct.onNodeWithTag("reportClaimButton").assertIsDisplayed().performClick()
+        mainAct.waitUntilAtLeastOneExists(hasTestTag("addDamageModal"), 2000)
+        mainAct.onNodeWithTag("addDamageModal").assertIsDisplayed()
+    }
+
+    @Test
+    fun reportClaimModalContainsAllTheGoodInputs() {
+        this.buttonToReportAClaimIsPresentAndClickable()
+        mainAct.onNodeWithTag("addDamageCommentInput").assertIsDisplayed()
+        mainAct.onNodeWithTag("addDamagePriorityDropDown").assertIsDisplayed()
+        mainAct.onNodeWithTag("addDamageRoomDropDown").assertIsDisplayed()
+        mainAct.onNodeWithTag("addDamageSubmitButton").assertIsDisplayed()
+        mainAct.onNodeWithText(res.getString(R.string.priority)).assertIsDisplayed()
+        mainAct.onNodeWithText(res.getString(R.string.room)).assertIsDisplayed()
     }
 }

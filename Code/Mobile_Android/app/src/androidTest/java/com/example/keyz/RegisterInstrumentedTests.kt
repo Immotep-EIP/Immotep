@@ -148,4 +148,3 @@ class RegisterInstrumentedTests {
         mainAct.onNodeWithTag("loginScreen").assertIsDisplayed()
     }
 }
-
