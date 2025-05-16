@@ -20,6 +20,8 @@ const AddStuffModal: React.FC<AddFurnitureModalProps> = ({
       open={isOpen}
       onOk={onOk}
       onCancel={onCancel}
+      okText={t('components.button.add')}
+      cancelText={t('components.button.cancel')}
     >
       <Form form={form} layout="vertical">
         <Form.Item

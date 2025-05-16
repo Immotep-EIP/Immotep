@@ -11,7 +11,7 @@ export interface Room {
 
 export interface AddRoomModalProps {
   isOpen: boolean
-  onOk: () => void
+  onOk: (templateItems: { name: string; quantity: number }[]) => void
   onCancel: () => void
   form: any
   roomTypes: { value: string; label: string }[]

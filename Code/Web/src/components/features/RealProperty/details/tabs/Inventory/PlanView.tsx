@@ -103,7 +103,10 @@ const PlanView: React.FC<PlanViewProps> = ({
                     onClose={() => handleDeleteFurniture(room.id, stuff.id)}
                     style={{ margin: '2px 0' }}
                   >
-                    {stuff.name} ({stuff.quantity})
+                    {t(`components.inventory.furniture.${stuff.name}`, {
+                      defaultValue: stuff.name
+                    })}
+                    ({stuff.quantity})
                   </Tag>
                 ))}
                 <Button

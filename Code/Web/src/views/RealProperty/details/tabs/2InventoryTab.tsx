@@ -34,7 +34,8 @@ const InventoryTab: React.FC = () => {
     createRoom,
     createFurniture,
     deleteRoom,
-    deleteFurniture
+    deleteFurniture,
+    refreshInventory
   } = useInventory(id || '')
 
   const roomTypes = getRoomTypeOptions(t)
@@ -48,12 +49,25 @@ const InventoryTab: React.FC = () => {
     }
   }
 
-  const handleAddRoom = async () => {
+  const handleAddRoom = async (
+    templateItems?: { name: string; quantity: number }[]
+  ) => {
     try {
       const { roomName, roomType } = await formAddRoom.validateFields()
       const result = await createRoom(roomName, roomType)
 
       if (result.success) {
+        if (templateItems && templateItems.length > 0) {
+          await Promise.all(
+            templateItems.map(item =>
+              createFurniture(result.roomId!, {
+                name: item.name,
+                quantity: item.quantity
+              })
+            )
+          )
+        }
+        refreshInventory()
         formAddRoom.resetFields()
         setIsModalAddRoomOpen(false)
       }

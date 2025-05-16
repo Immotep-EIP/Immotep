@@ -128,8 +128,8 @@ const useInventory = (propertyId: string) => {
                 ...room.furniture,
                 {
                   id: newFurniture.id as string,
-                  name: newFurniture.name,
-                  quantity: newFurniture.quantity,
+                  name: furniture.name,
+                  quantity: furniture.quantity,
                   room_id: roomId,
                   property_id: propertyId,
                   archived: false
