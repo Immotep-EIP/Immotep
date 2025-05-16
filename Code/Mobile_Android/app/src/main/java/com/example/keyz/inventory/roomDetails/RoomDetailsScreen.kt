@@ -1,5 +1,6 @@
 package com.example.keyz.inventory.roomDetails
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,9 +64,16 @@ fun RoomDetailsScreen(
     val currentlyOpenDetail = viewModel.currentlyOpenDetail.collectAsState()
     var addDetailModalOpen by rememberSaveable { mutableStateOf(false) }
     var endRoomDetailsScreenOpen by rememberSaveable { mutableStateOf(false) }
+    var editOpen by rememberSaveable { mutableStateOf(false) }
+
+    BackHandler {
+        viewModel.onClose(baseRoom)
+    }
+
     LaunchedEffect(Unit) {
         viewModel.addBaseDetails(baseRoom.details)
     }
+
     AddRoomOrDetailModal(
         open = addDetailModalOpen,
         addRoomOrDetail =
@@ -101,12 +109,13 @@ fun RoomDetailsScreen(
                         Button(
                             shape = RoundedCornerShape(5.dp),
                             colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colorScheme.secondary,
+                                backgroundColor =
+                                    if (editOpen) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary,
                                 contentColor = MaterialTheme.colorScheme.onSecondary
                             ),
                             modifier = Modifier.testTag("editRoomsDetails"),
-                            onClick = { }) {
-                            Text(stringResource(R.string.edit))
+                            onClick = { editOpen = !editOpen }) {
+                            Text(stringResource(if (editOpen) R.string.close_edit else R.string.edit))
                         }
                     }
                     Column {
@@ -116,14 +125,18 @@ fun RoomDetailsScreen(
                                     leftIcon = if (detail.completed) Icons.Outlined.Check else null,
                                     leftText = detail.name,
                                     onClick = { viewModel.onOpenDetail(detail) },
-                                    testTag = "detailButton ${detail.id}"
+                                    testTag = "detailButton ${detail.id}",
+                                    editOpen = editOpen,
+                                    onClickEdit = {}
                                 )
                             }
                         }
-                        InventoryCenterAddButton(
-                            onClick = { addDetailModalOpen = true },
-                            testTag = "addDetailsButton"
-                        )
+                        if (editOpen) {
+                            InventoryCenterAddButton(
+                                onClick = { addDetailModalOpen = true },
+                                testTag = "addDetailsButton"
+                            )
+                        }
                     }
                     if (roomIsCompleted(Room(id = baseRoom.id, details = viewModel.details.toTypedArray(), name = baseRoom.name))) {
                         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {

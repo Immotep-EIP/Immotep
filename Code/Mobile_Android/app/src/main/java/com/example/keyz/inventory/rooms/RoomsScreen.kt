@@ -68,6 +68,7 @@ fun RoomsScreen(
     var exitPopUpOpen by rememberSaveable { mutableStateOf(false) }
     var confirmPopUpOpen by rememberSaveable { mutableStateOf(false) }
     var addRoomModalOpen by rememberSaveable { mutableStateOf(false) }
+    var editOpen by rememberSaveable { mutableStateOf(false) }
 
     val showNotCompletedRooms = viewModel.showNotCompletedRooms.collectAsState()
 
@@ -182,21 +183,18 @@ fun RoomsScreen(
                             ) {
                             Text(
                                 stringResource(R.string.confirm_inventory),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                         }
                         Button(
                             shape = RoundedCornerShape(5.dp),
                             colors = androidx.compose.material.ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colorScheme.secondary,
+                                backgroundColor =
+                                if (editOpen) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary,
                                 contentColor = MaterialTheme.colorScheme.onSecondary
                             ),
                             modifier = Modifier.testTag("editInventoryButton"),
-                            onClick = { }) {
-                            Text(
-                                stringResource(R.string.edit),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            onClick = { editOpen = !editOpen }) {
+                            Text(stringResource(if (editOpen) R.string.close_edit else R.string.edit))
                         }
                     }
                     Column {
@@ -209,14 +207,18 @@ fun RoomsScreen(
                                         viewModel.openRoomPanel(room)
                                     },
                                     testTag = "roomButton ${room.id}",
-                                    error = !room.completed && showNotCompletedRooms.value
+                                    error = !room.completed && showNotCompletedRooms.value,
+                                    editOpen = editOpen,
+                                    onClickEdit = {}
                                 )
                             }
                         }
-                        InventoryCenterAddButton(
-                            onClick = { addRoomModalOpen = true },
-                            testTag = "addRoomButton"
-                        )
+                        if (editOpen) {
+                            InventoryCenterAddButton(
+                                onClick = { addRoomModalOpen = true },
+                                testTag = "addRoomButton"
+                            )
+                        }
                     }
                 }
             }

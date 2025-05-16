@@ -21,7 +21,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun NextInventoryButton(leftIcon: ImageVector?, leftText: String, onClick: () -> Unit, testTag: String, error : Boolean = false) {
+fun NextInventoryButton(
+    leftIcon: ImageVector?,
+    leftText: String,
+    onClick: () -> Unit,
+    onClickEdit: () -> Unit,
+    testTag: String,
+    error : Boolean = false,
+    editOpen : Boolean,
+) {
     Button(onClick = onClick,
         border = BorderStroke(1.dp, if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary),
         shape = RoundedCornerShape(5.dp),

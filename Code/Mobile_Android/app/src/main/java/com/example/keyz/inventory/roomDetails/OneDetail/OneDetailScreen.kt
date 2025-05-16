@@ -1,6 +1,7 @@
 package com.example.keyz.inventory.roomDetails.OneDetail
 
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -53,9 +54,15 @@ fun OneDetailScreen(
     val isLoading = viewModel.aiLoading.collectAsState()
     val callError = viewModel.aiCallError.collectAsState()
     val isExit = !detailValue.value.newItem && oldReportId != null
+
+    BackHandler {
+        viewModel.onClose(onModifyDetail, isExit)
+    }
+
     LaunchedEffect(Unit) {
         viewModel.reset(baseDetail)
     }
+
     InventoryLayout(
         testTag = "oneDetailScreen",
         { viewModel.onClose(onModifyDetail, isExit) }

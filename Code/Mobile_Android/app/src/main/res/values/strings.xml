@@ -204,4 +204,5 @@
     <string name="priority">Priority</string>
     <string name="room">Room</string>
     <string name="report_claim">Reporting a claim</string>
+    <string name="close_edit">Close edit</string>
 </resources>
