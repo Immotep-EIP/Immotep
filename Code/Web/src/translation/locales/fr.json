@@ -233,9 +233,9 @@
     },
     "inventory": {
       "view_mode": {
-        "plan": "Vue Plan",
-        "grid": "Vue Grille",
-        "list": "Vue Liste"
+        "plan": "Plan",
+        "grid": "Grille",
+        "list": "Liste"
       },
       "room": {
         "add": "Ajouter une Pièce",
@@ -254,7 +254,43 @@
       "furniture": {
         "name": "Nom de l'Objet",
         "quantity": "Quantité",
-        "quantity_validation": "La quantité doit être comprise entre 1 et 1000"
+        "quantity_validation": "La quantité doit être comprise entre 1 et 1000",
+        "suggested_items": "Objets suggérés pour cette pièce",
+        "Bed": "Lit",
+        "Wardrobe": "Armoire",
+        "Nightstand": "Table de nuit",
+        "Table": "Table",
+        "Chair": "Chaise",
+        "Fridge": "Réfrigérateur",
+        "Oven": "Four",
+        "Sink": "Évier",
+        "Coffee Table": "Table basse",
+        "TV Stand": "Meuble TV",
+        "Armchair": "Fauteuil",
+        "Mirror": "Miroir",
+        "Desk": "Bureau",
+        "Bookshelf": "Bibliothèque",
+        "Lamp": "Lampe",
+        "Dining Table": "Table à manger",
+        "Buffet": "Buffet",
+        "Toy Box": "Coffre à jouets",
+        "Play Mat": "Tapis de jeu",
+        "Washing Machine": "Lave-linge",
+        "Dryer": "Sèche-linge",
+        "Laundry Basket": "Panier à linge",
+        "Coat Rack": "Porte-manteau",
+        "Shoe Cabinet": "Meuble à chaussures",
+        "Shelf": "Étagère",
+        "Storage Box": "Boîte de rangement",
+        "Wine Rack": "Casier à vin",
+        "Workbench": "Établi",
+        "Tool Cabinet": "Armoire à outils",
+        "Outdoor Chair": "Chaise d'extérieur",
+        "Small Table": "Petite table",
+        "Sofa": "Canapé",
+        "Shower": "Douche",
+        "Toilet": "WC",
+        "Custom Item": "Objet personnalisé"
       },
       "search": {
         "placeholder": "Rechercher des pièces et objets..."
