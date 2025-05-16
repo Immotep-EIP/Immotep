@@ -39,6 +39,10 @@ data class CreateOrUpdateResponse(
     val id : String
 )
 
+data class ArchiveInput(
+    val archive: Boolean = true
+)
+
 const val API_PREFIX = "/v1"
 
 interface ApiService {
@@ -179,6 +183,14 @@ interface ApiService {
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Body room: AddRoomInput
+    ) : CreateOrUpdateResponse
+
+    @PUT("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/archive")
+    suspend fun archiveRoom(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("roomId") roomId: String,
+        @Body archive: ArchiveInput
     ) : CreateOrUpdateResponse
 
     //room tenant specific functions

@@ -21,6 +21,7 @@ import com.example.keyz.apiCallerServices.PropertyPictureResponse
 import com.example.keyz.apiCallerServices.RoomOutput
 import com.example.keyz.apiCallerServices.UpdatePropertyPictureInput
 import com.example.keyz.apiClient.ApiService
+import com.example.keyz.apiClient.ArchiveInput
 import com.example.keyz.apiClient.CreateOrUpdateResponse
 import com.example.keyz.authService.LoginResponse
 import com.example.keyz.authService.RegistrationInput
@@ -300,5 +301,14 @@ class MockedApiService : ApiService {
         damage: DamageInput
     ): CreateOrUpdateResponse {
         return CreateOrUpdateResponse(id = "newDamage")
+    }
+
+    override suspend fun archiveRoom(
+        authHeader: String,
+        propertyId: String,
+        roomId: String,
+        archive: ArchiveInput
+    ): CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(roomId)
     }
 }

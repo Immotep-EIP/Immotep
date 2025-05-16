@@ -30,7 +30,7 @@ fun NextInventoryButton(
     error : Boolean = false,
     editOpen : Boolean,
 ) {
-    Button(onClick = onClick,
+    Button(onClick = if (editOpen) onClickEdit else onClick,
         border = BorderStroke(1.dp, if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary),
         shape = RoundedCornerShape(5.dp),
         colors = androidx.compose.material.ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colorScheme.background),
@@ -44,7 +44,9 @@ fun NextInventoryButton(
                 if (leftIcon != null) { Icon(leftIcon, contentDescription = "Camera icon", modifier = Modifier.size(50.dp)) }
                 Text(text = leftText, color = if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
             }
-            Icon(Icons.Outlined.ChevronRight, contentDescription = "Arrow forward icon")
+            if (!editOpen) {
+                Icon(Icons.Outlined.ChevronRight, contentDescription = "Arrow forward icon")
+            }
         }
     }
 }

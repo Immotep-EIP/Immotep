@@ -2,11 +2,13 @@ package com.example.keyz.inventory.rooms
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.keyz.apiCallerServices.RoomType
 import com.example.keyz.inventory.Room
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class RoomsViewModel(
     private val getRooms: () -> Array<Room>,

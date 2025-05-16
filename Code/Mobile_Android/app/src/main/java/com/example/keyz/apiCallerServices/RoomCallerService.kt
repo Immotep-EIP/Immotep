@@ -2,6 +2,7 @@ package com.example.keyz.apiCallerServices
 
 import androidx.navigation.NavController
 import com.example.keyz.apiClient.ApiService
+import com.example.keyz.apiClient.ArchiveInput
 import com.example.keyz.apiClient.CreateOrUpdateResponse
 import com.example.keyz.inventory.Room
 import com.example.keyz.inventory.RoomDetail
@@ -95,5 +96,9 @@ class RoomCallerService(
 
     suspend fun addRoom(propertyId: String, room: AddRoomInput) : CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
         apiService.addRoom(getBearerToken(), propertyId, room)
+    }
+
+    suspend fun archiveRoom(propertyId: String, roomId : String) = changeRetrofitExceptionByApiCallerException {
+        apiService.archiveRoom(getBearerToken(), propertyId, roomId, ArchiveInput())
     }
 }

@@ -114,8 +114,15 @@ class InventoryViewModel(
 
     fun removeRoom(roomId: String) {
         val roomIndex = rooms.indexOf(rooms.find { it.id == roomId })
-        if (roomIndex < 0 || roomIndex >= rooms.size) return
-        rooms.removeAt(roomIndex)
+        if (_propertyId == null || roomIndex < 0 || roomIndex >= rooms.size) return
+        viewModelScope.launch {
+            try {
+                roomApiCaller.archiveRoom(_propertyId!!, roomId)
+                rooms.removeAt(roomIndex)
+            } catch (e : Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun editRoom(room: Room) {

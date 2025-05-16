@@ -206,4 +206,6 @@
     <string name="room">Chambre</string>
     <string name="report_claim">Faire une réclamation</string>
     <string name="close_edit">Fermer la modification</string>
+    <string name="mod_room">Modifier la pièce</string>
+    <string name="delete_room">Supprimer la pièce</string>
 </resources>

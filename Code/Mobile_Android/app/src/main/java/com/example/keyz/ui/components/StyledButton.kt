@@ -18,12 +18,13 @@ fun StyledButton(
     onClick: () -> Unit,
     text: String,
     modifier: Modifier = Modifier,
+    error: Boolean = false,
     testTag: String = "StyledButton"
 ) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.secondary
+            containerColor = if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary
         ),
         modifier = modifier
             .clip(RoundedCornerShape(5.dp))

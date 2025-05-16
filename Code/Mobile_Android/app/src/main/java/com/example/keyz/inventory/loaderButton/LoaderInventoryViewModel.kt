@@ -9,6 +9,7 @@ import com.example.keyz.apiCallerServices.InventoryCallerService
 import com.example.keyz.apiCallerServices.RoomCallerService
 import com.example.keyz.apiClient.ApiService
 import com.example.keyz.inventory.Room
+import com.example.keyz.inventory.RoomDetail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -46,25 +47,48 @@ class LoaderInventoryViewModel(
     val inventoryErrors = _inventoryErrors.asStateFlow()
     val isLoading = _internalIsLoading.asStateFlow()
 
-    private suspend fun tryLoadLastInventory(propertyId: String) {
+    private fun setNewValuesForLastInventoryDetails(
+        originalRoomDetails : Array<RoomDetail>,
+        lastInventoryRoomDetails : Array<RoomDetail>
+    ) : Array<RoomDetail> {
+        return originalRoomDetails.map { detail ->
+            return@map lastInventoryRoomDetails.find {
+                lastInventoryDetail ->
+                lastInventoryDetail.id == detail.id
+            } ?: detail.copy(newItem = true)
+        }.toTypedArray()
+    }
+    private suspend fun tryLoadLastInventory(propertyId: String, baseRooms : Array<Room>) {
         val inventoryReport = inventoryApiCaller.getLastInventoryReport(propertyId)
         val lastInventoryRoomsAsRooms = inventoryReport.getRoomsAsRooms(empty = true)
         _oldReportId.value = inventoryReport.id
-        this.rooms.addAll(lastInventoryRoomsAsRooms)
+        val newRooms = baseRooms.map { room ->
+            val lastInventoryRoom = lastInventoryRoomsAsRooms.find { it.id == room.id }
+            if (lastInventoryRoom == null) {
+                return@map room.copy(
+                    newItem = true,
+                    details = room.details.map { detail -> detail.copy(newItem = true) }.toTypedArray()
+                )
+            }
+            lastInventoryRoom.details = setNewValuesForLastInventoryDetails(room.details, lastInventoryRoom.details)
+            return@map lastInventoryRoom
+        }
+        this.rooms.addAll(newRooms)
     }
 
-    private suspend fun tryGetBaseRooms(propertyId: String) {
+    private suspend fun tryGetBaseRooms(propertyId: String) : Array<Room> {
         try {
             val newRooms = roomApiCaller.getAllRoomsWithFurniture(
                 propertyId,
                 { _inventoryErrors.value = _inventoryErrors.value.copy(errorRoomName = it) }
             )
-            rooms.addAll(newRooms)
+            return newRooms
         } catch (e: Exception) {
             println("Error during get base rooms ${e.message}")
             _inventoryErrors.value = _inventoryErrors.value.copy(getAllRooms = true, getLastInventoryReport = true)
             e.printStackTrace()
         }
+        return arrayOf()
     }
 
     fun loadInventory(propertyId: String) {
@@ -78,9 +102,9 @@ class LoaderInventoryViewModel(
                 rooms.clear()
                 _internalIsLoading.value = true
                 try {
-                    tryLoadLastInventory(propertyId)
+                    tryLoadLastInventory(propertyId, tryGetBaseRooms(propertyId))
                 } catch (e: Exception) {
-                    tryGetBaseRooms(propertyId)
+                    e.printStackTrace()
                 } finally {
                     _internalIsLoading.value = false
                 }

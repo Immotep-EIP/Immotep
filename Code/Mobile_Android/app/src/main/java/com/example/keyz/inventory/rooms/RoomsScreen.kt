@@ -36,6 +36,7 @@ import com.example.keyz.apiCallerServices.RoomType
 import com.example.keyz.components.InitialFadeIn
 import com.example.keyz.components.InventoryCenterAddButton
 import com.example.keyz.components.inventory.AddRoomOrDetailModal
+import com.example.keyz.components.inventory.EditRoomOrDetailModal
 import com.example.keyz.inventory.roomDetails.RoomDetailsScreen
 
 
@@ -69,6 +70,7 @@ fun RoomsScreen(
     var confirmPopUpOpen by rememberSaveable { mutableStateOf(false) }
     var addRoomModalOpen by rememberSaveable { mutableStateOf(false) }
     var editOpen by rememberSaveable { mutableStateOf(false) }
+    var editRoomOpen by rememberSaveable { mutableStateOf<String?>(null) }
 
     val showNotCompletedRooms = viewModel.showNotCompletedRooms.collectAsState()
 
@@ -166,6 +168,11 @@ fun RoomsScreen(
                 isRoom = true,
                 addRoomType = true
             )
+            EditRoomOrDetailModal(
+                currentRoomOrDetailId = editRoomOpen,
+                deleteRoomOrDetail = removeRoom,
+                close = { editRoomOpen = null },
+            )
             InitialFadeIn {
                 Column {
                     Row(
@@ -209,7 +216,7 @@ fun RoomsScreen(
                                     testTag = "roomButton ${room.id}",
                                     error = !room.completed && showNotCompletedRooms.value,
                                     editOpen = editOpen,
-                                    onClickEdit = {}
+                                    onClickEdit = { editRoomOpen = room.id }
                                 )
                             }
                         }

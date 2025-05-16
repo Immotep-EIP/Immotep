@@ -205,4 +205,6 @@
     <string name="room">Room</string>
     <string name="report_claim">Reporting a claim</string>
     <string name="close_edit">Close edit</string>
+    <string name="mod_room">Modify the room</string>
+    <string name="delete_room">Delete the room</string>
 </resources>
