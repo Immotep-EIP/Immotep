@@ -7,6 +7,7 @@ import useDamages from '@/hooks/Property/useDamages'
 import { usePropertyId } from '@/context/propertyIdContext'
 import base64ToFileAsString from '@/utils/base64/baseToFileAsString'
 import style from './3DamageTab.module.css'
+import useNavigation from '@/hooks/Navigation/useNavigation'
 
 interface DataType {
   key: string
@@ -25,6 +26,7 @@ interface DamageTabProps {
 const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
   const { t } = useTranslation()
   const propertyId = usePropertyId()
+  const { goToDamageDetails } = useNavigation()
   const { damages, loading, error } = useDamages(propertyId || '', status || '')
 
   const transformedData: DataType[] =
@@ -150,13 +152,17 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
         pagination={false}
         bordered
         style={{ width: '100%' }}
-        // onRow={record => {
-        //   return {
-        //     onClick: event => {
-        //       console.log('Row clicked:', record)
-        //     }
-        //   }
-        // }}
+        onRow={record => ({
+          onClick: event => {
+            if (record.key) {
+              if (!propertyId) {
+                event.stopPropagation()
+                return
+              }
+              goToDamageDetails(propertyId, record.key)
+            }
+          }
+        })}
       />
     </div>
   )

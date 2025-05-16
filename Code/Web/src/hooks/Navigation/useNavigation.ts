@@ -30,6 +30,16 @@ const useNavigation = () => {
     })
   }
 
+  const goToDamageDetails = (id: string, damageId: string) => {
+    navigate(
+      NavigationEnum.DAMAGE_DETAILS.replace(':id', id).replace(
+        ':damageId',
+        damageId
+      ),
+      { state: { id, damageId } }
+    )
+  }
+
   const goToMessages = () => {
     navigate(NavigationEnum.MESSAGES)
   }
@@ -57,6 +67,7 @@ const useNavigation = () => {
     goToOverview,
     goToRealProperty,
     goToRealPropertyDetails,
+    goToDamageDetails,
     goToMessages,
     goToSettings,
     goToMyProfile,
