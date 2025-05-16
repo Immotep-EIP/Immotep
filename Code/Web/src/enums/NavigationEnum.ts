@@ -10,6 +10,7 @@ const NavigationEnum = {
   OVERVIEW: '/overview',
   REAL_PROPERTY: '/real-property',
   REAL_PROPERTY_DETAILS: '/real-property/details/:id',
+  DAMAGE_DETAILS: '/real-property/details/:id/damage/:damageId',
   MESSAGES: '/messages',
 
   // ! MAIN LAYOUT - HEADER

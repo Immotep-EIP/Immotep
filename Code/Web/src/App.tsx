@@ -26,6 +26,7 @@ import ProtectedRoute from '@/components/features/authentication/ProtectedRoute/
 import Lost from '@/views/Lost/Lost'
 import SuccesPageRegisterTenant from '@/components/ui/SuccesPage/SuccesPageRegisterTenant'
 import SuccesPageLoginTenant from '@/components/ui/SuccesPage/SuccesPageLoginTenant'
+import DamageDetails from './views/Damages/details/DamageDetails.tsx'
 
 if ('serviceWorker' in navigator) {
   ;(async () => {
@@ -85,6 +86,10 @@ const App: React.FC = () => (
               <Route
                 path={NavigationEnum.REAL_PROPERTY_DETAILS}
                 element={<RealPropertyDetails />}
+              />
+              <Route
+                path={NavigationEnum.DAMAGE_DETAILS}
+                element={<DamageDetails />}
               />
               <Route
                 path={NavigationEnum.MESSAGES}
