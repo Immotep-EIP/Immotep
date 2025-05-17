@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"slices"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
@@ -346,6 +347,12 @@ func ArchiveProperty(c *gin.Context) {
 		return
 	}
 
-	property := database.ArchiveProperty(c.Param("property_id"), req.Archive)
-	c.JSON(http.StatusOK, models.IdResponse{ID: property.ID})
+	property, _ := c.MustGet("property").(db.PropertyModel)
+	if slices.ContainsFunc(property.Leases(), func(x db.LeaseModel) bool { return x.Active }) && req.Archive {
+		utils.SendError(c, http.StatusConflict, utils.CannotArchiveNonFreeProperty, nil)
+		return
+	}
+
+	res := database.ArchiveProperty(property.ID, req.Archive)
+	c.JSON(http.StatusOK, models.IdResponse{ID: res.ID})
 }
