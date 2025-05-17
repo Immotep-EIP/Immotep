@@ -20,6 +20,8 @@ const RealPropertyDetails: React.FC = () => {
   const showModalUpdate = () => setIsModalUpdateOpen(true)
   const [isPropertyUpdated, setIsPropertyUpdated] = useState(false)
 
+  const [refreshKey, setRefreshKey] = useState(0)
+
   const {
     propertyDetails: propertyData,
     refreshPropertyDetails,
@@ -31,15 +33,23 @@ const RealPropertyDetails: React.FC = () => {
     setIsModalOpen(false)
     if (invitationSent) {
       refreshPropertyDetails(id)
+      setRefreshKey(prev => prev + 1)
     }
   }
 
   useEffect(() => {
     if (isPropertyUpdated) {
       refreshPropertyDetails(id)
+      setRefreshKey(prev => prev + 1)
       setIsPropertyUpdated(false)
     }
   }, [isPropertyUpdated, id, refreshPropertyDetails])
+
+  useEffect(() => {
+    if (propertyData) {
+      setRefreshKey(prev => prev + 1)
+    }
+  }, [propertyData])
 
   if (loading) {
     return <div>{t('components.loading')}</div>
@@ -61,6 +71,7 @@ const RealPropertyDetails: React.FC = () => {
         {propertyData && (
           <>
             <DetailsPart
+              key={refreshKey}
               propertyData={propertyData}
               showModal={showModal}
               propertyId={id}

@@ -430,6 +430,7 @@
       "409_error": "Invitation déjà envoyée",
       "fill_fields": "Veuillez remplir les champs requis",
       "error_fetching_data": "Erreur lors de la récupération des données",
+      "date_error": "La date de début doit être inférieure à la date de fin",
       "title": "Détails de la propriété",
       "informations": {
         "name": "Nom",

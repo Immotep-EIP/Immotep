@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Modal, message, Tabs } from 'antd'
 import { useTranslation } from 'react-i18next'
 
@@ -19,6 +19,7 @@ import PropertyImage from './PropertyImage'
 import PropertyInfo from './PropertyInfo'
 import style from './DetailsPart.module.css'
 import UnarchiveProperty from '@/services/api/Owner/Properties/UnarchiveProperty'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 interface ChildrenComponentProps {
   t: (key: string) => string
@@ -67,6 +68,14 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
     GetPropertyPicture
   )
   const { refreshPropertyDetails } = useProperties()
+
+  const [currentStatus, setCurrentStatus] = useState(propertyData?.status || '')
+
+  useEffect(() => {
+    if (propertyData?.status) {
+      setCurrentStatus(propertyData.status)
+    }
+  }, [propertyData])
 
   const removeProperty = async () => {
     Modal.confirm({
@@ -130,6 +139,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
             return
           }
           await EndLease(propertyData?.id || '')
+          setCurrentStatus(PropertyStatusEnum.AVAILABLE)
           await refreshPropertyDetails(propertyData.id)
           message.success(t('components.modal.end_contract.success'))
         } catch (error) {
@@ -154,6 +164,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
             return
           }
           await CancelTenantInvitation(propertyData.id)
+          setCurrentStatus(PropertyStatusEnum.AVAILABLE)
           await refreshPropertyDetails(propertyData.id)
           message.success(t('components.modal.cancel_invitation.success'))
         } catch (error) {
@@ -173,19 +184,19 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         onCancelInvitation={cancelInvitation}
         onRemoveProperty={removeProperty}
         onRecoverProperty={recoverProperty}
-        propertyStatus={propertyData.status}
+        propertyStatus={currentStatus}
         propertyArchived={propertyData.archived || false}
       />
       <div className={style.headerInformationContainer}>
         <PropertyImage
-          status={propertyData.status}
+          status={currentStatus}
           picture={picture}
           isLoading={isLoading}
         />
         <PropertyInfo propertyData={propertyData} />
       </div>
       <PropertyIdProvider id={propertyId}>
-        <ChildrenComponent t={t} propertyStatus={propertyData.status} />
+        <ChildrenComponent t={t} propertyStatus={currentStatus} />
       </PropertyIdProvider>
     </div>
   )

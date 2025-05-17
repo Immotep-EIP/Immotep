@@ -29,23 +29,31 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
   const onFinish: FormProps<InviteTenant>['onFinish'] = async tenantInfo => {
     try {
       setLoading(true)
-      // eslint-disable-next-line camelcase
-      const { start_date, end_date } = tenantInfo
+      // Destructurer avec des noms en camelCase
+      const { start_date: startDate, end_date: endDate } = tenantInfo
       const formattedTenantInfo = {
         ...tenantInfo,
         propertyId
       }
-      if (dayjs(start_date).isAfter(dayjs(end_date))) {
-        message.error(t('pages.real_property_details.dateError'))
-        setLoading(false)
+
+      if (startDate && endDate) {
+        if (dayjs(startDate).isAfter(dayjs(endDate))) {
+          message.error(t('pages.real_property_details.date_error'))
+          setLoading(false)
+          return
+        }
+      }
+
+      if (!startDate) {
         return
       }
+
       await InviteTenants(formattedTenantInfo)
       message.success(t('pages.real_property_details.invite_tenant'))
       setLoading(false)
       onClose(true)
     } catch (error: any) {
-      if (error.response.status === 409)
+      if (error.response?.status === 409)
         message.error(t('pages.real_property_details.409_error'))
       setLoading(false)
     }
