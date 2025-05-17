@@ -42,9 +42,17 @@ func (*TestUserVerifier) AddClaims(email, _tokenId, _tokenType, _scope string) (
 }
 
 // Adds properties to the token
-func (*TestUserVerifier) AddProperties(_email, _tokenId, _tokenType string, _scope string) (map[string]string, error) {
+func (*TestUserVerifier) AddProperties(email, _tokenId, _tokenType string, _scope string) (map[string]string, error) {
+	pdb := services.DBclient
+	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
+	if err != nil {
+		return nil, errors.New("wrong user")
+	}
+
 	props := make(map[string]string)
-	// props["customer_name"] = "Gopher"
+	props["role"] = string(user.Role)
+	props["id"] = user.ID
+
 	return props, nil
 }
 
