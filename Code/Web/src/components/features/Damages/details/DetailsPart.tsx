@@ -111,7 +111,9 @@ const DetailsPart: React.FC = () => {
               subTitleStyle={{ marginBottom: '0.5rem' }}
             >
               <div className={style.pictureContainer}>
-                {damage.pictures.map(picture => (
+                {(!damage?.pictures || damage.pictures.length === 0) &&
+                  t('pages.real_property_details.tabs.damage.no_pictures')}
+                {damage?.pictures?.map(picture => (
                   <div key={picture} className={style.pictureWrapper}>
                     <Image
                       height="100%"

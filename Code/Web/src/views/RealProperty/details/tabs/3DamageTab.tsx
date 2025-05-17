@@ -41,7 +41,7 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
         item.room_name ||
         t('pages.real_property_details.tabs.damage.unknown_room'),
       priority: item.priority.charAt(0).toUpperCase() + item.priority.slice(1),
-      pictures: item.pictures.map(picture => picture)
+      pictures: item?.pictures?.map(picture => picture)
     })) || []
 
   const columns: TableProps<DataType>['columns'] = [
@@ -79,13 +79,13 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       key: 'pictures',
       render: record => (
         <div className={style.imagesContainer}>
-          {record.length === 0 ? (
+          {!record || record.length === 0 ? (
             <Typography.Text>
               {t('pages.real_property_details.tabs.damage.no_pictures')}
             </Typography.Text>
           ) : (
             <Typography.Text>
-              {record.length}{' '}
+              {record?.length}{' '}
               {t('pages.real_property_details.tabs.damage.pictures')}
             </Typography.Text>
           )}
