@@ -35,7 +35,6 @@ const PropertyImage: React.FC<PropertyImageProps> = memo(
   }
 )
 
-// Ajout de la validation des props pour satisfaire la règle ESLint react/prop-types
 PropertyImage.propTypes = {
   status: PropTypes.string.isRequired,
   picture: PropTypes.string,
