@@ -1,6 +1,10 @@
 const endpoints = {
   // Owner endpoints
   owner: {
+    // Dashboard endpoints
+    dashboard: {
+      list: () => 'owner/dashboard/'
+    },
     properties: {
       // Base property endpoints
       list: 'owner/properties/',

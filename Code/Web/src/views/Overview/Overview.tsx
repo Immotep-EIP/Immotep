@@ -14,6 +14,7 @@ import style from './Overview.module.css'
 import '@/../node_modules/react-grid-layout/css/styles.css'
 import '@/../node_modules/react-resizable/css/styles.css'
 import Reminders from '@/components/features/Overview/Widgets/Reminders/Reminders'
+// import useDashboard from '@/hooks/Dashboard/useDashboard'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -34,6 +35,13 @@ const WidgetTemplate: React.FC<{
 const Overview: React.FC = () => {
   const { t } = useTranslation()
   const [areWidgetsMovable, setAreWidgetsMovable] = useState(false)
+  // const { reminders, properties, open_damages, loading, error } = useDashboard()
+
+  // console.log('reminders', reminders)
+  // console.log('properties', properties)
+  // console.log('open_damages', open_damages)
+  // console.log('loading', loading)
+  // console.log('error', error)
 
   const layouts: { lg: Widget[] } = {
     lg: [
