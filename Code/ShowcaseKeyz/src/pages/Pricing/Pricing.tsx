@@ -44,41 +44,42 @@ function PricingPage() {
   };
 
   const prices = [
+    // {
+    //   title: t("pricing.plans.basic.title"),
+    //   price: "4,99€",
+    //   period: t("pricing.period"),
+    //   features: [
+    //     t("pricing.plans.basic.features.feature1"),
+    //     t("pricing.plans.basic.features.feature2"),
+    //     t("pricing.plans.basic.features.feature3"),
+    //     t("pricing.plans.basic.features.feature4"),
+    //     t("pricing.plans.basic.features.feature5"),
+    //   ],
+    //   // cta: t("pricing.cta"), // ! TODO : Uncomment this and remove the next line when the CTA is ready
+    //   cta: t("pricing.contact_us"),
+    //   popular: false,
+    //   icon: (
+    //     <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
+    //       <path
+    //         d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+    //         stroke="currentColor"
+    //         strokeWidth="2"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
+    //       <path
+    //         d="M9 22V12h6v10"
+    //         stroke="currentColor"
+    //         strokeWidth="2"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
+    //     </svg>
+    //   ),
+    // },
     {
-      title: t("pricing.plans.basic.title"),
-      price: "4,99€",
-      period: t("pricing.period"),
-      features: [
-        t("pricing.plans.basic.features.feature1"),
-        t("pricing.plans.basic.features.feature2"),
-        t("pricing.plans.basic.features.feature3"),
-        t("pricing.plans.basic.features.feature4"),
-        t("pricing.plans.basic.features.feature5"),
-      ],
-      // cta: t("pricing.cta"), // ! TODO : Uncomment this and remove the next line when the CTA is ready
-      cta: t("pricing.contact_us"),
-      popular: false,
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" className={style.planIcon}>
-          <path
-            d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M9 22V12h6v10"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-    },
-    {
-      title: t("pricing.plans.premium.title"),
+      // title: t("pricing.plans.premium.title"),
+      title: "Standard",
       price: "4,99€",
       period: t("pricing.period"),
       features: [
@@ -104,7 +105,8 @@ function PricingPage() {
       ),
     },
     {
-      title: t("pricing.plans.pro.title"),
+      // title: t("pricing.plans.pro.title"),
+      title: "Advanced",
       price: "24,99€",
       period: t("pricing.period"),
       features: [
@@ -186,7 +188,7 @@ function PricingPage() {
                 <span className={style.pricePeriod}>{price.period}</span>
               </div>
             )}
-            {index === 1 && (
+            {index === 0 && (
               <div className={style.additionalInfo}>
                 {t("pricing.plans.premium.additional_info")}
               </div>

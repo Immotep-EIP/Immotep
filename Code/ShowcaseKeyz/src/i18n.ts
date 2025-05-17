@@ -104,7 +104,7 @@ const resources = {
           pro: {
             title: "Pro",
             features: {
-              feature1: "À partir de 10 logements",
+              feature1: "À partir de 8 logements",
               feature2: "1 compte locataire par logement",
               feature3: "États des lieux guidés par IA",
               feature4: "8 Go de stockage par logement",
@@ -366,7 +366,7 @@ const resources = {
           pro: {
             title: "Pro",
             features: {
-              feature1: "From 10 properties",
+              feature1: "From 8 properties",
               feature2: "1 tenant account per property",
               feature3: "AI-guided property inspections",
               feature4: "8 GB storage per property",
@@ -624,7 +624,7 @@ const resources = {
           pro: {
             title: "Pro",
             features: {
-              feature1: "Ab 10 Immobilien",
+              feature1: "Ab 8 Immobilien",
               feature2: "1 Mieterkonto pro Immobilie",
               feature3: "KI-gestützte Wohnungsübergaben",
               feature4: "8 GB Speicher pro Immobilie",
