@@ -6,7 +6,7 @@ import useDamages from '@/hooks/Property/useDamages'
 import { usePropertyId } from '@/context/propertyIdContext'
 import style from './3DamageTab.module.css'
 import useNavigation from '@/hooks/Navigation/useNavigation'
-import DamagePriorityTag from '@/components/common/DamagePriorityTag'
+import PriorityTag from '@/components/common/PriorityTag'
 
 interface DataType {
   key: string
@@ -71,7 +71,7 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       title: t('pages.real_property_details.tabs.damage.table.priority'),
       dataIndex: 'priority',
       key: 'priority',
-      render: text => <DamagePriorityTag priority={text} />
+      render: text => <PriorityTag priority={text} />
     },
     {
       title: t('pages.real_property_details.tabs.damage.table.pictures'),

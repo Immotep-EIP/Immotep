@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react'
-import { UseDashboardReturn } from '@/interfaces/Dashboard/Dashboard'
+import {
+  DashboardOpenDamages,
+  DashboardProperties,
+  DashboardReminders,
+  UseDashboardReturn
+} from '@/interfaces/Dashboard/Dashboard'
 import GetDashboard from '@/services/api/Owner/Properties/GetDashboard'
 
 const useDashboard = (): UseDashboardReturn => {
-  const [reminders, setReminders] = useState<UseDashboardReturn['reminders']>(
-    []
+  const [reminders, setReminders] = useState<DashboardReminders[] | null>(null)
+  const [properties, setProperties] = useState<DashboardProperties | null>(null)
+  const [openDamages, setOpenDamages] = useState<DashboardOpenDamages | null>(
+    null
   )
-  const [properties, setProperties] = useState<
-    UseDashboardReturn['properties'] | null
-  >(null)
-  const [openDamages, setOpenDamages] = useState<
-    UseDashboardReturn['open_damages'] | null
-  >(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -20,6 +21,9 @@ const useDashboard = (): UseDashboardReturn => {
       setLoading(true)
       setError(null)
       const response = await GetDashboard()
+      if (!response) {
+        throw new Error('No data received from the API')
+      }
       setReminders(response.reminders)
       setProperties(response.properties)
       setOpenDamages(response.open_damages)

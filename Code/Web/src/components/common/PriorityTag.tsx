@@ -2,7 +2,7 @@ import React from 'react'
 import { Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 
-const DamagePriorityTag: React.FC<{ priority: string }> = ({ priority }) => {
+const PriorityTag: React.FC<{ priority: string }> = ({ priority }) => {
   const { t } = useTranslation()
   const priorityLower = priority.toLowerCase()
 
@@ -19,6 +19,8 @@ const DamagePriorityTag: React.FC<{ priority: string }> = ({ priority }) => {
         return 'red'
       case 'medium':
         return 'yellow'
+      case 'low':
+        return 'green'
       default:
         return 'green'
     }
@@ -33,4 +35,4 @@ const DamagePriorityTag: React.FC<{ priority: string }> = ({ priority }) => {
   )
 }
 
-export default DamagePriorityTag
+export default PriorityTag

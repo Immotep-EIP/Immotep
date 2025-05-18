@@ -367,6 +367,11 @@
     "switch": {
       "show_archived": "Archivées",
       "show_active": "Actives"
+    },
+    "loading": {
+      "loading": "Chargement en cours...",
+      "loading_data": "Chargement des données...",
+      "no_data": "Aucune donnée disponible"
     }
   },
   "pages": {

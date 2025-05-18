@@ -1,4 +1,4 @@
-export interface ReminderType {
+export interface DashboardReminders {
   id: string
   priority: string
   title: string
@@ -6,7 +6,7 @@ export interface ReminderType {
   link: string
 }
 
-export interface PropertyType {
+export interface DashboardPropertiesRecentlyAdded {
   id: string
   name: string
   address: string
@@ -21,7 +21,16 @@ export interface PropertyType {
   owner_id: string
 }
 
-export interface DamageType {
+export interface DashboardProperties {
+  nbr_total: number
+  nbr_archived: number
+  nbr_occupied: number
+  nbr_available: number
+  nbr_pending_invites: number
+  list_recently_added: [DashboardPropertiesRecentlyAdded]
+}
+
+export interface DashboardOpenDamagesToFix {
   id: string
   comment: string
   priority: string
@@ -35,32 +44,21 @@ export interface DamageType {
   room_id: string
 }
 
-export interface Dashboard {
-  reminders: ReminderType[]
-  properties: {
-    nbr_total: number
-    nbr_archived: number
-    nbr_occupied: number
-    nbr_available: number
-    nbr_pending_invites: number
-    list_recently_added: PropertyType[]
-  } | null
-  open_damages: {
-    nbr_total: number
-    nbr_urgent: number
-    nbr_high: number
-    nbr_medium: number
-    nbr_low: number
-    nbr_planned_to_fix_this_week: number
-    list_to_fix: DamageType[]
-  } | null
+export interface DashboardOpenDamages {
+  nbr_total: number
+  nbr_urgent: number
+  nbr_high: number
+  nbr_medium: number
+  nbr_low: number
+  nbr_planned_to_fix_this_week: number
+  list_to_fix: [DashboardOpenDamagesToFix]
 }
 
 export interface UseDashboardReturn {
-  reminders: ReminderType[]
-  properties: PropertyType[] | null
-  open_damages: DamageType[] | null
+  reminders: DashboardReminders[] | null
+  properties: DashboardProperties | null
+  open_damages: DashboardOpenDamages | null
   loading: boolean
   error: string | null
-  refreshDashboard: () => Promise<void>
+  refreshDashboard: () => void
 }

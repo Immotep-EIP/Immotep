@@ -2,21 +2,31 @@ import React from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
 
 import { useTranslation } from 'react-i18next'
-import useProperties from '@/hooks/Property/useProperties'
-import { WidgetProps } from '@/interfaces/Widgets/Widgets.ts'
 import PropertiesIcon from '@/assets/icons/realProperty.svg'
 import style from './PropertiesRepartition.module.css'
+import { DashboardProperties } from '@/interfaces/Dashboard/Dashboard'
 
-const PropertiesRepartition: React.FC<WidgetProps> = ({ height }) => {
+interface PropertiesRepartitionProps {
+  properties: DashboardProperties | null
+  loading: boolean
+  error: string | null
+  height: number
+}
+
+const PropertiesRepartition: React.FC<PropertiesRepartitionProps> = ({
+  properties,
+  loading,
+  error,
+  height
+}) => {
   const rowHeight = 120
   const pixelHeight = height * rowHeight
   const { t } = useTranslation()
-  const { properties, loading, error } = useProperties()
 
-  if (loading) {
+  if (loading || properties === null) {
     return (
       <div>
-        <p>{t('generals.loading')}</p>
+        <p>{t('components.loading.loading_data')}</p>
         <LoadingOutlined />
       </div>
     )
@@ -25,13 +35,6 @@ const PropertiesRepartition: React.FC<WidgetProps> = ({ height }) => {
   if (error) {
     return <p>{t('widgets.user_info.error_fetching')}</p>
   }
-
-  const availableProperties = properties.filter(
-    property => property.lease === null
-  ).length
-  const unavailableProperties = properties.filter(
-    property => property.lease !== null
-  ).length
 
   return (
     <div
@@ -52,15 +55,15 @@ const PropertiesRepartition: React.FC<WidgetProps> = ({ height }) => {
       <div className={style.contentContainer}>
         <div>
           <span className={style.propertiesNumber}>
-            {availableProperties < 9
-              ? `0${availableProperties}`
-              : availableProperties || '-'}
+            {(properties?.nbr_available ?? 0) < 9
+              ? `0${properties?.nbr_available ?? 0}`
+              : (properties?.nbr_available ?? '-')}
           </span>
           <span
             className={style.propertiesNumberText}
             style={{ color: '#4caf50' }}
           >
-            {availableProperties > 1
+            {(properties?.nbr_available ?? 0) > 1
               ? t('pages.real_property.status.availables')
               : t('pages.real_property.status.available')}
           </span>
@@ -68,15 +71,15 @@ const PropertiesRepartition: React.FC<WidgetProps> = ({ height }) => {
         <div className={style.separator} />
         <div>
           <span className={style.propertiesNumber}>
-            {unavailableProperties < 9
-              ? `0${unavailableProperties}`
-              : unavailableProperties || '-'}
+            {(properties?.nbr_occupied ?? 0) < 9
+              ? `0${properties?.nbr_occupied ?? 0}`
+              : (properties?.nbr_occupied ?? '-')}
           </span>
           <span
             className={style.propertiesNumberText}
             style={{ color: '#f44336' }}
           >
-            {unavailableProperties > 1
+            {(properties?.nbr_occupied ?? 0) > 1
               ? t('pages.real_property.status.unavailables')
               : t('pages.real_property.status.unavailable')}
           </span>

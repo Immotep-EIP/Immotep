@@ -2,21 +2,31 @@ import React from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
 
 import { useTranslation } from 'react-i18next'
-import useProperties from '@/hooks/Property/useProperties'
-import { WidgetProps } from '@/interfaces/Widgets/Widgets.ts'
 import PropertiesIcon from '@/assets/icons/realProperty.svg'
 import style from './PropertiesNumber.module.css'
+import { DashboardProperties } from '@/interfaces/Dashboard/Dashboard'
 
-const PropertiesNumber: React.FC<WidgetProps> = ({ height }) => {
+interface PropertiesNumberProps {
+  properties: DashboardProperties | null
+  loading: boolean
+  error: string | null
+  height: number
+}
+
+const PropertiesNumber: React.FC<PropertiesNumberProps> = ({
+  properties,
+  loading,
+  error,
+  height
+}: PropertiesNumberProps) => {
   const rowHeight = 120
   const pixelHeight = height * rowHeight
   const { t } = useTranslation()
-  const { properties, loading, error } = useProperties()
 
-  if (loading) {
+  if (loading || properties === null) {
     return (
       <div>
-        <p>{t('generals.loading')}</p>
+        <p>{t('components.loading.loading_data')}</p>
         <LoadingOutlined />
       </div>
     )
@@ -44,9 +54,9 @@ const PropertiesNumber: React.FC<WidgetProps> = ({ height }) => {
           </div>
         </div>
         <span className={style.propertiesNumber}>
-          {properties.length && properties.length < 9
-            ? `0${properties.length}`
-            : properties.length}
+          {properties?.nbr_total && properties?.nbr_total < 9
+            ? `0${properties?.nbr_total}`
+            : properties?.nbr_total}
         </span>
         <span className={style.propertiesNumberText}>
           {t('widgets.properties_number.real_properties')}

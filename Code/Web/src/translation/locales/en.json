@@ -367,6 +367,11 @@
     "switch": {
       "show_archived": "Archived",
       "show_active": "Active"
+    },
+    "loading": {
+      "loading": "Loading...",
+      "loading_data": "Loading data...",
+      "no_data": "No data available"
     }
   },
   "pages": {

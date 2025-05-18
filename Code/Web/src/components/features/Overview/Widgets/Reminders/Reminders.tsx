@@ -1,39 +1,40 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Empty } from 'antd'
-import { WidgetProps } from '@/interfaces/Widgets/Widgets.ts'
+import { LoadingOutlined } from '@ant-design/icons'
+import { DashboardReminders } from '@/interfaces/Dashboard/Dashboard'
+import PriorityTag from '@/components/common/PriorityTag'
 import style from './Reminders.module.css'
 
-const Reminders: React.FC<WidgetProps> = ({ height }) => {
+interface RemindersProps {
+  reminders: DashboardReminders[] | null
+  loading: boolean
+  error: string | null
+  height: number
+}
+
+const Reminders: React.FC<RemindersProps> = ({
+  reminders,
+  loading,
+  error,
+  height
+}: RemindersProps) => {
   const { t } = useTranslation()
   const rowHeight = 120
   const pixelHeight = height * rowHeight
 
-  const reminders = [
-    {
-      id: 1,
-      title: 'End of lease',
-      description:
-        'Your contract on property "Logement étudiant KM0" is about to expire. Think about the exit inventory.'
-    },
-    {
-      id: 2,
-      title: 'Empty property',
-      description: 'Your property "The Stables" is empty.'
-    },
-    {
-      id: 3,
-      title: 'New message',
-      description:
-        'You have a new message from "John Doe" regarding your property "The Stables".'
-    },
-    {
-      id: 4,
-      title: 'New message',
-      description:
-        'You have a new message from "John Doe" regarding your property "The Stables".'
-    }
-  ]
+  if (loading || reminders === null) {
+    return (
+      <div>
+        <p>{t('components.loading.loading_data')}</p>
+        <LoadingOutlined />
+      </div>
+    )
+  }
+
+  if (error) {
+    return <p>{t('widgets.user_info.error_fetching')}</p>
+  }
 
   return (
     <div
@@ -51,10 +52,11 @@ const Reminders: React.FC<WidgetProps> = ({ height }) => {
           reminders.map(reminder => (
             <div key={reminder.id} className={style.reminderItem}>
               <div className={style.reminderTexts}>
-                <span className={style.titleText}>{reminder.title}</span>
-                <span className={style.descriptionText}>
-                  {reminder.description}
-                </span>
+                <div className={style.reminderheader}>
+                  <span className={style.titleText}>{reminder.title}</span>
+                  <PriorityTag priority={reminder.priority} />
+                </div>
+                <span className={style.descriptionText}>{reminder.advice}</span>
               </div>
             </div>
           ))

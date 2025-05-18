@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
-import { Button } from 'antd'
+import { Button, Spin } from 'antd'
 
 import { useTranslation } from 'react-i18next'
 import MoveWidgetIcon from '@/assets/icons/move.png'
@@ -14,7 +14,7 @@ import style from './Overview.module.css'
 import '@/../node_modules/react-grid-layout/css/styles.css'
 import '@/../node_modules/react-resizable/css/styles.css'
 import Reminders from '@/components/features/Overview/Widgets/Reminders/Reminders'
-// import useDashboard from '@/hooks/Dashboard/useDashboard'
+import useDashboard from '@/hooks/Dashboard/useDashboard'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -35,15 +35,9 @@ const WidgetTemplate: React.FC<{
 const Overview: React.FC = () => {
   const { t } = useTranslation()
   const [areWidgetsMovable, setAreWidgetsMovable] = useState(false)
-  // const { reminders, properties, open_damages, loading, error } = useDashboard()
+  const { reminders, properties, loading, error } = useDashboard()
 
-  // console.log('reminders', reminders)
-  // console.log('properties', properties)
-  // console.log('open_damages', open_damages)
-  // console.log('loading', loading)
-  // console.log('error', error)
-
-  const layouts: { lg: Widget[] } = {
+  const initialLayouts: { lg: Widget[] } = {
     lg: [
       {
         i: '1',
@@ -52,7 +46,14 @@ const Overview: React.FC = () => {
         y: 0,
         w: 2,
         h: 1,
-        children: <PropertiesNumber height={1} />
+        children: (
+          <PropertiesNumber
+            properties={properties}
+            loading={loading}
+            error={error}
+            height={1}
+          />
+        )
       },
       {
         i: '2',
@@ -61,7 +62,14 @@ const Overview: React.FC = () => {
         y: 0,
         w: 2,
         h: 1,
-        children: <PropertiesRepartition height={1} />
+        children: (
+          <PropertiesRepartition
+            properties={properties}
+            loading={loading}
+            error={error}
+            height={1}
+          />
+        )
       },
       {
         i: '3',
@@ -79,12 +87,68 @@ const Overview: React.FC = () => {
         y: 0,
         w: 4,
         h: 2,
-        children: <Reminders height={2} />
+        children: (
+          <Reminders
+            reminders={reminders}
+            loading={loading}
+            error={error}
+            height={2}
+          />
+        )
       }
     ]
   }
 
-  const [widgets, setWidgets] = useState(layouts.lg)
+  const [widgets, setWidgets] = useState(initialLayouts.lg)
+
+  useEffect(() => {
+    if (properties) {
+      setWidgets(prevWidgets =>
+        prevWidgets.map(widget => {
+          if (widget.name === 'PropertiesNumber') {
+            return {
+              ...widget,
+              children: (
+                <PropertiesNumber
+                  properties={properties}
+                  loading={loading}
+                  error={error}
+                  height={widget.h}
+                />
+              )
+            }
+          }
+          if (widget.name === 'PropertiesRepartition') {
+            return {
+              ...widget,
+              children: (
+                <PropertiesRepartition
+                  properties={properties}
+                  loading={loading}
+                  error={error}
+                  height={widget.h}
+                />
+              )
+            }
+          }
+          if (widget.name === 'Reminders') {
+            return {
+              ...widget,
+              children: (
+                <Reminders
+                  reminders={reminders}
+                  loading={loading}
+                  error={error}
+                  height={widget.h}
+                />
+              )
+            }
+          }
+          return widget
+        })
+      )
+    }
+  }, [properties, loading, error, reminders])
 
   const handleLayoutChange = (layout: Layout[]) => {
     const updatedWidgets = widgets.map(widget => {
@@ -152,29 +216,42 @@ const Overview: React.FC = () => {
             </div>
           )}
         </div>
-        <div className={style.contentContainer}>
-          <ResponsiveGridLayout
-            className={style.gridLayout}
-            layouts={{ lg: widgets }}
-            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-            rowHeight={120}
-            isResizable={false}
-            onResize={handleLayoutChange}
-            isDraggable={areWidgetsMovable}
-            draggableHandle={`.${style.moveWidgetIcon}`}
-            preventCollision
-            compactType={null}
-          >
-            {widgets.map((widget: Widget) => (
-              <div key={widget.i} data-grid={widget}>
-                <WidgetTemplate areWidgetsMovable={areWidgetsMovable}>
-                  {widget.children}
-                </WidgetTemplate>
-              </div>
-            ))}
-          </ResponsiveGridLayout>
-        </div>
+
+        {loading ? (
+          <Spin
+            size="large"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+        ) : (
+          <div className={style.contentContainer}>
+            <ResponsiveGridLayout
+              className={style.gridLayout}
+              layouts={{ lg: widgets }}
+              breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+              cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+              rowHeight={120}
+              isResizable={false}
+              onResize={handleLayoutChange}
+              isDraggable={areWidgetsMovable}
+              draggableHandle={`.${style.moveWidgetIcon}`}
+              preventCollision
+              compactType={null}
+            >
+              {widgets.map((widget: Widget) => (
+                <div key={widget.i} data-grid={widget}>
+                  <WidgetTemplate areWidgetsMovable={areWidgetsMovable}>
+                    {widget.children}
+                  </WidgetTemplate>
+                </div>
+              ))}
+            </ResponsiveGridLayout>
+          </div>
+        )}
       </div>
     </>
   )

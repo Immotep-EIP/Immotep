@@ -9,7 +9,7 @@ import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
 import base64ToFileAsString from '@/utils/base64/baseToFileAsString'
 import useDamages from '@/hooks/Property/useDamages'
 import useProperties from '@/hooks/Property/useProperties'
-import DamagePriorityTag from '@/components/common/DamagePriorityTag'
+import PriorityTag from '@/components/common/PriorityTag'
 import DamageStatusTag from '@/components/common/DamageStatusTag'
 
 const DetailsPart: React.FC = () => {
@@ -53,7 +53,7 @@ const DetailsPart: React.FC = () => {
                   subtitleKey={t('pages.damage_details.priority')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
                 >
-                  <DamagePriorityTag priority={damage?.priority} />
+                  <PriorityTag priority={damage?.priority} />
                 </SubtitledElement>
                 <SubtitledElement
                   subtitleKey={t('pages.damage_details.fix_status')}
