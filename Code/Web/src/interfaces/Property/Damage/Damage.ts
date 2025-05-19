@@ -15,7 +15,7 @@ export interface Damage {
 }
 
 export interface DamageDetails {
-  read?: string
+  read?: boolean
   fix_planned_at?: string
 }
 

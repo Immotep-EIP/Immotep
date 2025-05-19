@@ -61,7 +61,7 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
                   {toLocaleDate(damage.created_at)}
                 </span>
               </div>
-              {damage.read ? (
+              {!damage.read ? (
                 <Badge
                   className={style.damageComment}
                   color="blue"
@@ -69,7 +69,7 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
                   style={{ fontWeight: 700 }}
                 />
               ) : (
-                <span className={style.damageComment}>{damage.comment}</span>
+                <span className={style.damageCommentWithoutBadge}>{damage.comment}</span>
               )}
             </div>
           ))

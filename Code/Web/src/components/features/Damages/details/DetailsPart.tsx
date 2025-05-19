@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, Spin } from 'antd'
 import { EyeOutlined } from '@ant-design/icons'
@@ -11,7 +11,7 @@ import useDamages from '@/hooks/Property/useDamages'
 import useProperties from '@/hooks/Property/useProperties'
 import PriorityTag from '@/components/common/PriorityTag'
 import DamageStatusTag from '@/components/common/DamageStatusTag'
-// import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
+import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
 
 const DetailsPart: React.FC = () => {
   const { t } = useTranslation()
@@ -30,14 +30,12 @@ const DetailsPart: React.FC = () => {
     setRefreshTrigger(prev => prev + 1)
   }
 
-  // useEffect(() => {
-  //   const setDamageAsRead = async () => {
-  //     if (damage && damage.read === 'false') {
-  //       await UpdateDamage({ read: 'true' }, id, damageId)
-  //     }
-  //   }
-  //   setDamageAsRead()
-  // }, [damage, id, damageId])
+  useEffect(() => {
+    const setDamageAsRead = async () => {
+      await UpdateDamage({ read: true }, id, damageId)
+    }
+    setDamageAsRead()
+  }, [damage, id, damageId])
 
   return (
     <div className={style.mainContainer}>

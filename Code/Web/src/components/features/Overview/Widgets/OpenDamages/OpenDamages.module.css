@@ -48,6 +48,7 @@
   text-align: right;
 }
 
+.damageCommentWithoutBadge,
 .damageComment {
   width: 100%;
   overflow: hidden;
@@ -59,6 +60,10 @@
   margin-right: 10px;
   text-align: left;
   text-decoration: none;
+}
+
+.damageCommentWithoutBadge {
+  margin-left: 10px;
 }
 
 .damageInformationsContainer {
