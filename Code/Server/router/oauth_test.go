@@ -90,9 +90,27 @@ func TestAddProperties(t *testing.T) {
 	testOauth := router.TestUserVerifier{}
 
 	t.Run("Add properties", func(t *testing.T) {
+		c, m, ensure := services.ConnectDBTest()
+		defer ensure(t)
+
+		m.User.Expect(database.MockGetUserByEmail(c)).Returns(BuildTestUser("1"))
+
 		props, err := testOauth.AddProperties("test@example.com", "", "", "")
 		require.NoError(t, err)
 		assert.NotNil(t, props)
+		assert.Equal(t, "1", props["id"])
+		assert.Equal(t, "owner", props["role"])
+	})
+
+	t.Run("Not found user", func(t *testing.T) {
+		c, m, ensure := services.ConnectDBTest()
+		defer ensure(t)
+
+		m.User.Expect(database.MockGetUserByEmail(c)).Errors(db.ErrNotFound)
+
+		props, err := testOauth.AddProperties("test@example.com", "", "", "")
+		require.Error(t, err)
+		assert.Nil(t, props)
 	})
 }
 

@@ -1,4 +1,4 @@
-FROM golang:1.22
+FROM golang:1.24
 
 WORKDIR /app
 
@@ -22,4 +22,4 @@ ENV GIN_MODE=release
 
 EXPOSE 3001
 
-CMD go run github.com/steebchen/prisma-client-go migrate deploy && /app/backend
+CMD ["/app/backend"]

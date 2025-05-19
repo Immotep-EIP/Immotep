@@ -27,3 +27,21 @@ func GetAllDatasFromProperties(ownerId string) []db.PropertyModel {
 	}
 	return allProperties
 }
+
+func MockGetAllDatasFromProperties(c *services.PrismaDB) db.PropertyMockExpectParam {
+	return c.Client.Property.FindMany(
+		db.Property.OwnerID.Equals("1"),
+	).With(
+		db.Property.Owner.Fetch(),
+		db.Property.Leases.Fetch().With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Damages.Fetch().With(db.Damage.Room.Fetch()),
+			db.Lease.Reports.Fetch().With(
+				db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()),
+				db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()),
+			),
+		),
+		db.Property.LeaseInvite.Fetch(),
+		db.Property.Rooms.Fetch().With(db.Room.Furnitures.Fetch()),
+	)
+}
