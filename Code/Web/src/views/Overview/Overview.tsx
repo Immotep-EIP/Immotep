@@ -7,7 +7,6 @@ import MoveWidgetIcon from '@/assets/icons/move.png'
 import PageTitle from '@/components/ui/PageText/Title.tsx'
 import PropertiesNumber from '@/components/features/Overview/Widgets/PropertiesNumber/PropertiesNumber'
 import PropertiesRepartition from '@/components/features/Overview/Widgets/PropertiesRepartition/PropertiesRepartition'
-import LastMessages from '@/components/features/Overview/Widgets/LastMessages/LastMessages'
 import { Layout, Widget } from '@/interfaces/Widgets/Widgets.ts'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import style from './Overview.module.css'
@@ -15,6 +14,7 @@ import '@/../node_modules/react-grid-layout/css/styles.css'
 import '@/../node_modules/react-resizable/css/styles.css'
 import Reminders from '@/components/features/Overview/Widgets/Reminders/Reminders'
 import useDashboard from '@/hooks/Dashboard/useDashboard'
+import OpenDamages from '@/components/features/Overview/Widgets/OpenDamages/OpenDamages'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -35,7 +35,13 @@ const WidgetTemplate: React.FC<{
 const Overview: React.FC = () => {
   const { t } = useTranslation()
   const [areWidgetsMovable, setAreWidgetsMovable] = useState(false)
-  const { reminders, properties, loading, error } = useDashboard()
+  const {
+    reminders,
+    properties,
+    open_damages: openDamages,
+    loading,
+    error
+  } = useDashboard()
 
   const initialLayouts: { lg: Widget[] } = {
     lg: [
@@ -71,15 +77,15 @@ const Overview: React.FC = () => {
           />
         )
       },
-      {
-        i: '3',
-        name: 'LastMessages',
-        x: 0,
-        y: 1,
-        w: 4,
-        h: 2,
-        children: <LastMessages height={2} />
-      },
+      // {
+      //   i: '3',
+      //   name: 'LastMessages',
+      //   x: 0,
+      //   y: 1,
+      //   w: 4,
+      //   h: 2,
+      //   children: <LastMessages height={2} />
+      // },
       {
         i: '4',
         name: 'Reminders',
@@ -90,6 +96,22 @@ const Overview: React.FC = () => {
         children: (
           <Reminders
             reminders={reminders}
+            loading={loading}
+            error={error}
+            height={2}
+          />
+        )
+      },
+      {
+        i: '5',
+        name: 'OpenDamages',
+        x: 0,
+        y: 0,
+        w: 2,
+        h: 2,
+        children: (
+          <OpenDamages
+            openDamages={openDamages}
             loading={loading}
             error={error}
             height={2}
@@ -137,6 +159,19 @@ const Overview: React.FC = () => {
               children: (
                 <Reminders
                   reminders={reminders}
+                  loading={loading}
+                  error={error}
+                  height={widget.h}
+                />
+              )
+            }
+          }
+          if (widget.name === 'OpenDamages') {
+            return {
+              ...widget,
+              children: (
+                <OpenDamages
+                  openDamages={openDamages}
                   loading={loading}
                   error={error}
                   height={widget.h}

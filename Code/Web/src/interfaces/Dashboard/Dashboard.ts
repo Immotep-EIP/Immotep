@@ -51,7 +51,7 @@ export interface DashboardOpenDamages {
   nbr_medium: number
   nbr_low: number
   nbr_planned_to_fix_this_week: number
-  list_to_fix: [DashboardOpenDamagesToFix]
+  list_to_fix: DashboardOpenDamagesToFix[]
 }
 
 export interface UseDashboardReturn {

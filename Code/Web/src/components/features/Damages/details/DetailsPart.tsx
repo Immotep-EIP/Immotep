@@ -11,6 +11,7 @@ import useDamages from '@/hooks/Property/useDamages'
 import useProperties from '@/hooks/Property/useProperties'
 import PriorityTag from '@/components/common/PriorityTag'
 import DamageStatusTag from '@/components/common/DamageStatusTag'
+// import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
 
 const DetailsPart: React.FC = () => {
   const { t } = useTranslation()
@@ -28,6 +29,15 @@ const DetailsPart: React.FC = () => {
   const handleRefresh = () => {
     setRefreshTrigger(prev => prev + 1)
   }
+
+  // useEffect(() => {
+  //   const setDamageAsRead = async () => {
+  //     if (damage && damage.read === 'false') {
+  //       await UpdateDamage({ read: 'true' }, id, damageId)
+  //     }
+  //   }
+  //   setDamageAsRead()
+  // }, [damage, id, damageId])
 
   return (
     <div className={style.mainContainer}>
