@@ -45,6 +45,7 @@ func mainFunc() int {
 		"PORT",
 		"PUBLIC_URL",
 		"WEB_PUBLIC_URL",
+		"SHOWCASE_PUBLIC_URL",
 		"DATABASE_URL",
 		"SECRET_KEY",
 		"OPENAI_API_KEY",

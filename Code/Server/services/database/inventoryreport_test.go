@@ -232,6 +232,55 @@ func TestGetInvReportByPropertyID_NoConnection(t *testing.T) {
 
 // #############################################################################
 
+func TestGetInvReportsByLeaseID(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockGetInvReportsByLeaseID(c)).ReturnsMany([]db.InventoryReportModel{invReport})
+
+	invReports := database.GetInvReportsByLeaseID("1")
+	assert.Len(t, invReports, 1)
+	assert.Equal(t, invReport.ID, invReports[0].ID)
+}
+
+func TestGetInvReportsByLeaseID_MultipleReports(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport1 := BuildTestInventoryReport("1")
+	invReport2 := BuildTestInventoryReport("2")
+	m.InventoryReport.Expect(database.MockGetInvReportsByLeaseID(c)).ReturnsMany([]db.InventoryReportModel{invReport1, invReport2})
+
+	invReports := database.GetInvReportsByLeaseID("1")
+	assert.Len(t, invReports, 2)
+	assert.Equal(t, invReport1.ID, invReports[0].ID)
+	assert.Equal(t, invReport2.ID, invReports[1].ID)
+}
+
+func TestGetInvReportsByLeaseID_NoReports(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetInvReportsByLeaseID(c)).ReturnsMany([]db.InventoryReportModel{})
+
+	invReports := database.GetInvReportsByLeaseID("1")
+	assert.Empty(t, invReports)
+}
+
+func TestGetInvReportsByLeaseID_NoConnection(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetInvReportsByLeaseID(c)).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetInvReportsByLeaseID("1")
+	})
+}
+
+// #############################################################################
+
 func TestGetInvReportByID(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
@@ -297,5 +346,40 @@ func TestGetLatestInvReportByProperty_NoConnection(t *testing.T) {
 
 	assert.Panics(t, func() {
 		database.GetLatestInvReportByProperty("1")
+	})
+}
+
+// #############################################################################
+
+func TestGetLatestInvReportByLease(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockGetLatestInvReportByLease(c)).Returns(invReport)
+
+	latestInvReport := database.GetLatestInvReportByLease("1")
+	assert.NotNil(t, latestInvReport)
+	assert.Equal(t, invReport.ID, latestInvReport.ID)
+}
+
+func TestGetLatestInvReportByLease_NoReports(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetLatestInvReportByLease(c)).Errors(db.ErrNotFound)
+
+	latestInvReport := database.GetLatestInvReportByLease("1")
+	assert.Nil(t, latestInvReport)
+}
+
+func TestGetLatestInvReportByLease_NoConnection(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetLatestInvReportByLease(c)).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetLatestInvReportByLease("1")
 	})
 }

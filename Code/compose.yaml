@@ -24,6 +24,19 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+  migrate:
+    container_name: immotep-migrate
+    build:
+      context: ./Server/
+      dockerfile: Dockerfile.migrate
+    # image: mazettt/immotep-migrate:latest
+    restart: "no"
+    env_file: ./Server/.env.docker
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     container_name: immotep-db
     image: postgres
