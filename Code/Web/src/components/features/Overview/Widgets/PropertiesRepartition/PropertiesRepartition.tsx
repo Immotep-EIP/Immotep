@@ -55,9 +55,7 @@ const PropertiesRepartition: React.FC<PropertiesRepartitionProps> = ({
       <div className={style.contentContainer}>
         <div>
           <span className={style.propertiesNumber}>
-            {(properties?.nbr_available ?? 0) < 9
-              ? `0${properties?.nbr_available ?? 0}`
-              : (properties?.nbr_available ?? '-')}
+            {properties?.nbr_total ?? 0}
           </span>
           <span
             className={style.propertiesNumberText}
@@ -71,9 +69,7 @@ const PropertiesRepartition: React.FC<PropertiesRepartitionProps> = ({
         <div className={style.separator} />
         <div>
           <span className={style.propertiesNumber}>
-            {(properties?.nbr_occupied ?? 0) < 9
-              ? `0${properties?.nbr_occupied ?? 0}`
-              : (properties?.nbr_occupied ?? '-')}
+            {properties?.nbr_occupied ?? 0}
           </span>
           <span
             className={style.propertiesNumberText}

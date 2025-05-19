@@ -46,14 +46,17 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
       style={{ height: `${pixelHeight}px` }}
     >
       <div className={style.contentContainer}>
-        {openDamages.list_to_fix.length === 0 ? (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={t('widgets.reminders.no_reminders')}
-            className={style.empty}
-          />
+        {openDamages?.list_to_fix === null ||
+        openDamages?.list_to_fix?.length === 0 ? (
+          <div className={style.emptyContainer}>
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={t('widgets.reminders.no_reminders')}
+              className={style.empty}
+            />
+          </div>
         ) : (
-          openDamages.list_to_fix.map((damage: DashboardOpenDamagesToFix) => (
+          openDamages?.list_to_fix?.map((damage: DashboardOpenDamagesToFix) => (
             <div key={damage.id} className={style.damageItem}>
               <div className={style.damageInformationsContainer}>
                 <PriorityTag priority={damage.priority} />
@@ -69,7 +72,9 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
                   style={{ fontWeight: 700 }}
                 />
               ) : (
-                <span className={style.damageCommentWithoutBadge}>{damage.comment}</span>
+                <span className={style.damageCommentWithoutBadge}>
+                  {damage.comment}
+                </span>
               )}
             </div>
           ))

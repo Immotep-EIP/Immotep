@@ -54,9 +54,7 @@ const DamagesRepartition: React.FC<DamagesRepartitionProps> = ({
       <div className={style.contentContainer}>
         <div>
           <span className={style.damagesNumber}>
-            {(openDamages.nbr_total ?? 0) < 9
-              ? `0${openDamages.nbr_total ?? 0}`
-              : (openDamages.nbr_total ?? '-')}
+            {openDamages.nbr_total ?? 0}
           </span>
           <span className={style.damagesNumberText}>
             {(openDamages.nbr_total ?? 0) > 1
