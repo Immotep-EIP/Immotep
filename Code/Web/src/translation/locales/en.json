@@ -201,7 +201,8 @@
       "cancel_invitation": "Cancel invitation",
       "add_item": "Add Item",
       "delete_item": "Delete Item",
-      "add_intervention_date": "Add intervention date"
+      "add_intervention_date": "Add intervention date",
+      "modify_intervention_date": "Modify intervention date"
     },
     "modal": {
       "end_contract": {

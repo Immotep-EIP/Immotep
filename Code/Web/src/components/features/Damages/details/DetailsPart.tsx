@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Image, Spin } from 'antd'
-import { EyeOutlined } from '@ant-design/icons'
+import { Image, Spin, Button, Modal, DatePicker, Space } from 'antd'
+import { EyeOutlined, CalendarOutlined } from '@ant-design/icons'
 import { useLocation } from 'react-router-dom'
+import dayjs from 'dayjs'
 import DamageHeader from './DamageHeader'
 import style from './DetailsPart.module.css'
 import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
@@ -19,15 +20,56 @@ const DetailsPart: React.FC = () => {
   const { id, damageId } = location.state || {}
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const { propertyDetails: propertyData } = useProperties(id)
-  const { damage, loading, error } = useDamages(
+  const { damage, loading, error, updateDamage } = useDamages(
     id || '',
     propertyData?.status || '',
     damageId || '',
     refreshTrigger
   )
 
+  // États pour le modal de planification d'intervention
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+
   const handleRefresh = () => {
     setRefreshTrigger(prev => prev + 1)
+  }
+
+  // Gestionnaires pour le modal de planification
+  const handleOpenModal = () => {
+    setIsModalOpen(true)
+    if (damage?.fix_planned_at) {
+      setSelectedDate(new Date(damage.fix_planned_at))
+    }
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+    setSelectedDate(null)
+  }
+
+  const handleOk = async () => {
+    try {
+      if (selectedDate) {
+        const isoDate = selectedDate.toISOString()
+        await updateDamage(id, damageId, {
+          fix_planned_at: isoDate
+        })
+        handleRefresh()
+        handleCancel()
+      }
+    } catch (error) {
+      console.error('Error while setting intervention date:', error)
+    }
+  }
+
+  const handleDateChange = (date: any) => {
+    if (date) {
+      const jsDate = date.toDate()
+      setSelectedDate(jsDate)
+    } else {
+      setSelectedDate(null)
+    }
   }
 
   useEffect(() => {
@@ -48,12 +90,7 @@ const DetailsPart: React.FC = () => {
       {error && <div>{t('components.error', { message: error })}</div>}
       {damage && (
         <>
-          <DamageHeader
-            propertyId={id}
-            propertyStatus={propertyData?.status || ''}
-            damageId={damageId}
-            onDataUpdated={handleRefresh}
-          />
+          <DamageHeader />
           <div className={style.headerInformationContainer}>
             <div className={style.damageInfosContainer}>
               <div className={style.rowContainer}>
@@ -90,12 +127,23 @@ const DetailsPart: React.FC = () => {
                   subtitleKey={t('pages.damage_details.fix_planned_at')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
                 >
-                  {damage.fix_planned_at
-                    ? (() => {
-                        const date = new Date(damage.fix_planned_at)
-                        return `${date.toLocaleDateString()} ${t('pages.damage_details.at')} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-                      })()
-                    : '-'}
+                  <div className={style.dateWithButtonContainer}>
+                    <span>
+                      {damage.fix_planned_at
+                        ? (() => {
+                            const date = new Date(damage.fix_planned_at)
+                            return `${date.toLocaleDateString()} ${t('pages.damage_details.at')} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                          })()
+                        : '-'}
+                    </span>
+                    <Button
+                      type="primary"
+                      icon={<CalendarOutlined />}
+                      size="small"
+                      onClick={handleOpenModal}
+                      style={{ marginLeft: '0.5rem' }}
+                    />
+                  </div>
                 </SubtitledElement>
               </div>
               <div className={style.rowContainer}>
@@ -138,6 +186,31 @@ const DetailsPart: React.FC = () => {
               </div>
             </SubtitledElement>
           </div>
+
+          <Modal
+            title={
+              damage.fix_planned_at
+                ? t('components.button.modify_intervention_date')
+                : t('components.button.add_intervention_date')
+            }
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            okText={t('components.button.confirm')}
+            cancelText={t('components.button.cancel')}
+          >
+            <Space
+              direction="vertical"
+              style={{ width: '100%', marginTop: 16 }}
+            >
+              <DatePicker
+                onChange={handleDateChange}
+                style={{ width: '100%' }}
+                showTime
+                value={selectedDate ? dayjs(selectedDate) : null}
+              />
+            </Space>
+          </Modal>
         </>
       )}
     </div>
