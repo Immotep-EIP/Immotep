@@ -495,6 +495,8 @@
     },
     "damage_details": {
       "title": "Détails du dommage",
+      "title_damage": "Dommage",
+      "title_damages": "Dommages",
       "pictures": "Images",
       "comment": "Commentaire",
       "created_at": "Créé le",
@@ -505,7 +507,13 @@
       "fix_status": "Statut de l'intervention",
       "update_success": "Dommage mis à jour avec succès",
       "update_error": "Erreur lors de la mise à jour du dommage",
-      "at": "à"
+      "at": "à",
+      "status": {
+        "urgent": "Urgent",
+        "high": "Haut",
+        "medium": "Moyen",
+        "low": "Bas"
+      }
     },
     "overview": {
       "document_title": "Aperçu",

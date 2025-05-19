@@ -495,6 +495,8 @@
     },
     "damage_details": {
       "title": "Damage details",
+      "title_damage": "Damage",
+      "title_damages": "Damages",
       "pictures": "Images",
       "comment": "Comment",
       "created_at": "Created at",
@@ -505,7 +507,13 @@
       "fix_status": "Intervention status",
       "update_success": "Damage updated successfully",
       "update_error": "Error while updating damage",
-      "at": "at"
+      "at": "at",
+      "status": {
+        "urgent": "Urgent",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      }
     },
     "overview": {
       "document_title": "Overview",

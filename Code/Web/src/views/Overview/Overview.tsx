@@ -15,6 +15,7 @@ import '@/../node_modules/react-resizable/css/styles.css'
 import Reminders from '@/components/features/Overview/Widgets/Reminders/Reminders'
 import useDashboard from '@/hooks/Dashboard/useDashboard'
 import OpenDamages from '@/components/features/Overview/Widgets/OpenDamages/OpenDamages'
+import DamagesRepartition from '@/components/features/Overview/Widgets/DamagesRepartition/DamagesRepartition'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -117,6 +118,22 @@ const Overview: React.FC = () => {
             height={2}
           />
         )
+      },
+      {
+        i: '6',
+        name: 'DamagesRepartition',
+        x: 6,
+        y: 0,
+        w: 2,
+        h: 1,
+        children: (
+          <DamagesRepartition
+            openDamages={openDamages}
+            loading={loading}
+            error={error}
+            height={2}
+          />
+        )
       }
     ]
   }
@@ -171,6 +188,19 @@ const Overview: React.FC = () => {
               ...widget,
               children: (
                 <OpenDamages
+                  openDamages={openDamages}
+                  loading={loading}
+                  error={error}
+                  height={widget.h}
+                />
+              )
+            }
+          }
+          if (widget.name === 'DamagesRepartition') {
+            return {
+              ...widget,
+              children: (
+                <DamagesRepartition
                   openDamages={openDamages}
                   loading={loading}
                   error={error}
