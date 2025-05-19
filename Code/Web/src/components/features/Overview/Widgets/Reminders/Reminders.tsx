@@ -52,11 +52,13 @@ const Reminders: React.FC<RemindersProps> = ({
           reminders.map(reminder => (
             <div key={reminder.id} className={style.reminderItem}>
               <div className={style.reminderTexts}>
+                <span className={style.titleText}>{reminder.title}</span>
                 <div className={style.reminderheader}>
-                  <span className={style.titleText}>{reminder.title}</span>
                   <PriorityTag priority={reminder.priority} />
+                  <span className={style.descriptionText}>
+                    {reminder.advice}
+                  </span>
                 </div>
-                <span className={style.descriptionText}>{reminder.advice}</span>
               </div>
             </div>
           ))
