@@ -68,7 +68,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
         </Form.Item>
         <Form.Item
           name="roomType"
-          label={t('components.input.room_type.label')}
+          label={t('components.select.room_type.placeholder')}
           rules={[
             { required: true, message: t('components.input.room_type.error') }
           ]}
