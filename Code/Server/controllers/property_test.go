@@ -865,6 +865,7 @@ func TestArchiveProperty(t *testing.T) {
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
+	property.Leases()[0].Active = false
 	updatedProperty := property
 	updatedProperty.Archived = true
 	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
@@ -885,6 +886,32 @@ func TestArchiveProperty(t *testing.T) {
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	assert.JSONEq(t, resp.ID, property.ID)
+}
+
+func TestArchiveProperty_NonFree(t *testing.T) {
+	c, mock, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	property := BuildTestProperty("1")
+	updatedProperty := property
+	updatedProperty.Archived = true
+	mock.Property.Expect(database.MockGetPropertyByID(c)).Returns(property)
+
+	b, err := json.Marshal(map[string]bool{"archive": true})
+	require.NoError(t, err)
+
+	r := router.TestRoutes()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPut, "/v1/owner/properties/1/archive/", bytes.NewReader(b))
+	req.Header.Set("Oauth.claims.id", "1")
+	req.Header.Set("Oauth.claims.role", string(db.RoleOwner))
+	r.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusConflict, w.Code)
+	var resp utils.Error
+	err = json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Equal(t, utils.CannotArchiveNonFreeProperty, resp.Code)
 }
 
 func TestArchiveProperty_NotFound(t *testing.T) {
