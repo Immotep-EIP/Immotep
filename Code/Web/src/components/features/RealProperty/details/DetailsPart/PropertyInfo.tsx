@@ -38,6 +38,8 @@ const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
           subtitleKey={t('pages.real_property_details.informations.tenant')}
         >
           <span className={style.detailsText}>
+            {propertyData.lease?.tenant_name || '-----------'}
+            {' - '}
             {propertyData.lease?.tenant_email || '-----------'}
           </span>
         </SubtitledElement>
