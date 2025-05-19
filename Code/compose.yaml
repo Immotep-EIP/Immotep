@@ -1,5 +1,18 @@
 name: immotep
 services:
+  showcase:
+    container_name: immotep-showcase
+    build:
+      context: ./ShowcaseKeyz/
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+    # image: mazettt/immotep-showcase:latest
+    restart: always
+    ports:
+      - 3003:3003
+    depends_on:
+      server:
+        condition: service_started
   frontend:
     container_name: immotep-frontend
     build:
