@@ -353,22 +353,22 @@ struct CustomAlertWithTwoTextFields: View {
         @Binding var textFieldInput: String
         @State private var selectedRoomType: String
         let roomTypes = [
-            "dressing",
-            "laundryroom",
-            "bedroom",
-            "playroom",
-            "bathroom",
-            "toilet",
-            "livingroom",
-            "diningroom",
-            "kitchen",
-            "hallway",
-            "balcony",
-            "cellar",
-            "garage",
-            "storage",
-            "office",
-            "other"
+            "dressing".localized(),
+            "laundryroom".localized(),
+            "bedroom".localized(),
+            "playroom".localized(),
+            "bathroom".localized(),
+            "toilet".localized(),
+            "livingroom".localized(),
+            "diningroom".localized(),
+            "kitchen".localized(),
+            "hallway".localized(),
+            "balcony".localized(),
+            "cellar".localized(),
+            "garage".localized(),
+            "storage".localized(),
+            "office".localized(),
+            "other".localized()
         ]
 
         let title: String
@@ -422,8 +422,9 @@ struct CustomAlertWithTwoTextFields: View {
                         .padding(.bottom, 10)
                         .foregroundStyle(Color("textColor"))
 
-                    TextField("Enter room name", text: $textFieldInput)
+                    TextField("Enter room name".localized(), text: $textFieldInput)
                         .frame(height: 35)
+                        .padding(.leading, 10)
                         .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
                         .padding(.horizontal)
 

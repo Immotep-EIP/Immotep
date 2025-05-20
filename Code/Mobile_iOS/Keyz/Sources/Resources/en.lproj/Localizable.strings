@@ -138,3 +138,20 @@
 "no_damages_reported" = "No damages reported";
 "Unable to load PDF" = "Unable to load PDF";
 "No active lease" = "No active lease";
+
+"dressing" = "Dressing";
+"laundryroom" = "Laundry room";
+"bedroom" = "Bedroom";
+"playroom" = "Play room";
+"bathroom" = "Bathroom";
+"toilet" = "Toilet";
+"livingroom" = "Living room";
+"diningroom" = "Dining room";
+"kitchen" = "Kitchen";
+"hallway" = "Hallway";
+"balcony" = "Balcony";
+"cellar" = "Cellar";
+"garage" = "Garage";
+"storage" = "Storage";
+"office" = "Office";
+"other" = "Other";

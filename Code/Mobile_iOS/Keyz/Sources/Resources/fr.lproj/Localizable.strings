@@ -138,3 +138,30 @@
 "no_damages_reported" = "Aucun sinistre signalé";
 "Unable to load PDF" = "Impossible de charger le PDF";
 "No active lease" = "Pas de contrat actif";
+
+"dressing" = "Dressing";
+"laundryroom" = "Buanderie";
+"bedroom" = "Chambre à coucher";
+"playroom" = "Salle de jeux";
+"bathroom" = "Salle de bain";
+"toilet" = "Toilettes";
+"livingroom" = "Salon";
+"diningroom" = "Salle à manger";
+"kitchen" = "Cuisine";
+"hallway" = "Couloir";
+"balcony" = "Balcon";
+"cellar" = "Cave";
+"garage" = "Garage";
+"storage" = "Débarras";
+"office" = "Bureau";
+"other" = "Autre";
+"Enter room name" = "Entrez un nom de pièce";
+"Room Type" = "Type de pièce";
+
+"Finalize Inventory" = "Finaliser l'état des lieux";
+"Add a Room" = "Ajouter une pièce";
+"Choose a name and type for your new room:" = "Choisir un nom et un type de pièce";
+"Add" = "Ajouter";
+"Delete Room" = "Supprimer une pièce";
+"Are you sure you want to delete the room %@?" = "Êtes-vous sûr de vouloir supprimer la pièce %@ ?";
+"Delete" = "Supprimer";
