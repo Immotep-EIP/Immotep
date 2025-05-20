@@ -25,16 +25,6 @@ const Reminders: React.FC<RemindersProps> = ({
   const rowHeight = 120
   const pixelHeight = height * rowHeight
 
-  const navigateTo = (link: string) => {
-    const cleanLink = link.replace(/^(https?:\/\/)?([^/]+)\//, '/')
-
-    const formattedLink = cleanLink.startsWith('/')
-      ? cleanLink
-      : `/${cleanLink}`
-
-    navigate(formattedLink)
-  }
-
   if (loading || reminders === null) {
     return (
       <div>
@@ -65,11 +55,11 @@ const Reminders: React.FC<RemindersProps> = ({
             <div
               key={reminder.id}
               className={style.reminderItem}
-              onClick={() => navigateTo(reminder.link)}
+              onClick={() => navigate(reminder.link)}
               onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
-                  navigateTo(reminder.link)
+                  navigate(reminder.link)
                 }
               }}
               role="button"
