@@ -2,11 +2,13 @@ import React from 'react'
 import { Button, Dropdown, MenuProps } from 'antd'
 import { MoreOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import returnIcon from '@/assets/icons/retour.svg'
 import PageTitle from '@/components/ui/PageText/Title'
 import { PropertyHeaderProps } from '@/interfaces/Property/Property'
 import style from './DetailsPart.module.css'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
+import NavigationEnum from '@/enums/NavigationEnum'
 
 const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   onShowModal,
@@ -19,6 +21,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   propertyArchived
 }) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   const items: MenuProps['items'] = [
     {
@@ -67,12 +70,12 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
       <div className={style.titleContainer}>
         <div
           className={style.returnButtonContainer}
-          onClick={() => window.history.back()}
+          onClick={() => navigate(NavigationEnum.REAL_PROPERTY)}
           tabIndex={0}
           role="button"
           onKeyDown={e => {
             if (e.key === 'Enter') {
-              window.history.back()
+              navigate(NavigationEnum.REAL_PROPERTY)
             }
           }}
         >
