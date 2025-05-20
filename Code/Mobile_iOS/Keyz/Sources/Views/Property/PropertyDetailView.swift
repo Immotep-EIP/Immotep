@@ -253,18 +253,17 @@ struct PropertyDetailView: View {
                                     .padding(.horizontal)
                                 }
                             }
-                            .onChange(of: selectedTab) {
-                                if selectedTab == "Damages".localized() {
-                                    Task {
-                                        do {
-                                            try await viewModel.fetchPropertyDamages(propertyId: property.id)
-                                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                                property = updatedProperty
-                                            }
-                                        } catch {
-                                            viewModel.damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
-                                            print("Error fetching damages: \(error.localizedDescription)")
+                            .onAppear {
+                                print("Tab switched to Damages, fetching damages...")
+                                Task {
+                                    do {
+                                        try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                            property = updatedProperty
                                         }
+                                    } catch {
+                                        viewModel.damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
+                                        print("Error fetching damages: \(error.localizedDescription)")
                                     }
                                 }
                             }
@@ -563,11 +562,13 @@ struct DamageItem: View {
 
     private func formatDateString(_ dateString: String) -> String {
         let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if let date = formatter.date(from: dateString) {
             let displayFormatter = DateFormatter()
-            displayFormatter.dateStyle = .medium
-            displayFormatter.timeStyle = .none
-            return displayFormatter.string(from: date)
+            displayFormatter.dateFormat = "dd/MM/yyyy"
+            displayFormatter.locale = Locale(identifier: "en_GB")
+            let formattedDate = displayFormatter.string(from: date)
+            return formattedDate
         }
         return dateString
     }
