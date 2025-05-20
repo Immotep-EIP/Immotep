@@ -78,6 +78,7 @@ struct PropertyView: View {
                     Text("No properties available".localized())
                         .foregroundColor(.gray)
                         .padding()
+                        .frame(maxWidth: .infinity)
                 } else {
                     ForEach($viewModel.properties) { $property in
                         NavigationLink(destination: PropertyDetailView(property: $property, viewModel: viewModel)) {
@@ -198,7 +199,8 @@ let exampleDataProperty2: [Property] = [
                 checked: false,
                 inventory: []
             )
-        ]
+        ],
+        damages: []
     ),
     Property(
         id: "cm7gijdee000ly7i82uq0qf36",
@@ -225,6 +227,7 @@ let exampleDataProperty2: [Property] = [
                 checked: true,
                 inventory: []
             )
-        ]
+        ],
+        damages: []
     )
 ]

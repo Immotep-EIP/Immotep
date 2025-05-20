@@ -4,6 +4,7 @@
 //
 //  Created by Liebenguth Alessio on 25/11/2024.
 //
+
 import SwiftUI
 import PDFKit
 
@@ -29,153 +30,155 @@ struct PropertyDetailView: View {
             VStack(spacing: 0) {
                 TopBar(title: "Keyz".localized())
 
+                VStack(alignment: .leading, spacing: 16) {
+                    ZStack(alignment: .topLeading) {
+                        if isLoading {
+                            VStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                Spacer()
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: 200)
+                        } else if let uiImage = property.photo {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 200)
+                                .clipped()
+                        } else {
+                            Image("DefaultImageProperty")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 200)
+                                .clipped()
+                                .accessibilityLabel("image_property")
+                        }
+
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .font(.title3)
+                                .foregroundColor(.white)
+                                .frame(width: 40, height: 40)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                        .padding(16)
+                        .accessibilityLabel("back_button")
+
+                        Menu {
+                            Button(action: {
+                                showInviteTenantSheet = true
+                            }) {
+                                Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
+                            }
+                            
+                            Button(action: {
+                                showEndLeasePopUp = true
+                            }) {
+                                Label("End Lease".localized(), systemImage: "xmark.circle")
+                            }
+                            
+                            Button(action: {
+                                showCancelInvitePopUp = true
+                            }) {
+                                Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
+                            }
+                            
+                            Button(action: {
+                                showEditPropertyPopUp = true
+                            }) {
+                                Label("Edit Property".localized(), systemImage: "pencil")
+                            }
+                            
+                            Button(action: {
+                                showDeletePropertyPopUp = true
+                            }) {
+                                Label("Delete Property".localized(), systemImage: "trash")
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .font(.title3)
+                                .foregroundColor(.white)
+                                .frame(width: 40, height: 40)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                        .frame(maxWidth: .infinity, alignment: .topTrailing)
+                        .padding(16)
+                        .accessibilityLabel("options_button")
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(property.name)
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color("textColor"))
+
+                            Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
+                                )
+                                .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
+                        }
+                        HStack(spacing: 4) {
+                            Image(systemName: "mappin.and.ellipse.circle")
+                                .font(.caption)
+                                .foregroundColor(Color("LightBlue"))
+                            Text("\(property.address), \(property.city), \(property.country)")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .lineLimit(1)
+                                .accessibilityLabel("text_address")
+                        }
+                    }
+                    .padding(.horizontal)
+
+                    HStack(spacing: 10) {
+                        ForEach(tabs, id: \.self) { tab in
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    selectedTab = tab
+                                }
+                            }) {
+                                Text(tab)
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(selectedTab == tab ? .white : .gray)
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 16)
+                                    .background(
+                                        selectedTab == tab
+                                            ? Color("LightBlue")
+                                            : Color.gray.opacity(0.1)
+                                    )
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    .scaleEffect(selectedTab == tab ? 1.05 : 1.0)
+                                    .shadow(
+                                        color: selectedTab == tab ? Color.black.opacity(0.2) : Color.clear,
+                                        radius: 4, x: 0, y: 2
+                                    )
+                            }
+                            .accessibilityLabel("tab_\(tab.lowercased())")
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(Color("basicWhiteBlack"))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 8)
+                }
+
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        ZStack(alignment: .topLeading) {
-                            if isLoading {
-                                VStack {
-                                    Spacer()
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle())
-                                    Spacer()
-                                }
-                                .frame(maxWidth: .infinity, maxHeight: 200)
-                            } else if let uiImage = property.photo {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(height: 200)
-                                    .clipped()
-                            } else {
-                                Image("DefaultImageProperty")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(height: 200)
-                                    .clipped()
-                                    .accessibilityLabel("image_property")
-                            }
-
-                            Button(action: {
-                                dismiss()
-                            }) {
-                                Image(systemName: "chevron.left")
-                                    .font(.title3)
-                                    .foregroundColor(.white)
-                                    .frame(width: 40, height: 40)
-                                    .background(Color.black.opacity(0.6))
-                                    .clipShape(Circle())
-                            }
-                            .padding(16)
-                            .accessibilityLabel("back_button")
-
-                            Menu {
-                                Button(action: {
-                                    showInviteTenantSheet = true
-                                }) {
-                                    Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
-                                }
-                                
-                                Button(action: {
-                                    showEndLeasePopUp = true
-                                }) {
-                                    Label("End Lease".localized(), systemImage: "xmark.circle")
-                                }
-                                
-                                Button(action: {
-                                    showCancelInvitePopUp = true
-                                }) {
-                                    Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
-                                }
-                                
-                                Button(action: {
-                                    showEditPropertyPopUp = true
-                                }) {
-                                    Label("Edit Property".localized(), systemImage: "pencil")
-                                }
-                                
-                                Button(action: {
-                                    showDeletePropertyPopUp = true
-                                }) {
-                                    Label("Delete Property".localized(), systemImage: "trash")
-                                }
-                            } label: {
-                                Image(systemName: "ellipsis")
-                                    .font(.title3)
-                                    .foregroundColor(.white)
-                                    .frame(width: 40, height: 40)
-                                    .background(Color.black.opacity(0.6))
-                                    .clipShape(Circle())
-                            }
-                            .frame(maxWidth: .infinity, alignment: .topTrailing)
-                            .padding(16)
-                            .accessibilityLabel("options_button")
-                        }
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text(property.name)
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color("textColor"))
-
-                                Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
-                                    )
-                                    .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
-                            }
-                            HStack(spacing: 4) {
-                                Image(systemName: "mappin.and.ellipse.circle")
-                                    .font(.caption)
-                                    .foregroundColor(Color("LightBlue"))
-                                Text("\(property.address), \(property.city), \(property.country)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                                    .lineLimit(1)
-                                    .accessibilityLabel("text_address")
-                            }
-                        }
-                        .padding(.horizontal)
-
-                        HStack(spacing: 10) {
-                            ForEach(tabs, id: \.self) { tab in
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        selectedTab = tab
-                                    }
-                                }) {
-                                    Text(tab)
-                                        .font(.system(size: 16, weight: .medium))
-                                        .foregroundColor(selectedTab == tab ? .white : .gray)
-                                        .padding(.vertical, 10)
-                                        .padding(.horizontal, 16)
-                                        .background(
-                                            selectedTab == tab
-                                                ? Color("LightBlue")
-                                                : Color.gray.opacity(0.1)
-                                        )
-                                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                                        .scaleEffect(selectedTab == tab ? 1.05 : 1.0)
-                                        .shadow(
-                                            color: selectedTab == tab ? Color.black.opacity(0.2) : Color.clear,
-                                            radius: 4, x: 0, y: 2
-                                        )
-                                }
-                                .accessibilityLabel("tab_\(tab.lowercased())")
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(Color("basicWhiteBlack"))
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 8)
-
                         switch selectedTab {
                         case "Details".localized():
                             VStack(alignment: .leading, spacing: 16) {
@@ -226,16 +229,51 @@ struct PropertyDetailView: View {
 
                         case "Damages".localized():
                             VStack {
-                                Text("no_damages_reported".localized())
-                                    .foregroundColor(.gray)
-                                    .padding()
+                                if viewModel.isFetchingDamages {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                        .padding()
+                                } else if let damagesError = viewModel.damagesError {
+                                    Text(damagesError)
+                                        .foregroundColor(.red)
+                                        .padding()
+                                } else if property.damages.isEmpty {
+                                    Text("no_damages_reported".localized())
+                                        .foregroundColor(.gray)
+                                        .padding()
+                                } else {
+                                    LazyVGrid(
+                                        columns: [GridItem(.flexible())],
+                                        spacing: 10
+                                    ) {
+                                        ForEach(property.damages) { damage in
+                                            DamageItem(damage: damage)
+                                        }
+                                    }
+                                    .padding(.horizontal)
+                                }
+                            }
+                            .onChange(of: selectedTab) {
+                                if selectedTab == "Damages".localized() {
+                                    Task {
+                                        do {
+                                            try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                                property = updatedProperty
+                                            }
+                                        } catch {
+                                            viewModel.damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
+                                            print("Error fetching damages: \(error.localizedDescription)")
+                                        }
+                                    }
+                                }
                             }
 
                         default:
                             EmptyView()
                         }
                     }
-                    .padding(.bottom, 20)
+                    .padding(.vertical, 20)
                 }
 
                 NavigationLink {
@@ -276,7 +314,6 @@ struct PropertyDetailView: View {
                             }
                         } catch {
                             print("Error fetching property data: \(error.localizedDescription)")
-//                            errorMessage = "Error fetching property data: \(error.localizedDescription)" // handle no document error
                         }
                         isLoading = false
                     }
@@ -469,6 +506,73 @@ struct DocumentsGrid: View {
     }
 }
 
+struct DamageItem: View {
+    let damage: DamageResponse
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(damage.roomName)
+                    .font(.headline)
+                    .foregroundColor(Color("textColor"))
+                Spacer()
+                Text(damage.priority.capitalized)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(priorityColor(damage.priority))
+                    )
+            }
+            Text(damage.comment)
+                .font(.subheadline)
+                .foregroundColor(.gray)
+            HStack {
+                Text("Status: \(damage.fixStatus.replacingOccurrences(of: "_", with: " ").capitalized)")
+                    .font(.caption)
+                    .foregroundColor(damage.fixStatus == "fixed" ? Color("GreenAlert") : Color("RedAlert"))
+                Spacer()
+                Text(formatDateString(damage.createdAt))
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+        }
+        .padding()
+        .background(Color("basicWhiteBlack"))
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+    }
+
+    private func priorityColor(_ priority: String) -> Color {
+        switch priority.lowercased() {
+        case "low":
+            return Color("GreenAlert")
+        case "medium":
+            return .yellow
+        case "high":
+            return .orange
+        case "urgent":
+            return Color("RedAlert")
+        default:
+            return .gray
+        }
+    }
+
+    private func formatDateString(_ dateString: String) -> String {
+        let formatter = ISO8601DateFormatter()
+        if let date = formatter.date(from: dateString) {
+            let displayFormatter = DateFormatter()
+            displayFormatter.dateStyle = .medium
+            displayFormatter.timeStyle = .none
+            return displayFormatter.string(from: date)
+        }
+        return dateString
+    }
+}
+
 struct PropertyDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let property = Property(
@@ -488,7 +592,77 @@ struct PropertyDetailView_Previews: PreviewProvider {
             leaseStartDate: "2025-04-08T22:00:00Z",
             leaseEndDate: nil,
             documents: [],
-            rooms: []
+            rooms: [],
+            damages: [
+                DamageResponse(
+                    id: "damage_001",
+                    comment: "Cracked window in the living room",
+                    priority: "high",
+                    roomName: "Living Room",
+                    fixStatus: "pending",
+                    pictures: ["base64_image_1"],
+                    createdAt: "2025-05-10T09:00:00Z",
+                    updatedAt: nil,
+                    fixPlannedAt: "2025-05-25T14:00:00Z",
+                    fixedAt: nil,
+                    leaseId: "lease_001",
+                    propertyId: "",
+                    propertyName: "Condo",
+                    tenantName: "John & Mary Doe",
+                    read: true
+                ),
+                DamageResponse(
+                    id: "damage_002",
+                    comment: "Leaking faucet in the kitchen",
+                    priority: "medium",
+                    roomName: "Kitchen",
+                    fixStatus: "fixed",
+                    pictures: ["base64_image_2"],
+                    createdAt: "2025-05-12T11:00:00Z",
+                    updatedAt: "2025-05-18T15:00:00Z",
+                    fixPlannedAt: nil,
+                    fixedAt: "2025-05-18T15:00:00Z",
+                    leaseId: "lease_001",
+                    propertyId: "",
+                    propertyName: "Condo",
+                    tenantName: "John & Mary Doe",
+                    read: false
+                ),
+                DamageResponse(
+                    id: "damage_003",
+                    comment: "Scratched floor in bedroom",
+                    priority: "low",
+                    roomName: "Bedroom",
+                    fixStatus: "pending",
+                    pictures: [],
+                    createdAt: "2025-05-15T08:00:00Z",
+                    updatedAt: nil,
+                    fixPlannedAt: nil,
+                    fixedAt: nil,
+                    leaseId: "lease_001",
+                    propertyId: "",
+                    propertyName: "Condo",
+                    tenantName: "John & Mary Doe",
+                    read: true
+                ),
+                DamageResponse(
+                    id: "damage_004",
+                    comment: "Scratched floor in bedroom",
+                    priority: "low",
+                    roomName: "Bedroom",
+                    fixStatus: "pending",
+                    pictures: [],
+                    createdAt: "2025-05-15T08:00:00Z",
+                    updatedAt: nil,
+                    fixPlannedAt: nil,
+                    fixedAt: nil,
+                    leaseId: "lease_001",
+                    propertyId: "",
+                    propertyName: "Condo",
+                    tenantName: "John & Mary Doe",
+                    read: true
+                )
+            ]
         )
         
         let viewModel = PropertyViewModel()
