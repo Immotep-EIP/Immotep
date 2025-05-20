@@ -45,6 +45,14 @@
   border-bottom: none;
 }
 
+.reminderItem:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.reminderItem:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .reminderTexts {
   display: flex;
   flex-direction: column;
