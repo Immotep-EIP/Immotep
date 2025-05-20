@@ -33,7 +33,7 @@ type Reminder struct {
 	Priority db.Priority `json:"priority"`
 	Title    string      `json:"title"`
 	Advice   string      `json:"advice"`
-	Link     string      `json:"link"`
+	Link     string      `json:"link,omitempty"`
 }
 
 type reminderModel map[string]Reminder
@@ -45,7 +45,9 @@ func (model reminderModel) Get(lang string) Reminder {
 	} else {
 		res = model["en"]
 	}
-	res.Link = os.Getenv("WEB_PUBLIC_URL") + res.Link
+	if res.Link != "" {
+		res.Link = os.Getenv("WEB_PUBLIC_URL") + res.Link
+	}
 	return res
 }
 
@@ -59,6 +61,7 @@ func replacePlaceholders(text string, placeholders map[string]string) string {
 func (r Reminder) WithPlaceholders(values map[string]string) Reminder {
 	r.Title = replacePlaceholders(r.Title, values)
 	r.Advice = replacePlaceholders(r.Advice, values)
+	r.Link = replacePlaceholders(r.Link, values)
 	return r
 }
 
@@ -69,21 +72,22 @@ var ReminderLeaseEnding = reminderModel{
 		Priority: db.PriorityHigh,
 		Title:    "Lease of property {property} is ending in {days} days.",
 		Advice:   "Plan an inventory appointment with the tenant to fill the inventory report.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 	"fr": {
 		Id:       "1",
 		Priority: db.PriorityHigh,
 		Title:    "Le bail de la propriété {property} se termine dans {days} jours.",
 		Advice:   "Planifiez un rendez-vous avec le locataire pour remplir l'état des lieux.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 }
 
-func GetReminderLeaseEnding(lang string, property string, days int) Reminder {
+func GetReminderLeaseEnding(lang string, property db.PropertyModel, days int) Reminder {
 	return ReminderLeaseEnding.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
-		"days":     strconv.Itoa(days),
+		"property":    property.Name,
+		"days":        strconv.Itoa(days),
+		"property_id": property.ID,
 	})
 }
 
@@ -94,20 +98,21 @@ var ReminderNoInventoryReport = reminderModel{
 		Priority: db.PriorityHigh,
 		Title:    "Lease of property {property} started recently and does not have an inventory report.",
 		Advice:   "Plan an appointment with the tenant to fill the inventory report.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 	"fr": {
 		Id:       "2",
 		Priority: db.PriorityHigh,
 		Title:    "Le bail de la propriété {property} a récemment commencé et n'a pas d'état des lieux.",
 		Advice:   "Planifiez un rendez-vous avec le locataire pour remplir l'état des lieux.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 }
 
-func GetReminderNoInventoryReport(lang string, property string) Reminder {
+func GetReminderNoInventoryReport(lang string, property db.PropertyModel) Reminder {
 	return ReminderNoInventoryReport.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
+		"property":    property.Name,
+		"property_id": property.ID,
 	})
 }
 
@@ -118,20 +123,21 @@ var ReminderPropertyAvailable = reminderModel{
 		Priority: db.PriorityLow,
 		Title:    "Property {property} is available for rent.",
 		Advice:   "Consider inviting a new tenant.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 	"fr": {
 		Id:       "3",
 		Priority: db.PriorityLow,
 		Title:    "La propriété {property} est disponible à la location.",
 		Advice:   "Envisagez d'inviter un nouveau locataire.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 }
 
-func GetReminderPropertyAvailable(lang string, property string) Reminder {
+func GetReminderPropertyAvailable(lang string, property db.PropertyModel) Reminder {
 	return ReminderPropertyAvailable.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
+		"property":    property.Name,
+		"property_id": property.ID,
 	})
 }
 
@@ -142,20 +148,21 @@ var ReminderEmptyInventory = reminderModel{
 		Priority: db.PriorityMedium,
 		Title:    "Inventory of property {property} is empty.",
 		Advice:   "Please add rooms and furnitures to be able to fill the inventory report quickly during your first visit of the property.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 	"fr": {
 		Id:       "4",
 		Priority: db.PriorityMedium,
 		Title:    "L'inventaire de la propriété {property} est vide.",
 		Advice:   "Veuillez ajouter des chambers et des meubles pour pouvoir remplir rapidement l'état des lieux lors de votre première visite de la propriété.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 }
 
-func GetReminderEmptyInventory(lang string, property string) Reminder {
+func GetReminderEmptyInventory(lang string, property db.PropertyModel) Reminder {
 	return ReminderEmptyInventory.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
+		"property":    property.Name,
+		"property_id": property.ID,
 	})
 }
 
@@ -166,21 +173,22 @@ var ReminderPendingLeaseInvitation = reminderModel{
 		Priority: db.PriorityMedium,
 		Title:    "Lease invitation for property {property} has been pending for {days} days.",
 		Advice:   "Follow up with the prospective tenant.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 	"fr": {
 		Id:       "5",
 		Priority: db.PriorityMedium,
 		Title:    "L'invitation à la location de la propriété {property} est en attente depuis {days} jours.",
 		Advice:   "Relancez le locataire potentiel.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}",
 	},
 }
 
-func GetReminderPendingLeaseInvitation(lang string, property string, days int) Reminder {
+func GetReminderPendingLeaseInvitation(lang string, property db.PropertyModel, days int) Reminder {
 	return ReminderPendingLeaseInvitation.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
-		"days":     strconv.Itoa(days),
+		"property":    property.Name,
+		"days":        strconv.Itoa(days),
+		"property_id": property.ID,
 	})
 }
 
@@ -191,22 +199,24 @@ var ReminderNewDamageReported = reminderModel{
 		Priority: db.PriorityHigh,
 		Title:    "New {priority} damage reported in room {room} of property {property}.",
 		Advice:   "Please review and plan a fix date.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 	"fr": {
 		Id:       "6",
 		Priority: db.PriorityHigh,
 		Title:    "Nouveau dommage {priority} signalé dans la pièce {room} de la propriété {property}.",
 		Advice:   "Veuillez examiner et planifier une date de réparation.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 }
 
-func GetReminderNewDamageReported(lang string, property string, room string, priority db.Priority) Reminder {
+func GetReminderNewDamageReported(lang string, property db.PropertyModel, damage db.DamageModel) Reminder {
 	return ReminderNewDamageReported.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
-		"room":     room,
-		"priority": string(priority),
+		"property":    property.Name,
+		"room":        damage.Room().Name,
+		"priority":    string(damage.Priority),
+		"property_id": property.ID,
+		"damage_id":   damage.ID,
 	})
 }
 
@@ -217,22 +227,24 @@ var ReminderDamageFixPlanned = reminderModel{
 		Priority: db.PriorityHigh,
 		Title:    "Damage in room {room} of property {property} is planned to be fixed in {days} days.",
 		Advice:   "Please remember to check the progress.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 	"fr": {
 		Id:       "7",
 		Priority: db.PriorityHigh,
 		Title:    "Le dommage dans la pièce {room} de la propriété {property} doit être réparé dans {days} jours.",
 		Advice:   "Veuillez vous souvenir de vérifier l'avancement.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 }
 
-func GetReminderDamageFixPlanned(lang string, property string, room string, days int) Reminder {
+func GetReminderDamageFixPlanned(lang string, property db.PropertyModel, damage db.DamageModel, days int) Reminder {
 	return ReminderDamageFixPlanned.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
-		"room":     room,
-		"days":     strconv.Itoa(days),
+		"property":    property.Name,
+		"room":        damage.Room().Name,
+		"days":        strconv.Itoa(days),
+		"property_id": property.ID,
+		"damage_id":   damage.ID,
 	})
 }
 
@@ -243,21 +255,23 @@ var ReminderUrgentDamageNotPlanned = reminderModel{
 		Priority: db.PriorityUrgent,
 		Title:    "Urgent damage in room {room} of property {property} is not planned to be fixed.",
 		Advice:   "Please plan a fix date.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 	"fr": {
 		Id:       "8",
 		Priority: db.PriorityUrgent,
 		Title:    "Le dommage urgent dans la pièce {room} de la propriété {property} n'est pas prévu pour être réparé.",
 		Advice:   "Veuillez planifier une date de réparation.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 }
 
-func GetReminderUrgentDamageNotPlanned(lang string, property string, room string) Reminder {
+func GetReminderUrgentDamageNotPlanned(lang string, property db.PropertyModel, damage db.DamageModel) Reminder {
 	return ReminderUrgentDamageNotPlanned.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
-		"room":     room,
+		"property":    property.Name,
+		"room":        damage.Room().Name,
+		"property_id": property.ID,
+		"damage_id":   damage.ID,
 	})
 }
 
@@ -268,21 +282,23 @@ var ReminderDamageOlderThan7Days = reminderModel{
 		Priority: db.PriorityUrgent,
 		Title:    "Damage in room {room} of property {property} was created more than 7 days ago.",
 		Advice:   "Please plan a fix date.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 	"fr": {
 		Id:       "9",
 		Priority: db.PriorityUrgent,
 		Title:    "Le dommage dans la pièce {room} de la propriété {property} a été créé il y a plus de 7 jours.",
 		Advice:   "Veuillez planifier une date de réparation.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 }
 
-func GetReminderDamageOlderThan7Days(lang string, property string, room string) Reminder {
+func GetReminderDamageOlderThan7Days(lang string, property db.PropertyModel, damage db.DamageModel) Reminder {
 	return ReminderDamageOlderThan7Days.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
-		"room":     room,
+		"property":    property.Name,
+		"room":        damage.Room().Name,
+		"property_id": property.ID,
+		"damage_id":   damage.ID,
 	})
 }
 
@@ -293,21 +309,23 @@ var ReminderDamageFixedByTenant = reminderModel{
 		Priority: db.PriorityMedium,
 		Title:    "Damage in room {room} of property {property} was marked as 'fixed by tenant'.",
 		Advice:   "Please review and confirm.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 	"fr": {
 		Id:       "10",
 		Priority: db.PriorityMedium,
 		Title:    "Le dommage dans la pièce {room} de la propriété {property} a été marqué comme 'réparé par le locataire'.",
 		Advice:   "Veuillez examiner et confirmer.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 }
 
-func GetReminderDamageFixedByTenant(lang string, property string, room string) Reminder {
+func GetReminderDamageFixedByTenant(lang string, property db.PropertyModel, damage db.DamageModel) Reminder {
 	return ReminderDamageFixedByTenant.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
-		"room":     room,
+		"property":    property.Name,
+		"room":        damage.Room().Name,
+		"property_id": property.ID,
+		"damage_id":   damage.ID,
 	})
 }
 
@@ -318,22 +336,24 @@ var ReminderFixDateOverdue = reminderModel{
 		Priority: db.PriorityHigh,
 		Title:    "Damage in room {room} of property {property} was planned to be fixed {days} days ago.",
 		Advice:   "Please mark it as 'fixed' or modify the planned fix date.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 	"fr": {
 		Id:       "11",
 		Priority: db.PriorityHigh,
 		Title:    "Le dommage dans la pièce {room} de la propriété {property} devait être réparé il y a {days} jours.",
 		Advice:   "Veuillez le marquer comme 'réparé' ou modifier la date de réparation prévue.",
-		Link:     "/TODO",
+		Link:     "/real-property/details/{property_id}/damage/{damage_id}",
 	},
 }
 
-func GetReminderFixDateOverdue(lang string, property string, room string, days int) Reminder {
+func GetReminderFixDateOverdue(lang string, property db.PropertyModel, damage db.DamageModel, days int) Reminder {
 	return ReminderFixDateOverdue.Get(lang).WithPlaceholders(map[string]string{
-		"property": property,
-		"room":     room,
-		"days":     strconv.Itoa(days),
+		"property":    property.Name,
+		"room":        damage.Room().Name,
+		"days":        strconv.Itoa(days),
+		"property_id": property.ID,
+		"damage_id":   damage.ID,
 	})
 }
 
@@ -344,14 +364,14 @@ var ReminderUnreadMessages = reminderModel{
 		Priority: db.PriorityLow,
 		Title:    "You have {messages} unread messages.",
 		Advice:   "Please check your inbox.",
-		Link:     "/TODO",
+		Link:     "/messages",
 	},
 	"fr": {
 		Id:       "12",
 		Priority: db.PriorityLow,
 		Title:    "Vous avez {messages} messages non lus.",
 		Advice:   "Veuillez vérifier votre boîte de réception.",
-		Link:     "/TODO",
+		Link:     "/messages",
 	},
 }
 
@@ -368,14 +388,14 @@ var ReminderAllGood = reminderModel{
 		Priority: db.PriorityLow,
 		Title:    "Good news!",
 		Advice:   "All your properties are in good condition and have no pending issues.",
-		Link:     "/TODO",
+		Link:     "",
 	},
 	"fr": {
 		Id:       "13",
 		Priority: db.PriorityLow,
 		Title:    "Bonne nouvelle !",
 		Advice:   "Toutes vos propriétés sont en bon état et n'ont aucun problème en attente.",
-		Link:     "/TODO",
+		Link:     "",
 	},
 }
 

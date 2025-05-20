@@ -4552,6 +4552,12 @@ const docTemplate = `{
                 "priority": {
                     "$ref": "#/definitions/db.Priority"
                 },
+                "property_id": {
+                    "type": "string"
+                },
+                "property_name": {
+                    "type": "string"
+                },
                 "read": {
                     "type": "boolean"
                 },
