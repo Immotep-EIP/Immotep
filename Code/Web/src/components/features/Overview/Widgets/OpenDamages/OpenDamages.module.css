@@ -34,6 +34,7 @@
   border-bottom: 0.2px solid #e0e0e0;
   padding-top: 10px;
   padding-bottom: 10px;
+  cursor: pointer;
 }
 
 .damageItem:first-child {
@@ -43,6 +44,14 @@
 .damageItem:last-child {
   padding-bottom: 0;
   border-bottom: none;
+}
+
+.damageItem:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.damageItem:active {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .dateText {

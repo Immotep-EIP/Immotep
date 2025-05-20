@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Badge, Empty } from 'antd'
 import {
@@ -9,6 +10,7 @@ import {
 import PriorityTag from '@/components/common/PriorityTag'
 import toLocaleDate from '@/utils/date/toLocaleDate'
 import style from './OpenDamages.module.css'
+import NavigationEnum from '@/enums/NavigationEnum'
 
 interface OpenDamagesProps {
   openDamages: DashboardOpenDamages | null
@@ -24,6 +26,7 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
   height
 }) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const rowHeight = 120
   const pixelHeight = height * rowHeight
 
@@ -39,6 +42,8 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
   if (error) {
     return <p>{t('widgets.user_info.error_fetching')}</p>
   }
+
+  console.log('openDamages', openDamages)
 
   return (
     <div
@@ -57,7 +62,26 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
           </div>
         ) : (
           openDamages?.list_to_fix?.map((damage: DashboardOpenDamagesToFix) => (
-            <div key={damage.id} className={style.damageItem}>
+            <div
+              key={damage.id}
+              className={style.damageItem}
+              onClick={() => {
+                // navigate(
+                //   NavigationEnum.DAMAGE_DETAILS.replace(':id', damage.property_id).replace(':damageId', damage.id),
+                // )
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  // navigate(
+                  //   NavigationEnum.DAMAGE_DETAILS.replace(':id', damage.property_id).replace(':damageId', damage.id),
+                  // )
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`${damage.created_at}: ${damage.comment}`}
+            >
               <div className={style.damageInformationsContainer}>
                 <PriorityTag priority={damage.priority} />
                 <span className={style.dateText}>
