@@ -17,7 +17,23 @@ import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
 const DetailsPart: React.FC = () => {
   const { t } = useTranslation()
   const location = useLocation()
-  const { id, damageId } = location.state || {}
+  let { id, damageId } = location.state || {}
+  if (!id || !damageId) {
+    const pathParts = location.pathname.split('/')
+    const lastPart = pathParts[pathParts.length - 1]
+    const idFromUrl = pathParts[pathParts.length - 3]
+    const damageIdFromUrl = lastPart.split('?')[0]
+    if (!idFromUrl || !damageIdFromUrl) {
+      throw new Error(
+        'Property ID or Damage ID not found in location state or URL'
+      )
+    }
+    id = idFromUrl
+    damageId = damageIdFromUrl
+
+    console.log('id', id)
+    console.log('damageId', damageId)
+  }
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const { propertyDetails: propertyData } = useProperties(id)
   const { damage, loading, error, updateDamage } = useDamages(
@@ -27,7 +43,6 @@ const DetailsPart: React.FC = () => {
     refreshTrigger
   )
 
-  // États pour le modal de planification d'intervention
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
@@ -35,7 +50,6 @@ const DetailsPart: React.FC = () => {
     setRefreshTrigger(prev => prev + 1)
   }
 
-  // Gestionnaires pour le modal de planification
   const handleOpenModal = () => {
     setIsModalOpen(true)
     if (damage?.fix_planned_at) {

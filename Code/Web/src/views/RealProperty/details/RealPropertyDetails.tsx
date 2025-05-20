@@ -12,7 +12,16 @@ import style from './RealPropertyDetails.module.css'
 const RealPropertyDetails: React.FC = () => {
   const { t } = useTranslation()
   const location = useLocation()
-  const { id } = location.state || {}
+  let { id } = location.state || {}
+  if (!id) {
+    const pathParts = location.pathname.split('/')
+    const lastPart = pathParts[pathParts.length - 1]
+    const idFromUrl = lastPart.split('?')[0]
+    if (!idFromUrl) {
+      throw new Error('Property ID not found in location state or URL')
+    }
+    id = idFromUrl
+  }
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => setIsModalOpen(true)
 
