@@ -11,7 +11,7 @@ actor ApiService: ApiServiceProtocol {
     static let shared = ApiService()
 
     func registerUser(with model: RegisterModel) async throws -> String {
-        let url = URL(string: "\(APIConfig.baseURL)/auth/register")!
+        let url = URL(string: "\(APIConfig.baseURL)/auth/register/")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -26,11 +26,12 @@ actor ApiService: ApiServiceProtocol {
         let jsonData = try JSONSerialization.data(withJSONObject: body)
         request.httpBody = jsonData
 
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
         }
+
         guard httpResponse.statusCode == 201 else {
             if httpResponse.statusCode == 409 {
                 throw NSError(domain: "", code: 409, userInfo: [NSLocalizedDescriptionKey: "Email already exists.".localized()])
@@ -41,10 +42,16 @@ actor ApiService: ApiServiceProtocol {
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
             }
         }
-        return "Registration successful!"
+
+        let idResponse = try JSONDecoder().decode(IdResponse.self, from: data)
+        return idResponse.id
     }
 }
 
+struct IdResponse: Codable {
+    let id: String
+}
+
 protocol ApiServiceProtocol {
-    func registerUser(with model: RegisterModel) async throws -> (String)
+    func registerUser(with model: RegisterModel) async throws -> String
 }
