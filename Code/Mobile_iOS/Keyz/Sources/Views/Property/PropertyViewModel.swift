@@ -430,7 +430,7 @@ class PropertyViewModel: ObservableObject {
     }
 
     func cancelInvite(propertyId: String, token: String) async throws {
-        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/cancel-invite")!
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/cancel-invite/")!
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "DELETE"

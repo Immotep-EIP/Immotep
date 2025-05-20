@@ -70,7 +70,7 @@ class TenantViewModel: ObservableObject {
         }
         
         switch httpResponse.statusCode {
-        case 200:
+        case 201:
             let inviteResponse = try JSONDecoder().decode(InviteResponse.self, from: data)
             return inviteResponse
         case 400:
