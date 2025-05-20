@@ -155,7 +155,8 @@ struct EditPropertyView: View {
             leaseEndDate: property.leaseEndDate,
             documents: property.documents,
             createdAt: property.createdAt,
-            rooms: property.rooms
+            rooms: property.rooms,
+            damages: []
         )
 
         guard let token = await TokenStorage.getAccessToken() else {

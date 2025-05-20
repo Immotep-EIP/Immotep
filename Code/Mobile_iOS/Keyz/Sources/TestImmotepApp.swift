@@ -31,7 +31,8 @@ struct TestImmotepView: View {
         createdAt: "2023-10-26T10:00:00Z",
         rooms: [
             PropertyRooms(id: "room1", name: "Salon", checked: false, inventory: [])
-        ]
+        ],
+        damages: []
     )
 
     var body: some View {
@@ -93,7 +94,8 @@ struct TestImmotepView: View {
                 createdAt: "2023-10-26T10:00:00Z",
                 rooms: [
                     PropertyRooms(id: "room1", name: "Salon", checked: false, inventory: [])
-                ]
+                ],
+                damages: []
             ),
             Property(
                 id: "cm7gijdee000ly7i82uq0qf36",
@@ -115,7 +117,9 @@ struct TestImmotepView: View {
                 createdAt: "2023-11-15T14:30:00Z",
                 rooms: [
                     PropertyRooms(id: "room2", name: "Chambre", checked: true, inventory: [])
-                ]
+                ],
+                damages: []
+
             )
         ]
         return PropertyView()

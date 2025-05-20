@@ -136,7 +136,8 @@ struct CreatePropertyView: View {
             leaseStartDate: nil,
             leaseEndDate: nil,
             documents: [],
-            rooms: []
+            rooms: [],
+            damages: []
         )
 
         guard let token = await TokenStorage.getAccessToken() else {

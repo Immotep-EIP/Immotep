@@ -27,6 +27,7 @@ struct Property: Identifiable, Equatable {
     var documents: [PropertyDocument]
     var createdAt: String?
     var rooms: [PropertyRooms]
+    var damages: [DamageResponse]
 
     static func == (lhs: Property, rhs: Property) -> Bool {
         return lhs.id == rhs.id
@@ -142,5 +143,41 @@ struct LeaseResponse: Codable {
         case propertyId = "property_id"
         case startDate = "start_date"
         case endDate = "end_date"
+    }
+}
+
+struct DamageResponse: Codable, Identifiable {
+    let id: String
+    let comment: String
+    let priority: String
+    let roomName: String
+    let fixStatus: String
+    let pictures: [String]
+    let createdAt: String
+    let updatedAt: String?
+    let fixPlannedAt: String?
+    let fixedAt: String?
+    let leaseId: String
+    let propertyId: String
+    let propertyName: String
+    let tenantName: String?
+    let read: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case comment
+        case priority
+        case roomName = "room_name"
+        case fixStatus = "fix_status"
+        case pictures
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case fixPlannedAt = "fix_planned_at"
+        case fixedAt = "fixed_at"
+        case leaseId = "lease_id"
+        case propertyId = "property_id"
+        case propertyName = "property_name"
+        case tenantName = "tenant_name"
+        case read
     }
 }
