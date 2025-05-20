@@ -24,33 +24,6 @@ definitions:
     - FixStatusAwaitingOwnerConfirmation
     - FixStatusAwaitingTenantConfirmation
     - FixStatusFixed
-  db.InnerDamage:
-    properties:
-      comment:
-        type: string
-      created_at:
-        type: string
-      fix_planned_at:
-        type: string
-      fixed_at:
-        type: string
-      fixed_owner:
-        type: boolean
-      fixed_tenant:
-        type: boolean
-      id:
-        type: string
-      lease_id:
-        type: string
-      priority:
-        $ref: '#/definitions/db.Priority'
-      read:
-        type: boolean
-      room_id:
-        type: string
-      updated_at:
-        type: string
-    type: object
   db.InnerProperty:
     properties:
       address:
@@ -288,7 +261,7 @@ definitions:
     properties:
       list_to_fix:
         items:
-          $ref: '#/definitions/db.InnerDamage'
+          $ref: '#/definitions/models.OpenDamageResponse'
         type: array
       nbr_high:
         type: integer
@@ -506,6 +479,39 @@ definitions:
       tenant_id:
         type: string
       tenant_name:
+        type: string
+    type: object
+  models.OpenDamageResponse:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      fix_planned_at:
+        type: string
+      fix_status:
+        $ref: '#/definitions/db.FixStatus'
+      fixed_at:
+        type: string
+      id:
+        type: string
+      lease_id:
+        type: string
+      priority:
+        $ref: '#/definitions/db.Priority'
+      property_id:
+        type: string
+      property_name:
+        type: string
+      read:
+        type: boolean
+      room_id:
+        type: string
+      room_name:
+        type: string
+      tenant_name:
+        type: string
+      updated_at:
         type: string
     type: object
   models.PropertyInventoryResponse:
