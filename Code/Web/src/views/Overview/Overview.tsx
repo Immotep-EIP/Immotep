@@ -297,7 +297,7 @@ const Overview: React.FC = () => {
             <ResponsiveGridLayout
               className={style.gridLayout}
               layouts={{ lg: widgets }}
-              breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+              breakpoints={{ lg: 768, md: 768, sm: 768, xs: 480, xxs: 0 }}
               cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
               rowHeight={120}
               isResizable={false}
