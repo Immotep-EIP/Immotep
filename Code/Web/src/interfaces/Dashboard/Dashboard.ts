@@ -42,6 +42,7 @@ export interface DashboardOpenDamagesToFix {
   fixed_tenant: boolean
   lease_id: string
   room_id: string
+  property_id: string
 }
 
 export interface DashboardOpenDamages {

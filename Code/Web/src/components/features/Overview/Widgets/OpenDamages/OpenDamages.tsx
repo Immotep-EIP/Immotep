@@ -43,8 +43,6 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
     return <p>{t('widgets.user_info.error_fetching')}</p>
   }
 
-  console.log('openDamages', openDamages)
-
   return (
     <div
       className={style.layoutContainer}
@@ -66,16 +64,22 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
               key={damage.id}
               className={style.damageItem}
               onClick={() => {
-                // navigate(
-                //   NavigationEnum.DAMAGE_DETAILS.replace(':id', damage.property_id).replace(':damageId', damage.id),
-                // )
+                navigate(
+                  NavigationEnum.DAMAGE_DETAILS.replace(
+                    ':id',
+                    damage.property_id
+                  ).replace(':damageId', damage.id)
+                )
               }}
               onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
-                  // navigate(
-                  //   NavigationEnum.DAMAGE_DETAILS.replace(':id', damage.property_id).replace(':damageId', damage.id),
-                  // )
+                  navigate(
+                    NavigationEnum.DAMAGE_DETAILS.replace(
+                      ':id',
+                      damage.property_id
+                    ).replace(':damageId', damage.id)
+                  )
                 }
               }}
               role="button"
