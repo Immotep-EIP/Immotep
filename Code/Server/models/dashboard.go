@@ -408,14 +408,53 @@ type DashboardProperties struct {
 	ListRecentlyAdded []db.InnerProperty `json:"list_recently_added"`
 }
 
+type OpenDamageResponse struct {
+	ID           string `json:"id"`
+	LeaseID      string `json:"lease_id"`
+	TenantName   string `json:"tenant_name"`
+	PropertyID   string `json:"property_id"`
+	PropertyName string `json:"property_name"`
+	RoomID       string `json:"room_id"`
+	RoomName     string `json:"room_name"`
+
+	Comment      string       `json:"comment"`
+	Priority     db.Priority  `json:"priority"`
+	Read         bool         `json:"read"`
+	CreatedAt    db.DateTime  `json:"created_at"`
+	UpdatedAt    db.DateTime  `json:"updated_at"`
+	FixStatus    db.FixStatus `json:"fix_status"`
+	FixPlannedAt *db.DateTime `json:"fix_planned_at"`
+	FixedAt      *db.DateTime `json:"fixed_at,omitempty"`
+}
+
+func (i *OpenDamageResponse) FromDbDamage(model db.DamageModel, tenant db.UserModel, property db.PropertyModel) {
+	i.ID = model.ID
+	i.LeaseID = model.LeaseID
+	i.TenantName = tenant.Name()
+	i.PropertyID = property.ID
+	i.PropertyName = property.Name
+	i.RoomID = model.RoomID
+	i.RoomName = model.Room().Name
+
+	i.Comment = model.Comment
+	i.Priority = model.Priority
+	i.Read = model.Read
+	i.CreatedAt = model.CreatedAt
+	i.UpdatedAt = model.UpdatedAt
+
+	i.FixStatus = model.FixStatus()
+	i.FixPlannedAt = model.InnerDamage.FixPlannedAt
+	i.FixedAt = model.InnerDamage.FixedAt
+}
+
 type DashboardOpenDamages struct {
-	NbrTotal                int              `json:"nbr_total"`
-	NbrUrgent               int              `json:"nbr_urgent"`
-	NbrHigh                 int              `json:"nbr_high"`
-	NbrMedium               int              `json:"nbr_medium"`
-	NbrLow                  int              `json:"nbr_low"`
-	NbrPlannedToFixThisWeek int              `json:"nbr_planned_to_fix_this_week"`
-	ListToFix               []db.InnerDamage `json:"list_to_fix"`
+	NbrTotal                int                  `json:"nbr_total"`
+	NbrUrgent               int                  `json:"nbr_urgent"`
+	NbrHigh                 int                  `json:"nbr_high"`
+	NbrMedium               int                  `json:"nbr_medium"`
+	NbrLow                  int                  `json:"nbr_low"`
+	NbrPlannedToFixThisWeek int                  `json:"nbr_planned_to_fix_this_week"`
+	ListToFix               []OpenDamageResponse `json:"list_to_fix"`
 }
 
 // type messages struct {
