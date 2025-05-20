@@ -33,11 +33,13 @@ type DamageTenantUpdateRequest struct {
 }
 
 type DamageResponse struct {
-	ID         string `json:"id"`
-	LeaseID    string `json:"lease_id"`
-	TenantName string `json:"tenant_name"`
-	RoomID     string `json:"room_id"`
-	RoomName   string `json:"room_name"`
+	ID           string `json:"id"`
+	LeaseID      string `json:"lease_id"`
+	TenantName   string `json:"tenant_name"`
+	PropertyID   string `json:"property_id"`
+	PropertyName string `json:"property_name"`
+	RoomID       string `json:"room_id"`
+	RoomName     string `json:"room_name"`
 
 	Comment      string       `json:"comment"`
 	Priority     db.Priority  `json:"priority"`
@@ -55,6 +57,8 @@ func (i *DamageResponse) FromDbDamage(model db.DamageModel) {
 	i.ID = model.ID
 	i.LeaseID = model.LeaseID
 	i.TenantName = model.Lease().Tenant().Name()
+	i.PropertyID = model.Lease().PropertyID
+	i.PropertyName = model.Lease().Property().Name
 	i.RoomID = model.RoomID
 	i.RoomName = model.Room().Name
 
