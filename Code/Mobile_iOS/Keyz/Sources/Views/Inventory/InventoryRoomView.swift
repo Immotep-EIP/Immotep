@@ -51,17 +51,17 @@ struct InventoryRoomView: View {
             }
 
             if showAddRoomAlert {
-                CustomAlert(
+                CustomAlertWithTextAndDropdown(
                     isActive: $showAddRoomAlert,
                     textFieldInput: $newRoomName,
                     title: "Add a Room",
-                    message: "Choose a name for your new room:",
+                    message: "Choose a name and type for your new room:",
                     buttonTitle: "Add",
                     secondaryButtonTitle: "Cancel",
-                    action: {
+                    action: { roomName, roomType in
                         Task {
                             do {
-                                try await inventoryViewModel.addRoom(name: newRoomName)
+                                try await inventoryViewModel.addRoom(name: roomName, type: roomType)
                                 newRoomName = ""
                             } catch {
                                 print("Error adding room: \(error.localizedDescription)")
