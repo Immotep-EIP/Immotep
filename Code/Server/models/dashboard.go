@@ -1,7 +1,6 @@
 package models
 
 import (
-	"os"
 	"strconv"
 	"strings"
 
@@ -44,9 +43,6 @@ func (model reminderModel) Get(lang string) Reminder {
 		res = r
 	} else {
 		res = model["en"]
-	}
-	if res.Link != "" {
-		res.Link = os.Getenv("WEB_PUBLIC_URL") + res.Link
 	}
 	return res
 }
