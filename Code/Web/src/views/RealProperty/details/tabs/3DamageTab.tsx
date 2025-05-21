@@ -130,7 +130,7 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
         dataSource={transformedData}
         pagination={false}
         bordered
-        style={{ width: '100%' }}
+        style={{ width: '100%', cursor: 'pointer' }}
         onRow={record => ({
           onClick: event => {
             if (record.key) {
