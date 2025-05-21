@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next'
 
 import { Input, Button } from 'antd'
 import { SendOutlined, PlusCircleOutlined } from '@ant-design/icons'
+
 import { Contact } from '@/interfaces/Messages/Contact'
 import { Message } from '@/interfaces/Messages/Message'
+
 import defaultAvatar from '@/assets/images/DefaultProfile.png'
 import style from './ChatInterface.module.css'
 

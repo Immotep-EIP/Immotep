@@ -1,12 +1,14 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { Empty, Spin, Table, Typography } from 'antd'
 import type { TableProps } from 'antd'
 
-import useDamages from '@/hooks/Property/useDamages'
 import { usePropertyId } from '@/context/propertyIdContext'
+import useDamages from '@/hooks/Property/useDamages'
 import useNavigation from '@/hooks/Navigation/useNavigation'
 import StatusTag from '@/components/common/Tag/StatusTag'
+
 import style from './3DamageTab.module.css'
 
 interface DataType {

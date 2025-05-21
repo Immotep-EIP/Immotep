@@ -1,5 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
+
 import { DBSchema } from 'idb'
+
 import { InviteTenant } from '../Tenant/InviteTenant'
 import { Lease } from './Lease/Lease'
 

@@ -6,15 +6,17 @@ import React, {
   useMemo
 } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import { LoadingOutlined } from '@ant-design/icons'
 
-import { UserTokenPayload, User } from '@/interfaces/User/User'
 import { loginApi } from '@/services/api/Authentification/AuthApi'
 import getUserProfile from '@/services/api/User/GetUserProfile'
-import { saveData, deleteData } from '@/utils/cache/localStorage'
-import { AuthContextType, AuthProviderProps } from '@/interfaces/Auth/Auth'
-import NavigationEnum from '@/enums/NavigationEnum'
 import imageCache from '@/utils/cache/ImageCache'
+import { saveData, deleteData } from '@/utils/cache/localStorage'
+
+import { AuthContextType, AuthProviderProps } from '@/interfaces/Auth/Auth'
+import { UserTokenPayload, User } from '@/interfaces/User/User'
+import NavigationEnum from '@/enums/NavigationEnum'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 

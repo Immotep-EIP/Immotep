@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
+
 import { Image, Spin, Button, Modal, DatePicker, Space } from 'antd'
 import { EyeOutlined, CalendarOutlined } from '@ant-design/icons'
-import { useLocation } from 'react-router-dom'
 import dayjs from 'dayjs'
 
 import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
@@ -12,6 +13,7 @@ import useDamages from '@/hooks/Property/useDamages'
 import useProperties from '@/hooks/Property/useProperties'
 import StatusTag from '@/components/common/Tag/StatusTag'
 import DamageHeader from './DamageHeader'
+
 import style from './DetailsPart.module.css'
 
 const DetailsPart: React.FC = () => {

@@ -1,7 +1,10 @@
 import React from 'react'
-import logo from '@/assets/images/KeyzLogo.svg'
+
 import PageTitle from '@/components/ui/PageText/Title'
+
 import { AuthentificationPageProps } from '@/interfaces/Auth/Auth'
+
+import logo from '@/assets/images/KeyzLogo.svg'
 import style from './AuthentificationPage.module.css'
 
 const AuthentificationPage: React.FC<AuthentificationPageProps> = ({

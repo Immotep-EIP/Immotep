@@ -5,15 +5,17 @@ import { useTranslation } from 'react-i18next'
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
 
-import '@/App.css'
 import { useAuth } from '@/context/authContext'
-import { UserTokenPayload } from '@/interfaces/User/User'
-import backgroundImg from '@/assets/images/building.jpg'
 import useNavigation from '@/hooks/Navigation/useNavigation'
-import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import DividedPage from '@/components/layout/DividedPage/DividedPage'
+import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import PageTitle from '@/components/ui/PageText/Title'
 import AcceptInvite from '@/services/api/Tenant/AcceptInvite'
+
+import { UserTokenPayload } from '@/interfaces/User/User'
+
+import backgroundImg from '@/assets/images/building.jpg'
+import '@/App.css'
 import style from './Login.module.css'
 
 const Login: React.FC = () => {

@@ -1,4 +1,5 @@
 import callApi from '@/services/api/apiCaller'
+
 import { User } from '@/interfaces/User/User'
 import endpoints from '@/enums/EndPointEnum'
 

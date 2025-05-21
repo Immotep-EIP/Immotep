@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Modal, Form, Input, Select, Checkbox, InputNumber } from 'antd'
 import { useTranslation } from 'react-i18next'
 
-import { AddRoomModalProps } from '@/interfaces/Property/Inventory/Room/Room'
+import { Modal, Form, Input, Select, Checkbox, InputNumber } from 'antd'
+
 import { ROOM_TEMPLATES } from '@/utils/types/roomTypes'
+
+import { AddRoomModalProps } from '@/interfaces/Property/Inventory/Room/Room'
 
 const AddRoomModal: React.FC<AddRoomModalProps> = ({
   isOpen,

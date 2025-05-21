@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Responsive, WidthProvider } from 'react-grid-layout'
+
 import { Spin } from 'antd'
 
-import { useTranslation } from 'react-i18next'
+import useDashboard from '@/hooks/Dashboard/useDashboard'
 import PageTitle from '@/components/ui/PageText/Title.tsx'
 import PropertiesNumber from '@/components/features/Overview/Widgets/PropertiesNumber/PropertiesNumber'
 import PropertiesRepartition from '@/components/features/Overview/Widgets/PropertiesRepartition/PropertiesRepartition'
-import { Layout, Widget } from '@/interfaces/Widgets/Widgets.ts'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
-import style from './Overview.module.css'
-import '@/../node_modules/react-grid-layout/css/styles.css'
-import '@/../node_modules/react-resizable/css/styles.css'
 import Reminders from '@/components/features/Overview/Widgets/Reminders/Reminders'
-import useDashboard from '@/hooks/Dashboard/useDashboard'
 import OpenDamages from '@/components/features/Overview/Widgets/OpenDamages/OpenDamages'
 import DamagesRepartition from '@/components/features/Overview/Widgets/DamagesRepartition/DamagesRepartition'
+
+import { Layout, Widget } from '@/interfaces/Widgets/Widgets.ts'
+
+import '@/../node_modules/react-grid-layout/css/styles.css'
+import '@/../node_modules/react-resizable/css/styles.css'
+import style from './Overview.module.css'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 

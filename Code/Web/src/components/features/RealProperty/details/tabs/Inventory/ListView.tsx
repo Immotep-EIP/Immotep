@@ -1,4 +1,6 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+
 import {
   Card,
   Row,
@@ -16,9 +18,11 @@ import {
   DeleteOutlined,
   EditOutlined
 } from '@ant-design/icons'
-import { useTranslation } from 'react-i18next'
+
 import { getRoomColor, isValidRoomType } from '@/utils/types/roomTypes'
+
 import { ListViewProps } from '@/interfaces/Property/Inventory/Views/ListView'
+
 import './ListView.css'
 
 const { Text } = Typography

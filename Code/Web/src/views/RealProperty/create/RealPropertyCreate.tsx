@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Button, Modal, message } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
+import { Form, Button, Modal, message } from 'antd'
+
 import useProperties from '@/hooks/Property/useProperties'
-import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import useImageUpload from '@/hooks/Image/useImageUpload'
+import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
+
 import { RealPropertyCreateProps } from '@/interfaces/Property/Property'
+
 import style from './RealPropertyCreate.module.css'
 
 const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({

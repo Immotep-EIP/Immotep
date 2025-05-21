@@ -1,10 +1,14 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+
 import { Empty, Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { DashboardReminders } from '@/interfaces/Dashboard/Dashboard'
+
 import StatusTag from '@/components/common/Tag/StatusTag'
+
+import { DashboardReminders } from '@/interfaces/Dashboard/Dashboard'
+
 import style from './Reminders.module.css'
 
 interface RemindersProps {

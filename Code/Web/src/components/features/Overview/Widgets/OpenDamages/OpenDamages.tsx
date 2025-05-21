@@ -1,15 +1,19 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { LoadingOutlined } from '@ant-design/icons'
+
 import { Badge, Empty, Tooltip } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
+
+import StatusTag from '@/components/common/Tag/StatusTag'
+import toLocaleDate from '@/utils/date/toLocaleDate'
+
 import {
   DashboardOpenDamages,
   DashboardOpenDamagesToFix
 } from '@/interfaces/Dashboard/Dashboard'
-import StatusTag from '@/components/common/Tag/StatusTag'
-import toLocaleDate from '@/utils/date/toLocaleDate'
 import NavigationEnum from '@/enums/NavigationEnum'
+
 import style from './OpenDamages.module.css'
 
 interface OpenDamagesProps {

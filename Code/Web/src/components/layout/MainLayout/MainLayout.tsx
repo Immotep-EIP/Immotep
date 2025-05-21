@@ -1,16 +1,18 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, Outlet, useLocation } from 'react-router-dom'
+
 import { Layout, Menu } from 'antd'
 import { t } from 'i18next'
 import type { MenuProps } from 'antd'
+
+import NavigationEnum from '@/enums/NavigationEnum'
 
 import Property from '@/assets/icons/realProperty.svg'
 import Overview from '@/assets/icons/overview.svg'
 import Messages from '@/assets/icons/messages.svg'
 import Keyz from '@/assets/images/KeyzLogo.svg'
 import Settings from '@/assets/icons/settings.svg'
-import NavigationEnum from '@/enums/NavigationEnum'
 import style from './MainLayout.module.css'
 
 const { Content } = Layout

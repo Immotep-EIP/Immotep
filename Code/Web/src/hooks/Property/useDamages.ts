@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { message } from 'antd'
+
+import GetPropertyDamages from '@/services/api/Owner/Properties/GetPropertyDamages'
+import GetPropertyDamageById from '@/services/api/Owner/Properties/GetPropertyDamageById'
+import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
+
 import {
   Damage,
   DamageDetails,
   UseDamagesReturn
 } from '@/interfaces/Property/Damage/Damage'
-import GetPropertyDamages from '@/services/api/Owner/Properties/GetPropertyDamages'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
-import GetPropertyDamageById from '@/services/api/Owner/Properties/GetPropertyDamageById'
-import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
 
 const useDamages = (
   propertyId: string,

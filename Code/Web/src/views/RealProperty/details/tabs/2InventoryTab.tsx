@@ -1,17 +1,19 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { Empty, Form, Modal, Typography, Space } from 'antd'
 
 import { usePropertyId } from '@/context/propertyIdContext'
 import useInventory from '@/hooks/Property/useInventory'
 import CardInventoryLoader from '@/components/ui/Loader/CardInventoryLoader'
-import { getRoomTypeOptions } from '@/utils/types/roomTypes'
 import GridView from '@/components/features/RealProperty/details/tabs/Inventory/GridView'
 import PlanView from '@/components/features/RealProperty/details/tabs/Inventory/PlanView'
 import ListView from '@/components/features/RealProperty/details/tabs/Inventory/ListView'
 import AddRoomModal from '@/components/features/RealProperty/details/tabs/Inventory/AddRoomModal'
 import AddStuffModal from '@/components/features/RealProperty/details/tabs/Inventory/AddStuffModal'
 import InventoryControls from '@/components/features/RealProperty/details/tabs/Inventory/InventoryControls'
+import { getRoomTypeOptions } from '@/utils/types/roomTypes'
+
 import style from './2InventoryTab.module.css'
 
 const InventoryTab: React.FC = () => {

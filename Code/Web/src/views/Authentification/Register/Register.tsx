@@ -4,15 +4,18 @@ import { useTranslation } from 'react-i18next'
 
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
-import backgroundImg from '@/assets/images/building.jpg'
+
+import { useAuth } from '@/context/authContext'
 import useNavigation from '@/hooks/Navigation/useNavigation'
-import '@/App.css'
-import { register } from '@/services/api/Authentification/AuthApi'
-import { UserRegisterPayload } from '@/interfaces/User/User'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import DividedPage from '@/components/layout/DividedPage/DividedPage'
 import PageTitle from '@/components/ui/PageText/Title'
-import { useAuth } from '@/context/authContext'
+import { register } from '@/services/api/Authentification/AuthApi'
+
+import { UserRegisterPayload } from '@/interfaces/User/User'
+
+import backgroundImg from '@/assets/images/building.jpg'
+import '@/App.css'
 import style from './Register.module.css'
 
 const Register: React.FC = () => {

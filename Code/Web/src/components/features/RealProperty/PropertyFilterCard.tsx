@@ -1,9 +1,11 @@
 import React from 'react'
-import { Input, Select, Space, Card } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
+import { Input, Select, Space, Card } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
+
 import { PropertyFilterCardProps } from '@/interfaces/Property/Property'
+
 import style from './PropertyFilterCard.module.css'
 
 const { Search } = Input

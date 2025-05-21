@@ -1,7 +1,10 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { LoadingOutlined } from '@ant-design/icons'
+
 import { DashboardOpenDamages } from '@/interfaces/Dashboard/Dashboard'
+
 import PropertiesIcon from '@/assets/icons/realProperty.svg'
 import style from './DamagesRepartition.module.css'
 
