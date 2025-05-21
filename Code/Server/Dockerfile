@@ -12,7 +12,7 @@ COPY . .
 ARG TARGETARCH
 
 RUN go install github.com/swaggo/swag/cmd/swag@latest
-RUN CGO_ENABLED=0 GOARCH=$TARGETARCH ./build.sh
+RUN CGO_ENABLED=0 GOARCH=$TARGETARCH make build
 
 # RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.63.4
 # RUN ./run_tests.sh no-interactive
