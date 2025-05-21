@@ -30,9 +30,6 @@ const DetailsPart: React.FC = () => {
     }
     id = idFromUrl
     damageId = damageIdFromUrl
-
-    console.log('id', id)
-    console.log('damageId', damageId)
   }
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const { propertyDetails: propertyData } = useProperties(id)
