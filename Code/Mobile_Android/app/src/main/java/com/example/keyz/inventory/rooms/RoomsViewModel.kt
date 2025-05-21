@@ -61,4 +61,11 @@ class RoomsViewModel(
         allRooms[roomIndex] = updatedRoom
         _currentlyOpenRoom.value = null
     }
+
+    fun handleRemoveRoom(roomId : String) {
+        val roomIndex = allRooms.indexOf(allRooms.find { it.id == roomId })
+        if (roomIndex < 0 || roomIndex >= allRooms.size) return
+        removeRoom(roomId)
+        allRooms.removeAt(roomIndex)
+    }
 }

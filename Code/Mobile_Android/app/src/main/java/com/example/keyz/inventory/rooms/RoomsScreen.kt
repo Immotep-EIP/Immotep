@@ -170,7 +170,7 @@ fun RoomsScreen(
             )
             EditRoomOrDetailModal(
                 currentRoomOrDetailId = editRoomOpen,
-                deleteRoomOrDetail = removeRoom,
+                deleteRoomOrDetail = { viewModel.handleRemoveRoom(it) },
                 close = { editRoomOpen = null },
             )
             InitialFadeIn {

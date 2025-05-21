@@ -58,6 +58,7 @@ class LoaderInventoryViewModel(
             } ?: detail.copy(newItem = true)
         }.toTypedArray()
     }
+
     private suspend fun tryLoadLastInventory(propertyId: String, baseRooms : Array<Room>) {
         val inventoryReport = inventoryApiCaller.getLastInventoryReport(propertyId)
         val lastInventoryRoomsAsRooms = inventoryReport.getRoomsAsRooms(empty = true)
