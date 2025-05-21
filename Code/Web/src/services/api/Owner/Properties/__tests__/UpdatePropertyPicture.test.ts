@@ -25,7 +25,7 @@ describe('UpdatePropertyPicture', () => {
     expect(mockedCallApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: `owner/properties/${propertyId}/picture/`,
-      data: JSON.stringify({ data: pictureData })
+      body: JSON.stringify({ data: pictureData })
     })
 
     expect(result).toEqual(mockResponse)

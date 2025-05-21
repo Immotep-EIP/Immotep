@@ -55,7 +55,10 @@ func GetDamagesByPropertyID(propertyID string, fixed bool) []db.DamageModel {
 		db.Damage.FixedAt.Order(db.SortOrderDesc),
 		db.Damage.CreatedAt.Order(db.SortOrderDesc),
 	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
+		db.Damage.Lease.Fetch().With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch(),
+		),
 		db.Damage.Room.Fetch(),
 		db.Damage.Pictures.Fetch(),
 	).Exec(pdb.Context)
@@ -78,7 +81,10 @@ func MockGetDamagesByPropertyID(c *services.PrismaDB, fixed bool) db.DamageMockE
 		db.Damage.FixedAt.Order(db.SortOrderDesc),
 		db.Damage.CreatedAt.Order(db.SortOrderDesc),
 	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
+		db.Damage.Lease.Fetch().With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch(),
+		),
 		db.Damage.Room.Fetch(),
 		db.Damage.Pictures.Fetch(),
 	)
@@ -95,7 +101,10 @@ func GetDamagesByLeaseID(leaseID string, fixed bool) []db.DamageModel {
 		db.Damage.FixedAt.Order(db.SortOrderDesc),
 		db.Damage.CreatedAt.Order(db.SortOrderDesc),
 	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
+		db.Damage.Lease.Fetch().With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch(),
+		),
 		db.Damage.Room.Fetch(),
 		db.Damage.Pictures.Fetch(),
 	).Exec(pdb.Context)
@@ -118,7 +127,10 @@ func MockGetDamagesByLeaseID(c *services.PrismaDB, fixed bool) db.DamageMockExpe
 		db.Damage.FixedAt.Order(db.SortOrderDesc),
 		db.Damage.CreatedAt.Order(db.SortOrderDesc),
 	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
+		db.Damage.Lease.Fetch().With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch(),
+		),
 		db.Damage.Room.Fetch(),
 		db.Damage.Pictures.Fetch(),
 	)
@@ -129,7 +141,10 @@ func GetDamageByID(damageID string) *db.DamageModel {
 	damage, err := pdb.Client.Damage.FindUnique(
 		db.Damage.ID.Equals(damageID),
 	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
+		db.Damage.Lease.Fetch().With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch(),
+		),
 		db.Damage.Room.Fetch(),
 		db.Damage.Pictures.Fetch(),
 	).Exec(pdb.Context)
@@ -146,7 +161,10 @@ func MockGetDamageByID(c *services.PrismaDB) db.DamageMockExpectParam {
 	return c.Client.Damage.FindUnique(
 		db.Damage.ID.Equals("1"),
 	).With(
-		db.Damage.Lease.Fetch().With(db.Lease.Tenant.Fetch()),
+		db.Damage.Lease.Fetch().With(
+			db.Lease.Tenant.Fetch(),
+			db.Lease.Property.Fetch(),
+		),
 		db.Damage.Room.Fetch(),
 		db.Damage.Pictures.Fetch(),
 	)

@@ -5,4 +5,15 @@ export interface Document {
   name: string
 }
 
-export type DocumentResponse = Document[]
+export interface UseDocumentReturn {
+  documents: Document[] | null
+  loading: boolean
+  error: string | null
+  refreshDocuments: (propertyId: string) => Promise<void>
+  uploadDocument: (
+    file: File,
+    documentName: string,
+    propertyId: string,
+    leaseId: string
+  ) => Promise<void>
+}

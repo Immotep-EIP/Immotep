@@ -251,3 +251,13 @@ model furnitureState {
 
     @@unique([report_id, furniture_id])
 }
+
+model contactMessage {
+    id          String   @id @default(cuid())
+    firstname   String
+    lastname    String
+    email       String
+    subject     String
+    message     String
+    created_at  DateTime @default(now())
+}

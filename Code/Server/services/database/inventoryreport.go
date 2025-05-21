@@ -147,7 +147,7 @@ func GetInvReportsByLeaseID(leaseID string) []db.InventoryReportModel {
 	return invReports
 }
 
-func MockGetInvReportByLeaseID(c *services.PrismaDB) db.InventoryReportMockExpectParam {
+func MockGetInvReportsByLeaseID(c *services.PrismaDB) db.InventoryReportMockExpectParam {
 	return c.Client.InventoryReport.FindMany(
 		db.InventoryReport.LeaseID.Equals("1"),
 	).OrderBy(

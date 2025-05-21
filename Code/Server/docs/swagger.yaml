@@ -24,6 +24,37 @@ definitions:
     - FixStatusAwaitingOwnerConfirmation
     - FixStatusAwaitingTenantConfirmation
     - FixStatusFixed
+  db.InnerProperty:
+    properties:
+      address:
+        type: string
+      apartment_number:
+        type: string
+      archived:
+        type: boolean
+      area_sqm:
+        type: number
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      deposit_price:
+        type: number
+      id:
+        type: string
+      name:
+        type: string
+      owner_id:
+        type: string
+      picture_id:
+        type: string
+      postal_code:
+        type: string
+      rental_price_per_month:
+        type: number
+    type: object
   db.Priority:
     enum:
     - low
@@ -111,6 +142,25 @@ definitions:
       archive:
         type: boolean
     type: object
+  models.ContactMessageRequest:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+      message:
+        type: string
+      subject:
+        type: string
+    required:
+    - email
+    - firstname
+    - lastname
+    - message
+    - subject
+    type: object
   models.CreateInventoryReportResponse:
     properties:
       date:
@@ -179,6 +229,10 @@ definitions:
         type: array
       priority:
         $ref: '#/definitions/db.Priority'
+      property_id:
+        type: string
+      property_name:
+        type: string
       read:
         type: boolean
       room_id:
@@ -202,6 +256,53 @@ definitions:
         $ref: '#/definitions/db.Priority'
     required:
     - add_pictures
+    type: object
+  models.DashboardOpenDamages:
+    properties:
+      list_to_fix:
+        items:
+          $ref: '#/definitions/models.OpenDamageResponse'
+        type: array
+      nbr_high:
+        type: integer
+      nbr_low:
+        type: integer
+      nbr_medium:
+        type: integer
+      nbr_planned_to_fix_this_week:
+        type: integer
+      nbr_total:
+        type: integer
+      nbr_urgent:
+        type: integer
+    type: object
+  models.DashboardProperties:
+    properties:
+      list_recently_added:
+        items:
+          $ref: '#/definitions/db.InnerProperty'
+        type: array
+      nbr_archived:
+        type: integer
+      nbr_available:
+        type: integer
+      nbr_occupied:
+        type: integer
+      nbr_pending_invites:
+        type: integer
+      nbr_total:
+        type: integer
+    type: object
+  models.DashboardResponse:
+    properties:
+      open_damages:
+        $ref: '#/definitions/models.DashboardOpenDamages'
+      properties:
+        $ref: '#/definitions/models.DashboardProperties'
+      reminders:
+        items:
+          $ref: '#/definitions/models.Reminder'
+        type: array
     type: object
   models.DocumentRequest:
     properties:
@@ -380,6 +481,39 @@ definitions:
       tenant_name:
         type: string
     type: object
+  models.OpenDamageResponse:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      fix_planned_at:
+        type: string
+      fix_status:
+        $ref: '#/definitions/db.FixStatus'
+      fixed_at:
+        type: string
+      id:
+        type: string
+      lease_id:
+        type: string
+      priority:
+        $ref: '#/definitions/db.Priority'
+      property_id:
+        type: string
+      property_name:
+        type: string
+      read:
+        type: boolean
+      room_id:
+        type: string
+      room_name:
+        type: string
+      tenant_name:
+        type: string
+      updated_at:
+        type: string
+    type: object
   models.PropertyInventoryResponse:
     properties:
       address:
@@ -522,6 +656,19 @@ definitions:
         type: string
       rental_price_per_month:
         type: number
+    type: object
+  models.Reminder:
+    properties:
+      advice:
+        type: string
+      id:
+        type: string
+      link:
+        type: string
+      priority:
+        $ref: '#/definitions/db.Priority'
+      title:
+        type: string
     type: object
   models.RoomRequest:
     properties:
@@ -750,6 +897,7 @@ definitions:
     - no-active-lease
     - lease-not-found
     - cannot-end-non-current-lease
+    - cannot-archive-non-free-property
     - inventory-report-must-be-linked-to-current-lease
     - no-pending-lease
     - document-not-found
@@ -800,6 +948,7 @@ definitions:
     - NoActiveLease
     - LeaseNotFound
     - CannotEndNonCurrentLease
+    - CannotArchiveNonFreeProperty
     - InvReportMustBeCurrentLease
     - NoLeaseInvite
     - DocumentNotFound
@@ -946,6 +1095,65 @@ paths:
       summary: Authenticate user
       tags:
       - auth
+  /contact/:
+    post:
+      consumes:
+      - application/json
+      description: Create a contact message to a lease
+      parameters:
+      - description: Message to create
+        in: body
+        name: contactMessages
+        required: true
+        schema:
+          $ref: '#/definitions/models.ContactMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created message ID
+          schema:
+            $ref: '#/definitions/models.IdResponse'
+        "400":
+          description: Missing fields or bad base64 string
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      summary: Create contact message
+      tags:
+      - contact-message
+  /owner/dashboard/:
+    get:
+      consumes:
+      - application/json
+      description: Get a summary of every data related to an owner
+      parameters:
+      - description: 'Language of the response (default: en)'
+        in: query
+        name: lang
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Dashboard data
+          schema:
+            items:
+              $ref: '#/definitions/models.DashboardResponse'
+            type: array
+        "403":
+          description: Not an owner
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Get dashboard
+      tags:
+      - dashboard
   /owner/properties/:
     get:
       consumes:
@@ -1688,8 +1896,6 @@ paths:
       responses:
         "204":
           description: Document deleted
-          schema:
-            $ref: '#/definitions/models.DocumentResponse'
         "403":
           description: Property not yours
           schema:
@@ -2191,8 +2397,6 @@ paths:
       responses:
         "204":
           description: Deleted room ID
-          schema:
-            $ref: '#/definitions/models.IdResponse'
         "403":
           description: Property not yours
           schema:
@@ -2411,8 +2615,6 @@ paths:
       responses:
         "204":
           description: Deleted furniture ID
-          schema:
-            $ref: '#/definitions/models.IdResponse'
         "403":
           description: Property not yours
           schema:

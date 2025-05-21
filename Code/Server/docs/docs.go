@@ -189,6 +189,98 @@ const docTemplate = `{
                 }
             }
         },
+        "/contact/": {
+            "post": {
+                "description": "Create a contact message to a lease",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contact-message"
+                ],
+                "summary": "Create contact message",
+                "parameters": [
+                    {
+                        "description": "Message to create",
+                        "name": "contactMessages",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ContactMessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created message ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.IdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing fields or bad base64 string",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/owner/dashboard/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a summary of every data related to an owner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get dashboard",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language of the response (default: en)",
+                        "name": "lang",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dashboard data",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DashboardResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not an owner",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/owner/properties/": {
             "get": {
                 "security": [
@@ -1402,10 +1494,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "Document deleted",
-                        "schema": {
-                            "$ref": "#/definitions/models.DocumentResponse"
-                        }
+                        "description": "Document deleted"
                     },
                     "403": {
                         "description": "Property not yours",
@@ -2172,10 +2261,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "Deleted room ID",
-                        "schema": {
-                            "$ref": "#/definitions/models.IdResponse"
-                        }
+                        "description": "Deleted room ID"
                     },
                     "403": {
                         "description": "Property not yours",
@@ -2516,10 +2602,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "Deleted furniture ID",
-                        "schema": {
-                            "$ref": "#/definitions/models.IdResponse"
-                        }
+                        "description": "Deleted furniture ID"
                     },
                     "403": {
                         "description": "Property not yours",
@@ -4147,6 +4230,53 @@ const docTemplate = `{
                 "FixStatusFixed"
             ]
         },
+        "db.InnerProperty": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "apartment_number": {
+                    "type": "string"
+                },
+                "archived": {
+                    "type": "boolean"
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deposit_price": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "picture_id": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "rental_price_per_month": {
+                    "type": "number"
+                }
+            }
+        },
         "db.Priority": {
             "type": "string",
             "enum": [
@@ -4252,6 +4382,33 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ContactMessageRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstname",
+                "lastname",
+                "message",
+                "subject"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "subject": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CreateInventoryReportResponse": {
             "type": "object",
             "properties": {
@@ -4354,6 +4511,12 @@ const docTemplate = `{
                 "priority": {
                     "$ref": "#/definitions/db.Priority"
                 },
+                "property_id": {
+                    "type": "string"
+                },
+                "property_name": {
+                    "type": "string"
+                },
                 "read": {
                     "type": "boolean"
                 },
@@ -4388,6 +4551,78 @@ const docTemplate = `{
                 },
                 "priority": {
                     "$ref": "#/definitions/db.Priority"
+                }
+            }
+        },
+        "models.DashboardOpenDamages": {
+            "type": "object",
+            "properties": {
+                "list_to_fix": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OpenDamageResponse"
+                    }
+                },
+                "nbr_high": {
+                    "type": "integer"
+                },
+                "nbr_low": {
+                    "type": "integer"
+                },
+                "nbr_medium": {
+                    "type": "integer"
+                },
+                "nbr_planned_to_fix_this_week": {
+                    "type": "integer"
+                },
+                "nbr_total": {
+                    "type": "integer"
+                },
+                "nbr_urgent": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.DashboardProperties": {
+            "type": "object",
+            "properties": {
+                "list_recently_added": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.InnerProperty"
+                    }
+                },
+                "nbr_archived": {
+                    "type": "integer"
+                },
+                "nbr_available": {
+                    "type": "integer"
+                },
+                "nbr_occupied": {
+                    "type": "integer"
+                },
+                "nbr_pending_invites": {
+                    "type": "integer"
+                },
+                "nbr_total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.DashboardResponse": {
+            "type": "object",
+            "properties": {
+                "open_damages": {
+                    "$ref": "#/definitions/models.DashboardOpenDamages"
+                },
+                "properties": {
+                    "$ref": "#/definitions/models.DashboardProperties"
+                },
+                "reminders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Reminder"
+                    }
                 }
             }
         },
@@ -4659,6 +4894,56 @@ const docTemplate = `{
                 }
             }
         },
+        "models.OpenDamageResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fix_planned_at": {
+                    "type": "string"
+                },
+                "fix_status": {
+                    "$ref": "#/definitions/db.FixStatus"
+                },
+                "fixed_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lease_id": {
+                    "type": "string"
+                },
+                "priority": {
+                    "$ref": "#/definitions/db.Priority"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "property_name": {
+                    "type": "string"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "room_name": {
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "models.PropertyInventoryResponse": {
             "type": "object",
             "properties": {
@@ -4867,6 +5152,26 @@ const docTemplate = `{
                 },
                 "rental_price_per_month": {
                     "type": "number"
+                }
+            }
+        },
+        "models.Reminder": {
+            "type": "object",
+            "properties": {
+                "advice": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "priority": {
+                    "$ref": "#/definitions/db.Priority"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -5197,6 +5502,7 @@ const docTemplate = `{
                 "no-active-lease",
                 "lease-not-found",
                 "cannot-end-non-current-lease",
+                "cannot-archive-non-free-property",
                 "inventory-report-must-be-linked-to-current-lease",
                 "no-pending-lease",
                 "document-not-found",
@@ -5247,6 +5553,7 @@ const docTemplate = `{
                 "NoActiveLease",
                 "LeaseNotFound",
                 "CannotEndNonCurrentLease",
+                "CannotArchiveNonFreeProperty",
                 "InvReportMustBeCurrentLease",
                 "NoLeaseInvite",
                 "DocumentNotFound",

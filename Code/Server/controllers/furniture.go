@@ -121,17 +121,17 @@ func ArchiveFurniture(c *gin.Context) {
 //	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id		path		string				true	"Property ID"
-//	@Param			room_id			path		string				true	"Room ID"
-//	@Param			furniture_id	path		string				true	"Furniture ID"
-//	@Success		204				{object}	models.IdResponse	"Deleted furniture ID"
-//	@Failure		403				{object}	utils.Error			"Property not yours"
-//	@Failure		404				{object}	utils.Error			"Furniture not found"
+//	@Param			property_id		path	string	true	"Property ID"
+//	@Param			room_id			path	string	true	"Room ID"
+//	@Param			furniture_id	path	string	true	"Furniture ID"
+//	@Success		204				"Deleted furniture ID"
+//	@Failure		403				{object}	utils.Error	"Property not yours"
+//	@Failure		404				{object}	utils.Error	"Furniture not found"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [delete]
 func DeleteFurniture(c *gin.Context) {
 	furniture, _ := c.MustGet("furniture").(db.FurnitureModel)
 	database.DeleteFurniture(furniture.ID)
-	c.JSON(http.StatusNoContent, nil)
+	c.Status(http.StatusNoContent)
 }

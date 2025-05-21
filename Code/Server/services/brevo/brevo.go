@@ -18,7 +18,8 @@ type emailBody struct {
 	// List of email addresses and names (optional) of the recipients in bcc
 	Bcc []brevo.SendSmtpEmailBcc `json:"bcc,omitempty"`
 	// List of email addresses and names (optional) of the recipients in cc
-	Cc []brevo.SendSmtpEmailCc `json:"cc,omitempty"`
+	Cc      []brevo.SendSmtpEmailCc     `json:"cc,omitempty"`
+	ReplyTo *brevo.SendSmtpEmailReplyTo `json:"replyTo,omitempty"`
 	// Subject of the message. Mandatory if 'templateId' is not passed
 	Subject string `json:"subject,omitempty"`
 	// Pass the absolute URL (no local file) or the base64 content of the attachment along with the attachment name (Mandatory if attachment content is passed). For example, `[{\"url\":\"https://attachment.domain.com/myAttachmentFromUrl.jpg\", \"name\":\"myAttachmentFromUrl.jpg\"}, {\"content\":\"base64 example content\", \"name\":\"myAttachmentFromBase64.jpg\"}]`. Allowed extensions for attachment file: xlsx, xls, ods, docx, docm, doc, csv, pdf, txt, gif, jpg, jpeg, png, tif, tiff, rtf, bmp, cgm, css, shtml, html, htm, zip, xml, ppt, pptx, tar, ez, ics, mobi, msg, pub, eps, odt, mp3, m4a, m4v, wma, ogg, flac, wav, aif, aifc, aiff, mp4, mov, avi, mkv, mpeg, mpg, wmv, pkpass and xlsm ( If 'templateId' is passed and is in New Template Language format then both attachment url and content are accepted. If template is in Old template Language format, then 'attachment' is ignored )
@@ -29,10 +30,7 @@ type emailBody struct {
 	Params map[string]any `json:"params,omitempty"`
 }
 
-func callBrevo(fromName string, toEmail string, templateId int64, subject string, params map[string]any) (string, error) {
-	apiURL := "https://api.brevo.com/v3/smtp/email"
-	apiKey := os.Getenv("BREVO_API_KEY")
-
+func buildBody(fromName string, toEmail string, cc []string, replyTo string, templateId int64, subject string, params map[string]any) emailBody {
 	body := emailBody{
 		Sender: &brevo.SendSmtpEmailSender{
 			Name:  fromName,
@@ -47,7 +45,23 @@ func callBrevo(fromName string, toEmail string, templateId int64, subject string
 		TemplateId: templateId,
 		Params:     params,
 	}
+	if len(cc) > 0 {
+		body.Cc = []brevo.SendSmtpEmailCc{}
+		for _, email := range cc {
+			body.Cc = append(body.Cc, brevo.SendSmtpEmailCc{Email: email})
+		}
+	}
+	if len(replyTo) > 0 {
+		body.ReplyTo = &brevo.SendSmtpEmailReplyTo{Email: replyTo}
+	}
+	return body
+}
 
+func callBrevo(fromName string, toEmail string, cc []string, replyTo string, templateId int64, subject string, params map[string]any) (string, error) {
+	apiURL := "https://api.brevo.com/v3/smtp/email"
+	apiKey := os.Getenv("BREVO_API_KEY")
+
+	body := buildBody(fromName, toEmail, cc, replyTo, templateId, subject, params)
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
 		panic(err)
@@ -77,7 +91,7 @@ func callBrevo(fromName string, toEmail string, templateId int64, subject string
 }
 
 func SendEmailInvite(invite db.LeaseInviteModel, userExists bool) (string, error) {
-	ownerName := invite.Property().Owner().Firstname + " " + invite.Property().Owner().Lastname
+	ownerName := invite.Property().Owner().Name()
 	var inviteLink string
 	if userExists {
 		inviteLink = os.Getenv("WEB_PUBLIC_URL") + "/login/invite/" + invite.ID
@@ -88,7 +102,34 @@ func SendEmailInvite(invite db.LeaseInviteModel, userExists bool) (string, error
 		"ownerName":  ownerName,
 		"inviteLink": inviteLink,
 	}
-	subject := "You've been invited to join a property on Immotep"
+	subject := "You've been invited to join a property on Keyz"
 
-	return callBrevo(ownerName+" via Immotep", invite.TenantEmail, 1, subject, params)
+	return callBrevo(ownerName+" via Keyz", invite.TenantEmail, []string{}, "", 1, subject, params)
+}
+
+func SendNewDamage(lease db.LeaseModel) (string, error) {
+	tenantName := lease.Tenant().Name()
+	propertyName := lease.Property().Name
+	params := map[string]any{
+		"tenantName":   tenantName,
+		"propertyName": propertyName,
+		"damageLink":   os.Getenv("WEB_PUBLIC_URL") + "/real-property/details",
+	}
+	subject := "A new damage has been created in " + propertyName
+
+	return callBrevo(tenantName+" via Keyz", lease.Property().Owner().Email, []string{}, "", 5, subject, params)
+}
+
+func SendNewContactMessage(cm db.ContactMessageModel) (string, error) {
+	name := cm.Firstname + " " + cm.Lastname
+	params := map[string]any{
+		"id":          cm.ID,
+		"senderName":  name,
+		"senderEmail": cm.Email,
+		"subject":     cm.Subject,
+		"message":     cm.Message,
+	}
+	subject := "[New message from keyz] " + cm.Subject
+
+	return callBrevo(name+" via keyz-app.fr", "contact@keyz-app.fr", []string{}, cm.Email, 4, subject, params)
 }

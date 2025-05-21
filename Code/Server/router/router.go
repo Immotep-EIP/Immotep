@@ -32,6 +32,15 @@ func registerAPIRoutes(r *gin.Engine, test bool) {
 
 	v1 := r.Group("/v1")
 	{
+		contact := v1.Group("/contact/")
+		{
+			contact.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), limiter.Rate{
+				Period: 1 * time.Hour,
+				Limit:  1,
+			})))
+			contact.POST("/", controllers.CreateContactMessage)
+		}
+
 		auth := v1.Group("/auth/")
 		{
 			auth.POST("/register/", controllers.RegisterOwner)
@@ -79,17 +88,12 @@ func registerValidators() {
 }
 
 func Routes() *gin.Engine {
-	rate := limiter.Rate{
-		Period: 1 * time.Hour,
-		Limit:  3000,
-	}
-
 	var allowOrigins []string
 	if gin.Mode() == gin.ReleaseMode {
-		allowOrigins = []string{os.Getenv("WEB_PUBLIC_URL")}
+		allowOrigins = []string{os.Getenv("WEB_PUBLIC_URL"), os.Getenv("SHOWCASE_PUBLIC_URL")}
 		log.Println("Running in release mode")
 	} else {
-		allowOrigins = []string{"https://*", "http://*", "http://localhost:4242", "http://localhost:3002"}
+		allowOrigins = []string{"https://*", "http://*", "http://localhost:4242", "http://localhost:3002", "http://localhost:3000"}
 		log.Println("Running in debug mode")
 	}
 
@@ -111,7 +115,10 @@ func Routes() *gin.Engine {
 	}))
 	r.Use(gin.Logger())
 	r.Use(gin.CustomRecovery(middlewares.PanicRecovery))
-	r.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), rate)))
+	r.Use(mgin.NewMiddleware(limiter.New(memory.NewStore(), limiter.Rate{
+		Period: 1 * time.Hour,
+		Limit:  3000,
+	})))
 
 	registerValidators()
 

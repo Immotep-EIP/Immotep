@@ -2,14 +2,14 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { HelmetProvider } from 'react-helmet-async'
 import { useTranslation } from 'react-i18next'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
+import useNavigation from '@/hooks/Navigation/useNavigation'
 import Lost from '../Lost'
 
 jest.mock('react-i18next', () => ({
   useTranslation: jest.fn()
 }))
 
-jest.mock('@/hooks/useNavigation/useNavigation', () => ({
+jest.mock('@/hooks/Navigation/useNavigation', () => ({
   __esModule: true,
   default: jest.fn()
 }))

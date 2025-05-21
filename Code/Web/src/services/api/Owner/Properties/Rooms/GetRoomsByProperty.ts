@@ -1,11 +1,19 @@
 import callApi from '@/services/api/apiCaller'
-import { Room } from '@/interfaces/Property/Room/Room'
+import { Room } from '@/interfaces/Property/Inventory/Room/Room'
+import endpoints from '@/enums/EndPointEnum'
+import { GetRoomsByPropertyParams } from '@/interfaces/Api/callApi'
 
-const GetRoomsByProperty = async (id: string) => {
+const GetRoomsByProperty = async ({
+  propertyId,
+  archive = false
+}: GetRoomsByPropertyParams): Promise<Room[]> => {
   try {
     return await callApi<Room[]>({
       method: 'GET',
-      endpoint: `owner/properties/${id}/rooms/`
+      endpoint: endpoints.owner.properties.rooms.list(propertyId),
+      params: {
+        archive
+      }
     })
   } catch (error) {
     console.error('Error fetching data:', error)

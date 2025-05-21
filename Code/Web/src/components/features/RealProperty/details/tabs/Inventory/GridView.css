@@ -1,0 +1,21 @@
+.room-card {
+  height: 100%;
+}
+
+.room-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.furniture-item:hover {
+  background-color: #f0f0f0 !important;
+}
+
+.action-button {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.action-button:hover {
+  opacity: 1;
+}

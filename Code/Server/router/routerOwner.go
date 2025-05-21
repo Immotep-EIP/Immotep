@@ -10,6 +10,8 @@ import (
 func registerOwnerRoutes(owner *gin.RouterGroup) {
 	owner.Use(middlewares.AuthorizeOwner())
 
+	owner.GET("/dashboard/", controllers.GetOwnerDashboard)
+
 	properties := owner.Group("/properties/")
 	{
 		properties.POST("/", controllers.CreateProperty)

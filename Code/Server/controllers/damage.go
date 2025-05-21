@@ -2,12 +2,14 @@ package controllers
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
+	"immotep/backend/services/brevo"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
@@ -50,8 +52,8 @@ func CreateDamage(c *gin.Context) {
 		return
 	}
 
-	damage := req.ToDbDamage()
-	if database.GetRoomByID(damage.RoomID) == nil {
+	damageReq := req.ToDbDamage()
+	if database.GetRoomByID(damageReq.RoomID) == nil {
 		utils.SendError(c, http.StatusNotFound, utils.RoomNotFound, nil)
 		return
 	}
@@ -63,8 +65,14 @@ func CreateDamage(c *gin.Context) {
 	}
 
 	lease, _ := c.MustGet("lease").(db.LeaseModel)
-	res := database.CreateDamage(damage, lease.ID, picturesIds)
-	c.JSON(http.StatusCreated, models.IdResponse{ID: res.ID})
+	damage := database.CreateDamage(damageReq, lease.ID, picturesIds)
+
+	res, err := brevo.SendNewDamage(lease)
+	if err != nil {
+		log.Println(res, err.Error())
+	}
+
+	c.JSON(http.StatusCreated, models.IdResponse{ID: damage.ID})
 }
 
 // GetDamagesByProperty godoc
