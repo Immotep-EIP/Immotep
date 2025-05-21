@@ -15,6 +15,8 @@ class LoginViewModel: ObservableObject {
     @Published var loginStatus: String = ""
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @Published var user: User?
+    @Published var userId: String?
+    @Published var userRole: String?
 
     @AppStorage("user") private var storedUserData: String = ""
 
@@ -41,10 +43,12 @@ class LoginViewModel: ObservableObject {
 
         Task {
             do {
-                let (accessToken, refreshToken) =
+                let (accessToken, refreshToken, _, _) =
                     try await authServiceCopy.loginUser(email: model.email, password: model.password, keepMeSignedIn: model.keepMeSignedIn)
                 TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: nil, keepMeSignedIn: model.keepMeSignedIn)
                 user = try await userServiceCopy.fetchUserProfile(with: accessToken)
+                userId = user?.id
+                userRole = user?.role
                 loginStatus = "Login successful!"
 
                 if let user = user {
@@ -79,6 +83,8 @@ class LoginViewModel: ObservableObject {
             let decoder = JSONDecoder()
             if let decodedUser = try? decoder.decode(User.self, from: data) {
                 self.user = decodedUser
+                self.userId = decodedUser.id
+                self.userRole = decodedUser.role
             }
         }
     }

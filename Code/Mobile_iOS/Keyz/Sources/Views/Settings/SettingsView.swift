@@ -45,6 +45,24 @@ struct SettingsView: View {
                                 .font(.headline)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
+                            HStack {
+                                Text("ID".localized())
+                                    .foregroundColor(.gray)
+                                Spacer()
+                                Text(loginViewModel.user?.id ?? "N/A")
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.vertical, 5)
+                            
+                            HStack {
+                                Text("Role".localized())
+                                    .foregroundColor(.gray)
+                                Spacer()
+                                Text(loginViewModel.user?.role ?? "N/A")
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.vertical, 5)
+                            
                             CustomTextInput(title: "First Name".localized(), placeholder: "", text: $editableFirstname, isSecure: false)
                                 .disabled(!isEditing)
                                 .onTapGesture {
@@ -120,7 +138,9 @@ struct SettingsView: View {
                         }
 
                         Button("Logout".localized()) {
-                            signOut()
+                            Task {
+                                await signOut()
+                            }
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -144,10 +164,13 @@ struct SettingsView: View {
         }
     }
     
-    private func signOut() {
+    private func signOut() async {
+        await UserService.shared.logout()
         TokenStorage.clearTokens()
         isLoggedIn = false
         loginViewModel.user = nil
+        loginViewModel.userId = nil
+        loginViewModel.userRole = nil
         navigateToLogin = true
     }
     
@@ -170,6 +193,8 @@ struct SettingsView: View {
         editableEmail = loginViewModel.user?.email ?? ""
         editableFirstname = loginViewModel.user?.firstname ?? ""
         editableLastname = loginViewModel.user?.lastname ?? ""
+        loginViewModel.userId = loginViewModel.user?.id
+        loginViewModel.userRole = loginViewModel.user?.role
     }
 }
 
