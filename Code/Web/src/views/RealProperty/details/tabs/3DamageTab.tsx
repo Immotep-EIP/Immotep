@@ -2,11 +2,12 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Empty, Spin, Table, Typography } from 'antd'
 import type { TableProps } from 'antd'
+
 import useDamages from '@/hooks/Property/useDamages'
 import { usePropertyId } from '@/context/propertyIdContext'
-import style from './3DamageTab.module.css'
 import useNavigation from '@/hooks/Navigation/useNavigation'
-import PriorityTag from '@/components/common/PriorityTag'
+import StatusTag from '@/components/common/Tag/StatusTag'
+import style from './3DamageTab.module.css'
 
 interface DataType {
   key: string
@@ -71,7 +72,17 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       title: t('pages.real_property_details.tabs.damage.table.priority'),
       dataIndex: 'priority',
       key: 'priority',
-      render: text => <PriorityTag priority={text} />
+      render: text => (
+        <StatusTag
+          value={text}
+          colorMap={{
+            urgent: 'red',
+            high: 'red',
+            medium: 'yellow',
+            low: 'green'
+          }}
+        />
+      )
     },
     {
       title: t('pages.real_property_details.tabs.damage.table.pictures'),
@@ -107,11 +118,7 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
       <div className={style.tabContentEmpty}>
         <Empty
           image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          styles={{
-            image: {
-              height: 60
-            }
-          }}
+          imageStyle={{ height: 60 }}
           description={
             <Typography.Text>
               {t('pages.real_property.error.no_tenant_linked')}

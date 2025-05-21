@@ -7,7 +7,7 @@ import {
   DashboardOpenDamages,
   DashboardOpenDamagesToFix
 } from '@/interfaces/Dashboard/Dashboard'
-import PriorityTag from '@/components/common/PriorityTag'
+import StatusTag from '@/components/common/Tag/StatusTag'
 import toLocaleDate from '@/utils/date/toLocaleDate'
 import NavigationEnum from '@/enums/NavigationEnum'
 import style from './OpenDamages.module.css'
@@ -117,7 +117,17 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
                       {damage.comment}
                     </span>
                   </Tooltip>
-                  <PriorityTag priority={damage.priority} />
+                  <StatusTag
+                    value={damage.priority}
+                    colorMap={{
+                      urgent: 'red',
+                      high: 'red',
+                      medium: 'yellow',
+                      low: 'green'
+                    }}
+                    i18nPrefix="pages.real_property_details.tabs.damage.priority"
+                    defaultColor="gray"
+                  />
                 </div>
               )}
             </div>

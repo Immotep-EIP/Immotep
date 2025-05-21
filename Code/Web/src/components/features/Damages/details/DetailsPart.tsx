@@ -4,15 +4,15 @@ import { Image, Spin, Button, Modal, DatePicker, Space } from 'antd'
 import { EyeOutlined, CalendarOutlined } from '@ant-design/icons'
 import { useLocation } from 'react-router-dom'
 import dayjs from 'dayjs'
-import DamageHeader from './DamageHeader'
-import style from './DetailsPart.module.css'
+
+import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
 import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
 import base64ToFileAsString from '@/utils/base64/baseToFileAsString'
 import useDamages from '@/hooks/Property/useDamages'
 import useProperties from '@/hooks/Property/useProperties'
-import PriorityTag from '@/components/common/PriorityTag'
-import DamageStatusTag from '@/components/common/DamageStatusTag'
-import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
+import StatusTag from '@/components/common/Tag/StatusTag'
+import DamageHeader from './DamageHeader'
+import style from './DetailsPart.module.css'
 
 const DetailsPart: React.FC = () => {
   const { t } = useTranslation()
@@ -90,8 +90,6 @@ const DetailsPart: React.FC = () => {
     setDamageAsRead()
   }, [damage, id, damageId])
 
-  console.log('damage', damage)
-
   return (
     <div className={style.mainContainer}>
       {loading ||
@@ -111,13 +109,34 @@ const DetailsPart: React.FC = () => {
                   subtitleKey={t('pages.damage_details.priority')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
                 >
-                  <PriorityTag priority={damage?.priority} />
+                  <StatusTag
+                    value={damage.priority}
+                    colorMap={{
+                      urgent: 'red',
+                      high: 'red',
+                      medium: 'yellow',
+                      low: 'green'
+                    }}
+                    i18nPrefix="pages.real_property_details.tabs.damage.priority"
+                    defaultColor="gray"
+                  />
                 </SubtitledElement>
                 <SubtitledElement
                   subtitleKey={t('pages.damage_details.fix_status')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
                 >
-                  <DamageStatusTag status={damage.fix_status} />
+                  <StatusTag
+                    value={damage.fix_status}
+                    colorMap={{
+                      pending: 'red',
+                      planned: 'orange',
+                      awaiting_owner_confirmation: 'blue',
+                      awaiting_tenant_confirmation: 'purple',
+                      fixed: 'green'
+                    }}
+                    i18nPrefix="pages.real_property_details.tabs.damage.status"
+                    defaultColor="gray"
+                  />
                 </SubtitledElement>
               </div>
 

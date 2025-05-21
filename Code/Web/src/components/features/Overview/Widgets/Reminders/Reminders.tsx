@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Empty, Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { DashboardReminders } from '@/interfaces/Dashboard/Dashboard'
-import PriorityTag from '@/components/common/PriorityTag'
+import StatusTag from '@/components/common/Tag/StatusTag'
 import style from './Reminders.module.css'
 
 interface RemindersProps {
@@ -71,7 +71,17 @@ const Reminders: React.FC<RemindersProps> = ({
                   <span className={style.titleText}>{reminder.title}</span>
                 </Tooltip>
                 <div className={style.reminderheader}>
-                  <PriorityTag priority={reminder.priority} />
+                  <StatusTag
+                    value={reminder.priority}
+                    colorMap={{
+                      urgent: 'red',
+                      high: 'red',
+                      medium: 'yellow',
+                      low: 'green'
+                    }}
+                    i18nPrefix="pages.real_property_details.tabs.damage.priority"
+                    defaultColor="gray"
+                  />
                   <Tooltip title={reminder.advice} placement="topLeft">
                     <span className={style.descriptionText}>
                       {reminder.advice}
