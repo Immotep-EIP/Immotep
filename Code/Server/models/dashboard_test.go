@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"immotep/backend/models"
+	"immotep/backend/prisma/db"
 )
 
 func TestReminderModel(t *testing.T) {
@@ -96,5 +97,32 @@ func TestGetReminders(t *testing.T) {
 	t.Run("AllGood", func(t *testing.T) {
 		r := models.GetReminderAllGood("en")
 		assert.Equal(t, "Good news!", r.Title)
+	})
+}
+
+func TestOpenDamageResponse(t *testing.T) {
+	t.Run("FromDbDamage", func(t *testing.T) {
+		mockDamageModel := BuildTestDamage("1")
+
+		resp := models.OpenDamageResponse{}
+		resp.FromDbDamage(mockDamageModel, db.UserModel{
+			InnerUser: db.InnerUser{
+				Firstname: "John",
+				Lastname:  "Doe",
+			},
+		}, BuildTestProperty("1"))
+
+		assert.Equal(t, mockDamageModel.ID, resp.ID)
+		assert.Equal(t, mockDamageModel.LeaseID, resp.LeaseID)
+		assert.Equal(t, "John Doe", resp.TenantName)
+		assert.Equal(t, mockDamageModel.RoomID, resp.RoomID)
+		assert.Equal(t, "Living Room", resp.RoomName)
+		assert.Equal(t, mockDamageModel.Comment, resp.Comment)
+		assert.Equal(t, mockDamageModel.Priority, resp.Priority)
+		assert.Equal(t, mockDamageModel.Read, resp.Read)
+		assert.Equal(t, mockDamageModel.CreatedAt, resp.CreatedAt)
+		assert.Equal(t, mockDamageModel.UpdatedAt, resp.UpdatedAt)
+		assert.Nil(t, resp.FixPlannedAt)
+		assert.Nil(t, resp.FixedAt)
 	})
 }
