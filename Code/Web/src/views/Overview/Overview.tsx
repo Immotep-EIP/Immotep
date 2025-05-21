@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
-import { Button, Spin } from 'antd'
+import { Spin } from 'antd'
 
 import { useTranslation } from 'react-i18next'
-import MoveWidgetIcon from '@/assets/icons/move.png'
 import PageTitle from '@/components/ui/PageText/Title.tsx'
 import PropertiesNumber from '@/components/features/Overview/Widgets/PropertiesNumber/PropertiesNumber'
 import PropertiesRepartition from '@/components/features/Overview/Widgets/PropertiesRepartition/PropertiesRepartition'
@@ -20,22 +19,15 @@ import DamagesRepartition from '@/components/features/Overview/Widgets/DamagesRe
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
 const WidgetTemplate: React.FC<{
-  areWidgetsMovable: boolean
   children: React.ReactNode
-}> = ({ areWidgetsMovable, children }) => (
+}> = ({ children }) => (
   <div className={style.widgetContainer}>
-    {areWidgetsMovable && (
-      <div className={style.moveWidgetIcon}>
-        <img src={MoveWidgetIcon} alt="move widget" style={{ width: '17px' }} />
-      </div>
-    )}
     <div className={style.widgetContent}>{children}</div>
   </div>
 )
 
 const Overview: React.FC = () => {
   const { t } = useTranslation()
-  const [areWidgetsMovable, setAreWidgetsMovable] = useState(false)
   const {
     reminders,
     properties,
@@ -254,32 +246,6 @@ const Overview: React.FC = () => {
       <div className={style.pageContainer}>
         <div className={style.pageHeader}>
           <PageTitle title={t('pages.overview.title')} size="title" />
-          {!areWidgetsMovable && (
-            <Button
-              type="primary"
-              onClick={() => setAreWidgetsMovable(!areWidgetsMovable)}
-              className={style.editButtonsContainer}
-            >
-              {t('components.button.edit_widgets_position')}
-            </Button>
-          )}
-          {areWidgetsMovable && (
-            <div className={style.editButtonsContainer}>
-              <Button
-                type="primary"
-                danger
-                onClick={() => setAreWidgetsMovable(!areWidgetsMovable)}
-              >
-                {t('components.button.cancel')}
-              </Button>
-              <Button
-                type="primary"
-                onClick={() => setAreWidgetsMovable(!areWidgetsMovable)}
-              >
-                {t('components.button.save')}
-              </Button>
-            </div>
-          )}
         </div>
 
         {loading ? (
@@ -302,16 +268,13 @@ const Overview: React.FC = () => {
               rowHeight={120}
               isResizable={false}
               onResize={handleLayoutChange}
-              isDraggable={areWidgetsMovable}
               draggableHandle={`.${style.moveWidgetIcon}`}
               preventCollision
               compactType={null}
             >
               {widgets.map((widget: Widget) => (
                 <div key={widget.i} data-grid={widget}>
-                  <WidgetTemplate areWidgetsMovable={areWidgetsMovable}>
-                    {widget.children}
-                  </WidgetTemplate>
+                  <WidgetTemplate>{widget.children}</WidgetTemplate>
                 </div>
               ))}
             </ResponsiveGridLayout>
