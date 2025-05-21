@@ -11,12 +11,14 @@ import PDFKit
 struct PropertyDetailView: View {
     @Binding var property: Property
     @ObservedObject var viewModel: PropertyViewModel
+    @EnvironmentObject var loginViewModel: LoginViewModel
     @StateObject private var tenantViewModel = TenantViewModel()
     @State private var showInviteTenantSheet = false
     @State private var showEndLeasePopUp = false
     @State private var showCancelInvitePopUp = false
     @State private var showDeletePropertyPopUp = false
     @State private var showEditPropertyPopUp = false
+    @State private var showReportDamageView = false
     @State private var errorMessage: String?
 
     @Environment(\.dismiss) var dismiss
@@ -68,47 +70,49 @@ struct PropertyDetailView: View {
                         .padding(16)
                         .accessibilityLabel("back_button")
 
-                        Menu {
-                            Button(action: {
-                                showInviteTenantSheet = true
-                            }) {
-                                Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
+                        if loginViewModel.userRole == "owner" {
+                            Menu {
+                                Button(action: {
+                                    showInviteTenantSheet = true
+                                }) {
+                                    Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
+                                }
+                                
+                                Button(action: {
+                                    showEndLeasePopUp = true
+                                }) {
+                                    Label("End Lease".localized(), systemImage: "xmark.circle")
+                                }
+                                
+                                Button(action: {
+                                    showCancelInvitePopUp = true
+                                }) {
+                                    Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
+                                }
+                                
+                                Button(action: {
+                                    showEditPropertyPopUp = true
+                                }) {
+                                    Label("Edit Property".localized(), systemImage: "pencil")
+                                }
+                                
+                                Button(action: {
+                                    showDeletePropertyPopUp = true
+                                }) {
+                                    Label("Delete Property".localized(), systemImage: "trash")
+                                }
+                            } label: {
+                                Image(systemName: "ellipsis")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                                    .frame(width: 40, height: 40)
+                                    .background(Color.black.opacity(0.6))
+                                    .clipShape(Circle())
                             }
-                            
-                            Button(action: {
-                                showEndLeasePopUp = true
-                            }) {
-                                Label("End Lease".localized(), systemImage: "xmark.circle")
-                            }
-                            
-                            Button(action: {
-                                showCancelInvitePopUp = true
-                            }) {
-                                Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
-                            }
-                            
-                            Button(action: {
-                                showEditPropertyPopUp = true
-                            }) {
-                                Label("Edit Property".localized(), systemImage: "pencil")
-                            }
-                            
-                            Button(action: {
-                                showDeletePropertyPopUp = true
-                            }) {
-                                Label("Delete Property".localized(), systemImage: "trash")
-                            }
-                        } label: {
-                            Image(systemName: "ellipsis")
-                                .font(.title3)
-                                .foregroundColor(.white)
-                                .frame(width: 40, height: 40)
-                                .background(Color.black.opacity(0.6))
-                                .clipShape(Circle())
+                            .frame(maxWidth: .infinity, alignment: .topTrailing)
+                            .padding(16)
+                            .accessibilityLabel("options_button")
                         }
-                        .frame(maxWidth: .infinity, alignment: .topTrailing)
-                        .padding(16)
-                        .accessibilityLabel("options_button")
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
@@ -252,14 +256,41 @@ struct PropertyDetailView: View {
                                     }
                                     .padding(.horizontal)
                                 }
+
+                                if loginViewModel.userRole == "tenant" {
+                                    Button(action: {
+                                        showReportDamageView = true
+                                    }) {
+                                        Text("Report Damage".localized())
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 15)
+                                            .background(Color("LightBlue"))
+                                            .foregroundColor(.white)
+                                            .cornerRadius(10)
+                                            .padding(.horizontal)
+                                            .padding(.top, 10)
+                                    }
+                                    .accessibilityLabel("report_damage_btn")
+                                }
                             }
                             .onAppear {
                                 print("Tab switched to Damages, fetching damages...")
                                 Task {
                                     do {
-                                        try await viewModel.fetchPropertyDamages(propertyId: property.id)
-                                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                            property = updatedProperty
+                                        if loginViewModel.userRole == "tenant" {
+                                            if let leaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: property.id, token: try await TokenStorage.getValidAccessToken()) {
+                                                try await viewModel.fetchTenantDamages(leaseId: leaseId)
+                                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                                    property.damages = updatedProperty.damages
+                                                }
+                                            } else {
+                                                viewModel.damagesError = "No active lease found.".localized()
+                                            }
+                                        } else {
+                                            try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                                property = updatedProperty
+                                            }
                                         }
                                     } catch {
                                         viewModel.damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
@@ -275,19 +306,21 @@ struct PropertyDetailView: View {
                     .padding(.vertical, 20)
                 }
 
-                NavigationLink {
-                    InventoryTypeView(property: $property)
-                } label: {
-                    Text("Start the entry/exit inventory".localized())
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 15)
-                        .background(Color("LightBlue"))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .padding(.horizontal)
-                        .padding(.bottom, 10)
+                if loginViewModel.userRole == "owner" {
+                    NavigationLink {
+                        InventoryTypeView(property: $property)
+                    } label: {
+                        Text("Start the entry/exit inventory".localized())
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 15)
+                            .background(Color("LightBlue"))
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                            .padding(.bottom, 10)
+                    }
+                    .accessibilityLabel("inventory_btn_start")
                 }
-                .accessibilityLabel("inventory_btn_start")
                 
                 if let errorMessage = errorMessage {
                     Text(errorMessage)
@@ -323,6 +356,9 @@ struct PropertyDetailView: View {
             }
             .sheet(isPresented: $showInviteTenantSheet) {
                 InviteTenantView(tenantViewModel: tenantViewModel, property: property)
+            }
+            .sheet(isPresented: $showReportDamageView) {
+                ReportDamageView(propertyId: property.id)
             }
             if showCancelInvitePopUp {
                 CustomAlertTwoButtons(
@@ -445,6 +481,86 @@ struct PropertyDetailView: View {
             return displayFormatter.string(from: date)
         }
         return dateString
+    }
+}
+
+struct ReportDamageView: View {
+    let propertyId: String
+    @EnvironmentObject var viewModel: PropertyViewModel
+    @Environment(\.dismiss) var dismiss
+    @State private var comment = ""
+    @State private var priority = "low"
+    @State private var roomName = ""
+    @State private var pictures: [String] = []
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 16) {
+                Text("Report a Damage")
+                    .font(.title)
+                    .padding()
+
+                TextField("Room Name", text: $roomName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+
+                TextField("Comment", text: $comment)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+
+                Picker("Priority", selection: $priority) {
+                    Text("Low").tag("low")
+                    Text("Medium").tag("medium")
+                    Text("High").tag("high")
+                    Text("Urgent").tag("urgent")
+                }
+                .pickerStyle(MenuPickerStyle())
+                .padding(.horizontal)
+
+                Text("Add Photos (not implemented yet)")
+                    .foregroundColor(.gray)
+                    .padding(.horizontal)
+
+                Button(action: {
+                    Task {
+                        do {
+                            let token = try await TokenStorage.getValidAccessToken()
+                            if let leaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token) {
+                                let damageRequest = DamageRequest(comment: comment, priority: priority, roomName: roomName, pictures: pictures.isEmpty ? nil : pictures)
+                                let damageId = try await viewModel.createDamage(propertyId: propertyId, leaseId: leaseId, damage: damageRequest, token: token)
+                                print("Damage reported with ID: \(damageId)")
+                                dismiss()
+                            } else {
+                                errorMessage = "No active lease found.".localized()
+                            }
+                        } catch {
+                            errorMessage = "Error reporting damage: \(error.localizedDescription)".localized()
+                            print("Error reporting damage: \(error.localizedDescription)")
+                        }
+                    }
+                }) {
+                    Text("Submit")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color("LightBlue"))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding(.horizontal)
+
+                if let errorMessage = errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding()
+                }
+
+                Spacer()
+            }
+            .navigationBarItems(trailing: Button("Cancel") {
+                dismiss()
+            })
+        }
     }
 }
 
@@ -667,8 +783,10 @@ struct PropertyDetailView_Previews: PreviewProvider {
         )
         
         let viewModel = PropertyViewModel()
+        let loginViewModel = LoginViewModel()
         
-        PropertyDetailView(property: .constant(property), viewModel: viewModel)
+        return PropertyDetailView(property: .constant(property), viewModel: viewModel)
             .environmentObject(viewModel)
+            .environmentObject(loginViewModel)
     }
 }

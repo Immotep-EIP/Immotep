@@ -181,3 +181,10 @@ struct DamageResponse: Codable, Identifiable {
         case read
     }
 }
+
+struct DamageRequest: Codable {
+    let comment: String
+    let priority: String
+    let roomName: String
+    let pictures: [String]?
+}

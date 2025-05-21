@@ -576,6 +576,221 @@ class PropertyViewModel: ObservableObject {
         self.damages = damagesData
         objectWillChange.send()
     }
+    
+    func fetchTenantProperty() async throws -> Property {
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/property/")!
+        let token = try await TokenStorage.getValidAccessToken()
+
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 401:
+                throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Property not found.".localized()])
+            case 500:
+                throw NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "Internal server error: \(errorBody)".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+
+        let decoder = JSONDecoder()
+        let propertyResponse = try decoder.decode(PropertyResponse.self, from: data)
+
+        var property = Property(
+            id: propertyResponse.id,
+            ownerID: propertyResponse.ownerId,
+            name: propertyResponse.name,
+            address: propertyResponse.address,
+            city: propertyResponse.city,
+            postalCode: propertyResponse.postalCode,
+            country: propertyResponse.country,
+            photo: nil,
+            monthlyRent: propertyResponse.rentalPricePerMonth,
+            deposit: propertyResponse.depositPrice,
+            surface: propertyResponse.areaSqm,
+            isAvailable: propertyResponse.isAvailable,
+            tenantName: propertyResponse.tenant,
+            leaseStartDate: propertyResponse.startDate,
+            leaseEndDate: propertyResponse.endDate,
+            documents: [],
+            createdAt: propertyResponse.createdAt,
+            rooms: [],
+            damages: []
+        )
+
+        do {
+            property.photo = try await fetchPropertiesPicture(propertyId: property.id)
+        } catch {
+            print("Failed to fetch picture for tenant property \(property.id), error: \(error.localizedDescription)")
+        }
+
+        do {
+            try await fetchPropertyDocuments(propertyId: property.id)
+            if let updatedProperty = properties.first(where: { $0.id == property.id }) {
+                property.documents = updatedProperty.documents
+            }
+        } catch {
+            print("Failed to fetch documents for tenant property \(property.id), error: \(error.localizedDescription)")
+        }
+
+        do {
+            try await fetchPropertyDamages(propertyId: property.id)
+            if let updatedProperty = properties.first(where: { $0.id == property.id }) {
+                property.damages = updatedProperty.damages
+            }
+        } catch {
+            print("Failed to fetch damages for tenant property \(property.id), error: \(error.localizedDescription)")
+        }
+
+        return property
+    }
+    
+    
+    func fetchTenantDamages(leaseId: String, fixed: Bool? = nil) async throws {
+        let urlComponents = URLComponents(string: "\(APIConfig.baseURL)/tenant/leases/\(leaseId)/damages/")!
+        var urlRequest = URLRequest(url: urlComponents.url!)
+        
+        if let fixed = fixed {
+            var components = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)!
+            components.queryItems = [URLQueryItem(name: "fixed", value: String(fixed))]
+            urlRequest.url = components.url
+        }
+        
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(try await TokenStorage.getValidAccessToken())", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        isFetchingDamages = true
+        damagesError = nil
+        defer { isFetchingDamages = false }
+
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            print("Fetch Tenant Damages failed with status \(httpResponse.statusCode): \(errorBody)")
+            switch httpResponse.statusCode {
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Lease not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease.".localized()])
+            case 500:
+                throw NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "Internal server error: \(errorBody)".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+
+        let decoder = JSONDecoder()
+        let damagesData = try decoder.decode([DamageResponse].self, from: data)
+        print("Damages fetched for lease \(leaseId): \(damagesData.count)")
+
+        if let propertyIndex = properties.firstIndex(where: { $0.id == damagesData.first?.propertyId }) {
+            properties[propertyIndex].damages = damagesData
+            objectWillChange.send()
+        }
+        self.damages = damagesData
+    }
+    
+    func fetchActiveLeaseIdForProperty(propertyId: String, token: String) async throws -> String? {
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/properties/\(propertyId)/leases/current/")!
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            print("Fetch Active Lease ID failed with status \(httpResponse.statusCode): \(errorBody)")
+            switch httpResponse.statusCode {
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease.".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+
+        let decoder = JSONDecoder()
+        let leaseResponse = try decoder.decode(LeaseResponse.self, from: data)
+        return leaseResponse.id
+    }
+
+    func createDamage(propertyId: String, leaseId: String, damage: DamageRequest, token: String) async throws -> String {
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/properties/\(propertyId)/leases/\(leaseId)/damages/")!
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let jsonData = try JSONEncoder().encode(damage)
+        urlRequest.httpBody = jsonData
+
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+
+        guard httpResponse.statusCode == 201 else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            print("Create Damage failed with status \(httpResponse.statusCode): \(errorBody)")
+            switch httpResponse.statusCode {
+            case 400:
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Missing fields or bad base64 string: \(errorBody)".localized()])
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease.".localized()])
+            case 500:
+                throw NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "Internal server error: \(errorBody)".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+
+        let decoder = JSONDecoder()
+        let idResponse = try decoder.decode(IdResponse.self, from: data)
+        print("Damage created with ID: \(idResponse.id)")
+        return idResponse.id
+    }
+
+    struct IdResponse: Codable {
+        let id: String
+    }
 }
 
 struct PropertyID: Decodable {
