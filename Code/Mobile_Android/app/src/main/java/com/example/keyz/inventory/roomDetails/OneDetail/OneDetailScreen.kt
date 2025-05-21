@@ -139,7 +139,8 @@ fun OneDetailScreen(
                             oldReportId = oldReportId,
                             propertyId = propertyId,
                             leaseId = leaseId,
-                            isRoom = isRoom
+                            isRoom = isRoom,
+                            isExit = isExit
                         ) },
                     ) {
                         Text(

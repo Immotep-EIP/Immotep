@@ -69,6 +69,10 @@ fun AddRoomOrDetailModal(
             } catch (e: Exception) {
                 println("Impossible to request focus")
             }
+        } else {
+            roomName = ""
+            roomType = RoomType.bedroom
+            error = null
         }
     }
 

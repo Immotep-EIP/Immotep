@@ -215,7 +215,8 @@ class OneDetailViewModel(
         oldReportId : String?,
         propertyId: String,
         leaseId: String,
-        isRoom: Boolean
+        isRoom: Boolean,
+        isExit: Boolean
     ) {
         _aiCallError.value = false
         if (picture.isEmpty()) {
@@ -223,9 +224,10 @@ class OneDetailViewModel(
             println("picture is empty")
             return
         }
-        if (oldReportId == null) {
-            return summarize(propertyId, leaseId, isRoom) { _aiCallError.value = true }
+        if (oldReportId != null && isExit) {
+            return compare(oldReportId, propertyId, leaseId, isRoom) { _aiCallError.value = true }
         }
-        return compare(oldReportId, propertyId, leaseId, isRoom) { _aiCallError.value = true }
+        return summarize(propertyId, leaseId, isRoom) { _aiCallError.value = true }
+
     }
 }
