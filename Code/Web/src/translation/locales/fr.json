@@ -133,6 +133,12 @@
         "label": "Document",
         "placeholder": "Choisissez un document",
         "error": "Veuillez sélectionner un document."
+      },
+      "search": {
+        "placeholder": "Rechercher des pièces et objets..."
+      },
+      "search_property": {
+        "placeholder": "Rechercher une propriété..."
       }
     },
     "messages": {
@@ -143,9 +149,9 @@
       "no_properties": "Vous n'avez aucune propriété pour le moment",
       "no_properties_so_no_messages": "Vous n'avez aucune propriété pour le moment, vous n'avez donc aucun message.",
       "delete_property_title": "Supprimer la propriété",
-      "delete_property_description": "Êtes-vous sûr de vouloir supprimer cette propriété ?",
-      "delete_property_success": "Propriété supprimée avec succès",
-      "delete_property_error": "Erreur lors de la suppression de la propriété",
+      "delete_property_description": "Êtes-vous sûr de vouloir archiver cette propriété ?",
+      "delete_property_success": "Propriété archivée avec succès",
+      "delete_property_error": "Erreur lors de l'archivage de la propriété",
       "no_rooms_in_inventory": "Vous n'avez aucune pièce dans votre inventaire pour le moment",
       "room_added": "Pièce ajoutée avec succès",
       "room_added_error": "Erreur lors de l'ajout de la pièce",
@@ -169,6 +175,7 @@
       "my_profile": "Mon profil",
       "add_real_property": "Ajouter une propriété",
       "add_widget": "Ajouter un widget",
+      "edit_widgets_position": "Modifier la position des widgets",
       "about": "À propos",
       "damage": "Dommages",
       "inventory": "Inventaire",
@@ -187,9 +194,14 @@
       "delete": "Supprimer",
       "edit_property": "Modifier la propriété",
       "delete_property": "Supprimer la propriété",
+      "archive_property": "Archiver la propriété",
+      "unarchive_property": "Désarchiver la propriété",
       "download": "Télécharger",
       "update": "Mettre à jour",
-      "cancel_invitation": "Annuler l'invitation"
+      "cancel_invitation": "Annuler l'invitation",
+      "add_item": "Ajouter un Objet",
+      "delete_item": "Supprimer l'Objet",
+      "add_intervention_date": "Ajouter une date d'intervention"
     },
     "modal": {
       "end_contract": {
@@ -204,12 +216,162 @@
         "success": "Propriété supprimée avec succès",
         "error": "Une erreur est survenue lors de la suppression de la propriété, veuillez réessayer."
       },
+      "archive_property": {
+        "title": "Archiver la propriété",
+        "description": "Êtes-vous sûr de vouloir archiver cette propriété ?",
+        "success": "Propriété archivée avec succès",
+        "error": "Une erreur est survenue lors de l'archivage de la propriété, veuillez réessayer."
+      },
+      "unarchive_property": {
+        "title": "Désarchiver la propriété",
+        "description": "Êtes-vous sûr de vouloir désarchiver cette propriété ?",
+        "success": "Propriété désarchivée avec succès",
+        "error": "Une erreur est survenue lors de la désarchivage de la propriété, veuillez réessayer."
+      },
       "cancel_invitation": {
         "title": "Annuler l'invitation",
         "description": "Êtes-vous sûr de vouloir annuler l'invitation de ce locataire ?",
         "success": "Invitation annulée avec succès",
         "error": "Une erreur est survenue lors de l'annulation de l'invitation, veuillez réessayer."
       }
+    },
+    "inventory": {
+      "view_mode": {
+        "plan": "Plan",
+        "grid": "Grille",
+        "list": "Liste"
+      },
+      "room": {
+        "add": "Ajouter une Pièce",
+        "delete": "Supprimer la Pièce",
+        "name": "Nom de la Pièce",
+        "type": "Type de Pièce",
+        "types": {
+          "all": "Toutes les Pièces",
+          "bedroom": "Chambre",
+          "bathroom": "Salle de Bain",
+          "kitchen": "Cuisine",
+          "living": "Salon",
+          "other": "Autre"
+        }
+      },
+      "furniture": {
+        "name": "Nom de l'Objet",
+        "quantity": "Quantité",
+        "quantity_validation": "La quantité doit être comprise entre 1 et 1000",
+        "suggested_items": "Objets suggérés pour cette pièce",
+        "Bed": "Lit",
+        "Wardrobe": "Armoire",
+        "Nightstand": "Table de nuit",
+        "Table": "Table",
+        "Chair": "Chaise",
+        "Fridge": "Réfrigérateur",
+        "Oven": "Four",
+        "Sink": "Évier",
+        "Coffee Table": "Table basse",
+        "TV Stand": "Meuble TV",
+        "Armchair": "Fauteuil",
+        "Mirror": "Miroir",
+        "Desk": "Bureau",
+        "Bookshelf": "Bibliothèque",
+        "Lamp": "Lampe",
+        "Dining Table": "Table à manger",
+        "Buffet": "Buffet",
+        "Toy Box": "Coffre à jouets",
+        "Play Mat": "Tapis de jeu",
+        "Washing Machine": "Lave-linge",
+        "Dryer": "Sèche-linge",
+        "Laundry Basket": "Panier à linge",
+        "Coat Rack": "Porte-manteau",
+        "Shoe Cabinet": "Meuble à chaussures",
+        "Shelf": "Étagère",
+        "Storage Box": "Boîte de rangement",
+        "Wine Rack": "Casier à vin",
+        "Workbench": "Établi",
+        "Tool Cabinet": "Armoire à outils",
+        "Outdoor Chair": "Chaise d'extérieur",
+        "Small Table": "Petite table",
+        "Sofa": "Canapé",
+        "Shower": "Douche",
+        "Toilet": "WC",
+        "Custom Item": "Objet personnalisé"
+      },
+      "search": {
+        "placeholder": "Rechercher des pièces et objets..."
+      },
+      "empty": {
+        "no_rooms": "Aucune pièce dans l'inventaire",
+        "no_items": "Aucun objet dans cette pièce"
+      },
+      "grid": {
+        "edit_room": "Modifier la Pièce",
+        "delete_room": "Supprimer la Pièce",
+        "add_item": "Ajouter un Objet",
+        "delete_item": "Supprimer l'Objet",
+        "quantity": "Quantité"
+      },
+      "controls": {
+        "search": "Rechercher",
+        "filter": "Filtrer par type de pièce",
+        "view_mode": "Mode d'affichage",
+        "add_room": "Ajouter une Pièce"
+      }
+    },
+    "documents": {
+      "success_add": "Document ajouté avec succès",
+      "error_add": "Erreur lors de l'ajout du document",
+      "success_delete": "Document supprimé avec succès",
+      "error_delete": "Erreur lors de la suppression du document"
+    },
+    "tooltip": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "plan_view": "Vue Plan",
+      "grid_view": "Vue Grille",
+      "list_view": "Vue Liste"
+    },
+    "select": {
+      "status": {
+        "placeholder": "Sélectionner le statut",
+        "all": "Tous les statuts",
+        "available": "Disponible",
+        "unavailable": "Occupée",
+        "invitation_sent": "Invitation envoyée"
+      },
+      "surface": {
+        "placeholder": "Sélectionner la surface",
+        "all": "Toutes les surfaces"
+      },
+      "room_type": {
+        "placeholder": "Sélectionner le type de pièce",
+        "all": "Toutes les Pièces",
+        "bedroom": "Chambre",
+        "bathroom": "Salle de Bain",
+        "kitchen": "Cuisine",
+        "living": "Salon",
+        "dressing": "Dressing",
+        "laundryroom": "Buanderie",
+        "playroom": "Salle de Jeux",
+        "toilet": "Toilettes",
+        "livingroom": "Salon",
+        "diningroom": "Salle à Manger",
+        "hallway": "Couloir",
+        "balcony": "Balcon",
+        "cellar": "Cave",
+        "garage": "Garage",
+        "storage": "Rangement",
+        "office": "Bureau",
+        "other": "Autre"
+      }
+    },
+    "switch": {
+      "show_archived": "Archivées",
+      "show_active": "Actives"
+    },
+    "loading": {
+      "loading": "Chargement en cours...",
+      "loading_data": "Chargement des données...",
+      "no_data": "Aucune donnée disponible"
     }
   },
   "pages": {
@@ -273,6 +435,7 @@
       "409_error": "Invitation déjà envoyée",
       "fill_fields": "Veuillez remplir les champs requis",
       "error_fetching_data": "Erreur lors de la récupération des données",
+      "date_error": "La date de début doit être inférieure à la date de fin",
       "title": "Détails de la propriété",
       "informations": {
         "name": "Nom",
@@ -292,31 +455,57 @@
           "add_room_modal_title": "Ajouter une pièce",
           "add_stuff_modal_title": "Ajouter un objet",
           "list_object_name": "Objets dans la pièce",
-          "remove_room_confirmation": "Êtes-vous sûr de vouloir supprimer cet pièce ?",
+          "remove_room_confirmation": "Êtes-vous sûr de vouloir supprimer cette pièce ?",
           "remove_room_success": "Pièce supprimé avec succès",
           "remove_stuff_confirmation": "Êtes-vous sûr de vouloir supprimer cet élément ?",
           "remove_stuff_success": "Élément supprimé avec succès",
           "error_fetching_data": "Erreur lors de la récupération des données"
         },
         "damage": {
+          "pictures": "Image(s)",
+          "no_pictures": "Aucune image",
+          "no_intervention_date": "Aucune date d'intervention définie",
           "table": {
             "date": "Date",
             "comment": "Commentaire",
             "intervention_date": "Date d'intervention",
             "room": "Pièce",
             "priority": "Priorité",
-            "pictures": "Images"
+            "pictures": "Images",
+            "available_pictures": "Images disponibles"
           },
           "priority": {
             "low": "Basse",
             "medium": "Moyenne",
-            "high": "Haute"
+            "high": "Haute",
+            "urgent": "Urgent"
+          },
+          "status": {
+            "pending": "En attente",
+            "planned": "Planifié",
+            "awaiting_owner_confirmation": "En attente de confirmation du propriétaire",
+            "awaiting_tenant_confirmation": "En attente de confirmation du locataire",
+            "fixed": "Réparé"
           },
           "modal": {
             "title": "Image du dommage"
           }
         }
       }
+    },
+    "damage_details": {
+      "title": "Détails du dommage",
+      "pictures": "Images",
+      "comment": "Commentaire",
+      "created_at": "Créé le",
+      "room_name": "Nom de la pièce",
+      "priority": "Priorité",
+      "tenant_name": "Nom du locataire",
+      "fix_planned_at": "Date d'intervention",
+      "fix_status": "Statut de l'intervention",
+      "update_success": "Dommage mis à jour avec succès",
+      "update_error": "Erreur lors de la mise à jour du dommage",
+      "at": "à"
     },
     "overview": {
       "document_title": "Aperçu",
@@ -359,13 +548,16 @@
       "status": {
         "available": "Disponible",
         "unavailable": "Occupée",
+        "availables": "Disponibles",
+        "unavailables": "Occupées",
         "invitation_sent": "Invitation envoyée"
       },
       "damage": {
         "waiting": "Dommage(s) non résolu(s)"
       },
       "error": {
-        "error_fetching_data": "Erreur lors de la récupération des données"
+        "error_fetching_data": "Erreur lors de la récupération des données",
+        "no_tenant_linked": "Aucun locataire lié à cette propriété, veuillez en ajouter un pour bénéficier de cette fonctionnalité."
       }
     },
     "messages": {
@@ -381,17 +573,12 @@
   "widgets": {
     "document_title": "Widgets",
     "document_description": "Gérez vos widgets facilement. Ajoutez, modifiez ou supprimez vos widgets.",
-    "user_info": {
-      "title": "Bienvenue",
-      "properties_number": "Voici un aperçu de vos",
-      "real_properties": "propriétés",
-      "error_fetching": "Erreur de récupération des données"
+    "properties_number": {
+      "properties_number": "Nombre de propriétés",
+      "real_properties": "Propriétés"
     },
-    "maintenance": {
-      "title": "Maintenance",
-      "no_maintenance": "Aucune maintenance en cours",
-      "no_maintenance_description": "Vous n'avez aucune maintenance en cours pour le moment",
-      "complete_button": "Confirmer"
+    "reminders": {
+      "no_reminders": "Vous n'avez pas de rappels pour le moment"
     }
   }
 }

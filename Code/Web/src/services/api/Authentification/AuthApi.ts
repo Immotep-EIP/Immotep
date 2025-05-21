@@ -1,37 +1,45 @@
 import qs from 'qs'
 
 import callApi from '@/services/api/apiCaller'
-import { UserRegister, UserToken, TokenResponse } from '@/interfaces/User/User'
+import {
+  UserRegisterPayload,
+  UserTokenPayload,
+  TokenResponse,
+  User
+} from '@/interfaces/User/User'
+import endpoints from '@/enums/EndPointEnum'
 
-export const register = async (userInfo: UserRegister) => {
-  const endpoint = userInfo.contractId
-    ? `auth/invite/${userInfo.contractId}/`
-    : 'auth/register/'
+export const register = async (
+  userInfo: UserRegisterPayload
+): Promise<User> => {
+  const endpoint = userInfo.leaseId
+    ? endpoints.user.auth.invite(userInfo.leaseId)
+    : endpoints.user.auth.register()
 
   try {
-    const response = await callApi({
+    return await callApi<User, UserRegisterPayload>({
       method: 'POST',
       endpoint,
-      data: userInfo
+      body: userInfo
     })
-    return response
   } catch (error) {
     console.error('request error:', error)
     throw error
   }
 }
 
-export const loginApi = async (userInfo: UserToken) => {
+export const loginApi = async (
+  userInfo: UserTokenPayload
+): Promise<TokenResponse> => {
   try {
-    const response = await callApi<UserToken, TokenResponse>({
+    return await callApi<TokenResponse, UserTokenPayload>({
       method: 'POST',
-      endpoint: 'auth/token/',
-      data: qs.stringify(userInfo),
+      endpoint: endpoints.user.auth.token(),
+      body: qs.stringify(userInfo),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-    return response
   } catch (error) {
     console.error('request error:', error)
     throw error

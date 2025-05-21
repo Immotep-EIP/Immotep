@@ -3,31 +3,20 @@ import React, {
   useContext,
   useState,
   useEffect,
-  ReactNode,
   useMemo
 } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LoadingOutlined } from '@ant-design/icons'
 
-import { UserToken, TokenResponse, User } from '@/interfaces/User/User'
+import { UserTokenPayload, User } from '@/interfaces/User/User'
 import { loginApi } from '@/services/api/Authentification/AuthApi'
 import getUserProfile from '@/services/api/User/GetUserProfile'
 import { saveData, deleteData } from '@/utils/cache/localStorage'
+import { AuthContextType, AuthProviderProps } from '@/interfaces/Auth/Auth'
 import NavigationEnum from '@/enums/NavigationEnum'
-
-interface AuthContextType {
-  isAuthenticated: boolean
-  login: (user: UserToken) => Promise<TokenResponse>
-  logout: () => void
-  user: User | null
-  updateUser: (newUserData: Partial<User>) => void
-}
+import imageCache from '@/utils/cache/ImageCache'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
-
-interface AuthProviderProps {
-  children: ReactNode
-}
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -73,7 +62,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth()
   }, [])
 
-  const login = async (userInfo: UserToken) => {
+  const login = async (userInfo: UserTokenPayload) => {
     try {
       const response = await loginApi(userInfo)
       setIsAuthenticated(true)
@@ -96,16 +85,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(registration => {
-        if (registration.active) {
-          registration.active.postMessage({
-            type: 'LOGOUT'
-          })
-        }
-      })
-    }
     deleteData()
+    imageCache.clearCache()
     navigate(NavigationEnum.LOGIN)
   }
 

@@ -14,94 +14,64 @@ import (
 func BuildTestDocument(id string) db.DocumentModel {
 	return db.DocumentModel{
 		InnerDocument: db.InnerDocument{
-			ID:         id,
-			Name:       "Document",
-			Data:       []byte("data"),
-			ContractID: "1",
-			CreatedAt:  time.Now(),
+			ID:        id,
+			Name:      "Document",
+			Data:      []byte("data"),
+			LeaseID:   "1",
+			CreatedAt: time.Now(),
 		},
 	}
 }
 
-func TestGetCurrentActiveContractDocuments(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+// #############################################################################
+
+func TestGetLeaseDocuments(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	contract := BuildTestContract()
 	documents := []db.DocumentModel{
 		BuildTestDocument("1"),
 		BuildTestDocument("2"),
 	}
+	m.Document.Expect(database.MockGetDocumentsByLease(c)).ReturnsMany(documents)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{contract})
-
-	mock.Document.Expect(
-		client.Client.Document.FindMany(
-			db.Document.ContractID.Equals(contract.ID),
-		),
-	).ReturnsMany(documents)
-
-	foundDocuments := database.GetCurrentActiveContractDocuments("1")
+	foundDocuments := database.GetDocumentsByLease("1")
 	assert.NotNil(t, foundDocuments)
 	assert.Len(t, foundDocuments, len(documents))
 	assert.Equal(t, documents[0].ID, foundDocuments[0].ID)
 	assert.Equal(t, documents[1].ID, foundDocuments[1].ID)
 }
 
-func TestGetCurrentActiveContractDocuments_NoActiveContract(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+func TestGetLeaseDocuments_NoDocuments(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{})
+	m.Document.Expect(database.MockGetDocumentsByLease(c)).ReturnsMany([]db.DocumentModel{})
+
+	foundDocuments := database.GetDocumentsByLease("1")
+	assert.NotNil(t, foundDocuments)
+	assert.Empty(t, foundDocuments)
+}
+
+func TestGetLeaseDocuments_NoConnection(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Document.Expect(database.MockGetDocumentsByLease(c)).Errors(errors.New("connection error"))
 
 	assert.Panics(t, func() {
-		database.GetCurrentActiveContractDocuments("1")
+		database.GetDocumentsByLease("1")
 	})
 }
 
-func TestGetCurrentActiveContractDocuments_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	contract := BuildTestContract()
-
-	mock.Contract.Expect(
-		client.Client.Contract.FindMany(
-			db.Contract.PropertyID.Equals("1"),
-			db.Contract.Active.Equals(true),
-		),
-	).ReturnsMany([]db.ContractModel{contract})
-
-	mock.Document.Expect(
-		client.Client.Document.FindMany(
-			db.Document.ContractID.Equals(contract.ID),
-		),
-	).Errors(errors.New("connection error"))
-
-	assert.Panics(t, func() {
-		database.GetCurrentActiveContractDocuments("1")
-	})
-}
+// #############################################################################
 
 func TestGetDocumentByID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	document := BuildTestDocument("1")
-
-	mock.Document.Expect(
-		client.Client.Document.FindUnique(db.Document.ID.Equals("1")),
-	).Returns(document)
+	m.Document.Expect(database.MockGetDocumentByID(c)).Returns(document)
 
 	foundDocument := database.GetDocumentByID("1")
 	assert.NotNil(t, foundDocument)
@@ -109,64 +79,71 @@ func TestGetDocumentByID(t *testing.T) {
 }
 
 func TestGetDocumentByID_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Document.Expect(
-		client.Client.Document.FindUnique(db.Document.ID.Equals("1")),
-	).Errors(db.ErrNotFound)
+	m.Document.Expect(database.MockGetDocumentByID(c)).Errors(db.ErrNotFound)
 
 	foundDocument := database.GetDocumentByID("1")
 	assert.Nil(t, foundDocument)
 }
 
 func TestGetDocumentByID_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Document.Expect(
-		client.Client.Document.FindUnique(db.Document.ID.Equals("1")),
-	).Errors(errors.New("connection error"))
+	m.Document.Expect(database.MockGetDocumentByID(c)).Errors(errors.New("connection error"))
 
 	assert.Panics(t, func() {
 		database.GetDocumentByID("1")
 	})
 }
 
+// #############################################################################
+
 func TestCreateDocument(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	document := BuildTestDocument("1")
+	m.Document.Expect(database.MockCreateDocument(c, document)).Returns(document)
 
-	mock.Document.Expect(
-		client.Client.Document.CreateOne(
-			db.Document.Name.Set(document.Name),
-			db.Document.Data.Set(document.Data),
-			db.Document.Contract.Link(db.Contract.ID.Equals(document.ContractID)),
-		),
-	).Returns(document)
-
-	newDocument := database.CreateDocument(document)
+	newDocument := database.CreateDocument(document, document.LeaseID)
 	assert.NotNil(t, newDocument)
 	assert.Equal(t, document.ID, newDocument.ID)
 }
 
 func TestCreateDocument_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	document := BuildTestDocument("1")
 
-	mock.Document.Expect(
-		client.Client.Document.CreateOne(
-			db.Document.Name.Set(document.Name),
-			db.Document.Data.Set(document.Data),
-			db.Document.Contract.Link(db.Contract.ID.Equals(document.ContractID)),
-		),
-	).Errors(errors.New("connection error"))
+	m.Document.Expect(database.MockCreateDocument(c, document)).Errors(errors.New("connection error"))
 
 	assert.Panics(t, func() {
-		database.CreateDocument(document)
+		database.CreateDocument(document, document.LeaseID)
+	})
+}
+
+// #############################################################################
+
+func TestDeleteDocument(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Document.Expect(database.MockDeleteDocument(c)).Returns(BuildTestDocument("1"))
+
+	database.DeleteDocument("1")
+}
+
+func TestDeleteDocument_NotFound(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.Document.Expect(database.MockDeleteDocument(c)).Errors(db.ErrNotFound)
+
+	assert.Panics(t, func() {
+		database.DeleteDocument("1")
 	})
 }

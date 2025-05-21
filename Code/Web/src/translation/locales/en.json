@@ -69,8 +69,8 @@
       },
       "rental": {
         "label": "Rent",
-        "placeholder": "Enter the rent",
-        "error": "Please fill in the rent."
+        "placeholder": "Enter the rent amount",
+        "error": "Please fill in the rent amount."
       },
       "deposit": {
         "label": "Security deposit",
@@ -78,9 +78,9 @@
         "error": "Please fill in the security deposit."
       },
       "picture": {
-        "label": "Picture",
-        "placeholder": "Choose a picture",
-        "error": "Please select a picture."
+        "label": "Image",
+        "placeholder": "Choose an image",
+        "error": "Please select an image."
       },
       "room_name": {
         "label": "Room name",
@@ -96,7 +96,7 @@
         "label": "Quantity",
         "placeholder": "Enter the quantity",
         "error": "Please enter a valid quantity.",
-        "validation_message": "The quantity must be between 1 and 1000."
+        "validation_message": "Quantity must be between 1 and 1000."
       },
       "widget_name": {
         "label": "Widget name",
@@ -133,28 +133,34 @@
         "label": "Document",
         "placeholder": "Choose a document",
         "error": "Please select a document."
+      },
+      "search": {
+        "placeholder": "Search rooms and items..."
+      },
+      "search_property": {
+        "placeholder": "Search for a property..."
       }
     },
     "messages": {
       "modifications_saved": "Changes saved",
       "no_modifications": "No changes to save",
-      "picture_updated": "Picture updated successfully",
-      "picture_not_updated": "Error updating the picture",
-      "no_properties": "You have no properties at the moment",
-      "no_properties_so_no_messages": "You have no properties at the moment, so no messages.",
+      "picture_updated": "Image updated",
+      "picture_not_updated": "Error while updating the image",
+      "no_properties": "You don't have any properties yet",
+      "no_properties_so_no_messages": "You don't have any properties yet, so you don't have any messages.",
       "delete_property_title": "Delete property",
-      "delete_property_description": "Are you sure you want to delete this property?",
-      "delete_property_success": "Property deleted successfully",
-      "delete_property_error": "Error deleting the property",
-      "no_rooms_in_inventory": "You have no rooms in your inventory at the moment",
+      "delete_property_description": "Are you sure you want to archive this property?",
+      "delete_property_success": "Property archived successfully",
+      "delete_property_error": "Error while archiving the property",
+      "no_rooms_in_inventory": "You don't have any rooms in your inventory yet",
       "room_added": "Room added successfully",
-      "room_added_error": "Error adding the room",
+      "room_added_error": "Error while adding the room",
       "furniture_added": "Item added successfully",
-      "furniture_added_error": "Error adding the item",
+      "furniture_added_error": "Error while adding the item",
       "room_deleted": "Room deleted successfully",
-      "room_deleted_error": "Error deleting the room",
+      "room_deleted_error": "Error while deleting the room",
       "furniture_deleted": "Item deleted successfully",
-      "furniture_deleted_error": "Error deleting the item"
+      "furniture_deleted_error": "Error while deleting the item"
     },
     "button": {
       "sign_in": "Sign in",
@@ -168,16 +174,17 @@
       "settings": "Settings",
       "my_profile": "My profile",
       "add_real_property": "Add a property",
-      "add_widget": "Add a widget",
+      "add_widget": "Add widget",
+      "edit_widgets_position": "Edit widgets position",
       "about": "About",
       "damage": "Damage",
       "inventory": "Inventory",
       "documents": "Documents",
-      "return": "Return",
-      "add_tenant": "Add a tenant",
-      "end_contract": "End lease",
-      "add_document": "Add a document",
-      "add_room": "Add a room",
+      "return": "Back",
+      "add_tenant": "Add tenant",
+      "end_contract": "Terminate lease",
+      "add_document": "Add document",
+      "add_room": "Add room",
       "edit": "Edit",
       "save": "Save",
       "cancel": "Cancel",
@@ -187,16 +194,21 @@
       "delete": "Delete",
       "edit_property": "Edit property",
       "delete_property": "Delete property",
+      "archive_property": "Archive property",
+      "unarchive_property": "Unarchive property",
       "download": "Download",
       "update": "Update",
-      "cancel_invitation": "Cancel invitation"
+      "cancel_invitation": "Cancel invitation",
+      "add_item": "Add Item",
+      "delete_item": "Delete Item",
+      "add_intervention_date": "Add intervention date"
     },
     "modal": {
       "end_contract": {
-        "title": "End lease",
-        "description": "Are you sure you want to end this tenant's lease?",
-        "success": "Lease ended successfully",
-        "error": "An error occurred while ending the lease, please try again."
+        "title": "Terminate lease",
+        "description": "Are you sure you want to terminate this tenant's lease?",
+        "success": "Lease terminated successfully",
+        "error": "An error occurred while terminating the lease, please try again."
       },
       "delete_property": {
         "title": "Delete property",
@@ -204,12 +216,162 @@
         "success": "Property deleted successfully",
         "error": "An error occurred while deleting the property, please try again."
       },
+      "archive_property": {
+        "title": "Archive property",
+        "description": "Are you sure you want to archive this property?",
+        "success": "Property archived successfully",
+        "error": "An error occurred while archiving the property, please try again."
+      },
+      "unarchive_property": {
+        "title": "Unarchive property",
+        "description": "Are you sure you want to unarchive this property?",
+        "success": "Property unarchived successfully",
+        "error": "An error occurred while unarchiving the property, please try again."
+      },
       "cancel_invitation": {
         "title": "Cancel invitation",
         "description": "Are you sure you want to cancel this tenant's invitation?",
         "success": "Invitation canceled successfully",
         "error": "An error occurred while canceling the invitation, please try again."
       }
+    },
+    "inventory": {
+      "view_mode": {
+        "plan": "Plan",
+        "grid": "Grid",
+        "list": "List"
+      },
+      "room": {
+        "add": "Add Room",
+        "delete": "Delete Room",
+        "name": "Room Name",
+        "type": "Room Type",
+        "types": {
+          "all": "All Rooms",
+          "bedroom": "Bedroom",
+          "bathroom": "Bathroom",
+          "kitchen": "Kitchen",
+          "living": "Living Room",
+          "other": "Other"
+        }
+      },
+      "furniture": {
+        "name": "Item Name",
+        "quantity": "Quantity",
+        "quantity_validation": "Quantity must be between 1 and 1000",
+        "suggested_items": "Suggested items for this room",
+        "Bed": "Bed",
+        "Wardrobe": "Wardrobe",
+        "Nightstand": "Nightstand",
+        "Table": "Table",
+        "Chair": "Chair",
+        "Fridge": "Fridge",
+        "Oven": "Oven",
+        "Sink": "Sink",
+        "Coffee Table": "Coffee Table",
+        "TV Stand": "TV Stand",
+        "Armchair": "Armchair",
+        "Mirror": "Mirror",
+        "Desk": "Desk",
+        "Bookshelf": "Bookshelf",
+        "Lamp": "Lamp",
+        "Dining Table": "Dining Table",
+        "Buffet": "Buffet",
+        "Toy Box": "Toy Box",
+        "Play Mat": "Play Mat",
+        "Washing Machine": "Washing Machine",
+        "Dryer": "Dryer",
+        "Laundry Basket": "Laundry Basket",
+        "Coat Rack": "Coat Rack",
+        "Shoe Cabinet": "Shoe Cabinet",
+        "Shelf": "Shelf",
+        "Storage Box": "Storage Box",
+        "Wine Rack": "Wine Rack",
+        "Workbench": "Workbench",
+        "Tool Cabinet": "Tool Cabinet",
+        "Outdoor Chair": "Outdoor Chair",
+        "Small Table": "Small Table",
+        "Sofa": "Sofa",
+        "Shower": "Shower",
+        "Toilet": "Toilet",
+        "Custom Item": "Custom Item"
+      },
+      "search": {
+        "placeholder": "Search rooms and items..."
+      },
+      "empty": {
+        "no_rooms": "No rooms in inventory",
+        "no_items": "No items in this room"
+      },
+      "grid": {
+        "edit_room": "Edit Room",
+        "delete_room": "Delete Room",
+        "add_item": "Add Item",
+        "delete_item": "Delete Item",
+        "quantity": "Quantity"
+      },
+      "controls": {
+        "search": "Search",
+        "filter": "Filter by room type",
+        "view_mode": "View mode",
+        "add_room": "Add Room"
+      }
+    },
+    "documents": {
+      "success_add": "Document added successfully",
+      "error_add": "Error while adding document",
+      "success_delete": "Document deleted successfully",
+      "error_delete": "Error while deleting document"
+    },
+    "tooltip": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "plan_view": "Plan View",
+      "grid_view": "Grid View",
+      "list_view": "List View"
+    },
+    "select": {
+      "status": {
+        "placeholder": "Select status",
+        "all": "All statuses",
+        "available": "Available",
+        "unavailable": "Occupied",
+        "invitation_sent": "Invitation sent"
+      },
+      "surface": {
+        "placeholder": "Select surface area",
+        "all": "All surfaces"
+      },
+      "room_type": {
+        "placeholder": "Select room type",
+        "all": "All Rooms",
+        "bedroom": "Bedroom",
+        "bathroom": "Bathroom",
+        "kitchen": "Kitchen",
+        "living": "Living Room",
+        "dressing": "Dressing Room",
+        "laundryroom": "Laundry Room",
+        "playroom": "Playroom",
+        "toilet": "Toilet",
+        "livingroom": "Living Room",
+        "diningroom": "Dining Room",
+        "hallway": "Hallway",
+        "balcony": "Balcony",
+        "cellar": "Cellar",
+        "garage": "Garage",
+        "storage": "Storage",
+        "office": "Office",
+        "other": "Other"
+      }
+    },
+    "switch": {
+      "show_archived": "Archived",
+      "show_active": "Active"
+    },
+    "loading": {
+      "loading": "Loading...",
+      "loading_data": "Loading data...",
+      "no_data": "No data available"
     }
   },
   "pages": {
@@ -217,7 +379,7 @@
       "document_title": "Sign in",
       "document_description": "Sign in to your Keyz account. Manage your properties and tenants easily.",
       "title": "Welcome!",
-      "description": "Please enter your details to sign in.",
+      "description": "Please enter your information to sign in.",
       "dont_have_account": "Don't have an account?",
       "connection_success": "You are now signed in.",
       "connection_error": "An error occurred while signing in, please try again.",
@@ -227,13 +389,13 @@
       "document_title": "Sign up",
       "document_description": "Create a Keyz account to manage your properties and tenants easily.",
       "title": "Create an account",
-      "description": "Join Keyz for peace of mind!",
+      "description": "Join Keyz for more peace of mind!",
       "agree_terms": "I agree to the Terms and Privacy Policy.",
       "already_have_account": "Already have an account?",
       "register_success": "You are now registered.",
       "register_error": "An error occurred while registering, please try again.",
       "email_already_used": "This email is already in use.",
-      "confirm_password_error": "Passwords do not match.",
+      "confirm_password_error": "Passwords don't match.",
       "fill_fields": "Please fill in all fields."
     },
     "register_tenant": {
@@ -246,12 +408,12 @@
     },
     "forgot_password": {
       "document_title": "Forgot password",
-      "document_description": "Easily reset your Keyz password if you've forgotten it. Simple and quick process to regain access to your account.",
+      "document_description": "Reset your Keyz password easily if you forgot it. Simple and quick process to regain access to your account.",
       "title": "Forgot password",
       "description": "Please enter your email to reset your password.",
       "send_email_success": "An email has been sent to reset your password.",
       "send_email_error": "An error occurred while sending the email, please try again.",
-      "emails_dont_match": "Emails do not match.",
+      "emails_dont_match": "Emails don't match.",
       "fill_fields": "Please fill in all fields."
     },
     "settings": {
@@ -263,7 +425,7 @@
       "en": "English",
       "fr": "French",
       "user_infos": "User information",
-      "logout": "Log out",
+      "logout": "Logout",
       "logout_success": "You are now logged out."
     },
     "real_property_details": {
@@ -271,8 +433,9 @@
       "document_description": "Details of your property. Manage your property easily.",
       "invite_tenant": "Invitation sent successfully",
       "409_error": "Invitation already sent",
-      "fill_fields": "Please fill in the required fields",
-      "error_fetching_data": "Error fetching data",
+      "fill_fields": "Please fill in required fields",
+      "error_fetching_data": "Error while fetching data",
+      "date_error": "Start date must be before end date",
       "title": "Property details",
       "informations": {
         "name": "Name",
@@ -285,32 +448,44 @@
       },
       "tabs": {
         "documents": {
-          "modal_title": "Add a document",
+          "modal_title": "Add document",
           "no_documents": "No documents yet"
         },
         "inventory": {
-          "add_room_modal_title": "Add a room",
-          "add_stuff_modal_title": "Add an item",
+          "add_room_modal_title": "Add room",
+          "add_stuff_modal_title": "Add item",
           "list_object_name": "Items in the room",
           "remove_room_confirmation": "Are you sure you want to delete this room?",
           "remove_room_success": "Room deleted successfully",
           "remove_stuff_confirmation": "Are you sure you want to delete this item?",
           "remove_stuff_success": "Item deleted successfully",
-          "error_fetching_data": "Error fetching data"
+          "error_fetching_data": "Error while fetching data"
         },
         "damage": {
+          "pictures": "Image(s)",
+          "no_pictures": "No images",
+          "no_intervention_date": "No intervention date set",
           "table": {
             "date": "Date",
             "comment": "Comment",
             "intervention_date": "Intervention date",
             "room": "Room",
             "priority": "Priority",
-            "pictures": "Pictures"
+            "pictures": "Images",
+            "available_pictures": "Available images"
           },
           "priority": {
             "low": "Low",
             "medium": "Medium",
-            "high": "High"
+            "high": "High",
+            "urgent": "Urgent"
+          },
+          "status": {
+            "pending": "Pending",
+            "planned": "Planned",
+            "awaiting_owner_confirmation": "Awaiting owner confirmation",
+            "awaiting_tenant_confirmation": "Awaiting tenant confirmation",
+            "fixed": "Fixed"
           },
           "modal": {
             "title": "Damage image"
@@ -318,59 +493,76 @@
         }
       }
     },
+    "damage_details": {
+      "title": "Damage details",
+      "pictures": "Images",
+      "comment": "Comment",
+      "created_at": "Created at",
+      "room_name": "Room name",
+      "priority": "Priority",
+      "tenant_name": "Tenant name",
+      "fix_planned_at": "Intervention date",
+      "fix_status": "Intervention status",
+      "update_success": "Damage updated successfully",
+      "update_error": "Error while updating damage",
+      "at": "at"
+    },
     "overview": {
       "document_title": "Overview",
       "document_description": "Overview of your properties and tenants. Manage your properties and tenants easily.",
       "title": "Overview",
       "widget_creation": {
-        "title": "Add a widget",
-        "error": "Error creating the widget",
-        "error_fetching_data": "Error fetching data",
+        "title": "Add widget",
+        "error": "Error while creating widget",
+        "error_fetching_data": "Error while fetching data",
         "fill_fields": "Please fill in all fields",
         "widget_created": "Widget created successfully"
       }
     },
     "lost": {
       "document_title": "Page not found",
-      "document_description": "The page you are looking for does not exist. Please return to the home page.",
+      "document_description": "The page you're looking for doesn't exist. Please return to the home page.",
       "page_not_found": "Page not found",
       "back_home": "Back to home"
     },
     "real_property": {
       "document_title": "Property",
-      "document_description": "Manage your properties easily. Add, edit, or delete your properties.",
-      "title": "Property",
+      "document_description": "Manage your properties easily. Add, edit or delete your properties.",
+      "title": "Property(ies)",
       "add_real_property": {
-        "document_title": "Add a property",
-        "document_description": "Add a property to manage it easily. Fill in the required fields to add a property.",
-        "title": "Add a property",
+        "document_title": "Add property",
+        "document_description": "Add a property to manage it easily. Fill in required fields to add a property.",
+        "title": "Add property",
         "property_created": "Property created successfully",
-        "error_property_created": "Error creating the property",
+        "error_property_created": "Error while creating property",
         "fill_all_fields": "Please fill in all fields"
       },
       "update_real_property": {
         "document_title": "Edit property",
-        "document_description": "Edit your property easily. Fill in the required fields to edit your property.",
+        "document_description": "Edit your property easily. Fill in required fields to edit your property.",
         "title": "Edit property",
         "property_updated": "Property updated successfully",
-        "error_property_updated": "Error updating the property",
+        "error_property_updated": "Error while updating property",
         "fill_all_fields": "Please fill in all fields"
       },
       "status": {
         "available": "Available",
         "unavailable": "Occupied",
+        "availables": "Available",
+        "unavailables": "Occupied",
         "invitation_sent": "Invitation sent"
       },
       "damage": {
         "waiting": "Unresolved damage(s)"
       },
       "error": {
-        "error_fetching_data": "Error fetching data"
+        "error_fetching_data": "Error while fetching data",
+        "no_tenant_linked": "No tenant linked to this property, please add one to benefit from this feature."
       }
     },
     "messages": {
       "document_title": "Messages",
-      "document_description": "Manage your messages easily. Send, receive, and delete your messages.",
+      "document_description": "Manage your messages easily. Send, receive and delete your messages.",
       "title": "Messages",
       "select_contact": "Select a contact to start chatting",
       "no_messages": "No messages yet",
@@ -380,18 +572,13 @@
   },
   "widgets": {
     "document_title": "Widgets",
-    "document_description": "Manage your widgets easily. Add, edit, or delete your widgets.",
-    "user_info": {
-      "title": "Welcome",
-      "properties_number": "Here's an overview of your",
-      "real_properties": "properties",
-      "error_fetching": "Error fetching data"
+    "document_description": "Manage your widgets easily. Add, edit or delete your widgets.",
+    "properties_number": {
+      "properties_number": "Number of properties",
+      "real_properties": "Properties"
     },
-    "maintenance": {
-      "title": "Maintenance",
-      "no_maintenance": "No maintenance in progress",
-      "no_maintenance_description": "You have no maintenance in progress at the moment",
-      "complete_button": "Confirm"
+    "reminders": {
+      "no_reminders": "You don't have any reminders yet"
     }
   }
 }

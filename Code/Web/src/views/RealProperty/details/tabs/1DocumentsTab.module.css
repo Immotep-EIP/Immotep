@@ -1,10 +1,21 @@
 .tabContent {
   width: 100%;
   height: 100%;
+  min-height: 250px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+.tabContentEmpty,
+.loadingContainer {
+  width: 100%;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .buttonAddContainer {
@@ -14,42 +25,6 @@
   justify-content: flex-end;
   width: 100%;
   margin-bottom: 20px;
-}
-
-.documentsContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
-  width: 100%;
-  box-sizing: border-box;
-  justify-items: stretch;
-}
-
-.documentContainer {
-  background-color: white;
-  padding: 10px;
-  border: 0.1px solid #ddd;
-  border-radius: 8px;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  outline: none;
-}
-
-.documentContainer:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.documentContainer:focus {
-  box-shadow: 0 0 0 2px #1890ff;
-}
-
-.pdfIcon {
-  font-size: 64px;
-  color: #ff4d4f;
 }
 
 .documentDateContainer {
@@ -75,9 +50,4 @@
   height: 120px;
   object-fit: cover;
   border-radius: 8px;
-}
-
-.documentName {
-  font-size: 14px;
-  color: #333;
 }

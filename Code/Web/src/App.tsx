@@ -5,7 +5,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import './translation/i18n.tsx'
 
 import NavigationEnum from '@/enums/NavigationEnum'
-import MainLayout from '@/components/MainLayout/MainLayout.tsx'
+import MainLayout from '@/components/layout/MainLayout/MainLayout'
 
 // ! AUTHENTIFICATION
 import { AuthProvider } from '@/context/authContext'
@@ -21,31 +21,12 @@ import MessagesContent from '@/views/Messages/Messages'
 
 // ! MAIN LAYOUT - HEADER
 import Settings from '@/views/Settings/Settings'
-import MyProfile from '@/views/MyProfile/MyProfile'
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
+import ProtectedRoute from '@/components/features/authentication/ProtectedRoute/ProtectedRoute'
 
-import Lost from './views/Lost/Lost.tsx'
-import SuccesPageRegisterTenant from './components/SuccesPage/SuccesPageRegisterTenant.tsx'
-import SuccesPageLoginTenant from './components/SuccesPage/SuccesPageLoginTenant.tsx'
-
-if ('serviceWorker' in navigator) {
-  ;(async () => {
-    try {
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: './'
-      })
-      if (registration.installing) {
-        // console.log('Service worker installing')
-      } else if (registration.waiting) {
-        // console.log('Service worker installed')
-      } else if (registration.active) {
-        // console.log('Service worker active')
-      }
-    } catch (error) {
-      console.error(`Registration failed with ${error}`)
-    }
-  })()
-}
+import Lost from '@/views/Lost/Lost'
+import SuccesPageRegisterTenant from '@/components/ui/SuccesPage/SuccesPageRegisterTenant'
+import SuccesPageLoginTenant from '@/components/ui/SuccesPage/SuccesPageLoginTenant'
+import DamageDetails from './views/Damages/details/DamageDetails.tsx'
 
 const App: React.FC = () => (
   <HelmetProvider>
@@ -88,11 +69,14 @@ const App: React.FC = () => (
                 element={<RealPropertyDetails />}
               />
               <Route
+                path={NavigationEnum.DAMAGE_DETAILS}
+                element={<DamageDetails />}
+              />
+              <Route
                 path={NavigationEnum.MESSAGES}
                 element={<MessagesContent />}
               />
               <Route path={NavigationEnum.SETTINGS} element={<Settings />} />
-              <Route path={NavigationEnum.MY_PROFILE} element={<MyProfile />} />
             </Route>
           </Route>
         </Routes>

@@ -1,5 +1,9 @@
 import qs from 'qs'
-import { TokenResponse, UserRegister, UserToken } from '@/interfaces/User/User'
+import {
+  TokenResponse,
+  UserRegisterPayload,
+  UserTokenPayload
+} from '@/interfaces/User/User'
 import { register, loginApi } from '@/services/api/Authentification/AuthApi'
 import callApi from '@/services/api/apiCaller'
 
@@ -13,8 +17,8 @@ describe('AuthApi', () => {
   })
 
   describe('register', () => {
-    it('should call callApi with the correct parameters for registration without contractId', async () => {
-      const userInfo: UserRegister = {
+    it('should call callApi with the correct parameters for registration without leaseId', async () => {
+      const userInfo: UserRegisterPayload = {
         email: 'test@example.com',
         password: 'password123',
         firstname: 'John',
@@ -30,19 +34,19 @@ describe('AuthApi', () => {
       expect(mockedCallApi).toHaveBeenCalledWith({
         method: 'POST',
         endpoint: 'auth/register/',
-        data: userInfo
+        body: userInfo
       })
 
       expect(result).toEqual(mockResponse)
     })
 
-    it('should call callApi with the correct parameters for registration with contractId', async () => {
-      const userInfo: UserRegister = {
+    it('should call callApi with the correct parameters for registration with leaseId', async () => {
+      const userInfo: UserRegisterPayload = {
         email: 'test@example.com',
         password: 'password123',
         firstname: 'John',
         lastname: 'Doe',
-        contractId: '12345',
+        leaseId: '12345',
         confirmPassword: 'password123'
       }
 
@@ -54,14 +58,14 @@ describe('AuthApi', () => {
       expect(mockedCallApi).toHaveBeenCalledWith({
         method: 'POST',
         endpoint: 'auth/invite/12345/',
-        data: userInfo
+        body: userInfo
       })
 
       expect(result).toEqual(mockResponse)
     })
 
     it('should handle errors during registration', async () => {
-      const userInfo: UserRegister = {
+      const userInfo: UserRegisterPayload = {
         email: 'test@example.com',
         password: 'password123',
         firstname: 'John',
@@ -86,7 +90,7 @@ describe('AuthApi', () => {
 
   describe('loginApi', () => {
     it('should call callApi with the correct parameters for login', async () => {
-      const userInfo: UserToken = {
+      const userInfo: UserTokenPayload = {
         grant_type: 'password',
         username: 'test@example.com',
         password: 'password123'
@@ -104,7 +108,7 @@ describe('AuthApi', () => {
       expect(mockedCallApi).toHaveBeenCalledWith({
         method: 'POST',
         endpoint: 'auth/token/',
-        data: qs.stringify(userInfo),
+        body: qs.stringify(userInfo),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -114,7 +118,7 @@ describe('AuthApi', () => {
     })
 
     it('should handle errors during login', async () => {
-      const userInfo: UserToken = {
+      const userInfo: UserTokenPayload = {
         grant_type: 'password',
         username: 'test@example.com',
         password: 'password123'

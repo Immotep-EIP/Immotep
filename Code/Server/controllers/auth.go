@@ -39,7 +39,7 @@ func TokenAuth(s *oauth.OAuthBearerServer) func(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		models.UserRequest	true	"Owner user data"
-//	@Success		201		{object}	models.UserResponse	"Created user data"
+//	@Success		201		{object}	models.IdResponse	"Created user ID"
 //	@Failure		400		{object}	utils.Error			"Missing fields"
 //	@Failure		409		{object}	utils.Error			"Email already exists"
 //	@Failure		500
@@ -63,7 +63,7 @@ func RegisterOwner(c *gin.Context) {
 		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusCreated, models.DbUserToResponse(*user))
+	c.JSON(http.StatusCreated, models.IdResponse{ID: user.ID})
 }
 
 // RegisterTenant godoc
@@ -73,11 +73,11 @@ func RegisterOwner(c *gin.Context) {
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			id		path		string				true	"Pending contract ID"
+//	@Param			id		path		string				true	"Pending lease ID"
 //	@Param			user	body		models.UserRequest	true	"Tenant user data"
-//	@Success		201		{object}	models.UserResponse	"Created user data"
+//	@Success		201		{object}	models.IdResponse	"Created user ID"
 //	@Failure		400		{object}	utils.Error			"Missing fields"
-//	@Failure		404		{object}	utils.Error			"Pending contract not found"
+//	@Failure		404		{object}	utils.Error			"Pending lease not found"
 //	@Failure		409		{object}	utils.Error			"Email already exists"
 //	@Failure		500
 //	@Router			/auth/invite/{id}/ [post]
@@ -89,17 +89,17 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	pendingContract := database.GetPendingContractById(c.Param("id"))
-	if pendingContract == nil {
+	leaseInvite := database.GetLeaseInviteById(c.Param("id"))
+	if leaseInvite == nil {
 		utils.SendError(c, http.StatusNotFound, utils.InviteNotFound, nil)
 		return
 	}
-	if pendingContract.TenantEmail != userReq.Email {
+	if leaseInvite.TenantEmail != userReq.Email {
 		utils.SendError(c, http.StatusBadRequest, utils.UserSameEmailAsInvite, nil)
 		return
 	}
 
-	if database.GetCurrentActiveContract(pendingContract.PropertyID) != nil {
+	if database.GetCurrentActiveLeaseByProperty(leaseInvite.PropertyID) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
@@ -116,8 +116,8 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	_ = database.CreateContract(*pendingContract, *user)
-	c.JSON(http.StatusCreated, models.DbUserToResponse(*user))
+	_ = database.CreateLease(*leaseInvite, *user)
+	c.JSON(http.StatusCreated, models.IdResponse{ID: user.ID})
 }
 
 // AcceptInvite godoc
@@ -127,11 +127,11 @@ func RegisterTenant(c *gin.Context) {
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path	string	true	"Pending contract ID"
+//	@Param			id	path	string	true	"Pending lease ID"
 //	@Success		204	"Accepted"
 //	@Failure		403	{object}	utils.Error	"Not a tenant"
-//	@Failure		404	{object}	utils.Error	"Pending contract not found"
-//	@Failure		409	{object}	utils.Error	"Property not available or tenant already has contract"
+//	@Failure		404	{object}	utils.Error	"Pending lease not found"
+//	@Failure		409	{object}	utils.Error	"Property not available or tenant already has lease"
 //	@Failure		500
 //	@Router			/tenant/invite/{id}/ [post]
 func AcceptInvite(c *gin.Context) {
@@ -142,25 +142,25 @@ func AcceptInvite(c *gin.Context) {
 		return
 	}
 
-	pendingContract := database.GetPendingContractById(c.Param("id"))
-	if pendingContract == nil {
+	leaseInvite := database.GetLeaseInviteById(c.Param("id"))
+	if leaseInvite == nil {
 		utils.SendError(c, http.StatusNotFound, utils.InviteNotFound, nil)
 		return
 	}
-	if pendingContract.TenantEmail != user.Email {
+	if leaseInvite.TenantEmail != user.Email {
 		utils.SendError(c, http.StatusForbidden, utils.UserSameEmailAsInvite, nil)
 		return
 	}
 
-	if database.GetCurrentActiveContract(pendingContract.PropertyID) != nil {
+	if database.GetCurrentActiveLeaseByProperty(leaseInvite.PropertyID) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
 		return
 	}
-	if database.GetTenantCurrentActiveContract(user.ID) != nil {
-		utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasContract, nil)
+	if database.GetCurrentActiveLeaseByTenant(user.ID) != nil {
+		utils.SendError(c, http.StatusConflict, utils.TenantAlreadyHasLease, nil)
 		return
 	}
 
-	_ = database.CreateContract(*pendingContract, *user)
+	_ = database.CreateLease(*leaseInvite, *user)
 	c.Status(http.StatusNoContent)
 }

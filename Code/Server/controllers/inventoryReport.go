@@ -64,8 +64,8 @@ func createFurnitureState(invrep *db.InventoryReportModel, room models.RoomState
 			InnerFurnitureState: db.InnerFurnitureState{
 				FurnitureID: f.ID,
 				ReportID:    invrep.ID,
-				Cleanliness: db.Cleanliness(f.Cleanliness),
-				State:       db.State(f.State),
+				Cleanliness: f.Cleanliness,
+				State:       f.State,
 				Note:        f.Note,
 			},
 		}
@@ -108,8 +108,8 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 			InnerRoomState: db.InnerRoomState{
 				RoomID:      r.ID,
 				ReportID:    invrep.ID,
-				Cleanliness: db.Cleanliness(r.Cleanliness),
-				State:       db.State(r.State),
+				Cleanliness: r.Cleanliness,
+				State:       r.State,
 				Note:        r.Note,
 			},
 		}
@@ -124,20 +124,19 @@ func createRoomStates(c *gin.Context, invrep *db.InventoryReportModel, req model
 	return errorList
 }
 
-func createInvReportPDF(invRepId string, contract db.ContractModel) (*db.DocumentModel, error) {
+func createInvReportPDF(invRepId string, lease db.LeaseModel) (*db.DocumentModel, error) {
 	invReport := database.GetInvReportByID(invRepId)
-	docBytes, err := pdf.NewInventoryReportPDF(*invReport, contract)
+	docBytes, err := pdf.NewInventoryReportPDF(*invReport, lease)
 	if err != nil || docBytes == nil {
 		return nil, err
 	}
 
 	res := database.CreateDocument(db.DocumentModel{
 		InnerDocument: db.InnerDocument{
-			Name:       "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
-			Data:       docBytes,
-			ContractID: contract.ID,
+			Name: "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
+			Data: docBytes,
 		},
-	})
+	}, lease.ID)
 	return &res, nil
 }
 
@@ -145,10 +144,11 @@ func createInvReportPDF(invRepId string, contract db.ContractModel) (*db.Documen
 //
 //	@Summary		Create a new inventory report
 //	@Description	Create a new inventory report for a room
-//	@Tags			owner
+//	@Tags			inventory-report
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string									true	"Property ID"
+//	@Param			lease_id	path		string									true	"Lease ID"
 //	@Param			invReport	body		models.InventoryReportRequest			true	"Inventory report data"
 //	@Success		201			{object}	models.CreateInventoryReportResponse	"Created inventory report data"
 //	@Failure		400			{object}	utils.Error								"Missing fields"
@@ -156,7 +156,7 @@ func createInvReportPDF(invRepId string, contract db.ContractModel) (*db.Documen
 //	@Failure		404			{object}	utils.Error								"Property or room not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/inventory-reports/ [post]
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/ [post]
 func CreateInventoryReport(c *gin.Context) {
 	var req models.InventoryReportRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -164,15 +164,13 @@ func CreateInventoryReport(c *gin.Context) {
 		return
 	}
 
-	propertyId := c.Param("property_id")
-
-	contract := database.GetCurrentActiveContractWithInfos(propertyId)
-	if contract == nil {
-		utils.SendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
+	if c.Param("lease_id") != "current" {
+		utils.SendError(c, http.StatusBadRequest, utils.InvReportMustBeCurrentLease, nil)
 		return
 	}
 
-	invrep := database.CreateInvReport(db.ReportType(req.Type), propertyId)
+	lease, _ := c.MustGet("lease").(db.LeaseModel)
+	invrep := database.CreateInvReport(req.Type, lease.ID)
 	if invrep == nil {
 		utils.SendError(c, http.StatusConflict, utils.InventoryReportAlreadyExists, nil)
 		return
@@ -180,7 +178,7 @@ func CreateInventoryReport(c *gin.Context) {
 
 	errorsList := createRoomStates(c, invrep, req)
 
-	irPdf, err := createInvReportPDF(invrep.ID, *contract)
+	irPdf, err := createInvReportPDF(invrep.ID, lease)
 	if err != nil {
 		errorsList = append(errorsList, err.Error())
 	}
@@ -188,11 +186,11 @@ func CreateInventoryReport(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.DbInventoryReportToCreateResponse(*invrep, irPdf, errorsList))
 }
 
-// GetInventoryReportsByProperty godoc
+// GetAllInventoryReportsByProperty godoc
 //
 //	@Summary		Get all inventory reports for a property
 //	@Description	Get all inventory reports for a property
-//	@Tags			owner
+//	@Tags			inventory-report
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string							true	"Property ID"
@@ -202,16 +200,39 @@ func CreateInventoryReport(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/ [get]
-func GetInventoryReportsByProperty(c *gin.Context) {
-	reports := database.GetInvReportByPropertyID(c.Param("property_id"))
+func GetAllInventoryReportsByProperty(c *gin.Context) {
+	property, _ := c.MustGet("property").(db.PropertyModel)
+	reports := database.GetInvReportsByPropertyID(property.ID)
 	c.JSON(http.StatusOK, utils.Map(reports, models.DbInventoryReportToResponse))
 }
 
-// GetInventoryReportByID godoc
+// GetAllInventoryReportsByLease godoc
+//
+//	@Summary		Get all inventory reports for a lease
+//	@Description	Get all inventory reports for a lease
+//	@Tags			inventory-report
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id	path		string							true	"Property ID"
+//	@Param			lease_id	path		string							true	"Lease ID"
+//	@Success		200			{array}		models.InventoryReportResponse	"List of inventory reports"
+//	@Failure		403			{object}	utils.Error						"Property not found"
+//	@Failure		404			{object}	utils.Error						"Property not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/ [get]
+//	@Router			/tenant/leases/{lease_id}/inventory-reports/ [get]
+func GetInventoryReportsByLease(c *gin.Context) {
+	lease, _ := c.MustGet("lease").(db.LeaseModel)
+	reports := database.GetInvReportsByLeaseID(lease.ID)
+	c.JSON(http.StatusOK, utils.Map(reports, models.DbInventoryReportToResponse))
+}
+
+// GetInventoryReport godoc
 //
 //	@Summary		Get inventory report by ID
 //	@Description	Get inventory report information by its ID or get the latest one
-//	@Tags			owner
+//	@Tags			inventory-report
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string							true	"Property ID"
@@ -222,12 +243,9 @@ func GetInventoryReportsByProperty(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/inventory-reports/{report_id}/ [get]
-func GetInventoryReportByID(c *gin.Context) {
-	var report *db.InventoryReportModel
-	if c.Param("report_id") == "latest" {
-		report = database.GetLatestInvReport(c.Param("property_id"))
-	} else {
-		report = database.GetInvReportByID(c.Param("report_id"))
-	}
-	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(*report))
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/{report_id}/ [get]
+//	@Router			/tenant/leases/{lease_id}/inventory-reports/{report_id}/ [get]
+func GetInventoryReport(c *gin.Context) {
+	report, _ := c.MustGet("invrep").(db.InventoryReportModel)
+	c.JSON(http.StatusOK, models.DbInventoryReportToResponse(report))
 }

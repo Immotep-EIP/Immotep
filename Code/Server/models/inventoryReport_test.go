@@ -13,12 +13,18 @@ import (
 func TestInventoryReport(t *testing.T) {
 	model := db.InventoryReportModel{
 		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			PropertyID: "1",
-			Date:       time.Now(),
-			Type:       db.ReportTypeStart,
+			ID:      "1",
+			LeaseID: "1",
+			Date:    time.Now(),
+			Type:    db.ReportTypeStart,
 		},
 		RelationsInventoryReport: db.RelationsInventoryReport{
+			Lease: &db.LeaseModel{
+				InnerLease: db.InnerLease{
+					ID:         "1",
+					PropertyID: "1",
+				},
+			},
 			RoomStates: []db.RoomStateModel{
 				{
 					InnerRoomState: db.InnerRoomState{
@@ -102,9 +108,9 @@ func TestInventoryReport(t *testing.T) {
 		resp.FromDbInventoryReport(model)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
-		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Equal(t, model.Type, resp.Type)
 		assert.Len(t, resp.Rooms, 2)
 
 		assert.Empty(t, resp.Rooms[0].Furnitures)
@@ -113,8 +119,8 @@ func TestInventoryReport(t *testing.T) {
 		room := resp.Rooms[1]
 		assert.Equal(t, "2", room.ID)
 		assert.Equal(t, "Kitchen", room.Name)
-		assert.Equal(t, "good", room.State)
-		assert.Equal(t, "clean", room.Cleanliness)
+		assert.Equal(t, db.StateGood, room.State)
+		assert.Equal(t, db.CleanlinessClean, room.Cleanliness)
 		assert.Equal(t, "Room is in good condition", room.Note)
 		assert.Len(t, room.Pictures, 1)
 		assert.Equal(t, "YmFzZTY0aW1hZ2Ux", room.Pictures[0])
@@ -124,8 +130,8 @@ func TestInventoryReport(t *testing.T) {
 		assert.Equal(t, "1", furniture.ID)
 		assert.Equal(t, "Sofa", furniture.Name)
 		assert.Equal(t, 1, furniture.Quantity)
-		assert.Equal(t, "good", furniture.State)
-		assert.Equal(t, "clean", furniture.Cleanliness)
+		assert.Equal(t, db.StateGood, furniture.State)
+		assert.Equal(t, db.CleanlinessClean, furniture.Cleanliness)
 		assert.Equal(t, "Furniture is in good condition", furniture.Note)
 		assert.Len(t, furniture.Pictures, 1)
 		assert.Equal(t, "YmFzZTY0aW1hZ2Uy", furniture.Pictures[0])
@@ -135,9 +141,9 @@ func TestInventoryReport(t *testing.T) {
 		resp := models.DbInventoryReportToResponse(model)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
-		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Equal(t, model.Type, resp.Type)
 		assert.Len(t, resp.Rooms, 2)
 
 		assert.Empty(t, resp.Rooms[0].Furnitures)
@@ -146,8 +152,8 @@ func TestInventoryReport(t *testing.T) {
 		room := resp.Rooms[1]
 		assert.Equal(t, "2", room.ID)
 		assert.Equal(t, "Kitchen", room.Name)
-		assert.Equal(t, "good", room.State)
-		assert.Equal(t, "clean", room.Cleanliness)
+		assert.Equal(t, db.StateGood, room.State)
+		assert.Equal(t, db.CleanlinessClean, room.Cleanliness)
 		assert.Equal(t, "Room is in good condition", room.Note)
 		assert.Len(t, room.Pictures, 1)
 		assert.Equal(t, "YmFzZTY0aW1hZ2Ux", room.Pictures[0])
@@ -157,8 +163,8 @@ func TestInventoryReport(t *testing.T) {
 		assert.Equal(t, "1", furniture.ID)
 		assert.Equal(t, "Sofa", furniture.Name)
 		assert.Equal(t, 1, furniture.Quantity)
-		assert.Equal(t, "good", furniture.State)
-		assert.Equal(t, "clean", furniture.Cleanliness)
+		assert.Equal(t, db.StateGood, furniture.State)
+		assert.Equal(t, db.CleanlinessClean, furniture.Cleanliness)
 		assert.Equal(t, "Furniture is in good condition", furniture.Note)
 		assert.Len(t, furniture.Pictures, 1)
 		assert.Equal(t, "YmFzZTY0aW1hZ2Uy", furniture.Pictures[0])
@@ -168,10 +174,18 @@ func TestInventoryReport(t *testing.T) {
 func TestCreateInventoryReportResponse(t *testing.T) {
 	model := db.InventoryReportModel{
 		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			PropertyID: "1",
-			Date:       time.Now(),
-			Type:       db.ReportTypeStart,
+			ID:      "1",
+			LeaseID: "1",
+			Date:    time.Now(),
+			Type:    db.ReportTypeStart,
+		},
+		RelationsInventoryReport: db.RelationsInventoryReport{
+			Lease: &db.LeaseModel{
+				InnerLease: db.InnerLease{
+					ID:         "1",
+					PropertyID: "1",
+				},
+			},
 		},
 	}
 
@@ -189,9 +203,9 @@ func TestCreateInventoryReportResponse(t *testing.T) {
 		resp.FromDbInventoryReport(model, pdf, errors)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
-		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Equal(t, model.Type, resp.Type)
 		assert.Equal(t, pdf.Name, resp.PdfName)
 		assert.Equal(t, "data:application/pdf;base64,"+base64.StdEncoding.EncodeToString(pdf.Data), resp.PdfData)
 		assert.Equal(t, errors, resp.Errors)
@@ -202,9 +216,9 @@ func TestCreateInventoryReportResponse(t *testing.T) {
 		resp.FromDbInventoryReport(model, nil, errors)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
-		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Equal(t, model.Type, resp.Type)
 		assert.Empty(t, resp.PdfName)
 		assert.Empty(t, resp.PdfData)
 		assert.Equal(t, errors, resp.Errors)
@@ -214,9 +228,9 @@ func TestCreateInventoryReportResponse(t *testing.T) {
 		resp := models.DbInventoryReportToCreateResponse(model, pdf, errors)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
-		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Equal(t, model.Type, resp.Type)
 		assert.Equal(t, pdf.Name, resp.PdfName)
 		assert.Equal(t, "data:application/pdf;base64,"+base64.StdEncoding.EncodeToString(pdf.Data), resp.PdfData)
 		assert.Equal(t, errors, resp.Errors)
@@ -226,9 +240,9 @@ func TestCreateInventoryReportResponse(t *testing.T) {
 		resp := models.DbInventoryReportToCreateResponse(model, nil, errors)
 
 		assert.Equal(t, model.ID, resp.ID)
-		assert.Equal(t, model.PropertyID, resp.PropertyID)
+		assert.Equal(t, model.LeaseID, resp.LeaseID)
 		assert.Equal(t, model.Date, resp.Date)
-		assert.Equal(t, string(model.Type), resp.Type)
+		assert.Equal(t, model.Type, resp.Type)
 		assert.Empty(t, resp.PdfName)
 		assert.Empty(t, resp.PdfData)
 		assert.Equal(t, errors, resp.Errors)

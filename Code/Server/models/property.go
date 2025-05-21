@@ -4,7 +4,16 @@ import (
 	"slices"
 
 	"immotep/backend/prisma/db"
+	// "immotep/backend/services/database"
 	"immotep/backend/utils"
+)
+
+type PropertyStatus string
+
+const (
+	StatusUnavailable PropertyStatus = "unavailable"
+	StatusInviteSent  PropertyStatus = "invite sent"
+	StatusAvailable   PropertyStatus = "available"
 )
 
 type PropertyRequest struct {
@@ -47,6 +56,21 @@ type PropertyUpdateRequest struct {
 	DepositPrice        *float64 `json:"deposit_price,omitempty"`
 }
 
+type propertyLeaseResponse struct {
+	ID          string       `json:"id"`
+	TenantName  string       `json:"tenant_name"`
+	TenantEmail string       `json:"tenant_email"`
+	Active      bool         `json:"active"`
+	StartDate   db.DateTime  `json:"start_date"`
+	EndDate     *db.DateTime `json:"end_date"`
+}
+
+type propertyInviteResponse struct {
+	TenantEmail string       `json:"tenant_email"`
+	StartDate   db.DateTime  `json:"start_date"`
+	EndDate     *db.DateTime `json:"end_date"`
+}
+
 type PropertyResponse struct {
 	ID                  string      `json:"id"`
 	OwnerID             string      `json:"owner_id"`
@@ -65,14 +89,13 @@ type PropertyResponse struct {
 
 	// calculated fields
 
-	NbDamage  int          `json:"nb_damage"`
-	Status    string       `json:"status"`
-	Tenant    string       `json:"tenant,omitempty"`
-	StartDate *db.DateTime `json:"start_date,omitempty"`
-	EndDate   *db.DateTime `json:"end_date,omitempty"`
+	NbDamage int                     `json:"nb_damage"`
+	Status   PropertyStatus          `json:"status"`
+	Lease    *propertyLeaseResponse  `json:"lease"`
+	Invite   *propertyInviteResponse `json:"invite,omitempty"`
 }
 
-func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
+func (p *PropertyResponse) FromDbProperty(model db.PropertyModel, leaseId string) {
 	p.ID = model.ID
 	p.OwnerID = model.OwnerID
 	p.PictureID = model.InnerProperty.PictureID
@@ -88,61 +111,53 @@ func (p *PropertyResponse) FromDbProperty(model db.PropertyModel) {
 	p.CreatedAt = model.CreatedAt
 	p.Archived = model.Archived
 
-	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	p.NbDamage = 0
+	for _, lease := range model.Leases() {
+		p.NbDamage += utils.CountIf(lease.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
+	}
+	p.Lease = nil
+	p.Invite = nil
 
-	activeIndex := slices.IndexFunc(model.Contracts(), func(x db.ContractModel) bool { return x.Active })
-	invite, inviteOk := model.PendingContract()
+	invite, inviteOk := model.LeaseInvite()
 	switch {
-	case activeIndex != -1:
-		active := model.Contracts()[activeIndex]
-		p.Status = "unavailable"
-		p.Tenant = active.Tenant().Firstname + " " + active.Tenant().Lastname
-		p.StartDate = &active.StartDate
-		p.EndDate = active.InnerContract.EndDate
+	case slices.ContainsFunc(model.Leases(), func(x db.LeaseModel) bool { return x.Active }):
+		p.Status = StatusUnavailable
 	case inviteOk:
-		p.Status = "invite sent"
-		p.Tenant = invite.TenantEmail
-		p.StartDate = &invite.StartDate
-		p.EndDate = invite.InnerPendingContract.EndDate
+		p.Status = StatusInviteSent
+		p.Invite = &propertyInviteResponse{
+			TenantEmail: invite.TenantEmail,
+			StartDate:   invite.StartDate,
+			EndDate:     invite.InnerLeaseInvite.EndDate,
+		}
 	default:
-		p.Status = "available"
-		p.Tenant = ""
-		p.StartDate = nil
-		p.EndDate = nil
+		p.Status = StatusAvailable
+	}
+
+	iLease := slices.IndexFunc(model.Leases(), func(x db.LeaseModel) bool { return utils.Ternary(leaseId == "current", x.Active, x.ID == leaseId) })
+	if iLease != -1 {
+		active := model.Leases()[iLease]
+		p.Lease = &propertyLeaseResponse{
+			ID:          active.ID,
+			TenantName:  active.Tenant().Name(),
+			TenantEmail: active.Tenant().Email,
+			Active:      active.Active,
+			StartDate:   active.StartDate,
+			EndDate:     active.InnerLease.EndDate,
+		}
 	}
 }
 
-func DbPropertyToResponse(pc db.PropertyModel) PropertyResponse {
+func DbPropertyToResponse(pc db.PropertyModel, leaseId string) PropertyResponse {
 	var resp PropertyResponse
-	resp.FromDbProperty(pc)
+	resp.FromDbProperty(pc, leaseId)
 	return resp
 }
 
-type PropertyInventoryResponse struct {
-	ID                  string      `json:"id"`
-	OwnerID             string      `json:"owner_id"`
-	PictureID           *string     `json:"picture_id,omitempty"`
-	Name                string      `json:"name"`
-	Address             string      `json:"address"`
-	ApartmentNumber     *string     `json:"apartment_number,omitempty"`
-	City                string      `json:"city"`
-	PostalCode          string      `json:"postal_code"`
-	Country             string      `json:"country"`
-	AreaSqm             float64     `json:"area_sqm"`
-	RentalPricePerMonth float64     `json:"rental_price_per_month"`
-	DepositPrice        float64     `json:"deposit_price"`
-	CreatedAt           db.DateTime `json:"created_at"`
-	Archived            bool        `json:"archived"`
-
-	// calculated fields
-
-	NbDamage  int          `json:"nb_damage"`
-	Status    string       `json:"status"`
-	Tenant    string       `json:"tenant,omitempty"`
-	StartDate *db.DateTime `json:"start_date,omitempty"`
-	EndDate   *db.DateTime `json:"end_date,omitempty"`
-
-	Rooms []roomResponse `json:"rooms"`
+type furnitureResponse struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Quantity int    `json:"quantity"`
+	Archived bool   `json:"archived"`
 }
 
 type roomResponse struct {
@@ -153,51 +168,13 @@ type roomResponse struct {
 	Furnitures []furnitureResponse `json:"furnitures"`
 }
 
-type furnitureResponse struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Quantity int    `json:"quantity"`
-	Archived bool   `json:"archived"`
+type PropertyInventoryResponse struct {
+	PropertyResponse
+	Rooms []roomResponse `json:"rooms"`
 }
 
-func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel) {
-	p.ID = model.ID
-	p.OwnerID = model.OwnerID
-	p.PictureID = model.InnerProperty.PictureID
-	p.Name = model.Name
-	p.Address = model.Address
-	p.ApartmentNumber = model.InnerProperty.ApartmentNumber
-	p.City = model.City
-	p.PostalCode = model.PostalCode
-	p.Country = model.Country
-	p.AreaSqm = model.AreaSqm
-	p.RentalPricePerMonth = model.RentalPricePerMonth
-	p.DepositPrice = model.DepositPrice
-	p.CreatedAt = model.CreatedAt
-	p.Archived = model.Archived
-
-	p.NbDamage = utils.CountIf(model.Damages(), func(x db.DamageModel) bool { return x.InnerDamage.FixedAt == nil })
-
-	activeIndex := slices.IndexFunc(model.Contracts(), func(x db.ContractModel) bool { return x.Active })
-	invite, inviteOk := model.PendingContract()
-	switch {
-	case activeIndex != -1:
-		active := model.Contracts()[activeIndex]
-		p.Status = "unavailable"
-		p.Tenant = active.Tenant().Firstname + " " + active.Tenant().Lastname
-		p.StartDate = &active.StartDate
-		p.EndDate = active.InnerContract.EndDate
-	case inviteOk:
-		p.Status = "invite sent"
-		p.Tenant = invite.TenantEmail
-		p.StartDate = &invite.StartDate
-		p.EndDate = invite.InnerPendingContract.EndDate
-	default:
-		p.Status = "available"
-		p.Tenant = ""
-		p.StartDate = nil
-		p.EndDate = nil
-	}
+func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel, leaseId string) {
+	p.PropertyResponse.FromDbProperty(model, leaseId)
 
 	p.Rooms = make([]roomResponse, len(model.Rooms()))
 	for i, room := range model.Rooms() {
@@ -215,8 +192,8 @@ func (p *PropertyInventoryResponse) FromDbProperty(model db.PropertyModel) {
 	}
 }
 
-func DbPropertyInventoryToResponse(pc db.PropertyModel) PropertyInventoryResponse {
+func DbPropertyInventoryToResponse(pc db.PropertyModel, leaseId string) PropertyInventoryResponse {
 	var resp PropertyInventoryResponse
-	resp.FromDbProperty(pc)
+	resp.FromDbProperty(pc, leaseId)
 	return resp
 }

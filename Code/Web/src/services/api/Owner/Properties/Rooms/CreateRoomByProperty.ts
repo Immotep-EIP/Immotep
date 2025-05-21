@@ -1,15 +1,29 @@
 import callApi from '@/services/api/apiCaller'
-import { Room } from '@/interfaces/Property/Room/Room'
+import endpoints from '@/enums/EndPointEnum'
+import { ROOM_TYPES, isValidRoomType } from '@/utils/types/roomTypes'
 
-const CreateRoomByProperty = async (id: string, PropertyName: string) => {
+const CreateRoomByProperty = async (
+  propertyId: string,
+  roomName: string,
+  roomType: string
+): Promise<{ id: string }> => {
   try {
-    return await callApi<Room>({
+    if (!isValidRoomType(roomType.toLowerCase())) {
+      throw new Error(
+        `Invalid room type. Must be one of: ${ROOM_TYPES.join(', ')}`
+      )
+    }
+
+    return await callApi<{ id: string }, { name: string; type: string }>({
       method: 'POST',
-      endpoint: `owner/properties/${id}/rooms/`,
-      data: JSON.stringify({ name: PropertyName })
+      endpoint: endpoints.owner.properties.rooms.create(propertyId),
+      body: JSON.stringify({
+        name: roomName,
+        type: roomType.toLowerCase()
+      })
     })
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error creating room:', error)
     throw error
   }
 }
