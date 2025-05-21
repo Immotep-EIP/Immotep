@@ -90,6 +90,8 @@ const DetailsPart: React.FC = () => {
     setDamageAsRead()
   }, [damage, id, damageId])
 
+  console.log('damage', damage)
+
   return (
     <div className={style.mainContainer}>
       {loading ||
@@ -121,11 +123,26 @@ const DetailsPart: React.FC = () => {
 
               <div className={style.rowContainer}>
                 <SubtitledElement
+                  subtitleKey={t('pages.damage_details.property_name')}
+                  subTitleStyle={{ marginBottom: '0.5rem' }}
+                >
+                  {damage?.property_name || '-'}
+                </SubtitledElement>
+                <SubtitledElement
+                  subtitleKey={t('pages.damage_details.room_name')}
+                  subTitleStyle={{ marginBottom: '0.5rem' }}
+                >
+                  {damage?.room_name || '-'}
+                </SubtitledElement>
+                <SubtitledElement
                   subtitleKey={t('pages.damage_details.tenant_name')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
                 >
                   {damage.tenant_name}
                 </SubtitledElement>
+              </div>
+
+              <div className={style.rowContainer}>
                 <SubtitledElement
                   subtitleKey={t('pages.damage_details.created_at')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
@@ -158,13 +175,6 @@ const DetailsPart: React.FC = () => {
                 </SubtitledElement>
               </div>
               <div className={style.rowContainer}>
-                <SubtitledElement
-                  subtitleKey={t('pages.damage_details.room_name')}
-                  subTitleStyle={{ marginBottom: '0.5rem' }}
-                >
-                  {damage?.room_name ||
-                    t('pages.real_property_details.tabs.damage.unknown_room')}
-                </SubtitledElement>
                 <SubtitledElement
                   subtitleKey={t('pages.damage_details.comment')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
