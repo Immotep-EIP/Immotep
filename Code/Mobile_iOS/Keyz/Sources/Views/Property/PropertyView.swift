@@ -9,167 +9,193 @@ import SwiftUI
 
 struct PropertyView: View {
     @EnvironmentObject var viewModel: PropertyViewModel
+    @EnvironmentObject var loginViewModel: LoginViewModel
+    @State private var tenantProperty: Property?
     @State private var isLoading = false
+    @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                VStack(spacing: 0) {
-                    TopBar(title: "Keyz".localized())
-                    headerView
-                    propertyListView
-                }
-                VStack {
-                    Spacer()
-                    HStack {
+            if loginViewModel.userRole == "tenant" {
+                if isLoading {
+                    VStack {
                         Spacer()
-                        NavigationLink(destination: CreatePropertyView(viewModel: viewModel)) {
-                            Image(systemName: "plus")
-                                .font(.title2)
-                                .foregroundColor(.white)
-                                .frame(width: 50, height: 50)
-                                .background(Color("LightBlue"))
-                                .clipShape(Circle())
-                                .shadow(radius: 4)
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                        Spacer()
+                    }
+                } else if let error = errorMessage {
+                    VStack {
+                        Spacer()
+                        Text(error)
+                            .foregroundColor(.red)
+                            .padding()
+                        Spacer()
+                    }
+                } else if let property = tenantProperty {
+                    PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                } else {
+                    VStack {
+                        Spacer()
+                        Text("No property associated.".localized())
+                            .foregroundColor(.gray)
+                            .padding()
+                        Spacer()
+                    }
+                }
+            } else {
+                ZStack {
+                    VStack(spacing: 0) {
+                        TopBar(title: "Keyz".localized())
+
+                        Text("Real Property".localized())
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 10)
+                            .padding(.bottom, 5)
+
+                        if viewModel.properties.isEmpty {
+                            VStack {
+                                Spacer()
+                                Text("No properties available".localized())
+                                    .foregroundColor(.gray)
+                                Spacer()
+                            }
+                        } else {
+                            ScrollView {
+                                LazyVGrid(
+                                    columns: [GridItem(.flexible())],
+                                    spacing: 15
+                                ) {
+                                    ForEach(viewModel.properties) { property in
+                                        NavigationLink(
+                                            destination: PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                                        ) {
+                                            PropertyCard(property: property)
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal)
+                                .padding(.vertical, 10)
+                            }
                         }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 20)
-                        .accessibilityLabel("add_property")
+                    }
+
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            NavigationLink {
+                                CreatePropertyView(viewModel: viewModel)
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundColor(Color("LightBlue"))
+                                    .background(
+                                        Circle()
+                                            .fill(Color.white)
+                                            .shadow(radius: 4)
+                                    )
+                            }
+                            .padding(.bottom, 30)
+                            .padding(.trailing, 20)
+                            .accessibilityLabel("add_property_btn")
+                        }
+                    }
+                }
+                .onAppear {
+                    Task {
+                        await viewModel.fetchProperties()
                     }
                 }
             }
-            .overlay(
-                isLoading ? ProgressView("Loading properties...".localized())
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .padding()
-                    .background(Color.white.opacity(0.8))
-                    .cornerRadius(10)
-                    : nil
-            )
         }
         .onAppear {
-            if !CommandLine.arguments.contains("-skipLogin") {
+            if loginViewModel.userRole == "tenant" {
                 Task {
                     isLoading = true
-                    await viewModel.fetchProperties()
+                    do {
+                        tenantProperty = try await viewModel.fetchTenantProperty()
+                    } catch {
+                        errorMessage = "Error fetching property: \(error.localizedDescription)".localized()
+                        print("Error fetching tenant property: \(error.localizedDescription)")
+                    }
                     isLoading = false
                 }
             }
         }
     }
-
-    private var headerView: some View {
-        HStack {
-            Text("Real property".localized())
-                .font(.title2)
-                .fontWeight(.bold)
-                .padding(.horizontal)
-                .padding(.vertical, 10)
-                .foregroundStyle(Color("textColor"))
-            Spacer()
-        }
-        .background(Color("primaryBackgroundColor"))
-    }
-
-    private var propertyListView: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                if viewModel.properties.isEmpty && !isLoading {
-                    Text("No properties available".localized())
-                        .foregroundColor(.gray)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                } else {
-                    ForEach($viewModel.properties) { $property in
-                        NavigationLink(destination: PropertyDetailView(property: $property, viewModel: viewModel)) {
-                            PropertyCardView(property: $property)
-                                .background(Color.white)
-                                .cornerRadius(15)
-                                .shadow(radius: 2)
-                                .padding(.horizontal)
-                        }
-                        .accessibilityIdentifier("property_card_\(property.id)")
-                    }
-                }
-            }
-            .padding(.vertical)
-        }
-        .background(Color("primaryBackgroundColor"))
-    }
 }
 
-struct PropertyCardView: View {
-    @Binding var property: Property
+struct PropertyCard: View {
+    let property: Property
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ZStack(alignment: .topTrailing) {
+        ZStack(alignment: .topTrailing) {
+            VStack(alignment: .leading, spacing: 8) {
                 if let uiImage = property.photo {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
                         .frame(height: 150)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
+                        .clipped()
+                        .cornerRadius(10)
                 } else {
                     Image("DefaultImageProperty")
                         .resizable()
                         .scaledToFill()
                         .frame(height: 150)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
+                        .clipped()
+                        .cornerRadius(10)
                         .accessibilityLabel("image_property")
                 }
 
-                Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
-                    )
-                    .padding(8)
-                    .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
-            }
+                HStack {
+                    Text(property.name)
+                        .font(.headline)
+                        .foregroundColor(Color("textColor"))
+                    Spacer()
+                    Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
+                        )
+                        .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
+                }
 
-            Text(property.name)
-                .font(.headline)
-                .foregroundColor(Color("textColor"))
-
-            HStack(spacing: 4) {
-                Image(systemName: "mappin.and.ellipse.circle")
-                    .font(.caption)
-                    .foregroundColor(Color("LightBlue"))
-                Text("\(property.address), \(property.city) \(property.postalCode)")
-                    .font(.subheadline)
-                    .foregroundColor(Color("LightBlue"))
-                    .lineLimit(1)
-                    .accessibilityLabel("text_address")
+                HStack(spacing: 4) {
+                    Image(systemName: "mappin.and.ellipse.circle")
+                        .font(.caption)
+                        .foregroundColor(Color("LightBlue"))
+                    Text("\(property.address), \(property.city), \(property.country)")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
+                        .accessibilityLabel("text_address")
+                }
             }
+            .padding()
+            .background(Color("basicWhiteBlack"))
+            .cornerRadius(10)
+            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
         }
-        .padding()
-        .background(Color("basicWhiteBlack"))
     }
 }
 
 struct PropertyView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = PropertyViewModel()
-        viewModel.properties = exampleDataProperty2
-        return PropertyView()
-            .environmentObject(viewModel)
-            .onAppear {
-                viewModel.properties = exampleDataProperty2
-            }
+        PropertyView()
+            .environmentObject(PropertyViewModel())
+            .environmentObject(LoginViewModel())
     }
 }
 

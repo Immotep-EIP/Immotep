@@ -27,6 +27,7 @@ struct ContentView: View {
 
                 PropertyView()
                     .environmentObject(propertyViewModel)
+                    .environmentObject(loginViewModel)
                     .tabItem {
                         Image(systemName: "building.2")
                         Text("Real Property".localized())
