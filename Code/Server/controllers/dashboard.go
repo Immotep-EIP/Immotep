@@ -164,7 +164,7 @@ func getPropertyAndDamageDashboard_Properties(pRes *models.DashboardProperties, 
 	}
 }
 
-func getPropertyAndDamageDashboard_Damage(dRes *models.DashboardOpenDamages, damage db.DamageModel, now time.Time) {
+func getPropertyAndDamageDashboard_Damage(dRes *models.DashboardOpenDamages, damage db.DamageModel, lease db.LeaseModel, property db.PropertyModel, now time.Time) {
 	if !damage.IsFixed() {
 		dRes.NbrTotal++
 		switch damage.Priority {
@@ -184,14 +184,16 @@ func getPropertyAndDamageDashboard_Damage(dRes *models.DashboardOpenDamages, dam
 		}
 	}
 	if !damage.FixedOwner {
-		dRes.ListToFix = append(dRes.ListToFix, damage.InnerDamage)
+		d := models.OpenDamageResponse{}
+		d.FromDbDamage(damage, *lease.Tenant(), property)
+		dRes.ListToFix = append(dRes.ListToFix, d)
 	}
 }
 
-func getPropertyAndDamageDashboard_Damages(dRes *models.DashboardOpenDamages, leases []db.LeaseModel, now time.Time) {
-	for _, lease := range leases {
+func getPropertyAndDamageDashboard_Damages(dRes *models.DashboardOpenDamages, property db.PropertyModel, now time.Time) {
+	for _, lease := range property.Leases() {
 		for _, damage := range lease.Damages() {
-			getPropertyAndDamageDashboard_Damage(dRes, damage, now)
+			getPropertyAndDamageDashboard_Damage(dRes, damage, lease, property, now)
 		}
 	}
 }
@@ -203,7 +205,7 @@ func getPropertyAndDamageDashboard(properties []db.PropertyModel) (models.Dashbo
 
 	for _, property := range properties {
 		getPropertyAndDamageDashboard_Properties(&pRes, property, now)
-		getPropertyAndDamageDashboard_Damages(&dRes, property.Leases(), now)
+		getPropertyAndDamageDashboard_Damages(&dRes, property, now)
 	}
 
 	return pRes, dRes
