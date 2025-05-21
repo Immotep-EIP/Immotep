@@ -2,6 +2,9 @@ name: check-build
 
 on:
   workflow_call:
+  push:
+    branches:
+      - build
 
 jobs:
   build-web:
@@ -48,29 +51,30 @@ jobs:
         run: go install github.com/swaggo/swag/cmd/swag@latest
 
       - name: Build
-        run: ./build.sh
+        run: make build
 
       - name: Install linter
         run: sudo snap install golangci-lint --classic
 
       - name: Run linter
-        run: ./run_linter.sh
+        run: make lint
 
       - name: Test
         id: test
         run: |
-          OUTPUT=$(./run_tests.sh no-interactive)
-          echo "# Coverage report" >> $GITHUB_STEP_SUMMARY
+          OUTPUT=$(make test)
+          echo "# Test and coverage report" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`txt" >> $GITHUB_STEP_SUMMARY
           echo "$OUTPUT" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "COVERAGE=$(echo "$OUTPUT" | grep total | grep -o '[0-9]\+\(\.[0-9]\+\)\?' | cut -d. -f1)" >> "$GITHUB_OUTPUT"
+          echo "COVERAGE=$(echo "$OUTPUT" | grep "Coverage: " | grep -o '[0-9]\+\(\.[0-9]\+\)\?' | cut -d. -f1)" >> "$GITHUB_OUTPUT"
+          echo "$OUTPUT"
 
       - name: Check coverage requirements
         run: |
           COVERAGE=${{ steps.test.outputs.COVERAGE }}
           if [ "$COVERAGE" -lt 80 ]; then
-            echo "The unit test coverage must me greater than 80%"
+            echo "The unit test coverage must me greater than 80% but got $COVERAGE%"
             exit 1
           fi
 
