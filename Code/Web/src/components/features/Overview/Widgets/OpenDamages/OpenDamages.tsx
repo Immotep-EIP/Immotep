@@ -87,7 +87,9 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
               aria-label={`${damage.created_at}: ${damage.comment}`}
             >
               <div className={style.damageInformationsContainer}>
-                <PriorityTag priority={damage.priority} />
+                <span className={style.damageInfosContainer}>
+                  {damage.property_name || '-'} {'>'} {damage.room_name || '-'}
+                </span>
                 <span className={style.dateText}>
                   {toLocaleDate(damage.created_at)}
                 </span>
@@ -100,9 +102,12 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
                   style={{ fontWeight: 700 }}
                 />
               ) : (
-                <span className={style.damageCommentWithoutBadge}>
-                  {damage.comment}
-                </span>
+                <div className={style.damageCommentContainer}>
+                  <span className={style.damageCommentWithoutBadge}>
+                    {damage.comment}
+                  </span>
+                  <PriorityTag priority={damage.priority} />
+                </div>
               )}
             </div>
           ))

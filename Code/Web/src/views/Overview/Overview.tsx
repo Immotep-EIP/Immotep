@@ -84,7 +84,7 @@ const Overview: React.FC = () => {
         name: 'Reminders',
         x: 7,
         y: 0,
-        w: 4,
+        w: 3,
         h: 2,
         children: (
           <Reminders
@@ -100,7 +100,7 @@ const Overview: React.FC = () => {
         name: 'OpenDamages',
         x: 0,
         y: 0,
-        w: 2,
+        w: 3,
         h: 2,
         children: (
           <OpenDamages
