@@ -373,6 +373,9 @@
       "loading": "Chargement en cours...",
       "loading_data": "Chargement des données...",
       "no_data": "Aucune donnée disponible"
+    },
+    "soon_available": {
+      "title": "Cette fonctionnalité sera bientôt disponible"
     }
   },
   "pages": {

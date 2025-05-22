@@ -373,6 +373,9 @@
       "loading": "Loading...",
       "loading_data": "Loading data...",
       "no_data": "No data available"
+    },
+    "soon_available": {
+      "title": "This feature will be available soon"
     }
   },
   "pages": {

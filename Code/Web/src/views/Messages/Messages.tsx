@@ -95,7 +95,17 @@ const Messages: React.FC = () => {
           <PageTitle title={t('pages.messages.title')} size="title" />
         </div>
         <div className={style.contentContainer}>
-          <ContactList
+          <div className={style.soonAvailableContainer}>
+            <Empty
+              image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+              description={
+                <Typography.Text>
+                  {t('components.soon_available.title')}
+                </Typography.Text>
+              }
+            />
+          </div>
+          {/* <ContactList
             contacts={contacts}
             onSelectContact={setSelectedContact}
             selectedContact={selectedContact}
@@ -111,7 +121,7 @@ const Messages: React.FC = () => {
                 </Typography.Text>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </>
