@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next'
+
 import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
+
 import { PropertyDetails } from '@/interfaces/Property/Property'
+
 import style from './DetailsPart.module.css'
 
 const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
@@ -38,6 +41,8 @@ const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
           subtitleKey={t('pages.real_property_details.informations.tenant')}
         >
           <span className={style.detailsText}>
+            {propertyData.lease?.tenant_name || '-----------'}
+            {' - '}
             {propertyData.lease?.tenant_email || '-----------'}
           </span>
         </SubtitledElement>

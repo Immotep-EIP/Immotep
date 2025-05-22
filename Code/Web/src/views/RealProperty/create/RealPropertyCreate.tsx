@@ -1,12 +1,16 @@
-import React from 'react'
-import { Form, Button, Modal, message } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { DownOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
+import { Form, Button, Modal, message } from 'antd'
+
 import useProperties from '@/hooks/Property/useProperties'
-import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import useImageUpload from '@/hooks/Image/useImageUpload'
+import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
+
 import { RealPropertyCreateProps } from '@/interfaces/Property/Property'
+
 import style from './RealPropertyCreate.module.css'
 
 const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
@@ -18,6 +22,36 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
   const { loading, createProperty } = useProperties()
   const { uploadProps, imageBase64, resetImage } = useImageUpload()
   const [form] = Form.useForm()
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true)
+  const [canScroll, setCanScroll] = useState(false)
+
+  useEffect(() => {
+    if (showModalCreate) {
+      setShowScrollIndicator(true)
+
+      const checkIfScrollable = () => {
+        const modalBody = document.querySelector('.ant-modal-body')
+        if (modalBody) {
+          const canScrollContent =
+            modalBody.scrollHeight > modalBody.clientHeight
+          setCanScroll(canScrollContent)
+
+          const handleScroll = () => {
+            if (modalBody.scrollTop > 30) {
+              setShowScrollIndicator(false)
+            }
+          }
+
+          modalBody.addEventListener('scroll', handleScroll)
+          return () => modalBody.removeEventListener('scroll', handleScroll)
+        }
+
+        return undefined
+      }
+
+      setTimeout(checkIfScrollable, 300)
+    }
+  }, [showModalCreate])
 
   const onFinish = async (values: PropertyFormFieldsType) => {
     try {
@@ -48,7 +82,11 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
 
   return (
     <Modal
-      title={t('pages.real_property.add_real_property.document_title')}
+      title={
+        <div className={style.modalTitleContainer}>
+          {t('pages.real_property.add_real_property.document_title')}
+        </div>
+      }
       open={showModalCreate}
       onCancel={handleCancel}
       footer={[
@@ -71,7 +109,8 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
       styles={{
         body: {
           maxHeight: 'calc(70vh - 55px)',
-          overflowY: 'auto'
+          overflowY: 'auto',
+          position: 'relative'
         }
       }}
     >
@@ -87,6 +126,11 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
         >
           <PropertyFormFields uploadProps={uploadProps} />
         </Form>
+        {canScroll && showScrollIndicator && (
+          <div className={style.scrollIndicator}>
+            <DownOutlined className={style.scrollIcon} />
+          </div>
+        )}
       </div>
     </Modal>
   )

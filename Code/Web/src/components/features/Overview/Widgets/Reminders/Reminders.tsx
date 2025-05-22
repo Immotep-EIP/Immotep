@@ -1,9 +1,14 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Empty } from 'antd'
+import { useNavigate } from 'react-router-dom'
+
+import { Empty, Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
+
+import StatusTag from '@/components/common/Tag/StatusTag'
+
 import { DashboardReminders } from '@/interfaces/Dashboard/Dashboard'
-import PriorityTag from '@/components/common/PriorityTag'
+
 import style from './Reminders.module.css'
 
 interface RemindersProps {
@@ -20,6 +25,7 @@ const Reminders: React.FC<RemindersProps> = ({
   height
 }: RemindersProps) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const rowHeight = 120
   const pixelHeight = height * rowHeight
 
@@ -50,13 +56,42 @@ const Reminders: React.FC<RemindersProps> = ({
           />
         ) : (
           reminders.map(reminder => (
-            <div key={reminder.id} className={style.reminderItem}>
+            <div
+              key={reminder.id}
+              className={style.reminderItem}
+              onClick={() => navigate(reminder.link)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  navigate(reminder.link)
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`${reminder.title}: ${reminder.advice}`}
+            >
               <div className={style.reminderTexts}>
-                <div className={style.reminderheader}>
+                <Tooltip title={reminder.title} placement="topLeft">
                   <span className={style.titleText}>{reminder.title}</span>
-                  <PriorityTag priority={reminder.priority} />
+                </Tooltip>
+                <div className={style.reminderheader}>
+                  <StatusTag
+                    value={reminder.priority}
+                    colorMap={{
+                      urgent: 'red',
+                      high: 'red',
+                      medium: 'yellow',
+                      low: 'green'
+                    }}
+                    i18nPrefix="pages.real_property_details.tabs.damage.priority"
+                    defaultColor="gray"
+                  />
+                  <Tooltip title={reminder.advice} placement="topLeft">
+                    <span className={style.descriptionText}>
+                      {reminder.advice}
+                    </span>
+                  </Tooltip>
                 </div>
-                <span className={style.descriptionText}>{reminder.advice}</span>
               </div>
             </div>
           ))

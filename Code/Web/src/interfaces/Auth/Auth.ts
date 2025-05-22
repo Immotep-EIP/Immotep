@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { TokenResponse, UserTokenPayload, User } from '../User/User'
 
 export interface AuthentificationPageProps {

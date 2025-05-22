@@ -1,4 +1,6 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+
 import {
   Card,
   Row,
@@ -16,11 +18,12 @@ import {
   EditOutlined,
   DeleteOutlined
 } from '@ant-design/icons'
-import { useTranslation } from 'react-i18next'
+
+import { getRoomColor, isValidRoomType } from '@/utils/types/roomTypes'
 
 import { Room } from '@/interfaces/Property/Inventory/Room/Room'
-import { getRoomColor, isValidRoomType } from '@/utils/types/roomTypes'
 import { GridViewProps } from '@/interfaces/Property/Inventory/Views/GridView'
+
 import './GridView.css'
 
 const { Text } = Typography

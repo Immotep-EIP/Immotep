@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { Skeleton } from 'antd'
 
 import style from '@/views/RealProperty/details/tabs/2InventoryTab.module.css'

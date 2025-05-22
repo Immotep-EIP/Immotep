@@ -1,8 +1,10 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
-import style from './DamageDetails.module.css'
 import DetailsPart from '@/components/features/Damages/details/DetailsPart'
+
+import style from './DamageDetails.module.css'
 
 const DamageDetails: React.FC = () => {
   const { t } = useTranslation()

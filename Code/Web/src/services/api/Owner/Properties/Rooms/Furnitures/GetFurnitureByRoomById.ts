@@ -1,4 +1,5 @@
 import callApi from '@/services/api/apiCaller'
+
 import { Furniture } from '@/interfaces/Property/Inventory/Room/Furniture/Furniture'
 import endpoints from '@/enums/EndPointEnum'
 

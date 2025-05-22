@@ -4230,47 +4230,6 @@ const docTemplate = `{
                 "FixStatusFixed"
             ]
         },
-        "db.InnerDamage": {
-            "type": "object",
-            "properties": {
-                "comment": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "fix_planned_at": {
-                    "type": "string"
-                },
-                "fixed_at": {
-                    "type": "string"
-                },
-                "fixed_owner": {
-                    "type": "boolean"
-                },
-                "fixed_tenant": {
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "lease_id": {
-                    "type": "string"
-                },
-                "priority": {
-                    "$ref": "#/definitions/db.Priority"
-                },
-                "read": {
-                    "type": "boolean"
-                },
-                "room_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "db.InnerProperty": {
             "type": "object",
             "properties": {
@@ -4552,6 +4511,12 @@ const docTemplate = `{
                 "priority": {
                     "$ref": "#/definitions/db.Priority"
                 },
+                "property_id": {
+                    "type": "string"
+                },
+                "property_name": {
+                    "type": "string"
+                },
                 "read": {
                     "type": "boolean"
                 },
@@ -4595,7 +4560,7 @@ const docTemplate = `{
                 "list_to_fix": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/db.InnerDamage"
+                        "$ref": "#/definitions/models.OpenDamageResponse"
                     }
                 },
                 "nbr_high": {
@@ -4925,6 +4890,56 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tenant_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.OpenDamageResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fix_planned_at": {
+                    "type": "string"
+                },
+                "fix_status": {
+                    "$ref": "#/definitions/db.FixStatus"
+                },
+                "fixed_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lease_id": {
+                    "type": "string"
+                },
+                "priority": {
+                    "$ref": "#/definitions/db.Priority"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "property_name": {
+                    "type": "string"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "room_name": {
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

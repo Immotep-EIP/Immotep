@@ -48,6 +48,12 @@ func BuildTestDamage(id string) db.DamageModel {
 							Lastname:  "Doe",
 						},
 					},
+					Property: &db.PropertyModel{
+						InnerProperty: db.InnerProperty{
+							ID:   "1",
+							Name: "Test Property",
+						},
+					},
 				},
 			},
 			Room: &db.RoomModel{

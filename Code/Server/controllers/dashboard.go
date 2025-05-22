@@ -43,20 +43,20 @@ func getReminders_Damage_FixPlanned(lang string, now time.Time, property db.Prop
 
 	// reminder 11
 	if fixPlanned && fixPlanAt.Before(now) {
-		res = append(res, models.GetReminderFixDateOverdue(lang, property.Name, damage.Room().Name, int(now.Sub(fixPlanAt).Hours())/24))
+		res = append(res, models.GetReminderFixDateOverdue(lang, property, damage, int(now.Sub(fixPlanAt).Hours())/24))
 		// reminder 7
 	} else if fixPlanned && fixPlanAt.Before(now.AddDate(0, 0, 7)) {
-		res = append(res, models.GetReminderDamageFixPlanned(lang, property.Name, damage.Room().Name, int(fixPlanAt.Sub(now).Hours())/24))
+		res = append(res, models.GetReminderDamageFixPlanned(lang, property, damage, int(fixPlanAt.Sub(now).Hours())/24))
 	}
 
 	// reminder 8
 	if !fixPlanned && damage.Priority == db.PriorityUrgent {
-		res = append(res, models.GetReminderUrgentDamageNotPlanned(lang, property.Name, damage.Room().Name))
+		res = append(res, models.GetReminderUrgentDamageNotPlanned(lang, property, damage))
 	}
 
 	// reminder 9
 	if damage.Read && !fixPlanned && damage.CreatedAt.Before(now.AddDate(0, 0, -7)) {
-		res = append(res, models.GetReminderDamageOlderThan7Days(lang, property.Name, damage.Room().Name))
+		res = append(res, models.GetReminderDamageOlderThan7Days(lang, property, damage))
 	}
 
 	return res
@@ -72,14 +72,14 @@ func getReminders_Damage(lang string, now time.Time, property db.PropertyModel, 
 
 		// reminder 6
 		if !damage.Read {
-			res = append(res, models.GetReminderNewDamageReported(lang, property.Name, damage.Room().Name, damage.Priority))
+			res = append(res, models.GetReminderNewDamageReported(lang, property, damage))
 		}
 
 		res = append(res, getReminders_Damage_FixPlanned(lang, now, property, damage)...)
 
 		// reminder 10
 		if damage.FixedTenant {
-			res = append(res, models.GetReminderDamageFixedByTenant(lang, property.Name, damage.Room().Name))
+			res = append(res, models.GetReminderDamageFixedByTenant(lang, property, damage))
 		}
 	}
 	return res
@@ -91,12 +91,12 @@ func getReminders_Lease(lang string, now time.Time, property db.PropertyModel, c
 	// reminder 1
 	end, endOk := currentLease.EndDate()
 	if endOk && end.Before(now.AddDate(0, 0, 30)) {
-		res = append(res, models.GetReminderLeaseEnding(lang, property.Name, int(end.Sub(now).Hours())/24))
+		res = append(res, models.GetReminderLeaseEnding(lang, property, int(end.Sub(now).Hours())/24))
 	}
 
 	// reminder 2
 	if len(currentLease.Reports()) == 0 {
-		res = append(res, models.GetReminderNoInventoryReport(lang, property.Name))
+		res = append(res, models.GetReminderNoInventoryReport(lang, property))
 	}
 
 	res = append(res, getReminders_Damage(lang, now, property, currentLease.Damages())...)
@@ -114,17 +114,17 @@ func getReminders_Property(lang string, now time.Time, property db.PropertyModel
 		res = append(res, getReminders_Lease(lang, now, property, currentLease)...)
 	} else if !inviteOk {
 		// reminder 3
-		res = append(res, models.GetReminderPropertyAvailable(lang, property.Name))
+		res = append(res, models.GetReminderPropertyAvailable(lang, property))
 	}
 
 	// reminder 4
 	if len(property.Rooms()) == 0 {
-		res = append(res, models.GetReminderEmptyInventory(lang, property.Name))
+		res = append(res, models.GetReminderEmptyInventory(lang, property))
 	}
 
 	// reminder 5
 	if inviteOk && invite.CreatedAt.Before(now.AddDate(0, 0, -7)) {
-		res = append(res, models.GetReminderPendingLeaseInvitation(lang, property.Name, int(now.Sub(invite.CreatedAt).Hours())/24))
+		res = append(res, models.GetReminderPendingLeaseInvitation(lang, property, int(now.Sub(invite.CreatedAt).Hours())/24))
 	}
 	return res
 }
@@ -164,7 +164,7 @@ func getPropertyAndDamageDashboard_Properties(pRes *models.DashboardProperties, 
 	}
 }
 
-func getPropertyAndDamageDashboard_Damage(dRes *models.DashboardOpenDamages, damage db.DamageModel, now time.Time) {
+func getPropertyAndDamageDashboard_Damage(dRes *models.DashboardOpenDamages, damage db.DamageModel, lease db.LeaseModel, property db.PropertyModel, now time.Time) {
 	if !damage.IsFixed() {
 		dRes.NbrTotal++
 		switch damage.Priority {
@@ -184,14 +184,16 @@ func getPropertyAndDamageDashboard_Damage(dRes *models.DashboardOpenDamages, dam
 		}
 	}
 	if !damage.FixedOwner {
-		dRes.ListToFix = append(dRes.ListToFix, damage.InnerDamage)
+		d := models.OpenDamageResponse{}
+		d.FromDbDamage(damage, *lease.Tenant(), property)
+		dRes.ListToFix = append(dRes.ListToFix, d)
 	}
 }
 
-func getPropertyAndDamageDashboard_Damages(dRes *models.DashboardOpenDamages, leases []db.LeaseModel, now time.Time) {
-	for _, lease := range leases {
+func getPropertyAndDamageDashboard_Damages(dRes *models.DashboardOpenDamages, property db.PropertyModel, now time.Time) {
+	for _, lease := range property.Leases() {
 		for _, damage := range lease.Damages() {
-			getPropertyAndDamageDashboard_Damage(dRes, damage, now)
+			getPropertyAndDamageDashboard_Damage(dRes, damage, lease, property, now)
 		}
 	}
 }
@@ -203,7 +205,7 @@ func getPropertyAndDamageDashboard(properties []db.PropertyModel) (models.Dashbo
 
 	for _, property := range properties {
 		getPropertyAndDamageDashboard_Properties(&pRes, property, now)
-		getPropertyAndDamageDashboard_Damages(&dRes, property.Leases(), now)
+		getPropertyAndDamageDashboard_Damages(&dRes, property, now)
 	}
 
 	return pRes, dRes

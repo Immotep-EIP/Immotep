@@ -1,6 +1,7 @@
 import React from 'react'
-import { Modal, Form, Input, InputNumber } from 'antd'
 import { useTranslation } from 'react-i18next'
+
+import { Modal, Form, Input, InputNumber } from 'antd'
 
 import { AddFurnitureModalProps } from '@/interfaces/Property/Inventory/Room/Furniture/Furniture'
 

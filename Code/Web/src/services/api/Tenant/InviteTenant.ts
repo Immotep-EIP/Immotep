@@ -1,4 +1,5 @@
 import callApi from '@/services/api/apiCaller'
+
 import {
   InviteTenantResponse,
   InviteTenant

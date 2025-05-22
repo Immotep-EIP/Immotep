@@ -1,10 +1,12 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Badge } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import ArrowRight from '@/assets/icons/arrowRight.png'
-import { WidgetProps } from '@/interfaces/Widgets/Widgets.ts'
+
 import NavigationEnum from '@/enums/NavigationEnum'
+import { WidgetProps } from '@/interfaces/Widgets/Widgets.ts'
+
+import ArrowRight from '@/assets/icons/arrowRight.png'
 import style from './LastMessages.module.css'
 
 const LastMessages: React.FC<WidgetProps> = ({ height }) => {

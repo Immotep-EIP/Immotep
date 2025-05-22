@@ -201,7 +201,8 @@
       "cancel_invitation": "Annuler l'invitation",
       "add_item": "Ajouter un Objet",
       "delete_item": "Supprimer l'Objet",
-      "add_intervention_date": "Ajouter une date d'intervention"
+      "add_intervention_date": "Ajouter une date d'intervention",
+      "modify_intervention_date": "Modifier la date d'intervention"
     },
     "modal": {
       "end_contract": {
@@ -372,6 +373,9 @@
       "loading": "Chargement en cours...",
       "loading_data": "Chargement des données...",
       "no_data": "Aucune donnée disponible"
+    },
+    "soon_available": {
+      "title": "Cette fonctionnalité sera bientôt disponible"
     }
   },
   "pages": {
@@ -495,6 +499,8 @@
     },
     "damage_details": {
       "title": "Détails du dommage",
+      "title_damage": "Dommage",
+      "title_damages": "Dommages",
       "pictures": "Images",
       "comment": "Commentaire",
       "created_at": "Créé le",
@@ -503,9 +509,16 @@
       "tenant_name": "Nom du locataire",
       "fix_planned_at": "Date d'intervention",
       "fix_status": "Statut de l'intervention",
+      "property_name": "Nom de la propriété",
       "update_success": "Dommage mis à jour avec succès",
       "update_error": "Erreur lors de la mise à jour du dommage",
-      "at": "à"
+      "at": "à",
+      "status": {
+        "urgent": "Urgent",
+        "high": "Haut",
+        "medium": "Moyen",
+        "low": "Bas"
+      }
     },
     "overview": {
       "document_title": "Aperçu",

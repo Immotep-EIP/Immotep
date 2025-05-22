@@ -1,10 +1,12 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { LoadingOutlined } from '@ant-design/icons'
 
-import { useTranslation } from 'react-i18next'
+import { DashboardProperties } from '@/interfaces/Dashboard/Dashboard'
+
 import PropertiesIcon from '@/assets/icons/realProperty.svg'
 import style from './PropertiesNumber.module.css'
-import { DashboardProperties } from '@/interfaces/Dashboard/Dashboard'
 
 interface PropertiesNumberProps {
   properties: DashboardProperties | null

@@ -35,7 +35,8 @@ describe('RealPropertyCreate Component', () => {
     })
     ;(useImageUpload as jest.Mock).mockReturnValue({
       uploadProps: {},
-      imageBase64: 'mocked-image-base64'
+      imageBase64: 'mocked-image-base64',
+      resetImage: jest.fn()
     })
   })
 

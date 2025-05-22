@@ -45,6 +45,14 @@
   border-bottom: none;
 }
 
+.reminderItem:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.reminderItem:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .reminderTexts {
   display: flex;
   flex-direction: column;
@@ -57,24 +65,12 @@
 .reminderheader {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
 }
 
 .titleText {
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.3);
-  margin-bottom: 5px;
-  text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 85%;
-  width: 85%;
-}
-
-.descriptionText {
   font-size: 14px;
   color: #000;
   text-align: left;
@@ -83,4 +79,15 @@
   white-space: nowrap;
   max-width: 100%;
   width: 100%;
+}
+
+.descriptionText {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.3);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 85%;
+  width: 85%;
 }

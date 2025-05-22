@@ -1,6 +1,7 @@
-import endpoints from '@/enums/EndPointEnum'
 import callApi from '@/services/api/apiCaller'
+
 import { User } from '@/interfaces/User/User'
+import endpoints from '@/enums/EndPointEnum'
 
 const PutUserPicture = async (pictureData: string): Promise<User> => {
   try {

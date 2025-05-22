@@ -9,6 +9,7 @@ import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import CardComponent from '@/components/features/RealProperty/PropertyCard'
 import PropertyFilterCard from '@/components/features/RealProperty/PropertyFilterCard'
 import RealPropertyCreate from './create/RealPropertyCreate'
+
 import style from './RealProperty.module.css'
 
 const RealPropertyPage: React.FC = () => {

@@ -201,7 +201,8 @@
       "cancel_invitation": "Cancel invitation",
       "add_item": "Add Item",
       "delete_item": "Delete Item",
-      "add_intervention_date": "Add intervention date"
+      "add_intervention_date": "Add intervention date",
+      "modify_intervention_date": "Modify intervention date"
     },
     "modal": {
       "end_contract": {
@@ -372,6 +373,9 @@
       "loading": "Loading...",
       "loading_data": "Loading data...",
       "no_data": "No data available"
+    },
+    "soon_available": {
+      "title": "This feature will be available soon"
     }
   },
   "pages": {
@@ -495,6 +499,8 @@
     },
     "damage_details": {
       "title": "Damage details",
+      "title_damage": "Damage",
+      "title_damages": "Damages",
       "pictures": "Images",
       "comment": "Comment",
       "created_at": "Created at",
@@ -503,9 +509,16 @@
       "tenant_name": "Tenant name",
       "fix_planned_at": "Intervention date",
       "fix_status": "Intervention status",
+      "property_name": "Property name",
       "update_success": "Damage updated successfully",
       "update_error": "Error while updating damage",
-      "at": "at"
+      "at": "at",
+      "status": {
+        "urgent": "Urgent",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      }
     },
     "overview": {
       "document_title": "Overview",

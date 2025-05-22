@@ -31,17 +31,32 @@ export interface DashboardProperties {
 }
 
 export interface DashboardOpenDamagesToFix {
-  id: string
+  // id: string
+  // comment: string
+  // priority: string
+  // read: boolean
+  // created_at: string
+  // updated_at: string
+  // fix_planned_at: string
+  // fixed_owner: boolean
+  // fixed_tenant: boolean
+  // lease_id: string
+  // room_id: string
+  // property_id: string
   comment: string
-  priority: string
-  read: boolean
   created_at: string
-  updated_at: string
   fix_planned_at: string
-  fixed_owner: boolean
-  fixed_tenant: boolean
+  fix_status: string
+  id: string
   lease_id: string
+  priority: string
+  property_id: string
+  property_name: string
+  read: boolean
   room_id: string
+  room_name: string
+  tenant_name: string
+  updated_at: string
 }
 
 export interface DashboardOpenDamages {
@@ -51,7 +66,7 @@ export interface DashboardOpenDamages {
   nbr_medium: number
   nbr_low: number
   nbr_planned_to_fix_this_week: number
-  list_to_fix: [DashboardOpenDamagesToFix]
+  list_to_fix: DashboardOpenDamagesToFix[]
 }
 
 export interface UseDashboardReturn {

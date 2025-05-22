@@ -1,4 +1,5 @@
 import { openDB, IDBPDatabase } from 'idb'
+
 import { ImageDBSchema } from '@/interfaces/Property/Property'
 
 class ImageCache {

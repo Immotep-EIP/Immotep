@@ -2,17 +2,27 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
+import useProperties from '@/hooks/Property/useProperties'
 import InviteTenantModal from '@/components/features/RealProperty/details/DetailsPart/InviteTenantModal'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
-import useProperties from '@/hooks/Property/useProperties'
 import DetailsPart from '@/components/features/RealProperty/details/DetailsPart/DetailsPart'
 import RealPropertyUpdate from '../update/RealPropertyUpdate'
+
 import style from './RealPropertyDetails.module.css'
 
 const RealPropertyDetails: React.FC = () => {
   const { t } = useTranslation()
   const location = useLocation()
-  const { id } = location.state || {}
+  let { id } = location.state || {}
+  if (!id) {
+    const pathParts = location.pathname.split('/')
+    const lastPart = pathParts[pathParts.length - 1]
+    const idFromUrl = lastPart.split('?')[0]
+    if (!idFromUrl) {
+      throw new Error('Property ID not found in location state or URL')
+    }
+    id = idFromUrl
+  }
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => setIsModalOpen(true)
 
