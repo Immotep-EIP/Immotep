@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Empty, Typography } from 'antd'
-import { MessageOutlined } from '@ant-design/icons'
+// import { MessageOutlined } from '@ant-design/icons'
 
 import useProperties from '@/hooks/Property/useProperties'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import PageTitle from '@/components/ui/PageText/Title'
-import ContactList from '@/components/features/Messages/ContactList'
-import ChatInterface from '@/components/features/Messages/ChatInterface'
+// import ContactList from '@/components/features/Messages/ContactList'
+// import ChatInterface from '@/components/features/Messages/ChatInterface'
 
 import { Contact } from '@/interfaces/Messages/Contact'
 
@@ -17,7 +17,7 @@ import style from './Messages.module.css'
 const Messages: React.FC = () => {
   const { t } = useTranslation()
   const { loading } = useProperties()
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+  // const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
 
   const mockTenants = [
     {

@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react'
-import { message, UploadFile, UploadProps } from 'antd'
+import { message, UploadFile } from 'antd'
 import type { RcFile } from 'antd/es/upload/interface'
 import fileToBase64 from '@/utils/base64/fileToBase'
 import useImageUpload from '../useImageUpload'
