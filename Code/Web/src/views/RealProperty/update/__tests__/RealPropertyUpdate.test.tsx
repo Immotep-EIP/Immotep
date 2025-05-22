@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { message } from 'antd'
-import RealPropertyUpdate from '@/views/RealProperty/update/RealPropertyUpdate' // Corrected import path
+import RealPropertyUpdate from '@/views/RealProperty/update/RealPropertyUpdate'
 import useProperties from '@/hooks/Property/useProperties'
 import useImageUpload from '@/hooks/Image/useImageUpload'
 import useImageCache from '@/hooks/Image/useImageCache'
@@ -119,6 +119,15 @@ describe('RealPropertyUpdate Component', () => {
     expect(mockSetIsModalUpdateOpen).toHaveBeenCalledWith(false)
   })
 
+  it('closes the modal when clicking the close button', () => {
+    renderComponent()
+
+    const closeButton = screen.getByRole('button', { name: /close/i })
+    fireEvent.click(closeButton)
+
+    expect(mockSetIsModalUpdateOpen).toHaveBeenCalledWith(false)
+  })
+
   it('submits the form and updates the property successfully', async () => {
     const mockUpdateProperty = useProperties().updateProperty as jest.Mock
     mockUpdateProperty.mockResolvedValueOnce({})
@@ -152,6 +161,27 @@ describe('RealPropertyUpdate Component', () => {
     })
   })
 
+  it('handles image data promise correctly', async () => {
+    const mockImageData = 'test-image-data'
+    ;(useImageUpload as jest.Mock).mockReturnValue({
+      uploadProps: {},
+      imageBase64: mockImageData
+    })
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(useImageCache).toHaveBeenCalledWith(
+        mockPropertyData.id,
+        expect.any(Function)
+      )
+    })
+
+    const imageCacheCallback = (useImageCache as jest.Mock).mock.calls[0][1]
+    const result = await imageCacheCallback()
+    expect(result).toEqual({ data: mockImageData })
+  })
+
   it('shows an error message when form submission fails', async () => {
     const mockUpdateProperty = useProperties().updateProperty as jest.Mock
     mockUpdateProperty.mockRejectedValueOnce(new Error('Update failed'))
@@ -170,7 +200,6 @@ describe('RealPropertyUpdate Component', () => {
   it('shows an error message when form fields are not filled', async () => {
     renderComponent()
 
-    // Clear all form fields
     fireEvent.change(screen.getByDisplayValue('Test Property'), {
       target: { value: '' }
     })
@@ -201,6 +230,29 @@ describe('RealPropertyUpdate Component', () => {
       expect(message.error).toHaveBeenCalledWith(
         'pages.real_property.update_real_property.fill_all_fields'
       )
+    })
+  })
+
+  it('returns early when propertyData or values are missing', async () => {
+    const mockUpdateProperty = useProperties().updateProperty as jest.Mock
+
+    render(
+      <RealPropertyUpdate
+        propertyData={{} as any}
+        isModalUpdateOpen
+        setIsModalUpdateOpen={mockSetIsModalUpdateOpen}
+        setIsPropertyUpdated={mockSetIsPropertyUpdated}
+      />
+    )
+
+    fireEvent.click(screen.getByText('components.button.update'))
+
+    await waitFor(() => {
+      expect(mockUpdateProperty).not.toHaveBeenCalled()
+      expect(mockUpdateCache).not.toHaveBeenCalled()
+      expect(mockSetIsModalUpdateOpen).not.toHaveBeenCalled()
+      expect(message.success).not.toHaveBeenCalled()
+      expect(mockSetIsPropertyUpdated).not.toHaveBeenCalled()
     })
   })
 })

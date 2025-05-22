@@ -1,19 +1,37 @@
+import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { HelmetProvider } from 'react-helmet-async'
+import { BrowserRouter } from 'react-router-dom'
 import Register from '@/views/Authentification/Register/Register'
 import { register } from '@/services/api/Authentification/AuthApi'
 import useNavigation from '@/hooks/Navigation/useNavigation'
+import { AuthProvider } from '@/context/authContext'
+
+jest.mock('@/context/authContext', () => ({
+  useAuth: jest.fn(() => ({
+    login: jest.fn().mockResolvedValue({}),
+    isAuthenticated: false,
+    user: null,
+    logout: jest.fn(),
+    updateUser: jest.fn()
+  })),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children
+}))
 
 jest.mock('@/services/api/Authentification/AuthApi', () => ({
   register: jest.fn()
 }))
+
 jest.mock('@/hooks/Navigation/useNavigation', () => ({
   __esModule: true,
   default: jest.fn(() => ({
-    goToLogin: jest.fn()
+    goToLogin: jest.fn(),
+    goToOverview: jest.fn(),
+    goToSuccessRegisterTenant: jest.fn()
   }))
 }))
+
 jest.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => ({
@@ -34,12 +52,17 @@ describe('Register Component', () => {
     mockGoToLogin.mockReset()
   })
 
-  // eslint-disable-next-line no-undef
-  const renderWithHelmet = (component: React.ReactNode) =>
-    render(<HelmetProvider>{component}</HelmetProvider>)
+  const renderWithProviders = (component: React.ReactNode) =>
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <HelmetProvider>{component}</HelmetProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    )
 
   it('renders the form elements correctly', () => {
-    renderWithHelmet(<Register />)
+    renderWithProviders(<Register />)
 
     expect(
       screen.getByLabelText('components.input.first_name.label')
@@ -65,7 +88,7 @@ describe('Register Component', () => {
   })
 
   it('displays error message if passwords do not match', async () => {
-    renderWithHelmet(<Register />)
+    renderWithProviders(<Register />)
 
     fireEvent.input(
       screen.getByLabelText('components.input.first_name.label'),
@@ -105,7 +128,7 @@ describe('Register Component', () => {
 
   it('registers user and redirects to login on success', async () => {
     mockRegister.mockResolvedValueOnce({})
-    renderWithHelmet(<Register />)
+    renderWithProviders(<Register />)
 
     fireEvent.input(
       screen.getByLabelText('components.input.first_name.label'),
@@ -151,7 +174,7 @@ describe('Register Component', () => {
   it('displays error if email already exists', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
     mockRegister.mockRejectedValueOnce({ response: { status: 409 } })
-    renderWithHelmet(<Register />)
+    renderWithProviders(<Register />)
 
     fireEvent.input(
       screen.getByLabelText('components.input.first_name.label'),
@@ -189,7 +212,7 @@ describe('Register Component', () => {
     )
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      'pages.register.register_error',
+      'Registration error:',
       expect.anything()
     )
 
@@ -197,7 +220,7 @@ describe('Register Component', () => {
   })
 
   test('displays error message when form submission fails', async () => {
-    renderWithHelmet(<Register />)
+    renderWithProviders(<Register />)
 
     fireEvent.click(screen.getByText('components.button.sign_up'))
 
@@ -207,7 +230,7 @@ describe('Register Component', () => {
   })
 
   it('navigates to Login page when "Sign In" link is clicked', () => {
-    renderWithHelmet(<Register />)
+    renderWithProviders(<Register />)
 
     const signInLink = screen.getByText('components.button.sign_in')
 

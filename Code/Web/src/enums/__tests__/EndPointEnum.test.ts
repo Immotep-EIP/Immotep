@@ -2,6 +2,12 @@ import endpoints from '../EndPointEnum'
 
 describe('EndPointEnum', () => {
   describe('owner endpoints', () => {
+    describe('dashboard', () => {
+      it('should return the correct dashboard endpoints', () => {
+        expect(endpoints.owner.dashboard.list()).toBe('owner/dashboard/')
+      })
+    })
+
     describe('properties', () => {
       it('should return the correct base property endpoints', () => {
         expect(endpoints.owner.properties.list).toBe('owner/properties/')
@@ -101,6 +107,20 @@ describe('EndPointEnum', () => {
           )
           expect(endpoints.owner.properties.tenant.cancelInvite('123')).toBe(
             'owner/properties/123/cancel-invite/'
+          )
+        })
+      })
+
+      describe('damages', () => {
+        it('should return the correct damages endpoints', () => {
+          expect(endpoints.owner.properties.damages.list('123')).toBe(
+            'owner/properties/123/leases/current/damages/'
+          )
+          expect(endpoints.owner.properties.damages.byId('123', '456')).toBe(
+            'owner/properties/123/leases/current/damages/456/'
+          )
+          expect(endpoints.owner.properties.damages.update('123', '456')).toBe(
+            'owner/properties/123/leases/current/damages/456/'
           )
         })
       })
