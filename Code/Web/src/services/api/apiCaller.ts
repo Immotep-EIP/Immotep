@@ -2,9 +2,10 @@ import axios from 'axios'
 
 import { loginApi } from '@/services/api/Authentification/AuthApi'
 import { saveData, deleteData } from '@/utils/cache/localStorage'
+
+import { ApiCallerParams } from '@/interfaces/Api/callApi'
 import AuthEnum from '@/enums/AuthEnum'
 import NavigationEnum from '@/enums/NavigationEnum'
-import { ApiCallerParams } from '@/interfaces/Api/callApi'
 
 const API_BASE_URL = `${process.env.VITE_API_URL}` || 'http://localhost:3001/v1'
 

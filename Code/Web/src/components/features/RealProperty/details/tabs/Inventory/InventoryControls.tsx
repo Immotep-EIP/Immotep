@@ -1,4 +1,6 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { Row, Col, Input, Select, Radio, Button, Tooltip } from 'antd'
 import {
   SearchOutlined,
@@ -7,7 +9,6 @@ import {
   UnorderedListOutlined,
   BorderOuterOutlined
 } from '@ant-design/icons'
-import { useTranslation } from 'react-i18next'
 
 import { InventoryControlsProps } from '@/interfaces/Property/Inventory/Inventory'
 

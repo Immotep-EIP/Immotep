@@ -57,12 +57,18 @@ final class PropertyViewUITests: XCTestCase {
         XCTAssertTrue(firstPropertyCard.waitForExistence(timeout: 2), "First property card should exist")
         firstPropertyCard.tap()
 
+        let aboutSectionPredicate = NSPredicate { _, _ in
+            return self.app.staticTexts["About the property"].exists || self.app.staticTexts["À propos du bien"].exists
+        }
+        let aboutSectionExpectation = expectation(for: aboutSectionPredicate, evaluatedWith: nil, handler: nil)
+        wait(for: [aboutSectionExpectation], timeout: 5.0)
+
         let aboutSectionHeader = app.staticTexts["About the property"].exists || app.staticTexts["À propos du bien"].exists
         XCTAssertTrue(aboutSectionHeader, "About section should be visible")
 
         let startInventoryButton = app.buttons["inventory_btn_start"]
         XCTAssertTrue(startInventoryButton.waitForExistence(timeout: 2), "Start inventory button should exist")
-    }
+        }
 
     func testAboutCardView() throws {
         let secondPropertyCard = app.buttons["property_card_cm7gijdee000ly7i82uq0qf36"]
@@ -118,13 +124,13 @@ final class PropertyViewUITests: XCTestCase {
         XCTAssertTrue(app.textFields["Address_textfield"].exists, "Address field should exist")
         XCTAssertTrue(app.textFields["City_textfield"].exists, "City field should exist")
         XCTAssertTrue(app.textFields["Postal Code_textfield"].exists, "Postal Code field should exist")
-        XCTAssertTrue(app.textFields["Country_textfield"].exists, "Country field should exist")
-
         app.swipeUp()
 
+        XCTAssertTrue(app.textFields["Country_textfield"].exists, "Country field should exist")
         XCTAssertTrue(app.textFields["Monthly Rent_textfield"].waitForExistence(timeout: 2), "Rent field should exist")
         XCTAssertTrue(app.textFields["Deposit_textfield"].exists, "Deposit field should exist")
         XCTAssertTrue(app.textFields["Surface (m²)_textfield"].exists, "Surface field should exist")
+        app.swipeUp()
         XCTAssertTrue(app.buttons["cancel_button"].exists, "Cancel button should exist")
         XCTAssertTrue(app.buttons["confirm_button"].exists, "Confirm button should exist")
     }

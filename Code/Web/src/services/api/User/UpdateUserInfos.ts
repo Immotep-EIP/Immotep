@@ -1,4 +1,5 @@
 import callApi from '@/services/api/apiCaller'
+
 import { UpdateUserInfoPayload, User } from '@/interfaces/User/User'
 import endpoints from '@/enums/EndPointEnum'
 

@@ -1,8 +1,11 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { Empty, Typography } from 'antd'
 import { FilePdfOutlined } from '@ant-design/icons'
-import { useTranslation } from 'react-i18next'
+
 import { Document } from '@/interfaces/Property/Document'
+
 import style from './DocumentList.module.css'
 
 const DocumentList: React.FC<{

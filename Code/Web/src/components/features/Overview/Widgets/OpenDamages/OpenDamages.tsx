@@ -1,16 +1,20 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+
+import { Badge, Empty, Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { Badge, Empty } from 'antd'
+
+import StatusTag from '@/components/common/Tag/StatusTag'
+import toLocaleDate from '@/utils/date/toLocaleDate'
+
 import {
   DashboardOpenDamages,
   DashboardOpenDamagesToFix
 } from '@/interfaces/Dashboard/Dashboard'
-import PriorityTag from '@/components/common/PriorityTag'
-import toLocaleDate from '@/utils/date/toLocaleDate'
-import style from './OpenDamages.module.css'
 import NavigationEnum from '@/enums/NavigationEnum'
+
+import style from './OpenDamages.module.css'
 
 interface OpenDamagesProps {
   openDamages: DashboardOpenDamages | null
@@ -87,7 +91,15 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
               aria-label={`${damage.created_at}: ${damage.comment}`}
             >
               <div className={style.damageInformationsContainer}>
-                <PriorityTag priority={damage.priority} />
+                <Tooltip
+                  title={`${damage.property_name || '-'} > ${damage.room_name || '-'}`}
+                  placement="topLeft"
+                >
+                  <span className={style.damageInfosContainer}>
+                    {damage.property_name || '-'} {'>'}{' '}
+                    {damage.room_name || '-'}
+                  </span>
+                </Tooltip>
                 <span className={style.dateText}>
                   {toLocaleDate(damage.created_at)}
                 </span>
@@ -96,13 +108,31 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
                 <Badge
                   className={style.damageComment}
                   color="blue"
-                  text={damage.comment}
-                  style={{ fontWeight: 700 }}
+                  text={
+                    <Tooltip title={damage.comment} placement="topLeft">
+                      <span style={{ fontWeight: 700 }}>{damage.comment}</span>
+                    </Tooltip>
+                  }
                 />
               ) : (
-                <span className={style.damageCommentWithoutBadge}>
-                  {damage.comment}
-                </span>
+                <div className={style.damageCommentContainer}>
+                  <Tooltip title={damage.comment} placement="topLeft">
+                    <span className={style.damageCommentWithoutBadge}>
+                      {damage.comment}
+                    </span>
+                  </Tooltip>
+                  <StatusTag
+                    value={damage.priority}
+                    colorMap={{
+                      urgent: 'red',
+                      high: 'red',
+                      medium: 'yellow',
+                      low: 'green'
+                    }}
+                    i18nPrefix="pages.real_property_details.tabs.damage.priority"
+                    defaultColor="gray"
+                  />
+                </div>
               )}
             </div>
           ))

@@ -1,13 +1,16 @@
 import React from 'react'
+
 import { Badge } from 'antd'
 
 import useNavigation from '@/hooks/Navigation/useNavigation'
-import locationIcon from '@/assets/icons/location.svg'
-import { CardComponentProps } from '@/interfaces/Property/Property'
 import useImageCache from '@/hooks/Image/useImageCache'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
+
+import { CardComponentProps } from '@/interfaces/Property/Property'
 import { TenantStatusEnum } from '@/enums/PropertyEnum'
+
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
+import locationIcon from '@/assets/icons/location.svg'
 import style from './PropertyCard.module.css'
 
 const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+
 import NavigationEnum from '@/enums/NavigationEnum'
 
 const useNavigation = () => {

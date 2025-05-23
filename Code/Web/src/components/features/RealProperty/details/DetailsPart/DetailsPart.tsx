@@ -1,25 +1,28 @@
 import React, { useState, useEffect } from 'react'
-import { Modal, message, Tabs } from 'antd'
 import { useTranslation } from 'react-i18next'
 
+import { Modal, message, Tabs } from 'antd'
+
 import { PropertyIdProvider } from '@/context/propertyIdContext'
-import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
 import useImageCache from '@/hooks/Image/useImageCache'
 import useProperties from '@/hooks/Property/useProperties'
-import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
-import CancelTenantInvitation from '@/services/api/Owner/Properties/CancelTenantInvitation'
 import useNavigation from '@/hooks/Navigation/useNavigation'
+import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
+import CancelTenantInvitation from '@/services/api/Owner/Properties/CancelTenantInvitation'
 import EndLease from '@/services/api/Owner/Properties/Leases/EndLease'
+import ArchiveProperty from '@/services/api/Owner/Properties/ArchiveProperty'
+import UnarchiveProperty from '@/services/api/Owner/Properties/UnarchiveProperty'
 import DocumentsTab from '@/views/RealProperty/details/tabs/1DocumentsTab'
 import DamageTab from '@/views/RealProperty/details/tabs/3DamageTab'
 import InventoryTab from '@/views/RealProperty/details/tabs/2InventoryTab'
+
 import { DetailsPartProps } from '@/interfaces/Property/Property'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
 import PropertyHeader from './PropertyHeader'
 import PropertyImage from './PropertyImage'
 import PropertyInfo from './PropertyInfo'
+
 import style from './DetailsPart.module.css'
-import UnarchiveProperty from '@/services/api/Owner/Properties/UnarchiveProperty'
-import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 interface ChildrenComponentProps {
   t: (key: string) => string

@@ -1,7 +1,8 @@
 import callApi from '@/services/api/apiCaller'
+
 import { Room } from '@/interfaces/Property/Inventory/Room/Room'
-import endpoints from '@/enums/EndPointEnum'
 import { GetRoomsByPropertyParams } from '@/interfaces/Api/callApi'
+import endpoints from '@/enums/EndPointEnum'
 
 const GetRoomsByProperty = async ({
   propertyId,

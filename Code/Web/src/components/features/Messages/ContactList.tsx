@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { Input } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 
 import { ContactListProps } from '@/interfaces/Messages/Contact'
+
 import defaultAvatar from '@/assets/images/DefaultProfile.png'
 import style from './ContactList.module.css'
 

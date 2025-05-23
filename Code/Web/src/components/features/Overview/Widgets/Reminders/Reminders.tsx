@@ -1,10 +1,14 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Empty } from 'antd'
+
+import { Empty, Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
+
+import StatusTag from '@/components/common/Tag/StatusTag'
+
 import { DashboardReminders } from '@/interfaces/Dashboard/Dashboard'
-import PriorityTag from '@/components/common/PriorityTag'
+
 import style from './Reminders.module.css'
 
 interface RemindersProps {
@@ -67,12 +71,26 @@ const Reminders: React.FC<RemindersProps> = ({
               aria-label={`${reminder.title}: ${reminder.advice}`}
             >
               <div className={style.reminderTexts}>
-                <span className={style.titleText}>{reminder.title}</span>
+                <Tooltip title={reminder.title} placement="topLeft">
+                  <span className={style.titleText}>{reminder.title}</span>
+                </Tooltip>
                 <div className={style.reminderheader}>
-                  <PriorityTag priority={reminder.priority} />
-                  <span className={style.descriptionText}>
-                    {reminder.advice}
-                  </span>
+                  <StatusTag
+                    value={reminder.priority}
+                    colorMap={{
+                      urgent: 'red',
+                      high: 'red',
+                      medium: 'yellow',
+                      low: 'green'
+                    }}
+                    i18nPrefix="pages.real_property_details.tabs.damage.priority"
+                    defaultColor="gray"
+                  />
+                  <Tooltip title={reminder.advice} placement="topLeft">
+                    <span className={style.descriptionText}>
+                      {reminder.advice}
+                    </span>
+                  </Tooltip>
                 </div>
               </div>
             </div>

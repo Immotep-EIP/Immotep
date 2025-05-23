@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
+
 import GetProperties from '@/services/api/Owner/Properties/GetProperties.ts'
-import {
-  PropertyDetails,
-  CreatePropertyPayload
-} from '@/interfaces/Property/Property.tsx'
 import CreatePropertyFunction from '@/services/api/Owner/Properties/CreateProperty'
 import UpdatePropertyPicture from '@/services/api/Owner/Properties/UpdatePropertyPicture'
 import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
 import UpdatePropertyFunction from '@/services/api/Owner/Properties/UpdateProperty'
+
+import {
+  PropertyDetails,
+  CreatePropertyPayload
+} from '@/interfaces/Property/Property.tsx'
 
 const useProperties = (
   propertyId: string | null = null,

@@ -42,7 +42,7 @@ struct EditPropertyView: View {
 
     var body: some View {
         VStack {
-            TopBar(title: "Edit Property".localized())
+//            TopBar(title: "Edit Property".localized())
 
             Form {
                 Section {
@@ -155,7 +155,8 @@ struct EditPropertyView: View {
             leaseEndDate: property.leaseEndDate,
             documents: property.documents,
             createdAt: property.createdAt,
-            rooms: property.rooms
+            rooms: property.rooms,
+            damages: []
         )
 
         guard let token = await TokenStorage.getAccessToken() else {

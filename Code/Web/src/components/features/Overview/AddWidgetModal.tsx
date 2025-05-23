@@ -1,6 +1,8 @@
 import React from 'react'
-import { Modal, Form, Input, InputNumber, Button, message, Select } from 'antd'
 import { useTranslation } from 'react-i18next'
+
+import { Modal, Form, Input, InputNumber, Button, message, Select } from 'antd'
+
 import {
   addWidgetType,
   AddWidgetModalProps

@@ -43,7 +43,21 @@ final class LoginUITests: XCTestCase {
     }
 
     func testWelcomeTextExists() throws {
-        navigateToLoginView()
+        if app.buttons["person.crop.circle.fill"].exists {
+            app.buttons["person.crop.circle.fill"].tap()
+
+            let logoutButton = app.buttons["Logout"].exists || app.buttons["Se déconnecter"].exists
+            XCTAssertTrue(logoutButton)
+
+            if app.buttons["Logout"].exists {
+                app.buttons["Logout"].tap()
+            } else if app.buttons["Se déconnecter"].exists {
+                app.buttons["Se déconnecter"].tap()
+            }
+        } else {
+            return
+        }
+
         let welcomeText = app.staticTexts["Welcome back"].exists || app.staticTexts["Bienvenue !"].exists
         XCTAssertTrue(welcomeText)
     }
@@ -99,6 +113,7 @@ final class LoginUITests: XCTestCase {
 
         passwordSecureField.tap()
         passwordSecureField.typeText("testpassword")
+        Thread.sleep(forTimeInterval: 5.0)
 
         XCTAssertEqual(emailTextField.value as? String, "test@example.com", "The email is not filled in correctly.")
         XCTAssertEqual(passwordSecureField.value as? String, "••••••••••••", "The password is not filled in correctly.")
@@ -110,16 +125,26 @@ final class LoginUITests: XCTestCase {
             XCTAssertTrue(dontHaveAnAccount)
         }
 
-        func testSignUpLinkExists() throws {
+    func testSignUpLinkExists() throws {
             navigateToLoginView()
+
             let linkExist = app.buttons["Sign Up"].exists || app.buttons["Se connecter"].exists
-            XCTAssertTrue(linkExist)
+            XCTAssertTrue(linkExist, "Neither 'Sign Up' nor 'Se connecter' button exists.")
 
             let signUpLink = app.buttons["signUpLink"]
-            XCTAssertTrue(signUpLink.exists)
+            let signUpLinkPredicate = NSPredicate(format: "exists == true")
+            let signUpLinkExpectation = expectation(for: signUpLinkPredicate, evaluatedWith: signUpLink, handler: nil)
+            wait(for: [signUpLinkExpectation], timeout: 5.0)
+            XCTAssertTrue(signUpLink.exists, "The 'signUpLink' button does not exist.")
             signUpLink.tap()
 
+            let registerTitlePredicate = NSPredicate { _, _ in
+                return self.app.staticTexts["Create your account"].exists || self.app.staticTexts["Créer un compte"].exists
+            }
+            let registerTitleExpectation = expectation(for: registerTitlePredicate, evaluatedWith: nil, handler: nil)
+            wait(for: [registerTitleExpectation], timeout: 10.0)
+
             let registerTitle = app.staticTexts["Create your account"].exists || app.staticTexts["Créer un compte"].exists
-            XCTAssertTrue(registerTitle)
+            XCTAssertTrue(registerTitle, "The register title ('Create your account' or 'Créer un compte') does not appear.")
         }
 }

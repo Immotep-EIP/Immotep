@@ -13,8 +13,7 @@ struct User: Decodable, Encodable {
     var firstname: String
     var lastname: String
     var role: String
-//    var createdAt: Date
-//    var updatedAt: Date
+    var tenantPropertyId: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -22,8 +21,7 @@ struct User: Decodable, Encodable {
         case firstname
         case lastname
         case role
-//        case createdAt = "created_at"
-//        case updatedAt = "updated_at"
+        case tenantPropertyId = "tenant_property_id"
     }
 }
 
@@ -55,7 +53,7 @@ actor UserService: UserServiceProtocol {
             throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "No refresh token found. Please log in again."])
         }
         do {
-            let (newAccessToken, _) =
+            let (newAccessToken, _, _, _) =
             try await AuthService.shared.requestToken(grantType: "refresh_token", refreshToken: refreshToken, keepMeSignedIn: true)
             TokenStorage.storeAccessToken(newAccessToken)
             return newAccessToken
@@ -63,7 +61,6 @@ actor UserService: UserServiceProtocol {
             print("Error while refreshing token: \(error)")
             throw error
         }
-
     }
 
     func fetchUserProfile(with token: String) async throws -> User {
@@ -89,11 +86,11 @@ actor UserService: UserServiceProtocol {
             let userProfile = try decoder.decode(User.self, from: data)
             return userProfile
         } catch {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to decode user profile."])
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to decode user profile: \(error.localizedDescription)"])
         }
     }
 
-    func logout() {
+    func logout() async {
         currentUser = nil
     }
 }

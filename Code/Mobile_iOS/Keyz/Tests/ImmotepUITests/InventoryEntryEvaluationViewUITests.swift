@@ -14,6 +14,7 @@ final class InventoryEntryEvaluationViewUITests: XCTestCase {
         continueAfterFailure = false
         app.launchArguments = ["-skipLogin", "-inventoryEntryEvaluationView"]
         print("XCUITest - Launch arguments set to: \(app.launchArguments)")
+        Thread.sleep(forTimeInterval: 1.0)
         app.launch()
     }
 

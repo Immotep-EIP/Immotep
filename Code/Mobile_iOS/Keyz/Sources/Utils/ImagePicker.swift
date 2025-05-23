@@ -65,3 +65,11 @@ func convertUIImageToBase64(_ image: UIImage) -> String {
     }
     return imageData.base64EncodedString()
 }
+
+func convertBase64ToUIImage(_ base64: String) -> UIImage? {
+    guard let data = Data(base64Encoded: base64) else {
+        return nil
+    }
+    return UIImage(data: data)
+}
+

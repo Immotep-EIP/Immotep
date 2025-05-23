@@ -1,6 +1,8 @@
+import { useTranslation } from 'react-i18next'
+
 import { Form, Input, InputNumber, Upload, Button, UploadProps } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import { useTranslation } from 'react-i18next'
+
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
 
 const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {

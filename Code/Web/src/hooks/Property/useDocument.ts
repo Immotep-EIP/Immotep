@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Document, UseDocumentReturn } from '@/interfaces/Property/Document'
+
 import GetPropertyDocuments from '@/services/api/Owner/Properties/GetPropertyDocuments'
 import UploadDocument from '@/services/api/Owner/Properties/UploadDocument'
 import fileToBase64 from '@/utils/base64/fileToBase'
+
+import { Document, UseDocumentReturn } from '@/interfaces/Property/Document'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
