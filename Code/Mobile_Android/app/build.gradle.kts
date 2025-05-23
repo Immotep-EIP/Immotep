@@ -9,12 +9,12 @@ plugins {
 val cameraXVersion = "1.0.1"
 
 android {
-    namespace = "com.example.immotep"
+    namespace = "com.example.keyz"
     compileSdk = 35
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.immotep"
+        applicationId = "com.example.keyz"
         minSdk = 27
         targetSdk = 35
         targetSdk = 35
@@ -74,7 +74,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.5.4")
     implementation("androidx.compose.ui:ui-graphics:1.5.4")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
-    implementation("androidx.compose.material3:material3:1.2.0-alpha10")
+    implementation("androidx.compose.material3:material3:1.3.2")
 
     //pdf handler
     implementation("io.github.grizzi91:bouquet:1.1.2")
@@ -83,7 +83,7 @@ dependencies {
     //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("androidx.navigation:navigation-compose:2.8.1")
+    implementation("androidx.navigation:navigation-compose:2.8.4")
     implementation("com.squareup.okhttp3:logging-interceptor:3.12.1")
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
@@ -96,13 +96,15 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
+    //camer
     implementation("androidx.camera:camera-camera2:1.0.1")
     implementation("androidx.camera:camera-lifecycle:1.0.1")
     implementation("androidx.camera:camera-view:1.0.0-alpha27")
 
     // Needed for unit testing API
     testImplementation("androidx.arch.core:core-testing:2.1.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
+    testImplementation("io.mockk:mockk:1.13.9")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
     androidTestImplementation("io.github.aungthiha:compose-ui-test:1.0.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")

@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Immotep"
+rootProject.name = "Keyz"
 include(":app")
