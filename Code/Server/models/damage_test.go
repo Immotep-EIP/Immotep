@@ -66,6 +66,7 @@ func BuildTestDamage(id string) db.DamageModel {
 					InnerImage: db.InnerImage{
 						ID:   "1",
 						Data: db.Bytes("base64image1"),
+						Type: db.ImageTypeJpeg,
 					},
 				},
 			},

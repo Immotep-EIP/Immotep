@@ -134,7 +134,7 @@ func TestGetUserProfilePicture(t *testing.T) {
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	user.InnerUser.ProfilePictureID = &image.ID
 	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 	m.Image.Expect(database.MockGetImageByID(c)).Returns(image)
@@ -333,7 +333,7 @@ func TestUpdateCurrentUserProfilePicture(t *testing.T) {
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	updatedUser := user
 	updatedUser.InnerUser.ProfilePictureID = &image.ID
 	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
@@ -341,7 +341,7 @@ func TestUpdateCurrentUserProfilePicture(t *testing.T) {
 	m.User.Expect(database.MockUpdateUserPicture(c)).Returns(updatedUser)
 
 	reqBody := models.ImageRequest{
-		Data: "b3Vp",
+		Data: "data:image/jpeg;base64,b3Vp",
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
@@ -369,7 +369,7 @@ func TestUpdateCurrentUserProfilePicture_UserNotFound(t *testing.T) {
 	m.User.Expect(database.MockGetUserByID(c)).Errors(db.ErrNotFound)
 
 	reqBody := models.ImageRequest{
-		Data: "b3Vp",
+		Data: "data:image/jpeg;base64,b3Vp",
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
@@ -448,7 +448,7 @@ func TestGetCurrentUserProfilePicture(t *testing.T) {
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	user.InnerUser.ProfilePictureID = &image.ID
 	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 	m.Image.Expect(database.MockGetImageByID(c)).Returns(image)

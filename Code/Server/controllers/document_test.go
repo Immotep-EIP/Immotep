@@ -24,6 +24,7 @@ func BuildTestDocument() db.DocumentModel {
 			ID:        "1",
 			Name:      "Test Document",
 			Data:      []byte("Test Data"),
+			Type:      db.DocTypePdf,
 			LeaseID:   "1",
 			CreatedAt: time.Now(),
 		},
@@ -182,7 +183,7 @@ func TestUploadDocument(t *testing.T) {
 	r := router.TestRoutes()
 	docRequest := models.DocumentRequest{
 		Name: "Test Document",
-		Data: "VGVzdCBEYXRh", // Base64 encoded "Test Data"
+		Data: "data:application/pdf;base64,VGVzdCBEYXRh", // Base64 encoded "Test Data"
 	}
 	body, err := json.Marshal(docRequest)
 	require.NoError(t, err)
@@ -235,7 +236,7 @@ func TestUploadDocument_NoActiveLease(t *testing.T) {
 
 	docRequest := models.DocumentRequest{
 		Name: "Test Document",
-		Data: "VGVzdCBEYXRh", // Base64 encoded "Test Data"
+		Data: "data:application/pdf;base64,VGVzdCBEYXRh", // Base64 encoded "Test Data"
 	}
 	body, err := json.Marshal(docRequest)
 	require.NoError(t, err)
@@ -264,7 +265,7 @@ func TestUploadDocument_NotYours(t *testing.T) {
 
 	docRequest := models.DocumentRequest{
 		Name: "Test Document",
-		Data: "VGVzdCBEYXRh", // Base64 encoded "Test Data"
+		Data: "data:application/pdf;base64,VGVzdCBEYXRh", // Base64 encoded "Test Data"
 	}
 	body, err := json.Marshal(docRequest)
 	require.NoError(t, err)
