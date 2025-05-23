@@ -123,7 +123,7 @@ func (irp *PDF) AddImages(images []db.ImageModel) {
 	for _, picture := range images {
 		imageOptions := fpdf.ImageOptions{
 			ReadDpi:   true,
-			ImageType: "JPG",
+			ImageType: string(picture.Type),
 		}
 		info := irp.pdf.RegisterImageOptionsReader(picture.ID, imageOptions, bytes.NewReader(picture.Data))
 		imageWidth := info.Width() * imageHeight / info.Height()

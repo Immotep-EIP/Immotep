@@ -226,7 +226,7 @@ func UpdatePropertyPicture(c *gin.Context) {
 
 	image := req.ToDbImage()
 	if image == nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64OrUnsupportedType, nil)
 		return
 	}
 	newImage := database.CreateImage(*image)

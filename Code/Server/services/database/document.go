@@ -45,6 +45,7 @@ func CreateDocument(doc db.DocumentModel, leaseId string) db.DocumentModel {
 	newDocument, err := pdb.Client.Document.CreateOne(
 		db.Document.Name.Set(doc.Name),
 		db.Document.Data.Set(doc.Data),
+		db.Document.Type.Set(doc.Type),
 		db.Document.Lease.Link(db.Lease.ID.Equals(leaseId)),
 	).Exec(pdb.Context)
 	if err != nil || newDocument == nil {
@@ -57,6 +58,7 @@ func MockCreateDocument(c *services.PrismaDB, document db.DocumentModel) db.Docu
 	return c.Client.Document.CreateOne(
 		db.Document.Name.Set(document.Name),
 		db.Document.Data.Set(document.Data),
+		db.Document.Type.Set(document.Type),
 		db.Document.Lease.Link(db.Lease.ID.Equals(document.LeaseID)),
 	)
 }

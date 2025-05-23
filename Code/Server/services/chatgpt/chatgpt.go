@@ -24,11 +24,11 @@ type Message struct {
 	Content string `json:"content"`
 }
 
-func buildImageContent(picture string) map[string]any {
+func buildImageContent(pictureUri string) map[string]any {
 	return map[string]any{
 		"type": "image_url",
 		"image_url": map[string]any{
-			"url": "data:image/jpeg;base64," + picture,
+			"url": pictureUri,
 		},
 	}
 }
@@ -180,14 +180,14 @@ func callChatGPT(messages []map[string]any) (string, error) {
 	return string(respBody), nil
 }
 
-func summarize(stuffType string, name string, pictures []string) (string, error) {
+func summarize(stuffType string, name string, picturesUri []string) (string, error) {
 	content := []map[string]any{
 		{
 			"type": "text",
 			"text": buildSummaryPromptMessage(stuffType, name),
 		},
 	}
-	for _, picture := range pictures {
+	for _, picture := range picturesUri {
 		content = append(content, buildImageContent(picture))
 	}
 	messages := []map[string]any{
@@ -215,22 +215,22 @@ func summarize(stuffType string, name string, pictures []string) (string, error)
 	return "", nil
 }
 
-func SummarizeRoom(roomName string, pictures []string) (string, error) {
-	return summarize("room", roomName, pictures)
+func SummarizeRoom(roomName string, picturesUri []string) (string, error) {
+	return summarize("room", roomName, picturesUri)
 }
 
-func SummarizeFurniture(furnitureName string, pictures []string) (string, error) {
-	return summarize("furniture", furnitureName, pictures)
+func SummarizeFurniture(furnitureName string, picturesUri []string) (string, error) {
+	return summarize("furniture", furnitureName, picturesUri)
 }
 
-func compare(stuffType string, initialState string, initialCleanliness string, initialNote string, name string, initialPictures []string, currentPictures []string) (string, error) {
+func compare(stuffType string, initialState string, initialCleanliness string, initialNote string, name string, initialPicturesUri []string, currentPicturesUri []string) (string, error) {
 	contentInitial := []map[string]any{
 		{
 			"type": "text",
 			"text": "These pictures were taken during the first inventory report.",
 		},
 	}
-	for _, picture := range initialPictures {
+	for _, picture := range initialPicturesUri {
 		contentInitial = append(contentInitial, buildImageContent(picture))
 	}
 	contentCurrent := []map[string]any{
@@ -239,7 +239,7 @@ func compare(stuffType string, initialState string, initialCleanliness string, i
 			"text": "These pictures were taken during the current (last) inventory report.",
 		},
 	}
-	for _, picture := range currentPictures {
+	for _, picture := range currentPicturesUri {
 		contentCurrent = append(contentCurrent, buildImageContent(picture))
 	}
 	contentText := []map[string]any{
@@ -280,10 +280,10 @@ func compare(stuffType string, initialState string, initialCleanliness string, i
 	return "", nil
 }
 
-func CompareRoom(roomName string, initialReport db.RoomStateModel, initialPictures []string, currentPictures []string) (string, error) {
-	return compare("room", string(initialReport.State), string(initialReport.Cleanliness), initialReport.Note, roomName, initialPictures, currentPictures)
+func CompareRoom(roomName string, initialReport db.RoomStateModel, initialPicturesUri []string, currentPicturesUri []string) (string, error) {
+	return compare("room", string(initialReport.State), string(initialReport.Cleanliness), initialReport.Note, roomName, initialPicturesUri, currentPicturesUri)
 }
 
-func CompareFurniture(furnitureName string, initialReport db.FurnitureStateModel, initialPictures []string, currentPictures []string) (string, error) {
-	return compare("furniture", string(initialReport.State), string(initialReport.Cleanliness), initialReport.Note, furnitureName, initialPictures, currentPictures)
+func CompareFurniture(furnitureName string, initialReport db.FurnitureStateModel, initialPicturesUri []string, currentPicturesUri []string) (string, error) {
+	return compare("furniture", string(initialReport.State), string(initialReport.Cleanliness), initialReport.Note, furnitureName, initialPicturesUri, currentPicturesUri)
 }

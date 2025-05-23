@@ -59,6 +59,17 @@ enum cleanliness {
     clean
 }
 
+enum docType {
+    pdf
+    docx
+    xlsx
+}
+
+enum imageType {
+    png
+    jpeg
+}
+
 model user {
     id          String   @id @default(cuid())
     email       String   @unique @db.VarChar(255)
@@ -159,6 +170,7 @@ model leaseInvite {
 model image {
     id         String    @id @default(cuid())
     data       Bytes
+    type       imageType
     created_at DateTime  @default(now())
 
     users           user[]
@@ -172,6 +184,7 @@ model document {
     id          String   @id @default(cuid())
     name        String
     data        Bytes
+    type        docType
     created_at  DateTime @default(now())
 
     lease    lease @relation(fields: [lease_id], references: [id])

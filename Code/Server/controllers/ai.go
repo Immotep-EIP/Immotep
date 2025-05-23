@@ -6,19 +6,18 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/chatgpt"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func imagesToBase64Strings(images []db.ImageModel) []string {
 	res := make([]string, len(images))
 	for i, img := range images {
-		res[i] = base64.StdEncoding.EncodeToString(img.Data)
+		res[i] = "data:image/" + string(img.Type) + ";base64," + base64.StdEncoding.EncodeToString(img.Data)
 	}
 	return res
 }
