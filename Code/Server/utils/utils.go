@@ -21,7 +21,7 @@ func Map[T, V any](slice []T, transform func(T) V) []V {
 }
 
 func MapIf[T, V any](slice []T, condition func(T) bool, transform func(T) V) []V {
-	var res []V
+	res := make([]V, 0, len(slice))
 	for _, t := range slice {
 		if condition(t) {
 			res = append(res, transform(t))
@@ -48,7 +48,7 @@ func CountIf[T any](slice []T, condition func(T) bool) int {
 }
 
 func Filter[T any](slice []T, condition func(T) bool) []T {
-	var res []T
+	res := make([]T, 0, len(slice))
 	for _, elem := range slice {
 		if condition(elem) {
 			res = append(res, elem)
