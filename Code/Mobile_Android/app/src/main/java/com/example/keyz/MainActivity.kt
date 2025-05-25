@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val languageSetter  = LanguageSetter(this.dataStore)
+        val languageSetter = LanguageSetter(this.dataStore)
         val language = runBlocking {
             languageSetter.getLanguage()
         }

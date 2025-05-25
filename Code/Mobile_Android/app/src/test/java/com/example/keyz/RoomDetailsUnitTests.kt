@@ -26,6 +26,7 @@ class RoomDetailsViewModelTest {
 
     private val closeRoomPanel: (room: Room) -> Unit = mockk()
     private val addDetail: suspend (roomId: String, name: String) -> String? = mockk()
+    private val removeDetail: (String) -> Unit = mockk()
 
     private lateinit var viewModel: RoomDetailsViewModel
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -37,7 +38,7 @@ class RoomDetailsViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = RoomDetailsViewModel(closeRoomPanel, addDetail)
+        viewModel = RoomDetailsViewModel(closeRoomPanel, addDetail, removeDetail)
     }
 
     @Test
