@@ -21,7 +21,10 @@ describe('GetProperties', () => {
 
     expect(callApi).toHaveBeenCalledWith({
       method: 'GET',
-      endpoint: 'owner/properties/'
+      endpoint: 'owner/properties/',
+      params: {
+        archive: false
+      }
     })
     expect(result).toEqual(mockProperties)
   })
@@ -37,7 +40,10 @@ describe('GetProperties', () => {
 
     expect(callApi).toHaveBeenCalledWith({
       method: 'GET',
-      endpoint: 'owner/properties/'
+      endpoint: 'owner/properties/',
+      params: {
+        archive: false
+      }
     })
 
     consoleErrorSpy.mockRestore()

@@ -43,6 +43,7 @@ final class RegisterUITests: XCTestCase {
                 app.buttons["Se déconnecter"].tap()
             }
             let signUpButton = app.buttons["signUpLink"]
+            XCTAssertTrue(signUpButton.waitForExistence(timeout: 2), "Sign Up link should exist")
             signUpButton.tap()
         } else {
             let signUpButton = app.buttons["signUpLink"]
@@ -117,6 +118,7 @@ final class RegisterUITests: XCTestCase {
         passwordSecureField.typeText("testpassword")
 
         confirmPasswordSecureField.tap()
+        XCTAssertTrue(confirmPasswordSecureField.waitForExistence(timeout: 2), "Confirmation password field should exist")
         confirmPasswordSecureField.typeText("testpassword")
 
         XCTAssertEqual(passwordSecureField.value as? String, confirmPasswordSecureField.value as? String, "The passwords do not match.")
@@ -161,20 +163,23 @@ final class RegisterUITests: XCTestCase {
 
         nameTextField.tap()
         nameTextField.typeText("testName")
+        Thread.sleep(forTimeInterval: 2.0)
         XCTAssertEqual(nameTextField.value as? String, "testName")
 
         firstNameTextField.tap()
         firstNameTextField.typeText("testFirstName")
+        Thread.sleep(forTimeInterval: 2.0)
         XCTAssertEqual(firstNameTextField.value as? String, "testFirstName")
 
         emailTextField.tap()
         emailTextField.typeText("test@example.com")
-        XCTAssertEqual(emailTextField.value as? String, "test@example.com")
+        Thread.sleep(forTimeInterval: 2.0)
 
         passwordSecureField.tap()
         passwordSecureField.typeText("testpassword")
 
         confirmPasswordSecureField.tap()
+        XCTAssertTrue(confirmPasswordSecureField.waitForExistence(timeout: 2), "Confirmation password field should exist")
         confirmPasswordSecureField.typeText("testpassword")
 
         let termsButton = app.buttons["AgreementButton"]

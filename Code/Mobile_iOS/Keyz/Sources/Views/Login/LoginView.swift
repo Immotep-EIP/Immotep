@@ -82,7 +82,7 @@ struct LoginView: View {
             .frame(maxHeight: .infinity)
             .safeAreaInset(edge: .top) {
                 HStack(spacing: 20) {
-                    Image("immotepLogo")
+                    Image("KeyzLogo")
                         .resizable()
                         .frame(width: 50, height: 50)
                         .padding(.bottom, 40)

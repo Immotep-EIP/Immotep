@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
-    @StateObject private var profileViewModel = ProfileViewModel()
+    @StateObject private var loginViewModel = LoginViewModel()
     @StateObject private var propertyViewModel = PropertyViewModel()
     @AppStorage("lang") var lang: String = "en"
     @State private var selectedTab: Int = 0
@@ -18,7 +18,7 @@ struct ContentView: View {
         if isLoggedIn {
             TabView(selection: $selectedTab) {
                 OverviewView()
-                    .environmentObject(profileViewModel)
+                    .environmentObject(loginViewModel)
                     .tabItem {
                         Image(systemName: "house")
                         Text("Overview".localized())
@@ -27,6 +27,7 @@ struct ContentView: View {
 
                 PropertyView()
                     .environmentObject(propertyViewModel)
+                    .environmentObject(loginViewModel)
                     .tabItem {
                         Image(systemName: "building.2")
                         Text("Real Property".localized())
@@ -41,6 +42,7 @@ struct ContentView: View {
                     .tag(2)
 
                 SettingsView()
+                    .environmentObject(loginViewModel)
                     .tabItem {
                         Image(systemName: "gearshape")
                         Text("Settings".localized())
@@ -48,8 +50,16 @@ struct ContentView: View {
                     .tag(3)
             }
             .id(lang)
+            .accentColor(Color("LightBlue"))
         } else {
             LoginView()
+                .environmentObject(loginViewModel)
         }
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
     }
 }

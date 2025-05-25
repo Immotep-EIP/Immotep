@@ -5,16 +5,18 @@ import { useTranslation } from 'react-i18next'
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
 
-import '@/App.css'
 import { useAuth } from '@/context/authContext'
-import { UserToken } from '@/interfaces/User/User'
-import backgroundImg from '@/assets/images/buildingBackground.png'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
-import PageMeta from '@/components/PageMeta/PageMeta'
-import DividedPage from '@/components/DividedPage/DividedPage'
-import PageTitle from '@/components/PageText/Title'
-import style from './Login.module.css'
+import useNavigation from '@/hooks/Navigation/useNavigation'
+import DividedPage from '@/components/layout/DividedPage/DividedPage'
+import PageMeta from '@/components/ui/PageMeta/PageMeta'
+import PageTitle from '@/components/ui/PageText/Title'
 import AcceptInvite from '@/services/api/Tenant/AcceptInvite'
+
+import { UserTokenPayload } from '@/interfaces/User/User'
+
+import backgroundImg from '@/assets/images/building.jpg'
+import '@/App.css'
+import style from './Login.module.css'
 
 const Login: React.FC = () => {
   const {
@@ -25,7 +27,7 @@ const Login: React.FC = () => {
   } = useNavigation()
   const { login } = useAuth()
   const [loading, setLoading] = useState(false)
-  const { contractId } = useParams()
+  const { leaseId } = useParams()
 
   const { t } = useTranslation()
 
@@ -49,7 +51,7 @@ const Login: React.FC = () => {
     }
   }, [])
 
-  const onFinish: FormProps<UserToken>['onFinish'] = async values => {
+  const onFinish: FormProps<UserTokenPayload>['onFinish'] = async values => {
     setLoading(true)
     try {
       const loginValues = {
@@ -60,8 +62,8 @@ const Login: React.FC = () => {
       await login(loginValues)
       message.success(t('pages.login.connection_success'))
       setLoading(false)
-      if (contractId) {
-        await AcceptInvite(contractId)
+      if (leaseId) {
+        await AcceptInvite(leaseId)
         goToSuccessLoginTenant()
       } else {
         goToOverview()
@@ -75,7 +77,7 @@ const Login: React.FC = () => {
     }
   }
 
-  const onFinishFailed: FormProps<UserToken>['onFinishFailed'] = () => {
+  const onFinishFailed: FormProps<UserTokenPayload>['onFinishFailed'] = () => {
     message.error(t('pages.login.fill_fields'))
   }
 

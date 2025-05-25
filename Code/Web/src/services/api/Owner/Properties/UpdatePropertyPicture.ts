@@ -1,11 +1,17 @@
 import callApi from '@/services/api/apiCaller'
 
-const UpdatePropertyPicture = async (id: string, pictureData: string) => {
+import endpoints from '@/enums/EndPointEnum'
+import { PropertyDetails } from '@/interfaces/Property/Property'
+
+const UpdatePropertyPicture = async (
+  id: string,
+  pictureData: string
+): Promise<PropertyDetails> => {
   try {
-    return await callApi({
+    return await callApi<PropertyDetails, { data: string }>({
       method: 'PUT',
-      endpoint: `owner/properties/${id}/picture/`,
-      data: JSON.stringify({ data: pictureData }),
+      endpoint: endpoints.owner.properties.picture(id),
+      body: JSON.stringify({ data: pictureData })
     })
   } catch (error) {
     console.error('Error updating property picture:', error)

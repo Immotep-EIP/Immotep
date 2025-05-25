@@ -17,11 +17,14 @@ describe('GetRoomsByProperty', () => {
   it('should fetch rooms successfully', async () => {
     ;(callApi as jest.Mock).mockResolvedValue(mockResponse)
 
-    const result = await GetRoomsByProperty(mockPropertyId)
+    const result = await GetRoomsByProperty({ propertyId: mockPropertyId })
 
     expect(callApi).toHaveBeenCalledWith({
       method: 'GET',
-      endpoint: `owner/properties/${mockPropertyId}/rooms/`
+      endpoint: `owner/properties/${mockPropertyId}/rooms/`,
+      params: {
+        archive: false
+      }
     })
     expect(result).toEqual(mockResponse)
   })
@@ -33,12 +36,15 @@ describe('GetRoomsByProperty', () => {
       .mockImplementation(() => {})
     ;(callApi as jest.Mock).mockRejectedValue(mockError)
 
-    await expect(GetRoomsByProperty(mockPropertyId)).rejects.toThrow(
-      'Failed to fetch'
-    )
+    await expect(
+      GetRoomsByProperty({ propertyId: mockPropertyId })
+    ).rejects.toThrow('Failed to fetch')
     expect(callApi).toHaveBeenCalledWith({
       method: 'GET',
-      endpoint: `owner/properties/${mockPropertyId}/rooms/`
+      endpoint: `owner/properties/${mockPropertyId}/rooms/`,
+      params: {
+        archive: false
+      }
     })
 
     consoleErrorSpy.mockRestore()

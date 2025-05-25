@@ -36,7 +36,7 @@ describe('InviteTenants', () => {
     expect(mockedCallApi).toHaveBeenCalledWith({
       method: 'POST',
       endpoint: `owner/properties/${tenantInfo.propertyId}/send-invite/`,
-      data: tenantInfo
+      body: tenantInfo
     })
 
     expect(result).toEqual(mockResponse)

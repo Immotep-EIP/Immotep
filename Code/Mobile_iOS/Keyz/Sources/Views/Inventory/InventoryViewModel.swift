@@ -60,8 +60,8 @@ class InventoryViewModel: ObservableObject {
         await roomManager?.fetchRooms()
     }
 
-    func addRoom(name: String) async throws {
-        try await roomManager?.addRoom(name: name)
+    func addRoom(name: String, type: String) async throws {
+        try await roomManager?.addRoom(name: name, type: type)
     }
 
     func deleteRoom(_ room: LocalRoom) async {

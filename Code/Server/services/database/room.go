@@ -9,6 +9,7 @@ func CreateRoom(room db.RoomModel, proppertyId string) *db.RoomModel {
 	pdb := services.DBclient
 	newRoom, err := pdb.Client.Room.CreateOne(
 		db.Room.Name.Set(room.Name),
+		db.Room.Type.Set(room.Type),
 		db.Room.Property.Link(db.Property.ID.Equals(proppertyId)),
 	).Exec(pdb.Context)
 	if err != nil {
@@ -20,7 +21,15 @@ func CreateRoom(room db.RoomModel, proppertyId string) *db.RoomModel {
 	return newRoom
 }
 
-func GetRoomByPropertyID(propertyID string, archived bool) []db.RoomModel {
+func MockCreateRoom(c *services.PrismaDB, room db.RoomModel) db.RoomMockExpectParam {
+	return c.Client.Room.CreateOne(
+		db.Room.Name.Set(room.Name),
+		db.Room.Type.Set(room.Type),
+		db.Room.Property.Link(db.Property.ID.Equals("1")),
+	)
+}
+
+func GetRoomsByPropertyID(propertyID string, archived bool) []db.RoomModel {
 	pdb := services.DBclient
 	rooms, err := pdb.Client.Room.FindMany(
 		db.Room.PropertyID.Equals(propertyID),
@@ -30,6 +39,13 @@ func GetRoomByPropertyID(propertyID string, archived bool) []db.RoomModel {
 		panic(err)
 	}
 	return rooms
+}
+
+func MockGetRoomsByPropertyID(c *services.PrismaDB, archived bool) db.RoomMockExpectParam {
+	return c.Client.Room.FindMany(
+		db.Room.PropertyID.Equals("1"),
+		db.Room.Archived.Equals(archived),
+	)
 }
 
 func GetRoomByID(id string) *db.RoomModel {
@@ -46,6 +62,12 @@ func GetRoomByID(id string) *db.RoomModel {
 	return room
 }
 
+func MockGetRoomByID(c *services.PrismaDB) db.RoomMockExpectParam {
+	return c.Client.Room.FindUnique(
+		db.Room.ID.Equals("1"),
+	)
+}
+
 func ToggleArchiveRoom(roomId string, archive bool) *db.RoomModel {
 	pdb := services.DBclient
 	archivedRoom, err := pdb.Client.Room.FindUnique(
@@ -60,4 +82,28 @@ func ToggleArchiveRoom(roomId string, archive bool) *db.RoomModel {
 		panic(err)
 	}
 	return archivedRoom
+}
+
+func MockArchiveRoom(c *services.PrismaDB) db.RoomMockExpectParam {
+	return c.Client.Room.FindUnique(
+		db.Room.ID.Equals("1"),
+	).Update(
+		db.Room.Archived.Set(true),
+	)
+}
+
+func DeleteRoom(id string) {
+	pdb := services.DBclient
+	_, err := pdb.Client.Room.FindUnique(
+		db.Room.ID.Equals(id),
+	).Delete().Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func MockDeleteRoom(c *services.PrismaDB) db.RoomMockExpectParam {
+	return c.Client.Room.FindUnique(
+		db.Room.ID.Equals("1"),
+	).Delete()
 }

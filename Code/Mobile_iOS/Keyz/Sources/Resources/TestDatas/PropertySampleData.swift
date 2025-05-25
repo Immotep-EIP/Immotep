@@ -259,5 +259,6 @@ let exampleDataProperty = Property(
                 )
             ]
         )
-    ]
+    ],
+    damages: []
 )

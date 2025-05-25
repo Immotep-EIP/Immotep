@@ -13,7 +13,7 @@ final class InventoryStuffViewUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app.launchArguments = ["-skipLogin", "-inventoryStuffView"]
-        print("XCUITest - Launch arguments set to: \(app.launchArguments)")
+        Thread.sleep(forTimeInterval: 1.0)
         app.launch()
     }
 

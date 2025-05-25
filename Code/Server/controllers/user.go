@@ -135,7 +135,7 @@ func UpdateCurrentUserProfile(c *gin.Context) {
 		return
 	}
 
-	newUser := database.UpdateUser(claims["id"], req)
+	newUser := database.UpdateUser(*user, req)
 	if newUser == nil {
 		utils.SendError(c, http.StatusConflict, utils.EmailAlreadyExists, nil)
 		return

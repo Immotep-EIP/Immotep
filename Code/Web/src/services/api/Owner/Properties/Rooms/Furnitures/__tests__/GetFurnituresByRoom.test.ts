@@ -30,11 +30,17 @@ describe('GetFurnituresByRoom', () => {
   it('should fetch furnitures successfully', async () => {
     ;(callApi as jest.Mock).mockResolvedValue(mockResponse)
 
-    const result = await GetFurnituresByRoom(mockPropertyId, mockRoomId)
+    const result = await GetFurnituresByRoom({
+      propertyId: mockPropertyId,
+      roomId: mockRoomId
+    })
 
     expect(callApi).toHaveBeenCalledWith({
       method: 'GET',
-      endpoint: `owner/properties/${mockPropertyId}/rooms/${mockRoomId}/furnitures/`
+      endpoint: `owner/properties/${mockPropertyId}/rooms/${mockRoomId}/furnitures/`,
+      params: {
+        archive: false
+      }
     })
     expect(result).toEqual(mockResponse)
   })
@@ -47,12 +53,17 @@ describe('GetFurnituresByRoom', () => {
     ;(callApi as jest.Mock).mockRejectedValue(mockError)
 
     await expect(
-      GetFurnituresByRoom(mockPropertyId, mockRoomId)
+      GetFurnituresByRoom({
+        propertyId: mockPropertyId,
+        roomId: mockRoomId
+      })
     ).rejects.toThrow('Failed to fetch')
-
     expect(callApi).toHaveBeenCalledWith({
       method: 'GET',
-      endpoint: `owner/properties/${mockPropertyId}/rooms/${mockRoomId}/furnitures/`
+      endpoint: `owner/properties/${mockPropertyId}/rooms/${mockRoomId}/furnitures/`,
+      params: {
+        archive: false
+      }
     })
 
     consoleErrorSpy.mockRestore()

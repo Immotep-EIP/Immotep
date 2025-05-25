@@ -29,6 +29,7 @@
 "started_on" = "Commencé le %@";
 "Available" = "Disponible";
 "Busy" = "Occupé";
+"Unavailable" = "Indisponible";
 
 "New Property" = "Nouvelle propriété";
 "Click on the image to change" = "Cliquez sur l'image pour la changer";
@@ -43,24 +44,49 @@
 "Start Inventory" = "Commencer l'état des lieux";
 "No tenant assigned" = "Pas de locataire alloué";
 "area" = "Surface : %@ m²";
+"Area" = "Surface";
+"Rent /month" = "Loyer /mois";
+"Tenant(s)" = "Propriétaire(s)";
 "start_date" = "Date de début : %@";
 "No start date assigned" = "Pas de date renseignée";
-"rent_month" = "Loyer : %d€";
+"rent_month" = "Loyer : %d$";
 "end_date" = "Fin : %@";
 "No end date assigned" = "Pas de date renseignée";
-"deposit_value" = "Caution : %d€";
+"deposit_value" = "Caution : %d$";
+
+"Invite Tenant" = "Inviter un locataire";
+"End Lease" = "Mettre fin à la location";
+"Cancel Invite" = "Annuler l'invitation";
+"Edit Property" = "Modifier la propriété";
+"Delete Property" = "Supprimer la propriété";
+"Confirm" = "Confirmer";
+"Cancel" = "Annuler";
+
+"Are you sure you want to cancel the pending invite?" = "Êtes-vous sûr de vouloir annuler l'invitation en cours ?";
+"Are you sure you want to end the current lease?" = "Êtes-vous sûr de vouloir mettre fin à la location en cours ?";
+"Are you sure you want to delete this property?" = "Êtes-vous sûr de vouloir supprimer cette propriété ?";
+
+"Send Invitation" = "Envoyer une invitation";
+"Invite Tenant to %@" = "Inviter un locataire dans %@";
+"Tenant Email" = "Mail du locataire";
+"Start Date" = "Date de début";
+"End Date (Optional)" = "Date de fin (facultatif)";
+"Error inviting tenant: %@" = "Erreur durant l'invitation du locataire: %@";
 
 "Messages" = "Messages";
 
 "Settings" = "Paramètres";
-"Language" = "Langage";
+"User information" = "Informations utilisateur";
+"Language" = "Langue";
 "Select Language" = "Selectionner une langue";
 "English" = "English";
 "Français" = "Français";
 "Logout" = "Se déconnecter";
+"Edit" = "Modifier";
 "theme_system" = "Système";
 "theme_light" = "Clair";
 "theme_dark" = "Sombre";
+"Theme" = "Thème";
 
 "First name*" = "Prénom*";
 "Name*" = "Nom*";
@@ -75,6 +101,7 @@
 "Enter your password confirmation" = "Confirmez votre mot de passe";
 
 "Name" = "Nom";
+"First Name" = "Prénom";
 "Address" = "Adresse";
 "City" = "Ville";
 "Postal Code" = "Code postal";
@@ -101,3 +128,40 @@
 "You must agree to the terms and conditions." = "Vous devez accepter les termes et conditions.";
 "Please enter a valid email address." = "Veuillez entrer une adresse mail valide.";
 "Please enter both email and password." = "Veuillez entrer un mail et un mot de passe valides.";
+
+"Start the entry/exit inventory" = "Démarrer l'état des lieux d'entrée/sortie";
+"Tabs" = "Onglets";
+"Details" = "Détails";
+"Documents" = "Documents";
+"Damages" = "Sinistres";
+"no_data" = "----";
+"no_damages_reported" = "Aucun sinistre signalé";
+"Unable to load PDF" = "Impossible de charger le PDF";
+"No active lease" = "Pas de contrat actif";
+
+"dressing" = "Dressing";
+"laundryroom" = "Buanderie";
+"bedroom" = "Chambre à coucher";
+"playroom" = "Salle de jeux";
+"bathroom" = "Salle de bain";
+"toilet" = "Toilettes";
+"livingroom" = "Salon";
+"diningroom" = "Salle à manger";
+"kitchen" = "Cuisine";
+"hallway" = "Couloir";
+"balcony" = "Balcon";
+"cellar" = "Cave";
+"garage" = "Garage";
+"storage" = "Débarras";
+"office" = "Bureau";
+"other" = "Autre";
+"Enter room name" = "Entrez un nom de pièce";
+"Room Type" = "Type de pièce";
+
+"Finalize Inventory" = "Finaliser l'état des lieux";
+"Add a Room" = "Ajouter une pièce";
+"Choose a name and type for your new room:" = "Choisir un nom et un type de pièce";
+"Add" = "Ajouter";
+"Delete Room" = "Supprimer une pièce";
+"Are you sure you want to delete the room %@?" = "Êtes-vous sûr de vouloir supprimer la pièce %@ ?";
+"Delete" = "Supprimer";

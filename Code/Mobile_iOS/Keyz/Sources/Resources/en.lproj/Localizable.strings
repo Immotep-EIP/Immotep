@@ -5,7 +5,7 @@
 "Sign Up" = "Sign Up";
 "Registration successful!" = "Registration successful!";
 
-"Welcome back!" = "Welcome back";
+"Welcome back!" = "Welcome back!";
 "Don't have an account ?" = "Don't have an account ?";
 "Forgot password?" = "Forgot password?";
 "Keep me signed in" = "Keep me signed in";
@@ -29,6 +29,7 @@
 "started_on" = "Started on %@";
 "Available" = "Available";
 "Busy" = "Busy";
+"Unavailable" = "Unavailable";
 
 "New Property" = "New Property";
 "Click on the image to change" = "Click on the image to change";
@@ -43,24 +44,49 @@
 "Start Inventory" = "Start Inventory";
 "No tenant assigned" = "No tenant assigned";
 "area" = "Area: %@ m²";
+"Area" = "Area";
+"Rent /month" = "Rent /month";
+"Tenant(s)" = "Tenant(s)";
 "start_date" = "Start date: %@";
 "No start date assigned" = "No start date assigned";
-"rent_month" = "Rent: %d€";
+"rent_month" = "Rent: %d$";
 "end_date" = "End: %@";
 "No end date assigned" = "No end date assigned";
-"deposit_value" = "Deposit: %d€";
+"deposit_value" = "Deposit: %d$";
+
+"Invite Tenant" = "Invite Tenant";
+"End Lease" = "End Lease";
+"Cancel Invite" = "Cancel Invite";
+"Edit Property" = "Edit Property";
+"Delete Property" = "Delete Property";
+"Confirm" = "Confirm";
+"Cancel" = "Cancel";
+
+"Are you sure you want to cancel the pending invite?" = "Are you sure you want to cancel the pending invite?";
+"Are you sure you want to end the current lease?" = "Are you sure you want to end the current lease?";
+"Are you sure you want to delete this property?" = "Are you sure you want to delete this property?";
+
+"Send Invitation" = "Send Invitation";
+"Invite Tenant to %@" = "Invite Tenant to %@";
+"Tenant Email" = "Tenant Email";
+"Start Date" = "Start Date";
+"End Date (Optional)" = "End Date (Optional)";
+"Error inviting tenant: %@" = "Error inviting tenant: %@";
 
 "Messages" = "Messages";
 
 "Settings" = "Settings";
+"User information" = "User information";
 "Language" = "Language";
 "Select Language" = "Select Language";
 "English" = "English";
 "Français" = "Français";
 "Logout" = "Logout";
+"Edit" = "Edit";
 "theme_system" = "System";
 "theme_light" = "Light";
 "theme_dark" = "Dark";
+"Theme" = "Theme";
 
 "First name*" = "First name*";
 "Name*" = "Name*";
@@ -75,6 +101,7 @@
 "Enter your password confirmation" = "Enter your password confirmation";
 
 "Name" = "Name";
+"First Name" = "First Name";
 "Address" = "Address";
 "City" = "City";
 "Postal Code" = "Postal Code";
@@ -101,3 +128,30 @@
 "You must agree to the terms and conditions." = "You must agree to the terms and conditions.";
 "Please enter a valid email address." = "Please enter a valid email address.";
 "Please enter both email and password." = "Please enter both email and password.";
+
+"Start the entry/exit inventory" = "Start the entry/exit inventory";
+"Tabs" = "Tabs";
+"Details" = "Details";
+"Documents" = "Documents";
+"Damages" = "Damages";
+"no_data" = "----";
+"no_damages_reported" = "No damages reported";
+"Unable to load PDF" = "Unable to load PDF";
+"No active lease" = "No active lease";
+
+"dressing" = "Dressing";
+"laundryroom" = "Laundry room";
+"bedroom" = "Bedroom";
+"playroom" = "Play room";
+"bathroom" = "Bathroom";
+"toilet" = "Toilet";
+"livingroom" = "Living room";
+"diningroom" = "Dining room";
+"kitchen" = "Kitchen";
+"hallway" = "Hallway";
+"balcony" = "Balcony";
+"cellar" = "Cellar";
+"garage" = "Garage";
+"storage" = "Storage";
+"office" = "Office";
+"other" = "Other";

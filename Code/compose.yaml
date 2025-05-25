@@ -1,5 +1,18 @@
 name: immotep
 services:
+  showcase:
+    container_name: immotep-showcase
+    build:
+      context: ./ShowcaseKeyz/
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+    # image: mazettt/immotep-showcase:latest
+    restart: always
+    ports:
+      - 3003:3003
+    depends_on:
+      server:
+        condition: service_healthy
   frontend:
     container_name: immotep-frontend
     build:
@@ -12,7 +25,7 @@ services:
       - 3002:3002
     depends_on:
       server:
-        condition: service_started
+        condition: service_healthy
   server:
     container_name: immotep-server
     build: ./Server/
@@ -20,6 +33,24 @@ services:
     restart: always
     ports:
       - 3001:3001
+    env_file: ./Server/.env.docker
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3001/" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+  migrate:
+    container_name: immotep-migrate
+    build:
+      context: ./Server/
+      dockerfile: Dockerfile.migrate
+    # image: mazettt/immotep-migrate:latest
+    restart: "no"
     env_file: ./Server/.env.docker
     depends_on:
       db:

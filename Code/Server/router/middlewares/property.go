@@ -3,12 +3,14 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
-func CheckPropertyOwnership(propertyIdUrlParam string) gin.HandlerFunc {
+func CheckPropertyOwnerOwnership(propertyIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		claims := utils.GetClaims(c)
 		property := database.GetPropertyByID(c.Param(propertyIdUrlParam))
@@ -21,23 +23,41 @@ func CheckPropertyOwnership(propertyIdUrlParam string) gin.HandlerFunc {
 			return
 		}
 
+		c.Set("property", *property)
 		c.Next()
 	}
 }
 
-func CheckRoomOwnership(propertyIdUrlParam string, roomIdUrlParam string) gin.HandlerFunc {
+func GetPropertyByLease() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		lease, _ := c.MustGet("lease").(db.LeaseModel)
+
+		property := database.GetPropertyByID(lease.PropertyID)
+		if property == nil {
+			utils.AbortSendError(c, http.StatusNotFound, utils.PropertyNotFound, nil)
+			return
+		}
+
+		c.Set("property", *property)
+		c.Next()
+	}
+}
+
+func CheckRoomPropertyOwnership(roomIdUrlParam string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		property, _ := c.MustGet("property").(db.PropertyModel)
 		room := database.GetRoomByID(c.Param(roomIdUrlParam))
-		if room == nil || room.PropertyID != c.Param(propertyIdUrlParam) {
+		if room == nil || room.PropertyID != property.ID {
 			utils.AbortSendError(c, http.StatusNotFound, utils.RoomNotFound, nil)
 			return
 		}
 
+		c.Set("room", *room)
 		c.Next()
 	}
 }
 
-func CheckFurnitureOwnership(roomIdUrlParam string, furnitureIdUrlParam string) gin.HandlerFunc {
+func CheckFurnitureRoomOwnership(roomIdUrlParam string, furnitureIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		furniture := database.GetFurnitureByID(c.Param(furnitureIdUrlParam))
 		if furniture == nil || furniture.RoomID != c.Param(roomIdUrlParam) {
@@ -45,46 +65,47 @@ func CheckFurnitureOwnership(roomIdUrlParam string, furnitureIdUrlParam string) 
 			return
 		}
 
+		c.Set("furniture", *furniture)
 		c.Next()
 	}
 }
 
-func CheckInventoryReportOwnership(propertyIdUrlParam string, reportIdUrlParam string) gin.HandlerFunc {
+func CheckInventoryReportPropertyOwnership(reportIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		property, _ := c.MustGet("property").(db.PropertyModel)
+
+		var invrep *db.InventoryReportModel
 		if c.Param(reportIdUrlParam) == "latest" {
-			c.Next()
-			return
+			invrep = database.GetLatestInvReportByProperty(property.ID)
+		} else {
+			invrep = database.GetInvReportByID(c.Param(reportIdUrlParam))
 		}
-		invrep := database.GetInvReportByID(c.Param(reportIdUrlParam))
-		if invrep == nil || invrep.PropertyID != c.Param(propertyIdUrlParam) {
+		if invrep == nil || invrep.Lease().PropertyID != property.ID {
 			utils.AbortSendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
 			return
 		}
 
+		c.Set("invrep", *invrep)
 		c.Next()
 	}
 }
 
-func CheckActiveContract(propertyIdUrlParam string) gin.HandlerFunc {
+func CheckInventoryReportLeaseOwnership(reportIdUrlParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		contract := database.GetCurrentActiveContract(c.Param(propertyIdUrlParam))
-		if contract == nil {
-			utils.AbortSendError(c, http.StatusNotFound, utils.NoActiveContract, nil)
+		lease, _ := c.MustGet("lease").(db.LeaseModel)
+
+		var invrep *db.InventoryReportModel
+		if c.Param(reportIdUrlParam) == "latest" {
+			invrep = database.GetLatestInvReportByLease(lease.ID)
+		} else {
+			invrep = database.GetInvReportByID(c.Param(reportIdUrlParam))
+		}
+		if invrep == nil || invrep.LeaseID != lease.ID {
+			utils.AbortSendError(c, http.StatusNotFound, utils.InventoryReportNotFound, nil)
 			return
 		}
 
-		c.Next()
-	}
-}
-
-func CheckPendingContract(propertyIdUrlParam string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		contract := database.GetCurrentPendingContract(c.Param(propertyIdUrlParam))
-		if contract == nil {
-			utils.AbortSendError(c, http.StatusNotFound, utils.NoPendingContract, nil)
-			return
-		}
-
+		c.Set("invrep", *invrep)
 		c.Next()
 	}
 }

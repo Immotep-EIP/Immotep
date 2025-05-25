@@ -39,10 +39,8 @@
 				Tests/ImmotepTests/MockPropertyViewModel.swift,
 				Tests/ImmotepTests/RegisterUnitTest.swift,
 				Tests/ImmotepUITests/CreatePropertyUITests.swift,
-				Tests/ImmotepUITests/FeaturesUITests/ProfileUITests.swift,
 				Tests/ImmotepUITests/FeaturesUITests/PropertyViewUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,
-				Tests/ImmotepUITests/ImmotepUITestsLaunchTests.swift,
 				Tests/ImmotepUITests/InventoryEntryEvaluationViewUITests.swift,
 				Tests/ImmotepUITests/InventoryExitEvaluationViewUITests.swift,
 				Tests/ImmotepUITests/InventoryRoomViewUITests.swift,
@@ -57,10 +55,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Tests/ImmotepUITests/CreatePropertyUITests.swift,
-				Tests/ImmotepUITests/FeaturesUITests/ProfileUITests.swift,
 				Tests/ImmotepUITests/FeaturesUITests/PropertyViewUITests.swift,
 				Tests/ImmotepUITests/ImmotepUITests.swift,
-				Tests/ImmotepUITests/ImmotepUITestsLaunchTests.swift,
 				Tests/ImmotepUITests/InventoryEntryEvaluationViewUITests.swift,
 				Tests/ImmotepUITests/InventoryExitEvaluationViewUITests.swift,
 				Tests/ImmotepUITests/InventoryRoomViewUITests.swift,
@@ -213,7 +209,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 1630;
 				TargetAttributes = {
 					CAF02E6F2D91D84D00B50B33 = {
 						CreatedOnToolsVersion = 16.2;
@@ -234,6 +230,7 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = CAF02E672D91D84D00B50B33;
 			minimizedProjectReferenceProxies = 1;
@@ -316,6 +313,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -346,6 +344,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -379,6 +378,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -409,6 +409,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -438,10 +439,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Keyz/Sources/Resources/Assets/Assets.xcassets;
-				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Keyz;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access to fill an inventory report with furniture and room photos";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app requires library access to fill an inventory report with furniture and room photos";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -473,10 +475,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Keyz/Sources/Resources/Assets/Assets.xcassets;
-				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Keyz;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access to fill an inventory report with furniture and room photos";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app requires library access to fill an inventory report with furniture and room photos";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -506,7 +509,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
@@ -529,7 +531,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
@@ -551,7 +552,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.keyz-app.KeyzUITests";
@@ -572,7 +572,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5WUZPG35S6;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.keyz-app.KeyzUITests";
