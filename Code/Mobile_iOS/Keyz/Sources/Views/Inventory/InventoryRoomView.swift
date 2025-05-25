@@ -13,7 +13,7 @@ struct InventoryRoomView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                TopBar(title: inventoryViewModel.isEntryInventory ? "Entry Inventory" : "Exit Inventory")
+                TopBar(title: "Keyz")
                 VStack {
                     Spacer()
                     RoomListView(showDeleteConfirmationAlert: $showDeleteConfirmationAlert, roomToDelete: $roomToDelete)
@@ -32,7 +32,7 @@ struct InventoryRoomView: View {
                                 }
                             }
                         }, label: {
-                            Text("Finalize Inventory")
+                            Text("Finalize Inventory".localized())
                                 .padding()
                                 .frame(maxWidth: .infinity)
                                 .background(Color.blue)
@@ -51,17 +51,17 @@ struct InventoryRoomView: View {
             }
 
             if showAddRoomAlert {
-                CustomAlert(
+                CustomAlertWithTextAndDropdown(
                     isActive: $showAddRoomAlert,
                     textFieldInput: $newRoomName,
-                    title: "Add a Room",
-                    message: "Choose a name for your new room:",
-                    buttonTitle: "Add",
-                    secondaryButtonTitle: "Cancel",
-                    action: {
+                    title: "Add a Room".localized(),
+                    message: "Choose a name and type for your new room:".localized(),
+                    buttonTitle: "Add".localized(),
+                    secondaryButtonTitle: "Cancel".localized(),
+                    action: { roomName, roomType in
                         Task {
                             do {
-                                try await inventoryViewModel.addRoom(name: newRoomName)
+                                try await inventoryViewModel.addRoom(name: roomName, type: roomType)
                                 newRoomName = ""
                             } catch {
                                 print("Error adding room: \(error.localizedDescription)")
@@ -78,10 +78,10 @@ struct InventoryRoomView: View {
             if showDeleteConfirmationAlert {
                 CustomAlertTwoButtons(
                     isActive: $showDeleteConfirmationAlert,
-                    title: "Delete Room",
-                    message: roomToDelete != nil ? "Are you sure you want to delete the room \(roomToDelete!.name)?" : "",
-                    buttonTitle: "Delete",
-                    secondaryButtonTitle: "Cancel",
+                    title: "Delete Room".localized(),
+                    message: roomToDelete != nil ? "Are you sure you want to delete the room \(roomToDelete!.name)?".localized() : "",
+                    buttonTitle: "Delete".localized(),
+                    secondaryButtonTitle: "Cancel".localized(),
                     action: {
                         if let roomToDelete = roomToDelete {
                             Task {
@@ -98,7 +98,7 @@ struct InventoryRoomView: View {
             if showCompletionMessage, let message = inventoryViewModel.completionMessage {
                 CustomAlertTwoButtons(
                     isActive: $showCompletionMessage,
-                    title: inventoryViewModel.isEntryInventory ? "Entry Inventory" : "Exit Inventory",
+                    title: inventoryViewModel.isEntryInventory ? "Entry Inventory".localized() : "Exit Inventory".localized(),
                     message: message,
                     buttonTitle: "OK",
                     secondaryButtonTitle: nil,

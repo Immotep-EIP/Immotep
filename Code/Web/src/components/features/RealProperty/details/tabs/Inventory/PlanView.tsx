@@ -1,12 +1,15 @@
 import React from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
-import { Typography, Badge, Button, Popover, Space, Tag } from 'antd'
-import { HomeOutlined, PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
-import { Room } from '@/interfaces/Property/Inventory/Room/Room'
+import { Typography, Badge, Button, Popover, Space, Tag } from 'antd'
+import { HomeOutlined, PlusOutlined } from '@ant-design/icons'
+
 import { getRoomColor, isValidRoomType } from '@/utils/types/roomTypes'
+
+import { Room } from '@/interfaces/Property/Inventory/Room/Room'
 import { PlanViewProps } from '@/interfaces/Property/Inventory/Views/PlanView'
+
 import style from './PlanView.module.css'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)

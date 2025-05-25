@@ -84,7 +84,7 @@ class RoomManager {
         }
     }
 
-    func addRoom(name: String) async throws {
+    func addRoom(name: String, type: String) async throws {
         guard let viewModel = viewModel else { return }
         guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
@@ -94,7 +94,10 @@ class RoomManager {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve token"])
         }
 
-        let body: [String: Any] = ["name": name]
+        let body: [String: Any] = [
+            "name": name,
+            "type": type
+        ]
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -116,15 +119,10 @@ class RoomManager {
             }
 
             let decoder = JSONDecoder()
-            let newRoomResponse = try decoder.decode(RoomResponse.self, from: data)
+            let idResponse = try decoder.decode(IdResponse.self, from: data)
 
-            let newLocalRoom = LocalRoom(
-                id: newRoomResponse.id,
-                name: newRoomResponse.name,
-                checked: false,
-                inventory: []
-            )
-            viewModel.localRooms.append(newLocalRoom)
+            // Since the API only returns the ID, fetch the updated room list to get the full room details
+            await fetchRooms()
         } catch {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Error creating room: \(error.localizedDescription)"])
         }
@@ -154,7 +152,6 @@ class RoomManager {
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: body)
             urlRequest.httpBody = jsonData
-            print("Request body: \(String(data: jsonData, encoding: .utf8) ?? "Invalid JSON")")
         } catch {
             print("error: \(error.localizedDescription)")
 //            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to serialize request body: \(error.localizedDescription)".localized()])

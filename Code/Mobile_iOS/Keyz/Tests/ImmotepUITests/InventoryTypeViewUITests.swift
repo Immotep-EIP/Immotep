@@ -15,6 +15,7 @@ final class InventoryTypeViewUITests: XCTestCase {
         continueAfterFailure = false
         app.launchArguments = ["-skipLogin"]
         app.launchArguments += ["-inventoryTypeView"]
+        Thread.sleep(forTimeInterval: 1.0)
         app.launch()
     }
 

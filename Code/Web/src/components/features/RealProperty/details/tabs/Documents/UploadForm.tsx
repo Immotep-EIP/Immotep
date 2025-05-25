@@ -1,7 +1,8 @@
 import React from 'react'
-import { Form, Input, Upload, Button, FormInstance } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+
+import { Form, Input, Upload, Button, FormInstance } from 'antd'
 
 const UploadForm: React.FC<{ form: FormInstance }> = ({ form }) => {
   const { t } = useTranslation()

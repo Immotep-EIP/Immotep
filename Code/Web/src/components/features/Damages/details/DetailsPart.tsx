@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
+
 import { Image, Spin, Button, Modal, DatePicker, Space } from 'antd'
 import { EyeOutlined, CalendarOutlined } from '@ant-design/icons'
-import { useLocation } from 'react-router-dom'
 import dayjs from 'dayjs'
-import DamageHeader from './DamageHeader'
-import style from './DetailsPart.module.css'
+
+import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
 import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
 import base64ToFileAsString from '@/utils/base64/baseToFileAsString'
 import useDamages from '@/hooks/Property/useDamages'
 import useProperties from '@/hooks/Property/useProperties'
-import PriorityTag from '@/components/common/PriorityTag'
-import DamageStatusTag from '@/components/common/DamageStatusTag'
-import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
+import StatusTag from '@/components/common/Tag/StatusTag'
+import DamageHeader from './DamageHeader'
+
+import style from './DetailsPart.module.css'
 
 const DetailsPart: React.FC = () => {
   const { t } = useTranslation()
@@ -30,9 +32,6 @@ const DetailsPart: React.FC = () => {
     }
     id = idFromUrl
     damageId = damageIdFromUrl
-
-    console.log('id', id)
-    console.log('damageId', damageId)
   }
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const { propertyDetails: propertyData } = useProperties(id)
@@ -112,23 +111,59 @@ const DetailsPart: React.FC = () => {
                   subtitleKey={t('pages.damage_details.priority')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
                 >
-                  <PriorityTag priority={damage?.priority} />
+                  <StatusTag
+                    value={damage.priority}
+                    colorMap={{
+                      urgent: 'red',
+                      high: 'red',
+                      medium: 'yellow',
+                      low: 'green'
+                    }}
+                    i18nPrefix="pages.real_property_details.tabs.damage.priority"
+                    defaultColor="gray"
+                  />
                 </SubtitledElement>
                 <SubtitledElement
                   subtitleKey={t('pages.damage_details.fix_status')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
                 >
-                  <DamageStatusTag status={damage.fix_status} />
+                  <StatusTag
+                    value={damage.fix_status}
+                    colorMap={{
+                      pending: 'red',
+                      planned: 'orange',
+                      awaiting_owner_confirmation: 'blue',
+                      awaiting_tenant_confirmation: 'purple',
+                      fixed: 'green'
+                    }}
+                    i18nPrefix="pages.real_property_details.tabs.damage.status"
+                    defaultColor="gray"
+                  />
                 </SubtitledElement>
               </div>
 
               <div className={style.rowContainer}>
+                <SubtitledElement
+                  subtitleKey={t('pages.damage_details.property_name')}
+                  subTitleStyle={{ marginBottom: '0.5rem' }}
+                >
+                  {damage?.property_name || '-'}
+                </SubtitledElement>
+                <SubtitledElement
+                  subtitleKey={t('pages.damage_details.room_name')}
+                  subTitleStyle={{ marginBottom: '0.5rem' }}
+                >
+                  {damage?.room_name || '-'}
+                </SubtitledElement>
                 <SubtitledElement
                   subtitleKey={t('pages.damage_details.tenant_name')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
                 >
                   {damage.tenant_name}
                 </SubtitledElement>
+              </div>
+
+              <div className={style.rowContainer}>
                 <SubtitledElement
                   subtitleKey={t('pages.damage_details.created_at')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}
@@ -161,13 +196,6 @@ const DetailsPart: React.FC = () => {
                 </SubtitledElement>
               </div>
               <div className={style.rowContainer}>
-                <SubtitledElement
-                  subtitleKey={t('pages.damage_details.room_name')}
-                  subTitleStyle={{ marginBottom: '0.5rem' }}
-                >
-                  {damage?.room_name ||
-                    t('pages.real_property_details.tabs.damage.unknown_room')}
-                </SubtitledElement>
                 <SubtitledElement
                   subtitleKey={t('pages.damage_details.comment')}
                   subTitleStyle={{ marginBottom: '0.5rem' }}

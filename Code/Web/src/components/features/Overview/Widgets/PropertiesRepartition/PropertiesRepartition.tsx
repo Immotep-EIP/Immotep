@@ -1,10 +1,12 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { LoadingOutlined } from '@ant-design/icons'
 
-import { useTranslation } from 'react-i18next'
+import { DashboardProperties } from '@/interfaces/Dashboard/Dashboard'
+
 import PropertiesIcon from '@/assets/icons/realProperty.svg'
 import style from './PropertiesRepartition.module.css'
-import { DashboardProperties } from '@/interfaces/Dashboard/Dashboard'
 
 interface PropertiesRepartitionProps {
   properties: DashboardProperties | null

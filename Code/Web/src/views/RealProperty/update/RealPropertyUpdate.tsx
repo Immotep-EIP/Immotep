@@ -3,11 +3,13 @@ import { Form, Button, Modal, message } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import useProperties from '@/hooks/Property/useProperties'
-import { RealPropertyUpdateProps } from '@/interfaces/Property/Property'
-import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import useImageUpload from '@/hooks/Image/useImageUpload'
 import useImageCache from '@/hooks/Image/useImageCache'
+import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
+
+import { RealPropertyUpdateProps } from '@/interfaces/Property/Property'
+
 import style from './RealPropertyUpdate.module.css'
 
 const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({

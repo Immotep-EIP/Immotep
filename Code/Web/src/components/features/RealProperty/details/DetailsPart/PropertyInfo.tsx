@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next'
+
 import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
+
 import { PropertyDetails } from '@/interfaces/Property/Property'
+
 import style from './DetailsPart.module.css'
 
 const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {

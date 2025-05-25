@@ -96,8 +96,8 @@ struct TokenStorage {
 
     static func extractExpiryDate(from data: Data) throws -> TimeInterval {
         if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-           let expiresIn = json["expires_in"] as? TimeInterval {
-            return expiresIn
+           let expiresIn = json["expires_in"] as? Int {
+            return TimeInterval(expiresIn)
         } else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse expiry date from response."])
         }
@@ -113,7 +113,7 @@ struct TokenStorage {
         }
 
         do {
-            let (newAccessToken, _) = try await AuthService.shared.requestToken(
+            let (newAccessToken, _, _, _) = try await AuthService.shared.requestToken(
                 grantType: "refresh_token",
                 refreshToken: refreshToken,
                 keepMeSignedIn: TokenStorage.keepMeSignedIn()

@@ -1,10 +1,13 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
-import style from './DetailsPart.module.css'
+
 import PageTitle from '@/components/ui/PageText/Title'
-import returnIcon from '@/assets/icons/retour.svg'
+
 import NavigationEnum from '@/enums/NavigationEnum'
+
+import returnIcon from '@/assets/icons/retour.svg'
+import style from './DetailsPart.module.css'
 
 const DamageHeader: React.FC = () => {
   const { t } = useTranslation()

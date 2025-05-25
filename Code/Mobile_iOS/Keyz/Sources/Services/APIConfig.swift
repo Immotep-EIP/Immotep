@@ -14,9 +14,9 @@ enum AppEnvironment {
     var baseURL: URL {
         switch self {
         case .local:
-            return URL(string: "http://localhost:3001/api/v1")!
+            return URL(string: "http://localhost:3001/v1")!
         case .online:
-            return URL(string: "https://dev.backend.immotep.mazettt.fr/api/v1")!
+            return URL(string: "https://dev.space.keyz-app.fr/api/v1")!
         }
     }
 }

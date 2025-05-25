@@ -1,10 +1,14 @@
 import React, { memo } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import PropTypes from 'prop-types'
 import { Badge } from 'antd'
-import { useTranslation } from 'react-i18next'
-import defaultHouse from '@/assets/images/DefaultHouse.jpg'
-import { TenantStatusEnum } from '@/enums/PropertyEnum'
+
 import { PropertyImageProps } from '@/interfaces/Property/Property'
+
+import { TenantStatusEnum } from '@/enums/PropertyEnum'
+
+import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 import style from './DetailsPart.module.css'
 
 const PropertyImage: React.FC<PropertyImageProps> = memo(

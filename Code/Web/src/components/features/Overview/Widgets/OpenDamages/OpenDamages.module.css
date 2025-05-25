@@ -55,7 +55,7 @@
 }
 
 .dateText {
-  width: 100%;
+  width: 40%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -80,10 +80,33 @@
 }
 
 .damageCommentWithoutBadge {
-  margin-left: 10px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: #000;
 }
 
 .damageInformationsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.damageInfosContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 60%;
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+}
+
+.damageCommentContainer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

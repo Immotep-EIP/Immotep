@@ -1,5 +1,6 @@
-import { Result } from 'antd'
 import { useTranslation } from 'react-i18next'
+
+import { Result } from 'antd'
 
 import logo from '@/assets/images/KeyzLogo.svg'
 import style from './SuccesPageRegisterTenant.module.css'

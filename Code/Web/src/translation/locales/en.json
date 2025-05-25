@@ -373,6 +373,9 @@
       "loading": "Loading...",
       "loading_data": "Loading data...",
       "no_data": "No data available"
+    },
+    "soon_available": {
+      "title": "This feature will be available soon"
     }
   },
   "pages": {
@@ -506,6 +509,7 @@
       "tenant_name": "Tenant name",
       "fix_planned_at": "Intervention date",
       "fix_status": "Intervention status",
+      "property_name": "Property name",
       "update_success": "Damage updated successfully",
       "update_error": "Error while updating damage",
       "at": "at",

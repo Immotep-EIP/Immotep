@@ -51,13 +51,32 @@ describe('useNavigation', () => {
   it('should navigate to real property details page with id', () => {
     const { result } = renderHook(() => useNavigation())
     const testId = '123'
-    result.current.goToRealPropertyDetails(testId)
-    expect(mockNavigate).toHaveBeenCalledWith(
-      NavigationEnum.REAL_PROPERTY_DETAILS,
-      {
-        state: { id: testId }
-      }
+    // Simuler une route avec un placeholder :id
+    const expectedRoute = NavigationEnum.REAL_PROPERTY_DETAILS.replace(
+      ':id',
+      testId
     )
+
+    result.current.goToRealPropertyDetails(testId)
+    expect(mockNavigate).toHaveBeenCalledWith(expectedRoute, {
+      state: { id: testId }
+    })
+  })
+
+  it('should navigate to damage details page with property id and damage id', () => {
+    const { result } = renderHook(() => useNavigation())
+    const propertyId = '123'
+    const damageId = '456'
+    // Simuler une route avec deux placeholders :id et :damageId
+    const expectedRoute = NavigationEnum.DAMAGE_DETAILS.replace(
+      ':id',
+      propertyId
+    ).replace(':damageId', damageId)
+
+    result.current.goToDamageDetails(propertyId, damageId)
+    expect(mockNavigate).toHaveBeenCalledWith(expectedRoute, {
+      state: { id: propertyId, damageId }
+    })
   })
 
   it('should navigate to messages page', () => {

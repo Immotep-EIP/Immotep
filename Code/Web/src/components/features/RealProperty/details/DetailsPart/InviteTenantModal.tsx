@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import {
   Modal,
   Form,
@@ -8,14 +10,14 @@ import {
   FormProps,
   message
 } from 'antd'
-import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
+
+import InviteTenants from '@/services/api/Tenant/InviteTenant.ts'
 
 import {
   InviteTenant,
   InviteTenantModalProps
 } from '@/interfaces/Tenant/InviteTenant.ts'
-import InviteTenants from '@/services/api/Tenant/InviteTenant.ts'
 
 const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
   isOpen,

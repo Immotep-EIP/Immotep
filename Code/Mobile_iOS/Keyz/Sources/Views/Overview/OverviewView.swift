@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct OverviewView: View {
-    @StateObject private var viewModel = ProfileViewModel()
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
 
     var body: some View {
         NavigationStack {
             VStack {
-                TopBar(title: "Immotep")
+                TopBar(title: "Keyz")
                 ScrollView {
                     VStack(spacing: 30) {
                         OverviewBox(
@@ -22,7 +22,7 @@ struct OverviewView: View {
                             content: [
                                 String(
                                     format: "welcome_message".localized(),
-                                    viewModel.user?.firstname ?? ""),
+                                    loginViewModel.user?.firstname ?? ""),
                                     "Here is an overview of your appartments".localized()
                             ])
                         OverviewBox(
@@ -42,6 +42,9 @@ struct OverviewView: View {
                 }
             }
             .navigationBarBackButtonHidden(true)
+            .onAppear {
+                loginViewModel.loadUser()
+            }
         }
     }
 }
@@ -91,5 +94,6 @@ struct OverviewBox: View {
 struct OverviewView_Previews: PreviewProvider {
     static var previews: some View {
         OverviewView()
+            .environmentObject(LoginViewModel())
     }
 }

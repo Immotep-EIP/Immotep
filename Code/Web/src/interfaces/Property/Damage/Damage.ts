@@ -12,6 +12,8 @@ export interface Damage {
   fix_status: string
   fix_planned_at: string
   pictures: string[]
+  property_id: string
+  property_name: string
 }
 
 export interface DamageDetails {

@@ -1,14 +1,18 @@
 import React from 'react'
-import { Button, Dropdown, MenuProps } from 'antd'
-import { MoreOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import returnIcon from '@/assets/icons/retour.svg'
+
+import { Button, Dropdown, MenuProps } from 'antd'
+import { MoreOutlined } from '@ant-design/icons'
+
 import PageTitle from '@/components/ui/PageText/Title'
+
 import { PropertyHeaderProps } from '@/interfaces/Property/Property'
-import style from './DetailsPart.module.css'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
 import NavigationEnum from '@/enums/NavigationEnum'
+
+import returnIcon from '@/assets/icons/retour.svg'
+import style from './DetailsPart.module.css'
 
 const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   onShowModal,

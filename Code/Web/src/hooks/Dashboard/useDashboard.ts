@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
+
+import GetDashboard from '@/services/api/Owner/Properties/GetDashboard'
+
 import {
   DashboardOpenDamages,
   DashboardProperties,
   DashboardReminders,
   UseDashboardReturn
 } from '@/interfaces/Dashboard/Dashboard'
-import GetDashboard from '@/services/api/Owner/Properties/GetDashboard'
 
 const useDashboard = (): UseDashboardReturn => {
   const [reminders, setReminders] = useState<DashboardReminders[] | null>(null)

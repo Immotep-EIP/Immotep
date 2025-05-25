@@ -9,241 +9,193 @@ import SwiftUI
 
 struct PropertyView: View {
     @EnvironmentObject var viewModel: PropertyViewModel
-    @State private var isCreatingProperty = false
-    @State private var showDeleteConfirmationAlert = false
-    @State private var propertyToDelete: Property?
-    @State private var navigateToEditId: String?
-    @State private var listRefreshID = UUID()
+    @EnvironmentObject var loginViewModel: LoginViewModel
+    @State private var tenantProperty: Property?
+    @State private var isLoading = false
+    @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                VStack(spacing: 0) {
-                    TopBar(title: "Property".localized())
-                    headerView
-                    propertyListView
+            if loginViewModel.userRole == "tenant" {
+                if isLoading {
+                    VStack {
+                        Spacer()
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                        Spacer()
+                    }
+                } else if let error = errorMessage {
+                    VStack {
+                        Spacer()
+                        Text(error)
+                            .foregroundColor(.red)
+                            .padding()
+                        Spacer()
+                    }
+                } else if let property = tenantProperty {
+                    PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                } else {
+                    VStack {
+                        Spacer()
+                        Text("No property associated.".localized())
+                            .foregroundColor(.gray)
+                            .padding()
+                        Spacer()
+                    }
                 }
+            } else {
+                ZStack {
+                    VStack(spacing: 0) {
+                        TopBar(title: "Keyz".localized())
 
-                if showDeleteConfirmationAlert {
-                    CustomAlertTwoButtons(
-                        isActive: $showDeleteConfirmationAlert,
-                        title: "Delete Property".localized(),
-                        message: propertyToDelete != nil ? "Are you sure you want to delete the property \(propertyToDelete!.name)?".localized() : "",
-                        buttonTitle: "Delete".localized(),
-                        secondaryButtonTitle: "Cancel".localized(),
-                        action: {
-                            if let propertyToDelete = propertyToDelete {
-                                Task {
-                                    await deleteProperty(propertyToDelete)
+                        Text("Real Property".localized())
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 10)
+                            .padding(.bottom, 5)
+
+                        if viewModel.properties.isEmpty {
+                            VStack {
+                                Spacer()
+                                Text("No properties available".localized())
+                                    .foregroundColor(.gray)
+                                Spacer()
+                            }
+                        } else {
+                            ScrollView {
+                                LazyVGrid(
+                                    columns: [GridItem(.flexible())],
+                                    spacing: 15
+                                ) {
+                                    ForEach(viewModel.properties) { property in
+                                        NavigationLink(
+                                            destination: PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                                        ) {
+                                            PropertyCard(property: property)
+                                        }
+                                    }
                                 }
+                                .padding(.horizontal)
+                                .padding(.vertical, 10)
                             }
-                        },
-                        secondaryAction: {
-                            self.propertyToDelete = nil
                         }
-                    )
+                    }
+
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            NavigationLink {
+                                CreatePropertyView(viewModel: viewModel)
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundColor(Color("LightBlue"))
+                                    .background(
+                                        Circle()
+                                            .fill(Color.white)
+                                            .shadow(radius: 4)
+                                    )
+                            }
+                            .padding(.bottom, 30)
+                            .padding(.trailing, 20)
+                            .accessibilityLabel("add_property_btn")
+                        }
+                    }
                 }
-            }
-            .navigationDestination(isPresented: Binding(
-                get: { navigateToEditId != nil },
-                set: { if !$0 { navigateToEditId = nil } }
-            )) {
-                if let editId = navigateToEditId,
-                   let propertyToEdit = viewModel.properties.first(where: { $0.id == editId }) {
-                    EditPropertyView(viewModel: viewModel, property: Binding(
-                        get: { viewModel.properties.first(where: { $0.id == editId }) ?? propertyToEdit },
-                        set: { newValue in
-                            if let index = viewModel.properties.firstIndex(where: { $0.id == newValue.id }) {
-                                viewModel.properties[index] = newValue
-                            }
-                        }
-                    ))
+                .onAppear {
+                    Task {
+                        await viewModel.fetchProperties()
+                    }
                 }
             }
         }
         .onAppear {
-            if !CommandLine.arguments.contains("-skipLogin") {
+            if loginViewModel.userRole == "tenant" {
                 Task {
-                    await viewModel.fetchProperties()
-                    listRefreshID = UUID()
-                }
-            }
-        }
-        .onChange(of: viewModel.properties) {
-            listRefreshID = UUID()
-            print("Properties changed: \(viewModel.properties.map { $0.name })")
-        }
-        .onChange(of: navigateToEditId) {
-            if navigateToEditId == nil {
-                Task {
-                    await viewModel.fetchProperties()
-                }
-            }
-        }
-    }
-
-    private var headerView: some View {
-        HStack {
-            Spacer()
-            NavigationLink(destination: CreatePropertyView(viewModel: viewModel)) {
-                Text("Add a property".localized())
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                    .background(Color.blue)
-                    .cornerRadius(8)
-            }
-            .padding()
-            .accessibilityLabel("add_property")
-        }
-    }
-
-    private var propertyListView: some View {
-        List {
-            if !viewModel.properties.isEmpty {
-                ForEach($viewModel.properties) { $property in
-                    NavigationLink(destination: PropertyDetailView(property: $property, viewModel: viewModel)) {
-                        PropertyCardView(property: $property)
+                    isLoading = true
+                    do {
+                        tenantProperty = try await viewModel.fetchTenantProperty()
+                    } catch {
+                        errorMessage = "Error fetching property: \(error.localizedDescription)".localized()
+                        print("Error fetching tenant property: \(error.localizedDescription)")
                     }
-                    .accessibilityIdentifier("property_card_\(property.id)") // Déplacé ici
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(action: {
-                            navigateToEditId = property.id
-                        }, label: {
-                            Label("Edit", systemImage: "pencil")
-                        })
-                        .tint(.blue)
-
-                        Button(role: .destructive) {
-                            propertyToDelete = property
-                            showDeleteConfirmationAlert = true
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                    )
-                    .padding(.horizontal)
-                    .padding(.vertical, 15)
+                    isLoading = false
                 }
-            } else {
-                Text("No properties available".localized())
-                    .foregroundColor(.gray)
-                    .padding()
             }
-        }
-        .listStyle(.plain)
-        .id(listRefreshID)
-    }
-
-    private func deleteProperty(_ property: Property) async {
-        do {
-            try await viewModel.deleteProperty(propertyId: property.id)
-            await viewModel.fetchProperties()
-            propertyToDelete = nil
-        } catch {
-            print("Error deleting property: \(error)")
         }
     }
 }
 
-struct PropertyCardView: View {
-    @Binding var property: Property
+struct PropertyCard: View {
+    let property: Property
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            VStack {
-                HStack {
-                    if let uiImage = property.photo {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.black, lineWidth: 1))
-                    } else {
-                        Image("DefaultImageProperty")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color("textColor"), lineWidth: 1))
-                            .accessibilityLabel("image_property")
-                    }
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(property.name)
-                            .font(.headline)
-                            .padding(.trailing, 25)
-                        Text(property.address)
-                            .font(.subheadline)
-                            .padding(.trailing, 25)
-                            .lineLimit(2)
-                            .accessibilityLabel("text_address")
-
-                        if let tenant = property.tenantName {
-                            Text(tenant)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .accessibilityLabel("text_tenant")
-                        }
-
-                        if let leaseStart = property.leaseStartDate {
-                            Text(String(format: "started_on".localized(), formatDateString(leaseStart)))
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .accessibilityLabel("text_started_on")
-                        }
-                    }
+        ZStack(alignment: .topTrailing) {
+            VStack(alignment: .leading, spacing: 8) {
+                if let uiImage = property.photo {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 150)
+                        .clipped()
+                        .cornerRadius(10)
+                } else {
+                    Image("DefaultImageProperty")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 150)
+                        .clipped()
+                        .cornerRadius(10)
+                        .accessibilityLabel("image_property")
                 }
-                .padding(.trailing, 16)
-            }
 
-            if property.isAvailable == "available" {
-                Text("Available".localized())
-                    .font(.caption)
-                    .foregroundColor(.green)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Capsule().fill(Color.green.opacity(0.2)))
-                    .frame(maxWidth: .infinity, alignment: .topTrailing)
-                    .accessibilityLabel("text_available")
-            } else {
-                Text("Busy".localized())
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Capsule().fill(Color.red.opacity(0.2)))
-                    .frame(maxWidth: .infinity, alignment: .topTrailing)
-                    .accessibilityLabel("text_busy")
+                HStack {
+                    Text(property.name)
+                        .font(.headline)
+                        .foregroundColor(Color("textColor"))
+                    Spacer()
+                    Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
+                        )
+                        .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
+                }
+
+                HStack(spacing: 4) {
+                    Image(systemName: "mappin.and.ellipse.circle")
+                        .font(.caption)
+                        .foregroundColor(Color("LightBlue"))
+                    Text("\(property.address), \(property.city), \(property.country)")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
+                        .accessibilityLabel("text_address")
+                }
             }
+            .padding()
+            .background(Color("basicWhiteBlack"))
+            .cornerRadius(10)
+            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
         }
     }
 }
-
-private let dateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .medium
-    return formatter
-}()
 
 struct PropertyView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = PropertyViewModel()
-        viewModel.properties = exampleDataProperty2
-        print("Properties in preview: \(viewModel.properties.count)")
-        return PropertyView()
-            .environmentObject(viewModel)
-            .onAppear {
-                viewModel.properties = exampleDataProperty2
-            }
+        PropertyView()
+            .environmentObject(PropertyViewModel())
+            .environmentObject(LoginViewModel())
     }
 }
 
@@ -273,7 +225,8 @@ let exampleDataProperty2: [Property] = [
                 checked: false,
                 inventory: []
             )
-        ]
+        ],
+        damages: []
     ),
     Property(
         id: "cm7gijdee000ly7i82uq0qf36",
@@ -300,6 +253,7 @@ let exampleDataProperty2: [Property] = [
                 checked: true,
                 inventory: []
             )
-        ]
+        ],
+        damages: []
     )
 ]

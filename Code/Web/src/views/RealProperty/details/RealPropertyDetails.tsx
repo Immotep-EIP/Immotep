@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
+import useProperties from '@/hooks/Property/useProperties'
 import InviteTenantModal from '@/components/features/RealProperty/details/DetailsPart/InviteTenantModal'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
-import useProperties from '@/hooks/Property/useProperties'
 import DetailsPart from '@/components/features/RealProperty/details/DetailsPart/DetailsPart'
 import RealPropertyUpdate from '../update/RealPropertyUpdate'
+
 import style from './RealPropertyDetails.module.css'
 
 const RealPropertyDetails: React.FC = () => {
