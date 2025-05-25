@@ -79,7 +79,8 @@ fun AddRoomOrDetailModal(
     BigModalLayout(
         open = open,
         close = close,
-        height = 0.3f
+        height = 0.3f,
+        testTag = "addRoomOrDetailModal"
     ) {
         Column(
             modifier = Modifier.padding(

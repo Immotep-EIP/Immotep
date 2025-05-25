@@ -55,7 +55,7 @@ fun DeleteOrSeePictureModal(
         ModalBottomSheet(
             onDismissRequest = onClose,
             modifier = Modifier
-                .testTag("addRoomModal")
+                .testTag("deleteOrSeePictureModal")
 
         ) {
             Column(
