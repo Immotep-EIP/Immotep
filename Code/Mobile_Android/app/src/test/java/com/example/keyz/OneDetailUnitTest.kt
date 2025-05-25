@@ -226,7 +226,7 @@ class OneDetailViewModelTest {
 
     @Test
     fun `summarizeOrCompare with empty pictures sets picture error`() = runTest {
-        viewModel.summarizeOrCompare(null, "propertyId", "leaseId", true)
+        viewModel.summarizeOrCompare(null, "propertyId", "leaseId", true, false)
 
         assertTrue(viewModel.errors.first().picture)
     }
@@ -239,7 +239,7 @@ class OneDetailViewModelTest {
         viewModel.addPicture(uri1)
         coEvery { aiCallerService.summarize(any(), any(), any()) } returns fakeAiCallOutput
 
-        viewModel.summarizeOrCompare(null, propertyId, leaseId, isRoom)
+        viewModel.summarizeOrCompare(null, propertyId, leaseId, isRoom, false)
 
         coVerify {
             aiCallerService.summarize(
@@ -259,7 +259,7 @@ class OneDetailViewModelTest {
         viewModel.addPicture(uri1)
         coEvery { aiCallerService.compare(any(), any(), any(), any()) } returns fakeAiCallOutput
 
-        viewModel.summarizeOrCompare(oldReportId, propertyId, leaseId, isRoom)
+        viewModel.summarizeOrCompare(oldReportId, propertyId, leaseId, isRoom, true)
 
         coVerify {
             aiCallerService.compare(
@@ -281,7 +281,7 @@ class OneDetailViewModelTest {
             fakeAiCallOutput
         }
 
-        viewModel.summarizeOrCompare(null, propertyId, "leaseId", isRoom)
+        viewModel.summarizeOrCompare(null, propertyId, "leaseId", isRoom, false)
 
         assertTrue(viewModel.aiCallError.first())
     }
@@ -293,7 +293,7 @@ class OneDetailViewModelTest {
         viewModel.addPicture(uri1)
         coEvery { aiCallerService.summarize(any(), any(), any()) } returns aiResponse
 
-        viewModel.summarizeOrCompare(null, propertyId, "leaseId",true)
+        viewModel.summarizeOrCompare(null, propertyId, "leaseId",true, false)
 
         assertTrue(viewModel.detail.first().status == fakeAiCallOutput.state)
         assertTrue(viewModel.detail.first().cleanliness == fakeAiCallOutput.cleanliness)
@@ -308,7 +308,7 @@ class OneDetailViewModelTest {
         viewModel.addPicture(uri1)
         coEvery { aiCallerService.compare(any(), any(), any(), any()) } returns fakeAiCallOutput
 
-        viewModel.summarizeOrCompare(oldReportId, propertyId, "leaseId",false)
+        viewModel.summarizeOrCompare(oldReportId, propertyId, "leaseId",false, true)
 
         assertTrue(viewModel.detail.first().status == fakeAiCallOutput.state)
         assertTrue(viewModel.detail.first().cleanliness == fakeAiCallOutput.cleanliness)
