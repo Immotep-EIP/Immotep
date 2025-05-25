@@ -32,6 +32,7 @@ import com.example.keyz.R
 import com.example.keyz.components.InitialFadeIn
 import com.example.keyz.components.InventoryCenterAddButton
 import com.example.keyz.components.inventory.AddRoomOrDetailModal
+import com.example.keyz.components.inventory.EditRoomOrDetailModal
 import com.example.keyz.components.inventory.NextInventoryButton
 import com.example.keyz.inventory.Room
 import com.example.keyz.inventory.roomDetails.EndRoomDetails.EndRoomDetailsScreen
@@ -52,19 +53,21 @@ fun RoomDetailsScreen(
     baseRoom: Room,
     closeRoomPanel : (room : Room) -> Unit,
     addDetail: suspend (roomId : String, name : String) -> String?,
+    removeDetail: (String) -> Unit,
     oldReportId : String?,
     navController: NavController,
     propertyId: String,
     leaseId : String
 ) {
     val viewModel: RoomDetailsViewModel = viewModel {
-        RoomDetailsViewModel(closeRoomPanel, addDetail)
+        RoomDetailsViewModel(closeRoomPanel, addDetail, removeDetail)
     }
 
     val currentlyOpenDetail = viewModel.currentlyOpenDetail.collectAsState()
     var addDetailModalOpen by rememberSaveable { mutableStateOf(false) }
     var endRoomDetailsScreenOpen by rememberSaveable { mutableStateOf(false) }
     var editOpen by rememberSaveable { mutableStateOf(false) }
+    var editDetailOpen by rememberSaveable { mutableStateOf<String?>(null) }
 
     BackHandler {
         viewModel.onClose(baseRoom)
@@ -83,6 +86,11 @@ fun RoomDetailsScreen(
         },
         close = { addDetailModalOpen = false },
         isRoom = false
+    )
+    EditRoomOrDetailModal(
+        currentRoomOrDetailId = editDetailOpen,
+        deleteRoomOrDetail = { viewModel.handleRemoveDetail(it) },
+        close = { editDetailOpen = null },
     )
     if (endRoomDetailsScreenOpen) {
         EndRoomDetailsScreen(

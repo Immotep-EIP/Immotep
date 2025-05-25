@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class RoomDetailsViewModel(
     private val closeRoomPanel : (room : Room) -> Unit,
     private val addDetail : suspend (roomId : String, name : String) -> String?,
+    private val removeDetail: (String) -> Unit
 )  : ViewModel()  {
 
     val details = mutableStateListOf<RoomDetail>()
@@ -47,5 +48,15 @@ class RoomDetailsViewModel(
 
     fun onOpenDetail(detail: RoomDetail) {
         currentlyOpenDetail.value = detail
+    }
+    //finish this
+    fun handleRemoveDetail(detailId : String) {
+        try {
+            val detailIndex = details.indexOfFirst { it.id == detailId }
+            if (detailIndex == -1) return
+            removeDetail(detailId)
+        } catch(e : Exception) {
+            e.printStackTrace()
+        }
     }
 }

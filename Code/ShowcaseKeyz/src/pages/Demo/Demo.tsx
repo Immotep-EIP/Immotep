@@ -57,7 +57,7 @@ function DemoPage() {
           <div className={style.progressContainer}>
             <div className={style.progressBar}></div>
           </div>
-          <div className={style.percentageText}>75% {t("demo.completed")}</div>
+          <div className={style.percentageText}>75%</div>
         </div>
       </div>
     </div>

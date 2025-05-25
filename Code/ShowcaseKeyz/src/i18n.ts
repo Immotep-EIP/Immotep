@@ -261,7 +261,7 @@ const resources = {
         coming_soon: "Bientôt disponible",
         development_message:
           "Notre démo interactive est en cours de développement. Notre équipe travaille activement pour vous offrir une expérience immersive qui vous permettra de découvrir toutes les fonctionnalités de Keyz.",
-        completed: "complété",
+        completed: "complétés",
       },
     },
   },

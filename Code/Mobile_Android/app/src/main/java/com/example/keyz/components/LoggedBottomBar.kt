@@ -63,7 +63,8 @@ fun LoggedBottomBar(navController: NavController) {
     )
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        modifier = Modifier.testTag("loggedBottomBar")
     ) {
         navigationItems.forEachIndexed { _, (name, icon, iconDescription, pageName) ->
             val selected = navController.currentBackStackEntry?.destination?.route == pageName

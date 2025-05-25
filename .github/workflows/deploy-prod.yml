@@ -1,23 +1,27 @@
-name: deploy-dev
+name: deploy-prod
 
 on:
   push:
     branches:
-      - dev
-  pull_request:
-    branches:
       - main
+    # tags:
+    #   - 'v*'
 
 jobs:
-  check-build:
-    uses: ./.github/workflows/check-build.yml
+  check-build-web:
+    uses: ./.github/workflows/build-web.yml
 
-  deploy-dev:
-    needs: [check-build]
-    if: github.event_name == 'push'
+  check-build-server:
+    uses: ./.github/workflows/build-server.yml
+
+  check-build-android:
+    uses: ./.github/workflows/build-android.yml
+
+  deploy-prod:
+    needs: [check-build-server, check-build-web]
     runs-on: ubuntu-latest
-    environment: dev
-    concurrency: deploy_dev
+    environment: prod
+    concurrency: deploy_prod
 
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +35,7 @@ jobs:
           script_stop: true
           script: |
             cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/
-            git switch dev
+            git switch main
             docker compose down
             git pull
             docker compose up --build -d

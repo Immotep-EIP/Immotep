@@ -7,6 +7,7 @@ import com.example.keyz.apiCallerServices.InventoryCallerService
 import com.example.keyz.apiCallerServices.RoomCallerService
 import com.example.keyz.apiCallerServices.RoomType
 import com.example.keyz.apiClient.ApiService
+import com.example.keyz.apiClient.CreateOrUpdateResponse
 import com.example.keyz.apiClient.mockApi.fakeFurniture
 import com.example.keyz.apiClient.mockApi.fakeFurnitureOutputValue
 import com.example.keyz.apiClient.mockApi.fakeRoom
@@ -99,8 +100,10 @@ class InventoryViewModelTest {
     @Test
     fun removeRoom() = runTest {
         coEvery { roomCallerService.addRoom(any(), any()) } returns fakeRoomOutputValue
+        coEvery { roomCallerService.archiveRoom(any(), any()) } returns CreateOrUpdateResponse("testRoom")
         viewModel.addRoom("testRoom", RoomType.bedroom) { }
         viewModel.removeRoom("testRoom")
+        testDispatcher.scheduler.advanceUntilIdle()
         assert(viewModel.getRooms().isEmpty())
     }
 

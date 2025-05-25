@@ -238,7 +238,8 @@ fun RoomsScreen(
             addDetail = addDetail,
             navController = navController,
             propertyId = propertyId,
-            leaseId = leaseId
+            leaseId = leaseId,
+            removeDetail = {}
         )
     }
 }

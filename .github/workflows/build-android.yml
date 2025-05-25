@@ -1,13 +1,16 @@
-name: android-instrumented-tests
+name: build-android
 
 on:
+  workflow_call:
   push:
-    branches: [main, dev]
+    branches:
+      - android-dev
   pull_request:
-    branches: [ main, dev ]
+    branches:
+      - main
 
 jobs:
-  instrumented-tests-android:
+  instrumented-tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -45,3 +48,22 @@ jobs:
           target: ${{ steps.avd-info.outputs.target }}
           profile: "pixel_6"
           script: mv .github/debug.keystore ~/.android; cd Code/Mobile_Android ; ./gradlew connectedDebugAndroidTest
+
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Run unit tests
+      run:  cd Code/Mobile_Android && ./gradlew test
