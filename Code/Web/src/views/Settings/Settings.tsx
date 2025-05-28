@@ -136,12 +136,12 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
       setNewData({
         firstname: user.firstname,
         lastname: user.lastname,
-        email: user.email
+        email: user?.email
       })
       setOldData({
         firstname: user.firstname,
         lastname: user.lastname,
-        email: user.email
+        email: user?.email
       })
     }
   }, [user])
