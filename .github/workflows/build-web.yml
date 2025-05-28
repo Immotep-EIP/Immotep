@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - web-dev
+    paths:
+      - 'Code/Web/**'
+      - '.github/workflows/build-web.yml'
   pull_request:
     branches:
       - main

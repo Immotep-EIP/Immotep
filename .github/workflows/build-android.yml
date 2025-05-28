@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - android-dev
+    paths:
+      - 'Code/Mobile_Android/**'
+      - '.github/workflows/build-android.yml'
   pull_request:
     branches:
       - main
