@@ -11,6 +11,10 @@ build:
 	swag init --parseDependency true
 	go build
 
+db_update:
+	go run github.com/steebchen/prisma-client-go migrate deploy
+	go run github.com/steebchen/prisma-client-go generate
+
 db_migrate:
 	go run github.com/steebchen/prisma-client-go migrate dev
 
