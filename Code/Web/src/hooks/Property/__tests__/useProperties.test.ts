@@ -88,7 +88,10 @@ describe('useProperties', () => {
       deposit_price: 2000,
       apartment_number: '640'
     })
-    expect(UpdatePropertyPicture).toHaveBeenCalledWith('3', '...')
+    expect(UpdatePropertyPicture).toHaveBeenCalledWith(
+      '3',
+      'data:image/jpeg;base64,...'
+    )
     expect(result.current.properties).toContainEqual(newProperty)
   })
 
@@ -141,7 +144,7 @@ describe('useProperties', () => {
         apartment_number: '640'
       })
     )
-    expect(UpdatePropertyPicture).toHaveBeenCalledWith('3', '...')
+    expect(UpdatePropertyPicture).toHaveBeenCalledWith('3', mockImageBase64)
   })
 
   it('should fetch and set property details', async () => {
@@ -206,7 +209,7 @@ describe('useProperties', () => {
     expect(result.current.error).toBeNull()
     expect(result.current.properties).toContainEqual(mockCreatedProperty)
     expect(CreatePropertyFunction).toHaveBeenCalledWith(mockPropertyData)
-    expect(UpdatePropertyPicture).toHaveBeenCalledWith('3', '...')
+    expect(UpdatePropertyPicture).toHaveBeenCalledWith('3', mockImageBase64)
   })
 
   it('should handle error if property creation fails', async () => {
@@ -335,7 +338,7 @@ describe('useProperties', () => {
 
     // Verify results
     expect(UpdatePropertyFunction).toHaveBeenCalledWith(mockPropertyData, '1')
-    expect(UpdatePropertyPicture).toHaveBeenCalledWith('1', 'updatedImage')
+    expect(UpdatePropertyPicture).toHaveBeenCalledWith('1', mockImageBase64)
     expect(result.current.error).toBeNull()
     expect(result.current.properties).toContainEqual(mockUpdatedProperty)
   })
