@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { act } from 'react-dom/test-utils'
+import { act } from 'react'
 import RealPropertyPage from '@/views/RealProperty/RealProperty'
 import useProperties from '@/hooks/Property/useProperties'
 import useNavigation from '@/hooks/Navigation/useNavigation'

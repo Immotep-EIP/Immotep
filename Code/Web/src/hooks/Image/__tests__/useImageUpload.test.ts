@@ -120,7 +120,7 @@ describe('useImageUpload', () => {
       name: 'propertyPicture',
       maxCount: 1,
       fileList: [],
-      accept: '.png, .jpg, .jpeg',
+      accept: '.png,.jpg,.jpeg',
       beforeUpload: expect.any(Function),
       onChange: expect.any(Function)
     })
