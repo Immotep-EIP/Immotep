@@ -21,8 +21,11 @@ const useNavigation = () => {
     navigate(NavigationEnum.OVERVIEW)
   }
 
-  const goToRealProperty = () => {
-    navigate(NavigationEnum.REAL_PROPERTY)
+  const goToRealProperty = (archive?: boolean) => {
+    navigate({
+      pathname: NavigationEnum.REAL_PROPERTY,
+      search: archive ? '?archive=true' : ''
+    })
   }
 
   const goToRealPropertyDetails = (id: string) => {
