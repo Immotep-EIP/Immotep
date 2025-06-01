@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { act } from 'react'
+import { MemoryRouter } from 'react-router-dom'
 import RealPropertyPage from '@/views/RealProperty/RealProperty'
 import useProperties from '@/hooks/Property/useProperties'
 import useNavigation from '@/hooks/Navigation/useNavigation'
@@ -251,7 +252,11 @@ describe('RealPropertyPage', () => {
   })
 
   it('renders the page title and header correctly', () => {
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
     expect(screen.getByText('Real Properties')).toBeInTheDocument()
     expect(
       screen.getByRole('button', {
@@ -261,7 +266,11 @@ describe('RealPropertyPage', () => {
   })
 
   it('displays the switch for archived properties', () => {
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
     expect(screen.getByText('Show Active')).toBeInTheDocument()
 
     // Test the switch functionality
@@ -285,7 +294,11 @@ describe('RealPropertyPage', () => {
       error: null,
       refreshProperties: mockRefreshProperties
     })
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
     expect(screen.getByTestId('card-property-loader')).toBeInTheDocument()
   })
 
@@ -296,7 +309,11 @@ describe('RealPropertyPage', () => {
       error: new Error('Fetch error'),
       refreshProperties: mockRefreshProperties
     })
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
     expect(screen.getByText('Error fetching data')).toBeInTheDocument()
   })
 
@@ -307,19 +324,31 @@ describe('RealPropertyPage', () => {
       error: null,
       refreshProperties: mockRefreshProperties
     })
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
     expect(screen.getByText('No properties found')).toBeInTheDocument()
   })
 
   it('renders property cards when properties exist', () => {
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
     expect(screen.getByText('Test Property 1')).toBeInTheDocument()
     expect(screen.getByText('Test Property 2')).toBeInTheDocument()
     expect(screen.getByText('Test Property 3')).toBeInTheDocument()
   })
 
   it('filters properties by search query', async () => {
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
 
     // Initial state should show all properties
     expect(screen.getByText('Test Property 1')).toBeInTheDocument()
@@ -337,7 +366,11 @@ describe('RealPropertyPage', () => {
   })
 
   it('filters properties by surface range', () => {
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
 
     // Initial state should show all properties
     expect(screen.getByText('Test Property 1')).toBeInTheDocument() // 75 sqm
@@ -371,7 +404,11 @@ describe('RealPropertyPage', () => {
   })
 
   it('filters properties by status', () => {
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
 
     // Initial state should show all properties
     expect(screen.getByText('Test Property 1')).toBeInTheDocument() // available
@@ -397,7 +434,11 @@ describe('RealPropertyPage', () => {
   })
 
   it('opens the create modal when add button is clicked', () => {
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
 
     // Modal should not be visible initially
     expect(
@@ -420,7 +461,11 @@ describe('RealPropertyPage', () => {
   })
 
   it('refreshes properties after a new property is created', async () => {
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
 
     // Open the modal
     fireEvent.click(screen.getByRole('button', { name: 'Add Real Property' }))
@@ -440,7 +485,11 @@ describe('RealPropertyPage', () => {
   })
 
   it('correctly handles the archived property toggle', async () => {
-    const { rerender } = render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
 
     // Initial call should be with showArchived=false
     expect(useProperties).toHaveBeenLastCalledWith(null, false)
@@ -454,14 +503,22 @@ describe('RealPropertyPage', () => {
     })
 
     // Re-render the component after state update
-    rerender(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
 
     // After toggle, the useProperties hook should be called with showArchived=true
-    expect(useProperties).toHaveBeenLastCalledWith(null, true)
+    expect(useProperties).toHaveBeenCalledWith(null, true)
   })
 
   it('displays the correct address format with apartment number', () => {
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
     expect(screen.getByText(/N° 4B - 123 Main St/)).toBeInTheDocument()
   })
 
@@ -476,7 +533,11 @@ describe('RealPropertyPage', () => {
       error: null,
       refreshProperties: mockRefreshProperties
     })
-    render(<RealPropertyPage />)
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
     expect(screen.getByText('456 Oak Ave')).toBeInTheDocument()
     expect(screen.queryByText(/N° .* - 456 Oak Ave/)).not.toBeInTheDocument()
   })
