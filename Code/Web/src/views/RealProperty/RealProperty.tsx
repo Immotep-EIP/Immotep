@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Empty, Typography, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 import useProperties from '@/hooks/Property/useProperties'
 import PageTitle from '@/components/ui/PageText/Title'
