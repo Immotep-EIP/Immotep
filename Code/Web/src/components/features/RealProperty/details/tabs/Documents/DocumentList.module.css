@@ -26,6 +26,7 @@
   flex: 1 1 calc(25% - 20px);
   max-width: calc(25% - 20px);
   min-width: 200px;
+  position: relative;
 }
 
 .documentContainer:hover {
@@ -37,13 +38,29 @@
   box-shadow: 0 0 0 2px #1890ff;
 }
 
-.documentDateContainer {
-  width: 100%;
+.documentHeader {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-end;
+  margin-bottom: 10px;
+  padding: 0 5px;
+}
+
+.documentDateContainer {
   color: rgba(102, 102, 102, 0.5);
   font-size: 12px;
+}
+
+.deleteIcon {
+  font-size: 16px;
+  color: #ff4d4f;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.deleteIcon:hover {
+  transform: scale(1.1);
+  color: #ff7875;
 }
 
 .documentPreviewContainer {

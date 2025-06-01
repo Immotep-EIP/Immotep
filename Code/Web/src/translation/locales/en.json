@@ -453,7 +453,11 @@
       "tabs": {
         "documents": {
           "modal_title": "Add document",
-          "no_documents": "No documents yet"
+          "no_documents": "No documents yet",
+          "delete_confirmation": {
+            "title": "Delete document",
+            "message": "Are you sure you want to delete this document?"
+          }
         },
         "inventory": {
           "add_room_modal_title": "Add room",

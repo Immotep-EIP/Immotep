@@ -17,8 +17,14 @@ interface DocumentsTabProps {
 const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
   const { t } = useTranslation()
   const propertyId = usePropertyId()
-  const { documents, loading, error, refreshDocuments, uploadDocument } =
-    useDocument(propertyId || '', status || '')
+  const {
+    documents,
+    loading,
+    error,
+    refreshDocuments,
+    uploadDocument,
+    deleteDocument
+  } = useDocument(propertyId || '', status || '')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form] = Form.useForm()
 
@@ -80,7 +86,9 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       <div className={style.tabContentEmpty}>
         <Empty
           image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          styles={{ image: { height: 60 } }}
+          imageStyle={{
+            height: 60
+          }}
           description={
             <Typography.Text>
               {t('pages.real_property.error.no_tenant_linked')}
@@ -124,6 +132,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       <DocumentList
         documents={documents || []}
         onDocumentClick={handleDocumentClick}
+        onDeleteDocument={deleteDocument}
       />
     </div>
   )

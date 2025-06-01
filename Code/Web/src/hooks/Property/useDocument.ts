@@ -6,6 +6,7 @@ import fileToBase64 from '@/utils/base64/fileToBase'
 
 import { Document, UseDocumentReturn } from '@/interfaces/Property/Document'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
+import DeleteDocument from '@/services/api/Owner/Properties/DeleteDocument'
 
 const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
   const [documents, setDocuments] = useState<Document[] | null>(null)
@@ -59,6 +60,27 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
     }
   }
 
+  const deleteDocument = async (documentId: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+      setDocuments(
+        prevDocuments =>
+          prevDocuments?.filter(doc => doc.id !== documentId) ?? []
+      )
+      await DeleteDocument(propertyId, documentId)
+    } catch (err) {
+      await fetchDocuments(propertyId)
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'An error occurred while deleting the document'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (propertyId && status === PropertyStatusEnum.UNAVAILABLE) {
       fetchDocuments(propertyId)
@@ -70,7 +92,8 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
     loading,
     error,
     refreshDocuments: fetchDocuments,
-    uploadDocument
+    uploadDocument,
+    deleteDocument
   }
 }
 
