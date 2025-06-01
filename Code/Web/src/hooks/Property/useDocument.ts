@@ -43,7 +43,7 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
       const base64Data = await fileToBase64(file)
       const payload = {
         name: documentName,
-        data: base64Data.split(',')[1]
+        data: base64Data
       }
 
       await UploadDocument(JSON.stringify(payload), propertyId, leaseId)

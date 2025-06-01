@@ -23,7 +23,7 @@ const useProperties = (
 
   const clearError = () => setError(null)
 
-  const extractBase64Content = (base64: string) => base64.split(',')[1]
+  // const extractBase64Content = (base64: string) => base64.split(',')[1]
 
   const createProperty = async (
     propertyData: CreatePropertyPayload,
@@ -36,10 +36,7 @@ const useProperties = (
       if (!createdProperty) throw new Error('Property creation failed.')
 
       if (imageBase64) {
-        await UpdatePropertyPicture(
-          createdProperty.id,
-          extractBase64Content(imageBase64)
-        )
+        await UpdatePropertyPicture(createdProperty.id, imageBase64)
       }
       setProperties(prev => [...prev, createdProperty])
     } catch (err: unknown) {
@@ -65,12 +62,8 @@ const useProperties = (
         propertyId
       )
       if (!updatedProperty) throw new Error('Property update failed.')
-
       if (imageBase64) {
-        await UpdatePropertyPicture(
-          updatedProperty.id,
-          extractBase64Content(imageBase64)
-        )
+        await UpdatePropertyPicture(updatedProperty.id, imageBase64)
       }
       setProperties(prev =>
         prev.map(prop =>
