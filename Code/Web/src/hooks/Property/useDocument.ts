@@ -47,8 +47,15 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
         data: base64Data
       }
 
-      await UploadDocument(JSON.stringify(payload), propertyId, leaseId)
-      await fetchDocuments(propertyId)
+      const response = await UploadDocument(
+        JSON.stringify(payload),
+        propertyId,
+        leaseId
+      )
+      setDocuments(prevDocuments => {
+        if (!prevDocuments) return [response]
+        return [...prevDocuments, response]
+      })
     } catch (err) {
       setError(
         err instanceof Error
