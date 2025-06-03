@@ -9,6 +9,7 @@ struct InventoryRoomView: View {
     @State private var showDeleteConfirmationAlert: Bool = false
     @State private var roomToDelete: LocalRoom?
     @State private var showCompletionMessage: Bool = false
+    @State private var showErrorAlert: Bool = false
 
     var body: some View {
         ZStack {
@@ -64,7 +65,8 @@ struct InventoryRoomView: View {
                                 try await inventoryViewModel.addRoom(name: roomName, type: roomType)
                                 newRoomName = ""
                             } catch {
-                                print("Error adding room: \(error.localizedDescription)")
+                                inventoryViewModel.errorMessage = "Error adding room: \(error.localizedDescription)"
+                                showErrorAlert = true
                             }
                         }
                     },
@@ -95,6 +97,7 @@ struct InventoryRoomView: View {
                 )
                 .accessibilityIdentifier("DeleteRoomAlert")
             }
+
             if showCompletionMessage, let message = inventoryViewModel.completionMessage {
                 CustomAlertTwoButtons(
                     isActive: $showCompletionMessage,
@@ -102,10 +105,24 @@ struct InventoryRoomView: View {
                     message: message,
                     buttonTitle: "OK",
                     secondaryButtonTitle: nil,
+                    action: {},
+                    secondaryAction: nil
+                )
+            }
+
+            if showErrorAlert, let errorMessage = inventoryViewModel.errorMessage {
+                CustomAlertTwoButtons(
+                    isActive: $showErrorAlert,
+                    title: "Error".localized(),
+                    message: errorMessage,
+                    buttonTitle: "OK",
+                    secondaryButtonTitle: nil,
                     action: {
+                        inventoryViewModel.errorMessage = nil
                     },
                     secondaryAction: nil
                 )
+                .accessibilityIdentifier("ErrorAlert")
             }
         }
         .navigationBarBackButtonHidden(true)

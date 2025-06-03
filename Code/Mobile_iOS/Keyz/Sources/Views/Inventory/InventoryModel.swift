@@ -155,3 +155,8 @@ struct FurnitureStateResponse: Codable {
     let note: String
     let pictures: [String]
 }
+
+struct ErrorResponse: Codable {
+    let code: String
+    let error: String
+}

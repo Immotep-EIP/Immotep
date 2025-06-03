@@ -56,29 +56,27 @@ class RoomManager {
                 )
             }
 
-            if viewModel.localRooms.isEmpty {
-                viewModel.localRooms = viewModel.property.rooms.map { room in
-                    LocalRoom(
+            var updatedLocalRooms: [LocalRoom] = []
+            for room in viewModel.property.rooms {
+                if let existingRoom = viewModel.localRooms.first(where: { $0.id == room.id }) {
+                    updatedLocalRooms.append(LocalRoom(
                         id: room.id,
                         name: room.name,
-                        checked: room.checked,
-                        inventory: room.inventory.map { inventory in
-                            LocalInventory(
-                                id: inventory.id,
-                                propertyId: inventory.propertyId,
-                                roomId: inventory.roomId,
-                                name: inventory.name,
-                                quantity: inventory.quantity,
-                                checked: inventory.checked,
-                                images: inventory.images,
-                                status: inventory.status,
-                                comment: inventory.comment
-                            )
-                        }
-                    )
+                        checked: existingRoom.checked,
+                        inventory: existingRoom.inventory
+                    ))
+                } else {
+                    updatedLocalRooms.append(LocalRoom(
+                        id: room.id,
+                        name: room.name,
+                        checked: false,
+                        inventory: []
+                    ))
                 }
             }
-//            dump(viewModel.localRooms)
+
+            viewModel.localRooms = updatedLocalRooms
+
         } catch {
             viewModel.errorMessage = "Error fetching rooms: \(error.localizedDescription)"
         }
@@ -92,6 +90,15 @@ class RoomManager {
 
         guard let token = await viewModel.getToken() else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve token"])
+        }
+
+        let validRoomTypes = [
+            "dressing", "laundryroom", "bedroom", "playroom", "bathroom", "toilet",
+            "livingroom", "diningroom", "kitchen", "hallway", "balcony", "cellar",
+            "garage", "storage", "office", "other"
+        ]
+        guard validRoomTypes.contains(type) else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid room type: \(type)"])
         }
 
         let body: [String: Any] = [
@@ -114,6 +121,11 @@ class RoomManager {
             }
 
             guard (200...299).contains(httpResponse.statusCode) else {
+                // Decode error response for more details
+                if let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                    throw NSError(domain: "", code: httpResponse.statusCode,
+                                  userInfo: [NSLocalizedDescriptionKey: "API error: \(errorResponse.error)"])
+                }
                 throw NSError(domain: "", code: httpResponse.statusCode,
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
             }
@@ -121,7 +133,6 @@ class RoomManager {
             let decoder = JSONDecoder()
             let idResponse = try decoder.decode(IdResponse.self, from: data)
 
-            // Since the API only returns the ID, fetch the updated room list to get the full room details
             await fetchRooms()
         } catch {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Error creating room: \(error.localizedDescription)"])
