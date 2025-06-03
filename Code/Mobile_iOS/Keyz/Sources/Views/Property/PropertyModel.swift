@@ -105,12 +105,9 @@ struct PropertyResponse: Codable {
     let areaSqm: Double
     let rentalPricePerMonth: Int
     let depositPrice: Int
-    let picture: String?
     let createdAt: String
     let isAvailable: String
-    let tenant: String?
-    let startDate: String?
-    let endDate: String?
+    let lease: LeaseInfo?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -123,12 +120,9 @@ struct PropertyResponse: Codable {
         case areaSqm = "area_sqm"
         case rentalPricePerMonth = "rental_price_per_month"
         case depositPrice = "deposit_price"
-        case picture
         case createdAt = "created_at"
         case isAvailable = "status"
-        case tenant = "tenant"
-        case startDate = "start_date"
-        case endDate = "end_date"
+        case lease
     }
 }
 
@@ -187,4 +181,23 @@ struct DamageRequest: Codable {
     let priority: String
     let roomName: String
     let pictures: [String]?
+}
+
+
+struct LeaseInfo: Codable {
+    let id: String
+    let tenantName: String
+    let tenantEmail: String
+    let active: Bool
+    let startDate: String?
+    let endDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case tenantName = "tenant_name"
+        case tenantEmail = "tenant_email"
+        case active
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
 }
