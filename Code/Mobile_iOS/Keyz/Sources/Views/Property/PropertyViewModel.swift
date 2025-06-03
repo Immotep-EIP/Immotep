@@ -791,6 +791,39 @@ class PropertyViewModel: ObservableObject {
     struct IdResponse: Codable {
         let id: String
     }
+    
+    func fetchLastInventoryReport(propertyId: String, leaseId: String) async throws -> InventoryReportResponse? {
+         let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/\(leaseId)/inventory-reports/latest/")!
+         let token = try await TokenStorage.getValidAccessToken()
+
+         var urlRequest = URLRequest(url: url)
+         urlRequest.httpMethod = "GET"
+         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+
+         let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+         guard let httpResponse = response as? HTTPURLResponse else {
+             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+         }
+
+         guard (200...299).contains(httpResponse.statusCode) else {
+             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+             print("Fetch Last Inventory Report failed with status \(httpResponse.statusCode): \(errorBody)")
+             switch httpResponse.statusCode {
+             case 403:
+                 throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+             case 404:
+                 return nil
+             default:
+                 throw NSError(domain: "", code: httpResponse.statusCode,
+                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+             }
+         }
+
+         let decoder = JSONDecoder()
+         return try decoder.decode(InventoryReportResponse.self, from: data)
+     }
 }
 
 struct PropertyID: Decodable {

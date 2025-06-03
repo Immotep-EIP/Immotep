@@ -13,6 +13,7 @@ struct PropertyDetailView: View {
     @ObservedObject var viewModel: PropertyViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
     @StateObject private var tenantViewModel = TenantViewModel()
+    @StateObject private var inventoryViewModel = InventoryViewModel(property: Property(id: "", ownerID: "", name: "", address: "", city: "", postalCode: "", country: "", photo: nil, monthlyRent: 0, deposit: 0, surface: 0.0, isAvailable: "", tenantName: nil, leaseStartDate: nil, leaseEndDate: nil, documents: [], createdAt: nil, rooms: [], damages: []))
     @State private var showInviteTenantSheet = false
     @State private var showEndLeasePopUp = false
     @State private var showCancelInvitePopUp = false
@@ -20,11 +21,11 @@ struct PropertyDetailView: View {
     @State private var showEditPropertyPopUp = false
     @State private var showReportDamageView = false
     @State private var errorMessage: String?
-
-    @Environment(\.dismiss) var dismiss
-    @State private var selectedTab: String = "Details".localized()
     @State private var isLoading = false
-
+    @State private var selectedTab: String = "Details".localized()
+    @State private var isEntryInventory: Bool = true
+    @State private var navigateToInventory: Bool = false
+    @Environment(\.dismiss) var dismiss
     private let tabs = ["Details".localized(), "Documents".localized(), "Damages".localized()]
 
     var body: some View {
@@ -72,33 +73,19 @@ struct PropertyDetailView: View {
 
                         if loginViewModel.userRole == "owner" {
                             Menu {
-                                Button(action: {
-                                    showInviteTenantSheet = true
-                                }) {
+                                Button(action: { showInviteTenantSheet = true }) {
                                     Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
                                 }
-                                
-                                Button(action: {
-                                    showEndLeasePopUp = true
-                                }) {
+                                Button(action: { showEndLeasePopUp = true }) {
                                     Label("End Lease".localized(), systemImage: "xmark.circle")
                                 }
-                                
-                                Button(action: {
-                                    showCancelInvitePopUp = true
-                                }) {
+                                Button(action: { showCancelInvitePopUp = true }) {
                                     Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
                                 }
-                                
-                                Button(action: {
-                                    showEditPropertyPopUp = true
-                                }) {
+                                Button(action: { showEditPropertyPopUp = true }) {
                                     Label("Edit Property".localized(), systemImage: "pencil")
                                 }
-                                
-                                Button(action: {
-                                    showDeletePropertyPopUp = true
-                                }) {
+                                Button(action: { showDeletePropertyPopUp = true }) {
                                     Label("Delete Property".localized(), systemImage: "trash")
                                 }
                             } label: {
@@ -121,7 +108,6 @@ struct PropertyDetailView: View {
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundColor(Color("textColor"))
-
                             Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
                                 .font(.caption)
                                 .fontWeight(.medium)
@@ -160,9 +146,7 @@ struct PropertyDetailView: View {
                                     .padding(.vertical, 10)
                                     .padding(.horizontal, 16)
                                     .background(
-                                        selectedTab == tab
-                                            ? Color("LightBlue")
-                                            : Color.gray.opacity(0.1)
+                                        selectedTab == tab ? Color("LightBlue") : Color.gray.opacity(0.1)
                                     )
                                     .clipShape(RoundedRectangle(cornerRadius: 12))
                                     .scaleEffect(selectedTab == tab ? 1.05 : 1.0)
@@ -258,9 +242,7 @@ struct PropertyDetailView: View {
                                 }
 
                                 if loginViewModel.userRole == "tenant" {
-                                    Button(action: {
-                                        showReportDamageView = true
-                                    }) {
+                                    Button(action: { showReportDamageView = true }) {
                                         Text("Report Damage".localized())
                                             .frame(maxWidth: .infinity)
                                             .padding(.vertical, 15)
@@ -307,10 +289,12 @@ struct PropertyDetailView: View {
                 }
 
                 if loginViewModel.userRole == "owner" {
-                    NavigationLink {
-                        InventoryTypeView(property: $property)
-                    } label: {
-                        Text("Start the entry/exit inventory".localized())
+                    NavigationLink(
+                        destination: InventoryRoomView()
+                            .environmentObject(inventoryViewModel),
+                        isActive: $navigateToInventory
+                    ) {
+                        Text(isEntryInventory ? "Start Entry Inventory".localized() : "Start Exit Inventory".localized())
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 15)
                             .background(Color("LightBlue"))
@@ -319,9 +303,14 @@ struct PropertyDetailView: View {
                             .padding(.horizontal)
                             .padding(.bottom, 10)
                     }
-                    .accessibilityLabel("inventory_btn_start")
+                    .accessibilityLabel(isEntryInventory ? "inventory_btn_entry" : "inventory_btn_exit")
+                    .onTapGesture {
+                        inventoryViewModel.isEntryInventory = isEntryInventory
+                        inventoryViewModel.property = property
+                        navigateToInventory = true
+                    }
                 }
-                
+
                 if let errorMessage = errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
@@ -331,24 +320,34 @@ struct PropertyDetailView: View {
             .navigationBarBackButtonHidden(true)
             .onAppear {
                 Task {
-                    if !CommandLine.arguments.contains("-skipLogin") {
-                        do {
-                            isLoading = true
-                            if property.photo == nil {
-                                await viewModel.fetchProperties()
-                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                    property = updatedProperty
-                                }
-                            }
-                            try await viewModel.fetchPropertyDocuments(propertyId: property.id)
+                    do {
+                        isLoading = true
+                        if property.photo == nil {
+                            await viewModel.fetchProperties()
                             if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
                                 property = updatedProperty
                             }
-                        } catch {
-                            print("Error fetching property data: \(error.localizedDescription)")
                         }
-                        isLoading = false
+                        try await viewModel.fetchPropertyDocuments(propertyId: property.id)
+                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                            property = updatedProperty
+                        }
+
+                        let token = try await TokenStorage.getValidAccessToken()
+                        if let leaseId = try await viewModel.fetchActiveLease(propertyId: property.id, token: token) {
+                            if let lastReport = try await viewModel.fetchLastInventoryReport(propertyId: property.id, leaseId: leaseId) {
+                                isEntryInventory = lastReport.type == "end" || lastReport.type == "middle"
+                            } else {
+                                isEntryInventory = true
+                            }
+                        } else {
+                            isEntryInventory = true
+                        }
+                    } catch {
+                        errorMessage = "Error fetching property data: \(error.localizedDescription)".localized()
+                        print("Error fetching property data: \(error.localizedDescription)")
                     }
+                    isLoading = false
                 }
             }
             .sheet(isPresented: $showEditPropertyPopUp) {
@@ -360,85 +359,89 @@ struct PropertyDetailView: View {
             .sheet(isPresented: $showReportDamageView) {
                 ReportDamageView(propertyId: property.id)
             }
-            if showCancelInvitePopUp {
-                CustomAlertTwoButtons(
-                    isActive: $showCancelInvitePopUp,
-                    title: "Cancel Invite".localized(),
-                    message: "Are you sure you want to cancel the pending invite?".localized(),
-                    buttonTitle: "Confirm".localized(),
-                    secondaryButtonTitle: "Cancel".localized(),
-                    action: {
-                        Task {
-                            do {
-                                let token = try await TokenStorage.getValidAccessToken()
-                                try await viewModel.cancelInvite(propertyId: property.id, token: token)
-                                await viewModel.fetchProperties()
-                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                    property = updatedProperty
-                                }
-                            } catch {
-                                errorMessage = "Error cancelling invite: \(error.localizedDescription)"
-                                print("Error cancelling invite: \(error.localizedDescription)")
-                            }
-                        }
-                    },
-                    secondaryAction: {}
-                )
-                .accessibilityIdentifier("InviteTenantAlert")
-            }
-            if showEndLeasePopUp {
-                CustomAlertTwoButtons(
-                    isActive: $showEndLeasePopUp,
-                    title: "End Lease".localized(),
-                    message: "Are you sure you want to end the current lease?".localized(),
-                    buttonTitle: "Confirm".localized(),
-                    secondaryButtonTitle: "Cancel".localized(),
-                    action: {
-                        Task {
-                            do {
-                                let token = try await TokenStorage.getValidAccessToken()
-                                if let leaseId = try await viewModel.fetchActiveLease(propertyId: property.id, token: token) {
-                                    try await viewModel.endLease(propertyId: property.id, leaseId: leaseId, token: token)
-                                    await viewModel.fetchProperties()
-                                    if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                        property = updatedProperty
+            .overlay(
+                Group {
+                    if showCancelInvitePopUp {
+                        CustomAlertTwoButtons(
+                            isActive: $showCancelInvitePopUp,
+                            title: "Cancel Invite".localized(),
+                            message: "Are you sure you want to cancel the pending invite?".localized(),
+                            buttonTitle: "Confirm".localized(),
+                            secondaryButtonTitle: "Cancel".localized(),
+                            action: {
+                                Task {
+                                    do {
+                                        let token = try await TokenStorage.getValidAccessToken()
+                                        try await viewModel.cancelInvite(propertyId: property.id, token: token)
+                                        await viewModel.fetchProperties()
+                                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                            property = updatedProperty
+                                        }
+                                    } catch {
+                                        errorMessage = "Error cancelling invite: \(error.localizedDescription)".localized()
+                                        print("Error cancelling invite: \(error.localizedDescription)")
                                     }
-                                } else {
-                                    errorMessage = "No active lease found.".localized()
-                                    print("No active lease found for property \(property.id)")
                                 }
-                            } catch {
-                                errorMessage = "Error ending lease: \(error.localizedDescription)".localized()
-                                print("Error ending lease: \(error.localizedDescription)")
-                            }
-                        }
-                    },
-                    secondaryAction: {}
-                )
-                .accessibilityIdentifier("EndLeaseAlert")
-            }
-            if showDeletePropertyPopUp {
-                CustomAlertTwoButtons(
-                    isActive: $showDeletePropertyPopUp,
-                    title: "Delete Property".localized(),
-                    message: "Are you sure you want to delete this property?".localized(),
-                    buttonTitle: "Confirm".localized(),
-                    secondaryButtonTitle: "Cancel".localized(),
-                    action: {
-                        Task {
-                            do {
-                                try await viewModel.deleteProperty(propertyId: property.id)
-                                dismiss()
-                            } catch {
-                                errorMessage = "Error deleting property: \(error.localizedDescription)".localized()
-                                print("Error deleting property: \(error.localizedDescription)")
-                            }
-                        }
-                    },
-                    secondaryAction: {}
-                )
-                .accessibilityIdentifier("DeletePropertyAlert")
-            }
+                            },
+                            secondaryAction: {}
+                        )
+                        .accessibilityIdentifier("InviteTenantAlert")
+                    }
+                    if showEndLeasePopUp {
+                        CustomAlertTwoButtons(
+                            isActive: $showEndLeasePopUp,
+                            title: "End Lease".localized(),
+                            message: "Are you sure you want to end the current lease?".localized(),
+                            buttonTitle: "Confirm".localized(),
+                            secondaryButtonTitle: "Cancel".localized(),
+                            action: {
+                                Task {
+                                    do {
+                                        let token = try await TokenStorage.getValidAccessToken()
+                                        if let leaseId = try await viewModel.fetchActiveLease(propertyId: property.id, token: token) {
+                                            try await viewModel.endLease(propertyId: property.id, leaseId: leaseId, token: token)
+                                            await viewModel.fetchProperties()
+                                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                                property = updatedProperty
+                                            }
+                                        } else {
+                                            errorMessage = "No active lease found.".localized()
+                                            print("No active lease found for property \(property.id)")
+                                        }
+                                    } catch {
+                                        errorMessage = "Error ending lease: \(error.localizedDescription)".localized()
+                                        print("Error ending lease: \(error.localizedDescription)")
+                                    }
+                                }
+                            },
+                            secondaryAction: {}
+                        )
+                        .accessibilityIdentifier("EndLeaseAlert")
+                    }
+                    if showDeletePropertyPopUp {
+                        CustomAlertTwoButtons(
+                            isActive: $showDeletePropertyPopUp,
+                            title: "Delete Property".localized(),
+                            message: "Are you sure you want to delete this property?".localized(),
+                            buttonTitle: "Confirm".localized(),
+                            secondaryButtonTitle: "Cancel".localized(),
+                            action: {
+                                Task {
+                                    do {
+                                        try await viewModel.deleteProperty(propertyId: property.id)
+                                        dismiss()
+                                    } catch {
+                                        errorMessage = "Error deleting property: \(error.localizedDescription)".localized()
+                                        print("Error deleting property: \(error.localizedDescription)")
+                                    }
+                                }
+                            },
+                            secondaryAction: {}
+                        )
+                        .accessibilityIdentifier("DeletePropertyAlert")
+                    }
+                }
+            )
         }
     }
 
