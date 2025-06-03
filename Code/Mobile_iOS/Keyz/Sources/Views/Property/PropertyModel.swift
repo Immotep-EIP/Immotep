@@ -22,6 +22,7 @@ struct Property: Identifiable, Equatable {
     var surface: Double
     var isAvailable: String
     var tenantName: String?
+    var leaseId: String?
     var leaseStartDate: String?
     var leaseEndDate: String?
     var documents: [PropertyDocument]

@@ -13,7 +13,7 @@ struct PropertyDetailView: View {
     @ObservedObject var viewModel: PropertyViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
     @StateObject private var tenantViewModel = TenantViewModel()
-    @StateObject private var inventoryViewModel = InventoryViewModel(property: Property(id: "", ownerID: "", name: "", address: "", city: "", postalCode: "", country: "", photo: nil, monthlyRent: 0, deposit: 0, surface: 0.0, isAvailable: "", tenantName: nil, leaseStartDate: nil, leaseEndDate: nil, documents: [], createdAt: nil, rooms: [], damages: []))
+    @StateObject private var inventoryViewModel: InventoryViewModel
     @State private var showInviteTenantSheet = false
     @State private var showEndLeasePopUp = false
     @State private var showCancelInvitePopUp = false
@@ -27,421 +27,427 @@ struct PropertyDetailView: View {
     @State private var navigateToInventory: Bool = false
     @Environment(\.dismiss) var dismiss
     private let tabs = ["Details".localized(), "Documents".localized(), "Damages".localized()]
+    
+    init(property: Binding<Property>, viewModel: PropertyViewModel) {
+        self._property = property
+        self.viewModel = viewModel
+        self._inventoryViewModel = StateObject(wrappedValue: InventoryViewModel(property: property.wrappedValue))
+    }
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                TopBar(title: "Keyz".localized())
+        NavigationStack {
+            ZStack {
+                VStack(spacing: 0) {
+                    TopBar(title: "Keyz".localized())
 
-                VStack(alignment: .leading, spacing: 16) {
-                    ZStack(alignment: .topLeading) {
-                        if isLoading {
-                            VStack {
-                                Spacer()
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle())
-                                Spacer()
+                    VStack(alignment: .leading, spacing: 16) {
+                        ZStack(alignment: .topLeading) {
+                            if isLoading {
+                                VStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                    Spacer()
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: 200)
+                            } else if let uiImage = property.photo {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 200)
+                                    .clipped()
+                            } else {
+                                Image("DefaultImageProperty")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 200)
+                                    .clipped()
+                                    .accessibilityLabel("image_property")
                             }
-                            .frame(maxWidth: .infinity, maxHeight: 200)
-                        } else if let uiImage = property.photo {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(height: 200)
-                                .clipped()
-                        } else {
-                            Image("DefaultImageProperty")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(height: 200)
-                                .clipped()
-                                .accessibilityLabel("image_property")
-                        }
 
-                        Button(action: {
-                            dismiss()
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .font(.title3)
-                                .foregroundColor(.white)
-                                .frame(width: 40, height: 40)
-                                .background(Color.black.opacity(0.6))
-                                .clipShape(Circle())
-                        }
-                        .padding(16)
-                        .accessibilityLabel("back_button")
-
-                        if loginViewModel.userRole == "owner" {
-                            Menu {
-                                Button(action: { showInviteTenantSheet = true }) {
-                                    Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
-                                }
-                                Button(action: { showEndLeasePopUp = true }) {
-                                    Label("End Lease".localized(), systemImage: "xmark.circle")
-                                }
-                                Button(action: { showCancelInvitePopUp = true }) {
-                                    Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
-                                }
-                                Button(action: { showEditPropertyPopUp = true }) {
-                                    Label("Edit Property".localized(), systemImage: "pencil")
-                                }
-                                Button(action: { showDeletePropertyPopUp = true }) {
-                                    Label("Delete Property".localized(), systemImage: "trash")
-                                }
-                            } label: {
-                                Image(systemName: "ellipsis")
+                            Button(action: {
+                                dismiss()
+                            }) {
+                                Image(systemName: "chevron.left")
                                     .font(.title3)
                                     .foregroundColor(.white)
                                     .frame(width: 40, height: 40)
                                     .background(Color.black.opacity(0.6))
                                     .clipShape(Circle())
                             }
-                            .frame(maxWidth: .infinity, alignment: .topTrailing)
                             .padding(16)
-                            .accessibilityLabel("options_button")
-                        }
-                    }
+                            .accessibilityLabel("back_button")
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(property.name)
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(Color("textColor"))
-                            Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
-                                )
-                                .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
-                        }
-                        HStack(spacing: 4) {
-                            Image(systemName: "mappin.and.ellipse.circle")
-                                .font(.caption)
-                                .foregroundColor(Color("LightBlue"))
-                            Text("\(property.address), \(property.city), \(property.country)")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                                .lineLimit(1)
-                                .accessibilityLabel("text_address")
-                        }
-                    }
-                    .padding(.horizontal)
-
-                    HStack(spacing: 10) {
-                        ForEach(tabs, id: \.self) { tab in
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    selectedTab = tab
+                            if loginViewModel.userRole == "owner" {
+                                Menu {
+                                    Button(action: { showInviteTenantSheet = true }) {
+                                        Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
+                                    }
+                                    Button(action: { showEndLeasePopUp = true }) {
+                                        Label("End Lease".localized(), systemImage: "xmark.circle")
+                                    }
+                                    Button(action: { showCancelInvitePopUp = true }) {
+                                        Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
+                                    }
+                                    Button(action: { showEditPropertyPopUp = true }) {
+                                        Label("Edit Property".localized(), systemImage: "pencil")
+                                    }
+                                    Button(action: { showDeletePropertyPopUp = true }) {
+                                        Label("Delete Property".localized(), systemImage: "trash")
+                                    }
+                                } label: {
+                                    Image(systemName: "ellipsis")
+                                        .font(.title3)
+                                        .foregroundColor(.white)
+                                        .frame(width: 40, height: 40)
+                                        .background(Color.black.opacity(0.6))
+                                        .clipShape(Circle())
                                 }
-                            }) {
-                                Text(tab)
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(selectedTab == tab ? .white : .gray)
-                                    .padding(.vertical, 10)
-                                    .padding(.horizontal, 16)
+                                .frame(maxWidth: .infinity, alignment: .topTrailing)
+                                .padding(16)
+                                .accessibilityLabel("options_button")
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text(property.name)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(Color("textColor"))
+                                Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
                                     .background(
-                                        selectedTab == tab ? Color("LightBlue") : Color.gray.opacity(0.1)
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
                                     )
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                    .scaleEffect(selectedTab == tab ? 1.05 : 1.0)
-                                    .shadow(
-                                        color: selectedTab == tab ? Color.black.opacity(0.2) : Color.clear,
-                                        radius: 4, x: 0, y: 2
-                                    )
+                                    .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
                             }
-                            .accessibilityLabel("tab_\(tab.lowercased())")
+                            HStack(spacing: 4) {
+                                Image(systemName: "mappin.and.ellipse.circle")
+                                    .font(.caption)
+                                    .foregroundColor(Color("LightBlue"))
+                                Text("\(property.address), \(property.city), \(property.country)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                    .lineLimit(1)
+                                    .accessibilityLabel("text_address")
+                            }
                         }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(Color("basicWhiteBlack"))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-                    .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 8)
-                }
+                        .padding(.horizontal)
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        switch selectedTab {
-                        case "Details".localized():
-                            VStack(alignment: .leading, spacing: 16) {
-                                LazyVGrid(
-                                    columns: Array(repeating: GridItem(.flexible(), spacing: 15), count: 3),
-                                    spacing: 15
-                                ) {
-                                    DetailItem(
-                                        icon: "square.split.bottomrightquarter",
-                                        value: "\(formattedValue(property.surface))m2",
-                                        label: "Area".localized()
-                                    )
-                                    DetailItem(
-                                        icon: "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90",
-                                        value: "\(property.monthlyRent)$",
-                                        label: "Rent /month".localized()
-                                    )
-                                    DetailItem(
-                                        icon: "eurosign.bank.building",
-                                        value: "\(property.deposit)$",
-                                        label: "Deposit".localized()
-                                    )
+                        HStack(spacing: 10) {
+                            ForEach(tabs, id: \.self) { tab in
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        selectedTab = tab
+                                    }
+                                }) {
+                                    Text(tab)
+                                        .font(.system(size: 16, weight: .medium))
+                                        .foregroundColor(selectedTab == tab ? .white : .gray)
+                                        .padding(.vertical, 10)
+                                        .padding(.horizontal, 16)
+                                        .background(
+                                            selectedTab == tab ? Color("LightBlue") : Color.gray.opacity(0.1)
+                                        )
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        .scaleEffect(selectedTab == tab ? 1.05 : 1.0)
+                                        .shadow(
+                                            color: selectedTab == tab ? Color.black.opacity(0.2) : Color.clear,
+                                            radius: 4, x: 0, y: 2
+                                        )
                                 }
-                                .padding(.horizontal)
-
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Tenant(s)".localized())
-                                        .font(.headline)
-                                        .foregroundColor(Color("textColor"))
-                                    Text(property.tenantName ?? "No tenant assigned".localized())
-                                        .foregroundColor(.gray)
-                                }
-                                .padding(.horizontal)
-
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Dates".localized())
-                                        .font(.headline)
-                                        .foregroundColor(Color("textColor"))
-                                    Text(formatLeaseDates())
-                                        .foregroundColor(.gray)
-                                }
-                                .padding(.horizontal)
+                                .accessibilityLabel("tab_\(tab.lowercased())")
                             }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Color("basicWhiteBlack"))
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 8)
+                    }
 
-                        case "Documents".localized():
-                            DocumentsGrid(documents: $property.documents)
-                                .padding(.horizontal)
-
-                        case "Damages".localized():
-                            VStack {
-                                if viewModel.isFetchingDamages {
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle())
-                                        .padding()
-                                } else if let damagesError = viewModel.damagesError {
-                                    Text(damagesError)
-                                        .foregroundColor(.red)
-                                        .padding()
-                                } else if property.damages.isEmpty {
-                                    Text("no_damages_reported".localized())
-                                        .foregroundColor(.gray)
-                                        .padding()
-                                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            switch selectedTab {
+                            case "Details".localized():
+                                VStack(alignment: .leading, spacing: 16) {
                                     LazyVGrid(
-                                        columns: [GridItem(.flexible())],
-                                        spacing: 10
+                                        columns: Array(repeating: GridItem(.flexible(), spacing: 15), count: 3),
+                                        spacing: 15
                                     ) {
-                                        ForEach(property.damages) { damage in
-                                            DamageItem(damage: damage)
-                                        }
+                                        DetailItem(
+                                            icon: "square.split.bottomrightquarter",
+                                            value: "\(formattedValue(property.surface))m2",
+                                            label: "Area".localized()
+                                        )
+                                        DetailItem(
+                                            icon: "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90",
+                                            value: "\(property.monthlyRent)$",
+                                            label: "Rent /month".localized()
+                                        )
+                                        DetailItem(
+                                            icon: "eurosign.bank.building",
+                                            value: "\(property.deposit)$",
+                                            label: "Deposit".localized()
+                                        )
+                                    }
+                                    .padding(.horizontal)
+
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Tenant(s)".localized())
+                                            .font(.headline)
+                                            .foregroundColor(Color("textColor"))
+                                        Text(property.tenantName ?? "No tenant assigned".localized())
+                                            .foregroundColor(.gray)
+                                    }
+                                    .padding(.horizontal)
+
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Dates".localized())
+                                            .font(.headline)
+                                            .foregroundColor(Color("textColor"))
+                                        Text(formatLeaseDates())
+                                            .foregroundColor(.gray)
                                     }
                                     .padding(.horizontal)
                                 }
 
-                                if loginViewModel.userRole == "tenant" {
-                                    Button(action: { showReportDamageView = true }) {
-                                        Text("Report Damage".localized())
-                                            .frame(maxWidth: .infinity)
-                                            .padding(.vertical, 15)
-                                            .background(Color("LightBlue"))
-                                            .foregroundColor(.white)
-                                            .cornerRadius(10)
-                                            .padding(.horizontal)
-                                            .padding(.top, 10)
-                                    }
-                                    .accessibilityLabel("report_damage_btn")
-                                }
-                            }
-                            .onAppear {
-                                print("Tab switched to Damages, fetching damages...")
-                                Task {
-                                    do {
-                                        if loginViewModel.userRole == "tenant" {
-                                            if let leaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: property.id, token: try await TokenStorage.getValidAccessToken()) {
-                                                try await viewModel.fetchTenantDamages(leaseId: leaseId)
-                                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                                    property.damages = updatedProperty.damages
-                                                }
-                                            } else {
-                                                viewModel.damagesError = "No active lease found.".localized()
-                                            }
-                                        } else {
-                                            try await viewModel.fetchPropertyDamages(propertyId: property.id)
-                                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                                property = updatedProperty
+                            case "Documents".localized():
+                                DocumentsGrid(documents: $property.documents)
+                                    .padding(.horizontal)
+
+                            case "Damages".localized():
+                                VStack {
+                                    if viewModel.isFetchingDamages {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle())
+                                            .padding()
+                                    } else if let damagesError = viewModel.damagesError {
+                                        Text(damagesError)
+                                            .foregroundColor(.red)
+                                            .padding()
+                                    } else if property.damages.isEmpty {
+                                        Text("no_damages_reported".localized())
+                                            .foregroundColor(.gray)
+                                            .padding()
+                                    } else {
+                                        LazyVGrid(
+                                            columns: [GridItem(.flexible())],
+                                            spacing: 10
+                                        ) {
+                                            ForEach(property.damages) { damage in
+                                                DamageItem(damage: damage)
                                             }
                                         }
-                                    } catch {
-                                        viewModel.damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
-                                        print("Error fetching damages: \(error.localizedDescription)")
+                                        .padding(.horizontal)
+                                    }
+
+                                    if loginViewModel.userRole == "tenant" {
+                                        Button(action: { showReportDamageView = true }) {
+                                            Text("Report Damage".localized())
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.vertical, 15)
+                                                .background(Color("LightBlue"))
+                                                .foregroundColor(.white)
+                                                .cornerRadius(10)
+                                                .padding(.horizontal)
+                                                .padding(.top, 10)
+                                        }
+                                        .accessibilityLabel("report_damage_btn")
                                     }
                                 }
+                                .onAppear {
+                                    print("Tab switched to Damages, fetching damages...")
+                                    Task {
+                                        do {
+                                            if loginViewModel.userRole == "tenant" {
+                                                if let leaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: property.id, token: try await TokenStorage.getValidAccessToken()) {
+                                                    try await viewModel.fetchTenantDamages(leaseId: leaseId)
+                                                    if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                                        property.damages = updatedProperty.damages
+                                                    }
+                                                } else {
+                                                    viewModel.damagesError = "No active lease found.".localized()
+                                                }
+                                            } else {
+                                                try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                                    property = updatedProperty
+                                                }
+                                            }
+                                        } catch {
+                                            viewModel.damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
+                                            print("Error fetching damages: \(error.localizedDescription)")
+                                        }
+                                    }
+                                }
+
+                            default:
+                                EmptyView()
                             }
-
-                        default:
-                            EmptyView()
                         }
+                        .padding(.vertical, 20)
                     }
-                    .padding(.vertical, 20)
-                }
 
-                if loginViewModel.userRole == "owner" {
-                    NavigationLink(
-                        destination: InventoryRoomView()
-                            .environmentObject(inventoryViewModel),
-                        isActive: $navigateToInventory
-                    ) {
-                        Text(isEntryInventory ? "Start Entry Inventory".localized() : "Start Exit Inventory".localized())
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 15)
-                            .background(Color("LightBlue"))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                            .padding(.horizontal)
-                            .padding(.bottom, 10)
+                    if loginViewModel.userRole == "owner" {
+                        Button(action: {
+                            print("Navigating to Inventory with property ID: \(property.id)")
+                            inventoryViewModel.isEntryInventory = isEntryInventory
+                            navigateToInventory = true
+                        }) {
+                            Text(isEntryInventory ? "Start Entry Inventory".localized() : "Start Exit Inventory".localized())
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 15)
+                                .background(Color("LightBlue"))
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                                .padding(.horizontal)
+                                .padding(.bottom, 10)
+                        }
+                        .accessibilityLabel(isEntryInventory ? "inventory_btn_entry" : "inventory_btn_exit")
                     }
-                    .accessibilityLabel(isEntryInventory ? "inventory_btn_entry" : "inventory_btn_exit")
-                    .onTapGesture {
-                        inventoryViewModel.isEntryInventory = isEntryInventory
-                        inventoryViewModel.property = property
-                        navigateToInventory = true
-                    }
-                }
 
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
+                    if let errorMessage = errorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .padding()
+                    }
                 }
-            }
-            .navigationBarBackButtonHidden(true)
-            .onAppear {
-                Task {
-                    do {
-                        isLoading = true
-                        if property.photo == nil {
-                            await viewModel.fetchProperties()
+                .navigationDestination(isPresented: $navigateToInventory) {
+                    InventoryRoomView()
+                        .environmentObject(inventoryViewModel)
+                }
+                .navigationBarBackButtonHidden(true)
+                .onAppear {
+                    Task {
+                        do {
+                            isLoading = true
+                            if property.photo == nil {
+                                await viewModel.fetchProperties()
+                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                    property = updatedProperty
+                                }
+                            }
+                            try await viewModel.fetchPropertyDocuments(propertyId: property.id)
                             if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
                                 property = updatedProperty
                             }
-                        }
-                        try await viewModel.fetchPropertyDocuments(propertyId: property.id)
-                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                            property = updatedProperty
-                        }
 
-                        let token = try await TokenStorage.getValidAccessToken()
-                        if let leaseId = try await viewModel.fetchActiveLease(propertyId: property.id, token: token) {
-                            if let lastReport = try await viewModel.fetchLastInventoryReport(propertyId: property.id, leaseId: leaseId) {
-                                isEntryInventory = lastReport.type == "end" || lastReport.type == "middle"
+                            if let leaseId = property.leaseId {
+                                if let lastReport = try await viewModel.fetchLastInventoryReport(propertyId: property.id, leaseId: leaseId) {
+                                    isEntryInventory = lastReport.type == "end" || lastReport.type == "middle"
+                                } else {
+                                    isEntryInventory = true
+                                }
                             } else {
                                 isEntryInventory = true
                             }
-                        } else {
-                            isEntryInventory = true
+                        } catch {
+                            errorMessage = "Error fetching property data: \(error.localizedDescription)".localized()
+                            print("Error fetching property data: \(error.localizedDescription)")
                         }
-                    } catch {
-                        errorMessage = "Error fetching property data: \(error.localizedDescription)".localized()
-                        print("Error fetching property data: \(error.localizedDescription)")
+                        isLoading = false
                     }
-                    isLoading = false
                 }
-            }
-            .sheet(isPresented: $showEditPropertyPopUp) {
-                EditPropertyView(viewModel: viewModel, property: $property)
-            }
-            .sheet(isPresented: $showInviteTenantSheet) {
-                InviteTenantView(tenantViewModel: tenantViewModel, property: property)
-            }
-            .sheet(isPresented: $showReportDamageView) {
-                ReportDamageView(propertyId: property.id)
-            }
-            .overlay(
-                Group {
-                    if showCancelInvitePopUp {
-                        CustomAlertTwoButtons(
-                            isActive: $showCancelInvitePopUp,
-                            title: "Cancel Invite".localized(),
-                            message: "Are you sure you want to cancel the pending invite?".localized(),
-                            buttonTitle: "Confirm".localized(),
-                            secondaryButtonTitle: "Cancel".localized(),
-                            action: {
-                                Task {
-                                    do {
-                                        let token = try await TokenStorage.getValidAccessToken()
-                                        try await viewModel.cancelInvite(propertyId: property.id, token: token)
-                                        await viewModel.fetchProperties()
-                                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                            property = updatedProperty
-                                        }
-                                    } catch {
-                                        errorMessage = "Error cancelling invite: \(error.localizedDescription)".localized()
-                                        print("Error cancelling invite: \(error.localizedDescription)")
-                                    }
-                                }
-                            },
-                            secondaryAction: {}
-                        )
-                        .accessibilityIdentifier("InviteTenantAlert")
-                    }
-                    if showEndLeasePopUp {
-                        CustomAlertTwoButtons(
-                            isActive: $showEndLeasePopUp,
-                            title: "End Lease".localized(),
-                            message: "Are you sure you want to end the current lease?".localized(),
-                            buttonTitle: "Confirm".localized(),
-                            secondaryButtonTitle: "Cancel".localized(),
-                            action: {
-                                Task {
-                                    do {
-                                        let token = try await TokenStorage.getValidAccessToken()
-                                        if let leaseId = try await viewModel.fetchActiveLease(propertyId: property.id, token: token) {
-                                            try await viewModel.endLease(propertyId: property.id, leaseId: leaseId, token: token)
+                .sheet(isPresented: $showEditPropertyPopUp) {
+                    EditPropertyView(viewModel: viewModel, property: $property)
+                }
+                .sheet(isPresented: $showInviteTenantSheet) {
+                    InviteTenantView(tenantViewModel: tenantViewModel, property: property)
+                }
+                .sheet(isPresented: $showReportDamageView) {
+                    ReportDamageView(propertyId: property.id)
+                }
+                .overlay(
+                    Group {
+                        if showCancelInvitePopUp {
+                            CustomAlertTwoButtons(
+                                isActive: $showCancelInvitePopUp,
+                                title: "Cancel Invite".localized(),
+                                message: "Are you sure you want to cancel the pending invite?".localized(),
+                                buttonTitle: "Confirm".localized(),
+                                secondaryButtonTitle: "Cancel".localized(),
+                                action: {
+                                    Task {
+                                        do {
+                                            let token = try await TokenStorage.getValidAccessToken()
+                                            try await viewModel.cancelInvite(propertyId: property.id, token: token)
                                             await viewModel.fetchProperties()
                                             if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
                                                 property = updatedProperty
                                             }
-                                        } else {
-                                            errorMessage = "No active lease found.".localized()
-                                            print("No active lease found for property \(property.id)")
+                                        } catch {
+                                            errorMessage = "Error cancelling invite: \(error.localizedDescription)".localized()
+                                            print("Error cancelling invite: \(error.localizedDescription)")
                                         }
-                                    } catch {
-                                        errorMessage = "Error ending lease: \(error.localizedDescription)".localized()
-                                        print("Error ending lease: \(error.localizedDescription)")
                                     }
-                                }
-                            },
-                            secondaryAction: {}
-                        )
-                        .accessibilityIdentifier("EndLeaseAlert")
-                    }
-                    if showDeletePropertyPopUp {
-                        CustomAlertTwoButtons(
-                            isActive: $showDeletePropertyPopUp,
-                            title: "Delete Property".localized(),
-                            message: "Are you sure you want to delete this property?".localized(),
-                            buttonTitle: "Confirm".localized(),
-                            secondaryButtonTitle: "Cancel".localized(),
-                            action: {
-                                Task {
-                                    do {
-                                        try await viewModel.deleteProperty(propertyId: property.id)
-                                        dismiss()
-                                    } catch {
-                                        errorMessage = "Error deleting property: \(error.localizedDescription)".localized()
-                                        print("Error deleting property: \(error.localizedDescription)")
+                                },
+                                secondaryAction: {}
+                            )
+                            .accessibilityIdentifier("InviteTenantAlert")
+                        }
+                        if showEndLeasePopUp {
+                            CustomAlertTwoButtons(
+                                isActive: $showEndLeasePopUp,
+                                title: "End Lease".localized(),
+                                message: "Are you sure you want to end the current lease?".localized(),
+                                buttonTitle: "Confirm".localized(),
+                                secondaryButtonTitle: "Cancel".localized(),
+                                action: {
+                                    Task {
+                                        do {
+                                            let token = try await TokenStorage.getValidAccessToken()
+                                            if let leaseId = try await viewModel.fetchActiveLease(propertyId: property.id, token: token) {
+                                                try await viewModel.endLease(propertyId: property.id, leaseId: leaseId, token: token)
+                                                await viewModel.fetchProperties()
+                                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                                    property = updatedProperty
+                                                }
+                                            } else {
+                                                errorMessage = "No active lease found.".localized()
+                                                print("No active lease found for property \(property.id)")
+                                            }
+                                        } catch {
+                                            errorMessage = "Error ending lease: \(error.localizedDescription)".localized()
+                                            print("Error ending lease: \(error.localizedDescription)")
+                                        }
                                     }
-                                }
-                            },
-                            secondaryAction: {}
-                        )
-                        .accessibilityIdentifier("DeletePropertyAlert")
+                                },
+                                secondaryAction: {}
+                            )
+                            .accessibilityIdentifier("EndLeaseAlert")
+                        }
+                        if showDeletePropertyPopUp {
+                            CustomAlertTwoButtons(
+                                isActive: $showDeletePropertyPopUp,
+                                title: "Delete Property".localized(),
+                                message: "Are you sure you want to delete this property?".localized(),
+                                buttonTitle: "Confirm".localized(),
+                                secondaryButtonTitle: "Cancel".localized(),
+                                action: {
+                                    Task {
+                                        do {
+                                            try await viewModel.deleteProperty(propertyId: property.id)
+                                            dismiss()
+                                        } catch {
+                                            errorMessage = "Error deleting property: \(error.localizedDescription)".localized()
+                                            print("Error deleting property: \(error.localizedDescription)")
+                                        }
+                                    }
+                                },
+                                secondaryAction: {}
+                            )
+                            .accessibilityIdentifier("DeletePropertyAlert")
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 

@@ -4,6 +4,7 @@
 //
 //  Created by Liebenguth Alessio on 26/10/2024.
 //
+
 import SwiftUI
 import Foundation
 
@@ -164,6 +165,7 @@ class PropertyViewModel: ObservableObject {
                     surface: propertyResponse.areaSqm,
                     isAvailable: propertyResponse.isAvailable,
                     tenantName: propertyResponse.lease?.tenantName,
+                    leaseId: propertyResponse.lease?.id,
                     leaseStartDate: propertyResponse.lease?.startDate,
                     leaseEndDate: propertyResponse.lease?.endDate,
                     documents: [],
@@ -193,7 +195,6 @@ class PropertyViewModel: ObservableObject {
                     print("Image assigned to property \(self.properties[index].id): \(image != nil ? "Loaded" : "Nil")")
                 }
             }
-            //            print("Properties updated with images: \(properties.map { ($0.id, $0.photo != nil) })")
             objectWillChange.send()
         } catch {
             print("Error fetching properties: \(error.localizedDescription)")
@@ -223,12 +224,6 @@ class PropertyViewModel: ObservableObject {
                 
                 switch httpResponse.statusCode {
                 case 200, 201:
-                    //                    if let jsonString = String(data: data, encoding: .utf8) {
-                    //                        print("Raw JSON response for property \(propertyId): \(jsonString)")
-                    //                    } else {
-                    //                        print("Failed to decode raw JSON response for property \(propertyId)")
-                    //                    }
-                    
                     do {
                         let propertyImage = try JSONDecoder().decode(PropertyImageBase64.self, from: data)
                         
