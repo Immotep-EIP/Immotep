@@ -11,7 +11,6 @@ struct InventoryExitEvaluationView: View {
     @EnvironmentObject var inventoryViewModel: InventoryViewModel
     @Environment(\.presentationMode) var presentationMode
     let selectedStuff: LocalInventory
-
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
     @State private var replaceIndex: Int?
@@ -106,24 +105,24 @@ struct InventoryExitEvaluationView: View {
                         Text("Send Report")
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(inventoryViewModel.selectedImages.isEmpty ? Color.gray : Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     })
-                    .disabled(isLoading)
+                    .disabled(isLoading || inventoryViewModel.selectedImages.isEmpty)
                     .padding()
                 }
 
                 if let errorMessage = errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
+                        .padding()
                 }
             }
         }
         .fullScreenCover(isPresented: $showSheet) {
             ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
         }
-//        .navigationBarBackButtonHidden(true)
         .onAppear {
             inventoryViewModel.selectStuff(selectedStuff)
         }
@@ -165,19 +164,31 @@ struct InventoryExitEvaluationView: View {
     private func markStuffAsCheckedAndSendReport() async {
         do {
             try await inventoryViewModel.markStuffAsChecked(selectedStuff)
-
             await inventoryViewModel.fetchLastInventoryReport()
-
             if let oldReportId = inventoryViewModel.lastReportId {
                 try await inventoryViewModel.compareStuffReport(oldReportId: oldReportId)
-//                print("Comparison completed successfully")
+                isReportSent = true
             } else {
                 errorMessage = "No previous inventory report found for comparison."
             }
-
-            isReportSent = true
-        } catch {
-            errorMessage = "Error: \(error.localizedDescription)"
+        } catch let error as NSError {
+            switch error.code {
+            case 404:
+                errorMessage = "Property or old report not found. Please check the property details."
+            case 403:
+                errorMessage = "You do not have permission to access this property."
+            case 400:
+                if error.localizedDescription.contains("datauri") {
+                    errorMessage = "Invalid image format. Please ensure all images are valid JPEGs."
+                } else {
+                    errorMessage = "Invalid request: \(error.localizedDescription)"
+                }
+            case 0 where error.localizedDescription.contains("No active lease found"):
+                errorMessage = "No active lease found for this property."
+            default:
+                errorMessage = "Error: \(error.localizedDescription)"
+            }
+            print("Error sending comparison report: \(error.localizedDescription)")
         }
     }
 

@@ -108,24 +108,24 @@ struct InventoryEntryEvaluationView: View {
                         Text("Send Report")
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(inventoryViewModel.selectedImages.isEmpty ? Color.gray : Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     })
-                    .disabled(isLoading)
+                    .disabled(isLoading || inventoryViewModel.selectedImages.isEmpty)
                     .padding()
                 }
 
                 if let errorMessage = errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
+                        .padding()
                 }
             }
         }
         .fullScreenCover(isPresented: $showSheet) {
             ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
         }
-//        .navigationBarBackButtonHidden(true)
         .onAppear {
             inventoryViewModel.selectStuff(selectedStuff)
         }
@@ -174,8 +174,24 @@ struct InventoryEntryEvaluationView: View {
             try await inventoryViewModel.markStuffAsChecked(selectedStuff)
             try await inventoryViewModel.sendStuffReport()
             isReportSent = true
-        } catch {
-            errorMessage = "Error: \(error.localizedDescription)"
+        } catch let error as NSError {
+            switch error.code {
+            case 404:
+                errorMessage = "Property or lease not found. Please check the property details."
+            case 403:
+                errorMessage = "You do not have permission to access this property."
+            case 400:
+                if error.localizedDescription.contains("datauri") {
+                    errorMessage = "Invalid image format. Please ensure all images are valid JPEGs."
+                } else {
+                    errorMessage = "Invalid request: \(error.localizedDescription)"
+                }
+            case 0 where error.localizedDescription.contains("No active lease found"):
+                errorMessage = "No active lease found for this property."
+            default:
+                errorMessage = "Error: \(error.localizedDescription)"
+            }
+            print("Error sending report: \(error.localizedDescription)")
         }
     }
 

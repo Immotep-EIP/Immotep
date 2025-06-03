@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 class InventoryReportManager {
@@ -16,15 +17,23 @@ class InventoryReportManager {
     }
 
     func sendStuffReport() async throws {
-        guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/summarize/") else {
-            throw URLError(.badURL)
+        guard let viewModel = viewModel else {
+            throw URLError(.cannotFindHost)
         }
+        
+        guard let leaseId = viewModel.property.leaseId, !leaseId.isEmpty else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No active lease found for property \(viewModel.property.id)"])
+        }
+        
         guard let token = await viewModel.getToken() else {
             throw URLError(.userAuthenticationRequired)
         }
+        
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/\(leaseId)/inventory-reports/summarize/") else {
+            throw URLError(.badURL)
+        }
+        
         let base64Images = convertUIImagesToBase64(viewModel.selectedImages)
-
         guard let stuffID = viewModel.selectedStuff?.id else {
             throw URLError(.badServerResponse)
         }
@@ -45,9 +54,22 @@ class InventoryReportManager {
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
-        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-            _ = String(data: data, encoding: .utf8) ?? "No response body"
+        guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No response body"
+            print("API Error: Status code \(httpResponse.statusCode) - \(errorBody)")
+            if httpResponse.statusCode == 404 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Property or lease not found"])
+            } else if httpResponse.statusCode == 403 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Property not yours"])
+            } else if httpResponse.statusCode == 400 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Invalid request: \(errorBody)"])
+            } else {
+                throw URLError(.badServerResponse)
+            }
         }
 
         let decoder = JSONDecoder()
@@ -77,7 +99,7 @@ class InventoryReportManager {
 
         viewModel.comment = summarizeResponse.note
         viewModel.selectedStatus = uiStatus
-//        print("Report sent successfully: \(summarizeResponse)")
+        print("Report sent successfully: \(summarizeResponse)")
     }
 
     func finalizeInventory() async throws {
@@ -145,7 +167,6 @@ class InventoryReportManager {
             }
             viewModel.completionMessage = viewModel.isEntryInventory
             ? "Entry inventory finalized successfully!" : "Exit inventory finalized successfully!"
-//            print("Report inventory successfully created")
         } catch {
             viewModel.completionMessage = viewModel.isEntryInventory
             ? "Failed to finalize entry inventory: \(error.localizedDescription)"
@@ -260,6 +281,16 @@ class InventoryReportManager {
 
         viewModel.comment = summarizeResponse.note
         viewModel.selectedStatus = uiStatus
-//        print("Comparison report sent successfully: \(summarizeResponse)")
+    }
+
+    private func convertUIImagesToBase64(_ images: [UIImage]) -> [String] {
+        return images.compactMap { image in
+            guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                print("Failed to convert UIImage to JPEG data")
+                return nil
+            }
+            let base64String = imageData.base64EncodedString()
+            return "data:image/jpeg;base64,\(base64String)"
+        }
     }
 }

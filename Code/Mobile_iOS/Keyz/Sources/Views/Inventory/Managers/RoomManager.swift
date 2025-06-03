@@ -17,7 +17,15 @@ class RoomManager {
 
     func fetchRooms() async {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/") else {
+        let propertyId = viewModel.property.id
+        print("Fetching rooms for property ID: \(propertyId)")
+
+        guard !propertyId.isEmpty else {
+            viewModel.errorMessage = "Property ID is empty"
+            return
+        }
+
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/rooms/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }
@@ -40,7 +48,8 @@ class RoomManager {
             }
 
             guard (200...299).contains(httpResponse.statusCode) else {
-                viewModel.errorMessage = "Error: Status code \(httpResponse.statusCode)"
+                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+                viewModel.errorMessage = "Error: Status code \(httpResponse.statusCode) - \(errorBody)"
                 return
             }
 
@@ -83,8 +92,11 @@ class RoomManager {
     }
 
     func addRoom(name: String, type: String) async throws {
-        guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/") else {
+        guard let viewModel = viewModel else { throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No view model"]) }
+        let propertyId = viewModel.property.id
+        guard !propertyId.isEmpty else { throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Property ID is empty"]) }
+
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/rooms/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
@@ -121,7 +133,6 @@ class RoomManager {
             }
 
             guard (200...299).contains(httpResponse.statusCode) else {
-                // Decode error response for more details
                 if let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
                     throw NSError(domain: "", code: httpResponse.statusCode,
                                   userInfo: [NSLocalizedDescriptionKey: "API error: \(errorResponse.error)"])
@@ -141,7 +152,13 @@ class RoomManager {
 
     func deleteRoom(_ room: LocalRoom) async {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/archive/") else {
+        let propertyId = viewModel.property.id
+        guard !propertyId.isEmpty else {
+            viewModel.errorMessage = "Property ID is empty"
+            return
+        }
+
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/rooms/\(room.id)/archive/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }
@@ -151,10 +168,7 @@ class RoomManager {
             return
         }
 
-        let body: [String: Any] = [
-                "archive": true
-            ]
-
+        let body: [String: Any] = ["archive": true]
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "PUT"
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -163,12 +177,7 @@ class RoomManager {
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: body)
             urlRequest.httpBody = jsonData
-        } catch {
-            print("error: \(error.localizedDescription)")
-//            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to serialize request body: \(error.localizedDescription)".localized()])
-        }
 
-        do {
             let (_, response) = try await URLSession.shared.data(for: urlRequest)
 
             guard let httpResponse = response as? HTTPURLResponse else {
