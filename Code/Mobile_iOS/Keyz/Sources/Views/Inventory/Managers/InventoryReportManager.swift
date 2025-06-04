@@ -107,10 +107,16 @@ class InventoryReportManager {
         guard viewModel.areAllRoomsCompleted() else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Not all rooms and stuff are checked"])
         }
+        guard let leaseId = viewModel.property.leaseId, !leaseId.isEmpty else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No active lease found for property \(viewModel.property.id)"])
+        }
+
+        let placeholderImage = UIImage(named: "DefaultImageProperty") ?? createBlankImage()
+        let placeholderBase64 = convertUIImageToBase64(placeholderImage)
 
         let roomsData = viewModel.localRooms.map { room in
             let roomPictures = room.inventory.flatMap { $0.images.map { convertUIImageToBase64($0) } }
-            let finalRoomPictures = roomPictures.isEmpty ? [""] : roomPictures
+            let finalRoomPictures = roomPictures.isEmpty ? [placeholderBase64] : roomPictures
 
             return RoomStateRequest(
                 id: room.id,
@@ -123,7 +129,7 @@ class InventoryReportManager {
                     let stuffState = validStates.contains(stuff.status.lowercased()) ? stuff.status.lowercased() : "good"
                     let stuffNote = stuff.comment.isEmpty ? "No comment provided" : stuff.comment
                     let stuffPictures = stuff.images.map { convertUIImageToBase64($0) }
-                    let finalStuffPictures = stuffPictures.isEmpty ? [""] : stuffPictures
+                    let finalStuffPictures = stuffPictures.isEmpty ? [placeholderBase64] : stuffPictures
 
                     return FurnitureStateRequest(
                         id: stuff.id,
@@ -138,7 +144,7 @@ class InventoryReportManager {
 
         let requestBody = InventoryReportRequest(type: viewModel.isEntryInventory ? "start" : "end", rooms: roomsData)
 
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/current/inventory-reports/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
@@ -153,6 +159,10 @@ class InventoryReportManager {
 
         let encoder = JSONEncoder()
         urlRequest.httpBody = try encoder.encode(requestBody)
+        
+        if let jsonData = urlRequest.httpBody, let jsonString = String(data: jsonData, encoding: .utf8) {
+            print("Request Body: \(jsonString)")
+        }
 
         do {
             let (_, response) = try await URLSession.shared.data(for: urlRequest)
@@ -173,6 +183,17 @@ class InventoryReportManager {
             : "Failed to finalize exit inventory: \(error.localizedDescription)"
             throw error
         }
+    }
+
+    func createBlankImage() -> UIImage {
+        let size = CGSize(width: 1, height: 1)
+        UIGraphicsBeginImageContext(size)
+        let context = UIGraphicsGetCurrentContext()
+        context?.setFillColor(UIColor.white.cgColor)
+        context?.fill(CGRect(origin: .zero, size: size))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image ?? UIImage()
     }
 
     func fetchLastInventoryReport() async {
@@ -290,7 +311,13 @@ class InventoryReportManager {
                 return nil
             }
             let base64String = imageData.base64EncodedString()
-            return "data:image/jpeg;base64,\(base64String)"
+            let fullString = "data:image/jpeg;base64,\(base64String)"
+            if let decodedData = Data(base64Encoded: base64String), let _ = UIImage(data: decodedData) {
+                return fullString
+            } else {
+                print("Invalid Base64 string for image")
+                return nil
+            }
         }
     }
 }
