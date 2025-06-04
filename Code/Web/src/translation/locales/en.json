@@ -441,6 +441,8 @@
       "error_fetching_data": "Error while fetching data",
       "date_error": "Start date must be before end date",
       "title": "Property details",
+      "select_default": "Select a lease",
+      "current": "current",
       "informations": {
         "name": "Name",
         "address": "Address",
@@ -453,7 +455,7 @@
       "tabs": {
         "documents": {
           "modal_title": "Add document",
-          "no_documents": "No documents yet",
+          "no_documents": "No documents",
           "delete_confirmation": {
             "title": "Delete document",
             "message": "Are you sure you want to delete this document?"

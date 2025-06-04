@@ -1,13 +1,20 @@
 import { useTranslation } from 'react-i18next'
 
 import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
+import { usePropertyContext } from '@/context/propertyContext'
 
 import { PropertyDetails } from '@/interfaces/Property/Property'
+import { Lease } from '@/interfaces/Property/Lease/Lease'
 
 import style from './DetailsPart.module.css'
 
-const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
+const PropertyInfo = ({
+  propertyData
+}: {
+  propertyData: PropertyDetails & { leases: Lease[] }
+}) => {
   const { t } = useTranslation()
+  const { selectedLease } = usePropertyContext()
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString('fr-FR', {
@@ -41,9 +48,9 @@ const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
           subtitleKey={t('pages.real_property_details.informations.tenant')}
         >
           <span className={style.detailsText}>
-            {propertyData.lease?.tenant_name || '-----------'}
+            {selectedLease?.tenant_name || '-----------'}
             {' - '}
-            {propertyData.lease?.tenant_email || '-----------'}
+            {selectedLease?.tenant_email || '-----------'}
           </span>
         </SubtitledElement>
       </div>
@@ -52,12 +59,12 @@ const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
           subtitleKey={t('pages.real_property_details.informations.dates')}
         >
           <span className={style.detailsText}>
-            {propertyData.lease?.start_date
-              ? formatDate(propertyData.lease.start_date)
+            {selectedLease?.start_date
+              ? formatDate(selectedLease.start_date)
               : '...'}
             {' - '}
-            {propertyData.lease?.end_date
-              ? formatDate(propertyData.lease.end_date)
+            {selectedLease?.end_date
+              ? formatDate(selectedLease.end_date)
               : '...'}
           </span>
         </SubtitledElement>

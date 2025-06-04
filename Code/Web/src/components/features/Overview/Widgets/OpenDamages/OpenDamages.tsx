@@ -101,7 +101,7 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
                   </span>
                 </Tooltip>
                 <span className={style.dateText}>
-                  {toLocaleDate(damage.created_at)}
+                  {toLocaleDate(damage.created_at, 'short')}
                 </span>
               </div>
               {!damage.read ? (

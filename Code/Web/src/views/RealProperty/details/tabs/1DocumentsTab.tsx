@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next'
 
 import { Button, Modal, Form, message, Spin, Empty, Typography } from 'antd'
 
-import { usePropertyId } from '@/context/propertyIdContext'
+import { usePropertyContext } from '@/context/propertyContext'
 import useDocument from '@/hooks/Property/useDocument'
+import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
 import DocumentList from '@/components/features/RealProperty/details/tabs/Documents/DocumentList'
 import UploadForm from '@/components/features/RealProperty/details/tabs/Documents/UploadForm'
 
@@ -16,7 +17,9 @@ interface DocumentsTabProps {
 
 const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
   const { t } = useTranslation()
-  const propertyId = usePropertyId()
+  const { property, selectedLeaseId, selectedLease } = usePropertyContext()
+  const { canModify } = useLeasePermissions()
+
   const {
     documents,
     loading,
@@ -24,7 +27,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
     refreshDocuments,
     uploadDocument,
     deleteDocument
-  } = useDocument(propertyId || '', status || '')
+  } = useDocument(property?.id || '', selectedLeaseId || 'current')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form] = Form.useForm()
 
@@ -37,13 +40,13 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       .validateFields()
       .then(values => {
         const file = values.documentFile[0].originFileObj
-        uploadDocument(file, values.documentName, propertyId || '', 'current')
+        uploadDocument(file, values.documentName, property?.id || '')
           .then(() => {
             message.success(t('components.documents.success_add'))
             form.resetFields()
             setIsModalOpen(false)
-            if (propertyId) {
-              refreshDocuments(propertyId)
+            if (property?.id) {
+              refreshDocuments(property.id)
             }
           })
           .catch(error => {
@@ -81,7 +84,10 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
     )
   }
 
-  if (status === 'available') {
+  if (
+    (status === 'available' && !selectedLease) ||
+    (status === 'invite sent' && !selectedLease)
+  ) {
     return (
       <div className={style.tabContentEmpty}>
         <Empty
@@ -109,11 +115,13 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
 
   return (
     <div className={style.tabContent}>
-      <div className={style.buttonAddContainer}>
-        <Button type="primary" onClick={showModal}>
-          {t('components.button.add_document')}
-        </Button>
-      </div>
+      {canModify && (
+        <div className={style.buttonAddContainer}>
+          <Button type="primary" onClick={showModal}>
+            {t('components.button.add_document')}
+          </Button>
+        </div>
+      )}
       <Modal
         title={t('pages.real_property_details.tabs.documents.modal_title')}
         open={isModalOpen}

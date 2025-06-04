@@ -18,7 +18,6 @@ const endpoints = {
 
       // Leases endpoints
       leases: {
-        current: 'current',
         end: (propertyId: string) =>
           `owner/properties/${propertyId}/leases/current/end/`,
         byId: (propertyId: string, leaseId: string) =>

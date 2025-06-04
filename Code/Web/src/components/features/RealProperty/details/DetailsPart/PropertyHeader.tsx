@@ -1,11 +1,14 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Dropdown, MenuProps } from 'antd'
+import { Button, Dropdown, MenuProps, Select, Tag } from 'antd'
 import { MoreOutlined } from '@ant-design/icons'
 
 import PageTitle from '@/components/ui/PageText/Title'
+import { usePropertyContext } from '@/context/propertyContext'
 import useNavigation from '@/hooks/Navigation/useNavigation'
+import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
+import toLocaleDate from '@/utils/date/toLocaleDate'
 
 import { PropertyHeaderProps } from '@/interfaces/Property/Property'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
@@ -25,6 +28,12 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
 }) => {
   const { t } = useTranslation()
   const { goToRealProperty } = useNavigation()
+  const { property, selectedLeaseId, setSelectedLeaseId } = usePropertyContext()
+  const { canModify } = useLeasePermissions()
+
+  const onLeaseChange = (value: string) => {
+    setSelectedLeaseId(value)
+  }
 
   const items: MenuProps['items'] = [
     {
@@ -98,13 +107,56 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
           margin={false}
         />
       </div>
-      <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
-        <Button
-          type="text"
-          icon={<MoreOutlined />}
-          className={style.actionButton}
-        />
-      </Dropdown>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {property?.leases && property?.leases.length > 0 && (
+          <Select
+            value={selectedLeaseId}
+            onChange={onLeaseChange}
+            style={{ minWidth: 220 }}
+            allowClear={property?.leases.length > 1 || !property?.lease?.active}
+            options={[
+              ...(property?.leases?.map(lease => ({
+                value: lease.id,
+                label: (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <span>
+                      {`${toLocaleDate(lease.start_date, 'short')} - ${toLocaleDate(
+                        lease.end_date,
+                        'short'
+                      )}`}
+                    </span>
+                    {lease.active && (
+                      <Tag color="blue" style={{ margin: 0 }}>
+                        {t('pages.real_property_details.current')}
+                      </Tag>
+                    )}
+                  </div>
+                )
+              })) || [])
+            ]}
+            placeholder={t('pages.real_property_details.select_default')}
+          />
+        )}
+        {canModify && (
+          <Dropdown
+            menu={{ items }}
+            trigger={['click']}
+            placement="bottomRight"
+          >
+            <Button
+              type="text"
+              icon={<MoreOutlined />}
+              className={style.actionButton}
+            />
+          </Dropdown>
+        )}
+      </div>
     </div>
   )
 }

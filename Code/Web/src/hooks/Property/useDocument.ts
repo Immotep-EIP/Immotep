@@ -5,10 +5,12 @@ import UploadDocument from '@/services/api/Owner/Properties/UploadDocument'
 import fileToBase64 from '@/utils/base64/fileToBase'
 
 import { Document, UseDocumentReturn } from '@/interfaces/Property/Document'
-import PropertyStatusEnum from '@/enums/PropertyEnum'
 import DeleteDocument from '@/services/api/Owner/Properties/DeleteDocument'
 
-const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
+const useDocument = (
+  propertyId: string,
+  leaseId: string
+): UseDocumentReturn => {
   const [documents, setDocuments] = useState<Document[] | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
@@ -17,7 +19,7 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
     try {
       setLoading(true)
       setError(null)
-      const response = await GetPropertyDocuments(propertyId)
+      const response = await GetPropertyDocuments(propertyId, leaseId)
       setDocuments(response)
     } catch (err) {
       setError(
@@ -34,8 +36,7 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
   const uploadDocument = async (
     file: File,
     documentName: string,
-    propertyId: string,
-    leaseId: string = 'current'
+    propertyId: string
   ) => {
     try {
       setLoading(true)
@@ -47,11 +48,7 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
         data: base64Data
       }
 
-      const response = await UploadDocument(
-        JSON.stringify(payload),
-        propertyId,
-        leaseId
-      )
+      const response = await UploadDocument(JSON.stringify(payload), propertyId)
       setDocuments(prevDocuments => {
         if (!prevDocuments) return [response]
         return [...prevDocuments, response]
@@ -89,10 +86,10 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
   }
 
   useEffect(() => {
-    if (propertyId && status === PropertyStatusEnum.UNAVAILABLE) {
+    if (propertyId) {
       fetchDocuments(propertyId)
     }
-  }, [propertyId, status])
+  }, [propertyId, leaseId])
 
   return {
     documents,

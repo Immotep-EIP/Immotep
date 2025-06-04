@@ -441,6 +441,8 @@
       "error_fetching_data": "Erreur lors de la récupération des données",
       "date_error": "La date de début doit être inférieure à la date de fin",
       "title": "Détails de la propriété",
+      "select_default": "Sélectionner un bail",
+      "current": "en cours",
       "informations": {
         "name": "Nom",
         "address": "Adresse",
@@ -453,7 +455,7 @@
       "tabs": {
         "documents": {
           "modal_title": "Ajouter un document",
-          "no_documents": "Aucun document pour le moment",
+          "no_documents": "Aucun document",
           "delete_confirmation": {
             "title": "Supprimer le document",
             "message": "Êtes-vous sûr de vouloir supprimer ce document ?"
