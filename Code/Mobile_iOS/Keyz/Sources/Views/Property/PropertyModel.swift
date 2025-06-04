@@ -49,15 +49,11 @@ struct PropertyDocumentResponse: Codable {
     }
 }
 
-struct PropertyDocument: Identifiable, Equatable {
+struct PropertyDocument: Identifiable {
     let id: String
-    var title: String
-    var fileName: String
+    let title: String
+    let fileName: String
     let data: String
-
-    static func == (lhs: PropertyDocument, rhs: PropertyDocument) -> Bool {
-        return lhs.id == rhs.id
-    }
 }
 
 struct PropertyRooms: Identifiable, Equatable {
