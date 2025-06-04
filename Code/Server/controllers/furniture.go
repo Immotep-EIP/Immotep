@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
+	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
 )
@@ -13,16 +14,16 @@ import (
 //
 //	@Summary		Create a new furniture
 //	@Description	Create a new furniture for a room
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
-//	@Param			property_id	path		string						true	"Property ID"
-//	@Param			room_id		path		string						true	"Room ID"
-//	@Param			furniture	body		models.FurnitureRequest		true	"Furniture data"
-//	@Success		201			{object}	models.FurnitureResponse	"Created furniture data"
-//	@Failure		400			{object}	utils.Error					"Missing fields"
-//	@Failure		403			{object}	utils.Error					"Property not yours"
-//	@Failure		409			{object}	utils.Error					"Furniture already exists"
+//	@Param			property_id	path		string					true	"Property ID"
+//	@Param			room_id		path		string					true	"Room ID"
+//	@Param			furniture	body		models.FurnitureRequest	true	"Furniture data"
+//	@Success		201			{object}	models.IdResponse		"Created furniture ID"
+//	@Failure		400			{object}	utils.Error				"Missing fields"
+//	@Failure		403			{object}	utils.Error				"Property not yours"
+//	@Failure		409			{object}	utils.Error				"Furniture already exists"
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/ [post]
@@ -38,18 +39,19 @@ func CreateFurniture(c *gin.Context) {
 		utils.SendError(c, http.StatusConflict, utils.FurnitureAlreadyExists, nil)
 		return
 	}
-	c.JSON(http.StatusCreated, models.DbFurnitureToResponse(*furniture))
+	c.JSON(http.StatusCreated, models.IdResponse{ID: furniture.ID})
 }
 
 // GetFurnituresByRoom godoc
 //
 //	@Summary		Get furnitures by room ID
-//	@Description	Get all furnitures for a specific room
-//	@Tags			owner
+//	@Description	Get all furnitures for a specific room, optionally filtered by archive status
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id	path		string						true	"Property ID"
 //	@Param			room_id		path		string						true	"Room ID"
+//	@Param			archive		query		bool						false	"Archive status filter"
 //	@Success		200			{array}		models.FurnitureResponse	"List of furnitures"
 //	@Failure		403			{object}	utils.Error					"Property not yours"
 //	@Failure		404			{object}	utils.Error					"Room not found"
@@ -57,35 +59,16 @@ func CreateFurniture(c *gin.Context) {
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/ [get]
 func GetFurnituresByRoom(c *gin.Context) {
-	furnitures := database.GetFurnitureByRoomID(c.Param("room_id"), false)
+	archive := c.DefaultQuery("archive", "false") == utils.Strue
+	furnitures := database.GetFurnituresByRoomID(c.Param("room_id"), archive)
 	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
 }
 
-// GetArchivedFurnituresByRoom godoc
-//
-//	@Summary		Get archived furnitures by room ID
-//	@Description	Get all archived furnitures for a specific room
-//	@Tags			owner
-//	@Accept			json
-//	@Produce		json
-//	@Param			property_id	path		string						true	"Property ID"
-//	@Param			room_id		path		string						true	"Room ID"
-//	@Success		200			{array}		models.FurnitureResponse	"List of archived furnitures"
-//	@Failure		403			{object}	utils.Error					"Property not yours"
-//	@Failure		404			{object}	utils.Error					"Room not found"
-//	@Failure		500
-//	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/archived/ [get]
-func GetArchivedFurnituresByRoom(c *gin.Context) {
-	furnitures := database.GetFurnitureByRoomID(c.Param("room_id"), true)
-	c.JSON(http.StatusOK, utils.Map(furnitures, models.DbFurnitureToResponse))
-}
-
-// GetFurnitureByID godoc
+// GetFurniture godoc
 //
 //	@Summary		Get furniture by ID
 //	@Description	Get furniture information by its ID
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id		path		string						true	"Property ID"
@@ -97,23 +80,23 @@ func GetArchivedFurnituresByRoom(c *gin.Context) {
 //	@Failure		500
 //	@Security		Bearer
 //	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [get]
-func GetFurnitureByID(c *gin.Context) {
-	furniture := database.GetFurnitureByID(c.Param("furniture_id"))
-	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
+func GetFurniture(c *gin.Context) {
+	furniture, _ := c.MustGet("furniture").(db.FurnitureModel)
+	c.JSON(http.StatusOK, models.DbFurnitureToResponse(furniture))
 }
 
 // ArchiveFurniture godoc
 //
 //	@Summary		Toggle archive furniture by ID
 //	@Description	Toggle archive status of a furniture by its ID
-//	@Tags			owner
+//	@Tags			inventory
 //	@Accept			json
 //	@Produce		json
 //	@Param			property_id		path		string					true	"Property ID"
 //	@Param			room_id			path		string					true	"Room ID"
 //	@Param			furniture_id	path		string					true	"Furniture ID"
 //	@Param			archive			body		models.ArchiveRequest	true	"Archive status"
-//	@Success		200				{object}	models.PropertyResponse	"Toggled archive furniture data"
+//	@Success		200				{object}	models.IdResponse		"Updated furniture ID"
 //	@Failure		400				{object}	utils.Error				"Mising fields"
 //	@Failure		403				{object}	utils.Error				"Property not yours"
 //	@Failure		404				{object}	utils.Error				"Furniture not found"
@@ -128,5 +111,27 @@ func ArchiveFurniture(c *gin.Context) {
 	}
 
 	furniture := database.ToggleArchiveFurniture(c.Param("furniture_id"), req.Archive)
-	c.JSON(http.StatusOK, models.DbFurnitureToResponse(*furniture))
+	c.JSON(http.StatusOK, models.IdResponse{ID: furniture.ID})
+}
+
+// DeleteFurniture godoc
+//
+//	@Summary		Delete furniture by ID
+//	@Description	Delete a furniture by its ID
+//	@Tags			inventory
+//	@Accept			json
+//	@Produce		json
+//	@Param			property_id		path	string	true	"Property ID"
+//	@Param			room_id			path	string	true	"Room ID"
+//	@Param			furniture_id	path	string	true	"Furniture ID"
+//	@Success		204				"Deleted furniture ID"
+//	@Failure		403				{object}	utils.Error	"Property not yours"
+//	@Failure		404				{object}	utils.Error	"Furniture not found"
+//	@Failure		500
+//	@Security		Bearer
+//	@Router			/owner/properties/{property_id}/rooms/{room_id}/furnitures/{furniture_id}/ [delete]
+func DeleteFurniture(c *gin.Context) {
+	furniture, _ := c.MustGet("furniture").(db.FurnitureModel)
+	database.DeleteFurniture(furniture.ID)
+	c.Status(http.StatusNoContent)
 }

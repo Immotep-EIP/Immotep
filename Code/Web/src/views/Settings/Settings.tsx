@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
+
 import {
   Button,
   Segmented,
@@ -18,14 +19,15 @@ import {
 } from '@ant-design/icons'
 
 import { useAuth } from '@/context/authContext'
-import SubtitledElement from '@/components/SubtitledElement/SubtitledElement'
-import DefaultUser from '@/assets/images/DefaultProfile.png'
+import useImageCache from '@/hooks/Image/useImageCache'
+import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
+import PageMeta from '@/components/ui/PageMeta/PageMeta'
+import PageTitle from '@/components/ui/PageText/Title'
 import UpdateUserInfos from '@/services/api/User/UpdateUserInfos'
 import GetUserPicture from '@/services/api/User/GetUserPicture'
 import PutUserPicture from '@/services/api/User/PutUserPicture'
-import useImageCache from '@/hooks/useEffect/useImageCache'
-import PageMeta from '@/components/PageMeta/PageMeta'
-import PageTitle from '@/components/PageText/Title'
+
+import DefaultUser from '@/assets/images/DefaultProfile.png'
 import style from './Settings.module.css'
 
 interface UserSettingsProps {

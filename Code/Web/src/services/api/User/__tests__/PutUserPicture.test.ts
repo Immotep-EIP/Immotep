@@ -24,7 +24,7 @@ describe('PutUserPicture', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: 'profile/picture/',
-      data: JSON.stringify({ data: pictureData })
+      body: JSON.stringify({ data: pictureData })
     })
 
     expect(result).toEqual(mockResponse)
@@ -47,7 +47,7 @@ describe('PutUserPicture', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: 'profile/picture/',
-      data: JSON.stringify({ data: pictureData })
+      body: JSON.stringify({ data: pictureData })
     })
 
     consoleErrorSpy.mockRestore()
@@ -66,7 +66,7 @@ describe('PutUserPicture', () => {
     await expect(PutUserPicture(pictureData)).rejects.toThrow('API call failed')
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Error updating property picture:',
+      'Error updating user picture:',
       mockError
     )
 

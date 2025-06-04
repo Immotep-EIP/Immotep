@@ -21,15 +21,14 @@ func BuildTestImage(id string, base64data string) db.ImageModel {
 	return *ret
 }
 
+// #############################################################################
+
 func TestGetImageByID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	image := BuildTestImage("1", "b3Vp")
-
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals("1")),
-	).Returns(image)
+	m.Image.Expect(database.MockGetImageByID(c)).Returns(image)
 
 	foundImage := database.GetImageByID("1")
 	assert.NotNil(t, foundImage)
@@ -37,41 +36,34 @@ func TestGetImageByID(t *testing.T) {
 }
 
 func TestGetImageByID_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals("1")),
-	).Errors(db.ErrNotFound)
+	m.Image.Expect(database.MockGetImageByID(c)).Errors(db.ErrNotFound)
 
 	foundImage := database.GetImageByID("1")
 	assert.Nil(t, foundImage)
 }
 
 func TestGetImageByID_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.Image.Expect(
-		client.Client.Image.FindUnique(db.Image.ID.Equals("1")),
-	).Errors(errors.New("connection failed"))
+	m.Image.Expect(database.MockGetImageByID(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.GetImageByID("1")
 	})
 }
 
+// #############################################################################
+
 func TestCreateImage(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	image := BuildTestImage("1", "b3Vp")
-
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(image.Data),
-		),
-	).Returns(image)
+	m.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
 
 	newImage := database.CreateImage(image)
 	assert.NotNil(t, newImage)
@@ -79,16 +71,11 @@ func TestCreateImage(t *testing.T) {
 }
 
 func TestCreateImage_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	image := BuildTestImage("1", "b3Vp")
-
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(image.Data),
-		),
-	).Errors(&protocol.UserFacingError{
+	m.Image.Expect(database.MockCreateImage(c, image)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference
 		Meta: protocol.Meta{
@@ -103,16 +90,11 @@ func TestCreateImage_AlreadyExists(t *testing.T) {
 }
 
 func TestCreateImage_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
 	image := BuildTestImage("1", "b3Vp")
-
-	mock.Image.Expect(
-		client.Client.Image.CreateOne(
-			db.Image.Data.Set(image.Data),
-		),
-	).Errors(errors.New("connection failed"))
+	m.Image.Expect(database.MockCreateImage(c, image)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.CreateImage(image)

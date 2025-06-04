@@ -1,29 +1,33 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CloseOutlined } from '@ant-design/icons'
-import {
-  Button,
-  Empty,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
-  Typography
-} from 'antd'
-import addIcon from '@/assets/icons/plus.svg'
+
+import { Empty, Form, Modal, Typography, Space } from 'antd'
+
 import { usePropertyId } from '@/context/propertyIdContext'
-import useInventory from '@/hooks/useInventory/useInventory'
-import CardInventoryLoader from '@/components/Loader/CardInventoryLoader'
+import useInventory from '@/hooks/Property/useInventory'
+import CardInventoryLoader from '@/components/ui/Loader/CardInventoryLoader'
+import GridView from '@/components/features/RealProperty/details/tabs/Inventory/GridView'
+import PlanView from '@/components/features/RealProperty/details/tabs/Inventory/PlanView'
+import ListView from '@/components/features/RealProperty/details/tabs/Inventory/ListView'
+import AddRoomModal from '@/components/features/RealProperty/details/tabs/Inventory/AddRoomModal'
+import AddStuffModal from '@/components/features/RealProperty/details/tabs/Inventory/AddStuffModal'
+import InventoryControls from '@/components/features/RealProperty/details/tabs/Inventory/InventoryControls'
+import { getRoomTypeOptions } from '@/utils/types/roomTypes'
+
 import style from './2InventoryTab.module.css'
 
 const InventoryTab: React.FC = () => {
   const { t } = useTranslation()
   const [formAddRoom] = Form.useForm()
-  const [formAddStuff] = Form.useForm()
+  const [formAddFurniture] = Form.useForm()
   const id = usePropertyId()
   const [isModalAddRoomOpen, setIsModalAddRoomOpen] = useState(false)
   const [isModalAddStuffOpen, setIsModalAddStuffOpen] = useState(false)
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'plan'>('grid')
+  const [selectedRoomType, setSelectedRoomType] = useState<string>('all')
+  const [layouts, setLayouts] = useState<any>({})
 
   const {
     inventory,
@@ -32,8 +36,11 @@ const InventoryTab: React.FC = () => {
     createRoom,
     createFurniture,
     deleteRoom,
-    deleteFurniture
+    deleteFurniture,
+    refreshInventory
   } = useInventory(id || '')
+
+  const roomTypes = getRoomTypeOptions(t)
 
   const showModal = (modal: string, roomId?: string) => {
     if (modal === 'addRoom') {
@@ -44,11 +51,25 @@ const InventoryTab: React.FC = () => {
     }
   }
 
-  const handleAddRoom = async () => {
+  const handleAddRoom = async (
+    templateItems?: { name: string; quantity: number }[]
+  ) => {
     try {
-      const { roomName } = await formAddRoom.validateFields()
-      const success = await createRoom(roomName)
-      if (success) {
+      const { roomName, roomType } = await formAddRoom.validateFields()
+      const result = await createRoom(roomName, roomType)
+
+      if (result.success) {
+        if (templateItems && templateItems.length > 0) {
+          await Promise.all(
+            templateItems.map(item =>
+              createFurniture(result.roomId!, {
+                name: item.name,
+                quantity: item.quantity
+              })
+            )
+          )
+        }
+        refreshInventory()
         formAddRoom.resetFields()
         setIsModalAddRoomOpen(false)
       }
@@ -57,16 +78,17 @@ const InventoryTab: React.FC = () => {
     }
   }
 
-  const handleAddStuff = async () => {
+  const handleAddFurniture = async () => {
     try {
-      const { stuffName, itemQuantity } = await formAddStuff.validateFields()
+      const { stuffName, itemQuantity } =
+        await formAddFurniture.validateFields()
       if (selectedRoomId) {
         const success = await createFurniture(selectedRoomId, {
           name: stuffName,
           quantity: itemQuantity
         })
         if (success) {
-          formAddStuff.resetFields()
+          formAddFurniture.resetFields()
           setSelectedRoomId(null)
           setIsModalAddStuffOpen(false)
         }
@@ -81,7 +103,7 @@ const InventoryTab: React.FC = () => {
       formAddRoom.resetFields()
       setIsModalAddRoomOpen(false)
     } else if (modal === 'addStuff') {
-      formAddStuff.resetFields()
+      formAddFurniture.resetFields()
       setSelectedRoomId(null)
       setIsModalAddStuffOpen(false)
     }
@@ -95,7 +117,9 @@ const InventoryTab: React.FC = () => {
       okText: t('components.button.confirm'),
       cancelText: t('components.button.cancel'),
       okButtonProps: { danger: true },
-      onOk: () => deleteRoom(roomId)
+      onOk: () => {
+        deleteRoom(roomId)
+      }
     })
   }
 
@@ -111,133 +135,106 @@ const InventoryTab: React.FC = () => {
     })
   }
 
+  const filterInventory = () => ({
+    rooms: inventory.rooms.filter(room => {
+      const matchesSearch = room.name
+        ? room.name.toLowerCase().includes(searchQuery.toLowerCase())
+        : false
+      const matchesType =
+        selectedRoomType === 'all' ||
+        (room.type &&
+          room.type.toLowerCase() === selectedRoomType.toLowerCase())
+      return matchesSearch && matchesType
+    })
+  })
+
+  const filteredInventory = filterInventory()
+
   if (error) {
     return <p>{t('pages.real_property.error.error_fetching_data')}</p>
   }
 
+  const renderContent = () => {
+    if (isLoading) {
+      return <CardInventoryLoader cards={9} />
+    }
+
+    if (filteredInventory.rooms.length === 0) {
+      return (
+        <Empty
+          description={
+            <Typography.Text>
+              {t('components.messages.no_rooms_in_inventory')}
+            </Typography.Text>
+          }
+        />
+      )
+    }
+
+    switch (viewMode) {
+      case 'grid':
+        return (
+          <GridView
+            inventory={filteredInventory}
+            showModal={showModal}
+            handleDeleteRoom={handleDeleteRoom}
+            handleDeleteFurniture={handleDeleteFurniture}
+          />
+        )
+      case 'list':
+        return (
+          <ListView
+            inventory={filteredInventory}
+            showModal={showModal}
+            handleDeleteRoom={handleDeleteRoom}
+            handleDeleteFurniture={handleDeleteFurniture}
+          />
+        )
+      case 'plan':
+        return (
+          <PlanView
+            inventory={filteredInventory}
+            layouts={layouts}
+            setLayouts={setLayouts}
+            showModal={showModal}
+            handleDeleteFurniture={handleDeleteFurniture}
+          />
+        )
+      default:
+        return null
+    }
+  }
+
   return (
     <div className={style.tabContent}>
-      <div className={style.buttonAddContainer}>
-        <Button type="primary" onClick={() => showModal('addRoom')}>
-          {t('components.button.add_room')}
-        </Button>
-      </div>
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <InventoryControls
+          setSearchQuery={setSearchQuery}
+          selectedRoomType={selectedRoomType}
+          setSelectedRoomType={setSelectedRoomType}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          showModal={showModal}
+          roomTypes={roomTypes}
+        />
 
-      {isLoading && <CardInventoryLoader cards={9} />}
+        {renderContent()}
+      </Space>
 
-      <div className={style.roomsContainer}>
-        {inventory.map(room => (
-          <div key={room.roomId} className={style.roomContainer}>
-            <div className={style.roomHeader}>
-              <span>{room.roomName}</span>
-              <CloseOutlined
-                onClick={() => handleDeleteRoom(room.roomId)}
-                aria-label={t('component.button.close')}
-              />
-            </div>
-            <div className={style.stuffsContainer}>
-              {room.stuffs.map(stuff => (
-                <div key={stuff.id} className={style.stuffCard}>
-                  <span>{stuff.name}</span>
-                  <CloseOutlined
-                    onClick={() => handleDeleteFurniture(room.roomId, stuff.id)}
-                    aria-label={t('component.button.close')}
-                    className={style.removeStuffIcon}
-                  />
-                </div>
-              ))}
-              <div
-                className={style.stuffCardAdd}
-                onClick={() => showModal('addStuff', room.roomId)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    showModal('addStuff', room.roomName)
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                aria-label={t('component.button.add')}
-              >
-                <img
-                  src={addIcon}
-                  alt="Add"
-                  style={{ width: '20px', height: '20px' }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {inventory.length === 0 && (
-          <Empty
-            description={
-              <Typography.Text>
-                {t('components.messages.no_rooms_in_inventory')}
-              </Typography.Text>
-            }
-          />
-        )}
-      </div>
-
-      {/* Add Room Modal */}
-      <Modal
-        title={t(
-          'pages.real_property_details.tabs.inventory.add_room_modal_title'
-        )}
-        open={isModalAddRoomOpen}
+      <AddRoomModal
+        isOpen={isModalAddRoomOpen}
         onOk={handleAddRoom}
         onCancel={() => handleCancel('addRoom')}
-      >
-        <Form form={formAddRoom} layout="vertical">
-          <Form.Item
-            name="roomName"
-            label={t('components.input.room_name.label')}
-            rules={[
-              { required: true, message: t('components.input.room_name.error') }
-            ]}
-          >
-            <Input maxLength={20} showCount />
-          </Form.Item>
-        </Form>
-      </Modal>
+        form={formAddRoom}
+        roomTypes={roomTypes}
+      />
 
-      {/* Add Stuff Modal */}
-      <Modal
-        title={t(
-          'pages.real_property_details.tabs.inventory.add_stuff_modal_title'
-        )}
-        open={isModalAddStuffOpen}
-        onOk={handleAddStuff}
+      <AddStuffModal
+        isOpen={isModalAddStuffOpen}
+        onOk={handleAddFurniture}
         onCancel={() => handleCancel('addStuff')}
-      >
-        <Form form={formAddStuff} layout="vertical">
-          <Form.Item
-            name="stuffName"
-            label={t('components.input.stuff_name.label')}
-            rules={[
-              {
-                required: true,
-                message: t('components.input.stuff_name.error')
-              }
-            ]}
-          >
-            <Input maxLength={20} showCount />
-          </Form.Item>
-          <Form.Item
-            name="itemQuantity"
-            label={t('components.input.item_quantity.label')}
-            rules={[
-              {
-                required: true,
-                message: t('components.input.item_quantity.error')
-              },
-              { type: 'number', min: 1, max: 1000 }
-            ]}
-          >
-            <InputNumber min={1} max={1000} style={{ width: '100%' }} />
-          </Form.Item>
-        </Form>
-      </Modal>
+        form={formAddFurniture}
+      />
     </div>
   )
 }

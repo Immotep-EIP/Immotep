@@ -1,0 +1,66 @@
+.documentsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.noDocuments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.documentContainer {
+  background-color: white;
+  padding: 10px;
+  border: 0.1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  flex: 1 1 calc(25% - 20px);
+  max-width: calc(25% - 20px);
+  min-width: 200px;
+}
+
+.documentContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.documentContainer:focus {
+  box-shadow: 0 0 0 2px #1890ff;
+}
+
+.documentDateContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: rgba(102, 102, 102, 0.5);
+  font-size: 12px;
+}
+
+.documentPreviewContainer {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.documentName {
+  font-size: 14px;
+  color: #333;
+}
+
+.pdfIcon {
+  font-size: 64px;
+  color: #ff4d4f;
+}

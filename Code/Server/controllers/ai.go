@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/chatgpt"
 	"immotep/backend/services/database"
 	"immotep/backend/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 func imagesToBase64Strings(images []db.ImageModel) []string {
@@ -37,7 +38,7 @@ func imagesToBase64Strings(images []db.ImageModel) []string {
 //	@Failure		404			{object}	utils.Error					"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/inventory-reports/summarize/ [post]
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/summarize/ [post]
 func GenerateSummary(c *gin.Context) {
 	var req models.SummarizeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -92,7 +93,7 @@ func GenerateSummary(c *gin.Context) {
 //	@Failure		404				{object}	utils.Error						"Property or old report not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/inventory-reports/compare/{old_report_id}/ [post]
+//	@Router			/owner/properties/{property_id}/leases/{lease_id}/inventory-reports/compare/{old_report_id}/ [post]
 func GenerateComparison(c *gin.Context) {
 	var req models.CompareRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

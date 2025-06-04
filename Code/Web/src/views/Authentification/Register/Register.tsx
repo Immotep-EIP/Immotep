@@ -4,54 +4,88 @@ import { useTranslation } from 'react-i18next'
 
 import { Button, Input, Form, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
-import backgroundImg from '@/assets/images/buildingBackground.png'
-import useNavigation from '@/hooks/useNavigation/useNavigation'
-import '@/App.css'
+
+import { useAuth } from '@/context/authContext'
+import useNavigation from '@/hooks/Navigation/useNavigation'
+import PageMeta from '@/components/ui/PageMeta/PageMeta'
+import DividedPage from '@/components/layout/DividedPage/DividedPage'
+import PageTitle from '@/components/ui/PageText/Title'
 import { register } from '@/services/api/Authentification/AuthApi'
-import { UserRegister } from '@/interfaces/User/User'
-import PageMeta from '@/components/PageMeta/PageMeta'
-import DividedPage from '@/components/DividedPage/DividedPage'
-import PageTitle from '@/components/PageText/Title'
+
+import { UserRegisterPayload } from '@/interfaces/User/User'
+
+import backgroundImg from '@/assets/images/building.jpg'
+import '@/App.css'
 import style from './Register.module.css'
 
 const Register: React.FC = () => {
-  const { goToLogin, goToSuccessRegisterTenant } = useNavigation()
+  const { goToLogin, goToSuccessRegisterTenant, goToOverview } = useNavigation()
+  const { login } = useAuth()
   const [form] = Form.useForm()
-  const { contractId } = useParams()
+  const { leaseId } = useParams()
   const [loading, setLoading] = useState(false)
 
   const { t } = useTranslation()
 
-  const onFinish: FormProps<UserRegister>['onFinish'] = async values => {
+  const onFinish: FormProps<UserRegisterPayload>['onFinish'] = async values => {
     try {
       setLoading(true)
       const { password, confirmPassword } = values
       if (password === confirmPassword) {
         const userInfo = {
           ...values,
-          contractId
+          leaseId
         }
-        await register(userInfo)
-        message.success(t('pages.register.register_success'))
-        form.resetFields()
-        setLoading(false)
-        if (contractId) {
-          goToSuccessRegisterTenant()
-        } else {
-          goToLogin()
+
+        try {
+          await register(userInfo)
+
+          const loginValues = {
+            username: values.email,
+            password: values.password,
+            grant_type: 'password'
+          }
+
+          try {
+            await login(loginValues)
+            message.success(t('pages.register.register_success'))
+            form.resetFields()
+
+            if (leaseId) {
+              goToSuccessRegisterTenant()
+            } else {
+              goToOverview()
+            }
+          } catch (loginError: any) {
+            console.error('Login after registration failed:', loginError)
+            message.warning(
+              t('pages.register.register_success_but_login_failed')
+            )
+            goToLogin()
+          }
+        } catch (registerError: any) {
+          if (registerError.response?.status === 409) {
+            message.error(t('pages.register.email_already_used'))
+          } else {
+            message.error(t('pages.register.register_error'))
+          }
+          console.error('Registration error:', registerError)
         }
-      } else message.error(t('pages.register.confirm_password_error'))
+      } else {
+        message.error(t('pages.register.confirm_password_error'))
+      }
     } catch (err: any) {
-      if (err.response.status === 409)
-        message.error(t('pages.register.email_already_used'))
-      console.error(t('pages.register.register_error'), err)
+      console.error('Unexpected error:', err)
+      message.error(t('pages.register.unexpected_error'))
+    } finally {
       setLoading(false)
     }
   }
 
-  const onFinishFailed: FormProps<UserRegister>['onFinishFailed'] = () => {
-    message.error(t('pages.register.fill_fields'))
-  }
+  const onFinishFailed: FormProps<UserRegisterPayload>['onFinishFailed'] =
+    () => {
+      message.error(t('pages.register.fill_fields'))
+    }
 
   return (
     <>
@@ -201,7 +235,7 @@ const Register: React.FC = () => {
 
               <div
                 className={style.dontHaveAccountContainer}
-                style={{ display: contractId ? 'none' : 'flex' }}
+                style={{ display: leaseId ? 'none' : 'flex' }}
               >
                 <span className={style.footerText}>
                   {t('pages.register.already_have_account')}

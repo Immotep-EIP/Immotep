@@ -20,6 +20,7 @@ describe('UpdateUserInfos', () => {
       lastname: 'Doe',
       email: 'john.doe@example.com',
       role: 'user',
+      profile_picture_id: '1',
       created_at: new Date(),
       updated_at: new Date()
     }
@@ -31,6 +32,7 @@ describe('UpdateUserInfos', () => {
       lastname: 'Doe',
       email: 'john.doe@example.com',
       role: 'user',
+      profile_picture_id: '1',
       created_at: new Date(),
       updated_at: new Date()
     }
@@ -40,7 +42,7 @@ describe('UpdateUserInfos', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: 'profile/',
-      data: JSON.stringify(userData)
+      body: JSON.stringify(userData)
     })
 
     expect(result).toEqual(mockResponse)
@@ -62,6 +64,7 @@ describe('UpdateUserInfos', () => {
       lastname: 'Doe',
       email: 'john.doe@example.com',
       role: 'user',
+      profile_picture_id: '1',
       created_at: new Date(),
       updated_at: new Date()
     }
@@ -71,7 +74,7 @@ describe('UpdateUserInfos', () => {
     expect(callApi).toHaveBeenCalledWith({
       method: 'PUT',
       endpoint: 'profile/',
-      data: JSON.stringify(userData)
+      body: JSON.stringify(userData)
     })
 
     consoleErrorSpy.mockRestore()
@@ -91,6 +94,7 @@ describe('UpdateUserInfos', () => {
       lastname: 'Doe',
       email: 'john.doe@example.com',
       role: 'user',
+      profile_picture_id: '1',
       created_at: new Date(),
       updated_at: new Date()
     }

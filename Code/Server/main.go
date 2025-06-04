@@ -19,7 +19,7 @@ import (
 //	@contact.email	martin.d-herouville@epitech.eu
 
 //	@host		localhost:3001
-//	@BasePath	/api/v1
+//	@BasePath	/v1
 
 //	@securityDefinitions.apikey	Bearer
 //	@in							header
@@ -45,6 +45,7 @@ func mainFunc() int {
 		"PORT",
 		"PUBLIC_URL",
 		"WEB_PUBLIC_URL",
+		"SHOWCASE_PUBLIC_URL",
 		"DATABASE_URL",
 		"SECRET_KEY",
 		"OPENAI_API_KEY",

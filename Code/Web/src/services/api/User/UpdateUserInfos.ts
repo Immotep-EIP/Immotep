@@ -1,19 +1,17 @@
 import callApi from '@/services/api/apiCaller'
-import { User } from '@/interfaces/User/User'
 
-interface UpdateUserInfosProps {
-  firstname: string
-  lastname: string
-}
+import { UpdateUserInfoPayload, User } from '@/interfaces/User/User'
+import endpoints from '@/enums/EndPointEnum'
 
-export const UpdateUserInfos = async (data: UpdateUserInfosProps) => {
+export const UpdateUserInfos = async (
+  data: UpdateUserInfoPayload
+): Promise<User> => {
   try {
-    const response = await callApi<User>({
+    return await callApi<User, UpdateUserInfoPayload>({
       method: 'PUT',
-      endpoint: 'profile/',
-      data: JSON.stringify(data),
+      endpoint: endpoints.user.profile.get(),
+      body: JSON.stringify(data)
     })
-    return response
   } catch (error) {
     console.error('Error fetching data:', error)
     throw error

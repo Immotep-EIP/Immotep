@@ -5,6 +5,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const Strue = "true"
+const Sfalse = "false"
+
 func GetClaims(c *gin.Context) map[string]string {
 	return c.GetStringMapString("oauth.claims")
 }
@@ -42,6 +45,16 @@ func CountIf[T any](slice []T, condition func(T) bool) int {
 		}
 	}
 	return count
+}
+
+func Filter[T any](slice []T, condition func(T) bool) []T {
+	var res []T
+	for _, elem := range slice {
+		if condition(elem) {
+			res = append(res, elem)
+		}
+	}
+	return res
 }
 
 func HashPassword(password string) (string, error) {

@@ -1,100 +1,29 @@
 import React, { useEffect, useState } from 'react'
-import { Badge, Button, Empty, Typography } from 'antd'
+import { Button, Empty, Typography, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
 
-import useNavigation from '@/hooks/useNavigation/useNavigation'
-import useProperties from '@/hooks/useEffect/useProperties.ts'
-
-import locationIcon from '@/assets/icons/location.svg'
-
-import PageTitle from '@/components/PageText/Title.tsx'
-import defaultHouse from '@/assets/images/DefaultHouse.jpg'
-import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
-import useImageCache from '@/hooks/useEffect/useImageCache'
-import CardPropertyLoader from '@/components/Loader/CardPropertyLoader'
-import PageMeta from '@/components/PageMeta/PageMeta'
-import { TenantStatusEnum } from '@/enums/PropertyEnum'
-import style from './RealProperty.module.css'
+import useProperties from '@/hooks/Property/useProperties'
+import PageTitle from '@/components/ui/PageText/Title'
+import CardPropertyLoader from '@/components/ui/Loader/CardPropertyLoader'
+import PageMeta from '@/components/ui/PageMeta/PageMeta'
+import CardComponent from '@/components/features/RealProperty/PropertyCard'
+import PropertyFilterCard from '@/components/features/RealProperty/PropertyFilterCard'
 import RealPropertyCreate from './create/RealPropertyCreate'
 
-interface CardComponentProps {
-  realProperty: any
-  t: (key: string) => string
-}
-
-const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
-  const { goToRealPropertyDetails } = useNavigation()
-
-  const { data: picture, isLoading } = useImageCache(
-    realProperty.id,
-    GetPropertyPicture
-  )
-
-  return (
-    <div
-      className={style.card}
-      key={realProperty.id}
-      role="button"
-      tabIndex={0}
-      onClick={() => goToRealPropertyDetails(realProperty.id)}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          goToRealPropertyDetails(realProperty.id)
-        }
-      }}
-    >
-      <div className={style.cardContentContainer}>
-        <Badge.Ribbon
-          text={t(
-            TenantStatusEnum[
-              realProperty!.status as keyof typeof TenantStatusEnum
-            ].text || ''
-          )}
-          color={
-            TenantStatusEnum[
-              realProperty!.status as keyof typeof TenantStatusEnum
-            ].color || 'default'
-          }
-        >
-          <div className={style.cardPictureContainer}>
-            <img
-              src={isLoading ? defaultHouse : picture || defaultHouse}
-              alt="property"
-              className={style.cardPicture}
-            />
-          </div>
-        </Badge.Ribbon>
-        <div className={style.cardInfoContainer}>
-          <b className={style.cardText}>{realProperty.name}</b>
-          <div className={style.cardAddressContainer}>
-            <img src={locationIcon} alt="location" className={style.icon} />
-            <span className={style.cardText}>
-              {realProperty.address &&
-              realProperty.postal_code &&
-              realProperty.city
-                ? (() => {
-                    let fullAddress = ''
-                    if (realProperty.apartment_number) {
-                      fullAddress = `N° ${realProperty.apartment_number} - ${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
-                    } else {
-                      fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
-                    }
-                    return fullAddress.length > 40
-                      ? `${fullAddress.substring(0, 40)}...`
-                      : fullAddress
-                  })()
-                : '-----------'}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import style from './RealProperty.module.css'
 
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
-  const { properties, loading, error, refreshProperties } = useProperties()
+  const [showArchived, setShowArchived] = useState(false)
+  const [filters, setFilters] = useState({
+    searchQuery: '',
+    surfaceRange: 'all',
+    status: 'all'
+  })
+  const { properties, loading, error, refreshProperties } = useProperties(
+    null,
+    showArchived
+  )
   const [showModalCreate, setShowModalCreate] = useState(false)
   const [isPropertyCreated, setIsPropertyCreated] = useState(false)
 
@@ -104,6 +33,50 @@ const RealPropertyPage: React.FC = () => {
       setIsPropertyCreated(false)
     }
   }, [isPropertyCreated, refreshProperties])
+
+  const surfaceRangeOptions = [
+    { value: 'all', label: t('components.select.surface.all') },
+    { value: '0-50', label: '0-50m²' },
+    { value: '51-100', label: '51-100m²' },
+    { value: '101-150', label: '101-150m²' },
+    { value: '151-200', label: '151-200m²' },
+    { value: '201+', label: '201m²+' }
+  ]
+
+  const statusOptions = [
+    { value: 'all', label: t('components.select.status.all') },
+    { value: 'available', label: t('components.select.status.available') },
+    {
+      value: 'unavailable',
+      label: t('components.select.status.unavailable')
+    },
+    {
+      value: 'invitation_sent',
+      label: t('components.select.status.invitation_sent')
+    }
+  ]
+
+  const filteredProperties = properties.filter(property => {
+    const searchLower = filters.searchQuery.toLowerCase()
+    const matchesSearch =
+      property.name.toLowerCase().includes(searchLower) ||
+      (property.country &&
+        property.country.toLowerCase().includes(searchLower)) ||
+      (property.city && property.city.toLowerCase().includes(searchLower))
+
+    const matchesSurface =
+      filters.surfaceRange === 'all' ||
+      (filters.surfaceRange === '201+'
+        ? property.area_sqm >= 201
+        : property.area_sqm >=
+            parseInt(filters.surfaceRange.split('-')[0], 10) &&
+          property.area_sqm <= parseInt(filters.surfaceRange.split('-')[1], 10))
+
+    const matchesStatus =
+      filters.status === 'all' || property.status === filters.status
+
+    return matchesSearch && matchesSurface && matchesStatus
+  })
 
   if (error) {
     return <p>{t('pages.real_property.error.error_fetching_data')}</p>
@@ -119,15 +92,31 @@ const RealPropertyPage: React.FC = () => {
       <div className={style.pageContainer}>
         <div className={style.pageHeader}>
           <PageTitle title={t('pages.real_property.title')} size="title" />
-          <Button type="primary" onClick={() => setShowModalCreate(true)}>
-            {t('components.button.add_real_property')}
-          </Button>
+          <div className={style.headerActions}>
+            <div className={style.archiveFilter}>
+              <Switch
+                checked={showArchived}
+                onChange={setShowArchived}
+                checkedChildren={t('components.switch.show_archived')}
+                unCheckedChildren={t('components.switch.show_active')}
+              />
+            </div>
+            <Button type="primary" onClick={() => setShowModalCreate(true)}>
+              {t('components.button.add_real_property')}
+            </Button>
+          </div>
         </div>
 
-        {loading && <CardPropertyLoader cards={12} />}
+        <PropertyFilterCard
+          filters={filters}
+          setFilters={setFilters}
+          surfaceRangeOptions={surfaceRangeOptions}
+          statusOptions={statusOptions}
+        />
 
         <div className={style.cardsContainer}>
-          {properties.length === 0 && (
+          {loading && <CardPropertyLoader cards={12} />}
+          {!loading && filteredProperties.length === 0 && (
             <div className={style.emptyContainer}>
               <Empty
                 image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
@@ -139,7 +128,7 @@ const RealPropertyPage: React.FC = () => {
               />
             </div>
           )}
-          {properties.map(realProperty => (
+          {filteredProperties.map(realProperty => (
             <CardComponent
               key={realProperty.id}
               realProperty={realProperty}

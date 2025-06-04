@@ -11,40 +11,60 @@ import (
 	"immotep/backend/services/database"
 )
 
-func TestCreateInventoryReport(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
-	defer ensure(t)
-
-	invReport := db.InventoryReportModel{
+func BuildTestInventoryReport(id string) db.InventoryReportModel {
+	return db.InventoryReportModel{
 		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			Type:       db.ReportTypeStart,
-			PropertyID: "1",
+			ID:      id,
+			Type:    db.ReportTypeStart,
+			LeaseID: "1",
 		},
 	}
+}
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.CreateOne(
-			db.InventoryReport.Type.Set(db.ReportTypeStart),
-			db.InventoryReport.Property.Link(db.Property.ID.Equals("1")),
-		),
-	).Returns(invReport)
+func BuildTestRoomState(id string) db.RoomStateModel {
+	return db.RoomStateModel{
+		InnerRoomState: db.InnerRoomState{
+			ID:          id,
+			Cleanliness: db.CleanlinessClean,
+			State:       db.StateGood,
+			Note:        "Test note",
+			RoomID:      "1",
+		},
+	}
+}
 
-	newInvReport := database.CreateInvReport(db.ReportTypeStart, "1")
+func BuildTestFurnitureState(id string) db.FurnitureStateModel {
+	return db.FurnitureStateModel{
+		InnerFurnitureState: db.InnerFurnitureState{
+			ID:          id,
+			Cleanliness: db.CleanlinessClean,
+			State:       db.StateGood,
+			Note:        "Test note",
+			FurnitureID: "1",
+		},
+	}
+}
+
+// #############################################################################
+
+func TestCreateInventoryReport(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockCreateInventoryReport(c, invReport)).Returns(invReport)
+
+	newInvReport := database.CreateInvReport(invReport.Type, "1")
 	assert.NotNil(t, newInvReport)
 	assert.Equal(t, invReport.ID, newInvReport.ID)
 }
 
 func TestCreateInventoryReport_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.CreateOne(
-			db.InventoryReport.Type.Set(db.ReportTypeStart),
-			db.InventoryReport.Property.Link(db.Property.ID.Equals("1")),
-		),
-	).Errors(&protocol.UserFacingError{
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockCreateInventoryReport(c, invReport)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002",
 		Meta: protocol.Meta{
@@ -53,49 +73,30 @@ func TestCreateInventoryReport_AlreadyExists(t *testing.T) {
 		Message: "Unique constraint failed",
 	})
 
-	newInvReport := database.CreateInvReport(db.ReportTypeStart, "1")
+	newInvReport := database.CreateInvReport(invReport.Type, "1")
 	assert.Nil(t, newInvReport)
 }
 
 func TestCreateInventoryReport_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.CreateOne(
-			db.InventoryReport.Type.Set(db.ReportTypeStart),
-			db.InventoryReport.Property.Link(db.Property.ID.Equals("1")),
-		),
-	).Errors(errors.New("connection failed"))
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockCreateInventoryReport(c, invReport)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.CreateInvReport(db.ReportTypeStart, "1")
+		database.CreateInvReport(invReport.Type, "1")
 	})
 }
 
+// #############################################################################
+
 func TestCreateRoomState(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	roomState := db.RoomStateModel{
-		InnerRoomState: db.InnerRoomState{
-			Cleanliness: db.CleanlinessClean,
-			State:       db.StateGood,
-			Note:        "Test note",
-			RoomID:      "1",
-		},
-	}
-
-	mock.RoomState.Expect(
-		client.Client.RoomState.CreateOne(
-			db.RoomState.Cleanliness.Set(db.CleanlinessClean),
-			db.RoomState.State.Set(db.StateGood),
-			db.RoomState.Note.Set("Test note"),
-			db.RoomState.Report.Link(db.InventoryReport.ID.Equals("1")),
-			db.RoomState.Room.Link(db.Room.ID.Equals("1")),
-			db.RoomState.Pictures.Link(db.Image.ID.Equals("1")),
-		),
-	).Returns(roomState)
+	roomState := BuildTestRoomState("1")
+	m.RoomState.Expect(database.MockCreateRoomState(c, roomState)).Returns(roomState)
 
 	newRoomState := database.CreateRoomState(roomState, []string{"1"}, "1")
 	assert.NotNil(t, newRoomState)
@@ -105,28 +106,11 @@ func TestCreateRoomState(t *testing.T) {
 }
 
 func TestCreateRoomState_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	roomState := db.RoomStateModel{
-		InnerRoomState: db.InnerRoomState{
-			Cleanliness: db.CleanlinessClean,
-			State:       db.StateGood,
-			Note:        "Test note",
-			RoomID:      "1",
-		},
-	}
-
-	mock.RoomState.Expect(
-		client.Client.RoomState.CreateOne(
-			db.RoomState.Cleanliness.Set(db.CleanlinessClean),
-			db.RoomState.State.Set(db.StateGood),
-			db.RoomState.Note.Set("Test note"),
-			db.RoomState.Report.Link(db.InventoryReport.ID.Equals("1")),
-			db.RoomState.Room.Link(db.Room.ID.Equals("1")),
-			db.RoomState.Pictures.Link(db.Image.ID.Equals("1")),
-		),
-	).Errors(&protocol.UserFacingError{
+	roomState := BuildTestRoomState("1")
+	m.RoomState.Expect(database.MockCreateRoomState(c, roomState)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002",
 		Meta: protocol.Meta{
@@ -140,57 +124,25 @@ func TestCreateRoomState_AlreadyExists(t *testing.T) {
 }
 
 func TestCreateRoomState_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	roomState := db.RoomStateModel{
-		InnerRoomState: db.InnerRoomState{
-			Cleanliness: db.CleanlinessClean,
-			State:       db.StateGood,
-			Note:        "Test note",
-			RoomID:      "1",
-		},
-	}
-
-	mock.RoomState.Expect(
-		client.Client.RoomState.CreateOne(
-			db.RoomState.Cleanliness.Set(db.CleanlinessClean),
-			db.RoomState.State.Set(db.StateGood),
-			db.RoomState.Note.Set("Test note"),
-			db.RoomState.Report.Link(db.InventoryReport.ID.Equals("1")),
-			db.RoomState.Room.Link(db.Room.ID.Equals("1")),
-			db.RoomState.Pictures.Link(db.Image.ID.Equals("1")),
-		),
-	).Errors(errors.New("connection failed"))
+	roomState := BuildTestRoomState("1")
+	m.RoomState.Expect(database.MockCreateRoomState(c, roomState)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.CreateRoomState(roomState, []string{"1"}, "1")
 	})
 }
 
+// #############################################################################
+
 func TestCreateFurnitureState(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	furnitureState := db.FurnitureStateModel{
-		InnerFurnitureState: db.InnerFurnitureState{
-			Cleanliness: db.CleanlinessClean,
-			State:       db.StateGood,
-			Note:        "Test note",
-			FurnitureID: "1",
-		},
-	}
-
-	mock.FurnitureState.Expect(
-		client.Client.FurnitureState.CreateOne(
-			db.FurnitureState.Cleanliness.Set(db.CleanlinessClean),
-			db.FurnitureState.State.Set(db.StateGood),
-			db.FurnitureState.Note.Set("Test note"),
-			db.FurnitureState.Report.Link(db.InventoryReport.ID.Equals("1")),
-			db.FurnitureState.Furniture.Link(db.Furniture.ID.Equals("1")),
-			db.FurnitureState.Pictures.Link(db.Image.ID.Equals("1")),
-		),
-	).Returns(furnitureState)
+	furnitureState := BuildTestFurnitureState("1")
+	m.FurnitureState.Expect(database.MockCreateFurnitureState(c, furnitureState)).Returns(furnitureState)
 
 	newFurnitureState := database.CreateFurnitureState(furnitureState, []string{"1"}, "1")
 	assert.NotNil(t, newFurnitureState)
@@ -200,28 +152,11 @@ func TestCreateFurnitureState(t *testing.T) {
 }
 
 func TestCreateFurnitureState_AlreadyExists(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	furnitureState := db.FurnitureStateModel{
-		InnerFurnitureState: db.InnerFurnitureState{
-			Cleanliness: db.CleanlinessClean,
-			State:       db.StateGood,
-			Note:        "Test note",
-			FurnitureID: "1",
-		},
-	}
-
-	mock.FurnitureState.Expect(
-		client.Client.FurnitureState.CreateOne(
-			db.FurnitureState.Cleanliness.Set(db.CleanlinessClean),
-			db.FurnitureState.State.Set(db.StateGood),
-			db.FurnitureState.Note.Set("Test note"),
-			db.FurnitureState.Report.Link(db.InventoryReport.ID.Equals("1")),
-			db.FurnitureState.Furniture.Link(db.Furniture.ID.Equals("1")),
-			db.FurnitureState.Pictures.Link(db.Image.ID.Equals("1")),
-		),
-	).Errors(&protocol.UserFacingError{
+	furnitureState := BuildTestFurnitureState("1")
+	m.FurnitureState.Expect(database.MockCreateFurnitureState(c, furnitureState)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002",
 		Meta: protocol.Meta{
@@ -235,163 +170,123 @@ func TestCreateFurnitureState_AlreadyExists(t *testing.T) {
 }
 
 func TestCreateFurnitureState_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	furnitureState := db.FurnitureStateModel{
-		InnerFurnitureState: db.InnerFurnitureState{
-			Cleanliness: db.CleanlinessClean,
-			State:       db.StateGood,
-			Note:        "Test note",
-			FurnitureID: "1",
-		},
-	}
-
-	mock.FurnitureState.Expect(
-		client.Client.FurnitureState.CreateOne(
-			db.FurnitureState.Cleanliness.Set(db.CleanlinessClean),
-			db.FurnitureState.State.Set(db.StateGood),
-			db.FurnitureState.Note.Set("Test note"),
-			db.FurnitureState.Report.Link(db.InventoryReport.ID.Equals("1")),
-			db.FurnitureState.Furniture.Link(db.Furniture.ID.Equals("1")),
-			db.FurnitureState.Pictures.Link(db.Image.ID.Equals("1")),
-		),
-	).Errors(errors.New("connection failed"))
+	furnitureState := BuildTestFurnitureState("1")
+	m.FurnitureState.Expect(database.MockCreateFurnitureState(c, furnitureState)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.CreateFurnitureState(furnitureState, []string{"1"}, "1")
 	})
 }
 
+// #############################################################################
+
 func TestGetInvReportByPropertyID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	invReport := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			Type:       db.ReportTypeStart,
-			PropertyID: "1",
-		},
-	}
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockGetInvReportByPropertyID(c)).ReturnsMany([]db.InventoryReportModel{invReport})
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindMany(
-			db.InventoryReport.PropertyID.Equals("1"),
-		).OrderBy(
-			db.InventoryReport.Date.Order(db.SortOrderDesc),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).ReturnsMany([]db.InventoryReportModel{invReport})
-
-	invReports := database.GetInvReportByPropertyID("1")
+	invReports := database.GetInvReportsByPropertyID("1")
 	assert.Len(t, invReports, 1)
 	assert.Equal(t, invReport.ID, invReports[0].ID)
 }
 
 func TestGetInvReportByPropertyID_MultipleReports(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	invReport1 := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			Type:       db.ReportTypeStart,
-			PropertyID: "1",
-		},
-	}
+	invReport1 := BuildTestInventoryReport("1")
+	invReport2 := BuildTestInventoryReport("2")
+	m.InventoryReport.Expect(database.MockGetInvReportByPropertyID(c)).ReturnsMany([]db.InventoryReportModel{invReport1, invReport2})
 
-	invReport2 := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "2",
-			Type:       db.ReportTypeEnd,
-			PropertyID: "1",
-		},
-	}
-
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindMany(
-			db.InventoryReport.PropertyID.Equals("1"),
-		).OrderBy(
-			db.InventoryReport.Date.Order(db.SortOrderDesc),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).ReturnsMany([]db.InventoryReportModel{invReport1, invReport2})
-
-	invReports := database.GetInvReportByPropertyID("1")
+	invReports := database.GetInvReportsByPropertyID("1")
 	assert.Len(t, invReports, 2)
 	assert.Equal(t, invReport1.ID, invReports[0].ID)
 	assert.Equal(t, invReport2.ID, invReports[1].ID)
 }
 
 func TestGetInvReportByPropertyID_NoReports(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindMany(
-			db.InventoryReport.PropertyID.Equals("1"),
-		).OrderBy(
-			db.InventoryReport.Date.Order(db.SortOrderDesc),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).ReturnsMany([]db.InventoryReportModel{})
+	m.InventoryReport.Expect(database.MockGetInvReportByPropertyID(c)).ReturnsMany([]db.InventoryReportModel{})
 
-	invReports := database.GetInvReportByPropertyID("1")
+	invReports := database.GetInvReportsByPropertyID("1")
 	assert.Empty(t, invReports)
 }
 
 func TestGetInvReportByPropertyID_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindMany(
-			db.InventoryReport.PropertyID.Equals("1"),
-		).OrderBy(
-			db.InventoryReport.Date.Order(db.SortOrderDesc),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Errors(errors.New("connection failed"))
+	m.InventoryReport.Expect(database.MockGetInvReportByPropertyID(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetInvReportByPropertyID("1")
+		database.GetInvReportsByPropertyID("1")
 	})
 }
 
-func TestGetInvReportByID(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+// #############################################################################
+
+func TestGetInvReportsByLeaseID(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	invReport := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			Type:       db.ReportTypeStart,
-			PropertyID: "1",
-		},
-	}
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockGetInvReportsByLeaseID(c)).ReturnsMany([]db.InventoryReportModel{invReport})
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindUnique(
-			db.InventoryReport.ID.Equals("1"),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Returns(invReport)
+	invReports := database.GetInvReportsByLeaseID("1")
+	assert.Len(t, invReports, 1)
+	assert.Equal(t, invReport.ID, invReports[0].ID)
+}
+
+func TestGetInvReportsByLeaseID_MultipleReports(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport1 := BuildTestInventoryReport("1")
+	invReport2 := BuildTestInventoryReport("2")
+	m.InventoryReport.Expect(database.MockGetInvReportsByLeaseID(c)).ReturnsMany([]db.InventoryReportModel{invReport1, invReport2})
+
+	invReports := database.GetInvReportsByLeaseID("1")
+	assert.Len(t, invReports, 2)
+	assert.Equal(t, invReport1.ID, invReports[0].ID)
+	assert.Equal(t, invReport2.ID, invReports[1].ID)
+}
+
+func TestGetInvReportsByLeaseID_NoReports(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetInvReportsByLeaseID(c)).ReturnsMany([]db.InventoryReportModel{})
+
+	invReports := database.GetInvReportsByLeaseID("1")
+	assert.Empty(t, invReports)
+}
+
+func TestGetInvReportsByLeaseID_NoConnection(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetInvReportsByLeaseID(c)).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetInvReportsByLeaseID("1")
+	})
+}
+
+// #############################################################################
+
+func TestGetInvReportByID(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Returns(invReport)
 
 	foundInvReport := database.GetInvReportByID("1")
 	assert.NotNil(t, foundInvReport)
@@ -399,108 +294,92 @@ func TestGetInvReportByID(t *testing.T) {
 }
 
 func TestGetInvReportByID_NotFound(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindUnique(
-			db.InventoryReport.ID.Equals("1"),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Errors(db.ErrNotFound)
 
 	foundInvReport := database.GetInvReportByID("1")
 	assert.Nil(t, foundInvReport)
 }
 
 func TestGetInvReportByID_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindUnique(
-			db.InventoryReport.ID.Equals("1"),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Errors(errors.New("connection failed"))
+	m.InventoryReport.Expect(database.MockGetInvReportByID(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
 		database.GetInvReportByID("1")
 	})
 }
 
-func TestGetLatestInvReport(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+// #############################################################################
+
+func TestGetLatestInvReportByProperty(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	invReport := db.InventoryReportModel{
-		InnerInventoryReport: db.InnerInventoryReport{
-			ID:         "1",
-			Type:       db.ReportTypeStart,
-			PropertyID: "1",
-		},
-	}
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Returns(invReport)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindFirst(
-			db.InventoryReport.PropertyID.Equals("1"),
-		).OrderBy(
-			db.InventoryReport.Date.Order(db.SortOrderDesc),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Returns(invReport)
-
-	latestInvReport := database.GetLatestInvReport("1")
+	latestInvReport := database.GetLatestInvReportByProperty("1")
 	assert.NotNil(t, latestInvReport)
 	assert.Equal(t, invReport.ID, latestInvReport.ID)
 }
 
-func TestGetLatestInvReport_NoReports(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+func TestGetLatestInvReportByProperty_NoReports(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindFirst(
-			db.InventoryReport.PropertyID.Equals("1"),
-		).OrderBy(
-			db.InventoryReport.Date.Order(db.SortOrderDesc),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Errors(db.ErrNotFound)
+	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Errors(db.ErrNotFound)
 
-	latestInvReport := database.GetLatestInvReport("1")
+	latestInvReport := database.GetLatestInvReportByProperty("1")
 	assert.Nil(t, latestInvReport)
 }
 
-func TestGetLatestInvReport_NoConnection(t *testing.T) {
-	client, mock, ensure := services.ConnectDBTest()
+func TestGetLatestInvReportByProperty_NoConnection(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	mock.InventoryReport.Expect(
-		client.Client.InventoryReport.FindFirst(
-			db.InventoryReport.PropertyID.Equals("1"),
-		).OrderBy(
-			db.InventoryReport.Date.Order(db.SortOrderDesc),
-		).With(
-			db.InventoryReport.Property.Fetch(),
-			db.InventoryReport.RoomStates.Fetch().With(db.RoomState.Room.Fetch()).With(db.RoomState.Pictures.Fetch()),
-			db.InventoryReport.FurnitureStates.Fetch().With(db.FurnitureState.Furniture.Fetch()).With(db.FurnitureState.Pictures.Fetch()),
-		),
-	).Errors(errors.New("connection failed"))
+	m.InventoryReport.Expect(database.MockGetLatestInvReport(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {
-		database.GetLatestInvReport("1")
+		database.GetLatestInvReportByProperty("1")
+	})
+}
+
+// #############################################################################
+
+func TestGetLatestInvReportByLease(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	invReport := BuildTestInventoryReport("1")
+	m.InventoryReport.Expect(database.MockGetLatestInvReportByLease(c)).Returns(invReport)
+
+	latestInvReport := database.GetLatestInvReportByLease("1")
+	assert.NotNil(t, latestInvReport)
+	assert.Equal(t, invReport.ID, latestInvReport.ID)
+}
+
+func TestGetLatestInvReportByLease_NoReports(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetLatestInvReportByLease(c)).Errors(db.ErrNotFound)
+
+	latestInvReport := database.GetLatestInvReportByLease("1")
+	assert.Nil(t, latestInvReport)
+}
+
+func TestGetLatestInvReportByLease_NoConnection(t *testing.T) {
+	c, m, ensure := services.ConnectDBTest()
+	defer ensure(t)
+
+	m.InventoryReport.Expect(database.MockGetLatestInvReportByLease(c)).Errors(errors.New("connection failed"))
+
+	assert.Panics(t, func() {
+		database.GetLatestInvReportByLease("1")
 	})
 }

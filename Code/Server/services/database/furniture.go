@@ -11,8 +11,6 @@ func CreateFurniture(furniture db.FurnitureModel, roomId string) *db.FurnitureMo
 		db.Furniture.Name.Set(furniture.Name),
 		db.Furniture.Room.Link(db.Room.ID.Equals(roomId)),
 		db.Furniture.Quantity.Set(furniture.Quantity),
-	).With(
-		db.Furniture.Room.Fetch(),
 	).Exec(pdb.Context)
 	if err != nil {
 		if _, is := db.IsErrUniqueConstraint(err); is {
@@ -23,7 +21,15 @@ func CreateFurniture(furniture db.FurnitureModel, roomId string) *db.FurnitureMo
 	return newFurniture
 }
 
-func GetFurnitureByRoomID(roomID string, archived bool) []db.FurnitureModel {
+func MockCreateFurniture(c *services.PrismaDB, furniture db.FurnitureModel) db.FurnitureMockExpectParam {
+	return c.Client.Furniture.CreateOne(
+		db.Furniture.Name.Set(furniture.Name),
+		db.Furniture.Room.Link(db.Room.ID.Equals("1")),
+		db.Furniture.Quantity.Set(furniture.Quantity),
+	)
+}
+
+func GetFurnituresByRoomID(roomID string, archived bool) []db.FurnitureModel {
 	pdb := services.DBclient
 	furnitures, err := pdb.Client.Furniture.FindMany(
 		db.Furniture.RoomID.Equals(roomID),
@@ -35,6 +41,15 @@ func GetFurnitureByRoomID(roomID string, archived bool) []db.FurnitureModel {
 		panic(err)
 	}
 	return furnitures
+}
+
+func MockGetFurnituresByRoomID(c *services.PrismaDB, archived bool) db.FurnitureMockExpectParam {
+	return c.Client.Furniture.FindMany(
+		db.Furniture.RoomID.Equals("1"),
+		db.Furniture.Archived.Equals(archived),
+	).With(
+		db.Furniture.Room.Fetch(),
+	)
 }
 
 func GetFurnitureByID(id string) *db.FurnitureModel {
@@ -53,12 +68,18 @@ func GetFurnitureByID(id string) *db.FurnitureModel {
 	return furniture
 }
 
+func MockGetFurnitureByID(c *services.PrismaDB) db.FurnitureMockExpectParam {
+	return c.Client.Furniture.FindUnique(
+		db.Furniture.ID.Equals("1"),
+	).With(
+		db.Furniture.Room.Fetch(),
+	)
+}
+
 func ToggleArchiveFurniture(furnitureId string, archive bool) *db.FurnitureModel {
 	pdb := services.DBclient
 	archivedFurniture, err := pdb.Client.Furniture.FindUnique(
 		db.Furniture.ID.Equals(furnitureId),
-	).With(
-		db.Furniture.Room.Fetch(),
 	).Update(
 		db.Furniture.Archived.Set(archive),
 	).Exec(pdb.Context)
@@ -69,4 +90,28 @@ func ToggleArchiveFurniture(furnitureId string, archive bool) *db.FurnitureModel
 		panic(err)
 	}
 	return archivedFurniture
+}
+
+func MockArchiveFurniture(c *services.PrismaDB) db.FurnitureMockExpectParam {
+	return c.Client.Furniture.FindUnique(
+		db.Furniture.ID.Equals("1"),
+	).Update(
+		db.Furniture.Archived.Set(true),
+	)
+}
+
+func DeleteFurniture(id string) {
+	pdb := services.DBclient
+	_, err := pdb.Client.Furniture.FindUnique(
+		db.Furniture.ID.Equals(id),
+	).Delete().Exec(pdb.Context)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func MockDeleteFurniture(c *services.PrismaDB) db.FurnitureMockExpectParam {
+	return c.Client.Furniture.FindUnique(
+		db.Furniture.ID.Equals("1"),
+	).Delete()
 }
