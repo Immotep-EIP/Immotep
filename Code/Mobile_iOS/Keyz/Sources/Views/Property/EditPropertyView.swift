@@ -42,8 +42,6 @@ struct EditPropertyView: View {
 
     var body: some View {
         VStack {
-//            TopBar(title: "Edit Property".localized())
-
             Form {
                 Section {
                     VStack {
@@ -160,18 +158,36 @@ struct EditPropertyView: View {
         )
 
         guard let token = await TokenStorage.getAccessToken() else {
-            errorMessage = "Failed to retrieve token."
+            errorMessage = "Failed to retrieve token.".localized()
             print("Token is nil")
             return
         }
 
         do {
-            _ = try await viewModel.updateProperty(request: updatedProperty, token: token)
-            property = updatedProperty
+            let propertyId = try await viewModel.updateProperty(request: updatedProperty, token: token)
+            print("Property updated successfully with ID: \(propertyId)")
+
+            if let newPhoto = photo, newPhoto != property.photo {
+                do {
+                    try await viewModel.updatePropertyPicture(token: token, propertyPicture: newPhoto, propertyID: propertyId)
+                    print("Property picture updated successfully")
+                } catch {
+                    print("Failed to update property picture: \(error.localizedDescription)")
+                }
+            }
+
+            if let updatedProperty = viewModel.properties.first(where: { $0.id == propertyId }) {
+                property = updatedProperty
+                print("Updated property binding in EditPropertyView for ID: \(propertyId)")
+            } else {
+                errorMessage = "Updated property not found in refreshed data.".localized()
+                print("Property \(propertyId) not found in viewModel.properties after update")
+            }
+
             dismiss()
         } catch {
-            errorMessage = "Error updating property: \(error.localizedDescription)"
-            print("Error: \(error)")
+            errorMessage = "Error updating property: \(error.localizedDescription)".localized()
+            print("Error updating property: \(error)")
         }
     }
 }

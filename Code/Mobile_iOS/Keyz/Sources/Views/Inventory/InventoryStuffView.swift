@@ -131,7 +131,7 @@ struct InventoryStuffView: View {
                 Text("Confirm")
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.blue)
+                    .background(Color("LightBlue"))
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
