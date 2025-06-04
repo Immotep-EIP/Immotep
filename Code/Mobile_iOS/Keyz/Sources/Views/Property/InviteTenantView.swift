@@ -20,10 +20,10 @@ struct InviteTenantView: View {
             Form {
                 Section(header: Text(String(format: "Invite Tenant to %@".localized(), property.name))) {
                     TextField("Tenant Email".localized(), text: $email)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
-                    
+                        .disableAutocorrection(true)
+                
                     DatePicker("Start Date".localized(),
                               selection: $startDate,
                               displayedComponents: .date)
@@ -77,3 +77,14 @@ struct InviteTenantView: View {
         }
     }
 }
+
+struct InviteTenantView_Previews: PreviewProvider {
+    static var viewModel = TenantViewModel()
+    static var previews: some View {
+        InviteTenantView(
+            tenantViewModel: viewModel,
+            property: exampleDataProperty
+        )
+    }
+}
+

@@ -47,7 +47,6 @@ class PropertyViewModel: ObservableObject {
         
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            print("Create Property failed with status \(httpResponse.statusCode): \(errorBody)")
             switch httpResponse.statusCode {
             case 400:
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid property data: \(errorBody)".localized()])
@@ -60,15 +59,11 @@ class PropertyViewModel: ObservableObject {
         }
         
         let propertyID = try JSONDecoder().decode(PropertyID.self, from: data)
-        print("Property created with ID: \(propertyID.id)")
         
         if let photo = request.photo {
             do {
-                print("Uploading photo for property \(propertyID.id)")
                 let result = try await updatePropertyPicture(token: token, propertyPicture: photo, propertyID: propertyID.id)
-                //                print("Photo upload result: \(result)")
             } catch {
-                print("Error uploading property picture: \(error.localizedDescription)")
             }
         }
         
@@ -102,7 +97,6 @@ class PropertyViewModel: ObservableObject {
         
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            print("Update Picture failed with status \(httpResponse.statusCode): \(errorBody)")
             switch httpResponse.statusCode {
             case 400:
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid image data: \(errorBody)".localized()])
@@ -127,8 +121,6 @@ class PropertyViewModel: ObservableObject {
         do {
             let token = try await TokenStorage.getValidAccessToken()
             
-            print("token: \(token)")
-            
             var urlRequest = URLRequest(url: url)
             urlRequest.httpMethod = "GET"
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -137,13 +129,11 @@ class PropertyViewModel: ObservableObject {
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("Invalid response from server")
                 return
             }
             
             guard (200...299).contains(httpResponse.statusCode) else {
                 let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-                print("Fetch Properties failed with status \(httpResponse.statusCode): \(errorBody)")
                 return
             }
             
@@ -181,10 +171,8 @@ class PropertyViewModel: ObservableObject {
                         let propertyId = await self.properties[index].id
                         do {
                             let image = try await self.fetchPropertiesPicture(propertyId: propertyId)
-                            print("Image fetch result for property \(propertyId): \(image != nil ? "Success" : "Nil")")
                             return (index: index, image: image)
                         } catch {
-                            print("Failed to fetch picture for Property ID: \(propertyId), error: \(error.localizedDescription)")
                             return (index: index, image: nil)
                         }
                     }
@@ -192,12 +180,10 @@ class PropertyViewModel: ObservableObject {
                 
                 for await (index, image) in group {
                     self.properties[index].photo = image
-                    print("Image assigned to property \(self.properties[index].id): \(image != nil ? "Loaded" : "Nil")")
                 }
             }
             objectWillChange.send()
         } catch {
-            print("Error fetching properties: \(error.localizedDescription)")
         }
     }
     
@@ -250,7 +236,6 @@ class PropertyViewModel: ObservableObject {
                     }
                     continue
                 case 403:
-                    print("Property \(propertyId) does not belong to the user")
                     return nil
                 case 404:
                     return nil
@@ -268,7 +253,7 @@ class PropertyViewModel: ObservableObject {
         return nil
     }
     
-    func updateProperty(request: Property, token: String) async throws -> PropertyResponse {
+    func updateProperty(request: Property, token: String) async throws -> String {
         let body: [String: Any] = [
             "name": request.name,
             "address": request.address,
@@ -317,9 +302,10 @@ class PropertyViewModel: ObservableObject {
         }
         
         let decoder = JSONDecoder()
-        let updatedProperty = try decoder.decode(PropertyResponse.self, from: data)
+        let idResponse = try decoder.decode(IdResponse.self, from: data)
+        
         await fetchProperties()
-        return updatedProperty
+        return idResponse.id
     }
     
     func deleteProperty(propertyId: String) async throws {
@@ -369,9 +355,8 @@ class PropertyViewModel: ObservableObject {
         }
     }
     
-    func fetchPropertyDocuments(propertyId: String) async throws {
-        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/documents/")!
-        
+    func fetchPropertyDocuments(propertyId: String) async throws -> [PropertyDocument] {
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/current/docs/")!
         let token = try await TokenStorage.getValidAccessToken()
         
         var urlRequest = URLRequest(url: url)
@@ -386,36 +371,46 @@ class PropertyViewModel: ObservableObject {
         config.httpMaximumConnectionsPerHost = 10
         let session = URLSession(configuration: config)
         
-        do {
-            let (data, response) = try await session.data(for: urlRequest)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server".localized()])
-            }
-            
-            guard (200...299).contains(httpResponse.statusCode) else {
-                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-                print("Fetch Documents failed with status \(httpResponse.statusCode): \(errorBody)")
-                throw NSError(domain: "", code: httpResponse.statusCode,
-                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)"])
-            }
-            
-            let decoder = JSONDecoder()
-            let documentsData = try decoder.decode([PropertyDocumentResponse].self, from: data)
-            print("Documents fetched for property \(propertyId): \(documentsData.count)")
-            
-            if let index = properties.firstIndex(where: { $0.id == propertyId }) {
-                var updatedProperty = properties[index]
-                updatedProperty.documents = documentsData.map { doc in
-                    PropertyDocument(id: doc.id, title: doc.name, fileName: doc.name, data: doc.data)
-                }
-                properties[index] = updatedProperty
-                objectWillChange.send()
-            }
-        } catch {
-            print("Fetch documents error for property \(propertyId): \(error.localizedDescription)")
-            throw error
+        let (data, response) = try await session.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server".localized()])
         }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            throw NSError(domain: "", code: httpResponse.statusCode,
+                          userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)"])
+        }
+        
+        let decoder = JSONDecoder()
+        let documentsData = try decoder.decode([PropertyDocumentResponse].self, from: data)
+        
+        let documents = documentsData.map { doc in
+            let cleanBase64 = doc.data.components(separatedBy: ",").last ?? doc.data
+            let filename = doc.name
+            let datePattern = #"(\d{4}-\d{2}-\d{2})"#
+            if let dateRange = filename.range(of: datePattern, options: .regularExpression) {
+                let dateString = String(filename[dateRange])
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                if let date = dateFormatter.date(from: dateString) {
+                    dateFormatter.dateFormat = "dd-MM-yyyy"
+                    let formattedDate = dateFormatter.string(from: date)
+                    return PropertyDocument(id: doc.id, title: formattedDate, fileName: doc.name, data: cleanBase64)
+                }
+            }
+            return PropertyDocument(id: doc.id, title: doc.name, fileName: doc.name, data: cleanBase64)
+        }
+        
+        if let index = properties.firstIndex(where: { $0.id == propertyId }) {
+            var updatedProperty = properties[index]
+            updatedProperty.documents = documents
+            properties[index] = updatedProperty
+            objectWillChange.send()
+        }
+        
+        return documents
     }
     
     func cancelInvite(propertyId: String, token: String) async throws {
@@ -434,7 +429,6 @@ class PropertyViewModel: ObservableObject {
         
         guard httpResponse.statusCode == 204 else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            print("Cancel Invite failed with status \(httpResponse.statusCode): \(errorBody)")
             switch httpResponse.statusCode {
             case 403:
                 throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property is not yours.".localized()])
@@ -447,7 +441,6 @@ class PropertyViewModel: ObservableObject {
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
             }
         }
-        print("Invite cancelled for property \(propertyId)")
     }
     
     func endLease(propertyId: String, leaseId: String, token: String) async throws {
@@ -466,7 +459,6 @@ class PropertyViewModel: ObservableObject {
         
         guard httpResponse.statusCode == 204 else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            print("End Lease failed with status \(httpResponse.statusCode): \(errorBody)")
             switch httpResponse.statusCode {
             case 400:
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Cannot end non-current lease.".localized()])
@@ -481,7 +473,6 @@ class PropertyViewModel: ObservableObject {
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
             }
         }
-        print("Lease ended for property \(propertyId), lease \(leaseId)")
     }
     
     func fetchActiveLease(propertyId: String, token: String) async throws -> String? {
@@ -500,7 +491,6 @@ class PropertyViewModel: ObservableObject {
         
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            print("Fetch Active Lease failed with status \(httpResponse.statusCode): \(errorBody)")
             switch httpResponse.statusCode {
             case 403:
                 throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property is not yours.".localized()])
@@ -515,11 +505,8 @@ class PropertyViewModel: ObservableObject {
         let decoder = JSONDecoder()
         let leases = try decoder.decode([LeaseResponse].self, from: data)
         if let activeLease = leases.first(where: { $0.endDate == nil }) {
-            print("Active lease found for property \(propertyId): \(activeLease.id)")
             return activeLease.id
         }
-        print("No active lease found for property \(propertyId)")
-        print("leaseIDs: \(leases.map(\.id))")
         return nil
     }
     
@@ -546,7 +533,6 @@ class PropertyViewModel: ObservableObject {
         
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            print("Fetch Damages failed with status \(httpResponse.statusCode): \(errorBody)")
             switch httpResponse.statusCode {
             case 403:
                 throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
@@ -560,12 +546,9 @@ class PropertyViewModel: ObservableObject {
         
         let decoder = JSONDecoder()
         let damagesData = try decoder.decode([DamageResponse].self, from: data)
-        print("Damages fetched for property \(propertyId): \(damagesData.count)")
         
         if let index = properties.firstIndex(where: { $0.id == propertyId }) {
             properties[index].damages = damagesData
-        } else {
-            print("Property with ID \(propertyId) not found in properties array")
         }
         
         self.damages = damagesData
@@ -604,44 +587,49 @@ class PropertyViewModel: ObservableObject {
             }
         }
 
-        let decoder = JSONDecoder()
-        let propertyResponse = try decoder.decode(PropertyResponse.self, from: data)
+        var property: Property
+        do {
+            let decoder = JSONDecoder()
+            let propertyResponse = try decoder.decode(PropertyResponse.self, from: data)
 
-        var property = Property(
-            id: propertyResponse.id,
-            ownerID: propertyResponse.ownerId,
-            name: propertyResponse.name,
-            address: propertyResponse.address,
-            city: propertyResponse.city,
-            postalCode: propertyResponse.postalCode,
-            country: propertyResponse.country,
-            photo: nil,
-            monthlyRent: propertyResponse.rentalPricePerMonth,
-            deposit: propertyResponse.depositPrice,
-            surface: propertyResponse.areaSqm,
-            isAvailable: propertyResponse.isAvailable,
-            tenantName: propertyResponse.lease?.tenantName,
-            leaseStartDate: propertyResponse.lease?.startDate,
-            leaseEndDate: propertyResponse.lease?.endDate,
-            documents: [],
-            createdAt: propertyResponse.createdAt,
-            rooms: [],
-            damages: []
-        )
+            property = Property(
+                id: propertyResponse.id,
+                ownerID: propertyResponse.ownerId,
+                name: propertyResponse.name,
+                address: propertyResponse.address,
+                city: propertyResponse.city,
+                postalCode: propertyResponse.postalCode,
+                country: propertyResponse.country,
+                photo: nil,
+                monthlyRent: propertyResponse.rentalPricePerMonth,
+                deposit: propertyResponse.depositPrice,
+                surface: propertyResponse.areaSqm,
+                isAvailable: propertyResponse.isAvailable,
+                tenantName: propertyResponse.lease?.tenantName,
+                leaseStartDate: propertyResponse.lease?.startDate,
+                leaseEndDate: propertyResponse.lease?.endDate,
+                documents: [],
+                createdAt: propertyResponse.createdAt,
+                rooms: [],
+                damages: []
+            )
+        } catch {
+            throw error
+        }
 
         do {
             property.photo = try await fetchPropertiesPicture(propertyId: property.id)
         } catch {
-            print("Failed to fetch picture for tenant property \(property.id), error: \(error.localizedDescription)")
         }
 
         do {
-            try await fetchPropertyDocuments(propertyId: property.id)
-            if let updatedProperty = properties.first(where: { $0.id == property.id }) {
-                property.documents = updatedProperty.documents
+            if let leaseId = try await fetchActiveLeaseIdForProperty(propertyId: property.id, token: token) {
+                try await fetchTenantPropertyDocuments(leaseId: leaseId, propertyId: property.id)
+                if let updatedProperty = properties.first(where: { $0.id == property.id }) {
+                    property.documents = updatedProperty.documents
+                }
             }
         } catch {
-            print("Failed to fetch documents for tenant property \(property.id), error: \(error.localizedDescription)")
         }
 
         do {
@@ -650,10 +638,55 @@ class PropertyViewModel: ObservableObject {
                 property.damages = updatedProperty.damages
             }
         } catch {
-            print("Failed to fetch damages for tenant property \(property.id), error: \(error.localizedDescription)")
         }
 
         return property
+    }
+    
+    func fetchTenantPropertyDocuments(leaseId: String, propertyId: String) async throws {
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/\(leaseId)/documents/")!
+        let token = try await TokenStorage.getValidAccessToken()
+
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let config = URLSessionConfiguration.default
+        config.waitsForConnectivity = true
+        config.timeoutIntervalForRequest = 120
+        config.timeoutIntervalForResource = 300
+        config.httpMaximumConnectionsPerHost = 10
+        let session = URLSession(configuration: config)
+
+        do {
+            let (data, response) = try await session.data(for: urlRequest)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server".localized()])
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)"])
+            }
+
+            let decoder = JSONDecoder()
+            let documentsData = try decoder.decode([PropertyDocumentResponse].self, from: data)
+
+            if let index = properties.firstIndex(where: { $0.id == propertyId }) {
+                var updatedProperty = properties[index]
+                updatedProperty.documents = documentsData.map { doc in
+                    let cleanBase64 = doc.data.components(separatedBy: ",").last ?? doc.data
+                    return PropertyDocument(id: doc.id, title: doc.name, fileName: doc.name, data: cleanBase64)
+                }
+                properties[index] = updatedProperty
+                objectWillChange.send()
+            }
+        } catch {
+            throw error
+        }
     }
     
     
@@ -683,7 +716,6 @@ class PropertyViewModel: ObservableObject {
 
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            print("Fetch Tenant Damages failed with status \(httpResponse.statusCode): \(errorBody)")
             switch httpResponse.statusCode {
             case 403:
                 throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Lease not yours.".localized()])
@@ -699,7 +731,6 @@ class PropertyViewModel: ObservableObject {
 
         let decoder = JSONDecoder()
         let damagesData = try decoder.decode([DamageResponse].self, from: data)
-        print("Damages fetched for lease \(leaseId): \(damagesData.count)")
 
         if let propertyIndex = properties.firstIndex(where: { $0.id == damagesData.first?.propertyId }) {
             properties[propertyIndex].damages = damagesData
@@ -724,7 +755,6 @@ class PropertyViewModel: ObservableObject {
 
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            print("Fetch Active Lease ID failed with status \(httpResponse.statusCode): \(errorBody)")
             switch httpResponse.statusCode {
             case 403:
                 throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
@@ -761,7 +791,6 @@ class PropertyViewModel: ObservableObject {
 
         guard httpResponse.statusCode == 201 else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            print("Create Damage failed with status \(httpResponse.statusCode): \(errorBody)")
             switch httpResponse.statusCode {
             case 400:
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Missing fields or bad base64 string: \(errorBody)".localized()])
@@ -779,7 +808,6 @@ class PropertyViewModel: ObservableObject {
 
         let decoder = JSONDecoder()
         let idResponse = try decoder.decode(IdResponse.self, from: data)
-        print("Damage created with ID: \(idResponse.id)")
         return idResponse.id
     }
 
@@ -788,37 +816,41 @@ class PropertyViewModel: ObservableObject {
     }
     
     func fetchLastInventoryReport(propertyId: String, leaseId: String) async throws -> InventoryReportResponse? {
-         let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/\(leaseId)/inventory-reports/latest/")!
-         let token = try await TokenStorage.getValidAccessToken()
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/\(leaseId)/inventory-reports/latest/")!
+        let token = try await TokenStorage.getValidAccessToken()
 
-         var urlRequest = URLRequest(url: url)
-         urlRequest.httpMethod = "GET"
-         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
 
-         let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
-         guard let httpResponse = response as? HTTPURLResponse else {
-             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
-         }
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
 
-         guard (200...299).contains(httpResponse.statusCode) else {
-             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-             print("Fetch Last Inventory Report failed with status \(httpResponse.statusCode): \(errorBody)")
-             switch httpResponse.statusCode {
-             case 403:
-                 throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
-             case 404:
-                 return nil
-             default:
-                 throw NSError(domain: "", code: httpResponse.statusCode,
-                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
-             }
-         }
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+            case 404:
+                return nil
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
 
-         let decoder = JSONDecoder()
-         return try decoder.decode(InventoryReportResponse.self, from: data)
-     }
+        do {
+            let decoder = JSONDecoder()
+            let report = try decoder.decode(InventoryReportResponse.self, from: data)
+            return report
+        } catch {
+            throw error
+        }
+    }
 }
 
 struct PropertyID: Decodable {
@@ -831,7 +863,6 @@ struct PropertyImageBase64: Decodable {
 
 private func convertUIImageToBase64(_ image: UIImage) -> String? {
     guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-        print("Failed to convert UIImage to JPEG data")
         return nil
     }
     return imageData.base64EncodedString()

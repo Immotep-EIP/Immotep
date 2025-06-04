@@ -33,7 +33,10 @@ struct PropertyView: View {
                         Spacer()
                     }
                 } else if let property = tenantProperty {
-                    PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                    PropertyDetailView(property: Binding(
+                        get: { property },
+                        set: { tenantProperty = $0 }
+                    ), viewModel: viewModel)
                 } else {
                     VStack {
                         Spacer()
@@ -69,11 +72,14 @@ struct PropertyView: View {
                                     columns: [GridItem(.flexible())],
                                     spacing: 15
                                 ) {
-                                    ForEach(viewModel.properties) { property in
+                                    ForEach(viewModel.properties.indices, id: \.self) { index in
                                         NavigationLink(
-                                            destination: PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                                            destination: PropertyDetailView(
+                                                property: $viewModel.properties[index],
+                                                viewModel: viewModel
+                                            )
                                         ) {
-                                            PropertyCard(property: property)
+                                            PropertyCard(property: viewModel.properties[index])
                                         }
                                     }
                                 }

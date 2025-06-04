@@ -263,7 +263,6 @@ struct PropertyDetailView: View {
                                     }
                                 }
                                 .onAppear {
-                                    print("Tab switched to Damages, fetching damages...")
                                     Task {
                                         do {
                                             if loginViewModel.userRole == "tenant" {
@@ -283,7 +282,6 @@ struct PropertyDetailView: View {
                                             }
                                         } catch {
                                             viewModel.damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
-                                            print("Error fetching damages: \(error.localizedDescription)")
                                         }
                                     }
                                 }
@@ -297,7 +295,6 @@ struct PropertyDetailView: View {
 
                     if loginViewModel.userRole == "owner" {
                         Button(action: {
-                            print("Navigating to Inventory with property ID: \(property.id)")
                             inventoryViewModel.isEntryInventory = isEntryInventory
                             navigateToInventory = true
                         }) {
@@ -328,17 +325,19 @@ struct PropertyDetailView: View {
                     Task {
                         do {
                             isLoading = true
-                            if property.photo == nil {
-                                await viewModel.fetchProperties()
-                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                    property = updatedProperty
-                                }
-                            }
-                            try await viewModel.fetchPropertyDocuments(propertyId: property.id)
+                            await viewModel.fetchProperties()
                             if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
                                 property = updatedProperty
                             }
-
+                            
+                            let documents = try await viewModel.fetchPropertyDocuments(propertyId: property.id)
+                            
+                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                property = updatedProperty
+                            } else {
+                                property.documents = documents
+                            }
+                            
                             if let leaseId = property.leaseId {
                                 if let lastReport = try await viewModel.fetchLastInventoryReport(propertyId: property.id, leaseId: leaseId) {
                                     isEntryInventory = lastReport.type == "end" || lastReport.type == "middle"
@@ -350,7 +349,6 @@ struct PropertyDetailView: View {
                             }
                         } catch {
                             errorMessage = "Error fetching property data: \(error.localizedDescription)".localized()
-                            print("Error fetching property data: \(error.localizedDescription)")
                         }
                         isLoading = false
                     }
@@ -384,7 +382,6 @@ struct PropertyDetailView: View {
                                             }
                                         } catch {
                                             errorMessage = "Error cancelling invite: \(error.localizedDescription)".localized()
-                                            print("Error cancelling invite: \(error.localizedDescription)")
                                         }
                                     }
                                 },
@@ -411,11 +408,9 @@ struct PropertyDetailView: View {
                                                 }
                                             } else {
                                                 errorMessage = "No active lease found.".localized()
-                                                print("No active lease found for property \(property.id)")
                                             }
                                         } catch {
                                             errorMessage = "Error ending lease: \(error.localizedDescription)".localized()
-                                            print("Error ending lease: \(error.localizedDescription)")
                                         }
                                     }
                                 },
@@ -437,7 +432,6 @@ struct PropertyDetailView: View {
                                             dismiss()
                                         } catch {
                                             errorMessage = "Error deleting property: \(error.localizedDescription)".localized()
-                                            print("Error deleting property: \(error.localizedDescription)")
                                         }
                                     }
                                 },
@@ -538,14 +532,12 @@ struct ReportDamageView: View {
                             if let leaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token) {
                                 let damageRequest = DamageRequest(comment: comment, priority: priority, roomName: roomName, pictures: pictures.isEmpty ? nil : pictures)
                                 let damageId = try await viewModel.createDamage(propertyId: propertyId, leaseId: leaseId, damage: damageRequest, token: token)
-                                print("Damage reported with ID: \(damageId)")
                                 dismiss()
                             } else {
                                 errorMessage = "No active lease found.".localized()
                             }
                         } catch {
                             errorMessage = "Error reporting damage: \(error.localizedDescription)".localized()
-                            print("Error reporting damage: \(error.localizedDescription)")
                         }
                     }
                 }) {
@@ -613,7 +605,6 @@ struct DocumentsGrid: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-
                         Text(document.title)
                             .font(.caption)
                             .multilineTextAlignment(.center)
