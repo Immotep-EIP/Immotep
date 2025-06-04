@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 
-import base64ToFile from '@/utils/base64/baseToFile'
+import base64ToFileAsString from '@/utils/base64/baseToFileAsString'
 import imageCache from '@/utils/cache/ImageCache'
 
 const useImageCache = (
@@ -14,11 +14,10 @@ const useImageCache = (
   const updateCache = async (newImageData: string) => {
     if (!id) return
 
-    const file = base64ToFile(
-      newImageData.split(',')[1],
-      'image.jpg',
-      'image/jpeg'
-    )
+    const fileUrl = base64ToFileAsString(newImageData)
+    const response = await fetch(fileUrl)
+    const blob = await response.blob()
+    const file = new File([blob], 'image.jpg', { type: blob.type })
 
     await imageCache.setImage(id, file)
     const url = URL.createObjectURL(file)
@@ -48,12 +47,16 @@ const useImageCache = (
 
       const response = await fetchImage(id)
       if (response && response.data) {
-        const file = base64ToFile(response.data, 'image.jpg', 'image/jpeg')
+        const fileUrl = base64ToFileAsString(response.data)
+        const fetchResponse = await fetch(fileUrl)
+        const blob = await fetchResponse.blob()
+        const file = new File([blob], 'image.jpg', { type: blob.type })
+
         await imageCache.setImage(id, file)
 
-        const fileUrl = URL.createObjectURL(file)
-        objectUrlRef.current = fileUrl
-        setData(fileUrl)
+        const url = URL.createObjectURL(file)
+        objectUrlRef.current = url
+        setData(url)
       } else {
         setData(null)
       }
