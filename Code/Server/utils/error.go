@@ -42,7 +42,7 @@ const (
 	CannotUpdateFixedDamage      ErrorCode = "cannot-update-fixed-damage"
 	DamageAlreadyFixed           ErrorCode = "damage-already-fixed"
 	FailedLinkImage              ErrorCode = "failed-to-link-image"
-	BadBase64String              ErrorCode = "bad-base64-string"
+	BadBase64OrUnsupportedType   ErrorCode = "bad-base64-string-or-unsupported-type"
 	PropertyPictureNotFound      ErrorCode = "property-picture-not-found"
 	UserProfilePictureNotFound   ErrorCode = "user-profile-picture-not-found"
 	RoomAlreadyExists            ErrorCode = "room-already-exists"

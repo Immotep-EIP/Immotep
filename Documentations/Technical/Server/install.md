@@ -10,6 +10,7 @@ Before setting up the project, ensure that you have the following installed on y
 2. **PostgreSQL**: The project uses PostgreSQL as the database. You can download it from [postgresql.org](https://www.postgresql.org/).
 3. **golangci-lint**: The project uses a linter to check code readability. You can install it from [golangci-lint.run](https://golangci-lint.run/).
 4. **Swag**: The API documentation is build using Swagger with a Go package named Swaggo. You can install it from [github.com/swaggo/swag](https://github.com/swaggo/swag).
+5. **Make**: The project uses Makefile for build automation. Ensure you have `make` installed on your system. You can install it using your package manager (e.g., `apt`, `brew`, etc.).
 
 ## Local Setup
 
@@ -68,10 +69,10 @@ TODO
 
 ### 6. Run the Application
 
-Start the backend server:
+Build and start the backend server:
 
 ```bash
-./run.sh
+make run
 ```
 
 The application should now be accessible at `http://localhost:3001`.
@@ -85,7 +86,7 @@ TODO
 Run the project's tests using:
 
 ```bash
-./run_tests.sh
+make test
 ```
 
 Include unit tests, integration tests, and any mock tests you have written for the API.

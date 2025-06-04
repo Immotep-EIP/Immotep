@@ -27,7 +27,7 @@ func TestGetImageByID(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Image.Expect(database.MockGetImageByID(c)).Returns(image)
 
 	foundImage := database.GetImageByID("1")
@@ -62,7 +62,7 @@ func TestCreateImage(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
 
 	newImage := database.CreateImage(image)
@@ -74,7 +74,7 @@ func TestCreateImage_AlreadyExists(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Image.Expect(database.MockCreateImage(c, image)).Errors(&protocol.UserFacingError{
 		IsPanic:   false,
 		ErrorCode: "P2002", // https://www.prisma.io/docs/orm/reference/error-reference
@@ -93,7 +93,7 @@ func TestCreateImage_NoConnection(t *testing.T) {
 	c, m, ensure := services.ConnectDBTest()
 	defer ensure(t)
 
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Image.Expect(database.MockCreateImage(c, image)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {

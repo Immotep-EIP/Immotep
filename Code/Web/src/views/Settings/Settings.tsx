@@ -50,7 +50,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
 
     setIsUploading(true)
     try {
-      const req = await PutUserPicture(pictureData.split(',')[1])
+      const req = await PutUserPicture(pictureData)
       if (req) {
         message.success(t('components.messages.picture_updated'))
         await updateCache(pictureData)

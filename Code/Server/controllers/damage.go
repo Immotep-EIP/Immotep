@@ -60,7 +60,7 @@ func CreateDamage(c *gin.Context) {
 
 	picturesIds, imgErr := getPictures(req.Pictures)
 	if imgErr != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, imgErr)
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64OrUnsupportedType, imgErr)
 		return
 	}
 
@@ -214,7 +214,7 @@ func UpdateDamageTenant(c *gin.Context) {
 
 	picturesIds, imgErr := getPictures(req.AddPictures)
 	if imgErr != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, imgErr)
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64OrUnsupportedType, imgErr)
 		return
 	}
 

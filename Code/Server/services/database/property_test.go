@@ -228,7 +228,7 @@ func TestUpdatePropertyPicture(t *testing.T) {
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Property.Expect(database.MockUpdatePropertyPicture(c)).Returns(property)
 
 	updatedProperty := database.UpdatePropertyPicture(property, image)
@@ -241,7 +241,7 @@ func TestUpdatePropertyPicture_NotFound(t *testing.T) {
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Property.Expect(database.MockUpdatePropertyPicture(c)).Errors(db.ErrNotFound)
 
 	updatedProperty := database.UpdatePropertyPicture(property, image)
@@ -253,7 +253,7 @@ func TestUpdatePropertyPicture_NoConnection(t *testing.T) {
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Property.Expect(database.MockUpdatePropertyPicture(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {

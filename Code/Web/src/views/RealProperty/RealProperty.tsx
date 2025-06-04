@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Empty, Typography, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 
 import useProperties from '@/hooks/Property/useProperties'
 import PageTitle from '@/components/ui/PageText/Title'
@@ -14,7 +15,10 @@ import style from './RealProperty.module.css'
 
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
-  const [showArchived, setShowArchived] = useState(false)
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const archiveParam = searchParams.get('archive')
+  const [showArchived, setShowArchived] = useState(archiveParam === 'true')
   const [filters, setFilters] = useState({
     searchQuery: '',
     surfaceRange: 'all',
@@ -33,6 +37,15 @@ const RealPropertyPage: React.FC = () => {
       setIsPropertyCreated(false)
     }
   }, [isPropertyCreated, refreshProperties])
+
+  const handleArchiveToggle = (checked: boolean) => {
+    setShowArchived(checked)
+    if (checked) {
+      setSearchParams({ archive: 'true' })
+    } else {
+      setSearchParams({})
+    }
+  }
 
   const surfaceRangeOptions = [
     { value: 'all', label: t('components.select.surface.all') },
@@ -96,7 +109,7 @@ const RealPropertyPage: React.FC = () => {
             <div className={style.archiveFilter}>
               <Switch
                 checked={showArchived}
-                onChange={setShowArchived}
+                onChange={handleArchiveToggle}
                 checkedChildren={t('components.switch.show_archived')}
                 unCheckedChildren={t('components.switch.show_active')}
               />

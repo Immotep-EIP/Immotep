@@ -108,3 +108,48 @@ func TestPtr(t *testing.T) {
 	require.NotNil(t, ptrBool)
 	assert.Equal(t, boolean, *ptrBool)
 }
+
+func TestFilter_Ints(t *testing.T) {
+	input := []int{1, 2, 3, 4, 5, 6}
+	condition := func(n int) bool { return n%2 == 0 }
+	expected := []int{2, 4, 6}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestFilter_Strings(t *testing.T) {
+	input := []string{"apple", "banana", "cherry", "date"}
+	condition := func(s string) bool { return len(s) > 5 }
+	expected := []string{"banana", "cherry"}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestFilter_EmptySlice(t *testing.T) {
+	input := []int{}
+	condition := func(n int) bool { return n > 0 }
+	expected := []int{}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestFilter_NoMatch(t *testing.T) {
+	input := []int{1, 3, 5, 7}
+	condition := func(n int) bool { return n%2 == 0 }
+	expected := []int{}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestFilter_AllMatch(t *testing.T) {
+	input := []int{2, 4, 6, 8}
+	condition := func(n int) bool { return n%2 == 0 }
+	expected := []int{2, 4, 6, 8}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}

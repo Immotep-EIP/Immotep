@@ -9,6 +9,5 @@ git switch -
 git merge backend
 
 cd Server/
-go run github.com/steebchen/prisma-client-go migrate deploy
-go run github.com/steebchen/prisma-client-go generate
+make db_update
 cd ..

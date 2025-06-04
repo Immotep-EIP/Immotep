@@ -453,7 +453,11 @@
       "tabs": {
         "documents": {
           "modal_title": "Ajouter un document",
-          "no_documents": "Aucun document pour le moment"
+          "no_documents": "Aucun document pour le moment",
+          "delete_confirmation": {
+            "title": "Supprimer le document",
+            "message": "Êtes-vous sûr de vouloir supprimer ce document ?"
+          }
         },
         "inventory": {
           "add_room_modal_title": "Ajouter une pièce",

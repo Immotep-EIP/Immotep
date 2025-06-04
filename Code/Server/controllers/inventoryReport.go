@@ -5,13 +5,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services/database"
 	"immotep/backend/services/pdf"
 	"immotep/backend/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func checkRoom(roomId string, propertyId string) error {
@@ -43,7 +42,7 @@ func getFurnitureStatePictures(f models.FurnitureStateRequest) ([]string, error)
 	for _, pic := range f.Pictures {
 		dbImage := models.StringToDbImage(pic)
 		if dbImage == nil {
-			err = errors.New(string(utils.BadBase64String))
+			err = errors.New(string(utils.BadBase64OrUnsupportedType))
 			continue
 		}
 		newImage := database.CreateImage(*dbImage)
@@ -87,7 +86,7 @@ func getRoomStatePictures(r models.RoomStateRequest) ([]string, error) {
 	for _, pic := range r.Pictures {
 		dbImage := models.StringToDbImage(pic)
 		if dbImage == nil {
-			err = errors.New(string(utils.BadBase64String))
+			err = errors.New(string(utils.BadBase64OrUnsupportedType))
 			continue
 		}
 		newImage := database.CreateImage(*dbImage)
@@ -136,6 +135,7 @@ func createInvReportPDF(invRepId string, lease db.LeaseModel) (*db.DocumentModel
 		InnerDocument: db.InnerDocument{
 			Name: "inventory_report_" + time.Now().Format("2006-01-02") + "_" + invRepId + ".pdf",
 			Data: docBytes,
+			Type: db.DocTypePdf,
 		},
 	}, lease.ID)
 	return &res, nil

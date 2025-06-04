@@ -1,15 +1,14 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 
 import { Button, Dropdown, MenuProps } from 'antd'
 import { MoreOutlined } from '@ant-design/icons'
 
 import PageTitle from '@/components/ui/PageText/Title'
+import useNavigation from '@/hooks/Navigation/useNavigation'
 
 import { PropertyHeaderProps } from '@/interfaces/Property/Property'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
-import NavigationEnum from '@/enums/NavigationEnum'
 
 import returnIcon from '@/assets/icons/retour.svg'
 import style from './DetailsPart.module.css'
@@ -25,7 +24,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   propertyArchived
 }) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { goToRealProperty } = useNavigation()
 
   const items: MenuProps['items'] = [
     {
@@ -69,17 +68,25 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
     }
   ]
 
+  const handleBack = () => {
+    if (propertyArchived) {
+      goToRealProperty(true)
+    } else {
+      goToRealProperty()
+    }
+  }
+
   return (
     <div className={style.moreInfosContainer}>
       <div className={style.titleContainer}>
         <div
           className={style.returnButtonContainer}
-          onClick={() => navigate(NavigationEnum.REAL_PROPERTY)}
+          onClick={handleBack}
           tabIndex={0}
           role="button"
           onKeyDown={e => {
             if (e.key === 'Enter') {
-              navigate(NavigationEnum.REAL_PROPERTY)
+              handleBack()
             }
           }}
         >

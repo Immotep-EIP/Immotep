@@ -44,7 +44,7 @@ To apply new migrations to the database, use the following command:
 
 ```bash
 cd Code/Server/
-./migrate_db.sh
+make db_migrate
 ```
 
 You then need to name your migration. This command creates a new migration file and applies it to the database.

@@ -16,4 +16,5 @@ export interface UseDocumentReturn {
     propertyId: string,
     leaseId: string
   ) => Promise<void>
+  deleteDocument: (documentId: string) => Promise<void>
 }

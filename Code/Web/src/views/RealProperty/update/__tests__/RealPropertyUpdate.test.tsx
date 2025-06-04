@@ -73,9 +73,21 @@ describe('RealPropertyUpdate Component', () => {
       loading: false,
       updateProperty: jest.fn()
     })
+
+    // Correction du mock pour éviter l'avertissement "value is not a valid prop"
     ;(useImageUpload as jest.Mock).mockReturnValue({
-      uploadProps: {},
-      imageBase64: 'mocked-image-base64'
+      uploadProps: {
+        // Utiliser fileList au lieu de value
+        fileList: [],
+        beforeUpload: jest.fn(() => false),
+        onChange: jest.fn(),
+        onRemove: jest.fn(),
+        accept: '.jpg,.jpeg,.png',
+        maxCount: 1,
+        listType: 'picture-card'
+      },
+      imageBase64: 'mocked-image-base64',
+      resetImage: jest.fn()
     })
     ;(useImageCache as jest.Mock).mockImplementation(() => ({
       updateCache: mockUpdateCache,
@@ -164,8 +176,18 @@ describe('RealPropertyUpdate Component', () => {
   it('handles image data promise correctly', async () => {
     const mockImageData = 'test-image-data'
     ;(useImageUpload as jest.Mock).mockReturnValue({
-      uploadProps: {},
-      imageBase64: mockImageData
+      uploadProps: {
+        // Fournir des props valides pour le composant Upload
+        fileList: [],
+        beforeUpload: jest.fn(() => false),
+        onChange: jest.fn(),
+        onRemove: jest.fn(),
+        accept: '.jpg,.jpeg,.png',
+        maxCount: 1,
+        listType: 'picture-card'
+      },
+      imageBase64: mockImageData,
+      resetImage: jest.fn()
     })
 
     renderComponent()

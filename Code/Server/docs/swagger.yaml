@@ -906,7 +906,7 @@ definitions:
     - cannot-update-fixed-damage
     - damage-already-fixed
     - failed-to-link-image
-    - bad-base64-string
+    - bad-base64-string-or-unsupported-type
     - property-picture-not-found
     - user-profile-picture-not-found
     - room-already-exists
@@ -957,7 +957,7 @@ definitions:
     - CannotUpdateFixedDamage
     - DamageAlreadyFixed
     - FailedLinkImage
-    - BadBase64String
+    - BadBase64OrUnsupportedType
     - PropertyPictureNotFound
     - UserProfilePictureNotFound
     - RoomAlreadyExists

@@ -41,6 +41,7 @@ const UploadForm: React.FC<{ form: FormInstance }> = ({ form }) => {
       >
         <Upload
           name="file"
+          accept=".pdf,.docx,.xlsx"
           listType="text"
           beforeUpload={() => false}
           maxCount={1}

@@ -17,8 +17,14 @@ interface DocumentsTabProps {
 const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
   const { t } = useTranslation()
   const propertyId = usePropertyId()
-  const { documents, loading, error, refreshDocuments, uploadDocument } =
-    useDocument(propertyId || '', status || '')
+  const {
+    documents,
+    loading,
+    error,
+    refreshDocuments,
+    uploadDocument,
+    deleteDocument
+  } = useDocument(propertyId || '', status || '')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form] = Form.useForm()
 
@@ -126,6 +132,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       <DocumentList
         documents={documents || []}
         onDocumentClick={handleDocumentClick}
+        onDeleteDocument={deleteDocument}
       />
     </div>
   )

@@ -17,6 +17,7 @@ func BuildTestDocument(id string) db.DocumentModel {
 			ID:        id,
 			Name:      "Document",
 			Data:      []byte("data"),
+			Type:      db.DocTypePdf,
 			LeaseID:   "1",
 			CreatedAt: time.Now(),
 		},
