@@ -126,14 +126,31 @@ struct PropertyResponse: Codable {
 struct LeaseResponse: Codable {
     let id: String
     let propertyId: String
-    let startDate: String?
-    let endDate: String?
-
+    let propertyName: String
+    let ownerId: String
+    let ownerName: String
+    let ownerEmail: String
+    let tenantId: String
+    let tenantName: String
+    let tenantEmail: String
+    let active: Bool
+    let startDate: Date
+    let endDate: Date?
+    let createdAt: Date
+    
     enum CodingKeys: String, CodingKey {
-        case id
+        case id, active
         case propertyId = "property_id"
+        case propertyName = "property_name"
+        case ownerId = "owner_id"
+        case ownerName = "owner_name"
+        case ownerEmail = "owner_email"
+        case tenantId = "tenant_id"
+        case tenantName = "tenant_name"
+        case tenantEmail = "tenant_email"
         case startDate = "start_date"
         case endDate = "end_date"
+        case createdAt = "created_at"
     }
 }
 
@@ -176,8 +193,15 @@ struct DamageResponse: Codable, Identifiable {
 struct DamageRequest: Codable {
     let comment: String
     let priority: String
-    let roomName: String
+    let roomId: String
     let pictures: [String]?
+    
+    enum CodingKeys: String, CodingKey {
+        case comment
+        case priority
+        case roomId = "room_id"
+        case pictures
+    }
 }
 
 
@@ -198,3 +222,4 @@ struct LeaseInfo: Codable {
         case endDate = "end_date"
     }
 }
+

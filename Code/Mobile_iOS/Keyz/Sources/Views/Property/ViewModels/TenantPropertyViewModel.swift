@@ -13,6 +13,7 @@ class TenantPropertyViewModel: ObservableObject {
     @Published var damages: [DamageResponse] = []
     @Published var isFetchingDamages = false
     @Published var damagesError: String?
+    @Published var rooms: [PropertyRoomsTenant] = []
     
     func fetchTenantProperty() async throws -> Property {
         let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/property/")!
@@ -24,26 +25,14 @@ class TenantPropertyViewModel: ObservableObject {
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
-        
+    
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
         }
         
-        guard (200...299).contains(httpResponse.statusCode) else {
+        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            switch httpResponse.statusCode {
-            case 401:
-                throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
-            case 403:
-                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
-            case 404:
-                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Property not found.".localized()])
-            case 500:
-                throw NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "Internal server error: \(errorBody)".localized()])
-            default:
-                throw NSError(domain: "", code: httpResponse.statusCode,
-                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
-            }
+            throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
         }
         
         var property: Property
@@ -88,6 +77,9 @@ class TenantPropertyViewModel: ObservableObject {
                 try await fetchTenantPropertyDocuments(leaseId: leaseId, propertyId: property.id)
                 try await fetchTenantDamages(leaseId: leaseId)
                 property.damages = damages
+                let rooms = try await fetchPropertyRooms(token: token)
+                self.rooms = rooms
+                property.rooms = rooms.map { PropertyRooms(id: $0.id, name: $0.name, checked: false, inventory: []) }
             }
         } catch {
             print("Error fetching tenant data: \(error.localizedDescription)")
@@ -96,8 +88,74 @@ class TenantPropertyViewModel: ObservableObject {
         return property
     }
     
+    func fetchPropertyRooms(token: String) async throws -> [PropertyRoomsTenant] {
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/property/inventory/")!
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: urlRequest)
+            
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("API Response: \(jsonString)")
+            } else {
+                print("API Response: Unable to convert data to string")
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+            }
+            
+            guard (200...299).contains(httpResponse.statusCode) else {
+                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+                print("API Error: Status Code \(httpResponse.statusCode), Body: \(errorBody)")
+                switch httpResponse.statusCode {
+                case 403:
+                    throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+                case 404:
+                    throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No property inventory found.".localized()])
+                default:
+                    throw NSError(domain: "", code: httpResponse.statusCode,
+                                  userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+                }
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let inventoryResponse = try decoder.decode(PropertyInventoryResponse.self, from: data)
+                print("Decoded Inventory Response: ID: \(inventoryResponse.id), Rooms: \(inventoryResponse.rooms.map { "\($0.name) (ID: \($0.id))" })")
+                return inventoryResponse.rooms.map { room in
+                    PropertyRoomsTenant(id: room.id, name: room.name)
+                }
+            } catch {
+                print("Decoding Error: \(error)")
+                if let decodingError = error as? DecodingError {
+                    switch decodingError {
+                    case .dataCorrupted(let context):
+                        print("Data corrupted: \(context.debugDescription)")
+                    case .keyNotFound(let key, let context):
+                        print("Key '\(key)' not found: \(context.debugDescription)")
+                    case .typeMismatch(let type, let context):
+                        print("Type mismatch for type \(type): \(context.debugDescription)")
+                    case .valueNotFound(let type, let context):
+                        print("Value not found for type \(type): \(context.debugDescription)")
+                    @unknown default:
+                        print("Unknown decoding error")
+                    }
+                }
+                throw error
+            }
+        } catch {
+            print("Fetch Rooms Error: \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
     func fetchPropertiesPicture(propertyId: String) async throws -> UIImage? {
-        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/picture/")!
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/property/picture/")!
         var attemptCount = 0
         let maxAttempts = 2
         
@@ -163,7 +221,7 @@ class TenantPropertyViewModel: ObservableObject {
     }
     
     func fetchTenantPropertyDocuments(leaseId: String, propertyId: String) async throws -> [PropertyDocument] {
-        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/\(leaseId)/documents/")!
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/docs/")!
         let token = try await TokenStorage.getValidAccessToken()
         
         var urlRequest = URLRequest(url: url)
@@ -204,7 +262,7 @@ class TenantPropertyViewModel: ObservableObject {
     }
     
     func fetchTenantDamages(leaseId: String, fixed: Bool? = nil) async throws {
-        let urlComponents = URLComponents(string: "\(APIConfig.baseURL)/tenant/leases/\(leaseId)/damages/")!
+        let urlComponents = URLComponents(string: "\(APIConfig.baseURL)/tenant/leases/current/damages/")!
         var urlRequest = URLRequest(url: urlComponents.url!)
         
         if let fixed = fixed {
@@ -250,7 +308,7 @@ class TenantPropertyViewModel: ObservableObject {
     }
     
     func fetchActiveLeaseIdForProperty(propertyId: String, token: String) async throws -> String? {
-        let url = URL(string: "\(APIConfig.baseURL)/tenant/properties/\(propertyId)/leases/current/")!
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/")!
         
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"
@@ -276,13 +334,37 @@ class TenantPropertyViewModel: ObservableObject {
             }
         }
         
-        let decoder = JSONDecoder()
-        let leaseResponse = try decoder.decode(LeaseResponse.self, from: data)
-        return leaseResponse.id
+        do {
+            let decoder = JSONDecoder()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+            let fallbackFormatter = DateFormatter()
+            fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+            decoder.dateDecodingStrategy = .custom { decoder in
+                let container = try decoder.singleValueContainer()
+                let dateString = try container.decode(String.self)
+                if let date = dateFormatter.date(from: dateString) {
+                    return date
+                } else if let date = fallbackFormatter.date(from: dateString) {
+                    return date
+                }
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Format de date invalide: \(dateString)")
+            }
+            
+            let leaseResponse = try decoder.decode(LeaseResponse.self, from: data)
+            
+            if leaseResponse.active && leaseResponse.propertyId == propertyId {
+                return leaseResponse.id
+            } else {
+                return nil
+            }
+        } catch {
+            throw error
+        }
     }
     
     func createDamage(propertyId: String, leaseId: String, damage: DamageRequest, token: String) async throws -> String {
-        let url = URL(string: "\(APIConfig.baseURL)/tenant/properties/\(propertyId)/leases/\(leaseId)/damages/")!
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/damages/")!
         
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
@@ -295,29 +377,100 @@ class TenantPropertyViewModel: ObservableObject {
         
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
         
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
-        }
-        
-        guard httpResponse.statusCode == 201 else {
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            switch httpResponse.statusCode {
+            let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+            switch code {
             case 400:
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Missing fields or bad base64 string: \(errorBody)".localized()])
             case 403:
-                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Invalid data.".localized()])
             case 404:
                 throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease.".localized()])
             case 500:
                 throw NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "Internal server error: \(errorBody)".localized()])
             default:
-                throw NSError(domain: "", code: httpResponse.statusCode,
-                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+                throw NSError(domain: "", code: code, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(code) - \(errorBody)".localized()])
             }
         }
         
         let decoder = JSONDecoder()
         let idResponse = try decoder.decode(IdResponse.self, from: data)
         return idResponse.id
+    }
+}
+
+struct PropertyRoomsTenant: Identifiable, Equatable {
+    let id: String
+    let name: String
+    
+    static func == (lhs: PropertyRoomsTenant, rhs: PropertyRoomsTenant) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+struct FurnitureResponseTenant: Codable {
+    let id: String
+    let name: String
+    let quantity: Int
+    let archived: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case quantity
+        case archived
+    }
+}
+
+struct RoomResponseTenant: Codable {
+    let id: String
+    let name: String
+    let archived: Bool
+    let furnitures: [FurnitureResponseTenant]
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case archived
+        case furnitures
+    }
+}
+
+struct PropertyInventoryResponse: Codable {
+    let id: String
+    let ownerId: String
+    let name: String
+    let address: String
+    let city: String
+    let postalCode: String
+    let country: String
+    let areaSqm: Double
+    let rentalPricePerMonth: Int
+    let depositPrice: Int
+    let createdAt: String
+    let archived: Bool
+    let nbDamage: Int
+    let status: String
+    let lease: LeaseInfo?
+    let rooms: [RoomResponseTenant]
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case ownerId = "owner_id"
+        case name
+        case address
+        case city
+        case postalCode = "postal_code"
+        case country
+        case areaSqm = "area_sqm"
+        case rentalPricePerMonth = "rental_price_per_month"
+        case depositPrice = "deposit_price"
+        case createdAt = "created_at"
+        case archived
+        case nbDamage = "nb_damage"
+        case status
+        case lease
+        case rooms
     }
 }

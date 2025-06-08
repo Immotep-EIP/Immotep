@@ -81,8 +81,9 @@ struct PropertyDetailView: View {
                 InviteTenantView(tenantViewModel: tenantViewModel, property: property)
             }
             .sheet(isPresented: $showReportDamageView) {
-                ReportDamageView(viewModel: viewModel, propertyId: property.id)
+                ReportDamageView(viewModel: viewModel.tenantViewModel, propertyId: property.id)
             }
+            
             .overlay(alertsView)
         }
     }
@@ -377,32 +378,39 @@ struct PropertyDetailView: View {
     }
 
     private var actionButtonView: some View {
-        Group {
-            if loginViewModel.userRole == "owner" {
-                Button(action: {
-                    inventoryViewModel.isEntryInventory = isEntryInventory
-                    navigateToInventory = true
-                }) {
-                    Text(isEntryInventory ? "Start Entry Inventory".localized() : "Start Exit Inventory".localized())
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 15)
-                        .background(Color("LightBlue"))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .padding(.horizontal)
-                        .padding(.bottom, 10)
+        VStack {
+            Spacer()
+            Group {
+                if loginViewModel.userRole == "owner" {
+                    Button(action: {
+                        inventoryViewModel.isEntryInventory = isEntryInventory
+                        navigateToInventory = true
+                    }) {
+                        Text(isEntryInventory ? "Start Entry Inventory".localized() : "Start Exit Inventory".localized())
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 15)
+                            .background(Color("LightBlue"))
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                            .padding(.bottom, 10)
+                    }
+                    .accessibilityLabel(isEntryInventory ? "inventory_btn_entry" : "inventory_btn_exit")
                 }
-                .accessibilityLabel(isEntryInventory ? "inventory_btn_entry" : "inventory_btn_exit")
             }
         }
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 
     private var errorMessageView: some View {
-        Group {
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .padding()
+        VStack {
+            Spacer()
+            Group {
+                if let errorMessage = errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding()
+                }
             }
         }
     }
@@ -529,103 +537,103 @@ struct PropertyDetailView: View {
     }
 }
 
-//struct PropertyDetailView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let property = Property(
-//            id: "",
-//            ownerID: "",
-//            name: "Condo",
-//            address: "4391 Hedge Street",
-//            city: "New Jersey",
-//            postalCode: "07102",
-//            country: "USA",
-//            photo: nil,
-//            monthlyRent: 1200,
-//            deposit: 2400,
-//            surface: 80.0,
-//            isAvailable: "Busy",
-//            tenantName: "John & Mary Doe",
-//            leaseStartDate: "2025-04-08T22:00:00Z",
-//            leaseEndDate: nil,
-//            documents: [],
-//            rooms: [],
-//            damages: [
-//                DamageResponse(
-//                    id: "damage_001",
-//                    comment: "Cracked window in the living room",
-//                    priority: "high",
-//                    roomName: "Living Room",
-//                    fixStatus: "pending",
-//                    pictures: ["base64_image_1"],
-//                    createdAt: "2025-05-10T09:00:00Z",
-//                    updatedAt: nil,
-//                    fixPlannedAt: "2025-05-25T14:00:00Z",
-//                    fixedAt: nil,
-//                    leaseId: "lease_001",
-//                    propertyId: "",
-//                    propertyName: "Condo",
-//                    tenantName: "John & Mary Doe",
-//                    read: true
-//                ),
-//                DamageResponse(
-//                    id: "damage_002",
-//                    comment: "Leaking faucet in the kitchen",
-//                    priority: "medium",
-//                    roomName: "Kitchen",
-//                    fixStatus: "fixed",
-//                    pictures: ["base64_image_2"],
-//                    createdAt: "2025-05-12T11:00:00Z",
-//                    updatedAt: "2025-05-18T15:00:00Z",
-//                    fixPlannedAt: nil,
-//                    fixedAt: "2025-05-18T15:00:00Z",
-//                    leaseId: "lease_001",
-//                    propertyId: "",
-//                    propertyName: "Condo",
-//                    tenantName: "John & Mary Doe",
-//                    read: false
-//                ),
-//                DamageResponse(
-//                    id: "damage_003",
-//                    comment: "Scratched floor in bedroom",
-//                    priority: "low",
-//                    roomName: "Bedroom",
-//                    fixStatus: "pending",
-//                    pictures: [],
-//                    createdAt: "2025-05-15T08:00:00Z",
-//                    updatedAt: nil,
-//                    fixPlannedAt: nil,
-//                    fixedAt: nil,
-//                    leaseId: "lease_001",
-//                    propertyId: "",
-//                    propertyName: "Condo",
-//                    tenantName: "John & Mary Doe",
-//                    read: true
-//                ),
-//                DamageResponse(
-//                    id: "damage_004",
-//                    comment: "Scratched floor in bedroom",
-//                    priority: "low",
-//                    roomName: "Bedroom",
-//                    fixStatus: "pending",
-//                    pictures: [],
-//                    createdAt: "2025-05-15T08:00:00Z",
-//                    updatedAt: nil,
-//                    fixPlannedAt: nil,
-//                    fixedAt: nil,
-//                    leaseId: "lease_001",
-//                    propertyId: "",
-//                    propertyName: "Condo",
-//                    tenantName: "John & Mary Doe",
-//                    read: true
-//                )
-//            ]
-//        )
-//        
-//        let viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
-//        let loginViewModel = LoginViewModel()
-//        
-//        return PropertyDetailView(property: .constant(property), viewModel: viewModel)
-//            .environmentObject(viewModel)
-//            .environmentObject(loginViewModel)
-//    }
-//}
+struct PropertyDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        let property = Property(
+            id: "",
+            ownerID: "",
+            name: "Condo",
+            address: "4391 Hedge Street",
+            city: "New Jersey",
+            postalCode: "07102",
+            country: "USA",
+            photo: nil,
+            monthlyRent: 1200,
+            deposit: 2400,
+            surface: 80.0,
+            isAvailable: "Busy",
+            tenantName: "John & Mary Doe",
+            leaseStartDate: "2025-04-08T22:00:00Z",
+            leaseEndDate: nil,
+            documents: [],
+            rooms: [],
+            damages: [
+                DamageResponse(
+                    id: "damage_001",
+                    comment: "Cracked window in the living room",
+                    priority: "high",
+                    roomName: "Living Room",
+                    fixStatus: "pending",
+                    pictures: ["base64_image_1"],
+                    createdAt: "2025-05-10T09:00:00Z",
+                    updatedAt: nil,
+                    fixPlannedAt: "2025-05-25T14:00:00Z",
+                    fixedAt: nil,
+                    leaseId: "lease_001",
+                    propertyId: "",
+                    propertyName: "Condo",
+                    tenantName: "John & Mary Doe",
+                    read: true
+                ),
+                DamageResponse(
+                    id: "damage_002",
+                    comment: "Leaking faucet in the kitchen",
+                    priority: "medium",
+                    roomName: "Kitchen",
+                    fixStatus: "fixed",
+                    pictures: ["base64_image_2"],
+                    createdAt: "2025-05-12T11:00:00Z",
+                    updatedAt: "2025-05-18T15:00:00Z",
+                    fixPlannedAt: nil,
+                    fixedAt: "2025-05-18T15:00:00Z",
+                    leaseId: "lease_001",
+                    propertyId: "",
+                    propertyName: "Condo",
+                    tenantName: "John & Mary Doe",
+                    read: false
+                ),
+                DamageResponse(
+                    id: "damage_003",
+                    comment: "Scratched floor in bedroom",
+                    priority: "low",
+                    roomName: "Bedroom",
+                    fixStatus: "pending",
+                    pictures: [],
+                    createdAt: "2025-05-15T08:00:00Z",
+                    updatedAt: nil,
+                    fixPlannedAt: nil,
+                    fixedAt: nil,
+                    leaseId: "lease_001",
+                    propertyId: "",
+                    propertyName: "Condo",
+                    tenantName: "John & Mary Doe",
+                    read: true
+                ),
+                DamageResponse(
+                    id: "damage_004",
+                    comment: "Scratched floor in bedroom",
+                    priority: "low",
+                    roomName: "Bedroom",
+                    fixStatus: "pending",
+                    pictures: [],
+                    createdAt: "2025-05-15T08:00:00Z",
+                    updatedAt: nil,
+                    fixPlannedAt: nil,
+                    fixedAt: nil,
+                    leaseId: "lease_001",
+                    propertyId: "",
+                    propertyName: "Condo",
+                    tenantName: "John & Mary Doe",
+                    read: true
+                )
+            ]
+        )
+        
+        let viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
+        let loginViewModel = LoginViewModel()
+        
+        return PropertyDetailView(property: .constant(property), viewModel: viewModel)
+            .environmentObject(viewModel)
+            .environmentObject(loginViewModel)
+    }
+}

@@ -15,7 +15,7 @@ class PropertyViewModel: ObservableObject {
     @Published var damagesError: String?
     
     private let ownerViewModel = OwnerPropertyViewModel()
-    private let tenantViewModel = TenantPropertyViewModel()
+    public let tenantViewModel = TenantPropertyViewModel()
     private let loginViewModel: LoginViewModel
     
     init(loginViewModel: LoginViewModel) {
