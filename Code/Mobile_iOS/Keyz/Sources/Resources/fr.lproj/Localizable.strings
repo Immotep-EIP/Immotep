@@ -46,7 +46,7 @@
 "area" = "Surface : %@ m²";
 "Area" = "Surface";
 "Rent /month" = "Loyer /mois";
-"Tenant(s)" = "Propriétaire(s)";
+"Tenant(s)" = "Locataires(s)";
 "start_date" = "Date de début : %@";
 "No start date assigned" = "Pas de date renseignée";
 "rent_month" = "Loyer : %d$";
