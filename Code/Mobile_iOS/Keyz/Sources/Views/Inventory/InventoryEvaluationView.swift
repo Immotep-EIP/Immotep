@@ -31,7 +31,7 @@ struct InventoryEntryEvaluationView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TopBar(title: "Inventory")
+            TopBar(title: "État des lieux")
 
             ScrollView {
                 Section {
@@ -40,7 +40,7 @@ struct InventoryEntryEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Comments")
+                        Text("Commentaire")
                             .font(.headline)
                         Spacer()
                     }
@@ -57,12 +57,12 @@ struct InventoryEntryEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Status")
+                        Text("Statut")
                             .font(.headline)
                         Spacer()
                     }
                     HStack {
-                        Picker("Select Equipment Status", selection: $inventoryViewModel.selectedStatus) {
+                        Picker("Selectionner un statut", selection: $inventoryViewModel.selectedStatus) {
                             Text("Select your equipment status").tag("Select your equipment status")
                             ForEach(Array(stateMapping.values), id: \.self) { status in
                                 Text(status).tag(status)
@@ -89,7 +89,7 @@ struct InventoryEntryEvaluationView: View {
                             await validateReport()
                         }
                     }, label: {
-                        Text("Validate")
+                        Text("Valider")
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color("LightBlue"))
@@ -105,7 +105,7 @@ struct InventoryEntryEvaluationView: View {
                             isLoading = false
                         }
                     }, label: {
-                        Text("Send Report")
+                        Text("Envoyer le rapport")
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color("LightBlue"))
@@ -226,7 +226,7 @@ struct PicturesSegment: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Picture(s)")
+                Text("Image(s)")
                     .font(.headline)
                 Spacer()
             }

@@ -96,14 +96,6 @@ struct RoomStateRequest: Codable {
     let furnitures: [FurnitureStateRequest]
 }
 
-//struct InventoryReportResponse: Codable {
-//    let date: String
-//    let id: String
-//    let propertyId: String
-//    let rooms: [RoomStateResponse]
-//    let type: String
-//}
-
 struct InventoryReportResponse: Codable {
     let id: String
     let propertyId: String

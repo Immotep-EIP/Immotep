@@ -169,8 +169,8 @@ struct EditPropertyView: View {
 
             if let newPhoto = photo, newPhoto != property.photo {
                 do {
-                    try await viewModel.updatePropertyPicture(token: token, propertyPicture: newPhoto, propertyID: propertyId)
-                    print("Property picture updated successfully")
+                    let res = try await viewModel.updatePropertyPicture(token: token, propertyPicture: newPhoto, propertyID: propertyId)
+                    print("Property picture updated successfully: \(res)")
                 } catch {
                     print("Failed to update property picture: \(error.localizedDescription)")
                 }
@@ -193,7 +193,7 @@ struct EditPropertyView: View {
 }
 
 struct EditPropertyView_Previews: PreviewProvider {
-    static var viewModel = PropertyViewModel()
+    static var viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
     static var previews: some View {
         EditPropertyView(viewModel: viewModel, property: .constant(exampleDataProperty))
     }

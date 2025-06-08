@@ -72,7 +72,7 @@ struct TestImmotepView: View {
     }
 
     private func propertyListView() -> some View {
-        let viewModel = PropertyViewModel()
+        let viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
         viewModel.properties = [
             Property(
                 id: "cm7gijdee000ly7i82uq0qf35",
@@ -194,7 +194,7 @@ struct TestImmotepView: View {
     }
 
     private func propertyCreateView() -> some View {
-        let viewModel = PropertyViewModel()
+        let viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
         return NavigationStack {
             PropertyView()
                 .environmentObject(viewModel)
@@ -205,7 +205,7 @@ struct TestImmotepView: View {
     }
 
     private func propertyEditView() -> some View {
-        let viewModel = PropertyViewModel()
+        let viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
         return NavigationStack {
             PropertyView()
                 .environmentObject(viewModel)

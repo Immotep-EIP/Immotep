@@ -43,7 +43,7 @@ struct InventoryStuffView: View {
 
     private var contentView: some View {
         VStack(spacing: 0) {
-            TopBar(title: "Inventory")
+            TopBar(title: "Keyz")
             if let selectedRoom = selectedRoom {
                 VStack {
                     Spacer()

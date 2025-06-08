@@ -157,7 +157,7 @@ struct CreatePropertyView: View {
 }
 
 struct CreatePropertyView_Previews: PreviewProvider {
-    static var viewModel = PropertyViewModel()
+    static var viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
     static var previews: some View {
         CreatePropertyView(viewModel: viewModel)
     }

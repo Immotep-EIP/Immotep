@@ -142,7 +142,7 @@ class RoomManager {
             }
 
             let decoder = JSONDecoder()
-            let idResponse = try decoder.decode(IdResponse.self, from: data)
+            let _ = try decoder.decode(IdResponse.self, from: data)
 
             await fetchRooms()
         } catch {
