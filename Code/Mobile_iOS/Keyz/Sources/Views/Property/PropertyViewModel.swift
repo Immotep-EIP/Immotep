@@ -4,6 +4,7 @@
 //
 //  Created by Liebenguth Alessio on 26/10/2024.
 //
+
 import SwiftUI
 import Foundation
 
@@ -13,6 +14,8 @@ class PropertyViewModel: ObservableObject {
     @Published var damages: [DamageResponse] = []
     @Published var isFetchingDamages = false
     @Published var damagesError: String?
+    @Published var rooms: [PropertyRoomsTenant] = []
+    @Published var activeLeaseId: String?
     
     private let ownerViewModel = OwnerPropertyViewModel()
     public let tenantViewModel = TenantPropertyViewModel()
@@ -124,32 +127,41 @@ class PropertyViewModel: ObservableObject {
     func fetchPropertyDamages(propertyId: String) async throws {
         if loginViewModel.userRole == "tenant" {
             if let leaseId = try await fetchActiveLeaseIdForProperty(propertyId: propertyId, token: try await TokenStorage.getValidAccessToken()) {
-                try await tenantViewModel.fetchTenantDamages(leaseId: leaseId)
-                if let propertyIndex = properties.firstIndex(where: { $0.id == propertyId }) {
-                    properties[propertyIndex].damages = tenantViewModel.damages
+                let fetchedDamages = try await tenantViewModel.fetchTenantDamages(leaseId: leaseId)
+                if let index = properties.firstIndex(where: { $0.id == propertyId }) {
+                    var updatedProperty = properties[index]
+                    updatedProperty.damages = fetchedDamages
+                    properties[index] = updatedProperty
                     objectWillChange.send()
                 }
-                self.damages = tenantViewModel.damages
-            } else {
-                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease found.".localized()])
             }
         } else {
-            try await ownerViewModel.fetchPropertyDamages(propertyId: propertyId)
-            if let propertyIndex = properties.firstIndex(where: { $0.id == propertyId }) {
-                properties[propertyIndex].damages = ownerViewModel.damages
+            let fetchedDamages = try await ownerViewModel.fetchPropertyDamages(propertyId: propertyId)
+            if let index = properties.firstIndex(where: { $0.id == propertyId }) {
+                var updatedProperty = properties[index]
+                updatedProperty.damages = fetchedDamages
+                properties[index] = updatedProperty
                 objectWillChange.send()
             }
-            self.damages = ownerViewModel.damages
         }
-        isFetchingDamages = false
     }
     
     func fetchActiveLeaseIdForProperty(propertyId: String, token: String) async throws -> String? {
-        if loginViewModel.userRole == "tenant" {
-            return try await tenantViewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token)
-        } else {
-            return try await ownerViewModel.fetchActiveLease(propertyId: propertyId, token: token)
+        if let leaseId = activeLeaseId {
+            return leaseId
         }
+        let leaseId = try await tenantViewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token)
+        self.activeLeaseId = leaseId
+        return leaseId
+    }
+    
+    func fetchPropertyRooms(propertyId: String, token: String) async throws -> [PropertyRoomsTenant] {
+        if !rooms.isEmpty {
+            return rooms
+        }
+        let fetchedRooms = try await tenantViewModel.fetchPropertyRooms(token: token)
+        self.rooms = fetchedRooms
+        return fetchedRooms
     }
     
     func createDamage(propertyId: String, leaseId: String, damage: DamageRequest, token: String) async throws -> String {

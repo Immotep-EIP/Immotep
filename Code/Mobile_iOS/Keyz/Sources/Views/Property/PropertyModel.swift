@@ -154,13 +154,13 @@ struct LeaseResponse: Codable {
     }
 }
 
-struct DamageResponse: Codable, Identifiable {
+struct DamageResponse: Codable, Equatable {
     let id: String
     let comment: String
     let priority: String
     let roomName: String
     let fixStatus: String
-    let pictures: [String]
+    let pictures: [String]?
     let createdAt: String
     let updatedAt: String?
     let fixPlannedAt: String?
@@ -223,3 +223,51 @@ struct LeaseInfo: Codable {
     }
 }
 
+
+extension Property {
+    func copyWith(
+        id: String? = nil,
+        ownerID: String? = nil,
+        name: String? = nil,
+        address: String? = nil,
+        city: String? = nil,
+        postalCode: String? = nil,
+        country: String? = nil,
+        photo: UIImage?? = nil,
+        monthlyRent: Int? = nil,
+        deposit: Int? = nil,
+        surface: Double? = nil,
+        isAvailable: String? = nil,
+        tenantName: String?? = nil,
+        leaseId: String?? = nil,
+        leaseStartDate: String?? = nil,
+        leaseEndDate: String?? = nil,
+        documents: [PropertyDocument]? = nil,
+        createdAt: String?? = nil,
+        rooms: [PropertyRooms]? = nil,
+        damages: [DamageResponse]? = nil
+    ) -> Property {
+        return Property(
+            id: id ?? self.id,
+            ownerID: ownerID ?? self.ownerID,
+            name: name ?? self.name,
+            address: address ?? self.address,
+            city: city ?? self.city,
+            postalCode: postalCode ?? self.postalCode,
+            country: country ?? self.country,
+            photo: photo ?? self.photo,
+            monthlyRent: monthlyRent ?? self.monthlyRent,
+            deposit: deposit ?? self.deposit,
+            surface: surface ?? self.surface,
+            isAvailable: isAvailable ?? self.isAvailable,
+            tenantName: tenantName ?? self.tenantName,
+            leaseId: leaseId ?? self.leaseId,
+            leaseStartDate: leaseStartDate ?? self.leaseStartDate,
+            leaseEndDate: leaseEndDate ?? self.leaseEndDate,
+            documents: documents ?? self.documents,
+            createdAt: createdAt ?? self.createdAt,
+            rooms: rooms ?? self.rooms,
+            damages: damages ?? self.damages
+        )
+    }
+}

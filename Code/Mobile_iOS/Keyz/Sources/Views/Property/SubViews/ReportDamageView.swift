@@ -6,200 +6,287 @@
 //
 
 import SwiftUI
+import Photos
+import AVFoundation
 
 struct ReportDamageView: View {
-    @ObservedObject var viewModel: TenantPropertyViewModel
-    let propertyId: String
     @Environment(\.dismiss) var dismiss
-    @State private var comment = ""
-    @State private var priority = "low"
-    @State private var selectedRoomId = ""
-    @State private var pictures: [String] = []
-    @State private var errorMessage: String?
-    @State private var offset: CGFloat = 1000
-    @State private var isLoading = false
+    @ObservedObject var viewModel: PropertyViewModel
+    let propertyId: String
+    let rooms: [PropertyRoomsTenant]
+    let leaseId: String?
+    let onDamageCreated: (() -> Void)?
 
+    @State private var description = ""
+    @State private var selectedPriority = "medium"
+    @State private var selectedRoomId: String?
+    @State private var errorMessage: String?
+    @State private var isLoading = false
+    @State private var showImagePicker = false
+    @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
+    @State private var selectedImages: [UIImage] = []
+    @State private var replaceIndex: Int?
+    
     private let priorities = ["low", "medium", "high", "urgent"]
+    private let maxImages = 5
 
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.5)
-                .onTapGesture { close() }
-
-            VStack(spacing: 16) {
-                Text("Report a Damage".localized())
-                    .font(.title2)
-                    .bold()
-                    .padding(.top)
-                    .foregroundStyle(Color("textColor"))
-
-                Text("Please provide details about the damage.".localized())
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                    .foregroundStyle(Color("textColor"))
-
-                Picker("Select Room".localized(), selection: $selectedRoomId) {
-                    Text("Choose a room...".localized()).tag("")
-                    ForEach(viewModel.rooms, id: \.id) { room in
-                        Text(room.name.capitalized).tag(room.id)
-                    }
+        NavigationView {
+            Form {
+                Section(header: Text("Description")) {
+                    TextEditor(text: $description)
+                        .frame(height: 100)
+                        .padding()
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                        )
                 }
-                .pickerStyle(.menu)
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.5), lineWidth: 1))
-
-                TextField("Comment".localized(), text: $comment)
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.5), lineWidth: 1))
-                    .padding(.horizontal)
-
-                Picker("Priority".localized(), selection: $priority) {
-                    ForEach(priorities, id: \.self) { priority in
-                        Text(priority.capitalized).tag(priority)
-                    }
-                }
-                .pickerStyle(.menu)
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .background(RoundedRectangle(cornerRadius: 8).fill(Color("textfieldBackground")))
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.5), lineWidth: 1))
-
-                Text("Add Photos (not implemented yet)".localized())
-                    .foregroundColor(.gray)
-                    .padding(.horizontal)
-
-                if let errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding(.horizontal)
-                        .transition(.opacity)
-                }
-
-                HStack(spacing: 16) {
-                    Button {
-                        close()
-                    } label: {
-                        Text("Cancel".localized())
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(RoundedRectangle(cornerRadius: 20).fill(.gray))
-                    }
-
-                    Button {
-                        submitDamage()
-                    } label: {
-                        if isLoading {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(RoundedRectangle(cornerRadius: 20).fill(Color("LightBlue").opacity(0.5)))
-                        } else {
-                            Text("Submit".localized())
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(RoundedRectangle(cornerRadius: 20).fill(Color("LightBlue")))
+                
+                Section(header: Text("Priority")) {
+                    Picker("Priority", selection: $selectedPriority) {
+                        ForEach(priorities, id: \.self) { priority in
+                            Text(priority.capitalized).tag(priority)
                         }
                     }
-                    .disabled(selectedRoomId.isEmpty || comment.isEmpty)
+                    .pickerStyle(.segmented)
                 }
-                .padding(.horizontal)
-                .padding(.bottom)
+                
+                Section(header: Text("Room")) {
+                    if rooms.isEmpty {
+                        Text("No rooms available").foregroundColor(.red)
+                    } else {
+                        Picker("Room", selection: $selectedRoomId) {
+                            Text("Select a room").tag(nil as String?)
+                            ForEach(rooms) { room in
+                                Text(room.name).tag(room.id as String?)
+                            }
+                        }
+                    }
+                }
+                Section {
+                    PicturesSegmentDamage(selectedImages: $selectedImages, showImagePickerOptions: showImagePickerOptions, maxImages: maxImages)
+                }
+                
+                if let errorMessage = errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                }
             }
-            .fixedSize(horizontal: false, vertical: true)
-            .padding()
-            .background(Color("basicWhiteBlack"))
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .shadow(radius: 20)
-            .padding(30)
-            .offset(y: offset)
-            .overlay(alignment: .topTrailing) {
-                Button {
-                    close()
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .tint(Color("textColor"))
-                        .padding()
+            .navigationTitle("Report Damage")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Submit") {
+                        isLoading = true
+                        Task {
+                            await submitDamage()
+                            isLoading = false
+                        }
+                    }
+                    .disabled(isLoading || description.isEmpty || selectedRoomId == nil || rooms.isEmpty)
+                }
+            }
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
             }
             .onAppear {
-                withAnimation(.spring()) {
-                    offset = 0
-                }
-                fetchRooms()
-            }
-        }
-        .ignoresSafeArea()
-    }
-
-    private func fetchRooms() {
-        Task {
-            do {
-                let token = try await TokenStorage.getValidAccessToken()
-                let rooms = try await viewModel.fetchPropertyRooms(token: token)
-                viewModel.rooms = rooms
                 if !rooms.isEmpty {
                     selectedRoomId = rooms.first!.id
                 }
-            } catch {
-                errorMessage = "Error fetching rooms: \(error.localizedDescription)".localized()
             }
         }
     }
-
-    private func submitDamage() {
-        isLoading = true
-        errorMessage = nil
-        Task {
-            do {
-                let token = try await TokenStorage.getValidAccessToken()
-                if let leaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token) {
-                    let damageRequest = DamageRequest(
-                        comment: comment,
-                        priority: priority,
-                        roomId: selectedRoomId,
-                        pictures: pictures.isEmpty ? nil : pictures
-                    )
-                    let damageId = try await viewModel.createDamage(
-                        propertyId: propertyId,
-                        leaseId: leaseId,
-                        damage: damageRequest,
-                        token: token
-                    )
-                    print("Damage reported with ID: \(damageId)")
-                    close()
-                } else {
-                    errorMessage = "No active lease found.".localized()
+    
+    private func createImagePickerBinding() -> Binding<UIImage?> {
+        return Binding(
+            get: { nil },
+            set: { image in
+                if let image = image {
+                    if let index = replaceIndex {
+                        selectedImages[index] = image
+                    } else if selectedImages.count < maxImages {
+                        selectedImages.append(image)
+                    }
+                    replaceIndex = nil
                 }
-            } catch {
-                errorMessage = "Error reporting damage: \(error.localizedDescription)".localized()
-                print("Error reporting damage: \(error.localizedDescription)")
+                showImagePicker = false
             }
-            isLoading = false
+        )
+    }
+    
+    private func showImagePickerOptions(replaceIndex: Int?) {
+        self.replaceIndex = replaceIndex
+        let actionSheet = UIAlertController(title: "Select Image Source", message: nil, preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "Take Photo", style: .default, handler: { _ in
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async {
+                    if granted {
+                        self.sourceType = .camera
+                        self.showImagePicker = true
+                    } else {
+                        self.errorMessage = "Camera access denied. Please enable it in Settings.".localized()
+                    }
+                }
+            }
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Choose from Library", style: .default, handler: { _ in
+            PHPhotoLibrary.requestAuthorization { status in
+                DispatchQueue.main.async {
+                    if status == .authorized {
+                        self.sourceType = .photoLibrary
+                        self.showImagePicker = true
+                    } else {
+                        self.errorMessage = "Photo library access denied. Please enable it in Settings.".localized()
+                    }
+                }
+            }
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootViewController = windowScene.windows.first?.rootViewController {
+            rootViewController.present(actionSheet, animated: true, completion: nil)
         }
     }
+    
+    private func submitDamage() async {
+        guard let roomId = selectedRoomId else {
+            errorMessage = "Please select a room.".localized()
+            return
+        }
+        
+        guard let leaseId = leaseId else {
+            errorMessage = "No active lease found.".localized()
+            return
+        }
+        
+        let base64Images = selectedImages.compactMap { convertUIImageToBase64($0) }
+        
+        let damageRequest = DamageRequest(
+            comment: description,
+            priority: selectedPriority,
+            roomId: roomId,
+            pictures: base64Images.isEmpty ? nil : base64Images
+        )
+        
+        do {
+            let token = try await TokenStorage.getValidAccessToken()
+            let damageId = try await viewModel.createDamage(
+                propertyId: propertyId,
+                leaseId: leaseId,
+                damage: damageRequest,
+                token: token
+            )
+            await MainActor.run {
+                onDamageCreated?()
+                dismiss()
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = "Error submitting damage: \(error.localizedDescription)".localized()
+            }
+        }
+    }
+    
+    private func convertUIImageToBase64(_ image: UIImage) -> String? {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            return nil
+        }
+        let base64String = imageData.base64EncodedString()
+        let dataURI = "data:image/jpeg;base64,\(base64String)"
+        return dataURI
+    }
+}
 
-    private func close() {
-        withAnimation(.spring()) {
-            offset = 1000
-            dismiss()
+struct PicturesSegmentDamage: View {
+    @Binding var selectedImages: [UIImage]
+    var showImagePickerOptions: (Int?) -> Void
+    let maxImages: Int
+    
+    @State private var showImageOptions = false
+    @State private var selectedImageIndex: Int?
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Photos (\(selectedImages.count)/\(maxImages))")
+                    .font(.headline)
+                Spacer()
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(selectedImages.indices, id: \.self) { index in
+                        Image(uiImage: selectedImages[index])
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .onTapGesture {
+                                selectedImageIndex = index
+                                showImageOptions = true
+                            }
+                    }
+                    if selectedImages.count < maxImages {
+                        Button(action: {
+                            showImagePickerOptions(nil)
+                        }, label: {
+                            ZStack {
+                                Rectangle()
+                                    .fill(Color.gray.opacity(0.2))
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                Image(systemName: "plus")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.gray)
+                            }
+                        })
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.top)
+        .actionSheet(isPresented: $showImageOptions) {
+            ActionSheet(
+                title: Text("Options"),
+                buttons: [
+                    .default(Text("Replace")) {
+                        if let index = selectedImageIndex {
+                            showImagePickerOptions(index)
+                        }
+                    },
+                    .destructive(Text("Delete")) {
+                        if let index = selectedImageIndex {
+                            selectedImages.remove(at: index)
+                        }
+                    },
+                    .cancel()
+                ]
+            )
         }
     }
 }
 
 struct ReportDamageView_Previews: PreviewProvider {
     static var previews: some View {
-        ReportDamageView(viewModel: TenantPropertyViewModel(), propertyId: "test_property")
+        NavigationView {
+            ReportDamageView(
+                viewModel: PropertyViewModel(loginViewModel: LoginViewModel()),
+                propertyId: "fakeid",
+                rooms: [],
+                leaseId: "fakeLeaseId",
+                onDamageCreated: nil
+            )
             .environment(\.locale, .init(identifier: "en"))
+        }
     }
 }

@@ -510,48 +510,25 @@ class OwnerPropertyViewModel: ObservableObject {
         return nil
     }
     
-    func fetchPropertyDamages(propertyId: String) async throws {
-        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/damages/")!
-        
+    func fetchPropertyDamages(propertyId: String) async throws -> [DamageResponse] {
         let token = try await TokenStorage.getValidAccessToken()
-        
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "GET"
-        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
-        
-        isFetchingDamages = true
-        damagesError = nil
-        defer { isFetchingDamages = false }
-        
-        let (data, response) = try await URLSession.shared.data(for: urlRequest)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
-        }
-        
-        guard (200...299).contains(httpResponse.statusCode) else {
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/damages/")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            switch httpResponse.statusCode {
-            case 403:
-                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
-            case 404:
-                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease.".localized()])
-            default:
-                throw NSError(domain: "", code: httpResponse.statusCode,
-                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
-            }
+            throw NSError(domain: "", code: (response as? HTTPURLResponse)?.statusCode ?? 0, userInfo: [NSLocalizedDescriptionKey: errorBody])
         }
-        
+
         let decoder = JSONDecoder()
-        let damagesData = try decoder.decode([DamageResponse].self, from: data)
-        
-        if let index = properties.firstIndex(where: { $0.id == propertyId }) {
-            properties[index].damages = damagesData
-        }
-        
-        self.damages = damagesData
+        let damages = try decoder.decode([DamageResponse].self, from: data)
+        self.damages = damages
         objectWillChange.send()
+        return damages
     }
     
     func fetchLastInventoryReport(propertyId: String, leaseId: String) async throws -> InventoryReportResponse? {

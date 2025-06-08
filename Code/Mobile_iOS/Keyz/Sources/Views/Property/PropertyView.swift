@@ -33,7 +33,7 @@ struct PropertyView: View {
                         Spacer()
                     }
                 } else if let property = tenantProperty {
-                    PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                    PropertyDetailView(property: property, viewModel: viewModel)
                 } else {
                     VStack {
                         Spacer()
@@ -71,7 +71,7 @@ struct PropertyView: View {
                                 ) {
                                     ForEach(viewModel.properties) { property in
                                         NavigationLink(
-                                            destination: PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                                            destination: PropertyDetailView(property: property, viewModel: viewModel)
                                         ) {
                                             PropertyCard(property: property)
                                         }
