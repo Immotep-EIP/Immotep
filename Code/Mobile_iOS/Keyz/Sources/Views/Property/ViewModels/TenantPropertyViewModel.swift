@@ -87,7 +87,7 @@ class TenantPropertyViewModel: ObservableObject {
             surface: propertyResponse.areaSqm,
             isAvailable: propertyResponse.isAvailable,
             tenantName: propertyResponse.lease?.tenantName,
-            leaseId: leaseId, // Use fetched leaseId
+            leaseId: leaseId,
             leaseStartDate: propertyResponse.lease?.startDate,
             leaseEndDate: propertyResponse.lease?.endDate,
             documents: documents,

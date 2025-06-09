@@ -160,7 +160,7 @@ class OwnerPropertyViewModel: ObservableObject {
                 leaseId: propertyResponse.lease?.id,
                 leaseStartDate: propertyResponse.lease?.startDate,
                 leaseEndDate: propertyResponse.lease?.endDate,
-                documents: existingProperty?.documents ?? [], // Preserve existing documents
+                documents: existingProperty?.documents ?? [],
                 createdAt: propertyResponse.createdAt,
                 rooms: [],
                 damages: []
@@ -379,7 +379,6 @@ class OwnerPropertyViewModel: ObservableObject {
         }
         
         let responseBody = String(data: data, encoding: .utf8) ?? "Unable to decode response"
-        print("Fetch Documents Response for property \(propertyId): Status \(httpResponse.statusCode) - \(responseBody)")
         
         guard (200...299).contains(httpResponse.statusCode) else {
             throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(responseBody)".localized()])

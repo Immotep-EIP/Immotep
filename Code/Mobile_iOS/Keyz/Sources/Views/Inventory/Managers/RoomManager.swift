@@ -18,7 +18,6 @@ class RoomManager {
     func fetchRooms() async {
         guard let viewModel = viewModel else { return }
         let propertyId = viewModel.property.id
-        print("Fetching rooms for property ID: \(propertyId)")
 
         guard !propertyId.isEmpty else {
             viewModel.errorMessage = "Property ID is empty"
@@ -218,14 +217,5 @@ class RoomManager {
         guard let viewModel = viewModel else { return }
         guard let index = viewModel.localRooms.firstIndex(where: { $0.id == room.id }) else { return }
         viewModel.localRooms[index].checked = true
-    }
-
-    func updateRoomCheckedStatus() {
-        guard let viewModel = viewModel else { return }
-        guard let selectedRoom = viewModel.selectedRoom else { return }
-        let allStuffChecked = viewModel.selectedInventory.allSatisfy { $0.checked }
-        if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == selectedRoom.id }) {
-            viewModel.localRooms[roomIndex].checked = allStuffChecked
-        }
     }
 }

@@ -86,10 +86,6 @@ class InventoryViewModel: ObservableObject {
         await roomManager?.markRoomAsChecked(room)
     }
 
-    func updateRoomCheckedStatus() {
-        roomManager?.updateRoomCheckedStatus()
-    }
-
     func markStuffAsChecked(_ stuff: LocalInventory) async throws {
         try await furnitureManager?.markStuffAsChecked(stuff)
     }
@@ -125,5 +121,13 @@ class InventoryViewModel: ObservableObject {
 
     func compareStuffReport(oldReportId: String) async throws {
         try await reportManager?.compareStuffReport(oldReportId: oldReportId)
+    }
+    
+    func sendRoomReport() async throws {
+        try await reportManager?.sendRoomReport()
+    }
+
+    func compareRoomReport(oldReportId: String) async throws {
+        try await reportManager?.compareRoomReport(oldReportId: oldReportId)
     }
 }

@@ -50,12 +50,17 @@ struct LocalRoom: Identifiable, Equatable {
     var name: String
     var checked: Bool
     var inventory: [LocalInventory]
+    var images: [UIImage] = []
+    var status: String = "Select room status"
+    var comment: String = ""
 
     static func == (lhs: LocalRoom, rhs: LocalRoom) -> Bool {
         return lhs.id == rhs.id &&
                lhs.name == rhs.name &&
                lhs.checked == rhs.checked &&
-               lhs.inventory == rhs.inventory
+               lhs.inventory == rhs.inventory &&
+               lhs.status == rhs.status &&
+               lhs.comment == rhs.comment
     }
 }
 

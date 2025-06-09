@@ -3,6 +3,7 @@ import SwiftUI
 struct InventoryRoomView: View {
     @EnvironmentObject var inventoryViewModel: InventoryViewModel
     @AppStorage("theme") private var selectedTheme: String = ThemeOption.system.rawValue
+    @Environment(\.dismiss) var dismiss
 
     @State private var newRoomName: String = ""
     @State private var showAddRoomAlert: Bool = false
@@ -105,7 +106,10 @@ struct InventoryRoomView: View {
                     message: message,
                     buttonTitle: "OK",
                     secondaryButtonTitle: nil,
-                    action: {},
+                    action: {
+                        showCompletionMessage = false
+                        dismiss()
+                    },
                     secondaryAction: nil
                 )
             }
@@ -202,6 +206,14 @@ struct RoomCard: View {
             }
             Text(room.name)
                 .foregroundStyle(Color("textColor"))
+            if !room.images.isEmpty {
+                Image(systemName: "photo")
+                    .foregroundStyle(Color.blue)
+            }
+            if !room.comment.isEmpty {
+                Image(systemName: "text.bubble")
+                    .foregroundStyle(Color.orange)
+            }
         }
     }
 }

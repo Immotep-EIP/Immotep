@@ -1,16 +1,18 @@
 //
-//  InventoryExitEvaluationView.swift
-//  Immotep
+//  InventoryRoomEvaluationView.swift
+//  Keyz
 //
-//  Created by Liebenguth Alessio on 19/01/2025.
+//  Created by Liebenguth Alessio on 09/06/2025.
 //
 
 import SwiftUI
+import UIKit
 
-struct InventoryExitEvaluationView: View {
+struct InventoryRoomEvaluationView: View {
     @EnvironmentObject var inventoryViewModel: InventoryViewModel
-    @Environment(\.presentationMode) var presentationMode
-    let selectedStuff: LocalInventory
+    @Environment(\.dismiss) var dismiss
+    let selectedRoom: LocalRoom
+
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
     @State private var replaceIndex: Int?
@@ -19,17 +21,16 @@ struct InventoryExitEvaluationView: View {
     @State private var isReportSent: Bool = false
 
     let stateMapping: [String: String] = [
+        "not_set": "Select room status",
         "broken": "Broken",
-        "needsRepair": "Needs Repair",
         "bad": "Bad",
-        "medium": "Medium",
         "good": "Good",
         "new": "New"
     ]
 
     var body: some View {
         VStack(spacing: 0) {
-            TopBar(title: "État des lieux - Sortie")
+            TopBar(title: "Room Analysis")
 
             ScrollView {
                 Section {
@@ -38,7 +39,7 @@ struct InventoryExitEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Commentaire")
+                        Text("Comment")
                             .font(.headline)
                         Spacer()
                     }
@@ -55,13 +56,13 @@ struct InventoryExitEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Statut")
+                        Text("Status")
                             .font(.headline)
                         Spacer()
                     }
                     HStack {
-                        Picker("Selectionner un statut", selection: $inventoryViewModel.selectedStatus) {
-                            Text("Select your equipment status").tag("Select your equipment status")
+                        Picker("Select a status", selection: $inventoryViewModel.selectedStatus) {
+                            Text("Select room status").tag("Select room status")
                             ForEach(Array(stateMapping.values), id: \.self) { status in
                                 Text(status).tag(status)
                             }
@@ -75,6 +76,7 @@ struct InventoryExitEvaluationView: View {
                             RoundedRectangle(cornerRadius: 10)
                                 .stroke(Color.gray, lineWidth: 1)
                         )
+                        .accessibilityIdentifier("RoomStatusPicker")
                         Spacer()
                     }
                 }
@@ -86,7 +88,7 @@ struct InventoryExitEvaluationView: View {
                             await validateReport()
                         }
                     }, label: {
-                        Text("Valider")
+                        Text("Validate")
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color("LightBlue"))
@@ -98,11 +100,11 @@ struct InventoryExitEvaluationView: View {
                     Button(action: {
                         Task {
                             isLoading = true
-                            await markStuffAsCheckedAndSendReport()
+                            await sendRoomReport()
                             isLoading = false
                         }
                     }, label: {
-                        Text("Envoyer le rapport")
+                        Text("Send Room Report")
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color("LightBlue"))
@@ -124,12 +126,15 @@ struct InventoryExitEvaluationView: View {
             ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
         }
         .onAppear {
-            inventoryViewModel.selectStuff(selectedStuff)
+            inventoryViewModel.selectRoom(selectedRoom)
+            inventoryViewModel.selectedImages = []
+            inventoryViewModel.comment = ""
+            inventoryViewModel.selectedStatus = "Select room status"
         }
     }
 
     private func createImagePickerBinding() -> Binding<UIImage?> {
-        return Binding(
+        Binding(
             get: { nil },
             set: { image in
                 if let image = image {
@@ -145,36 +150,35 @@ struct InventoryExitEvaluationView: View {
 
     private func showImagePickerOptions(replaceIndex: Int?) {
         self.replaceIndex = replaceIndex
+
         let actionSheet = UIAlertController(title: "Select Image Source", message: nil, preferredStyle: .actionSheet)
+
         actionSheet.addAction(UIAlertAction(title: "Take Photo", style: .default, handler: { _ in
             self.sourceType = .camera
             self.showSheet.toggle()
         }))
+
         actionSheet.addAction(UIAlertAction(title: "Choose from Library", style: .default, handler: { _ in
             self.sourceType = .photoLibrary
             self.showSheet.toggle()
         }))
+
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
             rootViewController.present(actionSheet, animated: true, completion: nil)
         }
     }
 
-    private func markStuffAsCheckedAndSendReport() async {
+    private func sendRoomReport() async {
         do {
-            try await inventoryViewModel.markStuffAsChecked(selectedStuff)
-            await inventoryViewModel.fetchLastInventoryReport()
-            if let oldReportId = inventoryViewModel.lastReportId {
-                try await inventoryViewModel.compareStuffReport(oldReportId: oldReportId)
-                isReportSent = true
-            } else {
-                errorMessage = "No previous inventory report found for comparison."
-            }
+            try await inventoryViewModel.sendRoomReport()
+            isReportSent = true
         } catch let error as NSError {
             switch error.code {
             case 404:
-                errorMessage = "Property or old report not found. Please check the property details."
+                errorMessage = "Property or lease not found. Please check the property details."
             case 403:
                 errorMessage = "You do not have permission to access this property."
             case 400:
@@ -188,26 +192,18 @@ struct InventoryExitEvaluationView: View {
             default:
                 errorMessage = "Error: \(error.localizedDescription)"
             }
-            print("Error sending comparison report: \(error.localizedDescription)")
+            print("Error sending room report: \(error.localizedDescription)")
         }
     }
 
     private func validateReport() async {
-        if let index = inventoryViewModel.selectedInventory.firstIndex(where: { $0.id == selectedStuff.id }) {
-            inventoryViewModel.selectedInventory[index].checked = true
-            inventoryViewModel.selectedInventory[index].images = inventoryViewModel.selectedImages
-            inventoryViewModel.selectedInventory[index].status = inventoryViewModel.selectedStatus
-            inventoryViewModel.selectedInventory[index].comment = inventoryViewModel.comment
+        if let roomIndex = inventoryViewModel.localRooms.firstIndex(where: { $0.id == selectedRoom.id }) {
+            inventoryViewModel.localRooms[roomIndex].checked = true
+            inventoryViewModel.localRooms[roomIndex].images = inventoryViewModel.selectedImages
+            inventoryViewModel.localRooms[roomIndex].status = inventoryViewModel.selectedStatus
+            inventoryViewModel.localRooms[roomIndex].comment = inventoryViewModel.comment
         }
-
-        if let roomIndex = inventoryViewModel.localRooms.firstIndex(where: { $0.id == inventoryViewModel.selectedRoom?.id }),
-           let stuffIndex = inventoryViewModel.localRooms[roomIndex].inventory.firstIndex(where: { $0.id == selectedStuff.id }) {
-            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].checked = true
-            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].images = inventoryViewModel.selectedImages
-            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].status = inventoryViewModel.selectedStatus
-            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].comment = inventoryViewModel.comment
-        }
-
-        presentationMode.wrappedValue.dismiss()
+        await inventoryViewModel.markRoomAsChecked(selectedRoom)
+        dismiss()
     }
 }

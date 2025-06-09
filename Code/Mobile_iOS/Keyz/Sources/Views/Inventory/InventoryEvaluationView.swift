@@ -201,7 +201,6 @@ struct InventoryEntryEvaluationView: View {
             inventoryViewModel.selectedInventory[index].images = inventoryViewModel.selectedImages
             inventoryViewModel.selectedInventory[index].status = inventoryViewModel.selectedStatus
             inventoryViewModel.selectedInventory[index].comment = inventoryViewModel.comment
-            inventoryViewModel.updateRoomCheckedStatus()
         }
 
         if let roomIndex = inventoryViewModel.localRooms.firstIndex(where: { $0.id == inventoryViewModel.selectedRoom?.id }),

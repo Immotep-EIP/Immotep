@@ -30,7 +30,6 @@ class FurnitureManager {
         }
 
         viewModel.selectedInventory[index].checked = true
-//        updateRoomCheckedStatus()
     }
 
     func fetchStuff(_ room: LocalRoom) async {
@@ -199,15 +198,6 @@ class FurnitureManager {
             viewModel.selectedImages = stuff.images
             viewModel.comment = stuff.comment
             viewModel.selectedStatus = stuff.status
-        }
-    }
-
-    private func updateRoomCheckedStatus() {
-        guard let viewModel = viewModel else { return }
-        guard let selectedRoom = viewModel.selectedRoom else { return }
-        let allStuffChecked = viewModel.selectedInventory.allSatisfy { $0.checked }
-        if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == selectedRoom.id }) {
-            viewModel.localRooms[roomIndex].checked = allStuffChecked
         }
     }
 }
