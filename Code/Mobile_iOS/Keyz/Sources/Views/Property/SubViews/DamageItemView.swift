@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct DamageItemView: View {
     let damage: DamageResponse
@@ -17,7 +18,7 @@ struct DamageItemView: View {
                     .font(.headline)
                     .foregroundColor(Color("textColor"))
                 Spacer()
-                Text(damage.priority.capitalized)
+                Text(damage.priority.capitalized.localized())
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
@@ -32,7 +33,7 @@ struct DamageItemView: View {
                 .font(.subheadline)
                 .foregroundColor(.gray)
             HStack {
-                Text("Status: \(damage.fixStatus.replacingOccurrences(of: "_", with: " ").capitalized)")
+                Text(String(format: "Status: %@".localized(), damage.fixStatus.replacingOccurrences(of: "_", with: " ").capitalized.localized()))
                     .font(.caption)
                     .foregroundColor(damage.fixStatus == "fixed" ? Color("GreenAlert") : Color("RedAlert"))
                 Spacer()
@@ -63,14 +64,18 @@ struct DamageItemView: View {
     }
     
     private func formatDateString(_ dateString: String) -> String {
-        let formatter = ISO8601DateFormatter()
-        if let date = formatter.date(from: dateString) {
-            let displayFormatter = DateFormatter()
-            displayFormatter.dateStyle = .medium
-            displayFormatter.timeStyle = .none
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        
+        let displayFormatter = DateFormatter()
+        displayFormatter.dateFormat = "dd/MM/yyyy"
+        displayFormatter.locale = Locale(identifier: "fr_FR")
+
+        if let date = isoFormatter.date(from: dateString) {
             return displayFormatter.string(from: date)
+        } else {
+            return "Invalid Date".localized()
         }
-        return dateString
     }
 }
 
@@ -83,7 +88,7 @@ struct DamageItemView_Previews: PreviewProvider {
             roomName: "Living Room",
             fixStatus: "pending",
             pictures: ["base64_image_1"],
-            createdAt: "2025-05-10T09:00:00Z",
+            createdAt: "2025-05-10T21:03:53.293Z",
             updatedAt: nil,
             fixPlannedAt: "2025-05-25T14:00:00Z",
             fixedAt: nil,

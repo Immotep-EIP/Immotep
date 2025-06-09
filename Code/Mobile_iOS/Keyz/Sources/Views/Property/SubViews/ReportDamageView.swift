@@ -43,21 +43,21 @@ struct ReportDamageView: View {
                         )
                 }
                 
-                Section(header: Text("Priority")) {
-                    Picker("Priority", selection: $selectedPriority) {
+                Section(header: Text("Priority".localized())) {
+                    Picker("Priority".localized(), selection: $selectedPriority) {
                         ForEach(priorities, id: \.self) { priority in
-                            Text(priority.capitalized).tag(priority)
+                            Text(priority.capitalized.localized()).tag(priority)
                         }
                     }
                     .pickerStyle(.segmented)
                 }
                 
-                Section(header: Text("Room")) {
+                Section(header: Text("Room".localized())) {
                     if rooms.isEmpty {
-                        Text("No rooms available").foregroundColor(.red)
+                        Text("No rooms available".localized()).foregroundColor(.red)
                     } else {
-                        Picker("Room", selection: $selectedRoomId) {
-                            Text("Select a room").tag(nil as String?)
+                        Picker("Room".localized(), selection: $selectedRoomId) {
+                            Text("Select a room".localized()).tag(nil as String?)
                             ForEach(rooms) { room in
                                 Text(room.name).tag(room.id as String?)
                             }
@@ -73,15 +73,15 @@ struct ReportDamageView: View {
                         .foregroundColor(.red)
                 }
             }
-            .navigationTitle("Report Damage")
+            .navigationTitle("Report Damage".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button("Cancel".localized()) {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Submit") {
+                    Button("Submit".localized()) {
                         isLoading = true
                         Task {
                             await submitDamage()
@@ -217,7 +217,7 @@ struct PicturesSegmentDamage: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Photos (\(selectedImages.count)/\(maxImages))")
+                Text(String(format: "Photos (%@/%@)".localized(), "\(selectedImages.count)", "\(maxImages)"))
                     .font(.headline)
                 Spacer()
             }
@@ -259,12 +259,12 @@ struct PicturesSegmentDamage: View {
             ActionSheet(
                 title: Text("Options"),
                 buttons: [
-                    .default(Text("Replace")) {
+                    .default(Text("Replace".localized())) {
                         if let index = selectedImageIndex {
                             showImagePickerOptions(index)
                         }
                     },
-                    .destructive(Text("Delete")) {
+                    .destructive(Text("Delete".localized())) {
                         if let index = selectedImageIndex {
                             selectedImages.remove(at: index)
                         }

@@ -10,32 +10,49 @@ import PDFKit
 
 struct DocumentsGridView: View {
     @Binding var documents: [PropertyDocument]
+    @State private var refreshID = UUID()
+    @State private var isInitialized = false
 
     var body: some View {
-        LazyVGrid(
-            columns: Array(repeating: GridItem(.flexible(), spacing: 15), count: 3),
-            spacing: 15
-        ) {
-            ForEach(documents) { document in
-                NavigationLink(destination: PDFViewer(base64String: document.data)) {
-                    VStack {
-                        Image(systemName: "doc.text")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
-                        Text(document.title)
-                            .font(.caption)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity)
-                    }
+        VStack {
+            if documents.isEmpty {
+                Text("No documents available".localized())
+                    .foregroundColor(.gray)
                     .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
+            } else {
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible(), spacing: 15), count: 3),
+                    spacing: 15
+                ) {
+                    ForEach(documents, id: \.id) { document in
+                        NavigationLink(destination: PDFViewer(base64String: document.data)) {
+                            VStack {
+                                Image(systemName: "doc.text")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 50, height: 50)
+                                Text(document.title)
+                                    .font(.caption)
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                        }
+                    }
                 }
+                .padding()
+                .id(refreshID)
             }
         }
-        .padding()
+        .onChange(of: documents) {
+            refreshID = UUID()
+        }
+        .onAppear {
+            isInitialized = true
+        }
     }
 }
 

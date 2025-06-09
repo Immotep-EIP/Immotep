@@ -30,22 +30,103 @@ struct PropertyDetailView: View {
     @State private var hasLoaded = false
     @Environment(\.dismiss) var dismiss
     private let tabs = ["Details".localized(), "Documents".localized(), "Damages".localized()]
-    @State private var refreshTrigger = UUID()
-    
-    @State private var internalState: Int=0
     
     init(property: Property, viewModel: PropertyViewModel) {
         self._property = State(initialValue: property)
         self.viewModel = viewModel
         self._inventoryViewModel = StateObject(wrappedValue: InventoryViewModel(property: property))
     }
+
+    private func fetchDocuments() async {
+        do {
+            let fetchedDocuments = try await viewModel.fetchPropertyDocuments(propertyId: property.id)
+            await MainActor.run {
+                property.documents = fetchedDocuments
+            }
+            if let index = viewModel.properties.firstIndex(where: { $0.id == property.id }) {
+                var updatedProperty = viewModel.properties[index]
+                updatedProperty.documents = fetchedDocuments
+                viewModel.properties[index] = updatedProperty
+            }
+        } catch {
+            errorMessage = "Error fetching documents: \(error.localizedDescription)".localized()
+        }
+    }
+    
+    private func fetchInitialData() async {
+        do {
+            isLoading = true
+            if property.photo == nil || property.damages.isEmpty {
+                await viewModel.fetchProperties()
+                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                    property = updatedProperty
+                }
+            }
+            await fetchDocuments()
+            if loginViewModel.userRole == "tenant" {
+                let token = try await TokenStorage.getValidAccessToken()
+                do {
+                    rooms = try await viewModel.fetchPropertyRooms(propertyId: property.id, token: token)
+                } catch {
+                    errorMessage = "Error fetching rooms: \(error.localizedDescription)".localized()
+                }
+                do {
+                    activeLeaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: property.id, token: token)
+                } catch {
+                    errorMessage = "Error fetching active lease: \(error.localizedDescription)".localized()
+                }
+                if property.damages.isEmpty, activeLeaseId != nil {
+                    do {
+                        try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                            property = updatedProperty
+                        }
+                    } catch {
+                        errorMessage = "Error fetching damages: \(error.localizedDescription)".localized()
+                    }
+                }
+            }
+            if loginViewModel.userRole == "owner", let leaseId = property.leaseId {
+                if property.damages.isEmpty {
+                    do {
+                        try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                        if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                            property = updatedProperty
+                        }
+                    } catch {
+                        errorMessage = "Error fetching damages: \(error.localizedDescription)".localized()
+                    }
+                }
+                do {
+                    if let lastReport = try await viewModel.fetchLastInventoryReport(propertyId: property.id, leaseId: leaseId) {
+                        isEntryInventory = lastReport.type == "end" || lastReport.type == "middle"
+                    } else {
+                        isEntryInventory = true
+                    }
+                } catch {
+                    errorMessage = "Error fetching inventory report: \(error.localizedDescription)".localized()
+                }
+            } else {
+                isEntryInventory = true
+            }
+        } catch {
+            errorMessage = "Error fetching property data: \(error.localizedDescription)".localized()
+        }
+        isLoading = false
+    }
     
     var body: some View {
         NavigationStack {
             ZStack {
                 mainContentView
-//                actionButtonView
                 errorMessageView
+            }
+            .onReceive(viewModel.$properties) { properties in
+                if let updatedProperty = properties.first(where: { $0.id == property.id }) {
+                    if !updatedProperty.documents.isEmpty {
+                        self.property = updatedProperty
+                    }
+                }
             }
             .navigationDestination(isPresented: $navigateToReportDamage) {
                 ReportDamageView(
@@ -58,75 +139,38 @@ struct PropertyDetailView: View {
                             do {
                                 try await viewModel.fetchPropertyDamages(propertyId: property.id)
                             } catch {
-                                self.errorMessage = "Error refreshing damages: \(error.localizedDescription)".localized()
+                                await MainActor.run {
+                                    self.errorMessage = "Error refreshing damages: \(error.localizedDescription)".localized()
+                                }
                             }
                         }
                     }
                 )
+            }
+            .navigationDestination(isPresented: $navigateToInventory) {
+                InventoryRoomView()
+                    .environmentObject(inventoryViewModel)
             }
             .navigationBarBackButtonHidden(true)
             .onAppear {
                 guard !hasLoaded else { return }
                 hasLoaded = true
                 Task {
-                    do {
-                        isLoading = true
-                        if property.photo == nil || property.documents.isEmpty || property.damages.isEmpty {
-                            await viewModel.fetchProperties()
-                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                property = updatedProperty
+                    await fetchInitialData()
+                }
+                inventoryViewModel.onInventoryFinalized = {
+                    Task {
+                        for attempt in 1...3 {
+                            await fetchDocuments()
+                            if !property.documents.isEmpty {
+                                break
                             }
+                            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds delay
                         }
                         if property.documents.isEmpty {
-                            do {
-                                _ = try await viewModel.fetchPropertyDocuments(propertyId: property.id)
-                                if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                    property = updatedProperty
-                                }
-                            } catch {
-                                throw error
-                            }
+                            errorMessage = "No documents found after inventory finalization".localized()
                         }
-                        if loginViewModel.userRole == "tenant" {
-                            let token = try await TokenStorage.getValidAccessToken()
-                            do {
-                                rooms = try await viewModel.fetchPropertyRooms(propertyId: property.id, token: token)
-                            } catch {
-                                throw error
-                            }
-                            do {
-                                activeLeaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: property.id, token: token)
-                            } catch {
-                                throw error
-                            }
-                            if property.damages.isEmpty, activeLeaseId != nil {
-                                do {
-                                    try await viewModel.fetchPropertyDamages(propertyId: property.id)
-                                    if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                                        property = updatedProperty
-                                    }
-                                } catch {
-                                    throw error
-                                }
-                            }
-                        }
-                        if loginViewModel.userRole == "owner", let leaseId = property.leaseId {
-                            do {
-                                if let lastReport = try await viewModel.fetchLastInventoryReport(propertyId: property.id, leaseId: leaseId) {
-                                    isEntryInventory = lastReport.type == "end" || lastReport.type == "middle"
-                                } else {
-                                    isEntryInventory = true
-                                }
-                            } catch {
-                                throw error
-                            }
-                        } else {
-                            isEntryInventory = true
-                        }
-                    } catch {
-                        errorMessage = "Error fetching property data: \(error.localizedDescription)".localized()
                     }
-                    isLoading = false
                 }
             }
             .sheet(isPresented: $showEditPropertyPopUp) {
@@ -136,12 +180,11 @@ struct PropertyDetailView: View {
                 InviteTenantView(tenantViewModel: tenantViewModel, property: property)
             }
             .overlay(alertsView)
-            .id(refreshTrigger)
         }
     }
     
     private var damagesContentView: some View {
-        ScrollView {
+        return ScrollView {
             VStack(spacing: 16) {
                 if viewModel.isFetchingDamages {
                     ProgressView()
@@ -151,20 +194,18 @@ struct PropertyDetailView: View {
                     Text(damagesError)
                         .foregroundColor(.red)
                         .padding()
-                } else if property.damages.isEmpty {
-                    Text("no_damages_reported".localized())
-                        .foregroundColor(.gray)
-                        .padding()
-                } else {
+                } else if let currentProperty = viewModel.properties.first(where: { $0.id == property.id }), !currentProperty.damages.isEmpty {
                     LazyVStack(spacing: 10) {
-                        if let currentProperty = viewModel.properties.first(where: { $0.id == property.id }) {
-                            ForEach(currentProperty.damages.sorted { $0.createdAt > $1.createdAt }, id: \.id) { damage in
-                                DamageItemView(damage: damage)
-                                    .id(damage.id)
-                            }
+                        ForEach(currentProperty.damages.sorted { $0.createdAt > $1.createdAt }, id: \.id) { damage in
+                            DamageItemView(damage: damage)
+                                .id(damage.id)
                         }
                     }
                     .padding(.horizontal)
+                } else {
+                    Text("no_damages_reported".localized())
+                        .foregroundColor(.gray)
+                        .padding()
                 }
                 
                 if loginViewModel.userRole == "tenant" {
@@ -353,8 +394,14 @@ struct PropertyDetailView: View {
                     detailsContentView
                     actionButtonView
                 case "Documents".localized():
-                    DocumentsGridView(documents: $property.documents)
-                        .padding(.horizontal)
+                    if let errorMessage = errorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .padding()
+                    } else {
+                        DocumentsGridView(documents: $property.documents)
+                            .padding(.horizontal)
+                    }
                 case "Damages".localized():
                     damagesContentView
                 default:
@@ -411,9 +458,8 @@ struct PropertyDetailView: View {
 
     private var actionButtonView: some View {
         VStack {
-            Spacer()
             Group {
-//                if loginViewModel.userRole == "owner" {
+                if loginViewModel.userRole == "owner" {
                     Button(action: {
                         inventoryViewModel.isEntryInventory = isEntryInventory
                         navigateToInventory = true
@@ -428,7 +474,7 @@ struct PropertyDetailView: View {
                             .padding(.bottom, 10)
                     }
                     .accessibilityLabel(isEntryInventory ? "inventory_btn_entry" : "inventory_btn_exit")
-//                }
+                }
             }
         }
         .ignoresSafeArea(.container, edges: .bottom)
@@ -585,9 +631,18 @@ struct PropertyDetailView_Previews: PreviewProvider {
             surface: 80.0,
             isAvailable: "Busy",
             tenantName: "John & Mary Doe",
+            leaseId: "leaseId",
             leaseStartDate: "2025-04-08T22:00:00Z",
             leaseEndDate: nil,
-            documents: [],
+            documents: [
+                PropertyDocument(
+                    id: "cmboeu0yh000mcxa1b83l5tnv",
+                    title: "09-06-2025",
+                    fileName: "inventory_report_2025-06-09_cmboeu0wx000hcxa1.pdf",
+                    data: ""
+                )
+            ],
+            createdAt: "",
             rooms: [],
             damages: [
                 DamageResponse(

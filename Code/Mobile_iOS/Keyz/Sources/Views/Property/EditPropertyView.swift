@@ -149,6 +149,7 @@ struct EditPropertyView: View {
             surface: surface?.doubleValue ?? 0.0,
             isAvailable: property.isAvailable,
             tenantName: property.tenantName,
+            leaseId: property.leaseId,
             leaseStartDate: property.leaseStartDate,
             leaseEndDate: property.leaseEndDate,
             documents: property.documents,

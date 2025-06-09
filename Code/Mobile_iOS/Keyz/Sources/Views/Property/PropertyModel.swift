@@ -10,7 +10,7 @@ import SwiftUI
 
 struct Property: Identifiable, Equatable {
     let id: String
-    let ownerID: String
+    var ownerID: String
     var name: String
     var address: String
     var city: String
@@ -24,14 +24,33 @@ struct Property: Identifiable, Equatable {
     var tenantName: String?
     var leaseId: String?
     var leaseStartDate: String?
-    var leaseEndDate: String?
+    let leaseEndDate: String?
     var documents: [PropertyDocument]
-    var createdAt: String?
+    var createdAt: String
     var rooms: [PropertyRooms]
     var damages: [DamageResponse]
 
     static func == (lhs: Property, rhs: Property) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id &&
+        lhs.ownerID == rhs.ownerID &&
+        lhs.name == rhs.name &&
+        lhs.address == rhs.address &&
+        lhs.city == rhs.city &&
+        lhs.postalCode == rhs.postalCode &&
+        lhs.country == rhs.country &&
+        lhs.photo == rhs.photo &&
+        lhs.monthlyRent == rhs.monthlyRent &&
+        lhs.deposit == rhs.deposit &&
+        lhs.surface == rhs.surface &&
+        lhs.isAvailable == rhs.isAvailable &&
+        lhs.tenantName == rhs.tenantName &&
+        lhs.leaseId == rhs.leaseId &&
+        lhs.leaseStartDate == rhs.leaseStartDate &&
+        lhs.leaseEndDate == rhs.leaseEndDate &&
+        lhs.documents == rhs.documents &&
+        lhs.createdAt == rhs.createdAt &&
+        lhs.rooms == rhs.rooms &&
+        lhs.damages == rhs.damages
     }
 }
 
@@ -49,11 +68,18 @@ struct PropertyDocumentResponse: Codable {
     }
 }
 
-struct PropertyDocument: Identifiable {
+struct PropertyDocument: Identifiable, Decodable, Equatable {
     let id: String
     let title: String
     let fileName: String
     let data: String
+
+    static func == (lhs: PropertyDocument, rhs: PropertyDocument) -> Bool {
+        lhs.id == rhs.id &&
+        lhs.title == rhs.title &&
+        lhs.fileName == rhs.fileName &&
+        lhs.data == rhs.data
+    }
 }
 
 struct PropertyRooms: Identifiable, Equatable {
@@ -265,7 +291,7 @@ extension Property {
             leaseStartDate: leaseStartDate ?? self.leaseStartDate,
             leaseEndDate: leaseEndDate ?? self.leaseEndDate,
             documents: documents ?? self.documents,
-            createdAt: createdAt ?? self.createdAt,
+            createdAt: (createdAt ?? self.createdAt) ?? "nil",
             rooms: rooms ?? self.rooms,
             damages: damages ?? self.damages
         )

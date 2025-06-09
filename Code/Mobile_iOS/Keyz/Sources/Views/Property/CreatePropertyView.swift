@@ -133,9 +133,11 @@ struct CreatePropertyView: View {
             surface: surface?.doubleValue ?? 0.0,
             isAvailable: "available",
             tenantName: nil,
+            leaseId: "leaseId",
             leaseStartDate: nil,
             leaseEndDate: nil,
             documents: [],
+            createdAt: "",
             rooms: [],
             damages: []
         )

@@ -242,7 +242,7 @@ class InventoryReportManager {
 
     func compareStuffReport(oldReportId: String) async throws {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/compare/\(oldReportId)/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/current/inventory-reports/compare/\(oldReportId)/") else {
             throw URLError(.badURL)
         }
         guard let token = await viewModel.getToken() else {

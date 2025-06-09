@@ -142,7 +142,8 @@ class OwnerPropertyViewModel: ObservableObject {
         let propertiesData = try decoder.decode([PropertyResponse].self, from: data)
         
         self.properties = propertiesData.map { propertyResponse in
-            Property(
+            let existingProperty = properties.first(where: { $0.id == propertyResponse.id })
+            return Property(
                 id: propertyResponse.id,
                 ownerID: propertyResponse.ownerId,
                 name: propertyResponse.name,
@@ -159,7 +160,7 @@ class OwnerPropertyViewModel: ObservableObject {
                 leaseId: propertyResponse.lease?.id,
                 leaseStartDate: propertyResponse.lease?.startDate,
                 leaseEndDate: propertyResponse.lease?.endDate,
-                documents: [],
+                documents: existingProperty?.documents ?? [], // Preserve existing documents
                 createdAt: propertyResponse.createdAt,
                 rooms: [],
                 damages: []
@@ -377,10 +378,11 @@ class OwnerPropertyViewModel: ObservableObject {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server".localized()])
         }
         
+        let responseBody = String(data: data, encoding: .utf8) ?? "Unable to decode response"
+        print("Fetch Documents Response for property \(propertyId): Status \(httpResponse.statusCode) - \(responseBody)")
+        
         guard (200...299).contains(httpResponse.statusCode) else {
-            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            throw NSError(domain: "", code: httpResponse.statusCode,
-                          userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(responseBody)".localized()])
         }
         
         let decoder = JSONDecoder()

@@ -85,17 +85,22 @@ class PropertyViewModel: ObservableObject {
             if let leaseId = try await fetchActiveLeaseIdForProperty(propertyId: propertyId, token: try await TokenStorage.getValidAccessToken()) {
                 documents = try await tenantViewModel.fetchTenantPropertyDocuments(leaseId: leaseId, propertyId: propertyId)
             } else {
+                print("No active lease found for property \(propertyId)")
                 throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease found.".localized()])
             }
         } else {
             documents = try await ownerViewModel.fetchPropertyDocuments(propertyId: propertyId)
         }
         
+        print("Fetched documents for property \(propertyId): \(documents.map { ($0.id, $0.title, $0.fileName) })")
         if let index = properties.firstIndex(where: { $0.id == propertyId }) {
             var updatedProperty = properties[index]
             updatedProperty.documents = documents
             properties[index] = updatedProperty
+            print("Updated property \(propertyId) with documents: \(documents.map { ($0.id, $0.title, $0.fileName) })")
             objectWillChange.send()
+        } else {
+            print("Property \(propertyId) not found in properties array")
         }
         return documents
     }

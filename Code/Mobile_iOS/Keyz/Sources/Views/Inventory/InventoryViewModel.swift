@@ -32,6 +32,8 @@ class InventoryViewModel: ObservableObject {
     private var roomManager: RoomManager?
     private var furnitureManager: FurnitureManager?
     private var reportManager: InventoryReportManager?
+    
+    var onInventoryFinalized: (() -> Void)?
 
     init(property: Property, isEntryInventory: Bool = true, localRooms: [LocalRoom]? = nil) {
         self.property = property
@@ -114,6 +116,7 @@ class InventoryViewModel: ObservableObject {
 
     func finalizeInventory() async throws {
         try await reportManager?.finalizeInventory()
+        onInventoryFinalized?()
     }
 
     func fetchLastInventoryReport() async {
