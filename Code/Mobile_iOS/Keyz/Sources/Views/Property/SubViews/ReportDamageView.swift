@@ -179,7 +179,7 @@ struct ReportDamageView: View {
         
         do {
             let token = try await TokenStorage.getValidAccessToken()
-            let damageId = try await viewModel.createDamage(
+            let _ = try await viewModel.createDamage(
                 propertyId: propertyId,
                 leaseId: leaseId,
                 damage: damageRequest,

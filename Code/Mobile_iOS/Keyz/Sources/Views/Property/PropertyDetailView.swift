@@ -160,7 +160,7 @@ struct PropertyDetailView: View {
                 }
                 inventoryViewModel.onInventoryFinalized = {
                     Task {
-                        for attempt in 1...3 {
+                        for _ in 1...3 {
                             await fetchDocuments()
                             if !property.documents.isEmpty {
                                 break
