@@ -138,7 +138,10 @@ const InventoryTab: React.FC = () => {
   const filterInventory = () => ({
     rooms: inventory.rooms.filter(room => {
       const matchesSearch = room.name
-        ? room.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ? room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          room.furniture?.some(furniture =>
+            furniture.name.toLowerCase().includes(searchQuery.toLowerCase())
+          )
         : false
       const matchesType =
         selectedRoomType === 'all' ||
