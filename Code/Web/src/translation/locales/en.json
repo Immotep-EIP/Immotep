@@ -202,7 +202,8 @@
       "add_item": "Add Item",
       "delete_item": "Delete Item",
       "add_intervention_date": "Add intervention date",
-      "modify_intervention_date": "Modify intervention date"
+      "modify_intervention_date": "Modify intervention date",
+      "remove": "Remove"
     },
     "modal": {
       "end_contract": {
@@ -295,7 +296,9 @@
         "Sofa": "Sofa",
         "Shower": "Shower",
         "Toilet": "Toilet",
-        "Custom Item": "Custom Item"
+        "Custom Item": "Custom Item",
+        "custom_items": "Custom items",
+        "add_custom_item": "Add custom item"
       },
       "search": {
         "placeholder": "Search rooms and items..."
