@@ -16,11 +16,7 @@ import DocumentsTab from '@/views/RealProperty/details/tabs/1DocumentsTab'
 import DamageTab from '@/views/RealProperty/details/tabs/3DamageTab'
 import InventoryTab from '@/views/RealProperty/details/tabs/2InventoryTab'
 
-import {
-  DetailsPartProps,
-  PropertyDetails
-} from '@/interfaces/Property/Property'
-import { Lease } from '@/interfaces/Property/Lease/Lease'
+import { DetailsPartProps } from '@/interfaces/Property/Property'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
 import PropertyHeader from './PropertyHeader'
 import PropertyImage from './PropertyImage'
@@ -206,9 +202,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
           picture={picture}
           isLoading={isLoading}
         />
-        <PropertyInfo
-          propertyData={propertyData as PropertyDetails & { leases: Lease[] }}
-        />
+        <PropertyInfo propertyData={propertyData} />
       </div>
 
       <ChildrenComponent

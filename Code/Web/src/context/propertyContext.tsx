@@ -4,7 +4,7 @@ import { PropertyDetails } from '@/interfaces/Property/Property'
 import { Lease } from '@/interfaces/Property/Lease/Lease'
 
 const PropertyContext = createContext<{
-  property: (PropertyDetails & { leases: Lease[] }) | null
+  property: PropertyDetails | null
   selectedLeaseId: string
   setSelectedLeaseId: (id: string) => void
   selectedLease: Lease | null
@@ -16,13 +16,13 @@ const PropertyContext = createContext<{
 })
 
 export const PropertyProvider: React.FC<{
-  property: PropertyDetails & { leases: Lease[] }
+  property: PropertyDetails
   children: React.ReactNode
 }> = ({ property, children }) => {
   const [selectedLeaseId, setSelectedLeaseId] = useState(property?.lease?.id)
 
   const selectedLease =
-    property.leases.find(lease => lease.id === selectedLeaseId) ?? null
+    property?.leases.find(lease => lease.id === selectedLeaseId) ?? null
 
   const value = useMemo(
     () => ({

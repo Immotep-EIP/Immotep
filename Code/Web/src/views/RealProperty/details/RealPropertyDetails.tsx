@@ -83,9 +83,7 @@ const RealPropertyDetails: React.FC = () => {
 
       <div className={style.pageContainer}>
         {propertyData && (
-          <PropertyProvider
-            property={propertyData as PropertyDetails & { leases: Lease[] }}
-          >
+          <PropertyProvider property={propertyData}>
             <DetailsPart
               key={refreshKey}
               propertyData={propertyData}

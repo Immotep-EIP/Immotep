@@ -4,15 +4,10 @@ import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
 import { usePropertyContext } from '@/context/propertyContext'
 
 import { PropertyDetails } from '@/interfaces/Property/Property'
-import { Lease } from '@/interfaces/Property/Lease/Lease'
 
 import style from './DetailsPart.module.css'
 
-const PropertyInfo = ({
-  propertyData
-}: {
-  propertyData: PropertyDetails & { leases: Lease[] }
-}) => {
+const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
   const { t } = useTranslation()
   const { selectedLease } = usePropertyContext()
 

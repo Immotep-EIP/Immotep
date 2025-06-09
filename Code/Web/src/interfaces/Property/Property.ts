@@ -35,6 +35,7 @@ export interface PropertyDetails {
   id: string
   invite?: InviteTenant
   lease: Lease
+  leases: Lease[]
   name: string
   nb_damage: number
   owner_id: string
