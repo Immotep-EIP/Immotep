@@ -155,3 +155,25 @@
 "storage" = "Storage";
 "office" = "Office";
 "other" = "Other";
+
+
+"Low" = "Low";
+"Medium" = "Medium";
+"High" = "High";
+"Urgent" = "Urgent";
+
+"Fixed" = "Fixed";
+"Pending" = "Pending";
+"In Progress" = "In Progress";
+"Not Started" = "Not Started";
+"Status: %@" = "Status: %@";
+"Invalid Date" = "Invalid Date";
+
+"Report Damage" = "Report Damage";
+"Options" = "Options";
+"Replace" = "Replace";
+"Delete" = "Delete";
+"Photos (%@/%@)" = "Photos (%@/%@)";
+
+"Start Entry Inventory" = "Start Entry Inventory";
+"Start Exit Inventory" = "Start Entry Inventory";

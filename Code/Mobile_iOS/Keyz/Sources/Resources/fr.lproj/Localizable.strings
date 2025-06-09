@@ -165,3 +165,25 @@
 "Delete Room" = "Supprimer une pièce";
 "Are you sure you want to delete the room %@?" = "Êtes-vous sûr de vouloir supprimer la pièce %@ ?";
 "Delete" = "Supprimer";
+
+
+"Low" = "Faible";
+"Medium" = "Moyenne";
+"High" = "Élevée";
+"Urgent" = "Urgente";
+
+"Fixed" = "Réparé";
+"Pending" = "En attente";
+"In Progress" = "En cours";
+"Not Started" = "Non commencé";
+"Status: %@" = "Statut : %@";
+"Invalid Date" = "Date invalide";
+
+"Report Damage" = "Signaler un sinistre";
+"Options" = "Options";
+"Replace" = "Remplacer";
+"Delete" = "Supprimer";
+"Photos (%@/%@)" = "Photos (%@/%@)";
+
+"Start Entry Inventory" = "Commencer l'état des lieux d'entrée";
+"Start Exit Inventory" = "Commencer l'état des lieux de sortie";
