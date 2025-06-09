@@ -44,7 +44,7 @@ struct PropertyDetailView: View {
         NavigationStack {
             ZStack {
                 mainContentView
-                actionButtonView
+//                actionButtonView
                 errorMessageView
             }
             .navigationDestination(isPresented: $navigateToReportDamage) {
@@ -198,8 +198,8 @@ struct PropertyDetailView: View {
         VStack(alignment: .leading, spacing: 16) {
             ZStack(alignment: .topLeading) {
                 imageView
-                backButtonView
                 if loginViewModel.userRole == "owner" {
+                    backButtonView
                     optionsMenuView
                 }
             }
@@ -351,6 +351,7 @@ struct PropertyDetailView: View {
                 switch selectedTab {
                 case "Details".localized():
                     detailsContentView
+                    actionButtonView
                 case "Documents".localized():
                     DocumentsGridView(documents: $property.documents)
                         .padding(.horizontal)
@@ -412,7 +413,7 @@ struct PropertyDetailView: View {
         VStack {
             Spacer()
             Group {
-                if loginViewModel.userRole == "owner" {
+//                if loginViewModel.userRole == "owner" {
                     Button(action: {
                         inventoryViewModel.isEntryInventory = isEntryInventory
                         navigateToInventory = true
@@ -427,7 +428,7 @@ struct PropertyDetailView: View {
                             .padding(.bottom, 10)
                     }
                     .accessibilityLabel(isEntryInventory ? "inventory_btn_entry" : "inventory_btn_exit")
-                }
+//                }
             }
         }
         .ignoresSafeArea(.container, edges: .bottom)
