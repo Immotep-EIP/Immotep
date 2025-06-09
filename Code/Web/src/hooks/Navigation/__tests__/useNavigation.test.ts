@@ -51,6 +51,15 @@ describe('useNavigation', () => {
     })
   })
 
+  it('should navigate to real property page with archive parameter', () => {
+    const { result } = renderHook(() => useNavigation())
+    result.current.goToRealProperty(true)
+    expect(mockNavigate).toHaveBeenCalledWith({
+      pathname: NavigationEnum.REAL_PROPERTY,
+      search: '?archive=true'
+    })
+  })
+
   it('should navigate to real property details page with id', () => {
     const { result } = renderHook(() => useNavigation())
     const testId = '123'

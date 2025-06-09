@@ -49,7 +49,8 @@ describe('CreatePropertyFunction', () => {
         tenant_email: 'tenant123',
         tenant_id: 'tenant123',
         tenant_name: 'Jane Tenant'
-      }
+      },
+      leases: []
     }
     mockedCallApi.mockResolvedValueOnce(mockResponse)
 
