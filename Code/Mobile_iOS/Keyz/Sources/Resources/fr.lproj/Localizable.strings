@@ -165,6 +165,7 @@
 "Properties" = "Propriétés";
 "Occupied" = "Occupée(s)";
 "Archived" = "Archivée(s)";
+"Available_property" = "Disponible(s)";
 "Pending Invites" = "Invitation(s) en attente";
 "+%d more" = "+%d de plus";
 

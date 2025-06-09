@@ -41,7 +41,7 @@ struct ContentView: View {
                     }
                     .tag(2)
 
-                SettingsView()
+                SettingsView(selectedTab: $selectedTab)
                     .environmentObject(loginViewModel)
                     .tabItem {
                         Image(systemName: "gearshape")

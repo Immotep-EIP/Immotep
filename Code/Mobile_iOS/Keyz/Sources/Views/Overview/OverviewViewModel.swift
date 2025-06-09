@@ -38,7 +38,6 @@ class OverviewViewModel: ObservableObject {
             }
 
             let responseBody = String(data: data, encoding: .utf8) ?? "Unable to decode response"
-            print("Dashboard API Response: Status \(httpResponse.statusCode) - \(responseBody)")
 
             guard (200...299).contains(httpResponse.statusCode) else {
                 throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(responseBody)".localized()])
@@ -51,8 +50,6 @@ class OverviewViewModel: ObservableObject {
             for reminder in dashboardResponse.reminders {
                 if reminderDict[reminder.id] == nil {
                     reminderDict[reminder.id] = reminder
-                } else {
-                    print("Duplicate reminder ID detected: \(reminder.id) - Title: \(reminder.title)")
                 }
             }
             let uniqueReminders = reminderDict.values.sorted { $0.id < $1.id }
@@ -66,7 +63,6 @@ class OverviewViewModel: ObservableObject {
             
         } catch {
             errorMessage = "Error fetching dashboard data: \(error.localizedDescription)".localized()
-            print("Dashboard API Error: \(error.localizedDescription)")
         }
 
         isLoading = false

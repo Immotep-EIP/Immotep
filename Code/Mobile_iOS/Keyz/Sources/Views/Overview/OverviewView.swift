@@ -281,7 +281,7 @@ struct PropertiesWidget: View {
             ) {
                 StatItem(label: "Total".localized(), value: "\(stats.total)")
                 StatItem(label: "Occupied".localized(), value: "\(stats.occupied)")
-                StatItem(label: "Available".localized(), value: "\(stats.available)")
+                StatItem(label: "Available_property".localized(), value: "\(stats.available)")
                 StatItem(label: "Archived".localized(), value: "\(stats.archived)")
                 StatItem(label: "Pending Invites".localized(), value: "\(stats.pendingInvites)")
             }

@@ -165,7 +165,7 @@ struct PropertyDetailView: View {
                             if !property.documents.isEmpty {
                                 break
                             }
-                            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds delay
+                            try? await Task.sleep(nanoseconds: 2_000_000_000)
                         }
                         if property.documents.isEmpty {
                             errorMessage = "No documents found after inventory finalization".localized()
