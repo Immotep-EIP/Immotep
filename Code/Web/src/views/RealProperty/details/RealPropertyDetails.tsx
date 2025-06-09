@@ -9,9 +9,6 @@ import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import DetailsPart from '@/components/features/RealProperty/details/DetailsPart/DetailsPart'
 import { PropertyProvider } from '@/context/propertyContext'
 
-import { PropertyDetails } from '@/interfaces/Property/Property'
-import { Lease } from '@/interfaces/Property/Lease/Lease'
-
 import style from './RealPropertyDetails.module.css'
 
 const RealPropertyDetails: React.FC = () => {
