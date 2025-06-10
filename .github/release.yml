@@ -1,0 +1,27 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    # authors:
+    #   - octocat
+  categories:
+    - title: Added 🎉
+      labels:
+        - feat
+        - feature
+    - title: Changed 🔄
+      labels:
+        - enhancement
+        - improvement
+        - change
+        - refactor
+        - perf
+        - performance
+        - style
+    - title: Fixed 🛠
+      labels:
+        - fix
+        - bug
+    - title: Other
+      labels:
+        - "*"
