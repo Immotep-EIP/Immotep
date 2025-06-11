@@ -50,7 +50,7 @@ jobs:
           LAST_PATCH="${{ steps.highest_version.outputs.patch }}"
           NEW_MAJOR="${{ steps.current_version.outputs.major }}"
           NEW_MINOR="${{ steps.current_version.outputs.minor }}"
-          echo "Checking that desired verison is GTE previous published version"
+          echo "Checking that desired version is GTE previous published version"
           echo "Is $NEW_MAJOR.$NEW_MINOR >= $LAST_MAJOR.$LAST_MINOR"
           if [[ "$NEW_MAJOR" -lt "$LAST_MAJOR" \
             || ("$NEW_MAJOR" -eq "$LAST_MAJOR" && "$NEW_MINOR" -lt "$LAST_MINOR" ) \
