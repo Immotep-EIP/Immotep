@@ -37,7 +37,7 @@ jobs:
           MAJOR=$(echo $TAG | cut -d '.' -f 1)
           MINOR=$(echo $TAG | cut -d '.' -f 2)
           PATCH=$(echo $TAG | cut -d '.' -f 3)
-          echo "parseD: $MAJOR.$MINOR.$PATCH"
+          echo "Parsed: $MAJOR.$MINOR.$PATCH"
           echo "major=$MAJOR" >> $GITHUB_OUTPUT
           echo "minor=$MINOR" >> $GITHUB_OUTPUT
           echo "patch=$PATCH" >> $GITHUB_OUTPUT
