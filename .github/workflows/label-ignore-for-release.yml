@@ -1,0 +1,16 @@
+name: ignore-main-pr-for-release
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  add-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add 'ignore-for-release' label to PR
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: ignore-for-release
