@@ -3,7 +3,7 @@ name: deploy-dev
 on:
   push:
     branches:
-      - dev
+      - deploy/dev
 
 jobs:
   check-build-web:
