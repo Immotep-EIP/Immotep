@@ -6,7 +6,7 @@ This application is the backend part of the Immotep application. It provides an 
 
 ## Technologies used
 
-The API is built using the Go programming language with the Gin framework, ensuring efficient handling of requests and responses. The system relies on a PostgreSQL database, leveraging Prisma as the ORM (Object-Relational Mapping) tool to facilitate seamless interactions with the database. User authentication is implemented using OAuth, using the `github.com/maxzerbini/oauth` package to provide secure access control to protected resources.
+The API is built using the Go programming language with the Gin framework, ensuring efficient handling of requests and responses. The system relies on a PostgreSQL database, leveraging Prisma as the ORM (Object-Relational Mapping) tool to facilitate seamless interactions with the database. User authentication is implemented using OAuth, using the `github.com/maxzerbini/oauth` package to provide secure access control to protected resources. The backend also integrates with OpenAI's ChatGPT for AI-powered features, Brevo for email notifications, and supports PDF generation for inventory reports.
 
 ## API documentation
 

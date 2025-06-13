@@ -7,15 +7,19 @@ The system architecture is designed to ensure modularity, scalability, and effic
 1. **Backend (API)**:
    - The backend is implemented using the Go programming language and the Gin web framework, which provides a lightweight and high-performance HTTP router.
    - The application is organized into a modular folder structure:
-     - **`controllers`**: Responsible for handling HTTP requests and sending appropriate responses. Each controller corresponds to a specific feature or module of the application.
-     - **`database`**: Contains the database configuration and connection setup, ensuring that the application can interact with the PostgreSQL database.
-     - **`docs`**: Stores the Swagger API documentation, which is automatically generated and updated based on code annotations when building the application.
-     - **`models`**: Contains data structure definitions that represent database entities, request and response payloads used in the controllers and other key types used across the application.
-     - **`prisma`**: Manages the Prisma configuration and schema, including model definitions, database migrations, and seeding. Prisma is used as the ORM (Object-Relational Mapping) tool to interact with the PostgreSQL database.
-     - **`router`**: Sets up the application's routing, defining the paths for each endpoint and integrating middlewares for tasks such as authentication, logging, and error handling.
-       - **`middlewares`**: Contains custom middleware functions that can be applied to specific routes or globally to handle common tasks such as authentication, authorization, logging, and error handling.
-     - **`services`**: Encapsulates the business logic, providing reusable functions and methods to interact with database, external services, and other components.
-     - **`utils`**: Contains utility functions and helper methods that are used across the application for tasks such as error handling, data validation, and formatting. It also includes error codes and constants used throughout the application.
+      - **`controllers`**: Responsible for handling HTTP requests and sending appropriate responses. Each controller corresponds to a specific feature or module of the application.
+      - **`docs`**: Stores the Swagger API documentation, which is automatically generated and updated based on code annotations when building the application.
+      - **`models`**: Contains data structure definitions that represent database entities, request and response payloads used in the controllers and other key types used across the application.
+      - **`prisma`**: Manages the Prisma configuration and schema, including model definitions, database migrations, and seeding. Prisma is used as the ORM (Object-Relational Mapping) tool to interact with the PostgreSQL database.
+      - **`router`**: Sets up the application's routing, defining the paths for each endpoint and integrating middlewares for tasks such as authentication, logging, and error handling. There are two main routers: one for the owner and one for the tenant. The `oauth.go` file contains the OAuth configuration and logic for user authentication.
+         - **`middlewares`**: Contains custom middleware functions that can be applied to specific routes or globally to handle common tasks such as authentication, authorization, logging, and error handling. Most of the middlewares store values in the Gin context, which can be accessed later in the controller. This allows for a clean separation of concerns, where the middleware handles cross-cutting concerns while the controllers focus on business logic.
+         - **`validators`**: Contains validation logic for incoming requests fields, ensuring that the data meets the required format and constraints before being processed by the controllers. This helps prevent invalid data from being processed and ensures that the application behaves as expected. Validators mostly check enum values.
+      - **`services`**: Encapsulates the business logic, providing reusable functions and methods to interact with database, external services, and other components.
+         - **`brevo`**: Handles email notifications via Brevo.
+         - **`chatgpt`**: Contains logic for interacting with OpenAI's ChatGPT API for AI-powered features such as summarizing and comparing inventory report pictures.
+         - **`database`**: Contains functions for database operations, such as querying and updating data. It uses the Prisma ORM to interact with the PostgreSQL database.
+         - **`pdf`**: Manages PDF generation, such as creating inventory reports.
+      - **`utils`**: Contains utility functions and helper methods that are used across the application for tasks such as error handling, data validation, and formatting. It also includes error codes and constants used throughout the application.
    - The Gin framework allows for a clean separation of concerns, promoting organized code that is easy to maintain and extend.
 
 2. **Database**:
@@ -36,7 +40,7 @@ The system architecture is designed to ensure modularity, scalability, and effic
 5. **External Services and Integrations**:
    - The application integrates with external services and APIs via HTTP requests, with the `services` layer handling communication and data processing.
    - One example of an external service is the database management system, which stores and retrieves data from the PostgreSQL database using Prisma.
-   - Another example of an external service is the email notification system, which sends notifications to users based on specific events or triggers within the application.
+   - Another example of an external service is the email notification system, which sends notifications to users based on specific events or triggers within the application. Emails are sent using the Brevo service, which is integrated into the `services/brevo` package.
    - The application also uses OpenAI's ChatGPT API to summarize and compare inventory report pictures.
 
 ## Data Flow
