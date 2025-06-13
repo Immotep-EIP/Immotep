@@ -8,9 +8,7 @@
 
 ---
 
-**Purpose:**
-
-The login page allows existing users to access their accounts.
+**Purpose:** The login page allows existing users to access their accounts.
 
 ---
 
