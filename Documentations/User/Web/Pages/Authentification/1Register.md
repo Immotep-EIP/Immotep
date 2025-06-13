@@ -22,7 +22,7 @@
 - | 6. **Accept Terms**: Check the box to accept the terms, privacy policy, and fees.
 - | 7. **Register**: Click the **Register** button to validate your registration and you will be redirect to the login page.
 
-  **Note:** If you already have an account, you can click the **Sign in** link at the bottom of the page.
+  > **Note:** If you already have an account, you can click the **Sign in** link at the bottom of the page.
 
 > **Already have an account?**
 > [Log in here](./2Login.md).
