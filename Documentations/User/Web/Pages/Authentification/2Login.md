@@ -4,20 +4,20 @@
 
 ---
 
-![Keyz Login Form](../../Images/login.png)
+**Purpose:** The login page allows existing users to access their accounts.
 
 ---
 
-**Purpose:** The login page allows existing users to access their accounts.
+![Keyz Login Form](../../Images/login.png)
 
 ---
 
 **Steps to Log In:**
 
-1. **Email**: Enter the email address used during registration.
-2. **Password**: Enter your password associated with your account.
-3. **Remember Me**: (Optional) Check this box to remember your session.
-4. **Log In**: Click the **Log In** button to access your account.
+- | 1. **Email**: Enter the email address used during registration.
+- | 2. **Password**: Enter your password associated with your account.
+- | 3. **Remember Me**: (Optional) Check this box to remember your session.
+- | 4. **Log In**: Click the **Log In** button to access your account.
 
    > **Note:** If you do not have an account yet, a **Register** link is available at the bottom of the page.
 
