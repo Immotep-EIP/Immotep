@@ -12,6 +12,8 @@
 
 The registration page allows new users to create an account by providing the necessary information.
 
+---
+
 ### Steps to Register:
 
 1. **First Name**: Enter your first name in the corresponding field.
@@ -22,10 +24,9 @@ The registration page allows new users to create an account by providing the nec
 6. **Accept Terms**: Check the box to accept the terms, privacy policy, and fees.
 7. **Register**: Click the **Register** button to validate your registration and you will be redirect to the login page.
 
-   > **Note:** If you already have an account, you can click the **Login** link at the bottom of the page.
+  **Note:** If you already have an account, you can click the **Login** link at the bottom of the page.
 
-> **Already have an account?**
-> [Log in here](./2Login.md).
+---
 
 ### Common Errors:
 
@@ -34,3 +35,6 @@ The registration page allows new users to create an account by providing the nec
 - The password and its confirmation must match to validate the registration.
 
 ---
+
+> **Already have an account?**
+> [Log in here](./2Login.md).

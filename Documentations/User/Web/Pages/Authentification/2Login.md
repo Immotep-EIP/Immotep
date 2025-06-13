@@ -12,6 +12,8 @@
 
 The login page allows existing users to access their accounts.
 
+---
+
 ### Steps to Log In:
 
 1. **Email**: Enter the email address used during registration.
@@ -21,9 +23,13 @@ The login page allows existing users to access their accounts.
 
    > **Note:** If you do not have an account yet, a **Register** link is available at the bottom of the page.
 
+---
+
 ### Additional Features:
 
 - **Forgot Password**: If you have forgotten your password, click the **Forgot Password** link to initiate the recovery process.
+
+---
 
 ### Common Errors:
 
