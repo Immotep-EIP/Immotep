@@ -4,11 +4,11 @@
 
 ---
 
-![Keyz Registration Form](../../Images/register.png)
+**Purpose:** The registration page allows new users to create an account by providing the necessary information.
 
 ---
 
-**Purpose:** The registration page allows new users to create an account by providing the necessary information.
+![Keyz Registration Form](../../Images/register.png)
 
 ---
 
