@@ -35,14 +35,19 @@ cp .env.example .env
 
 ```txt
 PORT='3001'
+PUBLIC_URL='http://localhost:3001'
+WEB_PUBLIC_URL='http://localhost:4242'
+SHOWCASE_PUBLIC_URL='http://localhost:4343'
 DATABASE_URL='postgresql://user:password@localhost:5432/immotep'
 SECRET_KEY='MySecretKey'
 OPENAI_API_KEY='MyOpenAIKey'
+BREVO_API_KEY='MyBrevoKey'
 ```
 
 - Replace `user` and `password` with your actual PostgreSQL credentials.
 - Configure SecretKey settings with the appropriate values for your authentication setup.
 - Configure OpenAI API Key with the appropriate value for your OpenAI account.
+- Configure Brevo API Key with the appropriate value for your Brevo account.
 
 ### 3. Install Dependencies
 
@@ -65,7 +70,9 @@ go mod download
 
 ### 5. Seed the Database (Optional)
 
-TODO
+```bash
+make db_reset
+```
 
 ### 6. Run the Application
 
@@ -76,6 +83,12 @@ make run
 ```
 
 The application should now be accessible at `http://localhost:3001`.
+
+If you face any issues with the linter, you can run the following command to run the server without linting:
+
+```bash
+make build && ./backend
+```
 
 ## Deployment Instructions
 
