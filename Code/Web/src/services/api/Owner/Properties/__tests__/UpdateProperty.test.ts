@@ -48,7 +48,8 @@ describe('UpdatePropertyFunction', () => {
       tenant_email: 'tenant123',
       tenant_id: 'tenant123',
       tenant_name: 'Jane Tenant'
-    }
+    },
+    leases: []
   }
 
   let consoleErrorSpy: jest.SpyInstance

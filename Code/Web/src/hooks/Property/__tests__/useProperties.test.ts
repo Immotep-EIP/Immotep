@@ -54,7 +54,7 @@ describe('useProperties', () => {
   })
 
   it('should handle property creation and update picture', async () => {
-    const newProperty = { id: '3', name: 'New Property' }
+    const newProperty = { id: '3', name: 'New Property', leases: [] }
     ;(CreatePropertyFunction as jest.Mock).mockResolvedValue(newProperty)
     ;(UpdatePropertyPicture as jest.Mock).mockResolvedValue('mocked value')
 
@@ -188,7 +188,7 @@ describe('useProperties', () => {
       apartment_number: '640'
     }
     const mockImageBase64 = 'data:image/png;base64,...'
-    const mockCreatedProperty = { id: '3', ...mockPropertyData }
+    const mockCreatedProperty = { id: '3', ...mockPropertyData, leases: [] }
 
     ;(GetProperties as jest.Mock).mockResolvedValue([])
     ;(CreatePropertyFunction as jest.Mock).mockResolvedValue(

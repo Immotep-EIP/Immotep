@@ -32,3 +32,9 @@ export interface FurnitureParams {
   name: string
   quantity: number
 }
+
+export interface CustomFurniture {
+  id: string
+  name: string
+  quantity: number
+}

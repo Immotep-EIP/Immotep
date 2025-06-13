@@ -13,8 +13,7 @@ export interface UseDocumentReturn {
   uploadDocument: (
     file: File,
     documentName: string,
-    propertyId: string,
-    leaseId: string
+    propertyId: string
   ) => Promise<void>
   deleteDocument: (documentId: string) => Promise<void>
 }

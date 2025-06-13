@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Modal, Form, Input, Select, Checkbox, InputNumber } from 'antd'
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  Checkbox,
+  InputNumber,
+  Button,
+  Space
+} from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 
 import { ROOM_TEMPLATES } from '@/utils/types/roomTypes'
 
 import { AddRoomModalProps } from '@/interfaces/Property/Inventory/Room/Room'
+import { CustomFurniture } from '@/interfaces/Property/Inventory/Room/Furniture/Furniture'
 
 const AddRoomModal: React.FC<AddRoomModalProps> = ({
   isOpen,
@@ -19,6 +30,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
   const [templateItems, setTemplateItems] = useState<
     { name: string; quantity: number; checked: boolean }[]
   >([])
+  const [customItems, setCustomItems] = useState<CustomFurniture[]>([])
 
   useEffect(() => {
     if (selectedType && ROOM_TEMPLATES[selectedType]) {
@@ -32,19 +44,45 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
 
   const handleOk = async () => {
     await form.validateFields()
-    onOk(
-      templateItems
+    onOk([
+      ...templateItems
         .filter(item => item.checked)
-        .map(({ name, quantity }) => ({ name, quantity }))
-    )
+        .map(({ name, quantity }) => ({ name, quantity })),
+      ...customItems.map(({ name, quantity }) => ({ name, quantity }))
+    ])
     setSelectedType(null)
     setTemplateItems([])
+    setCustomItems([])
   }
 
   const handleCancel = () => {
     setSelectedType(null)
     setTemplateItems([])
+    setCustomItems([])
     onCancel()
+  }
+
+  const addCustomItem = () => {
+    setCustomItems([
+      ...customItems,
+      { id: crypto.randomUUID(), name: '', quantity: 1 }
+    ])
+  }
+
+  const removeCustomItem = (id: string) => {
+    setCustomItems(customItems.filter(item => item.id !== id))
+  }
+
+  const updateCustomItem = (
+    id: string,
+    field: 'name' | 'quantity',
+    value: string | number
+  ) => {
+    setCustomItems(
+      customItems.map(item =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    )
   }
 
   return (
@@ -57,6 +95,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
       onCancel={handleCancel}
       okText={t('components.button.add')}
       cancelText={t('components.button.cancel')}
+      width={600}
     >
       <Form form={form} layout="vertical">
         <Form.Item
@@ -81,6 +120,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
           />
         </Form.Item>
       </Form>
+
       {templateItems.length > 0 && (
         <div style={{ marginTop: 16 }}>
           <p>{t('components.inventory.furniture.suggested_items')}</p>
@@ -114,6 +154,40 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
           ))}
         </div>
       )}
+
+      <div style={{ marginTop: 24 }}>
+        <p>{t('components.inventory.furniture.custom_items')}</p>
+        {customItems.map(item => (
+          <Space key={item.id} style={{ marginBottom: 8 }}>
+            <Input
+              placeholder={t('components.inventory.furniture.name')}
+              value={item.name}
+              onChange={e => updateCustomItem(item.id, 'name', e.target.value)}
+              style={{ width: 200 }}
+            />
+            <InputNumber
+              min={1}
+              value={item.quantity}
+              onChange={val => updateCustomItem(item.id, 'quantity', val || 1)}
+            />
+            <Button
+              type="text"
+              danger
+              onClick={() => removeCustomItem(item.id)}
+            >
+              {t('components.button.remove')}
+            </Button>
+          </Space>
+        ))}
+        <Button
+          type="dashed"
+          onClick={addCustomItem}
+          icon={<PlusOutlined />}
+          style={{ marginTop: 8 }}
+        >
+          {t('components.inventory.furniture.add_custom_item')}
+        </Button>
+      </div>
     </Modal>
   )
 }

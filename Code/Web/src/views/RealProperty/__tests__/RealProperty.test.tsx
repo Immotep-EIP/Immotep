@@ -8,6 +8,14 @@ import useNavigation from '@/hooks/Navigation/useNavigation'
 import useImageCache from '@/hooks/Image/useImageCache'
 import RealPropertyCreate from '@/views/RealProperty/create/RealPropertyCreate'
 
+const mockSetSearchParams = jest.fn()
+
+// Mock react-router-dom
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useSearchParams: () => [new URLSearchParams(), mockSetSearchParams]
+}))
+
 // Mock TenantStatusEnum
 jest.mock('@/enums/PropertyEnum', () => ({
   TenantStatusEnum: {
@@ -207,8 +215,7 @@ describe('RealPropertyPage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-
-    // Setup default hook mock implementations
+    mockSetSearchParams.mockClear()
     ;(useProperties as jest.Mock).mockReturnValue({
       properties: mockProperties,
       loading: false,
@@ -467,18 +474,14 @@ describe('RealPropertyPage', () => {
       </MemoryRouter>
     )
 
-    // Open the modal
     fireEvent.click(screen.getByRole('button', { name: 'Add Real Property' }))
 
-    // Create a new property
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
 
-    // Wait for the refreshProperties to be called
     await waitFor(() => {
       expect(mockRefreshProperties).toHaveBeenCalled()
     })
 
-    // Modal should be closed
     expect(
       screen.queryByTestId('real-property-create-modal')
     ).not.toBeInTheDocument()
@@ -491,25 +494,20 @@ describe('RealPropertyPage', () => {
       </MemoryRouter>
     )
 
-    // Initial call should be with showArchived=false
     expect(useProperties).toHaveBeenLastCalledWith(null, false)
 
-    // Toggle switch
     const switchElement = screen.getByRole('switch')
 
-    // Act inside an act block to handle state updates
     await act(async () => {
       fireEvent.click(switchElement)
     })
 
-    // Re-render the component after state update
     render(
       <MemoryRouter>
         <RealPropertyPage />
       </MemoryRouter>
     )
 
-    // After toggle, the useProperties hook should be called with showArchived=true
     expect(useProperties).toHaveBeenCalledWith(null, true)
   })
 
@@ -526,7 +524,7 @@ describe('RealPropertyPage', () => {
     ;(useProperties as jest.Mock).mockReturnValueOnce({
       properties: [
         {
-          ...mockProperties[1] // Property without apartment number
+          ...mockProperties[1]
         }
       ],
       loading: false,
@@ -540,5 +538,137 @@ describe('RealPropertyPage', () => {
     )
     expect(screen.getByText('456 Oak Ave')).toBeInTheDocument()
     expect(screen.queryByText(/N° .* - 456 Oak Ave/)).not.toBeInTheDocument()
+  })
+
+  it('handles archive toggle correctly', () => {
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
+
+    const switchElement = screen.getByRole('switch')
+
+    fireEvent.click(switchElement)
+    expect(mockSetSearchParams).toHaveBeenCalledWith({ archive: 'true' })
+    expect(useProperties).toHaveBeenCalledWith(null, true)
+
+    fireEvent.click(switchElement)
+    expect(mockSetSearchParams).toHaveBeenCalledWith({})
+    expect(useProperties).toHaveBeenCalledWith(null, false)
+  })
+
+  it('filters properties by country', () => {
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
+
+    const searchInput = screen.getByTestId('search-input')
+    fireEvent.change(searchInput, { target: { value: 'Another Country' } })
+
+    expect(screen.getByText('Test Property 3')).toBeInTheDocument()
+    expect(screen.queryByText('Test Property 1')).not.toBeInTheDocument()
+    expect(screen.queryByText('Test Property 2')).not.toBeInTheDocument()
+  })
+
+  it('filters properties by city', () => {
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
+
+    const searchInput = screen.getByTestId('search-input')
+    fireEvent.change(searchInput, { target: { value: 'Another City' } })
+
+    expect(screen.getByText('Test Property 2')).toBeInTheDocument()
+    expect(screen.queryByText('Test Property 1')).not.toBeInTheDocument()
+    expect(screen.queryByText('Test Property 3')).not.toBeInTheDocument()
+  })
+
+  it('handles property creation and refresh', async () => {
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add Real Property' }))
+    expect(screen.getByTestId('real-property-create-modal')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() => {
+      expect(mockRefreshProperties).toHaveBeenCalled()
+    })
+  })
+
+  it('handles surface range filter edge cases', () => {
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
+
+    const surfaceSelect = screen.getByTestId('surface-select')
+
+    fireEvent.change(surfaceSelect, { target: { value: '201+' } })
+    expect(screen.getByText('Test Property 3')).toBeInTheDocument()
+    expect(screen.queryByText('Test Property 1')).not.toBeInTheDocument()
+    expect(screen.queryByText('Test Property 2')).not.toBeInTheDocument()
+
+    fireEvent.change(surfaceSelect, { target: { value: '0-50' } })
+    expect(screen.queryByText('Test Property 1')).not.toBeInTheDocument()
+    expect(screen.queryByText('Test Property 2')).not.toBeInTheDocument()
+    expect(screen.queryByText('Test Property 3')).not.toBeInTheDocument()
+  })
+
+  it('handles invitation_sent status filter', () => {
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
+
+    const statusSelect = screen.getByTestId('status-select')
+    fireEvent.change(statusSelect, { target: { value: 'invitation_sent' } })
+
+    expect(screen.getByText('Test Property 3')).toBeInTheDocument()
+    expect(screen.queryByText('Test Property 1')).not.toBeInTheDocument()
+    expect(screen.queryByText('Test Property 2')).not.toBeInTheDocument()
+  })
+
+  it('handles multiple filter combinations', () => {
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
+
+    const searchInput = screen.getByTestId('search-input')
+    const surfaceSelect = screen.getByTestId('surface-select')
+    const statusSelect = screen.getByTestId('status-select')
+
+    fireEvent.change(searchInput, { target: { value: 'Test' } })
+    fireEvent.change(surfaceSelect, { target: { value: '51-100' } })
+    fireEvent.change(statusSelect, { target: { value: 'available' } })
+
+    expect(screen.getByText('Test Property 1')).toBeInTheDocument()
+    expect(screen.queryByText('Test Property 2')).not.toBeInTheDocument()
+    expect(screen.queryByText('Test Property 3')).not.toBeInTheDocument()
+  })
+
+  it('handles initial archive param from URL', () => {
+    jest.spyOn(URLSearchParams.prototype, 'get').mockReturnValue('true')
+
+    render(
+      <MemoryRouter>
+        <RealPropertyPage />
+      </MemoryRouter>
+    )
+
+    expect(useProperties).toHaveBeenCalledWith(null, true)
   })
 })

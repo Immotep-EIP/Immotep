@@ -60,7 +60,8 @@ describe('RealPropertyUpdate Component', () => {
       tenant_email: 'tenant123',
       tenant_id: 'tenant123',
       tenant_name: 'Jane Tenant'
-    }
+    },
+    leases: []
   }
 
   const mockSetIsModalUpdateOpen = jest.fn()
@@ -99,9 +100,9 @@ describe('RealPropertyUpdate Component', () => {
   const renderComponent = () =>
     render(
       <RealPropertyUpdate
-        propertyData={mockPropertyData}
         isModalUpdateOpen
         setIsModalUpdateOpen={mockSetIsModalUpdateOpen}
+        propertyData={mockPropertyData}
         setIsPropertyUpdated={mockSetIsPropertyUpdated}
       />
     )

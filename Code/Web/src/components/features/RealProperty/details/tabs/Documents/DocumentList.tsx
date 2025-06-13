@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { Empty, Typography, Modal } from 'antd'
 import { FilePdfOutlined, DeleteOutlined } from '@ant-design/icons'
 
+import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
+
 import { Document } from '@/interfaces/Property/Document'
 
 import style from './DocumentList.module.css'
@@ -15,6 +17,7 @@ const DocumentList: React.FC<{
 }> = ({ documents, onDocumentClick, onDeleteDocument }) => {
   const { t } = useTranslation()
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null)
+  const { canModify } = useLeasePermissions()
 
   const handleDelete = (e: React.MouseEvent, documentId: string) => {
     e.stopPropagation()
@@ -62,10 +65,12 @@ const DocumentList: React.FC<{
             <div className={style.documentDateContainer}>
               <span>{new Date(document.created_at).toLocaleDateString()}</span>
             </div>
-            <DeleteOutlined
-              className={style.deleteIcon}
-              onClick={e => handleDelete(e, document.id)}
-            />
+            {canModify && (
+              <DeleteOutlined
+                className={style.deleteIcon}
+                onClick={e => handleDelete(e, document.id)}
+              />
+            )}
           </div>
           <div className={style.documentPreviewContainer}>
             <FilePdfOutlined className={style.pdfIcon} />

@@ -3,10 +3,11 @@ import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import useProperties from '@/hooks/Property/useProperties'
+import RealPropertyUpdate from '@/views/RealProperty/update/RealPropertyUpdate'
 import InviteTenantModal from '@/components/features/RealProperty/details/DetailsPart/InviteTenantModal'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import DetailsPart from '@/components/features/RealProperty/details/DetailsPart/DetailsPart'
-import RealPropertyUpdate from '../update/RealPropertyUpdate'
+import { PropertyProvider } from '@/context/propertyContext'
 
 import style from './RealPropertyDetails.module.css'
 
@@ -79,7 +80,7 @@ const RealPropertyDetails: React.FC = () => {
 
       <div className={style.pageContainer}>
         {propertyData && (
-          <>
+          <PropertyProvider property={propertyData}>
             <DetailsPart
               key={refreshKey}
               propertyData={propertyData}
@@ -98,7 +99,7 @@ const RealPropertyDetails: React.FC = () => {
               propertyData={propertyData}
               setIsPropertyUpdated={setIsPropertyUpdated}
             />
-          </>
+          </PropertyProvider>
         )}
       </div>
     </>
