@@ -7,20 +7,20 @@ import (
 )
 
 type FurnitureStateRequest struct {
-	ID          string         `binding:"required"                             json:"id"`
-	State       db.State       `binding:"required,state"                       json:"state"`
-	Cleanliness db.Cleanliness `binding:"required,cleanliness"                 json:"cleanliness"`
-	Note        string         `binding:"required"                             json:"note"`
-	Pictures    []string       `binding:"required,min=1,dive,required,datauri" json:"pictures"`
+	ID          string         `binding:"required"                                   json:"id"`
+	State       db.State       `binding:"required,state"                             json:"state"`
+	Cleanliness db.Cleanliness `binding:"required,cleanliness"                       json:"cleanliness"`
+	Note        string         `binding:"required"                                   json:"note"`
+	Pictures    []string       `binding:"required,min=1,max=5,dive,required,datauri" json:"pictures"`
 }
 
 type RoomStateRequest struct {
-	ID          string                  `binding:"required"                             json:"id"`
-	State       db.State                `binding:"required,state"                       json:"state"`
-	Cleanliness db.Cleanliness          `binding:"required,cleanliness"                 json:"cleanliness"`
-	Note        string                  `binding:"required"                             json:"note"`
-	Pictures    []string                `binding:"required,min=1,dive,required,datauri" json:"pictures"`
-	Furnitures  []FurnitureStateRequest `binding:"required,dive"                        json:"furnitures"`
+	ID          string                  `binding:"required"                                    json:"id"`
+	State       db.State                `binding:"required,state"                              json:"state"`
+	Cleanliness db.Cleanliness          `binding:"required,cleanliness"                        json:"cleanliness"`
+	Note        string                  `binding:"required"                                    json:"note"`
+	Pictures    []string                `binding:"required,min=1,max=10,dive,required,datauri" json:"pictures"`
+	Furnitures  []FurnitureStateRequest `binding:"required,dive"                               json:"furnitures"`
 }
 
 type InventoryReportRequest struct {

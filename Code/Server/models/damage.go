@@ -5,10 +5,10 @@ import (
 )
 
 type DamageRequest struct {
-	Comment  string      `binding:"required"              json:"comment"`
-	Priority db.Priority `binding:"required,priority"     json:"priority"`
-	RoomID   string      `binding:"required"              json:"room_id"`
-	Pictures []string    `binding:"dive,required,datauri" json:"pictures"`
+	Comment  string      `binding:"required"                    json:"comment"`
+	Priority db.Priority `binding:"required,priority"           json:"priority"`
+	RoomID   string      `binding:"required"                    json:"room_id"`
+	Pictures []string    `binding:"max=5,dive,required,datauri" json:"pictures"`
 }
 
 func (r *DamageRequest) ToDbDamage() db.DamageModel {
