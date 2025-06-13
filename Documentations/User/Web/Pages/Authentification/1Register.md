@@ -14,20 +14,13 @@
 
 **Steps to Register:**
 
-1. **First Name**: Enter your first name in the corresponding field.
--
-2. **Last Name**: Enter your last name in the designated field.
--
-3. **Email**: Provide a valid email address.
--
-4. **Password**: Create a secure password with at least 8 characters (a visual indicator may help you see if the password is hidden).
--
-5. **Confirm Password**: Confirm your password by re-entering it.
--
-6. **Accept Terms**: Check the box to accept the terms, privacy policy, and fees.
--
-7. **Register**: Click the **Register** button to validate your registration and you will be redirect to the login page.
--
+- 1. **First Name**: Enter your first name in the corresponding field.
+- 2. **Last Name**: Enter your last name in the designated field.
+- 3. **Email**: Provide a valid email address.
+- 4. **Password**: Create a secure password with at least 8 characters (a visual indicator may help you see if the password is hidden).
+- 5. **Confirm Password**: Confirm your password by re-entering it.
+- 6. **Accept Terms**: Check the box to accept the terms, privacy policy, and fees.
+- 7. **Register**: Click the **Register** button to validate your registration and you will be redirect to the login page.
 
   **Note:** If you already have an account, you can click the **Sign in** link at the bottom of the page.
 
