@@ -51,3 +51,46 @@ The **Sidebar** allows easy navigation within the application, providing quick a
 
 > 💡 **Note**:  
 > The sidebar remains visible throughout the application for seamless navigation.
+
+---
+
+# Widgets
+
+## *Quick Overview of Key Metrics*
+
+---
+
+**Purpose:**  
+Widgets provide users with a concise summary of essential data and insights, offering a quick way to monitor and manage their properties and associated activities.
+
+---
+
+## **Key Widgets:**
+
+1. **New Damages**  
+   - Displays the number of recently reported damages that require attention.
+
+2. **Reminders**  
+   - Highlights important reminders, such as upcoming inspections or payment deadlines.
+
+3. **Number of Properties**  
+   - Shows the total number of properties in the system.
+
+4. **Availability Status**  
+   - Indicates how many properties are currently available or occupied.
+
+5. **Unresolved Damages**  
+   - Summarizes the total number of damages that have not yet been resolved.
+
+---
+
+## **Benefits of Widgets:**
+
+- **Quick Insights:** Gain immediate visibility into key metrics without navigating through multiple pages.  
+- **Actionable Information:** Prioritize tasks such as resolving damages or addressing availability concerns.  
+- **Streamlined Workflow:** Stay organized and informed with real-time data.
+
+---
+
+> 💡 **Note:**  
+> Widgets update dynamically to reflect the latest information, ensuring users have access to accurate and timely data.
