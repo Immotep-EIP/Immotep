@@ -8,13 +8,13 @@
 
 ---
 
-### Purpose:
+**Purpose:**
 
 The registration page allows new users to create an account by providing the necessary information.
 
 ---
 
-### Steps to Register:
+**Steps to Register:**
 
 1. **First Name**: Enter your first name in the corresponding field.
 2. **Last Name**: Enter your last name in the designated field.
@@ -24,11 +24,11 @@ The registration page allows new users to create an account by providing the nec
 6. **Accept Terms**: Check the box to accept the terms, privacy policy, and fees.
 7. **Register**: Click the **Register** button to validate your registration and you will be redirect to the login page.
 
-  **Note:** If you already have an account, you can click the **Login** link at the bottom of the page.
+  **Note:** If you already have an account, you can click the **Sign in** link at the bottom of the page.
 
 ---
 
-### Common Errors:
+**Common Errors:**
 
 - If the fields are incorrectly filled out or missing, error messages will be displayed.
 - A valid email address is required, and it must not have been previously used to create an account in the app.
