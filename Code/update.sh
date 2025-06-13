@@ -3,7 +3,7 @@
 ## -e Exit immediately when a command returns a non-zero status.
 set -e
 
-## Were used when working with one branch for each app. Not needed anymore because we create separate branches for features from the dev branch.
+## These were used when working with one branch for each app. Not needed anymore because we create separate branches for features from the dev branch.
 # git switch backend
 # git pull
 # git switch -
