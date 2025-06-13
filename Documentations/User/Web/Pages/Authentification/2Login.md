@@ -19,7 +19,10 @@
 - | 3. **Remember Me**: (Optional) Check this box to remember your session.
 - | 4. **Log In**: Click the **Log In** button to access your account.
 
-   > **Note:** If you do not have an account yet, a **Register** link is available at the bottom of the page.
+   > **Note:** If you do not have an account yet, a **Sign up** link is available at the bottom of the page.
+
+> **Don't have an account?**
+> [Sign up here](./1Register.md).
 
 ---
 
