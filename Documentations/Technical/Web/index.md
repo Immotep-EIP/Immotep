@@ -12,26 +12,22 @@ Welcome to the technical documentation of Immotep's web application. This docume
 - Target users and use cases
 - Technical requirements and constraints
 
-### 2. [Architecture](./Architecture/architecture.md)
+### 2. [Architecture](./Architecture/index.md)
 - System architecture overview
 - Component structure and organization
 - Data flows and state management
 - Technical stack and dependencies
 
-### 3. [Authentication and Security](./Features/authentication/auth-and-security.md)
-- Authentication flow and implementation
-- Security measures and best practices
-- User session management
-- Protected routes and access control
+### 3. [Development](./Development/index.md)
+- Coding standards and best practices
+- Testing guidelines and requirements
+- Development workflow and tools
+- Code quality and maintenance
+- Deployment process and CI/CD
 
-### 4. [Internationalization](./Features/internationalization/translation.md)
-- i18n implementation details
-- Translation management
-- Language switching mechanism
-- Supported languages and locales
-
-### 5. [Navigation System](./Features/navigation/navigation-system.md)
-- Routing configuration
-- Navigation components
-- URL structure and patterns
-- Breadcrumb implementation
+### 4. [Features](./Features/index.md)
+- Authentication and security
+- Real property management
+- Messaging system
+- Internationalization
+- Testing strategies

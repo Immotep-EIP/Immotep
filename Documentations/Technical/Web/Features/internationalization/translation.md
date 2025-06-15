@@ -1,5 +1,12 @@
 # Translation Management with i18n
 
+---
+
+**Purpose:**  
+This document outlines the translation management system implemented in the Keyz web application. It provides guidelines for managing multilingual content, adding new translations, and maintaining consistency across the application's interface.
+
+---
+
 ## Overview
 
 Our application uses **i18n** ([i18next Documentation](https://www.i18next.com/)) to manage translations and provide multilingual support. Texts are stored in JSON files for each supported language. Currently, the application supports:

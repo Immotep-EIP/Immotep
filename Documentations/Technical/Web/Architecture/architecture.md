@@ -1,8 +1,15 @@
 # Global Architecture - Immotep
 
+---
+
+**Purpose:**  
+This architecture documentation serves as a comprehensive guide for developers working on the Immotep web application. It outlines the system's structure, design patterns, and implementation details to ensure consistent development practices and maintainable code.
+
 ## Overview
 
 Immotep is a modern web application built with React and TypeScript, following a modular and scalable architecture. This documentation provides a comprehensive overview of the application's structure and its main components.
+
+---
 
 ## Project Structure
 
@@ -24,14 +31,20 @@ src/
 └── views/          # Main application pages
 ```
 
+---
+
 ## Application Flow
 
 ![Application Flow](../Resources/Diagrams/Architecture/Web-architecture.jpg)  
 *Figure: Keyz web architecture.*
 
+---
+
 ## Data Flows
 
 For a detailed description of data flows in the application, please refer to [Data Flows](./data-flows/data-flows.md). This document explains the interactions between different components, state management, and data flows between the frontend and backend.
+
+---
 
 ## Core Components
 
@@ -50,11 +63,15 @@ For a detailed description of data flows in the application, please refer to [Da
 - Navigation management
 - Content organization
 
+---
+
 ## State Management
 
 ### Context API
 - `AuthContext`: Authentication state management
-- `PropertyContext`: Real estate data management
+- `PropertyContext`: Real property data management
+
+---
 
 ## Routing
 
@@ -72,16 +89,22 @@ For a detailed description of data flows in the application, please refer to [Da
 - Property details
 - Damage details
 
+---
+
 ## Security
 
 - Route protection with `ProtectedRoute`
 - JWT token management
 - Session validation
 
+---
+
 ## Internationalization
 
 - Multi-language support with i18n
 - Translation files in `translation/` directory
+
+---
 
 ## Key Dependencies
 
@@ -111,6 +134,8 @@ For a detailed description of data flows in the application, please refer to [Da
 - ESLint - Code linting
 - Jest - Testing framework
 - Prettier - Code formatting
+
+---
 
 ## Extension Points
 

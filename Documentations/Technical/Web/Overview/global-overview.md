@@ -1,5 +1,7 @@
 # Global overview of the Web Application
 
+For detailed setup and installation instructions, please refer to our [Getting Started Guide](./getting-started.md).
+
 ## Technologies used
 
 This web application is built with [React](https://react.dev/), using [TypeScript](https://www.typescriptlang.org/) to ensure static typing and improve code robustness. The project leverages [Vite](https://vitejs.dev/) as its bundling tool for faster development and optimized production builds.

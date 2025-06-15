@@ -1,5 +1,10 @@
 # Navigation System
 
+---
+
+**Purpose:**  
+This document outlines the navigation system implemented in the Keyz web application. It provides guidelines for managing page routing, navigation components, and maintaining consistent navigation patterns throughout the application.
+
 ## Overview
 
 The navigation system in our application is built using **React Router**. To simplify and centralize navigation logic, we use a custom hook called `useNavigation`. This hook provides pre-defined functions for navigating between pages, ensuring consistency and maintainability.
