@@ -20,34 +20,6 @@ To ensure high code quality, ESLint is configured with the Airbnb style guide to
 
 ---
 
-## Code Structure
-
-The project's codebase is organized into a clear and modular structure, facilitating maintainability and scalability. Here's an overview of the key directories and their contents:
-
-- **src/**: The root directory for all source files.
-
-  - **assets/**: Contains various asset files used throughout the application.
-
-  - **components/**: This directory holds reusable components that can be utilized across the entire application.
-
-  - **views/**: Contains different views of the application, organized in appropriate folders, with accompanying CSS files for styling.
-
-  - **enums/**: This folder includes TypeScript enums used throughout the application, providing a way to define named constants.
-
-  - **interfaces/**: Contains TypeScript interfaces that define the structure of various data types used in the application.
-
-  - **hooks/**: Houses custom hooks used in the application, helping to avoid cluttering views with hook logic.
-
-  - **services/**: Contains files that manage API calls and business logic, separating concerns from UI components.
-
-  - **utils/**: A collection of utility functions that aid in the development of the application.
-
-  - **context/**: This directory holds context files that can be shared across the application, enabling state management.
-
-This organized structure promotes clarity, making it easier to navigate and maintain the codebase as the application grows.
-
----
-
 ## Setup
 
 ```bash
