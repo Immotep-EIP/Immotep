@@ -13,6 +13,7 @@ src/
       MainLayout/
       DividedPage/
       ...
+      
     features/                # Feature-specific components
       RealProperty/
         details/

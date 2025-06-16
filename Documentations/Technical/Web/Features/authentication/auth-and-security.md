@@ -1,5 +1,12 @@
 # Authentication and Token Management
 
+---
+
+**Purpose:**  
+This document outlines the authentication and security measures implemented in the Keyz web application. It provides a comprehensive guide for developers to understand how user authentication, token management, and security features are implemented and maintained.
+
+---
+
 ## User Registration and Login
 
 - **Registration Page**: A form is provided for users to sign up with the following fields:

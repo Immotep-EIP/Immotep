@@ -2,11 +2,11 @@
 
 ## Overview
 
-This document provides a detailed guide on building and deploying the Immotep project. The project uses Docker containers for consistent environments and GitHub Actions for continuous integration and deployment.
+This document provides a detailed guide on building and deploying the Keyz project. The project uses Docker containers for consistent environments and GitHub Actions for continuous integration and deployment.
 
 ## Docker Containers
 
-The Immotep project is structured to run in a multi-container Docker environment. Each component of the application is encapsulated in its own Docker container, allowing for modular development and deployment. A `compose.yaml` file is used to define and manage these containers, ensuring that they can communicate with each other and share resources as needed.
+The Keyz project is structured to run in a multi-container Docker environment. Each component of the application is encapsulated in its own Docker container, allowing for modular development and deployment. A `compose.yaml` file is used to define and manage these containers, ensuring that they can communicate with each other and share resources as needed.
 
 The following sections describe the Dockerfiles for each component and how they interact within the Docker Compose setup.
 
@@ -32,7 +32,7 @@ The [compose.yaml](/Code/compose.yaml) file orchestrates the multi-container app
 
 ## Continuous Integration and Deployment (CI/CD)
 
-The Immotep project employs a robust CI/CD pipeline using GitHub Actions. This pipeline automates the build, test, and deployment processes for the web application, server application, and Android application. The CI/CD setup ensures that code changes are automatically tested and deployed to development and production environments, maintaining high code quality and reducing manual intervention.
+The Keyz project employs a robust CI/CD pipeline using GitHub Actions. This pipeline automates the build, test, and deployment processes for the web application, server application, and Android application. The CI/CD setup ensures that code changes are automatically tested and deployed to development and production environments, maintaining high code quality and reducing manual intervention.
 
 ### GitHub Actions
 
