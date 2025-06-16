@@ -9,7 +9,7 @@ This section documents the main data flows within the Keyz web application, illu
 
 ## Authentication Data Flow
 
-![Authentication Data Flow](../../Resources/Diagrams/Data-flows/data-flow-authentification.jpg)
+![Authentication Data Flow](../../Resources/Diagrams/Data-flows/data-flow-authentication.jpg)
 
 This diagram shows the authentication process, from credential submission to token management and state update.
 
