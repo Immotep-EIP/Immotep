@@ -50,13 +50,6 @@ This section provides a comprehensive overview of the Keyz web application's arc
 
 ---
 
-## Related Documentation
-- [Getting Started Guide](../Overview/getting-started.md)
-- [Authentication and Security](../Features/authentication/auth-and-security.md)
-- [Navigation System](../Features/navigation/navigation-system.md)
-
----
-
 ## Maintenance
 
 This architecture documentation is maintained alongside the codebase. When making significant architectural changes:
