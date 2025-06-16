@@ -3,7 +3,7 @@
 ---
 
 **Purpose:**  
-This document outlines the authentication and security measures implemented in the Immotep web application. It provides a comprehensive guide for developers to understand how user authentication, token management, and security features are implemented and maintained.
+This document outlines the authentication and security measures implemented in the Keyz web application. It provides a comprehensive guide for developers to understand how user authentication, token management, and security features are implemented and maintained.
 
 ---
 

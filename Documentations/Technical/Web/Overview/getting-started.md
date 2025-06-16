@@ -1,4 +1,4 @@
-# Getting Started with Immotep
+# Getting Started with Keyz
 
 This guide will help you set up and run the Keyz web application on your local machine.
 
@@ -14,7 +14,7 @@ Before you begin, ensure you have the following installed:
 1. **Clone the repository**
    ```bash
    git clone [repository-url]
-   cd Immotep/Code/Web
+   cd Keyz/Code/Web
    ```
 
 2. **Install dependencies**

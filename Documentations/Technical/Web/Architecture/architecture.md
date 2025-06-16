@@ -1,13 +1,13 @@
-# Global Architecture - Immotep
+# Global Architecture - Keyz
 
 ---
 
 **Purpose:**  
-This architecture documentation serves as a comprehensive guide for developers working on the Immotep web application. It outlines the system's structure, design patterns, and implementation details to ensure consistent development practices and maintainable code.
+This architecture documentation serves as a comprehensive guide for developers working on the Keyz web application. It outlines the system's structure, design patterns, and implementation details to ensure consistent development practices and maintainable code.
 
 ## Overview
 
-Immotep is a modern web application built with React and TypeScript, following a modular and scalable architecture. This documentation provides a comprehensive overview of the application's structure and its main components.
+Keyz is a modern web application built with React and TypeScript, following a modular and scalable architecture. This documentation provides a comprehensive overview of the application's structure and its main components.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Welcome to the technical documentation of Immotep's web application. This documentation provides comprehensive information about the application's architecture, features, and implementation details. It serves as a reference for developers working on the project and helps maintain consistency in development practices.
+Welcome to the technical documentation of Keyz's web application. This documentation provides comprehensive information about the application's architecture, features, and implementation details. It serves as a reference for developers working on the project and helps maintain consistency in development practices.
 
 ## Documentation Structure
 
