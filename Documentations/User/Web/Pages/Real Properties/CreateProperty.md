@@ -1,7 +1,3 @@
-Voici la version mise à jour avec le lien ajouté :
-
----
-
 # Create Property
 
 ## *Add a New Property to Your Account*

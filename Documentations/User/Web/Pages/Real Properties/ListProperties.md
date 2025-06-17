@@ -1,7 +1,3 @@
-Voici une version complète que vous pouvez copier directement :
-
----
-
 # Properties
 
 ## *Manage and View Your Properties*
