@@ -169,9 +169,10 @@ struct EditPropertyView: View {
 
             if let newPhoto = photo, newPhoto != property.photo {
                 do {
-                    let res = try await viewModel.updatePropertyPicture(token: token, propertyPicture: newPhoto, propertyID: propertyId)
+                    let _ = try await viewModel.updatePropertyPicture(token: token, propertyPicture: newPhoto, propertyID: propertyId)
                 } catch {
-                    print("Failed to update property picture: \(error.localizedDescription)")
+                    errorMessage = String(format: NSLocalizedString("Error updating picture: %@", comment: ""), error.localizedDescription)
+                    return
                 }
             }
 

@@ -381,6 +381,9 @@ class OwnerPropertyViewModel: ObservableObject {
         let responseBody = String(data: data, encoding: .utf8) ?? "Unable to decode response"
         
         guard (200...299).contains(httpResponse.statusCode) else {
+            if (httpResponse.statusCode == 404) {
+                return []
+            }
             throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(responseBody)".localized()])
         }
         

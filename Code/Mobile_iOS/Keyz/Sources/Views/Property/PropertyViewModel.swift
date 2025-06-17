@@ -87,7 +87,8 @@ class PropertyViewModel: ObservableObject {
             if let leaseId = try await fetchActiveLeaseIdForProperty(propertyId: propertyId, token: try await TokenStorage.getValidAccessToken()) {
                 documents = try await tenantViewModel.fetchTenantPropertyDocuments(leaseId: leaseId, propertyId: propertyId)
             } else {
-                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease found.".localized()])
+                documents = []
+//                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease found.".localized()])
             }
         } else {
             documents = try await ownerViewModel.fetchPropertyDocuments(propertyId: propertyId)

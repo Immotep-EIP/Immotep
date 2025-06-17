@@ -20,6 +20,7 @@ struct CreatePropertyView: View {
     @State private var monthlyRent: NSNumber?
     @State private var deposit: NSNumber?
     @State private var surface: NSNumber?
+    @State private var errorMessage: String?
 
     @State private var propertyImage = UIImage(named: "DefaultImageProperty") ?? UIImage()
     @State private var showSheet = false
@@ -32,7 +33,7 @@ struct CreatePropertyView: View {
             Form {
                 Section {
                     VStack {
-                        Image(uiImage: photo!)
+                        Image(uiImage: photo ?? UIImage(named: "DefaultImageProperty")!)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 100, height: 100)
@@ -60,6 +61,11 @@ struct CreatePropertyView: View {
                     CustomTextInputNB(title: "Deposit", placeholder: "Enter deposit", value: $deposit, isSecure: false)
                     CustomTextInputNB(title: "Surface (m²)", placeholder: "Enter surface", value: $surface, isSecure: false)
                 }
+            }
+            if let errorMessage = errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .padding()
             }
             HStack {
                 Spacer()
@@ -133,27 +139,33 @@ struct CreatePropertyView: View {
             surface: surface?.doubleValue ?? 0.0,
             isAvailable: "available",
             tenantName: nil,
-            leaseId: "leaseId",
+            leaseId: nil,
             leaseStartDate: nil,
             leaseEndDate: nil,
             documents: [],
-            createdAt: "",
+            createdAt: ISO8601DateFormatter().string(from: Date()),
             rooms: [],
             damages: []
         )
 
         guard let token = await TokenStorage.getAccessToken() else {
-            print("Token is nil")
+            errorMessage = "Failed to retrieve access token.".localized()
             return
         }
 
         do {
             let response = try await viewModel.createProperty(request: newProperty, token: token)
-            if response == "Property successfully created!" {
+            await MainActor.run {
+                errorMessage = "Property created successfully with ID: \(response)!".localized()
                 dismiss()
             }
+            await viewModel.fetchProperties()
         } catch {
-            print("Error: \(error)")
+            if let nsError = error as NSError?, nsError.code == 409 {
+                errorMessage = "A property with this information already exists.".localized()
+            } else {
+                errorMessage = "Error creating property: \(error.localizedDescription)".localized()
+            }
         }
     }
 }
