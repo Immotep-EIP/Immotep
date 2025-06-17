@@ -12,6 +12,7 @@ import com.example.keyz.apiCallerServices.Document
 import com.example.keyz.apiCallerServices.DocumentInput
 import com.example.keyz.apiCallerServices.FurnitureInput
 import com.example.keyz.apiCallerServices.FurnitureOutput
+import com.example.keyz.apiCallerServices.GetDashBoardOutput
 import com.example.keyz.apiCallerServices.GetPropertyResponse
 import com.example.keyz.apiCallerServices.InventoryReportInput
 import com.example.keyz.apiCallerServices.InviteInput
@@ -310,5 +311,9 @@ class MockedApiService : ApiService {
         archive: ArchiveInput
     ): CreateOrUpdateResponse {
         return CreateOrUpdateResponse(roomId)
+    }
+
+    override suspend fun getDashboard(authHeader: String, lang: String): GetDashBoardOutput {
+        return fakeGetDashBoardOutput
     }
 }

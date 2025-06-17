@@ -12,6 +12,7 @@ import com.example.keyz.apiCallerServices.Document
 import com.example.keyz.apiCallerServices.DocumentInput
 import com.example.keyz.apiCallerServices.FurnitureInput
 import com.example.keyz.apiCallerServices.FurnitureOutput
+import com.example.keyz.apiCallerServices.GetDashBoardOutput
 import com.example.keyz.apiCallerServices.GetPropertyResponse
 import com.example.keyz.apiCallerServices.InventoryReportInput
 import com.example.keyz.apiCallerServices.InviteInput
@@ -33,6 +34,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 data class CreateOrUpdateResponse(
@@ -270,4 +272,11 @@ interface ApiService {
         @Body invite: InviteInput
     ) : CreateOrUpdateResponse
 
+    //dashboard functions
+
+    @GET("${API_PREFIX}/owner/dashboard")
+    suspend fun getDashboard(
+        @Header("Authorization") authHeader : String,
+        @Query("lang") lang: String,
+    ) : GetDashBoardOutput
 }
