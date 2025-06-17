@@ -20,7 +20,7 @@ struct DashboardResponse: Decodable, Equatable {
 }
 
 struct Reminder: Decodable, Identifiable, Equatable {
-    let id: String
+    var id: String
     let priority: String
     let title: String
     let advice: String
@@ -33,7 +33,7 @@ struct PropertyStats: Decodable, Equatable {
     let occupied: Int
     let available: Int
     let pendingInvites: Int
-    let recentlyAdded: [PropertySummary]
+    let recentlyAdded: [PropertySummary]?
 
     enum CodingKeys: String, CodingKey {
         case total = "nbr_total"
