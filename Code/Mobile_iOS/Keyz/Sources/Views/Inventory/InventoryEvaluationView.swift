@@ -31,7 +31,7 @@ struct InventoryEntryEvaluationView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TopBar(title: "Inventory")
+            TopBar(title: "État des lieux")
 
             ScrollView {
                 Section {
@@ -40,7 +40,7 @@ struct InventoryEntryEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Comments")
+                        Text("Commentaire")
                             .font(.headline)
                         Spacer()
                     }
@@ -57,12 +57,12 @@ struct InventoryEntryEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Status")
+                        Text("Statut")
                             .font(.headline)
                         Spacer()
                     }
                     HStack {
-                        Picker("Select Equipment Status", selection: $inventoryViewModel.selectedStatus) {
+                        Picker("Selectionner un statut", selection: $inventoryViewModel.selectedStatus) {
                             Text("Select your equipment status").tag("Select your equipment status")
                             ForEach(Array(stateMapping.values), id: \.self) { status in
                                 Text(status).tag(status)
@@ -89,10 +89,10 @@ struct InventoryEntryEvaluationView: View {
                             await validateReport()
                         }
                     }, label: {
-                        Text("Validate")
+                        Text("Valider")
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(Color("LightBlue"))
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     })
@@ -105,27 +105,27 @@ struct InventoryEntryEvaluationView: View {
                             isLoading = false
                         }
                     }, label: {
-                        Text("Send Report")
+                        Text("Envoyer le rapport")
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(Color("LightBlue"))
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     })
-                    .disabled(isLoading)
+                    .disabled(isLoading || inventoryViewModel.selectedImages.isEmpty)
                     .padding()
                 }
 
                 if let errorMessage = errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
+                        .padding()
                 }
             }
         }
         .fullScreenCover(isPresented: $showSheet) {
             ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
         }
-//        .navigationBarBackButtonHidden(true)
         .onAppear {
             inventoryViewModel.selectStuff(selectedStuff)
         }
@@ -174,8 +174,24 @@ struct InventoryEntryEvaluationView: View {
             try await inventoryViewModel.markStuffAsChecked(selectedStuff)
             try await inventoryViewModel.sendStuffReport()
             isReportSent = true
-        } catch {
-            errorMessage = "Error: \(error.localizedDescription)"
+        } catch let error as NSError {
+            switch error.code {
+            case 404:
+                errorMessage = "Property or lease not found. Please check the property details."
+            case 403:
+                errorMessage = "You do not have permission to access this property."
+            case 400:
+                if error.localizedDescription.contains("datauri") {
+                    errorMessage = "Invalid image format. Please ensure all images are valid JPEGs."
+                } else {
+                    errorMessage = "Invalid request: \(error.localizedDescription)"
+                }
+            case 0 where error.localizedDescription.contains("No active lease found"):
+                errorMessage = "No active lease found for this property."
+            default:
+                errorMessage = "Error: \(error.localizedDescription)"
+            }
+            print("Error sending report: \(error.localizedDescription)")
         }
     }
 
@@ -185,7 +201,6 @@ struct InventoryEntryEvaluationView: View {
             inventoryViewModel.selectedInventory[index].images = inventoryViewModel.selectedImages
             inventoryViewModel.selectedInventory[index].status = inventoryViewModel.selectedStatus
             inventoryViewModel.selectedInventory[index].comment = inventoryViewModel.comment
-            inventoryViewModel.updateRoomCheckedStatus()
         }
 
         if let roomIndex = inventoryViewModel.localRooms.firstIndex(where: { $0.id == inventoryViewModel.selectedRoom?.id }),
@@ -210,7 +225,7 @@ struct PicturesSegment: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Picture(s)")
+                Text("Image(s)")
                     .font(.headline)
                 Spacer()
             }

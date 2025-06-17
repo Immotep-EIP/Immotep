@@ -32,6 +32,8 @@ class InventoryViewModel: ObservableObject {
     private var roomManager: RoomManager?
     private var furnitureManager: FurnitureManager?
     private var reportManager: InventoryReportManager?
+    
+    var onInventoryFinalized: (() -> Void)?
 
     init(property: Property, isEntryInventory: Bool = true, localRooms: [LocalRoom]? = nil) {
         self.property = property
@@ -84,10 +86,6 @@ class InventoryViewModel: ObservableObject {
         await roomManager?.markRoomAsChecked(room)
     }
 
-    func updateRoomCheckedStatus() {
-        roomManager?.updateRoomCheckedStatus()
-    }
-
     func markStuffAsChecked(_ stuff: LocalInventory) async throws {
         try await furnitureManager?.markStuffAsChecked(stuff)
     }
@@ -114,6 +112,7 @@ class InventoryViewModel: ObservableObject {
 
     func finalizeInventory() async throws {
         try await reportManager?.finalizeInventory()
+        onInventoryFinalized?()
     }
 
     func fetchLastInventoryReport() async {
@@ -122,5 +121,13 @@ class InventoryViewModel: ObservableObject {
 
     func compareStuffReport(oldReportId: String) async throws {
         try await reportManager?.compareStuffReport(oldReportId: oldReportId)
+    }
+    
+    func sendRoomReport() async throws {
+        try await reportManager?.sendRoomReport()
+    }
+
+    func compareRoomReport(oldReportId: String) async throws {
+        try await reportManager?.compareRoomReport(oldReportId: oldReportId)
     }
 }

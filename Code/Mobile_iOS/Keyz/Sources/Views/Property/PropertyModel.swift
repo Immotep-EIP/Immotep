@@ -10,7 +10,7 @@ import SwiftUI
 
 struct Property: Identifiable, Equatable {
     let id: String
-    let ownerID: String
+    var ownerID: String
     var name: String
     var address: String
     var city: String
@@ -22,15 +22,35 @@ struct Property: Identifiable, Equatable {
     var surface: Double
     var isAvailable: String
     var tenantName: String?
+    var leaseId: String?
     var leaseStartDate: String?
-    var leaseEndDate: String?
+    let leaseEndDate: String?
     var documents: [PropertyDocument]
-    var createdAt: String?
+    var createdAt: String
     var rooms: [PropertyRooms]
     var damages: [DamageResponse]
 
     static func == (lhs: Property, rhs: Property) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id &&
+        lhs.ownerID == rhs.ownerID &&
+        lhs.name == rhs.name &&
+        lhs.address == rhs.address &&
+        lhs.city == rhs.city &&
+        lhs.postalCode == rhs.postalCode &&
+        lhs.country == rhs.country &&
+        lhs.photo == rhs.photo &&
+        lhs.monthlyRent == rhs.monthlyRent &&
+        lhs.deposit == rhs.deposit &&
+        lhs.surface == rhs.surface &&
+        lhs.isAvailable == rhs.isAvailable &&
+        lhs.tenantName == rhs.tenantName &&
+        lhs.leaseId == rhs.leaseId &&
+        lhs.leaseStartDate == rhs.leaseStartDate &&
+        lhs.leaseEndDate == rhs.leaseEndDate &&
+        lhs.documents == rhs.documents &&
+        lhs.createdAt == rhs.createdAt &&
+        lhs.rooms == rhs.rooms &&
+        lhs.damages == rhs.damages
     }
 }
 
@@ -48,14 +68,17 @@ struct PropertyDocumentResponse: Codable {
     }
 }
 
-struct PropertyDocument: Identifiable, Equatable {
+struct PropertyDocument: Identifiable, Decodable, Equatable {
     let id: String
-    var title: String
-    var fileName: String
+    let title: String
+    let fileName: String
     let data: String
 
     static func == (lhs: PropertyDocument, rhs: PropertyDocument) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id &&
+        lhs.title == rhs.title &&
+        lhs.fileName == rhs.fileName &&
+        lhs.data == rhs.data
     }
 }
 
@@ -105,12 +128,9 @@ struct PropertyResponse: Codable {
     let areaSqm: Double
     let rentalPricePerMonth: Int
     let depositPrice: Int
-    let picture: String?
     let createdAt: String
     let isAvailable: String
-    let tenant: String?
-    let startDate: String?
-    let endDate: String?
+    let lease: LeaseInfo?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -123,36 +143,50 @@ struct PropertyResponse: Codable {
         case areaSqm = "area_sqm"
         case rentalPricePerMonth = "rental_price_per_month"
         case depositPrice = "deposit_price"
-        case picture
         case createdAt = "created_at"
         case isAvailable = "status"
-        case tenant = "tenant"
-        case startDate = "start_date"
-        case endDate = "end_date"
+        case lease
     }
 }
 
 struct LeaseResponse: Codable {
     let id: String
     let propertyId: String
-    let startDate: String?
-    let endDate: String?
-
+    let propertyName: String
+    let ownerId: String
+    let ownerName: String
+    let ownerEmail: String
+    let tenantId: String
+    let tenantName: String
+    let tenantEmail: String
+    let active: Bool
+    let startDate: Date
+    let endDate: Date?
+    let createdAt: Date
+    
     enum CodingKeys: String, CodingKey {
-        case id
+        case id, active
         case propertyId = "property_id"
+        case propertyName = "property_name"
+        case ownerId = "owner_id"
+        case ownerName = "owner_name"
+        case ownerEmail = "owner_email"
+        case tenantId = "tenant_id"
+        case tenantName = "tenant_name"
+        case tenantEmail = "tenant_email"
         case startDate = "start_date"
         case endDate = "end_date"
+        case createdAt = "created_at"
     }
 }
 
-struct DamageResponse: Codable, Identifiable {
+struct DamageResponse: Codable, Equatable {
     let id: String
     let comment: String
     let priority: String
     let roomName: String
     let fixStatus: String
-    let pictures: [String]
+    let pictures: [String]?
     let createdAt: String
     let updatedAt: String?
     let fixPlannedAt: String?
@@ -185,6 +219,81 @@ struct DamageResponse: Codable, Identifiable {
 struct DamageRequest: Codable {
     let comment: String
     let priority: String
-    let roomName: String
+    let roomId: String
     let pictures: [String]?
+    
+    enum CodingKeys: String, CodingKey {
+        case comment
+        case priority
+        case roomId = "room_id"
+        case pictures
+    }
+}
+
+
+struct LeaseInfo: Codable {
+    let id: String
+    let tenantName: String
+    let tenantEmail: String
+    let active: Bool
+    let startDate: String?
+    let endDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case tenantName = "tenant_name"
+        case tenantEmail = "tenant_email"
+        case active
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
+}
+
+
+extension Property {
+    func copyWith(
+        id: String? = nil,
+        ownerID: String? = nil,
+        name: String? = nil,
+        address: String? = nil,
+        city: String? = nil,
+        postalCode: String? = nil,
+        country: String? = nil,
+        photo: UIImage?? = nil,
+        monthlyRent: Int? = nil,
+        deposit: Int? = nil,
+        surface: Double? = nil,
+        isAvailable: String? = nil,
+        tenantName: String?? = nil,
+        leaseId: String?? = nil,
+        leaseStartDate: String?? = nil,
+        leaseEndDate: String?? = nil,
+        documents: [PropertyDocument]? = nil,
+        createdAt: String?? = nil,
+        rooms: [PropertyRooms]? = nil,
+        damages: [DamageResponse]? = nil
+    ) -> Property {
+        return Property(
+            id: id ?? self.id,
+            ownerID: ownerID ?? self.ownerID,
+            name: name ?? self.name,
+            address: address ?? self.address,
+            city: city ?? self.city,
+            postalCode: postalCode ?? self.postalCode,
+            country: country ?? self.country,
+            photo: photo ?? self.photo,
+            monthlyRent: monthlyRent ?? self.monthlyRent,
+            deposit: deposit ?? self.deposit,
+            surface: surface ?? self.surface,
+            isAvailable: isAvailable ?? self.isAvailable,
+            tenantName: tenantName ?? self.tenantName,
+            leaseId: leaseId ?? self.leaseId,
+            leaseStartDate: leaseStartDate ?? self.leaseStartDate,
+            leaseEndDate: leaseEndDate ?? self.leaseEndDate,
+            documents: documents ?? self.documents,
+            createdAt: (createdAt ?? self.createdAt) ?? "nil",
+            rooms: rooms ?? self.rooms,
+            damages: damages ?? self.damages
+        )
+    }
 }

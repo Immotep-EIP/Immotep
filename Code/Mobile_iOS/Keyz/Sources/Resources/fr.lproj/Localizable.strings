@@ -4,7 +4,6 @@
 "Already have an account ?" = "Vous avez déjà un compte ?";
 "Sign Up" = "S’inscrire";
 "Registration successful!" = "Inscription réussie !";
-
 "Welcome back!" = "Bienvenue !";
 "Don't have an account ?" = "Vous n’avez pas de compte ?";
 "Forgot password?" = "Mot de passe oublié ?";
@@ -13,16 +12,13 @@
 "Please enter your details to sign in." = "Veuillez entrer vos identifiants pour vous connecter";
 "Sign In" = "Se connecter";
 "Login successful!" = "Connexion réussie !";
-
 "Hello" = "Bonjour";
-
 "Overview" = "Menu";
 "welcome_message" = "Bienvenue %@ !";
 "New messages" = "Nouveaux messages";
 "Scheduled inventory" = "États des lieux prévus";
 "Damage in progress" = "Sinistres en cours";
 "Available properties" = "Propriétés disponibles";
-
 "Real Property" = "Propriétés";
 "Property" = "Propriétés";
 "Add a property" = "Ajouter une propriété";
@@ -30,7 +26,6 @@
 "Available" = "Disponible";
 "Busy" = "Occupé";
 "Unavailable" = "Indisponible";
-
 "New Property" = "Nouvelle propriété";
 "Click on the image to change" = "Cliquez sur l'image pour la changer";
 "Cancel" = "Annuler";
@@ -38,7 +33,6 @@
 "Select Image Source" = "Sélectionner la source de l'image";
 "Take Photo" = "Prendre une photo";
 "Choose from Library" = "Choisir depuis la gallerie";
-
 "Property Details" = "Détails";
 "About the property" = "À propos";
 "Start Inventory" = "Commencer l'état des lieux";
@@ -46,35 +40,29 @@
 "area" = "Surface : %@ m²";
 "Area" = "Surface";
 "Rent /month" = "Loyer /mois";
-"Tenant(s)" = "Propriétaire(s)";
+"Tenant(s)" = "Locataires(s)";
 "start_date" = "Date de début : %@";
 "No start date assigned" = "Pas de date renseignée";
 "rent_month" = "Loyer : %d$";
 "end_date" = "Fin : %@";
 "No end date assigned" = "Pas de date renseignée";
 "deposit_value" = "Caution : %d$";
-
 "Invite Tenant" = "Inviter un locataire";
 "End Lease" = "Mettre fin à la location";
 "Cancel Invite" = "Annuler l'invitation";
 "Edit Property" = "Modifier la propriété";
 "Delete Property" = "Supprimer la propriété";
 "Confirm" = "Confirmer";
-"Cancel" = "Annuler";
-
 "Are you sure you want to cancel the pending invite?" = "Êtes-vous sûr de vouloir annuler l'invitation en cours ?";
 "Are you sure you want to end the current lease?" = "Êtes-vous sûr de vouloir mettre fin à la location en cours ?";
 "Are you sure you want to delete this property?" = "Êtes-vous sûr de vouloir supprimer cette propriété ?";
-
 "Send Invitation" = "Envoyer une invitation";
 "Invite Tenant to %@" = "Inviter un locataire dans %@";
 "Tenant Email" = "Mail du locataire";
 "Start Date" = "Date de début";
 "End Date (Optional)" = "Date de fin (facultatif)";
 "Error inviting tenant: %@" = "Erreur durant l'invitation du locataire: %@";
-
 "Messages" = "Messages";
-
 "Settings" = "Paramètres";
 "User information" = "Informations utilisateur";
 "Language" = "Langue";
@@ -87,19 +75,16 @@
 "theme_light" = "Clair";
 "theme_dark" = "Sombre";
 "Theme" = "Thème";
-
 "First name*" = "Prénom*";
 "Name*" = "Nom*";
 "Email*" = "Email*";
 "Password*" = "Mot de passe*";
 "Password confirmation*" = "Confirmation du mot de passe*";
-
 "Enter your email" = "Entrez votre email";
 "Enter your first name" = "Entrez votre prénom";
 "Enter your name" = "Entrez votre nom";
 "Enter your password" = "Entrez votre mot de passe";
 "Enter your password confirmation" = "Confirmez votre mot de passe";
-
 "Name" = "Nom";
 "First Name" = "Prénom";
 "Address" = "Adresse";
@@ -109,7 +94,6 @@
 "Monthly Rent" = "Loyer";
 "Deposit" = "Caution";
 "Surface (m²)" = "Surface (m²)";
-
 "Enter property name" = "Entrez le nom de la propriété";
 "Enter address" = "Entrez l'adresse";
 "Enter city" = "Entrez la ville";
@@ -118,17 +102,14 @@
 "Enter monthly rent" = "Entrez le montant du loyer";
 "Enter deposit" = "Entrez le montant de la caution";
 "Enter surface" = "Entrez la surface du bien";
-
 "Invalid response from server." = "Réponse invalide du serveur.";
 "Email already exists." = "Le mail entré est déjà associé à un compte.";
 "Empty fields." = "Champs vides.";
-
 "Please fill in all fields." = "Veuillez remplir tous les champs.";
 "Passwords do not match." = "Les mots de passes sont différents.";
 "You must agree to the terms and conditions." = "Vous devez accepter les termes et conditions.";
 "Please enter a valid email address." = "Veuillez entrer une adresse mail valide.";
 "Please enter both email and password." = "Veuillez entrer un mail et un mot de passe valides.";
-
 "Start the entry/exit inventory" = "Démarrer l'état des lieux d'entrée/sortie";
 "Tabs" = "Onglets";
 "Details" = "Détails";
@@ -138,7 +119,6 @@
 "no_damages_reported" = "Aucun sinistre signalé";
 "Unable to load PDF" = "Impossible de charger le PDF";
 "No active lease" = "Pas de contrat actif";
-
 "dressing" = "Dressing";
 "laundryroom" = "Buanderie";
 "bedroom" = "Chambre à coucher";
@@ -155,13 +135,41 @@
 "storage" = "Débarras";
 "office" = "Bureau";
 "other" = "Autre";
-"Enter room name" = "Entrez un nom de pièce";
-"Room Type" = "Type de pièce";
-
-"Finalize Inventory" = "Finaliser l'état des lieux";
-"Add a Room" = "Ajouter une pièce";
-"Choose a name and type for your new room:" = "Choisir un nom et un type de pièce";
-"Add" = "Ajouter";
-"Delete Room" = "Supprimer une pièce";
-"Are you sure you want to delete the room %@?" = "Êtes-vous sûr de vouloir supprimer la pièce %@ ?";
+"Low" = "Faible";
+"Medium" = "Moyenne";
+"High" = "Élevée";
+"Urgent" = "Urgente";
+"Fixed" = "Réparé";
+"Pending" = "En attente";
+"In Progress" = "En cours";
+"Not Started" = "Non commencé";
+"Status: %@" = "Statut : %@";
+"Invalid Date" = "Date invalide";
+"Report Damage" = "Signaler un sinistre";
+"Options" = "Options";
+"Replace" = "Remplacer";
 "Delete" = "Supprimer";
+"Photos (%@/%@)" = "Photos (%@/%@)";
+"Start Entry Inventory" = "Commencer l'état des lieux d'entrée";
+"Start Exit Inventory" = "Commencer l'état des lieux de sortie";
+"No data available" = "Aucune donnée disponible";
+"dashboard_overview" = "Voici un aperçu de vos propriétés et tâches";
+"+%d more" = "+%d de plus";
+"No recent properties" = "Aucune propriété récente";
+"%d$/month" = "%d$/mois";
+"Open Damages" = "Sinistres ouverts";
+"Planned This Week" = "Planifié cette semaine";
+"No damages to fix" = "Aucun sinistre à réparer";
+"Reminders" = "Rappels";
+"Please plan a fix date." = "Veuillez programmer une date pour résoudre le problème";
+"Properties" = "Propriétés";
+"Occupied" = "Occupée(s)";
+"Archived" = "Archivée(s)";
+"Available_property" = "Disponible(s)";
+"Pending Invites" = "Invitation(s) en attente";
+"+%d more" = "+%d de plus";
+
+"Urgent_damage" = "Urgent(s)";
+"High_damage" = "Haut(s)";
+"Medium_damage" = "Moyen(s)";
+"Low_damage" = "Faible(s)";

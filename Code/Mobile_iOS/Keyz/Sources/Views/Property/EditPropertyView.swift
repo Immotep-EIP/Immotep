@@ -42,8 +42,6 @@ struct EditPropertyView: View {
 
     var body: some View {
         VStack {
-//            TopBar(title: "Edit Property".localized())
-
             Form {
                 Section {
                     VStack {
@@ -151,6 +149,7 @@ struct EditPropertyView: View {
             surface: surface?.doubleValue ?? 0.0,
             isAvailable: property.isAvailable,
             tenantName: property.tenantName,
+            leaseId: property.leaseId,
             leaseStartDate: property.leaseStartDate,
             leaseEndDate: property.leaseEndDate,
             documents: property.documents,
@@ -160,24 +159,37 @@ struct EditPropertyView: View {
         )
 
         guard let token = await TokenStorage.getAccessToken() else {
-            errorMessage = "Failed to retrieve token."
+            errorMessage = "Failed to retrieve token.".localized()
             print("Token is nil")
             return
         }
 
         do {
-            _ = try await viewModel.updateProperty(request: updatedProperty, token: token)
-            property = updatedProperty
+            let propertyId = try await viewModel.updateProperty(request: updatedProperty, token: token)
+
+            if let newPhoto = photo, newPhoto != property.photo {
+                do {
+                    let res = try await viewModel.updatePropertyPicture(token: token, propertyPicture: newPhoto, propertyID: propertyId)
+                } catch {
+                    print("Failed to update property picture: \(error.localizedDescription)")
+                }
+            }
+
+            if let updatedProperty = viewModel.properties.first(where: { $0.id == propertyId }) {
+                property = updatedProperty
+            } else {
+                errorMessage = "Updated property not found in refreshed data.".localized()
+            }
+
             dismiss()
         } catch {
-            errorMessage = "Error updating property: \(error.localizedDescription)"
-            print("Error: \(error)")
+            errorMessage = "Error updating property: \(error.localizedDescription)".localized()
         }
     }
 }
 
 struct EditPropertyView_Previews: PreviewProvider {
-    static var viewModel = PropertyViewModel()
+    static var viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
     static var previews: some View {
         EditPropertyView(viewModel: viewModel, property: .constant(exampleDataProperty))
     }

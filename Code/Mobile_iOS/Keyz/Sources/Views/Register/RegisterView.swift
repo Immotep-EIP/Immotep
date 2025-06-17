@@ -24,17 +24,11 @@ struct RegisterView: View {
                         .padding(.bottom, 50)
 
                     VStack(alignment: .leading, spacing: 5) {
-
-                        CustomTextInput(title: "Name*", placeholder: "Enter your name", text: $viewModel.model.name, isSecure: false)
-
                         CustomTextInput(title: "First name*", placeholder: "Enter your first name", text: $viewModel.model.firstName, isSecure: false)
-
+                        CustomTextInput(title: "Name*", placeholder: "Enter your name", text: $viewModel.model.name, isSecure: false)
                         CustomTextInput(title: "Email*", placeholder: "Enter your email", text: $viewModel.model.email, isSecure: false)
-
                         CustomTextInput(title: "Password*", placeholder: "Enter your password", text: $viewModel.model.password, isSecure: true)
-
-                        CustomTextInput(title: "Password confirmation*", placeholder: "Enter your password confirmation",
-                                        text: $viewModel.model.passwordConfirmation, isSecure: true)
+                        CustomTextInput(title: "Password confirmation*", placeholder: "Enter your password confirmation", text: $viewModel.model.passwordConfirmation, isSecure: true)
 
                         HStack {
                             Button(action: {

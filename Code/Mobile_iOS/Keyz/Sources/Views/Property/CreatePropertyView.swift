@@ -133,9 +133,11 @@ struct CreatePropertyView: View {
             surface: surface?.doubleValue ?? 0.0,
             isAvailable: "available",
             tenantName: nil,
+            leaseId: "leaseId",
             leaseStartDate: nil,
             leaseEndDate: nil,
             documents: [],
+            createdAt: "",
             rooms: [],
             damages: []
         )
@@ -157,7 +159,7 @@ struct CreatePropertyView: View {
 }
 
 struct CreatePropertyView_Previews: PreviewProvider {
-    static var viewModel = PropertyViewModel()
+    static var viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
     static var previews: some View {
         CreatePropertyView(viewModel: viewModel)
     }

@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @StateObject private var loginViewModel = LoginViewModel()
-    @StateObject private var propertyViewModel = PropertyViewModel()
+    @StateObject private var propertyViewModel = PropertyViewModel(loginViewModel: LoginViewModel())
     @AppStorage("lang") var lang: String = "en"
     @State private var selectedTab: Int = 0
 
@@ -41,7 +41,7 @@ struct ContentView: View {
                     }
                     .tag(2)
 
-                SettingsView()
+                SettingsView(selectedTab: $selectedTab)
                     .environmentObject(loginViewModel)
                     .tabItem {
                         Image(systemName: "gearshape")

@@ -9,7 +9,8 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
-    
+    @Binding var selectedTab: Int
+
     @AppStorage("lang") private var lang: String = "en"
     @AppStorage("theme") private var selectedTheme: String = ThemeOption.system.rawValue
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
@@ -171,6 +172,7 @@ struct SettingsView: View {
         loginViewModel.user = nil
         loginViewModel.userId = nil
         loginViewModel.userRole = nil
+        selectedTab = 0
         navigateToLogin = true
     }
     
@@ -179,7 +181,6 @@ struct SettingsView: View {
     }
     
     private func saveChanges() {
-        print("Saving changes: \(editableEmail), \(editableFirstname), \(editableLastname)")
         if var updatedUser = loginViewModel.user {
             updatedUser.email = editableEmail
             updatedUser.firstname = editableFirstname
@@ -200,7 +201,8 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        @State var selectedTab: Int = 0
+        SettingsView(selectedTab: $selectedTab)
             .environmentObject(LoginViewModel())
     }
 }

@@ -33,7 +33,7 @@ struct PropertyView: View {
                         Spacer()
                     }
                 } else if let property = tenantProperty {
-                    PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                    PropertyDetailView(property: property, viewModel: viewModel)
                 } else {
                     VStack {
                         Spacer()
@@ -71,7 +71,7 @@ struct PropertyView: View {
                                 ) {
                                     ForEach(viewModel.properties) { property in
                                         NavigationLink(
-                                            destination: PropertyDetailView(property: .constant(property), viewModel: viewModel)
+                                            destination: PropertyDetailView(property: property, viewModel: viewModel)
                                         ) {
                                             PropertyCard(property: property)
                                         }
@@ -118,12 +118,8 @@ struct PropertyView: View {
             if loginViewModel.userRole == "tenant" {
                 Task {
                     isLoading = true
-                    do {
-                        tenantProperty = try await viewModel.fetchTenantProperty()
-                    } catch {
-                        errorMessage = "Error fetching property: \(error.localizedDescription)".localized()
-                        print("Error fetching tenant property: \(error.localizedDescription)")
-                    }
+                    await viewModel.fetchProperties()
+                    tenantProperty = viewModel.properties.first
                     isLoading = false
                 }
             }
@@ -194,7 +190,7 @@ struct PropertyCard: View {
 struct PropertyView_Previews: PreviewProvider {
     static var previews: some View {
         PropertyView()
-            .environmentObject(PropertyViewModel())
+            .environmentObject(PropertyViewModel(loginViewModel: LoginViewModel()))
             .environmentObject(LoginViewModel())
     }
 }
@@ -214,6 +210,7 @@ let exampleDataProperty2: [Property] = [
         surface: 85.5,
         isAvailable: "available",
         tenantName: nil,
+        leaseId: "id",
         leaseStartDate: nil,
         leaseEndDate: nil,
         documents: [],
@@ -242,6 +239,7 @@ let exampleDataProperty2: [Property] = [
         surface: 65.0,
         isAvailable: "unavailable",
         tenantName: "Jean Dupont",
+        leaseId: "id",
         leaseStartDate: "2024-12-01T00:00:00Z",
         leaseEndDate: nil,
         documents: [],
