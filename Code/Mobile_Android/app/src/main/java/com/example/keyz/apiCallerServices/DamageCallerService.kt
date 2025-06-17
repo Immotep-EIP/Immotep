@@ -39,7 +39,7 @@ data class DamageOutput(
     val fixed_at: String?,
     val id: String,
     val lease_id: String,
-    val pictures: Array<String>,
+    val pictures: Array<String> = arrayOf(),
     val priority: String,
     val read: Boolean,
     val room_id: String,

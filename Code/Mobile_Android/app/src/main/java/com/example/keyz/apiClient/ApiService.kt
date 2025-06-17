@@ -12,6 +12,7 @@ import com.example.keyz.apiCallerServices.Document
 import com.example.keyz.apiCallerServices.DocumentInput
 import com.example.keyz.apiCallerServices.FurnitureInput
 import com.example.keyz.apiCallerServices.FurnitureOutput
+import com.example.keyz.apiCallerServices.GetDashBoardOutput
 import com.example.keyz.apiCallerServices.GetPropertyResponse
 import com.example.keyz.apiCallerServices.InventoryReportInput
 import com.example.keyz.apiCallerServices.InviteInput
@@ -270,4 +271,11 @@ interface ApiService {
         @Body invite: InviteInput
     ) : CreateOrUpdateResponse
 
+    //dashboard functions
+
+    @GET("${API_PREFIX}/owner/dashboard/{lang}")
+    suspend fun getDashboard(
+        @Header("Authorization") authHeader : String,
+        @Path("lang") lang: String,
+    ) : Array<GetDashBoardOutput>
 }
