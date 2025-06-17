@@ -167,9 +167,10 @@
 "Archived" = "Archivée(s)";
 "Available_property" = "Disponible(s)";
 "Pending Invites" = "Invitation(s) en attente";
-"+%d more" = "+%d de plus";
 
 "Urgent_damage" = "Urgent(s)";
 "High_damage" = "Haut(s)";
 "Medium_damage" = "Moyen(s)";
 "Low_damage" = "Faible(s)";
+
+"No documents available" = "Aucun document disponible";

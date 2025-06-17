@@ -11,6 +11,7 @@ struct TestImmotepView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @StateObject private var loginViewModel = LoginViewModel()
     @State private var propertyExample: Property = exampleDataProperty
+    @State var navigateToInventory: Bool = false
     @State private var mockProperty = Property(
         id: "cm7gijdee000ly7i82uq0qf35",
         ownerID: "owner123",
@@ -130,7 +131,6 @@ struct TestImmotepView: View {
     }
 
     private func inventoryRoomView() -> some View {
-        @State var navigateToInventory: Bool = false
         let viewModel = InventoryViewModel(
             property: propertyExample,
             localRooms: [

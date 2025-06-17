@@ -99,7 +99,6 @@ class InventoryReportManager {
 
         viewModel.comment = summarizeResponse.note
         viewModel.selectedStatus = uiStatus
-        print("Report sent successfully: \(summarizeResponse)")
     }
 
     func finalizeInventory() async throws {

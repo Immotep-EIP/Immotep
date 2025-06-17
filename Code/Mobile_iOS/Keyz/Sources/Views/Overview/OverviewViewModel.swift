@@ -46,16 +46,14 @@ class OverviewViewModel: ObservableObject {
             let decoder = JSONDecoder()
             let dashboardResponse = try decoder.decode(DashboardResponse.self, from: data)
 
-            var reminderDict: [String: Reminder] = [:]
-            for reminder in dashboardResponse.reminders {
-                if reminderDict[reminder.id] == nil {
-                    reminderDict[reminder.id] = reminder
-                }
+            let remindersWithUniqueIds = dashboardResponse.reminders.enumerated().map { index, reminder in
+                var uniqueReminder = reminder
+                uniqueReminder.id = UUID().uuidString
+                return uniqueReminder
             }
-            let uniqueReminders = reminderDict.values.sorted { $0.id < $1.id }
 
             let uniqueDashboardResponse = DashboardResponse(
-                reminders: Array(uniqueReminders),
+                reminders: remindersWithUniqueIds,
                 properties: dashboardResponse.properties,
                 openDamages: dashboardResponse.openDamages
             )

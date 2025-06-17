@@ -12,7 +12,6 @@ struct PropertyView: View {
     @EnvironmentObject var loginViewModel: LoginViewModel
     @State private var tenantProperty: Property?
     @State private var isLoading = false
-    @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -22,14 +21,6 @@ struct PropertyView: View {
                         Spacer()
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle())
-                        Spacer()
-                    }
-                } else if let error = errorMessage {
-                    VStack {
-                        Spacer()
-                        Text(error)
-                            .foregroundColor(.red)
-                            .padding()
                         Spacer()
                     }
                 } else if let property = tenantProperty {

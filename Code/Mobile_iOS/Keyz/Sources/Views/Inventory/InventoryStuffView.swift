@@ -32,7 +32,6 @@ struct InventoryStuffView: View {
                 }
                 selectedRoom = inventoryViewModel.localRooms.first { $0.id == roomId }
                 if let room = selectedRoom {
-                    print("OnAppear - Room: \(room.name), checked: \(room.checked), inventory checked: \(room.inventory.allSatisfy { $0.checked })")
                     if room.inventory.isEmpty {
                         await inventoryViewModel.fetchStuff(room)
                     }
@@ -42,7 +41,6 @@ struct InventoryStuffView: View {
         }
         .onChange(of: inventoryViewModel.localRooms) {
             if let updatedRoom = inventoryViewModel.localRooms.first(where: { $0.id == roomId }) {
-                print("OnChange - Updated room: \(updatedRoom.name), checked: \(updatedRoom.checked), inventory checked: \(updatedRoom.inventory.allSatisfy { $0.checked })")
                 selectedRoom = updatedRoom
             }
         }
@@ -140,7 +138,6 @@ struct InventoryStuffView: View {
         Button {
             Task {
                 if let room = selectedRoom {
-                    print("Confirming room: \(room.name)")
                     await inventoryViewModel.markRoomAsChecked(room)
                     dismiss()
                 }

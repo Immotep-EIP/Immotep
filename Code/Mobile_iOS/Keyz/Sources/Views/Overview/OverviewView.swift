@@ -13,6 +13,8 @@ struct OverviewView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @State private var navigateToProperty: Property? = nil
     @State private var navigateToDamage: (propertyId: String, damageId: String)? = nil
+    @State private var showError = false
+    @State private var errorMessage: String?
 
     init() {
         self._viewModel = StateObject(wrappedValue: OverviewViewModel())
@@ -20,44 +22,51 @@ struct OverviewView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                TopBar(title: "Keyz")
-                ScrollView {
-                    if viewModel.isLoading {
-                        ProgressView()
+            ZStack {
+                VStack(spacing: 0) {
+                    TopBar(title: "Keyz")
+                    ScrollView {
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .padding()
+                        } else if viewModel.errorMessage != nil {
+                            EmptyView()
+                        } else if let dashboardData = viewModel.dashboardData {
+                            LazyVGrid(
+                                columns: [GridItem(.flexible())],
+                                spacing: 16
+                            ) {
+                                WelcomeWidget(
+                                    firstName: loginViewModel.user?.firstname ?? "User"
+                                )
+                                RemindersWidget(
+                                    reminders: dashboardData.reminders,
+                                    properties: dashboardData.properties,
+                                    navigateToProperty: $navigateToProperty
+                                )
+                                PropertiesWidget(
+                                    stats: dashboardData.properties,
+                                    navigateToProperty: $navigateToProperty
+                                )
+                                DamagesWidget(
+                                    stats: dashboardData.openDamages,
+                                    navigateToDamage: $navigateToDamage
+                                )
+                            }
                             .padding()
-                    } else if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .padding()
-                    } else if let dashboardData = viewModel.dashboardData {
-                        LazyVGrid(
-                            columns: [GridItem(.flexible())],
-                            spacing: 16
-                        ) {
-                            WelcomeWidget(
-                                firstName: loginViewModel.user?.firstname ?? "User"
-                            )
-                            RemindersWidget(
-                                reminders: dashboardData.reminders,
-                                properties: dashboardData.properties,
-                                navigateToProperty: $navigateToProperty
-                            )
-                            PropertiesWidget(
-                                stats: dashboardData.properties,
-                                navigateToProperty: $navigateToProperty
-                            )
-                            DamagesWidget(
-                                stats: dashboardData.openDamages,
-                                navigateToDamage: $navigateToDamage
-                            )
+                        } else {
+                            Text("No data available".localized())
+                                .foregroundColor(.gray)
+                                .padding()
                         }
-                        .padding()
-                    } else {
-                        Text("No data available".localized())
-                            .foregroundColor(.gray)
-                            .padding()
                     }
+                }
+                if showError, let message = errorMessage {
+                    ErrorNotificationView(message: message)
+                        .onDisappear {
+                            showError = false
+                            errorMessage = nil
+                        }
                 }
             }
             .navigationBarBackButtonHidden(true)
@@ -104,15 +113,21 @@ struct OverviewView: View {
                         viewModel: PropertyViewModel(loginViewModel: loginViewModel)
                     )
                     .environmentObject(loginViewModel)
-                    .onAppear {
-                        // See if usefull to make something here
-                    }
                 }
             }
             .onAppear {
                 loginViewModel.loadUser()
                 Task {
                     await viewModel.fetchDashboardData()
+                }
+            }
+            .onChange(of: viewModel.errorMessage) {
+                if let error = viewModel.errorMessage {
+                    errorMessage = error
+                    showError = true
+                } else {
+                    showError = false
+                    errorMessage = nil
                 }
             }
         }
@@ -127,17 +142,16 @@ struct WelcomeWidget: View {
             Text(String(format: "welcome_message".localized(), firstName))
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundColor(.primary)
-                .frame(maxWidth: .infinity)
+                .foregroundColor(Color("textColor"))
             Text("dashboard_overview".localized())
                 .font(.subheadline)
                 .foregroundColor(.gray)
-                .frame(maxWidth: .infinity)
         }
         .padding()
-        .background(Color.white)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color("basicWhiteBlack"))
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
     }
 }
 
@@ -151,7 +165,7 @@ struct RemindersWidget: View {
             HStack {
                 Text("Reminders".localized())
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color("textColor"))
                 Spacer()
                 Image(systemName: "bell.fill")
                     .foregroundColor(.red)
@@ -166,7 +180,7 @@ struct RemindersWidget: View {
                 ForEach(reminders.prefix(3)) { reminder in
                     Button(action: {
                         if let components = parseLink(reminder.link),
-                           let property = properties.recentlyAdded.first(where: { $0.id == components.propertyId }) {
+                           let property = properties.recentlyAdded?.first(where: { $0.id == components.propertyId }) {
                             navigateToProperty = Property(
                                 id: property.id,
                                 ownerID: property.ownerId,
@@ -203,9 +217,9 @@ struct RemindersWidget: View {
             }
         }
         .padding()
-        .background(Color.white)
+        .background(Color("basicWhiteBlack"))
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
     }
 
     private func parseLink(_ link: String) -> (propertyId: String, damageId: String)? {
@@ -231,7 +245,7 @@ struct ReminderItem: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(reminder.title)
                     .font(.subheadline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color("textColor"))
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 Text(reminder.advice)
@@ -240,8 +254,6 @@ struct ReminderItem: View {
                     .lineLimit(1)
             }
             Spacer()
-//            Image(systemName: "chevron.right")
-//                .foregroundColor(.gray)
         }
         .padding(.vertical, 4)
     }
@@ -266,7 +278,7 @@ struct PropertiesWidget: View {
             HStack {
                 Text("Properties".localized())
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color("textColor"))
                 Spacer()
                 Image(systemName: "house.fill")
                     .foregroundColor(.blue)
@@ -286,7 +298,7 @@ struct PropertiesWidget: View {
                 StatItem(label: "Pending Invites".localized(), value: "\(stats.pendingInvites)")
             }
 
-            if let recentProperty = stats.recentlyAdded.first {
+            if let recentProperty = stats.recentlyAdded?.first {
                 Button(action: {
                     navigateToProperty = Property(
                         id: recentProperty.id,
@@ -321,9 +333,9 @@ struct PropertiesWidget: View {
             }
         }
         .padding()
-        .background(Color.white)
+        .background(Color("basicWhiteBlack"))
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
     }
 }
 
@@ -336,7 +348,7 @@ struct StatItem: View {
             Text(value)
                 .font(.title3)
                 .fontWeight(.bold)
-                .foregroundColor(.primary)
+                .foregroundColor(Color("textColor"))
             Text(label)
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -358,7 +370,7 @@ struct PropertyItem: View {
                 Text(property.name)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color("textColor"))
                 Text("\(property.address), \(property.city)")
                     .font(.caption)
                     .foregroundColor(.gray)
@@ -384,7 +396,7 @@ struct DamagesWidget: View {
             HStack {
                 Text("Open Damages".localized())
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color("textColor"))
                 Spacer()
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.orange)
@@ -419,16 +431,17 @@ struct DamagesWidget: View {
                     }
                 }
                 if stats.toFix.count > 3 {
-                    Text(String(format: "+%d more".localized(), stats.toFix.count - 3))                        .font(.caption)
+                    Text(String(format: "+%d more".localized(), stats.toFix.count - 3))
+                        .font(.caption)
                         .foregroundColor(.gray)
                         .padding(.top, 4)
                 }
             }
         }
         .padding()
-        .background(Color.white)
+        .background(Color("basicWhiteBlack"))
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
     }
 }
 
@@ -443,7 +456,7 @@ struct DamageItem: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(damage.comment)
                     .font(.subheadline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color("textColor"))
                     .lineLimit(2)
                 Text("\(damage.propertyName) - \(damage.roomName)")
                     .font(.caption)
