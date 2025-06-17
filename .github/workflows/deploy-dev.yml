@@ -24,7 +24,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: SSH Remote Commands
+      # This step checks if there are any tables in the database with 0 rows. This is to be sure that the new migrations can be applied without issues.
+      - name: Check any database tables with 0 rows
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script_stop: true
+          script: |
+            docker exec -it immotep-db bash -c "! echo 'SELECT relname, n_live_tup FROM pg_stat_user_tables;' | psql immotep | grep ' 0'"
+
+      - name: Deploy
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DEPLOY_SERVER }}
