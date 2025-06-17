@@ -208,4 +208,11 @@
     <string name="close_edit">Fermer la modification</string>
     <string name="mod_room">Modifier la pièce</string>
     <string name="delete_room">Supprimer la pièce</string>
+    <string name="welcome">Welcome</string>
+    <string name="here_overview">Voici une vue d\'ensemble de vos</string>
+    <string name="properties">properietées</string>
+    <string name="unread_messages">Messages non lus</string>
+    <string name="scheduled_inventory">États des lieux prévus</string>
+    <string name="damage_in_progress">Dommages en cours</string>
+    <string name="available_properties">Propriétée(s) disponible(s)</string>
 </resources>

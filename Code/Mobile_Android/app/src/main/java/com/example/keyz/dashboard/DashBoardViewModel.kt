@@ -18,22 +18,27 @@ class DashBoardViewModel(
 ) : ViewModel() {
     private val _dashBoardApiCaller = DashBoardCallerService(apiService, navController)
     private val _isLoading = MutableStateFlow(false)
-    private val _dashBoard = MutableStateFlow<DashBoard?>(null)
+    private val _dashBoard = MutableStateFlow(DashBoard())
+    private val _userName = MutableStateFlow("")
     val isLoading = _isLoading.asStateFlow()
     val dashBoard = _dashBoard.asStateFlow()
+    val userName = _userName.asStateFlow()
 
-    fun getDashBoards() {
+    fun getDashBoard() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 val newDashBoard =_dashBoardApiCaller.getDashBoard()
                 _dashBoard.value = newDashBoard
-                println(newDashBoard)
             } catch(e : ApiCallerServiceException) {
                 e.printStackTrace()
             } finally {
                 _isLoading.value = false
             }
         }
+    }
+
+    fun getName() {
+
     }
 }

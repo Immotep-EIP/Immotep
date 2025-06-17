@@ -5,13 +5,13 @@ import com.example.keyz.apiClient.ApiService
 
 
 data class DashBoardOpenDamage(
-    val listToFix: Array<Damage>,
-    val nbrHigh: Int,
-    val nbrLow: Int,
-    val nbrMedium: Int,
-    val nbrPlannedToFixThisWeek: Int,
-    val nbrTotal: Int,
-    val nbrUrgent: Int
+    val listToFix: Array<Damage> = arrayOf(),
+    val nbrHigh: Int = 0,
+    val nbrLow: Int = 0,
+    val nbrMedium: Int = 0,
+    val nbrPlannedToFixThisWeek: Int = 0,
+    val nbrTotal: Int = 0,
+    val nbrUrgent: Int = 0
 )
 
 data class DashBoardOpenDamageOutput(
@@ -68,12 +68,12 @@ data class DashBoardPropertyOutput(
 }
 
 data class DashBoardProperties(
-    val listRecentlyAdded: Array<DetailedProperty>,
-    val nbrArchived: Int,
-    val nbrAvailable: Int,
-    val nbrOccupied: Int,
-    val nbrPendingInvites: Int,
-    val nbrTotal: Int
+    val listRecentlyAdded: Array<DetailedProperty> = arrayOf(),
+    val nbrArchived: Int = 0,
+    val nbrAvailable: Int = 0,
+    val nbrOccupied: Int = 0,
+    val nbrPendingInvites: Int = 0,
+    val nbrTotal: Int = 0
 )
 
 data class DashBoardPropertiesOutput(
@@ -121,9 +121,9 @@ data class GetDashBoardOutput(
 }
 
 data class DashBoard(
-    val reminders: Array<DashBoardReminder>,
-    val openDamages: DashBoardOpenDamage,
-    val properties: DashBoardProperties
+    val reminders: Array<DashBoardReminder> = arrayOf(),
+    val openDamages: DashBoardOpenDamage = DashBoardOpenDamage(),
+    val properties: DashBoardProperties = DashBoardProperties()
 )
 
 
