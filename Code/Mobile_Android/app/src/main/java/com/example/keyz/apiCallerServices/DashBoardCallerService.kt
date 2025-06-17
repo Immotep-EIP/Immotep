@@ -15,7 +15,7 @@ data class DashBoardOpenDamage(
 )
 
 data class DashBoardOpenDamageOutput(
-    val list_to_fix: Array<DamageOutput>,
+    val list_to_fix: Array<DamageOutput>?,
     val nbr_high: Int,
     val nbr_low: Int,
     val nbr_medium: Int,
@@ -25,7 +25,7 @@ data class DashBoardOpenDamageOutput(
 ) {
     fun toDashBoardOpenDamage() : DashBoardOpenDamage {
         return DashBoardOpenDamage(
-            listToFix = this.list_to_fix.map { it.toDamage() }.toTypedArray(),
+            listToFix = this.list_to_fix?.map { it.toDamage() }?.toTypedArray() ?: arrayOf(),
             nbrHigh = this.nbr_high,
             nbrLow = this.nbr_low,
             nbrMedium = this.nbr_medium,
@@ -77,7 +77,7 @@ data class DashBoardProperties(
 )
 
 data class DashBoardPropertiesOutput(
-    val list_recently_added: Array<DashBoardPropertyOutput>,
+    val list_recently_added: Array<DashBoardPropertyOutput>?,
     val nbr_archived: Int,
     val nbr_available: Int,
     val nbr_occupied: Int,
@@ -86,8 +86,9 @@ data class DashBoardPropertiesOutput(
 )  {
     fun toDashBoardProperties() : DashBoardProperties {
         return DashBoardProperties(
-            listRecentlyAdded = this.list_recently_added.map { it.toDetailedProperty() }
-                .toTypedArray(),
+            listRecentlyAdded = if (this.list_recently_added != null) {
+                this.list_recently_added.map { it.toDetailedProperty() }.toTypedArray()
+            } else arrayOf(),
             nbrArchived = this.nbr_archived,
             nbrAvailable = this.nbr_available,
             nbrOccupied = this.nbr_occupied,
@@ -110,19 +111,19 @@ data class GetDashBoardOutput(
     val properties: DashBoardPropertiesOutput,
     val reminders: Array<DashBoardReminder>
 ) {
-    fun toGetDashBoard() : GetDashBoard {
-        return GetDashBoard(
+    fun toDashBoard() : DashBoard {
+        return DashBoard(
             openDamages = this.open_damages.toDashBoardOpenDamage(),
-            properties = this.properties.toDashBoardProperties(),
-            reminders = this.reminders
+            reminders = this.reminders,
+            properties = this.properties.toDashBoardProperties()
         )
     }
 }
 
-data class GetDashBoard(
-    val openDamages : DashBoardOpenDamage,
-    val properties: DashBoardProperties,
-    val reminders: Array<DashBoardReminder>
+data class DashBoard(
+    val reminders: Array<DashBoardReminder>,
+    val openDamages: DashBoardOpenDamage,
+    val properties: DashBoardProperties
 )
 
 
@@ -132,9 +133,9 @@ class DashBoardCallerService (
 ) : ApiCallerService(apiService, navController) {
 
     suspend fun getDashBoard(
-    ) : Array<GetDashBoard> {
+    ) : DashBoard {
         return changeRetrofitExceptionByApiCallerException {
-            apiService.getDashboard(this.getBearerToken(), "eng").map { it.toGetDashBoard() }.toTypedArray()
+            apiService.getDashboard(this.getBearerToken(), "eng").toDashBoard()
         }
     }
 }

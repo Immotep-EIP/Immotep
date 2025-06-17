@@ -34,6 +34,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 data class CreateOrUpdateResponse(
@@ -273,9 +274,9 @@ interface ApiService {
 
     //dashboard functions
 
-    @GET("${API_PREFIX}/owner/dashboard/{lang}")
+    @GET("${API_PREFIX}/owner/dashboard")
     suspend fun getDashboard(
         @Header("Authorization") authHeader : String,
-        @Path("lang") lang: String,
-    ) : Array<GetDashBoardOutput>
+        @Query("lang") lang: String,
+    ) : GetDashBoardOutput
 }
