@@ -181,11 +181,6 @@ fun DashBoardScreen(
         LoadingDialog(isLoading.value)
         InitialFadeIn(durationMs = 300) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Button(onClick = {
-                    navController.navigate("login")
-                }) {
-                    Text("Dashboard")
-                }
                 HelloWidget(dashBoard.value.properties.nbrTotal)
                 UnreadMessagesWidget()
                 ScheduledInventoryWidget()
