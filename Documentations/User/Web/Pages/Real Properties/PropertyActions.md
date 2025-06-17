@@ -1,5 +1,3 @@
-Voici la documentation pour la page expliquant les possibilités sur une propriété :
-
 ---
 
 # Property Options
@@ -79,5 +77,46 @@ The *Property Options* menu provides various actions for managing a specific pro
 
 > 💡 **Tip:**
 > Use the **Edit Property** option regularly to ensure all information about the property remains accurate and reflects current conditions.
+
+---
+
+## **Post-Tenant Addition Features**
+
+Once a tenant has been added to the property, additional features become available:
+
+1. **Lease Documents Upload:**
+
+   * Upload documents related to the lease contract.
+   * These documents will be visible to the tenant in their mobile app.
+
+   ![Lease Documents Upload](../../Images/addDocument.png)
+   *Figure: Uploading lease documents for tenant visibility.*
+
+2. **Inventory Template Creation:**
+
+   * Create a detailed inventory template for the property.
+   * Add all the rooms in the apartment or house and list all items in each room.
+   * When performing an inventory check, the mobile app will use this template to list items for evaluation.
+   * Additional items can be added via the mobile app during the inventory process if needed.
+
+   ![Inventory Template](../../Images/addRoom.png)
+   *Figure: Setting up the inventory template for property checks.*
+
+3. **Damage Reporting Tab:**
+
+   * Access the **Damage** tab to view all damages reported by the tenant.
+   * See details such as:
+
+     * Description of the damage.
+     * Date it occurred.
+     * Photos or other attached media.
+
+   ![Damage Tab](../../Images/damagesTab.png)
+   *Figure: Viewing tenant-reported damages.*
+
+---
+
+> 💡 **Note:**
+> These additional features streamline communication and documentation, ensuring both landlord and tenant have access to accurate property data.
 
 ---
