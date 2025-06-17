@@ -119,13 +119,13 @@ data class UpdatePropertyPictureInput(
 //output api classes
 
 data class InvitePropertyResponse(
-    val end_date: String,
+    val end_date: String?,
     val start_date: String,
     val tenant_email: String
 ) {
     fun toInviteDetailedProperty() = InviteDetailedProperty(
         startDate = OffsetDateTime.parse(this.start_date),
-        endDate = OffsetDateTime.parse(this.end_date),
+        endDate = if (end_date != null) OffsetDateTime.parse(this.end_date) else null,
         tenantEmail = this.tenant_email
     )
 }
@@ -138,7 +138,7 @@ data class PropertyPictureResponse(
 
 data class LeasePropertyResponse(
     val active: Boolean,
-    val end_date: String,
+    val end_date: String?,
     val id: String,
     val start_date: String,
     val tenant_email: String,
@@ -147,7 +147,7 @@ data class LeasePropertyResponse(
     fun toLeaseDetailedProperty() = LeaseDetailedProperty(
         id = this.id,
         startDate = OffsetDateTime.parse(this.start_date),
-        endDate = OffsetDateTime.parse(this.end_date),
+        endDate = if (end_date != null) OffsetDateTime.parse(this.end_date) else null,
         tenantEmail = this.tenant_email,
         tenantName = this.tenant_name
     )
@@ -213,14 +213,14 @@ data class Document(
 
 data class InviteDetailedProperty(
     val startDate: OffsetDateTime,
-    val endDate: OffsetDateTime,
+    val endDate: OffsetDateTime?,
     val tenantEmail: String
 )
 
 data class LeaseDetailedProperty(
     val id: String,
     val startDate: OffsetDateTime,
-    val endDate: OffsetDateTime,
+    val endDate: OffsetDateTime?,
     val tenantEmail: String,
     val tenantName: String
 )
@@ -271,7 +271,14 @@ class RealPropertyCallerService (
     suspend fun getPropertiesAsDetailedProperties():  Array<DetailedProperty> {
         return changeRetrofitExceptionByApiCallerException(logoutOnUnauthorized = true) {
             val properties = apiService.getProperties(getBearerToken())
-            properties.map { it.toDetailedProperty() }.toTypedArray()
+            properties.mapNotNull {
+                try {
+                    it.toDetailedProperty()
+                } catch(e : Exception) {
+                    e.printStackTrace()
+                    null
+                }
+            }.toTypedArray()
         }
     }
 
