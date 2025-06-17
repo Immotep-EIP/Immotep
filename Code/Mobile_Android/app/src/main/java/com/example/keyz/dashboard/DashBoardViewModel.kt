@@ -12,6 +12,8 @@ import com.example.keyz.apiClient.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class DashBoardViewModel(
     private val navController: NavController,
@@ -22,20 +24,23 @@ class DashBoardViewModel(
     private val _isLoading = MutableStateFlow(false)
     private val _dashBoard = MutableStateFlow(DashBoard())
     private val _userName = MutableStateFlow("")
+    private val _loadingMutex = Mutex()
     val isLoading = _isLoading.asStateFlow()
     val dashBoard = _dashBoard.asStateFlow()
     val userName = _userName.asStateFlow()
 
     fun getDashBoard() {
         viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                val newDashBoard =_dashBoardApiCaller.getDashBoard()
-                _dashBoard.value = newDashBoard
-            } catch(e : ApiCallerServiceException) {
-                e.printStackTrace()
-            } finally {
-                _isLoading.value = false
+            _loadingMutex.withLock {
+                try {
+                    _isLoading.value = true
+                    val newDashBoard = _dashBoardApiCaller.getDashBoard()
+                    _dashBoard.value = newDashBoard
+                } catch (e: ApiCallerServiceException) {
+                    e.printStackTrace()
+                } finally {
+                    _isLoading.value = false
+                }
             }
         }
     }

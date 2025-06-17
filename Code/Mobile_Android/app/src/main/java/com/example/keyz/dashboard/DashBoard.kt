@@ -111,10 +111,10 @@ fun WidgetBase(
 }
 
 @Composable
-fun HelloWidget(nbOfProperties : Int) {
+fun HelloWidget(nbOfProperties : Int, userName : String) {
     WidgetBase(dropDownItems = arrayOf(), testTag = "helloWidget") {
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceBetween) {
-            Text(stringResource(R.string.welcome))
+            Text("${stringResource(R.string.welcome)} $userName")
             Spacer(modifier = Modifier.height(5.dp))
             Text("${stringResource(R.string.here_overview)} $nbOfProperties ${stringResource(R.string.properties)}")
         }
@@ -168,6 +168,7 @@ fun DashBoardScreen(
     }
     val isLoading = viewModel.isLoading.collectAsState()
     val dashBoard = viewModel.dashBoard.collectAsState()
+    val userName = viewModel.userName.collectAsState()
 
 
     LaunchedEffect(Unit) {
@@ -179,7 +180,7 @@ fun DashBoardScreen(
         LoadingDialog(isLoading.value)
         InitialFadeIn(durationMs = 300) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                HelloWidget(dashBoard.value.properties.nbrTotal)
+                HelloWidget(dashBoard.value.properties.nbrTotal, userName = userName.value)
                 UnreadMessagesWidget()
                 ScheduledInventoryWidget()
                 DamageInProgressWidget()
