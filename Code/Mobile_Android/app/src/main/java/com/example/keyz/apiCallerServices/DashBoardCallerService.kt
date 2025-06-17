@@ -2,6 +2,7 @@ package com.example.keyz.apiCallerServices
 
 import androidx.navigation.NavController
 import com.example.keyz.apiClient.ApiService
+import java.util.Locale
 
 
 data class DashBoardOpenDamage(
@@ -135,7 +136,7 @@ class DashBoardCallerService (
     suspend fun getDashBoard(
     ) : DashBoard {
         return changeRetrofitExceptionByApiCallerException {
-            apiService.getDashboard(this.getBearerToken(), "eng").toDashBoard()
+            apiService.getDashboard(this.getBearerToken(), Locale.getDefault().language).toDashBoard()
         }
     }
 }
