@@ -32,7 +32,7 @@ The **Menu** allows easy navigation within the application, providing quick acce
 
 ### **Messages**
 - **Description** *(Manage conversation)*:  
-  Access the **Messages** section to view your conversation with your owner. Stay in touch with hiù and receive important updates.
+  Access the **Messages** section to view your conversation with your owner. Stay in touch with them and receive important updates.
 
 ### **Settings**
 - **Description** *(Customize your experience)*:  
