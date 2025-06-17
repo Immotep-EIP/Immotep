@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
-import { Form, Button, Modal, message } from 'antd'
+import { Form, Modal, message } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import useProperties from '@/hooks/Property/useProperties'
 import useImageUpload from '@/hooks/Image/useImageUpload'
 import useImageCache from '@/hooks/Image/useImageCache'
+import { Button } from '@/components/common'
 import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
 
@@ -71,15 +72,14 @@ const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({
       open={isModalUpdateOpen}
       onCancel={() => setIsModalUpdateOpen(false)}
       footer={[
-        <Button key="back" onClick={() => setIsModalUpdateOpen(false)}>
+        <Button
+          key="back"
+          type="default"
+          onClick={() => setIsModalUpdateOpen(false)}
+        >
           {t('components.button.cancel')}
         </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          loading={loading}
-          onClick={() => form.submit()}
-        >
+        <Button key="submit" loading={loading} onClick={() => form.submit()}>
           {t('components.button.update')}
         </Button>
       ]}

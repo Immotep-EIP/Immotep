@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
 
 import {
-  Button,
   Segmented,
   Upload,
   UploadFile,
@@ -20,6 +19,7 @@ import {
 
 import { useAuth } from '@/context/authContext'
 import useImageCache from '@/hooks/Image/useImageCache'
+import { Button } from '@/components/common'
 import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import PageTitle from '@/components/ui/PageText/Title'

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { DownOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
-import { Form, Button, Modal, message } from 'antd'
+import { Form, Modal, message } from 'antd'
 
 import useProperties from '@/hooks/Property/useProperties'
 import useImageUpload from '@/hooks/Image/useImageUpload'
+import { Button } from '@/components/common'
 import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
 
@@ -90,15 +91,10 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
       open={showModalCreate}
       onCancel={handleCancel}
       footer={[
-        <Button key="back" onClick={handleCancel}>
+        <Button type="default" key="back" onClick={handleCancel}>
           {t('components.button.cancel')}
         </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          loading={loading}
-          onClick={() => form.submit()}
-        >
+        <Button key="submit" loading={loading} onClick={() => form.submit()}>
           {t('components.button.add')}
         </Button>
       ]}

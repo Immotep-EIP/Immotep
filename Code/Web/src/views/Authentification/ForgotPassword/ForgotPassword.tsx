@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Input, Form, message } from 'antd'
+import { Input, Form, message } from 'antd'
 import type { FormProps } from 'antd'
 
+import { Button } from '@/components/common'
 import AuthentificationPage from '@/components/features/authentication/AuthentificationPage/AuthentificationPage'
 import useNavigation from '@/hooks/Navigation/useNavigation'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'

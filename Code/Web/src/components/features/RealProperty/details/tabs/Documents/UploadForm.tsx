@@ -2,7 +2,9 @@ import React from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
-import { Form, Input, Upload, Button, FormInstance } from 'antd'
+import { Form, Input, Upload, FormInstance } from 'antd'
+
+import { Button } from '@/components/common'
 
 const UploadForm: React.FC<{ form: FormInstance }> = ({ form }) => {
   const { t } = useTranslation()
@@ -46,7 +48,7 @@ const UploadForm: React.FC<{ form: FormInstance }> = ({ form }) => {
           beforeUpload={() => false}
           maxCount={1}
         >
-          <Button icon={<UploadOutlined />}>
+          <Button type="default" icon={<UploadOutlined />}>
             {t('components.input.document.placeholder')}
           </Button>
         </Upload>

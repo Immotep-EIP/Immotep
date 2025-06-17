@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Empty, Typography, Switch } from 'antd'
+import { Empty, Typography, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 
 import useProperties from '@/hooks/Property/useProperties'
+import { Button } from '@/components/common'
 import PageTitle from '@/components/ui/PageText/Title'
 import CardPropertyLoader from '@/components/ui/Loader/CardPropertyLoader'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
@@ -114,7 +115,7 @@ const RealPropertyPage: React.FC = () => {
                 unCheckedChildren={t('components.switch.show_active')}
               />
             </div>
-            <Button type="primary" onClick={() => setShowModalCreate(true)}>
+            <Button onClick={() => setShowModalCreate(true)}>
               {t('components.button.add_real_property')}
             </Button>
           </div>

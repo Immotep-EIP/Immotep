@@ -1,17 +1,10 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Modal,
-  Form,
-  Input,
-  DatePicker,
-  Button,
-  FormProps,
-  message
-} from 'antd'
+import { Modal, Form, Input, DatePicker, FormProps, message } from 'antd'
 import dayjs from 'dayjs'
 
+import { Button } from '@/components/common'
 import InviteTenants from '@/services/api/Tenant/InviteTenant.ts'
 
 import {
@@ -71,15 +64,10 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
       open={isOpen}
       onCancel={() => onClose(false)}
       footer={[
-        <Button key="back" onClick={() => onClose(false)}>
+        <Button key="back" type="default" onClick={() => onClose(false)}>
           {t('components.button.cancel')}
         </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          loading={loading}
-          onClick={() => form.submit()}
-        >
+        <Button key="submit" loading={loading} onClick={() => form.submit()}>
           {t('components.button.add')}
         </Button>
       ]}

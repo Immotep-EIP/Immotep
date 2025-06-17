@@ -1,9 +1,10 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Dropdown, MenuProps, Select, Tag } from 'antd'
+import { Dropdown, MenuProps, Select, Tag } from 'antd'
 import { MoreOutlined } from '@ant-design/icons'
 
+import { Button } from '@/components/common'
 import PageTitle from '@/components/ui/PageText/Title'
 import { usePropertyContext } from '@/context/propertyContext'
 import useNavigation from '@/hooks/Navigation/useNavigation'

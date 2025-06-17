@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Modal,
-  Form,
-  Input,
-  Select,
-  Checkbox,
-  InputNumber,
-  Button,
-  Space
-} from 'antd'
+import { Modal, Form, Input, Select, Checkbox, InputNumber, Space } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
+
+import Button from '@/components/common/Button/Button'
 
 import { ROOM_TEMPLATES } from '@/utils/types/roomTypes'
 
@@ -170,11 +163,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
               value={item.quantity}
               onChange={val => updateCustomItem(item.id, 'quantity', val || 1)}
             />
-            <Button
-              type="text"
-              danger
-              onClick={() => removeCustomItem(item.id)}
-            >
+            <Button ghost danger onClick={() => removeCustomItem(item.id)}>
               {t('components.button.remove')}
             </Button>
           </Space>

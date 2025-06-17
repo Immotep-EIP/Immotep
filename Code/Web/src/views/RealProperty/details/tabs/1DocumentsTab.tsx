@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Modal, Form, message, Spin, Empty, Typography } from 'antd'
+import { Modal, Form, message, Spin, Empty, Typography } from 'antd'
 
 import { usePropertyContext } from '@/context/propertyContext'
 import useDocument from '@/hooks/Property/useDocument'
 import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
+import { Button } from '@/components/common'
 import DocumentList from '@/components/features/RealProperty/details/tabs/Documents/DocumentList'
 import UploadForm from '@/components/features/RealProperty/details/tabs/Documents/UploadForm'
 
@@ -117,7 +118,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
     <div className={style.tabContent}>
       {canModify && (
         <div className={style.buttonAddContainer}>
-          <Button type="primary" onClick={showModal}>
+          <Button onClick={showModal}>
             {t('components.button.add_document')}
           </Button>
         </div>
@@ -127,10 +128,10 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
         open={isModalOpen}
         onCancel={handleCancel}
         footer={[
-          <Button key="back" onClick={handleCancel}>
+          <Button key="back" type="default" onClick={handleCancel}>
             {t('components.button.cancel')}
           </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
+          <Button key="submit" onClick={handleOk}>
             {t('components.button.add')}
           </Button>
         ]}
