@@ -61,10 +61,10 @@ struct InventoryRoomEvaluationView: View {
                         Spacer()
                     }
                     HStack {
-                        Picker("Select a status", selection: $inventoryViewModel.selectedStatus) {
-                            Text("Select room status").tag("Select room status")
+                        Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
+                            Text("Select room status".localized()).tag("Select room status")
                             ForEach(Array(stateMapping.values), id: \.self) { status in
-                                Text(status).tag(status)
+                                Text(status.localized()).tag(status)
                             }
                         }
                         .frame(maxWidth: .infinity)
@@ -88,7 +88,7 @@ struct InventoryRoomEvaluationView: View {
                             await validateReport()
                         }
                     }, label: {
-                        Text("Validate")
+                        Text("Validate".localized())
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color("LightBlue"))
@@ -104,7 +104,7 @@ struct InventoryRoomEvaluationView: View {
                             isLoading = false
                         }
                     }, label: {
-                        Text("Send Room Report")
+                        Text("Send Room Report".localized())
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color("LightBlue"))
@@ -178,19 +178,19 @@ struct InventoryRoomEvaluationView: View {
         } catch let error as NSError {
             switch error.code {
             case 404:
-                errorMessage = "Property or lease not found. Please check the property details."
+                errorMessage = "Property or lease not found. Please check the property details.".localized()
             case 403:
-                errorMessage = "You do not have permission to access this property."
+                errorMessage = "You do not have permission to access this property.".localized()
             case 400:
                 if error.localizedDescription.contains("datauri") {
-                    errorMessage = "Invalid image format. Please ensure all images are valid JPEGs."
+                    errorMessage = "Invalid image format. Please ensure all images are valid JPEGs.".localized()
                 } else {
                     errorMessage = "Invalid request: \(error.localizedDescription)"
                 }
             case 0 where error.localizedDescription.contains("No active lease found"):
-                errorMessage = "No active lease found for this property."
+                errorMessage = "No active lease found for this property.".localized()
             default:
-                errorMessage = "Error: \(error.localizedDescription)"
+                errorMessage = "Error: \(error.localizedDescription)".localized()
             }
             print("Error sending room report: \(error.localizedDescription)")
         }
