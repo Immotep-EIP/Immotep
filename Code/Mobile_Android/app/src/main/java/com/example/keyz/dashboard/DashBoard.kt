@@ -132,7 +132,7 @@ fun UnreadMessagesWidget() {
 
 @Composable
 fun ScheduledInventoryWidget() {
-    WidgetBase(title = stringResource(R.string.unread_messages), dropDownItems = arrayOf(), testTag = "scheduledInventoryWidget") {
+    WidgetBase(title = stringResource(R.string.scheduled_inventory), dropDownItems = arrayOf(), testTag = "scheduledInventoryWidget") {
         Box(modifier = Modifier.height(100.dp), contentAlignment = Alignment.Center) {
 
         }
