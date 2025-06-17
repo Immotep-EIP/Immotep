@@ -28,6 +28,7 @@ import com.example.keyz.authService.LoginResponse
 import com.example.keyz.authService.RegistrationInput
 import com.example.keyz.authService.RegistrationResponse
 import com.example.keyz.inventory.InventoryReportOutput
+import retrofit2.Response
 
 
 class MockedApiService : ApiService {
@@ -43,6 +44,10 @@ class MockedApiService : ApiService {
             )
         }
         return fakeLoginResponse
+    }
+
+    override suspend fun loggin(grantType: String, username: String, password: String): String {
+        TODO("Not yet implemented")
     }
 
     override suspend fun refreshToken(grantType: String, refreshToken: String): LoginResponse {

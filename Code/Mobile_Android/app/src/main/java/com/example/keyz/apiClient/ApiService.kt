@@ -25,12 +25,14 @@ import com.example.keyz.authService.LoginResponse
 import com.example.keyz.authService.RegistrationInput
 import com.example.keyz.authService.RegistrationResponse
 import com.example.keyz.inventory.InventoryReportOutput
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -45,13 +47,18 @@ data class ArchiveInput(
     val archive: Boolean = true
 )
 
-const val API_PREFIX = "/v1"
+const val API_PREFIX = "/api/v1"
 
 interface ApiService {
 
     //Login functions
+    @Headers(
+        "Accept: application/json",
+        "Content-Type: application/x-www-form-urlencoded",
+        "User-Agent: KeyzAndroid/1.0"
+    )
     @FormUrlEncoded
-    @POST("${API_PREFIX}/auth/token")
+    @POST("${API_PREFIX}/auth/token/")
     suspend fun login(
         @Field("grant_type") grantType: String = "password",
         @Field("username") username: String,
@@ -59,29 +66,37 @@ interface ApiService {
     ): LoginResponse
 
     @FormUrlEncoded
-    @POST("${API_PREFIX}/auth/token")
+    @POST("${API_PREFIX}/auth/token/")
+    suspend fun loggin(
+        @Field("grant_type") grantType: String = "password",
+        @Field("username") username: String,
+        @Field("password") password: String,
+    ): String
+
+    @FormUrlEncoded
+    @POST("${API_PREFIX}/auth/token/")
     suspend fun refreshToken(
         @Field("grant_type") grantType: String = "refresh_token",
         @Field("refresh_token") refreshToken: String,
     ): LoginResponse
 
-    @POST("${API_PREFIX}/auth/register")
+    @POST("${API_PREFIX}/auth/register/")
     suspend fun register(
         @Body registrationInput: RegistrationInput,
     ): RegistrationResponse
 
     //profile functions
-    @GET("${API_PREFIX}/profile")
+    @GET("${API_PREFIX}/profile/")
     suspend fun getProfile(@Header("Authorization") authHeader : String): ProfileResponse
 
-    @PUT("${API_PREFIX}/profile")
+    @PUT("${API_PREFIX}/profile/")
     suspend fun updateProfile(@Header("Authorization") authHeader : String, @Body profileUpdateInput: ProfileUpdateInput): ProfileResponse
 
     //property functions
-    @GET("${API_PREFIX}/owner/properties")
+    @GET("${API_PREFIX}/owner/properties/")
     suspend fun getProperties(@Header("Authorization") authHeader : String): Array<GetPropertyResponse>
 
-    @GET("${API_PREFIX}/owner/properties/{propertyId}")
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/")
     suspend fun getProperty(@Header("Authorization") authHeader : String, @Path("propertyId") propertyId: String): GetPropertyResponse
 
     @GET("${API_PREFIX}/owner/properties/{propertyId}/picture/")
@@ -94,17 +109,17 @@ interface ApiService {
         @Body picture: UpdatePropertyPictureInput
     ): CreateOrUpdateResponse
 
-    @POST("${API_PREFIX}/owner/properties")
+    @POST("${API_PREFIX}/owner/properties/")
     suspend fun addProperty(@Header("Authorization") authHeader : String, @Body addPropertyInput: AddPropertyInput) : CreateOrUpdateResponse
 
-    @PUT("${API_PREFIX}/owner/properties/{propertyId}")
+    @PUT("${API_PREFIX}/owner/properties/{propertyId}/")
     suspend fun updateProperty(
         @Header("Authorization") authHeader : String,
         @Body addPropertyInput: AddPropertyInput,
         @Path("propertyId") propertyId: String
     ) : CreateOrUpdateResponse
 
-    @PUT("${API_PREFIX}/owner/properties/{propertyId}/archive")
+    @PUT("${API_PREFIX}/owner/properties/{propertyId}/archive/")
     suspend fun archiveProperty(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
@@ -174,20 +189,20 @@ interface ApiService {
     ) : CreateOrUpdateResponse
 
     //rooms functions
-    @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms")
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms/")
     suspend fun getAllRooms(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
     ) : Array<RoomOutput>
 
-    @POST("${API_PREFIX}/owner/properties/{propertyId}/rooms")
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/rooms/")
     suspend fun addRoom(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Body room: AddRoomInput
     ) : CreateOrUpdateResponse
 
-    @PUT("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/archive")
+    @PUT("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/archive/")
     suspend fun archiveRoom(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
@@ -203,14 +218,14 @@ interface ApiService {
     ) : Array<RoomOutput>
 
     //furnitures functions
-    @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/furnitures")
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/furnitures/")
     suspend fun getAllFurnitures(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Path("roomId") roomId: String,
     ) : Array<FurnitureOutput>
 
-    @POST("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/furnitures")
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/rooms/{roomId}/furnitures/")
     suspend fun addFurniture(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
@@ -227,13 +242,13 @@ interface ApiService {
         @Body inventoryReportInput: InventoryReportInput
     ) : CreatedInventoryReport
 
-    @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports")
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/")
     suspend fun getAllInventoryReports(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
     ) : Array<InventoryReportOutput>
 
-    @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/{report_id}")
+    @GET("${API_PREFIX}/owner/properties/{propertyId}/inventory-reports/{report_id}/")
     suspend fun getInventoryReportByIdOrLatest(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
@@ -259,13 +274,13 @@ interface ApiService {
     ) : AiCallOutput
 
     //invitation tenant functions
-    @DELETE("${API_PREFIX}/owner/properties/{propertyId}/cancel-invite")
+    @DELETE("${API_PREFIX}/owner/properties/{propertyId}/cancel-invite/")
     suspend fun cancelTenantInvitation(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
     ) : retrofit2.Response<Unit>
 
-    @POST("${API_PREFIX}/owner/properties/{propertyId}/send-invite")
+    @POST("${API_PREFIX}/owner/properties/{propertyId}/send-invite/")
     suspend fun inviteTenant(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
@@ -274,7 +289,7 @@ interface ApiService {
 
     //dashboard functions
 
-    @GET("${API_PREFIX}/owner/dashboard")
+    @GET("${API_PREFIX}/owner/dashboard/")
     suspend fun getDashboard(
         @Header("Authorization") authHeader : String,
         @Query("lang") lang: String,

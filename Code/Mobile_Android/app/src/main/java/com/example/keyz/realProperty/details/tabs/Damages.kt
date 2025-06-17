@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.keyz.LocalIsOwner
 import com.example.keyz.R
-import com.example.keyz.addDamageModal.AddDamageModal
+import com.example.keyz.components.addDamageModal.AddDamageModal
 import com.example.keyz.apiCallerServices.Damage
 import com.example.keyz.ui.components.StyledButton
 import com.example.keyz.utils.Base64Utils

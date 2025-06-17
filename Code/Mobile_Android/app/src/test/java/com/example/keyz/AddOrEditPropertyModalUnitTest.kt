@@ -3,7 +3,7 @@ package com.example.keyz
 import android.net.Uri
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.navigation.NavController
-import com.example.keyz.addOrEditPropertyModal.AddOrEditPropertyViewModel
+import com.example.keyz.components.addOrEditPropertyModal.AddOrEditPropertyViewModel
 import com.example.keyz.apiCallerServices.AddPropertyInput
 import com.example.keyz.apiClient.ApiService
 import io.mockk.coVerify

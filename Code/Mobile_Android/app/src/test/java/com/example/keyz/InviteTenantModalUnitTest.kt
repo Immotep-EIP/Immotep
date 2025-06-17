@@ -5,7 +5,7 @@ import androidx.navigation.NavController
 import com.example.keyz.apiCallerServices.InviteTenantCallerService
 import com.example.keyz.apiClient.ApiService
 import com.example.keyz.apiClient.mockApi.fakeInviteOutputValue
-import com.example.keyz.inviteTenantModal.InviteTenantViewModel
+import com.example.keyz.components.inviteTenantModal.InviteTenantViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

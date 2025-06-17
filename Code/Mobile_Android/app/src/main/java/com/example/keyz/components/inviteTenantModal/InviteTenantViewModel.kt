@@ -1,4 +1,4 @@
-package com.example.keyz.inviteTenantModal
+package com.example.keyz.components.inviteTenantModal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.example.keyz.addDamageModal
+package com.example.keyz.components.addDamageModal
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

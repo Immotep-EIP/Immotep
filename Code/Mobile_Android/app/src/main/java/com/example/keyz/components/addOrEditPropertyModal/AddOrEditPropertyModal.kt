@@ -1,4 +1,4 @@
-package com.example.keyz.addOrEditPropertyModal
+package com.example.keyz.components.addOrEditPropertyModal
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest

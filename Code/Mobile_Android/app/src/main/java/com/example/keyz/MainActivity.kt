@@ -32,7 +32,7 @@ val LocalIsOwner = compositionLocalOf<MutableState<Boolean>> {
     error("No local is owner provided")
 }
 
-var isTesting = true
+var isTesting = false
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

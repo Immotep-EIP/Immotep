@@ -36,6 +36,7 @@ import com.example.keyz.R
 import com.example.keyz.components.CheckBoxWithLabel
 import com.example.keyz.components.ErrorAlert
 import com.example.keyz.components.Header
+import com.example.keyz.components.LoadingDialog
 import com.example.keyz.components.TopText
 import com.example.keyz.ui.components.OutlinedTextField
 import com.example.keyz.ui.components.PasswordInput
@@ -51,9 +52,11 @@ fun LoginScreen(
     }
     val emailAndPassword = viewModel.emailAndPassword.collectAsState()
     val errors = viewModel.errors.collectAsState()
+    val isLoading = viewModel.isLoading.collectAsState()
     val columnPaddingApiError = if (errors.value.apiError == null) 40.dp else 20.dp
 
     BackHandler {}
+    LoadingDialog(isLoading.value)
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)

@@ -55,7 +55,7 @@ import coil.compose.AsyncImage
 import com.example.keyz.LocalApiService
 import com.example.keyz.LocalIsOwner
 import com.example.keyz.R
-import com.example.keyz.addOrEditPropertyModal.AddOrEditPropertyModal
+import com.example.keyz.components.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.keyz.apiCallerServices.DetailedProperty
 import com.example.keyz.apiCallerServices.PropertyStatus
 import com.example.keyz.components.DeletePopUp

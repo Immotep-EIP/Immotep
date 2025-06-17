@@ -48,14 +48,14 @@ import coil.compose.AsyncImage
 import com.example.keyz.LocalApiService
 import com.example.keyz.LocalIsOwner
 import com.example.keyz.R
-import com.example.keyz.addOrEditPropertyModal.AddOrEditPropertyModal
+import com.example.keyz.components.addOrEditPropertyModal.AddOrEditPropertyModal
 import com.example.keyz.apiCallerServices.DetailedProperty
 import com.example.keyz.apiCallerServices.PropertyStatus
 import com.example.keyz.components.ErrorAlert
 import com.example.keyz.components.InitialFadeIn
 import com.example.keyz.components.InternalLoading
 import com.example.keyz.inventory.loaderButton.LoaderInventoryViewModel
-import com.example.keyz.inviteTenantModal.InviteTenantModal
+import com.example.keyz.components.inviteTenantModal.InviteTenantModal
 import com.example.keyz.layouts.TabsLayout
 import com.example.keyz.realProperty.PropertyStatusBox
 import com.example.keyz.realProperty.details.tabs.AboutPropertyTab

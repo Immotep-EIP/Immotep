@@ -1,4 +1,4 @@
-package com.example.keyz.inviteTenantModal
+package com.example.keyz.components.inviteTenantModal
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable

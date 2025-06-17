@@ -9,6 +9,7 @@ import com.example.keyz.apiClient.ApiService
 import com.example.keyz.components.decodeRetroFitMessagesToHttpCodes
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import retrofit2.HttpException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -47,10 +48,28 @@ class AuthService(
         username: String,
         password: String,
     ) {
+        /*
+        val testRes = try {
+            apiService.loggin(username = username, password = password)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("error logggggin $e")
+            val code = decodeRetroFitMessagesToHttpCodes(e)
+            throw Exception("Failed to login,$code")
+        }
+        println("testRes : $testRes")
+
+         */
         val response =
             try {
                 apiService.login(username = username, password = password)
+            } catch(e : HttpException) {
+                println("error response : ${e.response()}")
+                e.printStackTrace()
+                val code = decodeRetroFitMessagesToHttpCodes(e)
+                throw Exception("Failed to login,$code")
             } catch (e: Exception) {
+                e.printStackTrace()
                 val code = decodeRetroFitMessagesToHttpCodes(e)
                 throw Exception("Failed to login,$code")
             }

@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 data class LoginState(
     val email: String = "",
@@ -36,8 +38,11 @@ class LoginViewModel(
     private val _emailAndPassword = MutableStateFlow(LoginState())
     private val _errors = MutableStateFlow(LoginErrorState())
     private val authService = AuthService(navController.context.dataStore, apiService)
+    private val _isLoading = MutableStateFlow(false)
+    private val _loadingMutex = Mutex()
     val emailAndPassword: StateFlow<LoginState> = _emailAndPassword.asStateFlow()
     val errors: StateFlow<LoginErrorState> = _errors.asStateFlow()
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     fun updateEmailAndPassword(email: String?, password: String?, keepSigned: Boolean?) {
         _emailAndPassword.value =
@@ -62,19 +67,25 @@ class LoginViewModel(
             return
         }
         viewModelScope.launch {
-            try {
-                authService.onLogin(username = _emailAndPassword.value.email, password = _emailAndPassword.value.password)
-                setIsOwner(authService.isUserOwner())
-                navController.navigate("dashboard")
-                return@launch
-            } catch (e: Exception) {
-                println("error: ${e.message}")
-                val messageAndCode = e.message?.split(",")
-                if (messageAndCode != null && messageAndCode.size == 2) {
-                    val code = messageAndCode[1].toInt()
-                    _errors.value = _errors.value.copy(apiError = code)
+            _loadingMutex.withLock {
+                _isLoading.value = true
+                try {
+                    authService.onLogin(
+                        username = _emailAndPassword.value.email,
+                        password = _emailAndPassword.value.password
+                    )
+                    setIsOwner(authService.isUserOwner())
+                    navController.navigate("dashboard")
+                } catch (e: Exception) {
+                    println("error: ${e.message}")
+                    val messageAndCode = e.message?.split(",")
+                    if (messageAndCode != null && messageAndCode.size == 2) {
+                        val code = messageAndCode[1].toInt()
+                        _errors.value = _errors.value.copy(apiError = code)
+                    }
+                } finally {
+                    _isLoading.value = false
                 }
-                return@launch
             }
         }
     }

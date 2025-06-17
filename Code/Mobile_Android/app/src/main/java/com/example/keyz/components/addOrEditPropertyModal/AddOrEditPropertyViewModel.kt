@@ -1,4 +1,4 @@
-package com.example.keyz.addOrEditPropertyModal
+package com.example.keyz.components.addOrEditPropertyModal
 
 import android.content.Context
 import android.net.Uri

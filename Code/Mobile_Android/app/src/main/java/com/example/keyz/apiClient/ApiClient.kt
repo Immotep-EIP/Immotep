@@ -1,24 +1,30 @@
 package com.example.keyz.apiClient
 
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 
 object RetrofitClient {
-    // private val BASE_URL = "https://test1.icytree-5b429d30.eastus.azurecontainerapps.io"
-    private const val BASE_URL = "http://10.0.2.2:8080/"
+    private const val BASE_URL = "https://dev.space.keyz-app.fr/"
 
+    // Logging interceptor setup
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY // Options: BASIC, HEADERS, BODY
+    }
 
-    private val okHttpClient: OkHttpClient = OkHttpClient().newBuilder()
+    private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor) // <- add this
         .connectTimeout(60, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(60, TimeUnit.SECONDS)
         .build()
+
     val retrofit: Retrofit by lazy {
-        Retrofit
-            .Builder()
+        Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
