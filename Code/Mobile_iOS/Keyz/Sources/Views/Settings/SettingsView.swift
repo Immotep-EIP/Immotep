@@ -181,7 +181,6 @@ struct SettingsView: View {
     }
     
     private func saveChanges() {
-        print("Saving changes: \(editableEmail), \(editableFirstname), \(editableLastname)")
         if var updatedUser = loginViewModel.user {
             updatedUser.email = editableEmail
             updatedUser.firstname = editableFirstname

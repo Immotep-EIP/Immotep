@@ -25,22 +25,24 @@ class PropertyViewModel: ObservableObject {
         self.loginViewModel = loginViewModel
     }
     
+    @AppStorage("userRole") var storedUserRole: String?
+    
     func createProperty(request: Property, token: String) async throws -> String {
-        guard loginViewModel.userRole == "owner" else {
+        guard storedUserRole == "owner" else {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can create properties.".localized()])
         }
         return try await ownerViewModel.createProperty(request: request, token: token)
     }
     
     func updatePropertyPicture(token: String, propertyPicture: UIImage, propertyID: String) async throws -> String {
-        guard loginViewModel.userRole == "owner" else {
+        guard storedUserRole == "owner" else {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can update property pictures.".localized()])
         }
         return try await ownerViewModel.updatePropertyPicture(token: token, propertyPicture: propertyPicture, propertyID: propertyID)
     }
     
     func fetchProperties() async {
-        if loginViewModel.userRole == "tenant" {
+        if storedUserRole == "tenant" {
             do {
                 let property = try await tenantViewModel.fetchTenantProperty()
                 self.properties = [property]
@@ -63,7 +65,7 @@ class PropertyViewModel: ObservableObject {
     }
     
     func updateProperty(request: Property, token: String) async throws -> String {
-        guard loginViewModel.userRole == "owner" else {
+        guard storedUserRole == "owner" else {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can update properties.".localized()])
         }
         let result = try await ownerViewModel.updateProperty(request: request, token: token)
@@ -72,7 +74,7 @@ class PropertyViewModel: ObservableObject {
     }
     
     func deleteProperty(propertyId: String) async throws {
-        guard loginViewModel.userRole == "owner" else {
+        guard storedUserRole == "owner" else {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can delete properties.".localized()])
         }
         try await ownerViewModel.deleteProperty(propertyId: propertyId)
@@ -81,23 +83,20 @@ class PropertyViewModel: ObservableObject {
     
     func fetchPropertyDocuments(propertyId: String) async throws -> [PropertyDocument] {
         let documents: [PropertyDocument]
-        if loginViewModel.userRole == "tenant" {
+        if storedUserRole == "tenant" {
             if let leaseId = try await fetchActiveLeaseIdForProperty(propertyId: propertyId, token: try await TokenStorage.getValidAccessToken()) {
                 documents = try await tenantViewModel.fetchTenantPropertyDocuments(leaseId: leaseId, propertyId: propertyId)
             } else {
-                print("No active lease found for property \(propertyId)")
                 throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease found.".localized()])
             }
         } else {
             documents = try await ownerViewModel.fetchPropertyDocuments(propertyId: propertyId)
         }
         
-        print("Fetched documents for property \(propertyId): \(documents.map { ($0.id, $0.title, $0.fileName) })")
         if let index = properties.firstIndex(where: { $0.id == propertyId }) {
             var updatedProperty = properties[index]
             updatedProperty.documents = documents
             properties[index] = updatedProperty
-            print("Updated property \(propertyId) with documents: \(documents.map { ($0.id, $0.title, $0.fileName) })")
             objectWillChange.send()
         } else {
             print("Property \(propertyId) not found in properties array")
@@ -106,7 +105,7 @@ class PropertyViewModel: ObservableObject {
     }
     
     func cancelInvite(propertyId: String, token: String) async throws {
-        guard loginViewModel.userRole == "owner" else {
+        guard storedUserRole == "owner" else {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can cancel invites.".localized()])
         }
         try await ownerViewModel.cancelInvite(propertyId: propertyId, token: token)
@@ -114,7 +113,7 @@ class PropertyViewModel: ObservableObject {
     }
     
     func endLease(propertyId: String, leaseId: String, token: String) async throws {
-        guard loginViewModel.userRole == "owner" else {
+        guard storedUserRole == "owner" else {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can end leases.".localized()])
         }
         try await ownerViewModel.endLease(propertyId: propertyId, leaseId: leaseId, token: token)
@@ -122,7 +121,7 @@ class PropertyViewModel: ObservableObject {
     }
     
     func fetchActiveLease(propertyId: String, token: String) async throws -> String? {
-        if loginViewModel.userRole == "tenant" {
+        if storedUserRole == "tenant" {
             return try await tenantViewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token)
         } else {
             return try await ownerViewModel.fetchActiveLease(propertyId: propertyId, token: token)
@@ -130,7 +129,7 @@ class PropertyViewModel: ObservableObject {
     }
     
     func fetchPropertyDamages(propertyId: String) async throws {
-        if loginViewModel.userRole == "tenant" {
+        if storedUserRole == "tenant" {
             if let leaseId = try await fetchActiveLeaseIdForProperty(propertyId: propertyId, token: try await TokenStorage.getValidAccessToken()) {
                 let fetchedDamages = try await tenantViewModel.fetchTenantDamages(leaseId: leaseId)
                 if let index = properties.firstIndex(where: { $0.id == propertyId }) {
@@ -170,14 +169,14 @@ class PropertyViewModel: ObservableObject {
     }
     
     func createDamage(propertyId: String, leaseId: String, damage: DamageRequest, token: String) async throws -> String {
-        guard loginViewModel.userRole == "tenant" else {
+        guard storedUserRole == "tenant" else {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only tenants can report damages.".localized()])
         }
         return try await tenantViewModel.createDamage(propertyId: propertyId, leaseId: leaseId, damage: damage, token: token)
     }
     
     func fetchLastInventoryReport(propertyId: String, leaseId: String) async throws -> InventoryReportResponse? {
-        guard loginViewModel.userRole == "owner" else {
+        guard storedUserRole == "owner" else {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can fetch inventory reports.".localized()])
         }
         return try await ownerViewModel.fetchLastInventoryReport(propertyId: propertyId, leaseId: leaseId)

@@ -120,6 +120,27 @@ struct PropertyDetailView: View {
             ZStack {
                 mainContentView
                 errorMessageView
+                
+                if selectedTab == "Damages".localized() && loginViewModel.userRole == "tenant" {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Button(action: { navigateToReportDamage = true }) {
+                                Image(systemName: "plus")
+                                    .font(.system(size: 24, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .background(Color("LightBlue"))
+                                    .clipShape(Circle())
+                                    .shadow(radius: 4)
+                            }
+                            .accessibilityLabel("report_damage_btn")
+                        }
+                    }
+                    .padding(.bottom, 20)
+                    .padding(.trailing, 20)
+                }
             }
             .onReceive(viewModel.$properties) { properties in
                 if let updatedProperty = properties.first(where: { $0.id == property.id }) {
@@ -184,47 +205,36 @@ struct PropertyDetailView: View {
     }
     
     private var damagesContentView: some View {
-        return ScrollView {
-            VStack(spacing: 16) {
-                if viewModel.isFetchingDamages {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .padding()
-                } else if let damagesError = viewModel.damagesError {
-                    Text(damagesError)
-                        .foregroundColor(.red)
-                        .padding()
-                } else if let currentProperty = viewModel.properties.first(where: { $0.id == property.id }), !currentProperty.damages.isEmpty {
-                    LazyVStack(spacing: 10) {
-                        ForEach(currentProperty.damages.sorted { $0.createdAt > $1.createdAt }, id: \.id) { damage in
-                            DamageItemView(damage: damage)
-                                .id(damage.id)
+        ZStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    if viewModel.isFetchingDamages {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .padding()
+                    } else if let damagesError = viewModel.damagesError {
+                        Text(damagesError)
+                            .foregroundColor(.red)
+                            .padding()
+                    } else if let currentProperty = viewModel.properties.first(where: { $0.id == property.id }), !currentProperty.damages.isEmpty {
+                        LazyVStack(spacing: 10) {
+                            ForEach(currentProperty.damages.sorted { $0.createdAt > $1.createdAt }, id: \.id) { damage in
+                                DamageItemView(damage: damage)
+                                    .id(damage.id)
+                            }
                         }
+                        .padding(.horizontal)
+                    } else {
+                        Text("no_damages_reported".localized())
+                            .foregroundColor(.gray)
+                            .padding()
                     }
-                    .padding(.horizontal)
-                } else {
-                    Text("no_damages_reported".localized())
-                        .foregroundColor(.gray)
-                        .padding()
                 }
-                
-                if loginViewModel.userRole == "tenant" {
-                    Button(action: { navigateToReportDamage = true }) {
-                        Text("Report Damage".localized())
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 15)
-                            .background(Color("LightBlue"))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                            .padding(.horizontal)
-                            .padding(.top, 10)
-                    }
-                    .accessibilityLabel("report_damage_btn")
-                }
+                .padding(.vertical, 20)
             }
-            .padding(.vertical, 20)
         }
     }
+
 
     private var mainContentView: some View {
         VStack(spacing: 0) {

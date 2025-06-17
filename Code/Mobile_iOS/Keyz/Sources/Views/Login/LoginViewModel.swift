@@ -19,6 +19,7 @@ class LoginViewModel: ObservableObject {
     @Published var userRole: String?
 
     @AppStorage("user") private var storedUserData: String = ""
+    @AppStorage("userRole") var storedUserRole: String?
 
     public var cancellables = Set<AnyCancellable>()
     public let userService: UserServiceProtocol
@@ -50,6 +51,7 @@ class LoginViewModel: ObservableObject {
                 userId = user?.id
                 userRole = user?.role
                 loginStatus = "Login successful!"
+                storedUserRole = user?.role
 
                 if let user = user {
                     saveUser(user)

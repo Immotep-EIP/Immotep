@@ -166,12 +166,10 @@ struct EditPropertyView: View {
 
         do {
             let propertyId = try await viewModel.updateProperty(request: updatedProperty, token: token)
-            print("Property updated successfully with ID: \(propertyId)")
 
             if let newPhoto = photo, newPhoto != property.photo {
                 do {
                     let res = try await viewModel.updatePropertyPicture(token: token, propertyPicture: newPhoto, propertyID: propertyId)
-                    print("Property picture updated successfully: \(res)")
                 } catch {
                     print("Failed to update property picture: \(error.localizedDescription)")
                 }
@@ -179,16 +177,13 @@ struct EditPropertyView: View {
 
             if let updatedProperty = viewModel.properties.first(where: { $0.id == propertyId }) {
                 property = updatedProperty
-                print("Updated property binding in EditPropertyView for ID: \(propertyId)")
             } else {
                 errorMessage = "Updated property not found in refreshed data.".localized()
-                print("Property \(propertyId) not found in viewModel.properties after update")
             }
 
             dismiss()
         } catch {
             errorMessage = "Error updating property: \(error.localizedDescription)".localized()
-            print("Error updating property: \(error)")
         }
     }
 }
