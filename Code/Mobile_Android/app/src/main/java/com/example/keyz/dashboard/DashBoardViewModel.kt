@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import com.example.keyz.apiCallerServices.ApiCallerServiceException
 import com.example.keyz.apiCallerServices.DashBoard
 import com.example.keyz.apiCallerServices.DashBoardCallerService
+import com.example.keyz.apiCallerServices.ProfileCallerService
 import com.example.keyz.apiClient.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +18,7 @@ class DashBoardViewModel(
     apiService: ApiService
 ) : ViewModel() {
     private val _dashBoardApiCaller = DashBoardCallerService(apiService, navController)
+    private val _profileApiCaller = ProfileCallerService(apiService, navController)
     private val _isLoading = MutableStateFlow(false)
     private val _dashBoard = MutableStateFlow(DashBoard())
     private val _userName = MutableStateFlow("")
@@ -39,6 +41,13 @@ class DashBoardViewModel(
     }
 
     fun getName() {
-
+        viewModelScope.launch {
+            try {
+                val profile = _profileApiCaller.getProfile()
+                _userName.value = "${profile.firstname} ${profile.lastname}"
+            } catch(e : ApiCallerServiceException) {
+                e.printStackTrace()
+            }
+        }
     }
 }

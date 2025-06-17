@@ -314,6 +314,6 @@ class MockedApiService : ApiService {
     }
 
     override suspend fun getDashboard(authHeader: String, lang: String): GetDashBoardOutput {
-        TODO("Not yet implemented")
+        return fakeGetDashBoardOutput
     }
 }

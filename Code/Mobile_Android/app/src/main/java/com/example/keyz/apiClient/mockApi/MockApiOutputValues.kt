@@ -3,8 +3,12 @@ package com.example.keyz.apiClient.mockApi
 import com.example.keyz.apiCallerServices.AiCallOutput
 import com.example.keyz.apiCallerServices.DamageOutput
 import com.example.keyz.apiCallerServices.DamagePriority
+import com.example.keyz.apiCallerServices.DashBoardOpenDamageOutput
+import com.example.keyz.apiCallerServices.DashBoardPropertiesOutput
+import com.example.keyz.apiCallerServices.DashBoardPropertyOutput
 import com.example.keyz.apiCallerServices.Document
 import com.example.keyz.apiCallerServices.FurnitureOutput
+import com.example.keyz.apiCallerServices.GetDashBoardOutput
 import com.example.keyz.apiCallerServices.GetPropertyResponse
 import com.example.keyz.apiCallerServices.InviteOutput
 import com.example.keyz.apiCallerServices.InvitePropertyResponse
@@ -277,3 +281,39 @@ val fakeDamageOutput = DamageOutput(
 )
 
 val fakeDamagesArray = arrayOf(fakeDamageOutput, fakeDamageOutput.copy(id = "secFakeDamage", room_name = "fakeRoom2"))
+
+
+val fakeGetDashBoardOutput = GetDashBoardOutput(
+    open_damages = DashBoardOpenDamageOutput(
+        list_to_fix = arrayOf(fakeDamageOutput),
+        nbr_high = 1,
+        nbr_low = 1,
+        nbr_medium = 1,
+        nbr_total = 3,
+        nbr_planned_to_fix_this_week = 1,
+        nbr_urgent = 0
+    ),
+    reminders = arrayOf(),
+    properties = DashBoardPropertiesOutput(
+        list_recently_added = fakeProperties.map { DashBoardPropertyOutput(
+        id = it.id,
+        apartment_number = it.apartment_number,
+        archived = it.archived,
+        owner_id = it.owner_id,
+        name = it.name,
+        address = it.address,
+        city = it.city,
+        postal_code = it.postal_code,
+        country = it.country,
+        area_sqm = it.area_sqm,
+        rental_price_per_month = it.rental_price_per_month,
+        deposit_price = it.deposit_price,
+        created_at = it.created_at
+    ) }.toTypedArray(),
+        nbr_archived = 0,
+        nbr_available = 1,
+        nbr_occupied = 2,
+        nbr_pending_invites = 0,
+        nbr_total = 3
+    )
+)
