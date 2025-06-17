@@ -9,7 +9,7 @@ The *Messages* page will serve as a dedicated space for landlords to engage in d
 
 ---
 
-![Coming Soon Banner](../../Images/comingSoon.png)
+![Coming Soon Banner](../Images/messages.png)
 *Figure: Messaging feature is coming soon to the Keyz application.*
 
 ---

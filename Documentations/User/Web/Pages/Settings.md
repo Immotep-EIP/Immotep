@@ -11,7 +11,7 @@ The *Settings* page allows users to personalize their profile, adjust applicatio
 
 ---
 
-![Keyz Settings Page](../../Images/settings.png)
+![Keyz Settings Page](../Images/settings.png)
 *Figure: User settings interface in the Keyz application.*
 
 ---
