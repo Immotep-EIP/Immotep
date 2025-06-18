@@ -1,9 +1,9 @@
 package database
 
 import (
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/utils"
 )
 
 func CreateContactMessage(contact db.ContactMessageModel) db.ContactMessageModel {

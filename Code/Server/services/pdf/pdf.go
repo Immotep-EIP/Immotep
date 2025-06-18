@@ -5,8 +5,8 @@ import (
 	"io"
 
 	"github.com/go-pdf/fpdf"
-	"immotep/backend/prisma/db"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	"keyz/backend/utils"
 )
 
 var Test = false

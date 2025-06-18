@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/utils"
 )
 
 type TestUserVerifier struct{}

@@ -4,7 +4,7 @@ import (
 	"log"
 	"strconv"
 
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 func NewInventoryReportPDF(invReport db.InventoryReportModel, lease db.LeaseModel) ([]byte, error) {

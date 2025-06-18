@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 
-	"immotep/backend/prisma/db"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	"keyz/backend/utils"
 )
 
 type Response struct {

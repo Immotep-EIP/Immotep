@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
 )
 
 func TestGetAllDatasFromProperties(t *testing.T) {

@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services/database"
-	"immotep/backend/services/pdf"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services/database"
+	"keyz/backend/services/pdf"
+	"keyz/backend/utils"
 )
 
 func checkRoom(roomId string, propertyId string) error {

@@ -1,6 +1,6 @@
-# Makefile for Immotep Server
+# Makefile for Keyz Server
 
-TEST_PACKAGES	=	$(shell go list ./... | grep -ve prisma -ve docs -ve chatgpt -ve brevo -ve '^immotep/backend$$' -ve '^immotep/backend/services$$')
+TEST_PACKAGES	=	$(shell go list ./... | grep -ve prisma -ve docs -ve chatgpt -ve brevo -ve '^keyz/backend$$' -ve '^keyz/backend/services$$')
 MODE 			?=	none
 
 all: build

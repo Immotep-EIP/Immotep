@@ -981,9 +981,9 @@ info:
   contact:
     email: martin.d-herouville@epitech.eu
     name: Mazettt
-  description: This is the API used by the Immotep application.
+  description: This is the API used by the Keyz application.
   termsOfService: http://swagger.io/terms/
-  title: Immotep API
+  title: Keyz API
   version: "1.0"
 paths:
   /auth/invite/{id}/:

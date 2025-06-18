@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/base64"
 
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 type FurnitureStateRequest struct {

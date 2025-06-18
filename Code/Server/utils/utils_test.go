@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"
-	"immotep/backend/utils"
+	"keyz/backend/utils"
 )
 
 func TestGetClaims(t *testing.T) {

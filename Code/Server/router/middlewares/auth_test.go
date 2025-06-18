@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/prisma/db"
-	"immotep/backend/router/middlewares"
+	"keyz/backend/prisma/db"
+	"keyz/backend/router/middlewares"
 )
 
 func TestCheckClaims(t *testing.T) {

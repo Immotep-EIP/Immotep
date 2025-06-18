@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services/chatgpt"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services/chatgpt"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func imagesToBase64Strings(images []db.ImageModel) []string {

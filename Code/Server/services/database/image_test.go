@@ -6,10 +6,10 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
 )
 
 func BuildTestImage(id string, base64data string) db.ImageModel {

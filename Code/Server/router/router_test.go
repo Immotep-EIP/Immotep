@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/router"
+	"keyz/backend/router"
 )
 
 func TestRoutes1_Welcome(t *testing.T) {
@@ -19,7 +19,7 @@ func TestRoutes1_Welcome(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "Welcome to Immotep API", w.Body.String())
+	assert.Equal(t, "Welcome to Keyz API", w.Body.String())
 }
 
 func TestRoutes2_Welcome(t *testing.T) {
@@ -31,5 +31,5 @@ func TestRoutes2_Welcome(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "Welcome to Immotep API", w.Body.String())
+	assert.Equal(t, "Welcome to Keyz API", w.Body.String())
 }

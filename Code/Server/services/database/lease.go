@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/utils"
 )
 
 func GetCurrentActiveLeaseByProperty(propertyId string) *db.LeaseModel {
