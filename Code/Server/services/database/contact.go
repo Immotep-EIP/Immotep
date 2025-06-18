@@ -3,6 +3,7 @@ package database
 import (
 	"immotep/backend/prisma/db"
 	"immotep/backend/services"
+	"immotep/backend/utils"
 )
 
 func CreateContactMessage(contact db.ContactMessageModel) db.ContactMessageModel {
@@ -10,7 +11,7 @@ func CreateContactMessage(contact db.ContactMessageModel) db.ContactMessageModel
 	newContact, err := pdb.Client.ContactMessage.CreateOne(
 		db.ContactMessage.Firstname.Set(contact.Firstname),
 		db.ContactMessage.Lastname.Set(contact.Lastname),
-		db.ContactMessage.Email.Set(contact.Email),
+		db.ContactMessage.Email.Set(utils.SanitizeEmail(contact.Email)),
 		db.ContactMessage.Subject.Set(contact.Subject),
 		db.ContactMessage.Message.Set(contact.Message),
 	).Exec(pdb.Context)
@@ -24,7 +25,7 @@ func MockCreateContactMessage(c *services.PrismaDB, contact db.ContactMessageMod
 	return c.Client.ContactMessage.CreateOne(
 		db.ContactMessage.Firstname.Set(contact.Firstname),
 		db.ContactMessage.Lastname.Set(contact.Lastname),
-		db.ContactMessage.Email.Set(contact.Email),
+		db.ContactMessage.Email.Set(utils.SanitizeEmail(contact.Email)),
 		db.ContactMessage.Subject.Set(contact.Subject),
 		db.ContactMessage.Message.Set(contact.Message),
 	)

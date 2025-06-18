@@ -134,6 +134,9 @@ func UpdateCurrentUserProfile(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
 		return
 	}
+	if req.Email != nil {
+		req.Email = utils.Ptr(utils.SanitizeEmail(*req.Email))
+	}
 
 	newUser := database.UpdateUser(*user, req)
 	if newUser == nil {

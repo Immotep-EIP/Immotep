@@ -504,7 +504,7 @@
                 }
             }
         },
-        "/owner/properties/{property_id}/archive": {
+        "/owner/properties/{property_id}/archive/": {
             "put": {
                 "security": [
                     {
@@ -571,7 +571,7 @@
                 }
             }
         },
-        "/owner/properties/{property_id}/cancel-invite": {
+        "/owner/properties/{property_id}/cancel-invite/": {
             "delete": {
                 "security": [
                     {
@@ -2697,7 +2697,7 @@
                 }
             }
         },
-        "/owner/properties/{property_id}/send-invite": {
+        "/owner/properties/{property_id}/send-invite/": {
             "post": {
                 "security": [
                     {
@@ -4460,6 +4460,7 @@
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -4536,6 +4537,7 @@
             "properties": {
                 "add_pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -4710,6 +4712,7 @@
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5232,6 +5235,7 @@
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 10,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5287,6 +5291,7 @@
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 10,
                     "minItems": 1,
                     "items": {
                         "type": "string"

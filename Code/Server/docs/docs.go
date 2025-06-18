@@ -510,7 +510,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/archive": {
+        "/owner/properties/{property_id}/archive/": {
             "put": {
                 "security": [
                     {
@@ -577,7 +577,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/cancel-invite": {
+        "/owner/properties/{property_id}/cancel-invite/": {
             "delete": {
                 "security": [
                     {
@@ -2703,7 +2703,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/send-invite": {
+        "/owner/properties/{property_id}/send-invite/": {
             "post": {
                 "security": [
                     {
@@ -4466,6 +4466,7 @@ const docTemplate = `{
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -4542,6 +4543,7 @@ const docTemplate = `{
             "properties": {
                 "add_pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -4716,6 +4718,7 @@ const docTemplate = `{
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5238,6 +5241,7 @@ const docTemplate = `{
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 10,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5293,6 +5297,7 @@ const docTemplate = `{
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 10,
                     "minItems": 1,
                     "items": {
                         "type": "string"

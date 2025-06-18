@@ -88,6 +88,7 @@ func RegisterTenant(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
 		return
 	}
+	userReq.Email = utils.SanitizeEmail(userReq.Email)
 
 	leaseInvite := database.GetLeaseInviteById(c.Param("id"))
 	if leaseInvite == nil {
