@@ -34,6 +34,7 @@ val LocalIsOwner = compositionLocalOf<MutableState<Boolean>> {
 
 var isTesting = false
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

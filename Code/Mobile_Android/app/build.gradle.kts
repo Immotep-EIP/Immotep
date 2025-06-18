@@ -8,6 +8,7 @@ plugins {
 
 val cameraXVersion = "1.0.1"
 
+
 android {
     namespace = "com.example.keyz"
     compileSdk = 35
@@ -26,6 +27,7 @@ android {
             useSupportLibrary = true
         }
     }
+
 
     buildTypes {
         release {
@@ -50,6 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

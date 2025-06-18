@@ -74,22 +74,15 @@ class LoaderInventoryViewModel(
             lastInventoryRoom.details = setNewValuesForLastInventoryDetails(room.details, lastInventoryRoom.details)
             return@map lastInventoryRoom
         }
-        this.rooms.addAll(newRooms)
+        rooms.addAll(newRooms)
     }
 
     private suspend fun tryGetBaseRooms(propertyId: String) : Array<Room> {
-        try {
-            val newRooms = roomApiCaller.getAllRoomsWithFurniture(
-                propertyId,
-                { _inventoryErrors.value = _inventoryErrors.value.copy(errorRoomName = it) }
-            )
-            return newRooms
-        } catch (e: Exception) {
-            println("Error during get base rooms ${e.message}")
-            _inventoryErrors.value = _inventoryErrors.value.copy(getAllRooms = true, getLastInventoryReport = true)
-            e.printStackTrace()
-        }
-        return arrayOf()
+        val newRooms = roomApiCaller.getAllRoomsWithFurniture(
+            propertyId,
+            { _inventoryErrors.value = _inventoryErrors.value.copy(errorRoomName = it) }
+        )
+        return newRooms
     }
 
     fun loadInventory(propertyId: String) {
@@ -102,13 +95,21 @@ class LoaderInventoryViewModel(
             _loadingMutex.withLock {
                 rooms.clear()
                 _internalIsLoading.value = true
-                try {
-                    tryLoadLastInventory(propertyId, tryGetBaseRooms(propertyId))
+                val newRooms = try {
+                    tryGetBaseRooms(propertyId)
                 } catch (e: Exception) {
+                    println("Error during get base rooms ${e.message}")
+                    _inventoryErrors.value = _inventoryErrors.value.copy(getAllRooms = true, getLastInventoryReport = true)
                     e.printStackTrace()
-                } finally {
-                    _internalIsLoading.value = false
+                    return@launch
                 }
+                try {
+                    tryLoadLastInventory(propertyId, newRooms)
+                } catch(e : Exception) {
+                    rooms.addAll(newRooms)
+                    e.printStackTrace()
+                }
+                _internalIsLoading.value = false
             }
         }
     }

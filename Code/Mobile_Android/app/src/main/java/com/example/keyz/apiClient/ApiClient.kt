@@ -9,15 +9,23 @@ import java.util.concurrent.TimeUnit
 
 
 object RetrofitClient {
+    //url for the local deployement
+    //private const val BASE_URL = "http://10.0.2.2:8080/"
+
+    //url for the dev deployement
     private const val BASE_URL = "https://dev.space.keyz-app.fr/"
 
-    // Logging interceptor setup
+    //url for the release deployements
+    //private const val BASE_URL = "https://dev.space.keyz-app.fr/"
+
+
+
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY // Options: BASIC, HEADERS, BODY
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor) // <- add this
+        .addInterceptor(loggingInterceptor)
         .connectTimeout(60, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(60, TimeUnit.SECONDS)
