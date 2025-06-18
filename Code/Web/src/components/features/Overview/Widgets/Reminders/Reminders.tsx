@@ -2,10 +2,10 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { Empty, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
-import StatusTag from '@/components/common/Tag/StatusTag'
+import { StatusTag, Empty } from '@/components/common'
 
 import { DashboardReminders } from '@/interfaces/Dashboard/Dashboard'
 
@@ -50,7 +50,6 @@ const Reminders: React.FC<RemindersProps> = ({
       <div className={style.contentContainer}>
         {reminders.length === 0 ? (
           <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={t('widgets.reminders.no_reminders')}
             className={style.empty}
           />

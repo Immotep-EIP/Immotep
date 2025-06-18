@@ -2,10 +2,10 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { Badge, Empty, Tooltip } from 'antd'
+import { Badge, Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
-import StatusTag from '@/components/common/Tag/StatusTag'
+import { StatusTag, Empty } from '@/components/common'
 import toLocaleDate from '@/utils/date/toLocaleDate'
 
 import {
@@ -57,7 +57,6 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
         openDamages?.list_to_fix?.length === 0 ? (
           <div className={style.emptyContainer}>
             <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
               description={t('widgets.reminders.no_reminders')}
               className={style.empty}
             />

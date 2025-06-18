@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Empty, Typography, Modal } from 'antd'
+import { Modal } from 'antd'
 import { FilePdfOutlined, DeleteOutlined } from '@ant-design/icons'
 
+import { Empty } from '@/components/common'
 import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
 
 import { Document } from '@/interfaces/Property/Document'
@@ -40,11 +41,9 @@ const DocumentList: React.FC<{
       {(!documents || documents.length === 0) && (
         <div className={style.noDocuments}>
           <Empty
-            description={
-              <Typography.Text>
-                {t('pages.real_property_details.tabs.documents.no_documents')}
-              </Typography.Text>
-            }
+            description={t(
+              'pages.real_property_details.tabs.documents.no_documents'
+            )}
           />
         </div>
       )}

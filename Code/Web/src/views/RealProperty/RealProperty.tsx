@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Empty, Typography, Switch } from 'antd'
+import { Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 
 import useProperties from '@/hooks/Property/useProperties'
-import { Button } from '@/components/common'
+import { Button, Empty } from '@/components/common'
 import PageTitle from '@/components/ui/PageText/Title'
 import CardPropertyLoader from '@/components/ui/Loader/CardPropertyLoader'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
@@ -132,14 +132,7 @@ const RealPropertyPage: React.FC = () => {
           {loading && <CardPropertyLoader cards={12} />}
           {!loading && filteredProperties.length === 0 && (
             <div className={style.emptyContainer}>
-              <Empty
-                image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                description={
-                  <Typography.Text>
-                    {t('components.messages.no_properties')}
-                  </Typography.Text>
-                }
-              />
+              <Empty description={t('components.messages.no_properties')} />
             </div>
           )}
           {filteredProperties.map(realProperty => (

@@ -1,9 +1,10 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Empty, Spin, Table, Typography } from 'antd'
+import { Spin, Table, Typography } from 'antd'
 import type { TableProps } from 'antd'
 
+import { Empty } from '@/components/common'
 import { usePropertyContext } from '@/context/propertyContext'
 import useDamages from '@/hooks/Property/useDamages'
 import useNavigation from '@/hooks/Navigation/useNavigation'
@@ -124,15 +125,7 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
   ) {
     return (
       <div className={style.tabContentEmpty}>
-        <Empty
-          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          imageStyle={{ height: 60 }}
-          description={
-            <Typography.Text>
-              {t('pages.real_property.error.no_tenant_linked')}
-            </Typography.Text>
-          }
-        />
+        <Empty description={t('pages.real_property.error.no_tenant_linked')} />
       </div>
     )
   }

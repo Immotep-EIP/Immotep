@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Form, message, Spin, Empty, Typography } from 'antd'
+import { Form, message, Spin } from 'antd'
 
 import { usePropertyContext } from '@/context/propertyContext'
 import useDocument from '@/hooks/Property/useDocument'
 import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
-import { Button, Modal } from '@/components/common'
+import { Button, Modal, Empty } from '@/components/common'
 import DocumentList from '@/components/features/RealProperty/details/tabs/Documents/DocumentList'
 import UploadForm from '@/components/features/RealProperty/details/tabs/Documents/UploadForm'
 
@@ -91,17 +91,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
   ) {
     return (
       <div className={style.tabContentEmpty}>
-        <Empty
-          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          imageStyle={{
-            height: 60
-          }}
-          description={
-            <Typography.Text>
-              {t('pages.real_property.error.no_tenant_linked')}
-            </Typography.Text>
-          }
-        />
+        <Empty description={t('pages.real_property.error.no_tenant_linked')} />
       </div>
     )
   }
