@@ -8,6 +8,7 @@ import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPictu
 
 import { CardComponentProps } from '@/interfaces/Property/Property'
 import { TenantStatusEnum } from '@/enums/PropertyEnum'
+import { Card } from '@/components/common'
 
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 import locationIcon from '@/assets/icons/location.svg'
@@ -22,7 +23,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
   )
 
   return (
-    <div
+    <Card
       className={style.card}
       key={realProperty.id}
       role="button"
@@ -33,53 +34,52 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
           goToRealPropertyDetails(realProperty.id)
         }
       }}
+      padding="none"
     >
-      <div className={style.cardContentContainer}>
-        <Badge.Ribbon
-          text={t(
-            TenantStatusEnum[
-              realProperty!.status as keyof typeof TenantStatusEnum
-            ].text || ''
-          )}
-          color={
-            TenantStatusEnum[
-              realProperty!.status as keyof typeof TenantStatusEnum
-            ].color || 'default'
-          }
-        >
-          <div className={style.cardPictureContainer}>
-            <img
-              src={isLoading ? defaultHouse : picture || defaultHouse}
-              alt="property"
-              className={style.cardPicture}
-            />
-          </div>
-        </Badge.Ribbon>
-        <div className={style.cardInfoContainer}>
-          <b className={style.cardText}>{realProperty.name}</b>
-          <div className={style.cardAddressContainer}>
-            <img src={locationIcon} alt="location" className={style.icon} />
-            <span className={style.cardText}>
-              {realProperty.address &&
-              realProperty.postal_code &&
-              realProperty.city
-                ? (() => {
-                    let fullAddress = ''
-                    if (realProperty.apartment_number) {
-                      fullAddress = `N° ${realProperty.apartment_number} - ${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
-                    } else {
-                      fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
-                    }
-                    return fullAddress.length > 40
-                      ? `${fullAddress.substring(0, 40)}...`
-                      : fullAddress
-                  })()
-                : '-----------'}
-            </span>
-          </div>
+      <Badge.Ribbon
+        text={t(
+          TenantStatusEnum[
+            realProperty!.status as keyof typeof TenantStatusEnum
+          ].text || ''
+        )}
+        color={
+          TenantStatusEnum[
+            realProperty!.status as keyof typeof TenantStatusEnum
+          ].color || 'default'
+        }
+      >
+        <div className={style.cardPictureContainer}>
+          <img
+            src={isLoading ? defaultHouse : picture || defaultHouse}
+            alt="property"
+            className={style.cardPicture}
+          />
+        </div>
+      </Badge.Ribbon>
+      <div className={style.cardInfoContainer}>
+        <b className={style.cardText}>{realProperty.name}</b>
+        <div className={style.cardAddressContainer}>
+          <img src={locationIcon} alt="location" className={style.icon} />
+          <span className={style.cardText}>
+            {realProperty.address &&
+            realProperty.postal_code &&
+            realProperty.city
+              ? (() => {
+                  let fullAddress = ''
+                  if (realProperty.apartment_number) {
+                    fullAddress = `N° ${realProperty.apartment_number} - ${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
+                  } else {
+                    fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
+                  }
+                  return fullAddress.length > 40
+                    ? `${fullAddress.substring(0, 40)}...`
+                    : fullAddress
+                })()
+              : '-----------'}
+          </span>
         </div>
       </div>
-    </div>
+    </Card>
   )
 }
 

@@ -1,8 +1,10 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Input, Select, Space, Card } from 'antd'
+import { Input, Select, Space } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
+
+import { Card } from '@/components/common'
 
 import { PropertyFilterCardProps } from '@/interfaces/Property/Property'
 
