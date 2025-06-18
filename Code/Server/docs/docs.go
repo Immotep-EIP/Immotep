@@ -4543,6 +4543,7 @@ const docTemplate = `{
             "properties": {
                 "add_pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }

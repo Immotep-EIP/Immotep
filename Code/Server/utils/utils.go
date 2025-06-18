@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -69,4 +71,8 @@ func CheckPasswordHash(password string, hash string) bool {
 
 func Ptr[T any](v T) *T {
 	return &v
+}
+
+func SanitizeEmail(email string) string {
+	return strings.ToLower(strings.TrimSpace(email))
 }

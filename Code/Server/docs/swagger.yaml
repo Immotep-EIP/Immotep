@@ -250,6 +250,7 @@ definitions:
       add_pictures:
         items:
           type: string
+        maxItems: 5
         type: array
       comment:
         type: string

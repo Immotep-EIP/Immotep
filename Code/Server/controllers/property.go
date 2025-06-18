@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"slices"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
@@ -265,7 +264,7 @@ func InviteTenant(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
 		return
 	}
-	inviteReq.TenantEmail = strings.ToLower(inviteReq.TenantEmail)
+	inviteReq.TenantEmail = utils.SanitizeEmail(inviteReq.TenantEmail)
 
 	if database.GetCurrentActiveLeaseByProperty(c.Param("property_id")) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
