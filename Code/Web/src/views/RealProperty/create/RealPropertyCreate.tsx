@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { DownOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
-import { Form, Modal, message } from 'antd'
+import { Form, message } from 'antd'
 
 import useProperties from '@/hooks/Property/useProperties'
 import useImageUpload from '@/hooks/Image/useImageUpload'
-import { Button } from '@/components/common'
+import { Button, Modal } from '@/components/common'
 import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
 
@@ -83,12 +83,8 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
 
   return (
     <Modal
-      title={
-        <div className={style.modalTitleContainer}>
-          {t('pages.real_property.add_real_property.document_title')}
-        </div>
-      }
-      open={showModalCreate}
+      title={t('pages.real_property.add_real_property.document_title')}
+      isOpen={showModalCreate}
       onCancel={handleCancel}
       footer={[
         <Button type="default" key="back" onClick={handleCancel}>

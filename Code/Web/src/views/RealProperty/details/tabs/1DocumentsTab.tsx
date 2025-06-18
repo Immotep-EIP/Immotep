@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Modal, Form, message, Spin, Empty, Typography } from 'antd'
+import { Form, message, Spin, Empty, Typography } from 'antd'
 
 import { usePropertyContext } from '@/context/propertyContext'
 import useDocument from '@/hooks/Property/useDocument'
 import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
-import { Button } from '@/components/common'
+import { Button, Modal } from '@/components/common'
 import DocumentList from '@/components/features/RealProperty/details/tabs/Documents/DocumentList'
 import UploadForm from '@/components/features/RealProperty/details/tabs/Documents/UploadForm'
 
@@ -125,7 +125,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       )}
       <Modal
         title={t('pages.real_property_details.tabs.documents.modal_title')}
-        open={isModalOpen}
+        isOpen={isModalOpen}
         onCancel={handleCancel}
         footer={[
           <Button key="back" type="default" onClick={handleCancel}>
