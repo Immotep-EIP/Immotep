@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
-import { Input, Form, message, Checkbox } from 'antd'
+import { Form, Input as AntInput, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
 
 import { useAuth } from '@/context/authContext'
 import useNavigation from '@/hooks/Navigation/useNavigation'
-import { Button } from '@/components/common'
+import { Button, Input } from '@/components/common'
 import DividedPage from '@/components/layout/DividedPage/DividedPage'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import PageTitle from '@/components/ui/PageText/Title'
@@ -135,7 +135,7 @@ const Login: React.FC = () => {
                   }
                 ]}
               >
-                <Input.Password
+                <AntInput.Password
                   className="input"
                   size="middle"
                   placeholder={t('components.input.password.placeholder')}

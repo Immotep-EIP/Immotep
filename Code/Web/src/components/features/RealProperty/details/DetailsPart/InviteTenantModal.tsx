@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Modal, Form, Input, DatePicker, FormProps, message } from 'antd'
+import { Modal, Form, DatePicker, FormProps, message } from 'antd'
 import dayjs from 'dayjs'
 
-import { Button } from '@/components/common'
+import { Button, Input } from '@/components/common'
 import InviteTenants from '@/services/api/Tenant/InviteTenant.ts'
 
 import {
@@ -91,6 +91,7 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
           <Input
             placeholder={t('components.input.email.placeholder')}
             aria-label={t('components.input.email.placeholder')}
+            onChange={() => {}}
           />
         </Form.Item>
 

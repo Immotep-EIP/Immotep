@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Modal, Form, Input, Select, Checkbox, InputNumber, Space } from 'antd'
+import { Modal, Form, Select, Checkbox, InputNumber, Space } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 
-import Button from '@/components/common/Button/Button'
+import { Button, Input } from '@/components/common'
 
 import { ROOM_TEMPLATES } from '@/utils/types/roomTypes'
 
@@ -155,7 +155,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
             <Input
               placeholder={t('components.inventory.furniture.name')}
               value={item.name}
-              onChange={e => updateCustomItem(item.id, 'name', e.target.value)}
+              onChange={e => updateCustomItem(item.id, 'name', e)}
               style={{ width: 200 }}
             />
             <InputNumber
