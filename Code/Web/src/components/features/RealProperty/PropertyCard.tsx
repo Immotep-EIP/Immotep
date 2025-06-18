@@ -1,14 +1,12 @@
 import React from 'react'
 
-import { Badge } from 'antd'
-
 import useNavigation from '@/hooks/Navigation/useNavigation'
 import useImageCache from '@/hooks/Image/useImageCache'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
 
 import { CardComponentProps } from '@/interfaces/Property/Property'
 import { TenantStatusEnum } from '@/enums/PropertyEnum'
-import { Card } from '@/components/common'
+import { Card, Badge } from '@/components/common'
 
 import defaultHouse from '@/assets/images/DefaultHouse.jpg'
 import locationIcon from '@/assets/icons/location.svg'

@@ -2,10 +2,10 @@ import React from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
 import { useTranslation } from 'react-i18next'
 
-import { Typography, Badge, Popover, Space, Tag } from 'antd'
+import { Typography, Popover, Space, Tag } from 'antd'
 import { HomeOutlined, PlusOutlined } from '@ant-design/icons'
 
-import { Button } from '@/components/common'
+import { Button, Badge } from '@/components/common'
 
 import { getRoomColor, isValidRoomType } from '@/utils/types/roomTypes'
 

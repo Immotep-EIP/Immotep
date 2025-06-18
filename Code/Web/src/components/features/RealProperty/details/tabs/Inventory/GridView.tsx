@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Row, Col, Space, Typography, Badge, Tag, Tooltip } from 'antd'
+import { Row, Col, Space, Typography, Tag, Tooltip } from 'antd'
 import {
   HomeOutlined,
   PlusOutlined,
@@ -9,7 +9,7 @@ import {
   DeleteOutlined
 } from '@ant-design/icons'
 
-import { Button, Card } from '@/components/common'
+import { Button, Card, Badge } from '@/components/common'
 
 import { getRoomColor, isValidRoomType } from '@/utils/types/roomTypes'
 

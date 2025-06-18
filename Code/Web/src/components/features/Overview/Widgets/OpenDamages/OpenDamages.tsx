@@ -2,10 +2,10 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { Badge, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
-import { StatusTag, Empty } from '@/components/common'
+import { StatusTag, Empty, Badge } from '@/components/common'
 import toLocaleDate from '@/utils/date/toLocaleDate'
 
 import {
