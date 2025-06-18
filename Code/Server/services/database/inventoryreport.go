@@ -1,8 +1,8 @@
 package database
 
 import (
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
 )
 
 func CreateInvReport(repType db.ReportType, leaseId string) *db.InventoryReportModel {

@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/utils"
 
 	"github.com/joho/godotenv"
 )

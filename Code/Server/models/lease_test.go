@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
 )
 
 func TestInviteRequest(t *testing.T) {

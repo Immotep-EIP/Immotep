@@ -12,12 +12,12 @@ import (
 	"github.com/maxzerbini/oauth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/controllers"
-	"immotep/backend/prisma/db"
-	"immotep/backend/router"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/controllers"
+	"keyz/backend/prisma/db"
+	"keyz/backend/router"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 const TENANT_EMAIL = "test1@example.com"

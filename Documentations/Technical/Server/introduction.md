@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This application is the backend part of the Immotep application. It provides an API responsible for managing the application's core functionalities, including user management, data processing, and integration with external services. The API communicates with the frontend applications (web and mobile) and is directly connected to a database to store and manage data.
+This application is the backend part of the Keyz application. It provides an API responsible for managing the application's core functionalities, including user management, data processing, and integration with external services. The API communicates with the frontend applications (web and mobile) and is directly connected to a database to store and manage data.
 
 ## Technologies used
 

@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"strings"
 
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 type ImageRequest struct {

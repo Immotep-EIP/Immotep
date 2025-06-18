@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/router/middlewares"
+	"keyz/backend/router/middlewares"
 )
 
 func TestPanicRecovery_WithError(t *testing.T) {

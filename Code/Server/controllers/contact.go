@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"immotep/backend/models"
-	"immotep/backend/services/brevo"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/services/brevo"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 // CreateContactMessage godoc

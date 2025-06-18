@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/models"
+	"keyz/backend/models"
 )
 
 func TestContactRequest(t *testing.T) {

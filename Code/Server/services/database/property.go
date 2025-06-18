@@ -1,9 +1,9 @@
 package database
 
 import (
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
 )
 
 func GetPropertiesByOwnerId(ownerId string, archived bool) []db.PropertyModel {

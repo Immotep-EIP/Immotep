@@ -11,12 +11,12 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/router"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/router"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func BuildTestProperty(id string) db.PropertyModel {

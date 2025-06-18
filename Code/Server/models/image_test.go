@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
 )
 
 func TestImageRequest(t *testing.T) {

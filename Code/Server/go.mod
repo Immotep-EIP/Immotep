@@ -1,4 +1,4 @@
-module immotep/backend
+module keyz/backend
 
 go 1.22.3
 

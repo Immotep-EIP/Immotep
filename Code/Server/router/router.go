@@ -16,10 +16,10 @@ import (
 	"github.com/ulule/limiter/v3"
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	"github.com/ulule/limiter/v3/drivers/store/memory"
-	"immotep/backend/controllers"
-	_ "immotep/backend/docs" // mandatory import for swagger doc
-	"immotep/backend/router/middlewares"
-	"immotep/backend/router/validators"
+	"keyz/backend/controllers"
+	_ "keyz/backend/docs" // mandatory import for swagger doc
+	"keyz/backend/router/middlewares"
+	"keyz/backend/router/validators"
 )
 
 func registerAPIRoutes(r *gin.Engine, test bool) {
@@ -122,7 +122,7 @@ func Routes() *gin.Engine {
 
 	registerValidators()
 
-	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
+	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Keyz API") })
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	registerAPIRoutes(r, false)
@@ -133,7 +133,7 @@ func TestRoutes() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 	registerValidators()
-	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Immotep API") })
+	r.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Keyz API") })
 	registerAPIRoutes(r, true)
 	return r
 }

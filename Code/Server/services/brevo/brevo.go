@@ -8,7 +8,7 @@ import (
 	"os"
 
 	brevo "github.com/getbrevo/brevo-go/lib"
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 type emailBody struct {

@@ -10,12 +10,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/router"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/router"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func BuildTestDocument() db.DocumentModel {

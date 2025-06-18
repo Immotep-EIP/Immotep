@@ -3,10 +3,10 @@ package database
 import (
 	"time"
 
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/utils"
 )
 
 func CreateDamage(damage db.DamageModel, leaseId string, picturesId []string) db.DamageModel {

@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func sortReminder(a, b models.Reminder) int {

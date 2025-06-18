@@ -1,7 +1,7 @@
 package models
 
 import (
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 type DamageRequest struct {
