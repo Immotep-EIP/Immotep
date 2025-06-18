@@ -196,6 +196,7 @@ definitions:
       pictures:
         items:
           type: string
+        maxItems: 5
         type: array
       priority:
         $ref: '#/definitions/db.Priority'
@@ -360,6 +361,7 @@ definitions:
       pictures:
         items:
           type: string
+        maxItems: 5
         minItems: 1
         type: array
       state:
@@ -708,6 +710,7 @@ definitions:
       pictures:
         items:
           type: string
+        maxItems: 10
         minItems: 1
         type: array
       state:
@@ -748,6 +751,7 @@ definitions:
       pictures:
         items:
           type: string
+        maxItems: 10
         minItems: 1
         type: array
       type:
@@ -1301,7 +1305,7 @@ paths:
       summary: Update property by ID
       tags:
       - property
-  /owner/properties/{property_id}/archive:
+  /owner/properties/{property_id}/archive/:
     put:
       consumes:
       - application/json
@@ -1344,7 +1348,7 @@ paths:
       summary: Toggle archive property by ID
       tags:
       - property
-  /owner/properties/{property_id}/cancel-invite:
+  /owner/properties/{property_id}/cancel-invite/:
     delete:
       consumes:
       - application/json
@@ -2725,7 +2729,7 @@ paths:
       summary: Toggle archive furniture by ID
       tags:
       - inventory
-  /owner/properties/{property_id}/send-invite:
+  /owner/properties/{property_id}/send-invite/:
     post:
       consumes:
       - application/json

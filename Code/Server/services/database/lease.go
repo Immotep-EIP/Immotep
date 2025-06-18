@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
@@ -274,7 +275,7 @@ func MockGetCurrentLeaseInvite(c *services.PrismaDB) db.LeaseInviteMockExpectPar
 func CreateLeaseInvite(leaseInvite db.LeaseInviteModel, propertyId string) *db.LeaseInviteModel {
 	pdb := services.DBclient
 	newLease, err := pdb.Client.LeaseInvite.CreateOne(
-		db.LeaseInvite.TenantEmail.Set(leaseInvite.TenantEmail),
+		db.LeaseInvite.TenantEmail.Set(strings.ToLower(leaseInvite.TenantEmail)),
 		db.LeaseInvite.StartDate.Set(leaseInvite.StartDate),
 		db.LeaseInvite.Property.Link(db.Property.ID.Equals(propertyId)),
 		db.LeaseInvite.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),
@@ -297,7 +298,7 @@ func CreateLeaseInvite(leaseInvite db.LeaseInviteModel, propertyId string) *db.L
 
 func MockCreateLeaseInvite(c *services.PrismaDB, leaseInvite db.LeaseInviteModel) db.LeaseInviteMockExpectParam {
 	return c.Client.LeaseInvite.CreateOne(
-		db.LeaseInvite.TenantEmail.Set(leaseInvite.TenantEmail),
+		db.LeaseInvite.TenantEmail.Set(strings.ToLower(leaseInvite.TenantEmail)),
 		db.LeaseInvite.StartDate.Set(leaseInvite.StartDate),
 		db.LeaseInvite.Property.Link(db.Property.ID.Equals("1")),
 		db.LeaseInvite.EndDate.SetIfPresent(leaseInvite.InnerLeaseInvite.EndDate),

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"immotep/backend/models"
@@ -133,6 +134,9 @@ func UpdateCurrentUserProfile(c *gin.Context) {
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
 		return
+	}
+	if req.Email != nil {
+		*req.Email = strings.ToLower(*req.Email)
 	}
 
 	newUser := database.UpdateUser(*user, req)

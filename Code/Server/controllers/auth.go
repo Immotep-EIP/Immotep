@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/maxzerbini/oauth"
@@ -88,6 +89,7 @@ func RegisterTenant(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
 		return
 	}
+	userReq.Email = strings.ToLower(userReq.Email)
 
 	leaseInvite := database.GetLeaseInviteById(c.Param("id"))
 	if leaseInvite == nil {

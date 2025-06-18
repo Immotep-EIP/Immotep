@@ -3,6 +3,7 @@ package router
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"immotep/backend/prisma/db"
 	"immotep/backend/services"
@@ -13,6 +14,7 @@ type TestUserVerifier struct{}
 
 // Validates the username and password
 func (*TestUserVerifier) ValidateUser(email, password, _scope string, _r *http.Request) error {
+	email = strings.ToLower(email)
 	pdb := services.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
 	if err != nil {
@@ -27,6 +29,7 @@ func (*TestUserVerifier) ValidateUser(email, password, _scope string, _r *http.R
 
 // Adds claims to the token
 func (*TestUserVerifier) AddClaims(email, _tokenId, _tokenType, _scope string) (map[string]string, error) {
+	email = strings.ToLower(email)
 	pdb := services.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
 	if err != nil {
@@ -43,6 +46,7 @@ func (*TestUserVerifier) AddClaims(email, _tokenId, _tokenType, _scope string) (
 
 // Adds properties to the token
 func (*TestUserVerifier) AddProperties(email, _tokenId, _tokenType string, _scope string) (map[string]string, error) {
+	email = strings.ToLower(email)
 	pdb := services.DBclient
 	user, err := pdb.Client.User.FindUnique(db.User.Email.Equals(email)).Exec(pdb.Context)
 	if err != nil {

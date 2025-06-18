@@ -1,6 +1,8 @@
 package database
 
 import (
+	"strings"
+
 	"immotep/backend/models"
 	"immotep/backend/prisma/db"
 	"immotep/backend/services"
@@ -58,7 +60,7 @@ func MockGetUserByEmail(c *services.PrismaDB) db.UserMockExpectParam {
 func CreateUser(user db.UserModel, role db.Role) *db.UserModel {
 	pdb := services.DBclient
 	newUser, err := pdb.Client.User.CreateOne(
-		db.User.Email.Set(user.Email),
+		db.User.Email.Set(strings.ToLower(user.Email)),
 		db.User.Password.Set(user.Password),
 		db.User.Firstname.Set(user.Firstname),
 		db.User.Lastname.Set(user.Lastname),
@@ -75,7 +77,7 @@ func CreateUser(user db.UserModel, role db.Role) *db.UserModel {
 
 func MockCreateUser(c *services.PrismaDB, user db.UserModel) db.UserMockExpectParam {
 	return c.Client.User.CreateOne(
-		db.User.Email.Set(user.Email),
+		db.User.Email.Set(strings.ToLower(user.Email)),
 		db.User.Password.Set(user.Password),
 		db.User.Firstname.Set(user.Firstname),
 		db.User.Lastname.Set(user.Lastname),
@@ -84,6 +86,10 @@ func MockCreateUser(c *services.PrismaDB, user db.UserModel) db.UserMockExpectPa
 }
 
 func UpdateUser(user db.UserModel, req models.UserUpdateRequest) *db.UserModel {
+	if req.Email != nil {
+		*req.Email = strings.ToLower(*req.Email)
+	}
+
 	pdb := services.DBclient
 	newUser, err := pdb.Client.User.FindUnique(db.User.ID.Equals(user.ID)).Update(
 		db.User.Email.SetIfPresent(req.Email),
@@ -100,6 +106,10 @@ func UpdateUser(user db.UserModel, req models.UserUpdateRequest) *db.UserModel {
 }
 
 func MockUpdateUser(c *services.PrismaDB, uUser models.UserUpdateRequest) db.UserMockExpectParam {
+	if uUser.Email != nil {
+		*uUser.Email = strings.ToLower(*uUser.Email)
+	}
+
 	return c.Client.User.FindUnique(
 		db.User.ID.Equals("1"),
 	).Update(
