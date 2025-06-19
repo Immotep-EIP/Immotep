@@ -53,6 +53,9 @@ func GenerateSummary(c *gin.Context) {
 		handleRoomSummary(c, req)
 	case "furniture":
 		handleFurnitureSummary(c, req)
+	default:
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, errors.New("invalid type: must be 'room' or 'furniture'"))
+		return
 	}
 }
 
@@ -139,6 +142,9 @@ func GenerateComparison(c *gin.Context) {
 		handleRoomComparison(c, req, oldReport)
 	case "furniture":
 		handleFurnitureComparison(c, req, oldReport)
+	default:
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, errors.New("invalid type: must be 'room' or 'furniture'"))
+		return
 	}
 }
 
