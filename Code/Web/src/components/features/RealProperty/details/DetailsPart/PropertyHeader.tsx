@@ -30,7 +30,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   const { t } = useTranslation()
   const { goToRealProperty } = useNavigation()
   const { property, selectedLeaseId, setSelectedLeaseId } = usePropertyContext()
-  const { canModify } = useLeasePermissions()
 
   const onLeaseChange = (value: string) => {
     setSelectedLeaseId(value)
@@ -113,7 +112,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
           <Select
             value={selectedLeaseId}
             onChange={onLeaseChange}
-            style={{ minWidth: 220 }}
+            style={{ minWidth: 220, textAlign: 'left' }}
             allowClear={property?.leases.length > 1 || !property?.lease?.active}
             options={[
               ...(property?.leases?.map(lease => ({
@@ -144,19 +143,14 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
             placeholder={t('pages.real_property_details.select_default')}
           />
         )}
-        {canModify && (
-          <Dropdown
-            menu={{ items }}
-            trigger={['click']}
-            placement="bottomRight"
-          >
-            <Button
-              type="text"
-              icon={<MoreOutlined />}
-              className={style.actionButton}
-            />
-          </Dropdown>
-        )}
+        <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
+          <Button
+            type="text"
+            style={{ border: '0.4px solid rgba(0, 0, 0, 0.8)' }}
+            icon={<MoreOutlined />}
+            className={style.actionButton}
+          />
+        </Dropdown>
       </div>
     </div>
   )

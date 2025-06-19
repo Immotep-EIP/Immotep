@@ -1,16 +1,17 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Form, message, Spin } from 'antd'
+import { Form, message, Spin, Modal } from 'antd'
 
 import { usePropertyContext } from '@/context/propertyContext'
 import useDocument from '@/hooks/Property/useDocument'
 import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
-import { Button, Modal, Empty } from '@/components/common'
+import { Button, Empty } from '@/components/common'
 import DocumentList from '@/components/features/RealProperty/details/tabs/Documents/DocumentList'
 import UploadForm from '@/components/features/RealProperty/details/tabs/Documents/UploadForm'
 
 import style from './1DocumentsTab.module.css'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 interface DocumentsTabProps {
   status?: string
@@ -21,6 +22,15 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
   const { property, selectedLeaseId, selectedLease } = usePropertyContext()
   const { canModify } = useLeasePermissions()
 
+  let leaseIdToUse: string | undefined
+  if (selectedLeaseId) {
+    leaseIdToUse = selectedLeaseId
+  } else if (property?.status === PropertyStatusEnum.UNAVAILABLE) {
+    leaseIdToUse = 'current'
+  } else {
+    leaseIdToUse = undefined
+  }
+
   const {
     documents,
     loading,
@@ -28,7 +38,8 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
     refreshDocuments,
     uploadDocument,
     deleteDocument
-  } = useDocument(property?.id || '', selectedLeaseId || 'current')
+  } = useDocument(property?.id || '', leaseIdToUse)
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form] = Form.useForm()
 
@@ -115,7 +126,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       )}
       <Modal
         title={t('pages.real_property_details.tabs.documents.modal_title')}
-        isOpen={isModalOpen}
+        open={isModalOpen}
         onCancel={handleCancel}
         footer={[
           <Button key="back" type="default" onClick={handleCancel}>
