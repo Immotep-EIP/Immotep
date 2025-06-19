@@ -34,7 +34,7 @@
 
 .roomBlock:hover {
   box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
 }
 
 .customRoom {
