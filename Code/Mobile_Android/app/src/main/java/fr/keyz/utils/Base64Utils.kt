@@ -131,8 +131,12 @@ class Base64Utils {
             }
         }
 
-        fun decodeBase64ToImage(base64String: String): ImageBitmap? {
+        fun decodeBase64ToImage(originalBase64String: String): ImageBitmap? {
             try {
+                var base64String = originalBase64String
+                if (base64String.startsWith("data:image")) {
+                    base64String = base64String.substringAfter(",")
+                }
                 val byteArrayDecoded =
                     Base64.getDecoder().decode(base64String)
                 return BitmapFactory.decodeByteArray(byteArrayDecoded, 0, byteArrayDecoded.size)
