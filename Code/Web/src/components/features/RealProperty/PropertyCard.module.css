@@ -1,6 +1,6 @@
 .card {
   width: calc(25% - 15px);
-  height: 230px;
+  min-height: 230px;
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;

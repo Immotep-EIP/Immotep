@@ -27,16 +27,9 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      const otherRoomType = roomTypes.find(
-        roomType => roomType.value === 'other'
-      )
-      if (otherRoomType) {
-        form.setFieldsValue({
-          roomType: 'other'
-        })
-      }
+      form.resetFields()
     }
-  }, [isOpen, form, roomTypes])
+  }, [isOpen, form])
 
   useEffect(() => {
     if (selectedType && ROOM_TEMPLATES[selectedType]) {
@@ -115,7 +108,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
       cancelText={t('components.button.cancel')}
       width={600}
     >
-      <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical" initialValues={{ roomType: 'other' }}>
         <Form.Item
           name="roomType"
           label={t('components.select.room_type.placeholder')}
@@ -126,7 +119,6 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
           <Select
             options={roomTypes.filter(type => type.value !== 'all')}
             onChange={handleRoomTypeChange}
-            defaultValue={t('components.select.room_type.other')}
           />
         </Form.Item>
         <Form.Item

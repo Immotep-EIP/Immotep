@@ -91,7 +91,6 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
           <Input
             placeholder={t('components.input.email.placeholder')}
             aria-label={t('components.input.email.placeholder')}
-            onChange={() => {}}
           />
         </Form.Item>
 

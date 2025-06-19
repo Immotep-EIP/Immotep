@@ -55,7 +55,11 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         </div>
       </Badge.Ribbon>
       <div className={style.cardInfoContainer}>
-        <b className={style.cardText}>{realProperty.name}</b>
+        <b className={style.cardText}>
+          {realProperty.name && realProperty.name.length > 35
+            ? `${realProperty.name.substring(0, 35)}...`
+            : realProperty.name}
+        </b>
         <div className={style.cardAddressContainer}>
           <img src={locationIcon} alt="location" className={style.icon} />
           <span className={style.cardText}>

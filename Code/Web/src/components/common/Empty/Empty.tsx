@@ -1,6 +1,8 @@
 import React from 'react'
 import { Empty as AntEmpty, Typography } from 'antd'
 
+import empty from '@/assets/images/EmptyImage.svg'
+
 interface EmptyStateProps {
   description: React.ReactNode
   className?: string
@@ -8,7 +10,7 @@ interface EmptyStateProps {
 
 const Empty: React.FC<EmptyStateProps> = ({ description, className }) => (
   <AntEmpty
-    image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+    image={empty}
     description={<Typography.Text>{description}</Typography.Text>}
     className={className}
   />
