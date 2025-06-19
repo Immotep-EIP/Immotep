@@ -1,4 +1,4 @@
-package com.example.keyz
+package fr.keyz
 
 import android.content.res.Resources
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -13,6 +13,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import fr.keyz.MainActivity
+import fr.keyz.isTesting
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

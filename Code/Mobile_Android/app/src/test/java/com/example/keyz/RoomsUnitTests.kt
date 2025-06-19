@@ -1,9 +1,9 @@
-package com.example.keyz
+package fr.keyz
 
 
-import com.example.keyz.apiCallerServices.RoomType
-import com.example.keyz.inventory.Room
-import com.example.keyz.inventory.rooms.RoomsViewModel
+import fr.keyz.apiCallerServices.RoomType
+import fr.keyz.inventory.Room
+import fr.keyz.inventory.rooms.RoomsViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

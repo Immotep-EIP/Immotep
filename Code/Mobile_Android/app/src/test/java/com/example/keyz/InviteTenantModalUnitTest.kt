@@ -1,11 +1,11 @@
-package com.example.keyz
+package fr.keyz
 
 
 import androidx.navigation.NavController
-import com.example.keyz.apiCallerServices.InviteTenantCallerService
-import com.example.keyz.apiClient.ApiService
-import com.example.keyz.apiClient.mockApi.fakeInviteOutputValue
-import com.example.keyz.components.inviteTenantModal.InviteTenantViewModel
+import fr.keyz.apiCallerServices.InviteTenantCallerService
+import fr.keyz.apiClient.ApiService
+import fr.keyz.apiClient.mockApi.fakeInviteOutputValue
+import fr.keyz.components.inviteTenantModal.InviteTenantViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

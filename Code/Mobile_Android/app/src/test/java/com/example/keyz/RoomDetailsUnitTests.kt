@@ -1,8 +1,8 @@
-package com.example.keyz
+package fr.keyz
 
-import com.example.keyz.inventory.Room
-import com.example.keyz.inventory.RoomDetail
-import com.example.keyz.inventory.roomDetails.RoomDetailsViewModel
+import fr.keyz.inventory.Room
+import fr.keyz.inventory.RoomDetail
+import fr.keyz.inventory.roomDetails.RoomDetailsViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

@@ -10,12 +10,12 @@ val cameraXVersion = "1.0.1"
 
 
 android {
-    namespace = "com.example.keyz"
+    namespace = "fr.keyz"
     compileSdk = 35
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.keyz"
+        applicationId = "fr.keyz"
         minSdk = 27
         targetSdk = 35
         targetSdk = 35

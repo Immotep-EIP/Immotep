@@ -1,7 +1,6 @@
-package com.example.keyz
+package fr.keyz
 
 import android.content.res.Resources
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
@@ -16,10 +15,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.keyz.apiClient.mockApi.MockedApiService
-import com.example.keyz.apiClient.mockApi.fakeDamagesArray
-import com.example.keyz.authService.AuthService
-import com.example.keyz.login.dataStore
+import fr.keyz.apiClient.mockApi.MockedApiService
+import fr.keyz.apiClient.mockApi.fakeDamagesArray
+import fr.keyz.authService.AuthService
+import fr.keyz.MainActivity
+import fr.keyz.isTesting
+import fr.keyz.login.dataStore
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule

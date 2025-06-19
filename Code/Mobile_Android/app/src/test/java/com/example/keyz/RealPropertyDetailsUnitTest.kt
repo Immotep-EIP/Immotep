@@ -1,26 +1,26 @@
-package com.example.keyz
+package fr.keyz
 
 
-import com.example.keyz.apiCallerServices.AddPropertyInput
-import com.example.keyz.apiCallerServices.DetailedProperty
-import com.example.keyz.apiCallerServices.PropertyStatus
-import com.example.keyz.apiCallerServices.RealPropertyCallerService
-import com.example.keyz.apiClient.ApiService
+import fr.keyz.apiCallerServices.AddPropertyInput
+import fr.keyz.apiCallerServices.DetailedProperty
+import fr.keyz.apiCallerServices.PropertyStatus
+import fr.keyz.apiCallerServices.RealPropertyCallerService
+import fr.keyz.apiClient.ApiService
 import androidx.navigation.NavController
-import com.example.keyz.apiCallerServices.ApiCallerServiceException
-import com.example.keyz.apiCallerServices.Damage
-import com.example.keyz.apiCallerServices.DamageCallerService
-import com.example.keyz.apiCallerServices.DamagePriority
-import com.example.keyz.apiCallerServices.DamageStatus
-import com.example.keyz.apiCallerServices.Document
-import com.example.keyz.apiCallerServices.InviteDetailedProperty
-import com.example.keyz.apiCallerServices.LeaseDetailedProperty
-import com.example.keyz.apiClient.CreateOrUpdateResponse
-import com.example.keyz.apiClient.mockApi.baseDateStr
-import com.example.keyz.apiClient.mockApi.fakeDamagesArray
-import com.example.keyz.apiClient.mockApi.fakeDocument
-import com.example.keyz.login.dataStore
-import com.example.keyz.realProperty.details.RealPropertyDetailsViewModel
+import fr.keyz.apiCallerServices.ApiCallerServiceException
+import fr.keyz.apiCallerServices.Damage
+import fr.keyz.apiCallerServices.DamageCallerService
+import fr.keyz.apiCallerServices.DamagePriority
+import fr.keyz.apiCallerServices.DamageStatus
+import fr.keyz.apiCallerServices.Document
+import fr.keyz.apiCallerServices.InviteDetailedProperty
+import fr.keyz.apiCallerServices.LeaseDetailedProperty
+import fr.keyz.apiClient.CreateOrUpdateResponse
+import fr.keyz.apiClient.mockApi.baseDateStr
+import fr.keyz.apiClient.mockApi.fakeDamagesArray
+import fr.keyz.apiClient.mockApi.fakeDocument
+import fr.keyz.login.dataStore
+import fr.keyz.realProperty.details.RealPropertyDetailsViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -84,7 +84,8 @@ class RealPropertyDetailsViewModelTest {
             endDate = OffsetDateTime.now().plusMonths(1),
             tenantEmail = "tenant@example.com",
             tenantName = "John Doe"
-        )))
+        )
+        ))
 
         coVerify { apiCaller.getPropertyDocuments("1", any()) }
         assertEquals(fakeDocument.id, viewModel.documents.first().id)
@@ -104,7 +105,8 @@ class RealPropertyDetailsViewModelTest {
             endDate = OffsetDateTime.now().plusMonths(1),
             tenantEmail = "tenant@example.com",
             tenantName = "John Doe"
-        )))
+        )
+        ))
 
         coVerify { apiCaller.getPropertyDocuments("1", any()) }
         assertEquals(property1.id, viewModel.property.first().id)
@@ -168,10 +170,13 @@ class RealPropertyDetailsViewModelTest {
             endDate = OffsetDateTime.now().plusMonths(1),
             tenantEmail = "tenant@example.com",
             tenantName = "John Doe"
-        ))
+        )
+        )
 
         val fakeDamagesArrayToTest = fakeDamagesArray.map { it.toDamage() }.toTypedArray()
-        coEvery { apiCaller.getPropertyDocuments(propertyWithLease.id, propertyWithLease.lease!!.id) } returns arrayOf(fakeDocument)
+        coEvery { apiCaller.getPropertyDocuments(propertyWithLease.id, propertyWithLease.lease!!.id) } returns arrayOf(
+            fakeDocument
+        )
         coEvery { damageApiCaller.getPropertyDamages(propertyWithLease.id, propertyWithLease.lease!!.id) } returns fakeDamagesArrayToTest
 
         viewModel.loadProperty(propertyWithLease)
@@ -193,7 +198,8 @@ class RealPropertyDetailsViewModelTest {
             endDate = OffsetDateTime.now().plusMonths(1),
             tenantEmail = "tenant@example.com",
             tenantName = "John Doe"
-        ))
+        )
+        )
         coEvery { apiCaller.getPropertyDocuments(propertyWithLease.id, propertyWithLease.lease!!.id) } returns emptyArray()
         coEvery { damageApiCaller.getPropertyDamages(propertyWithLease.id, propertyWithLease.lease!!.id) } throws ApiCallerServiceException("400")
 

@@ -1,0 +1,1 @@
+task ':security:security-crypto:writeVersionFile' property 'version'
