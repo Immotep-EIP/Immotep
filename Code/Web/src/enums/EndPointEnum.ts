@@ -23,8 +23,12 @@ const endpoints = {
         byId: (propertyId: string, leaseId: string) =>
           `owner/properties/${propertyId}/leases/${leaseId}/`,
         list: (propertyId: string) => `owner/properties/${propertyId}/leases/`,
-        documents: (propertyId: string, leaseId: string | undefined) =>
-          `owner/properties/${propertyId}/leases/${leaseId}/docs/`,
+        documents: (propertyId: string, leaseId: string | undefined) => {
+          if (!leaseId) {
+            throw new Error("leaseId is required to build the documents endpoint path.");
+          }
+          return `owner/properties/${propertyId}/leases/${leaseId}/docs/`;
+        },
         deleteDocument: (
           propertyId: string,
           leaseId: string,
