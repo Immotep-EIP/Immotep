@@ -119,7 +119,6 @@ class LoaderInventoryViewModel(
             _loadingMutex.withLock {
                 try {
                     setIsLoading(true)
-                    setIsLoading(false)
                     navController.navigate("inventory/${propertyId}/${currentLeaseId}")
                 } catch (e: Exception) {
                     setIsLoading(false)

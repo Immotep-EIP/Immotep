@@ -2,6 +2,7 @@ package fr.keyz.inventory.loaderButton
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import fr.keyz.R
 import fr.keyz.ui.components.StyledButton
@@ -13,7 +14,7 @@ fun LoaderInventoryButton(
     setIsLoading: (Boolean) -> Unit,
     viewModel: LoaderInventoryViewModel
 ) {
-
+    val isLoading = viewModel.isLoading.collectAsState()
     LaunchedEffect(propertyId) {
         viewModel.loadInventory(propertyId)
     }
@@ -21,6 +22,7 @@ fun LoaderInventoryButton(
     StyledButton(
         onClick = { viewModel.onClick(setIsLoading, propertyId, currentLeaseId) },
         text = stringResource(R.string.inventory_title),
-        testTag = "startInventory"
+        testTag = "startInventory",
+        isLoading = isLoading.value
     )
 }
