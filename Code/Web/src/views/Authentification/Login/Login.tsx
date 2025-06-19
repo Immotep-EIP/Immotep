@@ -70,7 +70,7 @@ const Login: React.FC = () => {
         goToOverview()
       }
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         message.error(t('pages.login.connection_error'))
         setLoading(false)
       }
