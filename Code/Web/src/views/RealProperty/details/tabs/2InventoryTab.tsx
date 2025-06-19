@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Empty, Form, Modal, Typography, Space } from 'antd'
+import { Form, Modal, Typography, Space } from 'antd'
 
+import { Empty } from '@/components/common'
 import { usePropertyContext } from '@/context/propertyContext'
 import useInventory from '@/hooks/Property/useInventory'
 import CardInventoryLoader from '@/components/ui/Loader/CardInventoryLoader'
@@ -164,13 +165,7 @@ const InventoryTab: React.FC = () => {
 
     if (filteredInventory.rooms.length === 0) {
       return (
-        <Empty
-          description={
-            <Typography.Text>
-              {t('components.messages.no_rooms_in_inventory')}
-            </Typography.Text>
-          }
-        />
+        <Empty description={t('components.messages.no_rooms_in_inventory')} />
       )
     }
 

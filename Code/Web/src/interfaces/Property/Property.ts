@@ -71,6 +71,7 @@ export interface DetailsPartProps {
   showModal: () => void
   propertyId: string
   showModalUpdate: () => void
+  refreshPropertyDetails: (propertyId: string) => void
 }
 
 export interface PropertyImageProps {

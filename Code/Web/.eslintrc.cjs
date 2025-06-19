@@ -4,13 +4,13 @@ module.exports = {
   plugins: ['prettier'],
   settings: {
     'import/resolver': {
-      typescript: {},
-    },
+      typescript: {}
+    }
   },
   env: {
     browser: true,
     es2021: true,
-    jest: true,
+    jest: true
   },
   rules: {
     'react/jsx-filename-extension': [1, { extensions: ['.jsx', '.tsx'] }],
@@ -21,8 +21,8 @@ module.exports = {
         ignoreComments: true,
         ignoreTemplateLiterals: true,
         ignoreRegExpLiterals: true,
-        ignoreUrls: true,
-      },
+        ignoreUrls: true
+      }
     ],
     'react/require-default-props': 'off',
     'import/no-unresolved': 'off',
@@ -33,21 +33,22 @@ module.exports = {
       'error',
       {
         namedComponents: 'arrow-function',
-        unnamedComponents: 'arrow-function',
-      },
+        unnamedComponents: 'arrow-function'
+      }
     ],
     'react/jsx-props-no-spreading': 'off',
     'no-unused-vars': 'off',
     'no-shadow': 'off',
     'no-console': ['warn', { allow: ['error'] }],
     'react-hooks/exhaustive-deps': 'off',
+    'react/prop-types': 'off'
   },
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
       rules: {
-        'import/no-extraneous-dependencies': 'off',
-      },
-    },
-  ],
-};
+        'import/no-extraneous-dependencies': 'off'
+      }
+    }
+  ]
+}

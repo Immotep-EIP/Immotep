@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Modal,
-  Form,
-  Input,
-  Select,
-  Checkbox,
-  InputNumber,
-  Button,
-  Space
-} from 'antd'
+import { Modal, Form, Select, Checkbox, InputNumber, Space } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
+
+import { Button, Input } from '@/components/common'
 
 import { ROOM_TEMPLATES } from '@/utils/types/roomTypes'
 
@@ -26,11 +19,17 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
   roomTypes
 }) => {
   const { t } = useTranslation()
-  const [selectedType, setSelectedType] = useState<string | null>(null)
+  const [selectedType, setSelectedType] = useState<string | null>('other')
   const [templateItems, setTemplateItems] = useState<
     { name: string; quantity: number; checked: boolean }[]
   >([])
   const [customItems, setCustomItems] = useState<CustomFurniture[]>([])
+
+  useEffect(() => {
+    if (isOpen) {
+      form.resetFields()
+    }
+  }, [isOpen, form])
 
   useEffect(() => {
     if (selectedType && ROOM_TEMPLATES[selectedType]) {
@@ -44,19 +43,20 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
 
   const handleOk = async () => {
     await form.validateFields()
+
     onOk([
       ...templateItems
         .filter(item => item.checked)
         .map(({ name, quantity }) => ({ name, quantity })),
       ...customItems.map(({ name, quantity }) => ({ name, quantity }))
     ])
-    setSelectedType(null)
+    setSelectedType('other')
     setTemplateItems([])
     setCustomItems([])
   }
 
   const handleCancel = () => {
-    setSelectedType(null)
+    setSelectedType('other')
     setTemplateItems([])
     setCustomItems([])
     onCancel()
@@ -85,6 +85,17 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
     )
   }
 
+  const handleRoomTypeChange = (value: string) => {
+    setSelectedType(value)
+
+    const selectedRoomType = roomTypes.find(
+      roomType => roomType.value === value
+    )
+    if (selectedRoomType) {
+      form.setFieldsValue({ roomName: selectedRoomType.label })
+    }
+  }
+
   return (
     <Modal
       title={t(
@@ -97,16 +108,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
       cancelText={t('components.button.cancel')}
       width={600}
     >
-      <Form form={form} layout="vertical">
-        <Form.Item
-          name="roomName"
-          label={t('components.input.room_name.label')}
-          rules={[
-            { required: true, message: t('components.input.room_name.error') }
-          ]}
-        >
-          <Input maxLength={20} showCount />
-        </Form.Item>
+      <Form form={form} layout="vertical" initialValues={{ roomType: 'other' }}>
         <Form.Item
           name="roomType"
           label={t('components.select.room_type.placeholder')}
@@ -116,8 +118,17 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
         >
           <Select
             options={roomTypes.filter(type => type.value !== 'all')}
-            onChange={value => setSelectedType(value)}
+            onChange={handleRoomTypeChange}
           />
+        </Form.Item>
+        <Form.Item
+          name="roomName"
+          label={t('components.input.room_name.label')}
+          rules={[
+            { required: true, message: t('components.input.room_name.error') }
+          ]}
+        >
+          <Input maxLength={20} showCount />
         </Form.Item>
       </Form>
 
@@ -162,7 +173,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
             <Input
               placeholder={t('components.inventory.furniture.name')}
               value={item.name}
-              onChange={e => updateCustomItem(item.id, 'name', e.target.value)}
+              onChange={e => updateCustomItem(item.id, 'name', e)}
               style={{ width: 200 }}
             />
             <InputNumber
@@ -170,11 +181,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
               value={item.quantity}
               onChange={val => updateCustomItem(item.id, 'quantity', val || 1)}
             />
-            <Button
-              type="text"
-              danger
-              onClick={() => removeCustomItem(item.id)}
-            >
+            <Button ghost danger onClick={() => removeCustomItem(item.id)}>
               {t('components.button.remove')}
             </Button>
           </Space>

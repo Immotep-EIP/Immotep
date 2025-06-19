@@ -1,23 +1,15 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Card,
-  Row,
-  Col,
-  Space,
-  Typography,
-  Badge,
-  Button,
-  Tag,
-  Tooltip
-} from 'antd'
+import { Row, Col, Space, Typography, Tag, Tooltip } from 'antd'
 import {
   HomeOutlined,
   PlusOutlined,
   EditOutlined,
   DeleteOutlined
 } from '@ant-design/icons'
+
+import { Button, Card, Badge } from '@/components/common'
 
 import { getRoomColor, isValidRoomType } from '@/utils/types/roomTypes'
 

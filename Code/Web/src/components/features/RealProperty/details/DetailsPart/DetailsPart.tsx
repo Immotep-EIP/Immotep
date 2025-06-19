@@ -67,7 +67,8 @@ const ChildrenComponent: React.FC<ChildrenComponentProps> = ({
 const DetailsPart: React.FC<DetailsPartProps> = ({
   propertyData,
   showModal,
-  showModalUpdate
+  showModalUpdate,
+  refreshPropertyDetails
 }) => {
   const { t } = useTranslation()
   const { goToRealProperty } = useNavigation()
@@ -75,7 +76,6 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
     propertyData?.id || '',
     GetPropertyPicture
   )
-  const { refreshPropertyDetails } = useProperties()
   const { canModify } = useLeasePermissions()
 
   const [currentStatus, setCurrentStatus] = useState(propertyData?.status || '')

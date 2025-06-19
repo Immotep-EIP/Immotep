@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Modal, Form, message, Spin, Empty, Typography } from 'antd'
+import { Form, message, Spin } from 'antd'
 
 import { usePropertyContext } from '@/context/propertyContext'
 import useDocument from '@/hooks/Property/useDocument'
 import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
+import { Button, Modal, Empty } from '@/components/common'
 import DocumentList from '@/components/features/RealProperty/details/tabs/Documents/DocumentList'
 import UploadForm from '@/components/features/RealProperty/details/tabs/Documents/UploadForm'
 
@@ -90,17 +91,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
   ) {
     return (
       <div className={style.tabContentEmpty}>
-        <Empty
-          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          imageStyle={{
-            height: 60
-          }}
-          description={
-            <Typography.Text>
-              {t('pages.real_property.error.no_tenant_linked')}
-            </Typography.Text>
-          }
-        />
+        <Empty description={t('pages.real_property.error.no_tenant_linked')} />
       </div>
     )
   }
@@ -117,20 +108,20 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
     <div className={style.tabContent}>
       {canModify && (
         <div className={style.buttonAddContainer}>
-          <Button type="primary" onClick={showModal}>
+          <Button onClick={showModal}>
             {t('components.button.add_document')}
           </Button>
         </div>
       )}
       <Modal
         title={t('pages.real_property_details.tabs.documents.modal_title')}
-        open={isModalOpen}
+        isOpen={isModalOpen}
         onCancel={handleCancel}
         footer={[
-          <Button key="back" onClick={handleCancel}>
+          <Button key="back" type="default" onClick={handleCancel}>
             {t('components.button.cancel')}
           </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
+          <Button key="submit" onClick={handleOk}>
             {t('components.button.add')}
           </Button>
         ]}

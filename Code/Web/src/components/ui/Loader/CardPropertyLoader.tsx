@@ -1,7 +1,8 @@
 import React from 'react'
 
-import { Badge, Skeleton } from 'antd'
+import { Skeleton } from 'antd'
 
+import { Badge } from '@/components/common'
 import style from '@/components/features/RealProperty/PropertyCard.module.css'
 
 const CardPropertyLoader: React.FC<{ cards: number }> = ({ cards }) =>

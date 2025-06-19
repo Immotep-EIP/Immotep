@@ -87,6 +87,7 @@ const RealPropertyDetails: React.FC = () => {
               showModal={showModal}
               propertyId={id}
               showModalUpdate={showModalUpdate}
+              refreshPropertyDetails={refreshPropertyDetails}
             />
             <InviteTenantModal
               isOpen={isModalOpen}
