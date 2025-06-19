@@ -19,11 +19,24 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
   roomTypes
 }) => {
   const { t } = useTranslation()
-  const [selectedType, setSelectedType] = useState<string | null>(null)
+  const [selectedType, setSelectedType] = useState<string | null>('other')
   const [templateItems, setTemplateItems] = useState<
     { name: string; quantity: number; checked: boolean }[]
   >([])
   const [customItems, setCustomItems] = useState<CustomFurniture[]>([])
+
+  useEffect(() => {
+    if (isOpen) {
+      const otherRoomType = roomTypes.find(
+        roomType => roomType.value === 'other'
+      )
+      if (otherRoomType) {
+        form.setFieldsValue({
+          roomType: 'other'
+        })
+      }
+    }
+  }, [isOpen, form, roomTypes])
 
   useEffect(() => {
     if (selectedType && ROOM_TEMPLATES[selectedType]) {
@@ -37,19 +50,20 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
 
   const handleOk = async () => {
     await form.validateFields()
+
     onOk([
       ...templateItems
         .filter(item => item.checked)
         .map(({ name, quantity }) => ({ name, quantity })),
       ...customItems.map(({ name, quantity }) => ({ name, quantity }))
     ])
-    setSelectedType(null)
+    setSelectedType('other')
     setTemplateItems([])
     setCustomItems([])
   }
 
   const handleCancel = () => {
-    setSelectedType(null)
+    setSelectedType('other')
     setTemplateItems([])
     setCustomItems([])
     onCancel()
@@ -78,6 +92,17 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
     )
   }
 
+  const handleRoomTypeChange = (value: string) => {
+    setSelectedType(value)
+
+    const selectedRoomType = roomTypes.find(
+      roomType => roomType.value === value
+    )
+    if (selectedRoomType) {
+      form.setFieldsValue({ roomName: selectedRoomType.label })
+    }
+  }
+
   return (
     <Modal
       title={t(
@@ -92,15 +117,6 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
     >
       <Form form={form} layout="vertical">
         <Form.Item
-          name="roomName"
-          label={t('components.input.room_name.label')}
-          rules={[
-            { required: true, message: t('components.input.room_name.error') }
-          ]}
-        >
-          <Input maxLength={20} showCount />
-        </Form.Item>
-        <Form.Item
           name="roomType"
           label={t('components.select.room_type.placeholder')}
           rules={[
@@ -109,8 +125,18 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
         >
           <Select
             options={roomTypes.filter(type => type.value !== 'all')}
-            onChange={value => setSelectedType(value)}
+            onChange={handleRoomTypeChange}
+            defaultValue={t('components.select.room_type.other')}
           />
+        </Form.Item>
+        <Form.Item
+          name="roomName"
+          label={t('components.input.room_name.label')}
+          rules={[
+            { required: true, message: t('components.input.room_name.error') }
+          ]}
+        >
+          <Input maxLength={20} showCount />
         </Form.Item>
       </Form>
 
