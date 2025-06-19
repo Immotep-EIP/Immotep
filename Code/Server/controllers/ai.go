@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/base64"
+	"errors"
 	"log"
 	"net/http"
 	"strings"
@@ -13,6 +14,8 @@ import (
 	"keyz/backend/services/database"
 	"keyz/backend/utils"
 )
+
+const chatGPTerror = "error"
 
 func imagesToBase64Strings(images []db.ImageModel) []string {
 	res := make([]string, len(images))
@@ -45,35 +48,63 @@ func GenerateSummary(c *gin.Context) {
 		return
 	}
 
-	if req.Type == "room" {
-		room := database.GetRoomByID(req.Id)
-		chatGPTres, err := chatgpt.SummarizeRoom(room.Name, req.Pictures)
-		if err != nil {
-			utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
-			return
-		}
-		splitted := strings.Split(chatGPTres, "|")
-		resp := models.SummarizeResponse{
-			State:       splitted[0],
-			Cleanliness: splitted[1],
-			Note:        splitted[2],
-		}
-		c.JSON(http.StatusOK, resp)
-	} else {
-		furniture := database.GetFurnitureByID(req.Id)
-		chatGPTres, err := chatgpt.SummarizeFurniture(furniture.Name, req.Pictures)
-		if err != nil {
-			utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
-			return
-		}
-		splitted := strings.Split(chatGPTres, "|")
-		resp := models.SummarizeResponse{
-			State:       splitted[0],
-			Cleanliness: splitted[1],
-			Note:        splitted[2],
-		}
-		c.JSON(http.StatusOK, resp)
+	switch req.Type {
+	case "room":
+		handleRoomSummary(c, req)
+	case "furniture":
+		handleFurnitureSummary(c, req)
+	default:
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, errors.New("invalid type: must be 'room' or 'furniture'"))
+		return
 	}
+}
+
+func handleRoomSummary(c *gin.Context, req models.SummarizeRequest) {
+	room := database.GetRoomByID(req.Id)
+	chatGPTres, err := chatgpt.SummarizeRoom(room.Name, req.Pictures)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
+		return
+	}
+	splitted := strings.Split(chatGPTres, "|")
+	if len(splitted) == 2 && splitted[0] == chatGPTerror {
+		utils.SendError(c, http.StatusBadRequest, utils.ErrorRequestChatGPTAPI, errors.New(splitted[1]))
+		return
+	} else if len(splitted) != 3 {
+		log.Println(chatGPTres)
+		utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, errors.New("unexpected response format from ChatGPT"))
+		return
+	}
+	resp := models.SummarizeResponse{
+		State:       splitted[0],
+		Cleanliness: splitted[1],
+		Note:        splitted[2],
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+func handleFurnitureSummary(c *gin.Context, req models.SummarizeRequest) {
+	furniture := database.GetFurnitureByID(req.Id)
+	chatGPTres, err := chatgpt.SummarizeFurniture(furniture.Name, req.Pictures)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
+		return
+	}
+	splitted := strings.Split(chatGPTres, "|")
+	if len(splitted) == 2 && splitted[0] == chatGPTerror {
+		utils.SendError(c, http.StatusBadRequest, utils.ErrorRequestChatGPTAPI, errors.New(splitted[1]))
+		return
+	} else if len(splitted) != 3 {
+		log.Println(chatGPTres)
+		utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, errors.New("unexpected response format from ChatGPT"))
+		return
+	}
+	resp := models.SummarizeResponse{
+		State:       splitted[0],
+		Cleanliness: splitted[1],
+		Note:        splitted[2],
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 // GenerateComparison godoc
@@ -111,51 +142,76 @@ func GenerateComparison(c *gin.Context) {
 		handleRoomComparison(c, req, oldReport)
 	case "furniture":
 		handleFurnitureComparison(c, req, oldReport)
+	default:
+		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, errors.New("invalid type: must be 'room' or 'furniture'"))
+		return
 	}
 }
 
 func handleRoomComparison(c *gin.Context, req models.CompareRequest, oldReport *db.InventoryReportModel) {
 	for _, rs := range oldReport.RoomStates() {
 		if rs.RoomID == req.Id {
-			room := database.GetRoomByID(req.Id)
-			chatGPTres, err := chatgpt.CompareRoom(room.Name, rs, imagesToBase64Strings(rs.Pictures()), req.Pictures)
-			if err != nil {
-				utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
-				return
-			}
-			log.Println(chatGPTres)
-			splitted := strings.Split(chatGPTres, "|")
-			resp := models.SummarizeResponse{
-				State:       splitted[0],
-				Cleanliness: splitted[1],
-				Note:        splitted[2],
-			}
-			c.JSON(http.StatusOK, resp)
+			handleRoomComparison2(c, req, rs)
 			return
 		}
 	}
 	utils.SendError(c, http.StatusNotFound, utils.RoomNotFound, nil)
 }
 
+func handleRoomComparison2(c *gin.Context, req models.CompareRequest, rs db.RoomStateModel) {
+	room := database.GetRoomByID(req.Id)
+	chatGPTres, err := chatgpt.CompareRoom(room.Name, rs, imagesToBase64Strings(rs.Pictures()), req.Pictures)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
+		return
+	}
+	splitted := strings.Split(chatGPTres, "|")
+	if len(splitted) == 2 && splitted[0] == chatGPTerror {
+		utils.SendError(c, http.StatusBadRequest, utils.ErrorRequestChatGPTAPI, errors.New(splitted[1]))
+		return
+	} else if len(splitted) != 3 {
+		log.Println(chatGPTres)
+		utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, errors.New("unexpected response format from ChatGPT"))
+		return
+	}
+	resp := models.SummarizeResponse{
+		State:       splitted[0],
+		Cleanliness: splitted[1],
+		Note:        splitted[2],
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
 func handleFurnitureComparison(c *gin.Context, req models.CompareRequest, oldReport *db.InventoryReportModel) {
 	for _, fs := range oldReport.FurnitureStates() {
 		if fs.FurnitureID == req.Id {
-			furniture := database.GetFurnitureByID(req.Id)
-			chatGPTres, err := chatgpt.CompareFurniture(furniture.Name, fs, imagesToBase64Strings(fs.Pictures()), req.Pictures)
-			if err != nil {
-				utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
-				return
-			}
-			log.Println(chatGPTres)
-			splitted := strings.Split(chatGPTres, "|")
-			resp := models.SummarizeResponse{
-				State:       splitted[0],
-				Cleanliness: splitted[1],
-				Note:        splitted[2],
-			}
-			c.JSON(http.StatusOK, resp)
+			handleFurnitureComparison2(c, req, fs)
 			return
 		}
 	}
 	utils.SendError(c, http.StatusNotFound, utils.FurnitureNotFound, nil)
+}
+
+func handleFurnitureComparison2(c *gin.Context, req models.CompareRequest, fs db.FurnitureStateModel) {
+	furniture := database.GetFurnitureByID(req.Id)
+	chatGPTres, err := chatgpt.CompareFurniture(furniture.Name, fs, imagesToBase64Strings(fs.Pictures()), req.Pictures)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, err)
+		return
+	}
+	splitted := strings.Split(chatGPTres, "|")
+	if len(splitted) == 2 && splitted[0] == chatGPTerror {
+		utils.SendError(c, http.StatusBadRequest, utils.ErrorRequestChatGPTAPI, errors.New(splitted[1]))
+		return
+	} else if len(splitted) != 3 {
+		log.Println(chatGPTres)
+		utils.SendError(c, http.StatusInternalServerError, utils.ErrorRequestChatGPTAPI, errors.New("unexpected response format from ChatGPT"))
+		return
+	}
+	resp := models.SummarizeResponse{
+		State:       splitted[0],
+		Cleanliness: splitted[1],
+		Note:        splitted[2],
+	}
+	c.JSON(http.StatusOK, resp)
 }

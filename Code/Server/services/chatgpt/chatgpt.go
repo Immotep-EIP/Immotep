@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"os"
 
@@ -47,6 +46,7 @@ DON'T SEND ANYTHING ELSE IN THE RESPONSE.
 In case of error, your response must strictly follow this format:
 error|<error_message>
 Ex: "error|The image does not correspond to the name provided."
+DON'T SEND ANYTHING ELSE IN THE ERROR RESPONSE.
 
 Where:
 - **State** represents the overall condition of the room and must be one of the following: broken, needsRepair, bad, medium, good, new.
@@ -68,6 +68,7 @@ DON'T SEND ANYTHING ELSE IN THE RESPONSE.
 In case of error, your response must strictly follow this format:
 error|<error_message>
 Ex: "error|The image does not correspond to the name provided."
+DON'T SEND ANYTHING ELSE IN THE ERROR RESPONSE.
 
 Where:
 - **State** represents the overall condition of the furniture and must be one of the following: broken, needsRepair, bad, medium, good, new.
@@ -201,7 +202,6 @@ func summarize(stuffType string, name string, picturesUri []string) (string, err
 	if err != nil {
 		return "", err
 	}
-	log.Println(resp)
 
 	var result Response
 	if err := json.Unmarshal([]byte(resp), &result); err != nil {
@@ -267,7 +267,6 @@ func compare(stuffType string, initialState string, initialCleanliness string, i
 	if err != nil {
 		return "", err
 	}
-	log.Println(resp)
 
 	var result Response
 	if err := json.Unmarshal([]byte(resp), &result); err != nil {
