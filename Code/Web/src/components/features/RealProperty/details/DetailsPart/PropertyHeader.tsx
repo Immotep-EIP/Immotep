@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { Dropdown, MenuProps, Select, Tag } from 'antd'
 import { MoreOutlined } from '@ant-design/icons'
 
-import { Button } from '@/components/common'
 import PageTitle from '@/components/ui/PageText/Title'
 import { usePropertyContext } from '@/context/propertyContext'
 import useNavigation from '@/hooks/Navigation/useNavigation'
@@ -143,12 +142,18 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
           />
         )}
         <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
-          <Button
-            type="text"
-            style={{ border: '0.4px solid rgba(0, 0, 0, 0.8)' }}
-            icon={<MoreOutlined />}
-            className={style.actionButton}
-          />
+          <span
+            style={{
+              border: '0.4px solid rgba(0, 0, 0, 0.8)',
+              borderRadius: 4,
+              padding: 6,
+              display: 'inline-flex',
+              alignItems: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            <MoreOutlined />
+          </span>
         </Dropdown>
       </div>
     </div>
