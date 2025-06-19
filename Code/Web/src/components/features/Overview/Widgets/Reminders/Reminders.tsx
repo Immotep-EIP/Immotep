@@ -69,7 +69,9 @@ const Reminders: React.FC<RemindersProps> = ({
               aria-label={`${reminder.title}: ${reminder.advice}`}
             >
               <div className={style.reminderTexts}>
-                <span className={style.titleText}>{reminder.title}</span>
+                <span className={style.titleText} title={reminder.title}>
+                  {reminder.title}
+                </span>
                 <div className={style.reminderheader}>
                   <StatusTag
                     value={reminder.priority}
