@@ -68,47 +68,6 @@ const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({
   }
 
   return (
-    // <Modal
-    //   title={t('pages.real_property.update_real_property.title')}
-    //   isOpen={isModalUpdateOpen}
-    //   onCancel={() => setIsModalUpdateOpen(false)}
-    //   footer={[
-    // <Button
-    //   key="back"
-    //   type="default"
-    //   onClick={() => setIsModalUpdateOpen(false)}
-    // >
-    //   {t('components.button.cancel')}
-    // </Button>,
-    // <Button key="submit" loading={loading} onClick={() => form.submit()}>
-    //   {t('components.button.update')}
-    // </Button>
-    //   ]}
-    //   style={{
-    //     top: '10%',
-    //     overflow: 'hidden'
-    //   }}
-    //   styles={{
-    //     body: {
-    //       maxHeight: 'calc(70vh - 55px)',
-    //       overflowY: 'auto'
-    //     }
-    //   }}
-    // >
-    //   <div className={style.pageContainer}>
-    //     <Form
-    //       form={form}
-    //       name="propertyForm"
-    //       onFinish={onFinish}
-    //       onFinishFailed={onFinishFailed}
-    //       autoComplete="off"
-    //       layout="vertical"
-    //       style={{ width: '90%', maxWidth: '500px', margin: '20px' }}
-    //     >
-    //       <PropertyFormFields uploadProps={uploadProps} />
-    //     </Form>
-    //   </div>
-    // </Modal>
     <Drawer
       title={
         <div className={style.drawerTitle}>
