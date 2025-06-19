@@ -19,7 +19,7 @@ func checkRoom(roomId string, propertyId string) error {
 		return errors.New(string(utils.RoomNotFound))
 	}
 	if room.PropertyID != propertyId {
-		return errors.New(string(utils.PropertyNotYours))
+		return errors.New(string(utils.RoomNotInThisProperty))
 	}
 	return nil
 }
