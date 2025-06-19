@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { Modal, message, Tabs } from 'antd'
 
 import useImageCache from '@/hooks/Image/useImageCache'
-import useProperties from '@/hooks/Property/useProperties'
 import useNavigation from '@/hooks/Navigation/useNavigation'
 import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'

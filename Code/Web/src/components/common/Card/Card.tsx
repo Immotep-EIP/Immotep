@@ -2,17 +2,17 @@ import React from 'react'
 import { Card as AntCard } from 'antd'
 import type { CardProps as AntCardProps } from 'antd'
 
-interface CardProps extends Omit<AntCardProps, 'title'> {
+interface CardProps extends Omit<AntCardProps, 'title' | 'variant'> {
   title?: React.ReactNode
   children: React.ReactNode
-  variant?: 'default' | 'elevated' | 'outlined'
+  customVariant?: 'default' | 'elevated' | 'outlined'
   padding?: 'none' | 'small' | 'medium' | 'large'
 }
 
 const Card: React.FC<CardProps> & { Grid: typeof AntCard.Grid } = ({
   title,
   children,
-  variant = 'default',
+  customVariant = 'default',
   padding = 'medium',
   ...props
 }) => {
@@ -34,7 +34,7 @@ const Card: React.FC<CardProps> & { Grid: typeof AntCard.Grid } = ({
       padding: getPadding()
     }
 
-    switch (variant) {
+    switch (customVariant) {
       case 'elevated':
         return {
           ...baseStyle,

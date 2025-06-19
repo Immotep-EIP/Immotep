@@ -8,7 +8,6 @@ import { Button } from '@/components/common'
 import PageTitle from '@/components/ui/PageText/Title'
 import { usePropertyContext } from '@/context/propertyContext'
 import useNavigation from '@/hooks/Navigation/useNavigation'
-import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
 import toLocaleDate from '@/utils/date/toLocaleDate'
 
 import { PropertyHeaderProps } from '@/interfaces/Property/Property'
