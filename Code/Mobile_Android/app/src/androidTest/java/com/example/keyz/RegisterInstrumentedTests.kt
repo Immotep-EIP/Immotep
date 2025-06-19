@@ -1,4 +1,4 @@
-package com.example.keyz
+package fr.keyz
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -10,6 +10,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import fr.keyz.MainActivity
+import fr.keyz.isTesting
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -42,7 +44,7 @@ class RegisterInstrumentedTests {
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.keyz", appContext.packageName)
+        assertEquals("fr.keyz", appContext.packageName)
     }
 
     @Test

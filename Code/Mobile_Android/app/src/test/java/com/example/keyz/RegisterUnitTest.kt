@@ -1,14 +1,14 @@
-package com.example.keyz
+package fr.keyz
 
 
 import androidx.navigation.NavController
-import com.example.keyz.apiClient.ApiService
-import com.example.keyz.apiClient.mockApi.fakeRegistrationResponse
-import com.example.keyz.authService.AuthService
-import com.example.keyz.authService.RegistrationInput
-import com.example.keyz.login.dataStore
-import com.example.keyz.register.RegisterFormError
-import com.example.keyz.register.RegisterViewModel
+import fr.keyz.apiClient.ApiService
+import fr.keyz.apiClient.mockApi.fakeRegistrationResponse
+import fr.keyz.authService.AuthService
+import fr.keyz.authService.RegistrationInput
+import fr.keyz.login.dataStore
+import fr.keyz.register.RegisterFormError
+import fr.keyz.register.RegisterViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -30,7 +30,7 @@ class RegisterViewModelTest {
 
     private lateinit var viewModel: RegisterViewModel
     private val navController : NavController = mockk(relaxed = true)
-    private val apiService : ApiService= mockk(relaxed = true)
+    private val apiService : ApiService = mockk(relaxed = true)
     private val authService : AuthService = mockk(relaxed = true)
     private val testDispatcher = StandardTestDispatcher()
 

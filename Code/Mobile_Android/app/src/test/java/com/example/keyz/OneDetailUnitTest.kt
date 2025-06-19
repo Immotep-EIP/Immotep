@@ -1,4 +1,4 @@
-package com.example.keyz
+package fr.keyz
 
 
 import kotlin.jvm.java
@@ -6,15 +6,15 @@ import kotlin.jvm.java
 
 import android.net.Uri
 import androidx.navigation.NavController
-import com.example.keyz.apiCallerServices.AICallerService
-import com.example.keyz.apiClient.ApiService
-import com.example.keyz.apiClient.mockApi.fakeAiCallOutput
-import com.example.keyz.inventory.Cleanliness
-import com.example.keyz.inventory.RoomDetail
-import com.example.keyz.inventory.State
-import com.example.keyz.inventory.roomDetails.OneDetail.OneDetailViewModel
-import com.example.keyz.inventory.roomDetails.OneDetail.RoomDetailsError
-import com.example.keyz.utils.Base64Utils
+import fr.keyz.apiCallerServices.AICallerService
+import fr.keyz.apiClient.ApiService
+import fr.keyz.apiClient.mockApi.fakeAiCallOutput
+import fr.keyz.inventory.Cleanliness
+import fr.keyz.inventory.RoomDetail
+import fr.keyz.inventory.State
+import fr.keyz.inventory.roomDetails.OneDetail.OneDetailViewModel
+import fr.keyz.inventory.roomDetails.OneDetail.RoomDetailsError
+import fr.keyz.utils.Base64Utils
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
