@@ -24,7 +24,9 @@ const endpoints = {
           `owner/properties/${propertyId}/leases/${leaseId}/`,
         list: (propertyId: string) => `owner/properties/${propertyId}/leases/`,
         documents: (propertyId: string, leaseId: string | undefined) =>
-          `owner/properties/${propertyId}/leases/${leaseId}/docs/`,
+          leaseId
+            ? `owner/properties/${propertyId}/leases/${leaseId}/docs/`
+            : `owner/properties/${propertyId}/docs/`,
         deleteDocument: (
           propertyId: string,
           leaseId: string,
