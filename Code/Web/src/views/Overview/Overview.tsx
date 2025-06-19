@@ -88,13 +88,13 @@ const Overview: React.FC = () => {
         x: 7,
         y: 0,
         w: 3,
-        h: 2,
+        h: 3,
         children: (
           <Reminders
             reminders={reminders}
             loading={loading}
             error={error}
-            height={2}
+            height={3}
           />
         )
       },
@@ -104,13 +104,13 @@ const Overview: React.FC = () => {
         x: 0,
         y: 0,
         w: 3,
-        h: 2,
+        h: 3,
         children: (
           <OpenDamages
             openDamages={openDamages}
             loading={loading}
             error={error}
-            height={2}
+            height={3}
           />
         )
       },
@@ -126,7 +126,7 @@ const Overview: React.FC = () => {
             openDamages={openDamages}
             loading={loading}
             error={error}
-            height={2}
+            height={1}
           />
         )
       }
