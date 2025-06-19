@@ -99,7 +99,11 @@ describe('AuthApi', () => {
       const mockResponse: TokenResponse = {
         access_token: 'access-token',
         refresh_token: 'refresh-token',
-        expires_in: 3600
+        expires_in: 3600,
+        properties: {
+          id: 'user-id',
+          role: 'user'
+        }
       }
       mockedCallApi.mockResolvedValueOnce(mockResponse)
 

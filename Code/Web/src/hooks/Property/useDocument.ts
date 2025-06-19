@@ -9,7 +9,7 @@ import DeleteDocument from '@/services/api/Owner/Properties/DeleteDocument'
 
 const useDocument = (
   propertyId: string,
-  leaseId: string
+  leaseId: string | undefined
 ): UseDocumentReturn => {
   const [documents, setDocuments] = useState<Document[] | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
@@ -86,7 +86,7 @@ const useDocument = (
   }
 
   useEffect(() => {
-    if (propertyId) {
+    if (propertyId && leaseId) {
       fetchDocuments(propertyId)
     }
   }, [propertyId, leaseId])

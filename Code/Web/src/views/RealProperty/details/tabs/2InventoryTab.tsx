@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Form, Modal, Typography, Space } from 'antd'
+import { Form, Modal, Space } from 'antd'
 
 import { Empty } from '@/components/common'
 import { usePropertyContext } from '@/context/propertyContext'
