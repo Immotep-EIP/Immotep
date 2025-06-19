@@ -53,7 +53,7 @@ fun InventoryScreen(
     Column(
         modifier = Modifier.testTag("inventoryScreen")
     ) {
-        LoadingDialog(isOpen = isLoadingInventory.value || isLoading.value)
+        LoadingDialog(isOpen = isLoadingInventory.value)
         if (inventoryErrors.value.getAllRooms) {
             ErrorAlert(null, null, stringResource(R.string.error_get_all_rooms))
         }

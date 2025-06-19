@@ -192,7 +192,7 @@ class Base64Utils {
         fun convertPdfUriToBase64(
             context: Context,
             pdfUri: Uri,
-            withPrefix: Boolean = false
+            withPrefix: Boolean = true
         ): String? {
             try {
                 val inputStream = context.contentResolver.openInputStream(pdfUri) ?: throw Exception("Input stream is null")
