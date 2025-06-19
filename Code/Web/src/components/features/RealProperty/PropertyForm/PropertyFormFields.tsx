@@ -1,12 +1,10 @@
 import { useTranslation } from 'react-i18next'
-
-import { Form, InputNumber, UploadProps } from 'antd'
-import Dragger from 'antd/es/upload/Dragger'
+import { Form, InputNumber, Upload, UploadProps } from 'antd'
 import { InboxOutlined } from '@ant-design/icons'
-
 import { Input } from '@/components/common'
-
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
+
+const { Dragger } = Upload
 
 const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
   const { t } = useTranslation()

@@ -135,7 +135,10 @@ describe('RealPropertyUpdate Component', () => {
   it('closes the modal when clicking the close button', () => {
     renderComponent()
 
-    const closeButton = screen.getByRole('button', { name: /close/i })
+    // Utiliser un sélecteur plus spécifique pour le bouton de fermeture du Drawer
+    // Utiliser getByLabelText qui est plus précis dans ce cas
+    const closeButton = screen.getByLabelText('Close')
+
     fireEvent.click(closeButton)
 
     expect(mockSetIsModalUpdateOpen).toHaveBeenCalledWith(false)
