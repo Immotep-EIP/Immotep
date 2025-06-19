@@ -1,50 +1,71 @@
-## Login Page Documentation
+# Login Screen
 
-This section provides a detailed overview of the Login page functionality within the Immotep mobile application.
+## UI Components
 
-**Components:**
+- `Header`: Displays app logo or name.
+- `TopText`: Shows a welcome message and login instruction.
+- `OutlinedTextField`: Email input field (`KeyboardType.Email`), with error message support.
+- `PasswordInput`: Password field with error message and visibility toggle.
+- `CheckBoxWithLabel`: "Keep me signed in" option.
+- Clickable `Text`: 
+  - "Forgot Password" navigates to password recovery.
+  - "Sign Up" navigates to the registration page.
+- `Button`: Triggers login process.
+- `ErrorAlert`: Displays API error codes if present.
+- `LoadingDialog`: Shown during login API call.
 
-* **Header:** Displays the application logo or name. (Implemented using `Header` composable)
-* **Top Text:** Shows a welcome message and login instruction. (Implemented using `TopText` composable)
-* **Email Input:** A text field for users to enter their email address. (Implemented using `OutlinedTextField` composable with `KeyboardOptions.keyboardType = KeyboardType.Email`)
-* **Password Input:** A password field for users to enter their login password. (Implemented using `PasswordInput` composable)
-* **Keep Signed Checkbox:** An option for users to stay signed in after login. (Implemented using `CheckBoxWithLabel` composable)
-* **Forgot Password Text:** A clickable text leading to the forgot password functionality. (Implemented using a clickable `Text` composable)
-* **Login Button:** Triggers the login process when clicked. (Implemented using a `Button` composable)
-* **Sign Up Text:** A clickable text leading to the registration page. (Implemented using a clickable `Text` composable)
+## ViewModel
 
-**Functionalities:**
+**`LoginViewModel`** handles:
 
-* Users can enter their email address and password in the respective input fields.
-* The `Email Input` enforces email format validation.
-* Users can choose to stay signed in after login using the `Keep Signed Checkbox`.
-* Clicking the `Forgot Password Text` navigates to the forgot password functionality.
-* Clicking the `Login Button` triggers the login process, performing the following actions:
-    * Validates email format and password length.
-    * Calls the `AuthService` (injected through ViewModel) to perform login with the provided credentials.
-    * Upon successful login, navigates to the dashboard screen.
-    * In case of login failure, displays relevant error messages based on the received error code.
+- `LoginState`: `email`, `password`, `keepSigned`.
+- `LoginErrorState`: `email`, `password`, `apiError`.
+- `updateEmailAndPassword(email, password, keepSigned)`: Updates user input.
+- `login(setIsOwner)`: Validates inputs and initiates login flow.
+- Uses `Mutex` to avoid concurrent login requests.
+- Handles login success/failure with UI state updates and navigation.
 
-**Data Flow:**
+### State Observed
 
-* User interaction with input fields updates the login state (`LoginState`) in the ViewModel.
-* The login button triggers the `login` function in the ViewModel.
-* The `login` function validates user input and initiates the login process through `AuthService`.
-* `AuthService` handles login logic and persists user data using DataStore (if `keepSigned` is selected).
-* Based on the login outcome, the ViewModel updates either the login state or the error state.
-* The UI layer displays relevant information based on the updated state (login success, error messages).
+- `emailAndPassword`: Combined state for inputs.
+- `errors`: Email/password validation or API error.
+- `isLoading`: Indicates progress during login.
 
-**Navigation:**
+## Functionality
 
-* This page utilizes navigation components to navigate between screens:
-    * Clicking `Forgot Password Text` triggers navigation to the forgot password functionality.
-    * Successful login navigates to the dashboard screen.
-    * Clicking `Sign Up Text` navigates to the registration page.
+- Validates:
+  - Email format (`RegexUtils.isValidEmail`)
+  - Password minimum length (≥ 3)
+- Calls [`AuthService.onLogin`](#authservice) to authenticate.
+- Stores session token via `DataStore` if login succeeds.
+- Sets user ownership role via `setIsOwner(authService.isUserOwner())`.
+- Navigates to dashboard on success.
+- Parses error response and displays appropriate error messages.
 
-**ViewModel:**
+## Data Flow
 
-* The `LoginViewModel` manages the login state (`LoginState`), including email, password, and keep signed information.
-* It also handles the error state (`LoginErrorState`), indicating validation errors or API error codes.
-* The `updateEmailAndPassword` function allows updating the login state based on user input.
-* The `login` function performs input validation, calls `AuthService` for login, and handles success/failure scenarios.
+```mermaid
+graph TD
+UserInput -->|updateEmailAndPassword| ViewModel
+LoginButton -->|login| ViewModel
+ViewModel -->|onLogin| AuthService
+AuthService -->|Token + Role| ViewModel
+ViewModel -->|Updates| UIState
+```
+## Navigation
+
+* "Forgot Password" → `forgotPassword` screen
+* "Sign Up" → `register` screen
+* On success → `dashboard` screen
+
+## API Integration
+
+This screen relies on the [`AuthService`](#authservice) class for handling the login API call and user role verification.
+
+### AuthService
+
+* Handles actual API login request and token persistence.
+* Injected through the `apiService` and `context.dataStore`.
+
+➡️ See [AuthService.kt](#) *(link to actual file in your repo or docs)*
 
