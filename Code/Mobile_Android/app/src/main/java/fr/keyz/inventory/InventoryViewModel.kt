@@ -15,6 +15,8 @@ import fr.keyz.apiClient.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.Vector
 
 /**
@@ -42,19 +44,30 @@ class InventoryViewModel(
     private var _propertyId : String? = null
     private var _leaseId: String? = null
     private val _inventoryErrors = MutableStateFlow(InventoryApiErrors())
+    private val _isLoading = MutableStateFlow(false)
+    private val _isLoadingMutex = Mutex()
 
     private val rooms = mutableStateListOf<Room>()
 
     private var nonModifiedRooms: Vector<Room> = Vector()
 
     val inventoryErrors = _inventoryErrors.asStateFlow()
+    val isLoading = _isLoading.asStateFlow()
 
-    fun loadInventoryFromRooms(rooms : Array<Room>) {
-        this.rooms.clear()
-        nonModifiedRooms.clear()
-        this.rooms.addAll(rooms)
-        rooms.forEach {
-            nonModifiedRooms.add(it.copy())
+    fun loadInventoryFromRooms(newRooms : Array<Room>) {
+        viewModelScope.launch {
+            _isLoadingMutex.withLock {
+                _isLoading.value = true
+            }
+            rooms.clear()
+            nonModifiedRooms.clear()
+            rooms.addAll(newRooms)
+            newRooms.forEach {
+                nonModifiedRooms.add(it.copy())
+            }
+            _isLoadingMutex.withLock {
+                _isLoading.value = false
+            }
         }
     }
 
@@ -167,20 +180,25 @@ class InventoryViewModel(
     fun sendInventory(oldReportId : String?, setNewValueOfInventory : (Array<Room>, reportId : String) -> Unit) : Boolean {
         if (!checkIfAllAreCompleted() || _propertyId == null || _leaseId == null) return false
         viewModelScope.launch {
-            try {
-                val inventoryReport = roomsToInventoryReport(oldReportId)
-                val newReport = inventoryApiCaller.createInventoryReport(
-                    propertyId = _propertyId!!,
-                    inventoryReportInput = inventoryReport,
-                    leaseId = _leaseId!!
-                )
-                setNewValueOfInventory(rooms.toTypedArray(), newReport.id)
-                onClose()
-                return@launch
-            } catch (e : Exception) {
-                println("Error sending inventory ${e.message}")
-                e.printStackTrace()
-                _inventoryErrors.value = _inventoryErrors.value.copy(createInventoryReport = true)
+            _isLoadingMutex.withLock {
+                try {
+                    _isLoading.value = true
+                    val inventoryReport = roomsToInventoryReport(oldReportId)
+                    val newReport = inventoryApiCaller.createInventoryReport(
+                        propertyId = _propertyId!!,
+                        inventoryReportInput = inventoryReport,
+                        leaseId = _leaseId!!
+                    )
+                    setNewValueOfInventory(rooms.toTypedArray(), newReport.id)
+                    onClose()
+                } catch (e: Exception) {
+                    println("Error sending inventory ${e.message}")
+                    e.printStackTrace()
+                    _inventoryErrors.value =
+                        _inventoryErrors.value.copy(createInventoryReport = true)
+                } finally {
+                    _isLoading.value = false
+                }
             }
         }
         return true

@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import fr.keyz.LocalApiService
 import fr.keyz.R
 import fr.keyz.components.ErrorAlert
+import fr.keyz.components.LoadingDialog
 import fr.keyz.inventory.loaderButton.LoaderInventoryViewModel
 import fr.keyz.inventory.rooms.RoomsScreen
 
@@ -35,6 +36,7 @@ fun InventoryScreen(
 
     val inventoryErrors = viewModel.inventoryErrors.collectAsState()
     val isLoading = loaderViewModel.isLoading.collectAsState()
+    val isLoadingInventory = viewModel.isLoading.collectAsState()
     val oldReportId = loaderViewModel.oldReportId.collectAsState()
 
     val cannotAddRoomText = stringResource(R.string.cannot_add_room)
@@ -51,6 +53,7 @@ fun InventoryScreen(
     Column(
         modifier = Modifier.testTag("inventoryScreen")
     ) {
+        LoadingDialog(isOpen = isLoadingInventory.value || isLoading.value)
         if (inventoryErrors.value.getAllRooms) {
             ErrorAlert(null, null, stringResource(R.string.error_get_all_rooms))
         }

@@ -30,7 +30,6 @@ class RoomsViewModel(
 
     fun onClose() {
         allRooms.clear()
-        closeInventory()
     }
 
     fun onConfirmInventory() {

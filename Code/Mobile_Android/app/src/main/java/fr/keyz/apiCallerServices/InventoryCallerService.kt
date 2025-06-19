@@ -36,12 +36,13 @@ class InventoryCallerService(
         leaseId : String,
     ) : CreatedInventoryReport {
             try {
-                return apiService.inventoryReport(
+                val inventoryReport = apiService.inventoryReport(
                     authHeader = getBearerToken(),
                     propertyId = propertyId,
                     leaseId = "current",
                     inventoryReportInput = inventoryReportInput
                 )
+                return inventoryReport
             } catch (e : HttpException) {
                 println("error response inventory report ${e.message()}")
             } catch (e : Exception) {
