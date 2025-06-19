@@ -2,7 +2,6 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
 import { StatusTag, Empty, Badge } from '@/components/common'
@@ -90,15 +89,9 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
               aria-label={`${damage.created_at}: ${damage.comment}`}
             >
               <div className={style.damageInformationsContainer}>
-                <Tooltip
-                  title={`${damage.property_name || '-'} > ${damage.room_name || '-'}`}
-                  placement="topLeft"
-                >
-                  <span className={style.damageInfosContainer}>
-                    {damage.property_name || '-'} {'>'}{' '}
-                    {damage.room_name || '-'}
-                  </span>
-                </Tooltip>
+                <span className={style.damageInfosContainer}>
+                  {damage.property_name || '-'} {'>'} {damage.room_name || '-'}
+                </span>
                 <span className={style.dateText}>
                   {toLocaleDate(damage.created_at, 'short')}
                 </span>
@@ -108,18 +101,14 @@ const OpenDamages: React.FC<OpenDamagesProps> = ({
                   className={style.damageComment}
                   color="blue"
                   text={
-                    <Tooltip title={damage.comment} placement="topLeft">
-                      <span style={{ fontWeight: 700 }}>{damage.comment}</span>
-                    </Tooltip>
+                    <span style={{ fontWeight: 700 }}>{damage.comment}</span>
                   }
                 />
               ) : (
                 <div className={style.damageCommentContainer}>
-                  <Tooltip title={damage.comment} placement="topLeft">
-                    <span className={style.damageCommentWithoutBadge}>
-                      {damage.comment}
-                    </span>
-                  </Tooltip>
+                  <span className={style.damageCommentWithoutBadge}>
+                    {damage.comment}
+                  </span>
                   <StatusTag
                     value={damage.priority}
                     colorMap={{

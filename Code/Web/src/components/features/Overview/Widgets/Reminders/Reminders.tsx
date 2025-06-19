@@ -2,7 +2,6 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
 import { StatusTag, Empty } from '@/components/common'
@@ -70,9 +69,7 @@ const Reminders: React.FC<RemindersProps> = ({
               aria-label={`${reminder.title}: ${reminder.advice}`}
             >
               <div className={style.reminderTexts}>
-                <Tooltip title={reminder.title} placement="topLeft">
-                  <span className={style.titleText}>{reminder.title}</span>
-                </Tooltip>
+                <span className={style.titleText}>{reminder.title}</span>
                 <div className={style.reminderheader}>
                   <StatusTag
                     value={reminder.priority}
@@ -85,11 +82,9 @@ const Reminders: React.FC<RemindersProps> = ({
                     i18nPrefix="pages.real_property_details.tabs.damage.priority"
                     defaultColor="gray"
                   />
-                  <Tooltip title={reminder.advice} placement="topLeft">
-                    <span className={style.descriptionText}>
-                      {reminder.advice}
-                    </span>
-                  </Tooltip>
+                  <span className={style.descriptionText}>
+                    {reminder.advice}
+                  </span>
                 </div>
               </div>
             </div>
