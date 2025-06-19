@@ -914,8 +914,9 @@ definitions:
     - bad-base64-string-or-unsupported-type
     - property-picture-not-found
     - user-profile-picture-not-found
-    - room-already-exists
     - room-not-found
+    - room-already-exists
+    - room-not-in-this-property
     - furniture-not-found
     - furniture-already-exists
     - furniture-not-in-this-room
@@ -965,8 +966,9 @@ definitions:
     - BadBase64OrUnsupportedType
     - PropertyPictureNotFound
     - UserProfilePictureNotFound
-    - RoomAlreadyExists
     - RoomNotFound
+    - RoomAlreadyExists
+    - RoomNotInThisProperty
     - FurnitureNotFound
     - FurnitureAlreadyExists
     - FurnitureNotInThisRoom

@@ -126,6 +126,9 @@ func (irp *PDF) AddImages(images []db.ImageModel) {
 			ImageType: string(picture.Type),
 		}
 		info := irp.pdf.RegisterImageOptionsReader(picture.ID, imageOptions, bytes.NewReader(picture.Data))
+		if info == nil {
+			continue
+		}
 		imageWidth := info.Width() * imageHeight / info.Height()
 		if currentX+imageWidth > maxWidth {
 			currentX = marginL
