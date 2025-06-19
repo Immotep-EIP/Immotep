@@ -30,6 +30,7 @@ class RoomsViewModel(
 
     fun onClose() {
         allRooms.clear()
+        closeInventory()
     }
 
     fun onConfirmInventory() {
@@ -37,7 +38,7 @@ class RoomsViewModel(
             _showNotCompletedRooms.value = true
             return
         }
-        this.onClose()
+        allRooms.clear()
     }
 
     suspend fun addARoom(name: String, type : RoomType) {
