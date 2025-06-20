@@ -194,6 +194,8 @@ struct PropertyDetailView: View {
                     }
                 }
             }
+
+
             .sheet(isPresented: $showEditPropertyPopUp) {
                 EditPropertyView(viewModel: viewModel, property: $property)
             }
