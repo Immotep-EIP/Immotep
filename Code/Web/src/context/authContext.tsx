@@ -69,7 +69,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userInfo: UserTokenPayload,
     leaseId: string | undefined
   ) => {
-    console.log('login called with:', userInfo, leaseId)
     try {
       const response = await loginApi(userInfo)
       if (!leaseId && response?.properties?.role === 'tenant') {
