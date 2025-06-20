@@ -63,7 +63,7 @@ fun WidgetBase(
                 .clip(RoundedCornerShape(10.dp))
                 .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(10.dp))
         ) {
-            Box(modifier = Modifier.padding(10.dp, end = 20.dp)) {
+            Box(modifier = Modifier.padding(start = 10.dp, top = 10.dp, bottom = 10.dp, end = 30.dp)) {
                 content()
             }
             Box(
