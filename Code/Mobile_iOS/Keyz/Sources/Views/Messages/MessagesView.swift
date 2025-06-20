@@ -14,6 +14,7 @@ struct MessagesView: View {
                 TopBar(title: "Keyz".localized())
                 Spacer()
                 Text("Messaging features will be available soon!".localized())
+                    .foregroundStyle(.gray)
                 Spacer()
             }
             .navigationBarBackButtonHidden(true)

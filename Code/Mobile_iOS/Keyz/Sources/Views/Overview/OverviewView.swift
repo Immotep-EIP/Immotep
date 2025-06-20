@@ -15,6 +15,8 @@ struct OverviewView: View {
     @State private var navigateToDamage: (propertyId: String, damageId: String)? = nil
     @State private var showError = false
     @State private var errorMessage: String?
+    @State private var navigateToReportDamage: Bool = false
+    @State private var navigateToInventory: Bool = false
 
     init() {
         self._viewModel = StateObject(wrappedValue: OverviewViewModel())
@@ -77,7 +79,9 @@ struct OverviewView: View {
                 if let property = navigateToProperty {
                     PropertyDetailView(
                         property: property,
-                        viewModel: PropertyViewModel(loginViewModel: loginViewModel)
+                        viewModel: PropertyViewModel(loginViewModel: loginViewModel),
+                        navigateToReportDamage: $navigateToReportDamage,
+                        navigateToInventory: $navigateToInventory
                     )
                     .environmentObject(loginViewModel)
                 }
@@ -110,7 +114,9 @@ struct OverviewView: View {
                             rooms: [],
                             damages: []
                         ),
-                        viewModel: PropertyViewModel(loginViewModel: loginViewModel)
+                        viewModel: PropertyViewModel(loginViewModel: loginViewModel),
+                        navigateToReportDamage: $navigateToReportDamage,
+                        navigateToInventory: $navigateToInventory
                     )
                     .environmentObject(loginViewModel)
                 }
@@ -118,7 +124,9 @@ struct OverviewView: View {
             .onAppear {
                 loginViewModel.loadUser()
                 Task {
-                    await viewModel.fetchDashboardData()
+                    if loginViewModel.userRole == "owner" {                        
+                        await viewModel.fetchDashboardData()
+                    }
                 }
             }
             .onChange(of: viewModel.errorMessage) {
