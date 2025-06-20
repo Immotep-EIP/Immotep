@@ -10,11 +10,11 @@ import androidx.navigation.NavController
 import fr.keyz.apiCallerServices.ApiCallerServiceException
 import fr.keyz.apiCallerServices.Damage
 import fr.keyz.apiCallerServices.DamageCallerService
-import fr.keyz.apiCallerServices.DamagePriority
 import fr.keyz.apiCallerServices.DamageStatus
 import fr.keyz.apiCallerServices.Document
 import fr.keyz.apiCallerServices.InviteDetailedProperty
 import fr.keyz.apiCallerServices.LeaseDetailedProperty
+import fr.keyz.apiCallerServices.Priority
 import fr.keyz.apiClient.CreateOrUpdateResponse
 import fr.keyz.apiClient.mockApi.baseDateStr
 import fr.keyz.apiClient.mockApi.fakeDamagesArray
@@ -223,7 +223,7 @@ class RealPropertyDetailsViewModelTest {
             fixedAt = null,
             leaseId = "lease123",
             pictures = emptyArray(),
-            priority = DamagePriority.medium,
+            priority = Priority.medium,
             read = false,
             roomId = "room1",
             roomName = "Living Room",

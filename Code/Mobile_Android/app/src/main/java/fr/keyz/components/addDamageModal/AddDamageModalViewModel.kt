@@ -8,7 +8,7 @@ import androidx.navigation.NavController
 import fr.keyz.apiCallerServices.Damage
 import fr.keyz.apiCallerServices.DamageCallerService
 import fr.keyz.apiCallerServices.DamageInput
-import fr.keyz.apiCallerServices.DamagePriority
+import fr.keyz.apiCallerServices.Priority
 import fr.keyz.apiCallerServices.RoomCallerService
 import fr.keyz.apiClient.ApiService
 import fr.keyz.utils.Base64Utils
@@ -63,7 +63,7 @@ class AddDamageModalViewModel(apiService: ApiService, private val navController:
         _form.value = _form.value.copy(comment = comment)
     }
 
-    fun setPriority(priority: DamagePriority) {
+    fun setPriority(priority: Priority) {
         _form.value = _form.value.copy(priority = priority)
     }
 

@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import fr.keyz.LocalApiService
-import fr.keyz.apiCallerServices.DamagePriority
 import fr.keyz.components.AddingPicturesCarousel
 import fr.keyz.layouts.BigModalLayout
 import fr.keyz.ui.components.OutlinedTextField
@@ -23,6 +22,7 @@ import fr.keyz.ui.components.DropDownItem
 import fr.keyz.ui.components.StyledButton
 import fr.keyz.R
 import fr.keyz.apiCallerServices.Damage
+import fr.keyz.apiCallerServices.Priority
 
 @Composable
 fun AddDamageModal(
@@ -62,10 +62,10 @@ fun AddDamageModal(
         Text(stringResource(R.string.priority), modifier = Modifier.padding(top = 10.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
         DropDown(
             items = listOf(
-                DropDownItem(stringResource(R.string.low), DamagePriority.low),
-                DropDownItem(stringResource(R.string.medium), DamagePriority.medium),
-                DropDownItem(stringResource(R.string.high), DamagePriority.high),
-                DropDownItem(stringResource(R.string.urgent), DamagePriority.urgent)
+                DropDownItem(stringResource(R.string.low), Priority.low),
+                DropDownItem(stringResource(R.string.medium), Priority.medium),
+                DropDownItem(stringResource(R.string.high), Priority.high),
+                DropDownItem(stringResource(R.string.urgent), Priority.urgent)
             ),
             selectedItem = form.value.priority,
             onItemSelected = { viewModel.setPriority(it) },

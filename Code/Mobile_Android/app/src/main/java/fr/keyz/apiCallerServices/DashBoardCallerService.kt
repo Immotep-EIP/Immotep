@@ -4,6 +4,23 @@ import androidx.navigation.NavController
 import fr.keyz.apiClient.ApiService
 import java.util.Locale
 
+//enum classes
+
+enum class Priority {
+    low, medium, high, urgent,
+}
+
+
+fun stringToPriority(str : String) : Priority {
+    return when (str) {
+        "urgent" -> Priority.urgent
+        "medium" -> Priority.medium
+        "high" -> Priority.high
+        else -> Priority.low
+    }
+}
+
+//data classes
 
 data class DashBoardOpenDamage(
     val listToFix: Array<Damage> = arrayOf(),
@@ -99,11 +116,12 @@ data class DashBoardPropertiesOutput(
     }
 }
 
+
 data class DashBoardReminder(
     val advice: String,
     val id: String,
     val link: String,
-    val priority: String,
+    val priority: Priority,
     val title: String
 )
 
