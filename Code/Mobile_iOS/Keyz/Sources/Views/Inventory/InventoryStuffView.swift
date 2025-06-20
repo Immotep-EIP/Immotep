@@ -55,6 +55,22 @@ struct InventoryStuffView: View {
     private var contentView: some View {
         VStack(spacing: 0) {
             TopBar(title: "Keyz")
+                .overlay(
+                    HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .font(.title3)
+                                .foregroundColor(Color("textColor"))
+                                .frame(width: 40, height: 40)
+                                .background(Color.black.opacity(0.2))
+                                .clipShape(Circle())
+                        }
+                        .padding(.trailing, 16)
+                    },
+                    alignment: .trailing
+                )
             if let selectedRoom = selectedRoom {
                 VStack {
                     Spacer()
