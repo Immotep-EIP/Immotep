@@ -174,3 +174,31 @@
 "Low_damage" = "Faible(s)";
 
 "No documents available" = "Aucun document disponible";
+
+"Room Type" = "Type de pièce";
+"Inventory Report" = "État des lieux";
+"Image(s)" = "Image(s)";
+"Property or old report not found. Please check the property details." = "Propriété ou ancien rapport non trouvé. Veuillez vérifier les détails de la propriété.";
+"No previous inventory report found for comparison." = "Aucun rapport d'inventaire précédent trouvé pour la comparaison.";
+
+"Room Analysis" = "Analyse de la pièce";
+"Select room status" = "Sélectionner l'état de la pièce";
+"Send Room Report" = "Envoyer le rapport de la pièce";
+"Broken" = "Cassé";
+"Bad" = "Mauvais";
+"Good" = "Bon";
+"New" = "Neuf";
+
+"Choose a name and type for your new room:" = "Choisissez un nom et un type pour votre nouvelle pièce :";
+"Are you sure you want to delete the room %@" = "Êtes-vous sûr de vouloir supprimer la pièce %@ ?";
+"Add an element" = "Ajouter un élément";
+"Please enter details:" = "Veuillez entrer les détails :";
+"Are you sure you want to delete the stuff?" = "Êtes-vous sûr de vouloir supprimer l'élément ?";
+"Error adding stuff: %@" = "Erreur lors de l'ajout de l'élément : %@";
+"Analyze Room" = "Analyser la pièce";
+
+"Messaging features will be available soon!" = "Les fonctionnalités de messagerie seront bientôt disponibles !";
+"No property associated." = "Aucune propriété associée.";
+"No properties available" = "Aucune propriété disponible";
+"Unknown" = "Inconnu";
+"Error refreshing damages: %@" = "Erreur lors de l'actualisation des sinistres : %@";

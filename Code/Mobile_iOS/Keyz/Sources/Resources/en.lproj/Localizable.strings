@@ -170,3 +170,31 @@
 "High_damage" = "High";
 "Medium_damage" = "Medium";
 "Low_damage" = "Low";
+
+"Room Type" = "Room Type";
+"Inventory Report" = "Inventory Report";
+"Image(s)" = "Image(s)";
+"Property or old report not found. Please check the property details." = "Property or old report not found. Please check the property details.";
+"No previous inventory report found for comparison." = "No previous inventory report found for comparison.";
+
+"Room Analysis" = "Room Analysis";
+"Select room status" = "Select room status";
+"Send Room Report" = "Send Room Report";
+"Broken" = "Broken";
+"Bad" = "Bad";
+"Good" = "Good";
+"New" = "New";
+
+"Choose a name and type for your new room:" = "Choose a name and type for your new room:";
+"Are you sure you want to delete the room %@" = "Are you sure you want to delete the room %@?";
+"Add an element" = "Add an element";
+"Please enter details:" = "Please enter details:";
+"Are you sure you want to delete the stuff?" = "Are you sure you want to delete the stuff?";
+"Error adding stuff: %@" = "Error adding stuff: %@";
+"Analyze Room" = "Analyze Room";
+
+"Messaging features will be available soon!" = "Messaging features will be available soon!";
+"No property associated." = "No property associated.";
+"No properties available" = "No properties available";
+"Unknown" = "Unknown";
+"Error refreshing damages: %@" = "Error refreshing damages: %@";
