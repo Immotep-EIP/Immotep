@@ -45,6 +45,7 @@ jobs:
           script: |
             cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/
             git switch dev
-            docker compose down
             git pull
-            docker compose up --build -d
+            docker compose build
+            docker compose up -d --remove-orphans
+            docker image prune -f
