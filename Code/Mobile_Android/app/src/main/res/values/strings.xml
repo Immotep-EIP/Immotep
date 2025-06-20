@@ -214,4 +214,5 @@
     <string name="scheduled_inventory">Scheduled inventory</string>
     <string name="damage_in_progress">Damage in progress</string>
     <string name="available_properties">Available properties</string>
+    <string name="reminders">Reminders</string>
 </resources>

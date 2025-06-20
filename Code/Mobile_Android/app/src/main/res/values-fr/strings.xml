@@ -215,4 +215,5 @@
     <string name="scheduled_inventory">États des lieux prévus</string>
     <string name="damage_in_progress">Dommages en cours</string>
     <string name="available_properties">Propriété(s) disponible(s)</string>
+    <string name="reminders">Rappels</string>
 </resources>
