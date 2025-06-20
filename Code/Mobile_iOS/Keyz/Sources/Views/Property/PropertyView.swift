@@ -12,6 +12,10 @@ struct PropertyView: View {
     @EnvironmentObject var loginViewModel: LoginViewModel
     @State private var tenantProperty: Property?
     @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var navigateToReportDamage: Bool = false
+    @State private var navigateToInventory: Bool = false
+    @State private var selectedProperty: Property?
 
     var body: some View {
         NavigationStack {
@@ -24,8 +28,12 @@ struct PropertyView: View {
                         Spacer()
                     }
                 } else if let property = tenantProperty {
-                    PropertyDetailView(property: property, viewModel: viewModel)
-                } else {
+                    PropertyDetailView(
+                        property: property,
+                        viewModel: viewModel,
+                        navigateToReportDamage: $navigateToReportDamage,
+                        navigateToInventory: $navigateToInventory
+                    )                } else {
                     VStack {
                         Spacer()
                         Text("No property associated.".localized())
@@ -62,10 +70,19 @@ struct PropertyView: View {
                                 ) {
                                     ForEach(viewModel.properties) { property in
                                         NavigationLink(
-                                            destination: PropertyDetailView(property: property, viewModel: viewModel)
+                                            destination: PropertyDetailView(
+                                                property: property,
+                                                viewModel: viewModel,
+                                                navigateToReportDamage: $navigateToReportDamage,
+                                                navigateToInventory: $navigateToInventory
+                                            )
+                                            .environmentObject(loginViewModel)
                                         ) {
                                             PropertyCard(property: property)
                                         }
+                                        .simultaneousGesture(TapGesture().onEnded {
+                                            selectedProperty = property
+                                        })
                                     }
                                 }
                                 .padding(.horizontal)
@@ -96,6 +113,25 @@ struct PropertyView: View {
                             .padding(.trailing, 20)
                             .accessibilityLabel("add_property_btn")
                         }
+                    }
+                }
+                .navigationDestination(isPresented: $navigateToReportDamage) {
+                    if let property = selectedProperty {
+                        ReportDamageView(
+                            viewModel: viewModel,
+                            propertyId: property.id,
+                            rooms: [],
+                            leaseId: viewModel.activeLeaseId,
+                            onDamageCreated: {
+                                Task {
+                                    do {
+                                        try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                                    } catch {
+                                        errorMessage = "Error refreshing damages: \(error.localizedDescription)".localized()
+                                    }
+                                }
+                            }
+                        )
                     }
                 }
                 .onAppear {
@@ -146,7 +182,7 @@ struct PropertyCard: View {
                         .font(.headline)
                         .foregroundColor(Color("textColor"))
                     Spacer()
-                    Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
+                    Text(statusText)
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(.white)
@@ -154,9 +190,9 @@ struct PropertyCard: View {
                         .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
+                                .fill(statusColor)
                         )
-                        .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
+                        .accessibilityLabel(statusAccessibilityLabel)
                 }
 
                 HStack(spacing: 4) {
@@ -174,6 +210,33 @@ struct PropertyCard: View {
             .background(Color("basicWhiteBlack"))
             .cornerRadius(10)
             .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        }
+    }
+
+    private var statusText: String {
+        switch property.isAvailable {
+        case "available": return "Available".localized()
+        case "pending": return "Pending".localized()
+        case "unavailable": return "Unavailable".localized()
+        default: return "Unknown".localized()
+        }
+    }
+
+    private var statusColor: Color {
+        switch property.isAvailable {
+        case "available": return Color("GreenAlert")
+        case "pending": return .orange
+        case "unavailable": return Color("RedAlert")
+        default: return .gray
+        }
+    }
+
+    private var statusAccessibilityLabel: String {
+        switch property.isAvailable {
+        case "available": return "text_available"
+        case "pending": return "text_pending"
+        case "unavailable": return "text_unavailable"
+        default: return "text_unknown"
         }
     }
 }
