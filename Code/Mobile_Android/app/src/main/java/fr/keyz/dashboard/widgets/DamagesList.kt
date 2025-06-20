@@ -58,16 +58,13 @@ fun OneDamagesInWidget(damage: Damage, isLast : Boolean) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DamagesListWidget(damages : Array<Damage>) {
-    val moreImportantDamages = damages.copyOf()
-    moreImportantDamages.sortBy { it.priority }
-    moreImportantDamages.reverse()
-    val prioritizedDamages = moreImportantDamages.take(5).toTypedArray()
-
+    val prioritizedDamages = damages.sortedByDescending { it.priority }.take(5).toTypedArray()
+    
     WidgetBase(
         title = stringResource(R.string.damages_list),
         dropDownItems = arrayOf(),
         testTag = "remindersWidget",
-        isEmpty = moreImportantDamages.isEmpty()
+        isEmpty = prioritizedDamages.isEmpty()
     ) {
         FlowColumn(
             modifier = Modifier
