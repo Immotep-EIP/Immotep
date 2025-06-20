@@ -10,6 +10,16 @@ enum class Priority {
     low, medium, high, urgent,
 }
 
+
+fun stringToPriority(str : String) : Priority {
+    return when (str) {
+        "urgent" -> Priority.urgent
+        "medium" -> Priority.medium
+        "high" -> Priority.high
+        else -> Priority.low
+    }
+}
+
 //data classes
 
 data class DashBoardOpenDamage(

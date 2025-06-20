@@ -23,13 +23,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.keyz.R
+import fr.keyz.apiCallerServices.Damage
 import fr.keyz.apiCallerServices.DashBoardReminder
 import fr.keyz.apiCallerServices.Priority
 import fr.keyz.components.PriorityBox
 import fr.keyz.utils.ThemeUtils
 
 @Composable
-fun OneReminder(reminder : DashBoardReminder, isLast : Boolean) {
+fun OneDamagesInWidget(reminder : DashBoardReminder, isLast : Boolean) {
     Row(modifier = Modifier.fillMaxWidth().drawBehind {
         if (!isLast) {
             val y = size.height - 2.dp.toPx() / 2
@@ -49,9 +50,9 @@ fun OneReminder(reminder : DashBoardReminder, isLast : Boolean) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun RemindersWidget(reminders : Array<DashBoardReminder>) {
-    var moreUsefulReminders = reminders.copyOf()
-    moreUsefulReminders.sortBy { it.priority }
+fun DamagesListWidget(damages : Array<Damage>) {
+    var moreImportantDamages = damages.copyOf()
+    moreImportantDamages.sortBy { it.priority }
     moreUsefulReminders.reverse()
     moreUsefulReminders = moreUsefulReminders.take(5).toTypedArray()
 

@@ -2,7 +2,6 @@ package fr.keyz.apiClient.mockApi
 
 import fr.keyz.apiCallerServices.AiCallOutput
 import fr.keyz.apiCallerServices.DamageOutput
-import fr.keyz.apiCallerServices.DamagePriority
 import fr.keyz.apiCallerServices.DashBoardOpenDamageOutput
 import fr.keyz.apiCallerServices.DashBoardPropertiesOutput
 import fr.keyz.apiCallerServices.DashBoardPropertyOutput
@@ -13,6 +12,7 @@ import fr.keyz.apiCallerServices.GetPropertyResponse
 import fr.keyz.apiCallerServices.InviteOutput
 import fr.keyz.apiCallerServices.InvitePropertyResponse
 import fr.keyz.apiCallerServices.LeasePropertyResponse
+import fr.keyz.apiCallerServices.Priority
 import fr.keyz.apiCallerServices.ProfileResponse
 import fr.keyz.apiCallerServices.RoomOutput
 import fr.keyz.apiCallerServices.RoomType
@@ -273,7 +273,7 @@ val fakeDamageOutput = DamageOutput(
     created_at = baseDateStr,
     fix_planned_at = baseDateEndStr,
     pictures = arrayOf(),
-    priority = DamagePriority.low.toString(),
+    priority = Priority.low.toString(),
     read = true,
     updated_at = baseDateStr,
     room_id = fakeRoom.id,

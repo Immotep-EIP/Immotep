@@ -8,7 +8,7 @@ import java.time.OffsetDateTime
 data class DamageInput(
     val comment: String = "",
     val pictures: ArrayList<String> = ArrayList(),
-    val priority: DamagePriority = DamagePriority.low,
+    val priority: Priority = Priority.low,
     val room_id: String? = null
 ) {
     fun toDamage(id : String, roomName: String, tenantName: String) : Damage {
@@ -57,7 +57,7 @@ data class DamageOutput(
             fixedAt = this.fixed_at?.let { OffsetDateTime.parse(it) },
             leaseId = this.lease_id,
             pictures = this.pictures ?: arrayOf(),
-            priority = stringToDamagePriority(this.priority),
+            priority = stringToPriority(this.priority),
             read = this.read,
             roomId = this.room_id,
             roomName = this.room_name,
@@ -76,7 +76,7 @@ data class Damage(
     val fixedAt: OffsetDateTime?,
     val leaseId: String,
     val pictures: Array<String>,
-    val priority: DamagePriority,
+    val priority: Priority,
     val read: Boolean,
     val roomId: String,
     val roomName: String,
