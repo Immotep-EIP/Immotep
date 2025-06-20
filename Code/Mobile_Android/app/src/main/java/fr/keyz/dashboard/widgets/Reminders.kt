@@ -50,10 +50,10 @@ fun OneReminder(reminder : DashBoardReminder, isLast : Boolean) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RemindersWidget(reminders : Array<DashBoardReminder>) {
-    var moreUsefulReminders = reminders.copyOf()
+    val moreUsefulReminders = reminders.copyOf()
     moreUsefulReminders.sortBy { it.priority }
     moreUsefulReminders.reverse()
-    moreUsefulReminders = moreUsefulReminders.take(5).toTypedArray()
+    val prioritiesReminders = moreUsefulReminders.take(5).toTypedArray()
 
     WidgetBase(
         title = stringResource(R.string.reminders),
@@ -66,8 +66,8 @@ fun RemindersWidget(reminders : Array<DashBoardReminder>) {
                 .testTag("remindersWidget")
                 .fillMaxSize()
         ) {
-            moreUsefulReminders.forEachIndexed { index, reminder ->
-                OneReminder(reminder, index == moreUsefulReminders.size - 1)
+            prioritiesReminders.forEachIndexed { index, reminder ->
+                OneReminder(reminder, index == prioritiesReminders.size - 1)
             }
         }
     }

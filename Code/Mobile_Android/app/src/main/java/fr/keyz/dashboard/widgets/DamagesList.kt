@@ -58,10 +58,10 @@ fun OneDamagesInWidget(damage: Damage, isLast : Boolean) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DamagesListWidget(damages : Array<Damage>) {
-    var moreImportantDamages = damages.copyOf()
+    val moreImportantDamages = damages.copyOf()
     moreImportantDamages.sortBy { it.priority }
     moreImportantDamages.reverse()
-    moreImportantDamages = moreImportantDamages.take(5).toTypedArray()
+    val prioritizedDamages = moreImportantDamages.take(5).toTypedArray()
 
     WidgetBase(
         title = stringResource(R.string.damages_list),
@@ -74,8 +74,8 @@ fun DamagesListWidget(damages : Array<Damage>) {
                 .testTag("damagesListWidget")
                 .fillMaxSize()
         ) {
-            moreImportantDamages.forEachIndexed { index, damage ->
-                OneDamagesInWidget(damage, index == moreImportantDamages.size - 1)
+            prioritizedDamages.forEachIndexed { index, damage ->
+                OneDamagesInWidget(damage, index == prioritizedDamages.size - 1)
             }
         }
     }
