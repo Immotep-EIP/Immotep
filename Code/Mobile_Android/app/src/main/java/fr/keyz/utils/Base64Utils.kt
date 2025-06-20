@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import java.io.File
 import java.io.FileOutputStream
-import java.util.Base64
+import android.util.Base64
 
 
 class Base64Utils {
@@ -120,7 +120,7 @@ class Base64Utils {
                 val path = getPathFromUri(fileUri, context) ?: return ""
                 val file = File(path)
                 val bytes = file.readBytes()
-                val base64 = Base64.getEncoder().encodeToString(bytes)
+                val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
                 if (!withPrefix) {
                     return base64
                 }
@@ -138,7 +138,7 @@ class Base64Utils {
                     base64String = base64String.substringAfter(",")
                 }
                 val byteArrayDecoded =
-                    Base64.getDecoder().decode(base64String)
+                    Base64.decode(base64String, Base64.DEFAULT)
                 return BitmapFactory.decodeByteArray(byteArrayDecoded, 0, byteArrayDecoded.size)
                     .asImageBitmap()
             } catch (e: Exception) {
@@ -151,7 +151,7 @@ class Base64Utils {
             return try {
                 val pdfName = if (name != null) "$name.pdf" else "temp_pdf.pdf"
                 val newBase64String = base64String.replace("data:application/pdf;base64,", "")
-                val pdfAsBytes = Base64.getDecoder().decode(newBase64String)
+                val pdfAsBytes = Base64.decode(newBase64String, Base64.DEFAULT)
 
                 val pdfFile = File(context.cacheDir, pdfName)
                 FileOutputStream(pdfFile).use { it.write(pdfAsBytes) }
@@ -197,7 +197,7 @@ class Base64Utils {
             try {
                 val inputStream = context.contentResolver.openInputStream(pdfUri) ?: throw Exception("Input stream is null")
                 val bytes = inputStream.readBytes()
-                val base64 = Base64.getEncoder().encodeToString(bytes)
+                val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
                 if (!withPrefix) {
                     return base64
                 }
