@@ -53,10 +53,16 @@ fun FullscreenZoomableImage(uri: Uri?, onClose: () -> Unit) {
                 rotationState += rotation
             }
         }
+    val closeAndReset = {
+        onClose()
+        scale = 1f
+        offset = Offset.Zero
+        rotationState = 0f
+    }
     BigModalLayout(
         height = height,
         open = uri != null,
-        close = {onClose(); scale = 1f; offset = Offset.Zero; rotationState = 0f;  },
+        close = closeAndReset,
         testTag = "fullscreenZoomableImage",
         backgroundColor = Color.Black
     ) {
@@ -65,7 +71,7 @@ fun FullscreenZoomableImage(uri: Uri?, onClose: () -> Unit) {
                 .fillMaxWidth()
                 .height(innerHeight)
                 .background(Color.Black)
-                .clickable { onClose() },
+                .clickable { closeAndReset() },
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
