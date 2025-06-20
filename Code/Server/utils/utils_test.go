@@ -153,3 +153,21 @@ func TestFilter_AllMatch(t *testing.T) {
 	result := utils.Filter(input, condition)
 	assert.Equal(t, expected, result)
 }
+
+func TestSanitizeEmail(t *testing.T) {
+	cases := []struct {
+		input    string
+		expected string
+	}{
+		{"  USER@Example.com  ", "user@example.com"},
+		{"Test@DOMAIN.ORG", "test@domain.org"},
+		{"  spaced@email.com", "spaced@email.com"},
+		{"nospaces@domain.com", "nospaces@domain.com"},
+		{"  MiXeD@Case.Com  ", "mixed@case.com"},
+		{"\tTab@domain.com\n", "tab@domain.com"},
+	}
+	for _, c := range cases {
+		result := utils.SanitizeEmail(c.input)
+		assert.Equal(t, c.expected, result, "input: %q", c.input)
+	}
+}
