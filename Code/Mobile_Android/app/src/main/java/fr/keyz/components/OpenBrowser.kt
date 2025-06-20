@@ -8,13 +8,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.sp
+import fr.keyz.R
 
 @Composable
 fun OpenBrowserAnnotatedString(url: String, title: String) {
     val context = LocalContext.current
-
+    val noBrowserFound = stringResource(R.string.no_browser_found)
     Text(
         AnnotatedString(
             title
@@ -30,7 +32,7 @@ fun OpenBrowserAnnotatedString(url: String, title: String) {
             try {
                 context.startActivity(browserIntent)
             } catch (e: Exception) {
-                Toast.makeText(context, "No browser found to open the link", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, noBrowserFound, Toast.LENGTH_SHORT).show()
             }
        },
     )
