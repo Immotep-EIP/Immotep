@@ -138,6 +138,7 @@ class InventoryViewModelTest {
     @Test
     fun getBaseRooms() = runTest {
         viewModel.loadInventoryFromRooms(arrayOf(fakeRoom.toRoom(arrayOf(fakeFurniture.toRoomDetail()))))
+        testDispatcher.scheduler.advanceUntilIdle()
         assert(viewModel.getRooms().isNotEmpty())
         assert(viewModel.getRooms().size == 1)
     }
