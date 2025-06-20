@@ -71,7 +71,7 @@ fun DamagesListWidget(damages : Array<Damage>) {
     ) {
         FlowColumn(
             modifier = Modifier
-                .testTag("realPropertyDetailsDamagesTab")
+                .testTag("damagesListWidget")
                 .fillMaxSize()
         ) {
             moreImportantDamages.forEachIndexed { index, damage ->

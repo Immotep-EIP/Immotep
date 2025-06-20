@@ -63,7 +63,7 @@ fun RemindersWidget(reminders : Array<DashBoardReminder>) {
     ) {
         FlowColumn(
             modifier = Modifier
-                .testTag("realPropertyDetailsDamagesTab")
+                .testTag("remindersWidget")
                 .fillMaxSize()
         ) {
             moreUsefulReminders.forEachIndexed { index, reminder ->
