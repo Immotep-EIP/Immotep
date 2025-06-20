@@ -186,7 +186,7 @@ ViewModel -->|StateFlow updates| UI
 
   * [`RealPropertyCallerService`](../../API/Api%20Callers/RealPropertyCallerService.md) (property, documents)
   * [`DamageCallerService`](../../API/Api%20Callers/DamageCallerService.md) (damages)
-  * [`InviteTenantCallerService`](../../API/Api%20Callers/InviteTenant.md) (tenant invitations)
+  * [`InviteTenantCallerService`](../../API/Api%20Callers/InviteTenantCallerService.md) (tenant invitations)
 
 * Caller services handle:
 

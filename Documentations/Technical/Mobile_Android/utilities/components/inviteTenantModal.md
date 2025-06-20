@@ -107,8 +107,4 @@ which uses ISO 8601 date formatting via `SimpleDateFormat`.
 * ViewModel is scoped to the Composable.
 * Automatically resets state after successful invitation or modal close.
 
----
 
-➡️ See [InviteTenantCallerService.kt](#)
-➡️ See [RegexUtils.kt](#)
-➡️ See [InviteInput.kt](#)

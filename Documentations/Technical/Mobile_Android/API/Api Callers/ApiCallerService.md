@@ -8,7 +8,7 @@
 
 The base class abstracts common behavior needed by API caller services, including:
 
-- Fetching and refreshing the bearer token using [`AuthService`](#authservice).
+- Fetching and refreshing the bearer token using [`AuthService`](../AuthService.md).
 - Handling unauthorized errors (`401`) and triggering logout via navigation if needed.
 - Catching and converting Retrofit exceptions into a domain-specific `ApiCallerServiceException`.
 - Providing a consistent way to determine user roles (e.g., owner vs. tenant).
