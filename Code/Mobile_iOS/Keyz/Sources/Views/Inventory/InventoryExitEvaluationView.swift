@@ -10,6 +10,7 @@ import SwiftUI
 struct InventoryExitEvaluationView: View {
     @EnvironmentObject var inventoryViewModel: InventoryViewModel
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     let selectedStuff: LocalInventory
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
@@ -29,7 +30,23 @@ struct InventoryExitEvaluationView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TopBar(title: "État des lieux - Sortie")
+            TopBar(title: "Inventory Report".localized())
+                .overlay(
+                    HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .font(.title3)
+                                .foregroundColor(Color("textColor"))
+                                .frame(width: 40, height: 40)
+                                .background(Color.black.opacity(0.2))
+                                .clipShape(Circle())
+                        }
+                        .padding(.trailing, 16)
+                    },
+                    alignment: .trailing
+                )
 
             ScrollView {
                 Section {
@@ -38,7 +55,7 @@ struct InventoryExitEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Commentaire")
+                        Text("Comment".localized())
                             .font(.headline)
                         Spacer()
                     }
@@ -55,13 +72,13 @@ struct InventoryExitEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Statut")
+                        Text("Status".localized())
                             .font(.headline)
                         Spacer()
                     }
                     HStack {
-                        Picker("Selectionner un statut", selection: $inventoryViewModel.selectedStatus) {
-                            Text("Select your equipment status").tag("Select your equipment status")
+                        Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
+                            Text("Select your equipment status".localized()).tag("Select your equipment status")
                             ForEach(Array(stateMapping.values), id: \.self) { status in
                                 Text(status).tag(status)
                             }
@@ -86,7 +103,7 @@ struct InventoryExitEvaluationView: View {
                             await validateReport()
                         }
                     }, label: {
-                        Text("Valider")
+                        Text("Validate".localized())
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color("LightBlue"))
@@ -102,12 +119,22 @@ struct InventoryExitEvaluationView: View {
                             isLoading = false
                         }
                     }, label: {
-                        Text("Envoyer le rapport")
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color("LightBlue"))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                        ZStack {
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .tint(.white)
+                            } else {
+                                Text("Send Report".localized())
+                            }
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(inventoryViewModel.selectedImages.isEmpty ? Color.gray : Color("LightBlue"))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .scaleEffect(isLoading ? 0.95 : 1.0)
+                        .animation(.easeInOut(duration: 0.2), value: isLoading)
                     })
                     .disabled(isLoading || inventoryViewModel.selectedImages.isEmpty)
                     .padding()
@@ -145,16 +172,16 @@ struct InventoryExitEvaluationView: View {
 
     private func showImagePickerOptions(replaceIndex: Int?) {
         self.replaceIndex = replaceIndex
-        let actionSheet = UIAlertController(title: "Select Image Source", message: nil, preferredStyle: .actionSheet)
-        actionSheet.addAction(UIAlertAction(title: "Take Photo", style: .default, handler: { _ in
+        let actionSheet = UIAlertController(title: "Select Image Source".localized(), message: nil, preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "Take Photo".localized(), style: .default, handler: { _ in
             self.sourceType = .camera
             self.showSheet.toggle()
         }))
-        actionSheet.addAction(UIAlertAction(title: "Choose from Library", style: .default, handler: { _ in
+        actionSheet.addAction(UIAlertAction(title: "Choose from Library".localized(), style: .default, handler: { _ in
             self.sourceType = .photoLibrary
             self.showSheet.toggle()
         }))
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "Cancel".localized(), style: .cancel, handler: nil))
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
             rootViewController.present(actionSheet, animated: true, completion: nil)
@@ -169,24 +196,24 @@ struct InventoryExitEvaluationView: View {
                 try await inventoryViewModel.compareStuffReport(oldReportId: oldReportId)
                 isReportSent = true
             } else {
-                errorMessage = "No previous inventory report found for comparison."
+                errorMessage = "No previous inventory report found for comparison.".localized()
             }
         } catch let error as NSError {
             switch error.code {
             case 404:
-                errorMessage = "Property or old report not found. Please check the property details."
+                errorMessage = "Property or old report not found. Please check the property details.".localized()
             case 403:
-                errorMessage = "You do not have permission to access this property."
+                errorMessage = "You do not have permission to access this property.".localized()
             case 400:
                 if error.localizedDescription.contains("datauri") {
-                    errorMessage = "Invalid image format. Please ensure all images are valid JPEGs."
+                    errorMessage = "Invalid image format. Please ensure all images are valid JPEGs.".localized()
                 } else {
                     errorMessage = "Invalid request: \(error.localizedDescription)"
                 }
             case 0 where error.localizedDescription.contains("No active lease found"):
-                errorMessage = "No active lease found for this property."
+                errorMessage = "No active lease found for this property.".localized()
             default:
-                errorMessage = "Error: \(error.localizedDescription)"
+                errorMessage = "Error: \(error.localizedDescription)".localized()
             }
             print("Error sending comparison report: \(error.localizedDescription)")
         }

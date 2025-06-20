@@ -30,8 +30,23 @@ struct InventoryRoomExitEvaluationView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TopBar(title: "Room Analysis - Exit".localized())
-
+            TopBar(title: "Room Analysis".localized())
+                .overlay(
+                    HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .font(.title3)
+                                .foregroundColor(Color("textColor"))
+                                .frame(width: 40, height: 40)
+                                .background(Color.black.opacity(0.2))
+                                .clipShape(Circle())
+                        }
+                        .padding(.trailing, 16)
+                    },
+                    alignment: .trailing
+                )
             ScrollView {
                 Section {
                     PicturesSegment(selectedImages: $inventoryViewModel.selectedImages, showImagePickerOptions: showImageSelection)
@@ -104,12 +119,22 @@ struct InventoryRoomExitEvaluationView: View {
                             isLoading = false
                         }
                     }, label: {
-                        Text("Send Room Report".localized())
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color("LightBlue"))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                        ZStack {
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .tint(.white)
+                            } else {
+                                Text("Send Room Report".localized())
+                            }
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(inventoryViewModel.selectedImages.isEmpty ? Color.gray : Color("LightBlue"))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .scaleEffect(isLoading ? 0.95 : 1.0)
+                        .animation(.easeInOut(duration: 0.2), value: isLoading)
                     })
                     .disabled(isLoading || inventoryViewModel.selectedImages.isEmpty)
                     .padding()

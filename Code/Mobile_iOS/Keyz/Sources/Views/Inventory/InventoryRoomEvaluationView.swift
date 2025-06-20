@@ -30,8 +30,23 @@ struct InventoryRoomEvaluationView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TopBar(title: "Room Analysis")
-
+            TopBar(title: "Room Analysis".localized())
+                .overlay(
+                    HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .font(.title3)
+                                .foregroundColor(Color("textColor"))
+                                .frame(width: 40, height: 40)
+                                .background(Color.black.opacity(0.2))
+                                .clipShape(Circle())
+                        }
+                        .padding(.trailing, 16)
+                    },
+                    alignment: .trailing
+                )
             ScrollView {
                 Section {
                     PicturesSegment(selectedImages: $inventoryViewModel.selectedImages, showImagePickerOptions: showImagePickerOptions)
@@ -39,7 +54,7 @@ struct InventoryRoomEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Comment")
+                        Text("Comment".localized())
                             .font(.headline)
                         Spacer()
                     }
@@ -56,7 +71,7 @@ struct InventoryRoomEvaluationView: View {
 
                 VStack {
                     HStack {
-                        Text("Status")
+                        Text("Status".localized())
                             .font(.headline)
                         Spacer()
                     }
@@ -104,12 +119,22 @@ struct InventoryRoomEvaluationView: View {
                             isLoading = false
                         }
                     }, label: {
-                        Text("Send Room Report".localized())
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color("LightBlue"))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                        ZStack {
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .tint(.white)
+                            } else {
+                                Text("Send Room Report".localized())
+                            }
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(inventoryViewModel.selectedImages.isEmpty ? Color.gray : Color("LightBlue"))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .scaleEffect(isLoading ? 0.95 : 1.0)
+                        .animation(.easeInOut(duration: 0.2), value: isLoading)
                     })
                     .disabled(isLoading || inventoryViewModel.selectedImages.isEmpty)
                     .padding()
@@ -151,19 +176,19 @@ struct InventoryRoomEvaluationView: View {
     private func showImagePickerOptions(replaceIndex: Int?) {
         self.replaceIndex = replaceIndex
 
-        let actionSheet = UIAlertController(title: "Select Image Source", message: nil, preferredStyle: .actionSheet)
+        let actionSheet = UIAlertController(title: "Select Image Source".localized(), message: nil, preferredStyle: .actionSheet)
 
-        actionSheet.addAction(UIAlertAction(title: "Take Photo", style: .default, handler: { _ in
+        actionSheet.addAction(UIAlertAction(title: "Take Photo".localized(), style: .default, handler: { _ in
             self.sourceType = .camera
             self.showSheet.toggle()
         }))
 
-        actionSheet.addAction(UIAlertAction(title: "Choose from Library", style: .default, handler: { _ in
+        actionSheet.addAction(UIAlertAction(title: "Choose from Library".localized(), style: .default, handler: { _ in
             self.sourceType = .photoLibrary
             self.showSheet.toggle()
         }))
 
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "Cancel".localized(), style: .cancel, handler: nil))
 
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
@@ -185,7 +210,7 @@ struct InventoryRoomEvaluationView: View {
                 if error.localizedDescription.contains("datauri") {
                     errorMessage = "Invalid image format. Please ensure all images are valid JPEGs.".localized()
                 } else {
-                    errorMessage = "Invalid request: \(error.localizedDescription)"
+                    errorMessage = "Invalid request: \(error.localizedDescription)".localized()
                 }
             case 0 where error.localizedDescription.contains("No active lease found"):
                 errorMessage = "No active lease found for this property.".localized()

@@ -19,7 +19,7 @@ struct RegisterView: View {
                         .font(.system(size: 25))
                         .bold()
                         .padding(.bottom, 5)
-                    Text("Join Immotep for your peace of mind!".localized())
+                    Text("Join Keyz for your peace of mind!".localized())
                         .font(.system(size: 14))
                         .padding(.bottom, 50)
 
@@ -90,7 +90,7 @@ struct RegisterView: View {
                         .resizable()
                         .frame(width: 50, height: 50)
                         .padding(.bottom, 40)
-                    Text("Immotep".localized())
+                    Text("Keyz")
                         .font(.title)
                         .bold()
                         .padding(.bottom, 40)

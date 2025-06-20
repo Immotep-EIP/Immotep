@@ -19,22 +19,29 @@ struct PropertyDetailView: View {
     @State private var showCancelInvitePopUp = false
     @State private var showDeletePropertyPopUp = false
     @State private var showEditPropertyPopUp = false
-    @State private var navigateToReportDamage = false
+    @Binding private var navigateToReportDamage: Bool
     @State private var errorMessage: String?
     @State private var isLoading = false
     @State private var selectedTab: String = "Details".localized()
     @State private var isEntryInventory: Bool = true
-    @State private var navigateToInventory: Bool = false
+    @Binding private var navigateToInventory: Bool
     @State private var rooms: [PropertyRoomsTenant] = []
     @State private var activeLeaseId: String?
     @State private var hasLoaded = false
     @Environment(\.dismiss) var dismiss
     private let tabs = ["Details".localized(), "Documents".localized(), "Damages".localized()]
     
-    init(property: Property, viewModel: PropertyViewModel) {
+    init(
+        property: Property,
+        viewModel: PropertyViewModel,
+        navigateToReportDamage: Binding<Bool>,
+        navigateToInventory: Binding<Bool>
+    ) {
         self._property = State(initialValue: property)
         self.viewModel = viewModel
         self._inventoryViewModel = StateObject(wrappedValue: InventoryViewModel(property: property))
+        self._navigateToReportDamage = navigateToReportDamage
+        self._navigateToInventory = navigateToInventory
     }
 
     private func fetchDocuments() async {
@@ -116,7 +123,6 @@ struct PropertyDetailView: View {
     }
     
     var body: some View {
-        NavigationStack {
             ZStack {
                 mainContentView
                 errorMessageView
@@ -142,37 +148,14 @@ struct PropertyDetailView: View {
                     .padding(.trailing, 20)
                 }
             }
+            .navigationBarBackButtonHidden(true)
             .onReceive(viewModel.$properties) { properties in
                 if let updatedProperty = properties.first(where: { $0.id == property.id }) {
-                    if !updatedProperty.documents.isEmpty {
+                    if !updatedProperty.documents.isEmpty || updatedProperty.isAvailable != property.isAvailable {
                         self.property = updatedProperty
                     }
                 }
             }
-            .navigationDestination(isPresented: $navigateToReportDamage) {
-                ReportDamageView(
-                    viewModel: viewModel,
-                    propertyId: property.id,
-                    rooms: rooms,
-                    leaseId: activeLeaseId,
-                    onDamageCreated: {
-                        Task {
-                            do {
-                                try await viewModel.fetchPropertyDamages(propertyId: property.id)
-                            } catch {
-                                await MainActor.run {
-                                    self.errorMessage = "Error refreshing damages: \(error.localizedDescription)".localized()
-                                }
-                            }
-                        }
-                    }
-                )
-            }
-            .navigationDestination(isPresented: $navigateToInventory) {
-                InventoryRoomView()
-                    .environmentObject(inventoryViewModel)
-            }
-            .navigationBarBackButtonHidden(true)
             .onAppear {
                 guard !hasLoaded else { return }
                 hasLoaded = true
@@ -201,7 +184,10 @@ struct PropertyDetailView: View {
                 InviteTenantView(tenantViewModel: tenantViewModel, property: property)
             }
             .overlay(alertsView)
-        }
+            .navigationDestination(isPresented: $navigateToInventory) {
+                InventoryRoomView()
+                    .environmentObject(inventoryViewModel)
+            }
     }
     
     private var damagesContentView: some View {
@@ -302,14 +288,20 @@ struct PropertyDetailView: View {
 
     private var optionsMenuView: some View {
         Menu {
-            Button(action: { showInviteTenantSheet = true }) {
-                Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
+            if property.isAvailable == "available" {
+                Button(action: { showInviteTenantSheet = true }) {
+                    Label("Invite Tenant".localized(), systemImage: "person.crop.circle.badge.plus")
+                }
             }
-            Button(action: { showEndLeasePopUp = true }) {
-                Label("End Lease".localized(), systemImage: "xmark.circle")
+            if property.isAvailable == "pending" {
+                Button(action: { showCancelInvitePopUp = true }) {
+                    Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
+                }
             }
-            Button(action: { showCancelInvitePopUp = true }) {
-                Label("Cancel Invite".localized(), systemImage: "person.crop.circle.badge.xmark")
+            if property.isAvailable == "unavailable" {
+                Button(action: { showEndLeasePopUp = true }) {
+                    Label("End Lease".localized(), systemImage: "xmark.circle")
+                }
             }
             Button(action: { showEditPropertyPopUp = true }) {
                 Label("Edit Property".localized(), systemImage: "pencil")
@@ -337,7 +329,7 @@ struct PropertyDetailView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundColor(Color("textColor"))
-                Text(property.isAvailable == "available" ? "Available".localized() : "Unavailable".localized())
+                Text(statusText)
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
@@ -345,9 +337,9 @@ struct PropertyDetailView: View {
                     .padding(.vertical, 4)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(property.isAvailable == "available" ? Color("GreenAlert") : Color("RedAlert"))
+                            .fill(statusColor)
                     )
-                    .accessibilityLabel(property.isAvailable == "available" ? "text_available" : "text_unavailable")
+                    .accessibilityLabel(statusAccessibilityLabel)
             }
             HStack(spacing: 4) {
                 Image(systemName: "mappin.and.ellipse.circle")
@@ -361,10 +353,38 @@ struct PropertyDetailView: View {
             }
         }
         .padding(.horizontal)
+        .padding(.bottom, 8)
+    }
+
+    private var statusText: String {
+        switch property.isAvailable {
+        case "available": return "Available".localized()
+        case "pending": return "Pending".localized()
+        case "unavailable": return "Unavailable".localized()
+        default: return "Unknown".localized()
+        }
+    }
+
+    private var statusColor: Color {
+        switch property.isAvailable {
+        case "available": return Color("GreenAlert")
+        case "pending": return Color.orange
+        case "unavailable": return Color("RedAlert")
+        default: return Color.gray
+        }
+    }
+
+    private var statusAccessibilityLabel: String {
+        switch property.isAvailable {
+        case "available": return "text_available"
+        case "pending": return "text_pending"
+        case "unavailable": return "text_unavailable"
+        default: return "text_unknown"
+        }
     }
 
     private var tabsView: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 20) {
             ForEach(tabs, id: \.self) { tab in
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.3)) {
@@ -477,12 +497,13 @@ struct PropertyDetailView: View {
                         Text(isEntryInventory ? "Start Entry Inventory".localized() : "Start Exit Inventory".localized())
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 15)
-                            .background(Color("LightBlue"))
+                            .background(property.leaseId == nil ? Color.gray : Color("LightBlue"))
                             .foregroundColor(.white)
                             .cornerRadius(10)
                             .padding(.horizontal)
                             .padding(.bottom, 10)
                     }
+                    .disabled(property.leaseId == nil)
                     .accessibilityLabel(isEntryInventory ? "inventory_btn_entry" : "inventory_btn_exit")
                 }
             }
@@ -626,6 +647,9 @@ struct PropertyDetailView: View {
 }
 
 struct PropertyDetailView_Previews: PreviewProvider {
+    @State static var navigateToReportDamage: Bool = false
+    @State static var navigateToInventory: Bool = false
+    
     static var previews: some View {
         let property = Property(
             id: "",
@@ -729,8 +753,14 @@ struct PropertyDetailView_Previews: PreviewProvider {
         let viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
         let loginViewModel = LoginViewModel()
         
-        return PropertyDetailView(property: property, viewModel: viewModel)
-            .environmentObject(viewModel)
-            .environmentObject(loginViewModel)
+        return PropertyDetailView(
+            property: property,
+            viewModel: viewModel,
+            navigateToReportDamage: $navigateToReportDamage,
+            navigateToInventory: $navigateToInventory
+        )
+        .environmentObject(viewModel)
+        .environmentObject(loginViewModel)
     }
 }
+
