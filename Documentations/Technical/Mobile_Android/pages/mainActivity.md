@@ -31,7 +31,7 @@
 
   1. **Language Setup**:
 
-     * Uses [`LanguageSetter`](../utilitaries/utils%20folder/languageSetter.md) with `DataStore` to retrieve saved language setting.
+     * Uses [`LanguageSetter`](../utilities/utils%20folder/languageSetter.md) with `DataStore` to retrieve saved language setting.
      * Applies locale to system configuration using `Locale.setDefault(...)` and `Configuration.setLocale(...)`.
 
   2. **API Selection**:
@@ -102,14 +102,14 @@ Navigation --> AllScreens
 ## Localization
 
 * Dynamically sets language and layout direction before Composables are composed.
-* Reads language preference from `DataStore` (via [`LanguageSetter`](../utilitaries/utils%20folder/languageSetter.md)).
+* Reads language preference from `DataStore` (via [`LanguageSetter`](../utilities/utils%20folder/languageSetter.md)).
 * Applies locale to both `Locale.setDefault()` and `Configuration`.
 
 ---
 
 ## Navigation
 
-* [`navigation`](../utilitaries/navigation.md) - Page for the navigation
+* [`navigation`](../utilities/navigation.md) - Page for the navigation
 * Root `Navigation()` Composable handles route management.
 * All screens launched from here can access `LocalApiService` and `LocalIsOwner`.
 

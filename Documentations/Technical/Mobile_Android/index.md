@@ -10,4 +10,4 @@
 
 4. [The link to the API](./API/index.md)
 
-5. [The utilitaries](./utilitaries/index.md)
+5. [The utilities](./utilities/index.md)
