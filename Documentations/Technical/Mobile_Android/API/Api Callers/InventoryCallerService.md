@@ -88,6 +88,6 @@ Fetches a specific inventory report by its ID.
 ## Dependencies
 
 * `InventoryReportRoom`, `InventoryReportOutput` from the `inventory` package
-* [`ApiService`](../apiClient/ApiService.md)
+* [`ApiService`](../ApiClient/ApiClientAndService.md)
 * [`ApiCallerService`](./ApiCallerService.md)
 

@@ -121,19 +121,16 @@ ViewModel -->|StateFlow| UI
 
 This component uses:
 
-* `RoomCallerService`
+* [`RoomCallerService`](../../API/Api%20Callers/RoomCallerService.md)
 
   * `getAllRoomsWithFurniture(propertyId, onRoomNameError)`
-* `InventoryCallerService`
+* [`InventoryCallerService`](../../API/Api%20Callers/InventoryCallerService.md)
 
   * `getLastInventoryReport(propertyId)`
 
-Both extend `ApiCallerService`, which:
+Both extend [`ApiCallerService`](../../API/Api%20Callers/ApiCallerService.md), which:
 
 * Automatically retrieves bearer tokens
 * Logs out users on `401`
 * Converts Retrofit exceptions into domain-level exceptions
 
-➡️ See [RoomCallerService.kt](#)
-➡️ See [InventoryCallerService.kt](#)
-➡️ See [ApiCallerService.kt](#)

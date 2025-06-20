@@ -150,7 +150,7 @@ Adds a new damage report under the current lease:
 
 ## Dependencies
 
-* [`ApiService`](../apiClient/ApiService.md)
+* [`ApiService`](../ApiClient/ApiClientAndService.md)
 * [`ApiCallerService`](./ApiCallerService.md)
 * `AuthService`
 * `Retrofit`

@@ -91,4 +91,4 @@ val response = apiService.login(username = "user@example.com", password = "secur
 
 ## See Also
 
-* [`AuthService`](#authservice) – Service layer using this interface to implement application-level authentication logic.
+* [`AuthService`](../AuthService.md) – Service layer using this interface to implement application-level authentication logic.

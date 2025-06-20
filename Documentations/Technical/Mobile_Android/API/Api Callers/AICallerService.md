@@ -2,7 +2,7 @@
 
 ## Overview
 
-`AICallerService` is a subclass of [`ApiCallerService`](#apicallerservice-base-class) that provides methods to interact with AI-powered endpoints for inventory report summarization and comparison.
+`AICallerService` is a subclass of [`ApiCallerService`](./ApiCallerService.md) that provides methods to interact with AI-powered endpoints for inventory report summarization and comparison.
 
 These endpoints use image data and inventory location types to automatically assess the state, cleanliness, and overall condition of properties.
 
@@ -41,6 +41,6 @@ Calls the backend to compare a new inventory report against a previous one (`old
 
 ## Dependencies
 
-- [`ApiService`](../apiClient/ApiService.kt) — The Retrofit interface used to communicate with the backend.
+- [`ApiService`](../ApiClient/ApiClientAndService.md) — The Retrofit interface used to communicate with the backend.
 - [`ApiCallerService`](./ApiCallerService.kt) — Provides authentication and error handling logic.
 

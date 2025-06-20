@@ -80,6 +80,6 @@ Adds a furniture entry in a specific room.
 
 ## Dependencies
 
-* [`ApiService`](../apiClient/ApiService.md)
+* [`ApiService`](../ApiClient/ApiClientAndService.md)
 * [`ApiCallerService`](./ApiCallerService.md)
 * `RoomDetail`, `State`, `Cleanliness` from the `inventory` package

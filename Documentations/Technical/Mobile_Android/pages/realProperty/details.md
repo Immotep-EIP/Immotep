@@ -182,11 +182,11 @@ ViewModel -->|StateFlow updates| UI
 
 ## API Integration
 
-* Uses multiple caller services extending `ApiCallerService`:
+* Uses multiple caller services extending [`ApiCallerService`](../../API/Api%20Callers/ApiCallerService.md):
 
-  * `RealPropertyCallerService` (property, documents)
-  * `DamageCallerService` (damages)
-  * `InviteTenantCallerService` (tenant invitations)
+  * [`RealPropertyCallerService`](../../API/Api%20Callers/RealPropertyCallerService.md) (property, documents)
+  * [`DamageCallerService`](../../API/Api%20Callers/DamageCallerService.md) (damages)
+  * [`InviteTenantCallerService`](../../API/Api%20Callers/InviteTenant.md) (tenant invitations)
 
 * Caller services handle:
 
@@ -194,9 +194,3 @@ ViewModel -->|StateFlow updates| UI
   * Error translation
   * User logout on `401`
 
----
-
-➡️ See [RealPropertyDetailsViewModel.kt](#)
-➡️ See [RealPropertyCallerService.kt](#)
-➡️ See [DamageCallerService.kt](#)
-➡️ See [InviteTenantCallerService.kt](#)

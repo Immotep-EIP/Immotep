@@ -88,5 +88,5 @@ Includes a helper function to convert itself to a domain model `Room`, optionall
 
 ## Dependencies
 
-* Uses `FurnitureCallerService` internally to get furniture details by room.
+* Uses [`FurnitureCallerService`](./FurnituresCallerService.md) internally to get furniture details by room.
 

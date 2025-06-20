@@ -72,6 +72,6 @@ Sends updated profile data to the API to modify the user's profile.
 
 ## Dependencies
 
-* [`ApiService`](../apiClient/ApiService.md)
+* [`ApiService`](../ApiClient/ApiClientAndService.md)
 * [`ApiCallerService`](./ApiCallerService.md)
 

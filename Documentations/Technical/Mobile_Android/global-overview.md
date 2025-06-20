@@ -18,6 +18,7 @@ In order to build this android application, we used the most common and fastest 
 
 All the pages are located in the Mobile_Android/app/src/main/java/com/example/immotep folder and each of them shares the same architecture according to the MVVM architecture. So, there is a folder for each of the pages with their names and each of the pages is a package with at least two files, one for the UI, usually the one that shares the same name with the package name, and another one, who ends with ViewModel, it's the view model. So, the UI page handle all the interface and visible to the end user logic and the ViewModel handles the data and state management, so it's here that the API calls will be made, state variables created... All the pages packages folders start with a lowercase letter.
 
+You can see the details of the pages, starting by the mainActivity in the [page](./pages/mainActivity.md) part of this documentation
 
 ## Tools packages
 

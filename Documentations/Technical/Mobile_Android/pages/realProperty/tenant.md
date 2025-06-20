@@ -104,25 +104,20 @@ graph TD
 
 ## Navigation
 
-* Uses `NavController` mainly to instantiate `RealPropertyCallerService` for API calls.
+* Uses `NavController` mainly to instantiate [`RealPropertyCallerService`](../../API/Api%20Callers/RealPropertyCallerService.md) for API calls.
 * Delegates actual property details screen navigation and back handling to nested `RealPropertyDetailsScreen`.
 
 ---
 
 ## API Integration
 
-* Relies on `RealPropertyCallerService` for fetching detailed property data.
+* Relies on [`RealPropertyCallerService`](../../API/Api%20Callers/RealPropertyCallerService.md) for fetching detailed property data.
 
   * `getPropertyWithDetails()`: Fetches property and associated detailed info from backend.
 
-* `RealPropertyCallerService` extends `ApiCallerService` and manages:
+* [`RealPropertyCallerService`](../../API/Api%20Callers/RealPropertyCallerService.md) extends [`ApiCallerService`](../../API/Api%20Callers/ApiCallerService.md) and manages:
 
   * Authorization headers.
   * Error handling and user logout on unauthorized.
   * Exception translation.
 
----
-
-➡️ See [RealPropertyTenantViewModel.kt](#)
-➡️ See [RealPropertyCallerService.kt](#)
-➡️ See [RealPropertyDetailsScreen.kt](#)

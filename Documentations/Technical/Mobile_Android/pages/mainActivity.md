@@ -31,7 +31,7 @@
 
   1. **Language Setup**:
 
-     * Uses `LanguageSetter` with `DataStore` to retrieve saved language setting.
+     * Uses [`LanguageSetter`](../utilitaries/utils%20folder/languageSetter.md) with `DataStore` to retrieve saved language setting.
      * Applies locale to system configuration using `Locale.setDefault(...)` and `Configuration.setLocale(...)`.
 
   2. **API Selection**:
@@ -54,7 +54,7 @@ val LocalApiService = compositionLocalOf<ApiService> {
 }
 ```
 
-Used to provide the `ApiService` (mocked or real) throughout the app. Accessed with:
+Used to provide the [`ApiService`](../API/ApiClient/ApiClientAndService.md) (mocked or real) throughout the app. Accessed with:
 
 ```kotlin
 val apiService = LocalApiService.current
@@ -102,13 +102,14 @@ Navigation --> AllScreens
 ## Localization
 
 * Dynamically sets language and layout direction before Composables are composed.
-* Reads language preference from `DataStore` (via `LanguageSetter`).
+* Reads language preference from `DataStore` (via [`LanguageSetter`](../utilitaries/utils%20folder/languageSetter.md)).
 * Applies locale to both `Locale.setDefault()` and `Configuration`.
 
 ---
 
 ## Navigation
 
+* [`navigation`](../utilitaries/navigation.md) - Page for the navigation
 * Root `Navigation()` Composable handles route management.
 * All screens launched from here can access `LocalApiService` and `LocalIsOwner`.
 
@@ -130,9 +131,3 @@ MainActivity is responsible for:
 ✅ Providing owner status to Composables
 ✅ Bootstrapping the navigation and UI stack inside `AppTheme`
 
----
-
-➡️ See [Navigation.kt](#)
-➡️ See [ApiClient.kt](#)
-➡️ See [MockedApiService.kt](#)
-➡️ See [LanguageSetter.kt](#)

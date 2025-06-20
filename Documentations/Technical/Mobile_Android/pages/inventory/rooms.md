@@ -2,7 +2,7 @@
 
 ## UI Components
 
-* `InventoryLayout`: Global layout for inventory pages, includes header/back navigation.
+* `InventoryLayout` : Global layout for inventory pages, includes header/back navigation.
 
 * `AlertDialog`: Two modals:
 
@@ -85,7 +85,7 @@ User -->|Confirm| RoomsViewModel -->|confirmInventory| InventoryViewModel
 
 ## Navigation
 
-* Navigates to `RoomDetailsScreen` on room button click
+* Navigates to [`RoomDetailsScreen`](./roomDetails/index.md) on room button click
 * Returns to list view after `closeRoomPanel()`
 * Integrated within the main inventory screen: `/inventory/{propertyId}/{leaseId}`
 
@@ -100,7 +100,7 @@ This screen **uses parent callbacks** to interact with backend APIs via:
 * `editRoom(room: Room)`
 * `confirmInventory()`
 
-Actual API calls are performed in the parent `InventoryViewModel`.
+Actual API calls are performed in the parent [`InventoryViewModel`](./index.md).
 
 ---
 
@@ -113,4 +113,4 @@ Actual API calls are performed in the parent `InventoryViewModel`.
 
 ### Room Detail
 
-* Navigates to `RoomDetailsScreen.kt` for room content editing
+* Navigates to [`RoomDetailsScreen`](./roomDetails/index.md) for room content editing

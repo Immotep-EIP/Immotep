@@ -81,9 +81,9 @@ InventoryViewModel -->|setNewValueSetByCompletedInventory| LoaderInventoryViewMo
 
 This screen interacts with:
 
-* `RoomCallerService` — Add/archive rooms
-* `FurnitureCallerService` — Add furniture items
-* `InventoryCallerService` — Get last report & submit new inventory
+* [`RoomCallerService`](../../API/Api%20Callers/RoomCallerService.md) — Add/archive rooms
+* [`FurnitureCallerService`](../../API/Api%20Callers/FurnituresCallerService.md) — Add furniture items
+* [`InventoryCallerService`](../../API/Api%20Callers/InventoryCallerService.md) — Get last report & submit new inventory
 
 ---
 
@@ -102,16 +102,19 @@ This screen interacts with:
 
 #### `loaderButton/`
 
+* [`LoaderInventoryButton`](./loaderButton.md) — Page to see the details of this module
 * `LoaderInventoryButton.kt` — Button to launch inventory session
 * `LoaderInventoryViewModel.kt` — Loads rooms and last reports, manages loading state
 
 #### `rooms/`
 
+* [`Rooms'](./rooms.md) — Page to see the details of this module
 * `RoomsScreen.kt` — Renders full list of rooms with action buttons
 * `RoomsViewModel.kt` — Optional separation of room-related logic (if used)
 
 #### `roomDetails/`
 
+* [`RoomsDetails'](./roomDetails/index.md) — Page to see the details of this module
 * `RoomDetailsScreen.kt` — Entry for viewing/editing one room’s furnitures
 * `RoomDetailsViewModel.kt` — Handles room state changes
 * `OneDetailScreen.kt`, `OneDetailViewModel.kt` — Focused view for one item

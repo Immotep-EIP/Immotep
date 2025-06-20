@@ -107,25 +107,7 @@ ProfileScreen -->|changeLanguage| LanguageSetter
 ProfileScreen -->|logout| AuthService
 ```
 
----
+## API Integration
 
-## Related Concepts
-
-| Element                | Description                           |
-| ---------------------- | ------------------------------------- |
-| `ProfileState`         | Data class holding user info          |
-| `ApiService`           | Network API interface                 |
-| `ProfileCallerService` | Handles API calls related to profile  |
-| `AuthService`          | Authentication and logout service     |
-| `LanguageSetter`       | Manages storing and applying language |
-| `DashBoardLayout`      | Common app dashboard layout wrapper   |
-
----
-
-## Related Files in Folder
-
-* `ProfileScreen.kt` — UI components and screen composable
-* `ProfileViewModel.kt` — ViewModel managing profile data and actions
-* `ProfileCallerService.kt` — Backend API call logic for profile
-* `AuthService.kt` — Auth and logout management
+This screen relies on the [`ProfileCallerService`](../API/Api%20Callers/ProfileCallerService.md) class for handling the API calls.
 

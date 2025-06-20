@@ -103,7 +103,7 @@ This module interacts with:
 
 * `RealPropertyScreen.kt` — Entry point deciding owner vs tenant UI
 * `RealPropertyOwnerScreen` (in `RealPropertyScreen.kt`) — Owner’s main property listing and management screen
-* `RealPropertyTenant.kt` — Tenant property overview UI
+* [`RealPropertyTenant.kt`](./tenant.md) — Tenant property overview UI
 
 ### State + Logic
 

@@ -15,13 +15,13 @@ Defines the app's navigation structure, with:
 
 * **`startDestination`**: `"dashboard"`
 * **Routes**:
-  * `"login"` → `LoginScreen`
-  * `"dashboard"` → `DashBoardScreen`
-  * `"register"` → `RegisterScreen`
-  * `"profile"` → `ProfileScreen`
-  * `"messages"` → `Messages`
-  * `"realProperty"` → `RealPropertyScreen`
-  * `"inventory/{propertyId}/{leaseId}"` → `InventoryScreen` with dynamic arguments
+  * `"login"` → [`LoginScreen`](../pages/login.md)
+  * `"dashboard"` → [`DashBoardScreen`](../pages/dashboard.md)
+  * `"register"` → [`RegisterScreen`](../pages/register.md)
+  * `"profile"` → [`ProfileScreen`](../pages/profile.md)
+  * `"messages"` → [`Messages`](../pages/messages.md)
+  * `"realProperty"` → [`RealPropertyScreen`](../pages/realProperty/index.md)
+  * `"inventory/{propertyId}/{leaseId}"` → [`InventoryScreen`](../pages/inventory/index.md) with dynamic arguments
 
 ---
 
@@ -101,18 +101,3 @@ NavHost --> LoginScreen & DashBoardScreen & ...
 * `LocalApiService` → For all API calls within screens
 * `LocalIsOwner` → Used to enable/disable features like property editing
 
----
-
-## Summary
-
-✅ Central navigation graph
-✅ Token-based access check at launch
-✅ Dynamic route support for property-based views
-✅ Shared `ViewModel` for inventory persistence across screens
-
----
-
-➡️ See [AuthService.kt](#)
-➡️ See [LoaderInventoryViewModel.kt](#)
-➡️ See [LoginScreen.kt](#)
-➡️ See [InventoryScreen.kt](#)

@@ -50,7 +50,7 @@ SubmitButton -->|onSubmit| ViewModel
 ViewModel -->|register| AuthService
 AuthService -->|Success/Error| ViewModel
 ViewModel -->|Updates| UIState
-````
+```
 
 ## Navigation
 
@@ -60,7 +60,7 @@ ViewModel -->|Updates| UIState
 
 ## API Integration
 
-This screen relies on the [`AuthService`](#authservice) class for handling the registration API call.
+This screen relies on the [`AuthService`](../API/AuthService.md) class for handling the registration API call.
 
 ### AuthService
 

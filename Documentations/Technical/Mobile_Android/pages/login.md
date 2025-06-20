@@ -60,12 +60,9 @@ ViewModel -->|Updates| UIState
 
 ## API Integration
 
-This screen relies on the [`AuthService`](#authservice) class for handling the login API call and user role verification.
+This screen relies on the [`AuthService`](../API/AuthService.md) class for handling the login API call and user role verification.
 
 ### AuthService
 
 * Handles actual API login request and token persistence.
 * Injected through the `apiService` and `context.dataStore`.
-
-➡️ See [AuthService.kt](#) *(link to actual file in your repo or docs)*
-

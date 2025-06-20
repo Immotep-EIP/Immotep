@@ -193,8 +193,7 @@ Fetches and transforms the dashboard content into a `DashBoard` model.
 
 ## Dependencies
 
-* [`ApiService`](../apiClient/ApiService.md)
 * [`ApiCallerService`](./ApiCallerService.md)
-* `DetailedProperty`
-* `Damage`, `DamageOutput`, `DamageStatus`
+* [`DetailedProperty`](./RealPropertyCallerService.md)
+* [`Damage, DamageOutput, DamageStatus`](./DamageCallerService.md)
 

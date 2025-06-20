@@ -102,20 +102,18 @@ Relies on the following **ApiCallerService subclasses**:
 
 ### 🔹 `DashBoardCallerService`
 
+* [`DashBoardCallerService`](../API/Api%20Callers/DashBoardCallerService.md) - Page for this caller service
 * Fetches the dashboard summary object.
 * Used in `getDashBoard()`.
 
 ### 🔹 `ProfileCallerService`
 
+* [`ProfileCallerService`](../API/Api%20Callers/ProfileCallerService.md) - Page for this caller service
 * Fetches user profile (name, role).
 * Used in `getName()`.
 
-These services inherit from `ApiCallerService`, which:
+These services inherit from [`ApiCallerService`](../API/Api%20Callers/ApiCallerService.md), which:
 
 * Wraps API calls in safe exception handling.
 * Handles auto-logout on `401 Unauthorized`.
 * Abstracts token retrieval and role-based logic.
-
-➡️ See [ApiCallerService.kt](#) *(link to actual file in your repo or docs)*
-➡️ See [DashBoardCallerService.kt](#) *(link to dashboard API wrapper)*
-➡️ See [ProfileCallerService.kt](#) *(link to profile API wrapper)*

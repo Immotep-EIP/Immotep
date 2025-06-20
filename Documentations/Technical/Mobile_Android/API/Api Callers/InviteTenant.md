@@ -70,7 +70,7 @@ Cancels a previously sent tenant invitation for the given property.
 
 ## Dependencies
 
-* [`ApiService`](../apiClient/ApiService.md)
+* [`ApiService`](../ApiClient/ApiClientAndService.md)
 * [`ApiCallerService`](./ApiCallerService.md)
 * `CreateOrUpdateResponse` (generic response for create or update API calls)
 

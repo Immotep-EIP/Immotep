@@ -89,8 +89,8 @@ graph TD
 * Switches between:
 
   * Default layout
-  * `OneDetailScreen` (furniture edit)
-  * `EndRoomDetailsScreen` (summary view)
+  * [`OneDetailScreen`](./OneDetail.md) (furniture edit)
+  * [`EndRoomDetailsScreen`](./endRoomDetails.md) (room summary)
 * Pressing back will call `onClose(baseRoom)` and return to `RoomsScreen`.
 
 ---
@@ -103,7 +103,7 @@ Uses parent-provided functions:
 * `removeDetail(detailId)`
 * `closeRoomPanel(updatedRoom: Room)`
 
-All backend operations are passed up and handled via callbacks from the parent `InventoryViewModel`.
+All backend operations are passed up and handled via callbacks from the parent [`InventoryViewModel`](../index.md).
 
 ---
 

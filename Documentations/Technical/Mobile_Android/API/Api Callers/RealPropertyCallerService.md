@@ -317,3 +317,7 @@ Input data class to archive (or unarchive) a property by setting a boolean flag.
 * `suspend fun uploadDocument(propertyId: String, leaseId: String, document: DocumentInput): CreateOrUpdateResponse`
   Uploads a document for a property or lease with owner/tenant distinction.
 
+## Dependencies
+
+* [`ApiService`](../ApiClient/ApiClientAndService.md)
+* [`ApiCallerService`](./ApiCallerService.md)
