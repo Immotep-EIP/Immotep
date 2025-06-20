@@ -59,7 +59,7 @@ fun OneDamagesInWidget(damage: Damage, isLast : Boolean) {
 @Composable
 fun DamagesListWidget(damages : Array<Damage>) {
     val prioritizedDamages = damages.sortedByDescending { it.priority }.take(5).toTypedArray()
-    
+
     WidgetBase(
         title = stringResource(R.string.damages_list),
         dropDownItems = arrayOf(),

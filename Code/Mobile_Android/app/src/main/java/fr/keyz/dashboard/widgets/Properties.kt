@@ -13,7 +13,7 @@ import fr.keyz.apiCallerServices.DashBoardProperties
 
 @Composable
 fun PropertiesWidget(properties: DashBoardProperties) {
-    WidgetBase(title = stringResource(R.string.properties_cap), dropDownItems = arrayOf(), testTag = "availablePropertiesWidget") {
+    WidgetBase(title = stringResource(R.string.properties_cap), dropDownItems = arrayOf(), testTag = "propertiesWidget") {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
