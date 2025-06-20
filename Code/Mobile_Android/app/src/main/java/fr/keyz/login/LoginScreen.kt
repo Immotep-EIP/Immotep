@@ -35,7 +35,7 @@ import fr.keyz.components.CheckBoxWithLabel
 import fr.keyz.components.ErrorAlert
 import fr.keyz.components.Header
 import fr.keyz.components.LoadingDialog
-import fr.keyz.components.OpenBrowserAnnotedString
+import fr.keyz.components.OpenBrowserAnnotatedString
 import fr.keyz.components.TopText
 import fr.keyz.ui.components.OutlinedTextField
 import fr.keyz.ui.components.PasswordInput
@@ -111,7 +111,7 @@ fun LoginScreen(
                         viewModel.updateEmailAndPassword(null, null, value)
                     },
                 )
-                OpenBrowserAnnotedString("https://dev.space.keyz-app.fr/forgot-password", stringResource(R.string.forgot_password))
+                OpenBrowserAnnotatedString("https://dev.space.keyz-app.fr/forgot-password", stringResource(R.string.forgot_password))
             }
             Button(
                 onClick = { viewModel.login({ isOwner.value = it }) },

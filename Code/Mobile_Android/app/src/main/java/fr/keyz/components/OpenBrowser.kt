@@ -12,7 +12,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun OpenBrowserAnnotedString(url: String, title: String) {
+fun OpenBrowserAnnotatedString(url: String, title: String) {
     val context = LocalContext.current
 
     Text(
