@@ -143,6 +143,7 @@ class OwnerPropertyViewModel: ObservableObject {
         
         self.properties = propertiesData.map { propertyResponse in
             let existingProperty = properties.first(where: { $0.id == propertyResponse.id })
+            let status = propertyResponse.isAvailable == "invite sent" ? "pending" : propertyResponse.isAvailable
             return Property(
                 id: propertyResponse.id,
                 ownerID: propertyResponse.ownerId,
@@ -155,7 +156,7 @@ class OwnerPropertyViewModel: ObservableObject {
                 monthlyRent: propertyResponse.rentalPricePerMonth,
                 deposit: propertyResponse.depositPrice,
                 surface: propertyResponse.areaSqm,
-                isAvailable: propertyResponse.isAvailable,
+                isAvailable: status,
                 tenantName: propertyResponse.lease?.tenantName,
                 leaseId: propertyResponse.lease?.id,
                 leaseStartDate: propertyResponse.lease?.startDate,
