@@ -25,15 +25,11 @@ import androidx.compose.ui.unit.dp
 import fr.keyz.R
 import fr.keyz.apiCallerServices.DashBoardReminder
 import fr.keyz.apiCallerServices.Priority
+import fr.keyz.utils.ThemeUtils
 
 @Composable
 fun PriorityBox(priority: Priority) {
-    val color = when (priority) {
-        Priority.low -> Color(0xFF90CAF9)
-        Priority.medium -> Color(0xFFFFF176)
-        Priority.high -> Color(0xFFFF9862)
-        Priority.urgent -> Color(0xFFF44336)
-    }
+    val color = ThemeUtils.getStatusColor(priority = priority)
     val text = when (priority) {
         Priority.low -> stringResource(R.string.low)
         Priority.medium -> stringResource(R.string.medium)

@@ -20,11 +20,6 @@ fun PropertiesWidget(properties: DashBoardProperties) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             WidgetNumberBase(
-                title = stringResource(R.string.available),
-                value = properties.nbrAvailable,
-                titleColor = MaterialTheme.colorScheme.surfaceVariant
-            )
-            WidgetNumberBase(
                 title = stringResource(R.string.busy),
                 value = properties.nbrOccupied,
                 titleColor = MaterialTheme.colorScheme.error
@@ -33,6 +28,11 @@ fun PropertiesWidget(properties: DashBoardProperties) {
                 title = stringResource(R.string.pending),
                 value = properties.nbrPendingInvites,
                 titleColor = MaterialTheme.colorScheme.inversePrimary
+            )
+            WidgetNumberBase(
+                title = stringResource(R.string.available),
+                value = properties.nbrAvailable,
+                titleColor = MaterialTheme.colorScheme.surfaceVariant
             )
         }
     }

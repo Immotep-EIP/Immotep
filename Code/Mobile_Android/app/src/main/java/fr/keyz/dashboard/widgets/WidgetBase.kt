@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.keyz.realProperty.details.RealPropertyDropDownMenuItem
@@ -50,7 +51,7 @@ fun WidgetNumberBase(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(value.toString(), color = valueColor, fontSize = 24.sp)
         Spacer(modifier = Modifier.height(5.dp))
-        Text(title, color = titleColor, fontSize = 18.sp)
+        Text(title, color = titleColor, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
     }
 
 }

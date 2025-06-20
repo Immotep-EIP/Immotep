@@ -45,7 +45,7 @@ import fr.keyz.components.LoadingDialog
 import fr.keyz.R
 import fr.keyz.apiCallerServices.DashBoardReminder
 import fr.keyz.components.InitialFadeIn
-import fr.keyz.dashboard.widgets.DamageInProgressWidget
+import fr.keyz.dashboard.widgets.DamageWidget
 import fr.keyz.dashboard.widgets.HelloWidget
 import fr.keyz.dashboard.widgets.PropertiesWidget
 import fr.keyz.dashboard.widgets.RemindersWidget
@@ -201,7 +201,7 @@ fun DashBoardScreen(
                 RemindersWidget(dashBoard.value.reminders)
                 //UnreadMessagesWidget()
                 //ScheduledInventoryWidget()
-                DamageInProgressWidget()
+                DamageWidget(dashBoard.value.openDamages)
                 PropertiesWidget(dashBoard.value.properties)
             }
         }
