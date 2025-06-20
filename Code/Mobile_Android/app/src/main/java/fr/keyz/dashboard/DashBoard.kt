@@ -45,7 +45,9 @@ import fr.keyz.components.LoadingDialog
 import fr.keyz.R
 import fr.keyz.apiCallerServices.DashBoardReminder
 import fr.keyz.components.InitialFadeIn
+import fr.keyz.components.InternalLoading
 import fr.keyz.dashboard.widgets.DamageWidget
+import fr.keyz.dashboard.widgets.DamagesListWidget
 import fr.keyz.dashboard.widgets.HelloWidget
 import fr.keyz.dashboard.widgets.PropertiesWidget
 import fr.keyz.dashboard.widgets.RemindersWidget
@@ -194,15 +196,19 @@ fun DashBoardScreen(
     }
 
     DashBoardLayout(navController, "dashboardScreen") {
-        LoadingDialog(isLoading.value)
-        InitialFadeIn(durationMs = 300) {
+        if (isLoading.value) {
+            InternalLoading()
+            return@DashBoardLayout
+        }
+        InitialFadeIn(durationMs = 200) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 HelloWidget(dashBoard.value.properties.nbrTotal, userName = userName.value)
                 RemindersWidget(dashBoard.value.reminders)
+                PropertiesWidget(dashBoard.value.properties)
                 //UnreadMessagesWidget()
                 //ScheduledInventoryWidget()
                 DamageWidget(dashBoard.value.openDamages)
-                PropertiesWidget(dashBoard.value.properties)
+                DamagesListWidget(dashBoard.value.openDamages.listToFix)
             }
         }
     }

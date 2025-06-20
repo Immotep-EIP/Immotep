@@ -3,6 +3,7 @@ package fr.keyz.dashboard.widgets
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
@@ -30,21 +31,27 @@ import fr.keyz.components.PriorityBox
 import fr.keyz.utils.ThemeUtils
 
 @Composable
-fun OneDamagesInWidget(reminder : DashBoardReminder, isLast : Boolean) {
-    Row(modifier = Modifier.fillMaxWidth().drawBehind {
-        if (!isLast) {
-            val y = size.height - 2.dp.toPx() / 2
-            drawLine(
-                Color.LightGray,
-                Offset(0f, y),
-                Offset(size.width, y),
-                2.dp.toPx()
-            )
+fun OneDamagesInWidget(damage: Damage, isLast : Boolean) {
+    val comment = if (damage.comment.length > 100) "${damage.comment.take(100)}..." else damage.comment
+    Column(
+        modifier = Modifier.fillMaxWidth().drawBehind {
+            if (!isLast) {
+                val y = size.height - 2.dp.toPx() / 2
+                drawLine(
+                    Color.LightGray,
+                    Offset(0f, y),
+                    Offset(size.width, y),
+                    2.dp.toPx()
+                )
+            }
         }
-    }, verticalAlignment = Alignment.CenterVertically) {
-        PriorityBox(reminder.priority)
-        Spacer(modifier = Modifier.width(5.dp))
-        Text(reminder.title, color = MaterialTheme.colorScheme.primary)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            PriorityBox(damage.priority)
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(damage.roomName, color = MaterialTheme.colorScheme.primary)
+        }
+        Text(comment, color = MaterialTheme.colorScheme.primary)
     }
 }
 
@@ -53,22 +60,22 @@ fun OneDamagesInWidget(reminder : DashBoardReminder, isLast : Boolean) {
 fun DamagesListWidget(damages : Array<Damage>) {
     var moreImportantDamages = damages.copyOf()
     moreImportantDamages.sortBy { it.priority }
-    moreUsefulReminders.reverse()
-    moreUsefulReminders = moreUsefulReminders.take(5).toTypedArray()
+    moreImportantDamages.reverse()
+    moreImportantDamages = moreImportantDamages.take(5).toTypedArray()
 
     WidgetBase(
-        title = stringResource(R.string.reminders),
+        title = stringResource(R.string.damages_list),
         dropDownItems = arrayOf(),
         testTag = "remindersWidget",
-        isEmpty = reminders.isEmpty()
+        isEmpty = moreImportantDamages.isEmpty()
     ) {
         FlowColumn(
             modifier = Modifier
                 .testTag("realPropertyDetailsDamagesTab")
                 .fillMaxSize()
         ) {
-            moreUsefulReminders.forEachIndexed { index, reminder ->
-                OneReminder(reminder, index == moreUsefulReminders.size - 1)
+            moreImportantDamages.forEachIndexed { index, damage ->
+                OneDamagesInWidget(damage, index == moreImportantDamages.size - 1)
             }
         }
     }

@@ -68,7 +68,7 @@ fun WidgetBase(
     if (isEmpty) {
         return
     }
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 5.dp, bottom = 10.dp, start = 5.dp, end = 5.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(top = 5.dp, bottom = 20.dp, start = 5.dp, end = 5.dp)) {
         if (title != null) {
             Text(title)
         }
