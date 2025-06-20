@@ -11,7 +11,7 @@ COPY go.sum .
 RUN go mod download
 
 # prefetch the binaries, so that they will be cached and not downloaded on each change
-RUN go run github.com/steebchen/prisma-client-go prefetch
+RUN go run github.com/steebchen/prisma-client-go@latest prefetch
 
 COPY . .
 
