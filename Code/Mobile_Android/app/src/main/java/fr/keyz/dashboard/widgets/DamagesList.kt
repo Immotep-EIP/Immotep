@@ -34,9 +34,9 @@ import fr.keyz.utils.ThemeUtils
 fun OneDamagesInWidget(damage: Damage, isLast : Boolean) {
     val comment = if (damage.comment.length > 100) "${damage.comment.take(100)}..." else damage.comment
     Column(
-        modifier = Modifier.fillMaxWidth().drawBehind {
+        modifier = Modifier.padding(bottom = if (isLast) 0.dp else 15.dp).fillMaxWidth().drawBehind {
             if (!isLast) {
-                val y = size.height - 2.dp.toPx() / 2
+                val y = size.height + 10.dp.toPx()
                 drawLine(
                     Color.LightGray,
                     Offset(0f, y),

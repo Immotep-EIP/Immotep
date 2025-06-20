@@ -30,9 +30,9 @@ import fr.keyz.utils.ThemeUtils
 
 @Composable
 fun OneReminder(reminder : DashBoardReminder, isLast : Boolean) {
-    Row(modifier = Modifier.fillMaxWidth().drawBehind {
+    Row(modifier = Modifier.padding(bottom = if (isLast) 0.dp else 15.dp).fillMaxWidth().drawBehind {
         if (!isLast) {
-            val y = size.height - 2.dp.toPx() / 2
+            val y = size.height + 10.dp.toPx()
             drawLine(
                 Color.LightGray,
                 Offset(0f, y),
