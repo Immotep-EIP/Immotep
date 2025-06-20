@@ -110,7 +110,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
           <Select
             value={selectedLeaseId}
             onChange={onLeaseChange}
-            style={{ minWidth: 220, textAlign: 'left' }}
+            style={{ width: 280, textAlign: 'left' }}
             allowClear={property?.leases.length > 1 || !property?.lease?.active}
             options={[
               ...(property?.leases?.map(lease => ({
@@ -124,10 +124,11 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
                     }}
                   >
                     <span>
-                      {`${toLocaleDate(lease.start_date, 'short')} - ${toLocaleDate(
-                        lease.end_date,
-                        'short'
-                      )}`}
+                      {toLocaleDate(lease.start_date, 'short')}
+                      {' - '}
+                      {(lease.end_date &&
+                        toLocaleDate(lease.end_date, 'short')) ||
+                        '...'}
                     </span>
                     {lease.active && (
                       <Tag color="blue" style={{ margin: 0 }}>

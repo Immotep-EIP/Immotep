@@ -14,7 +14,7 @@ export interface AuthProviderProps {
 
 export interface AuthContextType {
   isAuthenticated: boolean
-  login: (user: UserTokenPayload) => Promise<TokenResponse>
+  login: (user: UserTokenPayload, leaseId: string | undefined) => Promise<TokenResponse>
   logout: () => void
   user: User | null
   updateUser: (newUserData: Partial<User>) => void

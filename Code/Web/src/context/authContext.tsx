@@ -65,10 +65,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth()
   }, [])
 
-  const login = async (userInfo: UserTokenPayload) => {
+  const login = async (
+    userInfo: UserTokenPayload,
+    leaseId: string | undefined
+  ) => {
+    console.log('login called with:', userInfo, leaseId)
     try {
       const response = await loginApi(userInfo)
-      if (response?.properties?.role === 'tenant') {
+      if (!leaseId && response?.properties?.role === 'tenant') {
         message.error('Tenant login is not allowed')
         throw new Error('Tenant login is not allowed')
       } else {
