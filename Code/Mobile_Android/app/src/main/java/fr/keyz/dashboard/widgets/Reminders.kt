@@ -1,8 +1,5 @@
 package fr.keyz.dashboard.widgets
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
@@ -24,9 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.keyz.R
 import fr.keyz.apiCallerServices.DashBoardReminder
-import fr.keyz.apiCallerServices.Priority
 import fr.keyz.components.PriorityBox
-import fr.keyz.utils.ThemeUtils
 
 @Composable
 fun OneReminder(reminder : DashBoardReminder, isLast : Boolean) {
