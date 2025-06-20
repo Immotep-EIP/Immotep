@@ -19,13 +19,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +36,6 @@ import fr.keyz.components.ErrorAlert
 import fr.keyz.components.Header
 import fr.keyz.components.LoadingDialog
 import fr.keyz.components.OpenBrowserAnnotedString
-import fr.keyz.components.OpenBrowserButton
 import fr.keyz.components.TopText
 import fr.keyz.ui.components.OutlinedTextField
 import fr.keyz.ui.components.PasswordInput
