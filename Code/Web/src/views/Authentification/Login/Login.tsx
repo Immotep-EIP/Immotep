@@ -60,7 +60,7 @@ const Login: React.FC = () => {
         grant_type: 'password'
       }
       loginValues.grant_type = 'password'
-      await login(loginValues)
+      await login(loginValues, leaseId)
       message.success(t('pages.login.connection_success'))
       setLoading(false)
       if (leaseId) {
