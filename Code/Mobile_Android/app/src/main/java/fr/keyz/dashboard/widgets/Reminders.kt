@@ -3,13 +3,14 @@ package fr.keyz.dashboard.widgets
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,6 +64,7 @@ fun OneReminder(reminder : DashBoardReminder, isLast : Boolean) {
         }
     }, verticalAlignment = Alignment.CenterVertically) {
         PriorityBox(reminder.priority)
+        Spacer(modifier = Modifier.width(5.dp))
         Text(reminder.title, color = MaterialTheme.colorScheme.primary)
     }
 }
@@ -70,6 +72,11 @@ fun OneReminder(reminder : DashBoardReminder, isLast : Boolean) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RemindersWidget(reminders : Array<DashBoardReminder>) {
+    var moreUsefulReminders = reminders.copyOf()
+    moreUsefulReminders.sortBy { it.priority }
+    moreUsefulReminders.reverse()
+    moreUsefulReminders = moreUsefulReminders.take(5).toTypedArray()
+
     WidgetBase(
         title = stringResource(R.string.reminders),
         dropDownItems = arrayOf(),
@@ -81,9 +88,8 @@ fun RemindersWidget(reminders : Array<DashBoardReminder>) {
                 .testTag("realPropertyDetailsDamagesTab")
                 .fillMaxSize()
         ) {
-            //sort the array by gravity
-            reminders.take(5).forEachIndexed { index, reminder ->
-                OneReminder(reminder, index == reminders.size - 1 || index == 4 )
+            moreUsefulReminders.forEachIndexed { index, reminder ->
+                OneReminder(reminder, index == moreUsefulReminders.size - 1)
             }
         }
     }

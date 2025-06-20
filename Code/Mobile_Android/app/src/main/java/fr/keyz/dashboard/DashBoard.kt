@@ -45,9 +45,9 @@ import fr.keyz.components.LoadingDialog
 import fr.keyz.R
 import fr.keyz.apiCallerServices.DashBoardReminder
 import fr.keyz.components.InitialFadeIn
-import fr.keyz.dashboard.widgets.AvailablePropertiesWidget
 import fr.keyz.dashboard.widgets.DamageInProgressWidget
 import fr.keyz.dashboard.widgets.HelloWidget
+import fr.keyz.dashboard.widgets.PropertiesWidget
 import fr.keyz.dashboard.widgets.RemindersWidget
 import fr.keyz.dashboard.widgets.ScheduledInventoryWidget
 import fr.keyz.dashboard.widgets.UnreadMessagesWidget
@@ -199,10 +199,10 @@ fun DashBoardScreen(
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 HelloWidget(dashBoard.value.properties.nbrTotal, userName = userName.value)
                 RemindersWidget(dashBoard.value.reminders)
-                UnreadMessagesWidget()
-                ScheduledInventoryWidget()
+                //UnreadMessagesWidget()
+                //ScheduledInventoryWidget()
                 DamageInProgressWidget()
-                AvailablePropertiesWidget()
+                PropertiesWidget(dashBoard.value.properties)
             }
         }
     }

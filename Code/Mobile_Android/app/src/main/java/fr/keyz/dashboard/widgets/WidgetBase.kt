@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,8 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import fr.keyz.realProperty.details.RealPropertyDropDownMenuItem
 
 data class WidgetMenuItem(
@@ -35,6 +39,21 @@ data class WidgetMenuItem(
     val disabled : Boolean = false,
     val testTag : String
 )
+
+@Composable
+fun WidgetNumberBase(
+    title : String,
+    value : Int,
+    titleColor : Color = MaterialTheme.colorScheme.primary,
+    valueColor : Color = MaterialTheme.colorScheme.primary
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(value.toString(), color = valueColor, fontSize = 24.sp)
+        Spacer(modifier = Modifier.height(5.dp))
+        Text(title, color = titleColor, fontSize = 18.sp)
+    }
+
+}
 
 @Composable
 fun WidgetBase(
@@ -63,7 +82,7 @@ fun WidgetBase(
                 .clip(RoundedCornerShape(10.dp))
                 .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(10.dp))
         ) {
-            Box(modifier = Modifier.padding(start = 10.dp, top = 10.dp, bottom = 10.dp, end = 30.dp)) {
+            Box(modifier = Modifier.padding(start = 10.dp, top = 10.dp, bottom = 10.dp, end = 40.dp)) {
                 content()
             }
             Box(
