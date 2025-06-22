@@ -14,11 +14,9 @@ struct DocumentsGridView: View {
     @Binding var documents: [PropertyDocument]
     @EnvironmentObject var propertyViewModel: PropertyViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
-    @State private var refreshID = UUID()
-    @State private var isInitialized = false
     @State private var errorMessage: String?
     var onDelete: ((String) -> Void)?
-
+    
     var body: some View {
         VStack {
             if let errorMessage = errorMessage {
@@ -32,102 +30,62 @@ struct DocumentsGridView: View {
                     .foregroundColor(.gray)
                     .padding()
             } else {
-                LazyVGrid(
-                    columns: Array(repeating: GridItem(.flexible(), spacing: 15), count: 3),
-                    spacing: 15
-                ) {
-                    ForEach(documents, id: \.id) { document in
-                        ZStack(alignment: .topTrailing) {
-                            NavigationLink(destination: PDFViewer(base64String: document.data)) {
-                                VStack {
-                                    Image(systemName: "doc.text")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 50, height: 50)
-                                    Text(document.title)
-                                        .font(.caption)
-                                        .multilineTextAlignment(.center)
-                                        .frame(maxWidth: .infinity)
+                ScrollView {
+                    LazyVGrid(
+                        columns: Array(repeating: GridItem(.flexible(), spacing: 15), count: 3),
+                        spacing: 15
+                    ) {
+                        ForEach(documents, id: \.id) { document in
+                            ZStack(alignment: .topTrailing) {
+                                NavigationLink(destination: PDFViewer(base64String: document.data)) {
+                                    documentThumbnailView(document: document)
                                 }
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(8)
-                            }
-                            
-                            if loginViewModel.userRole == "owner" {
-                                Menu {
-                                    Button(role: .destructive) {
-                                        onDelete?(document.id)
+                                
+                                if loginViewModel.userRole == "owner" {
+                                    Menu {
+                                        Button(role: .destructive) {
+                                            onDelete?(document.id)
+                                        } label: {
+                                            Label("Delete".localized(), systemImage: "trash")
+                                        }
                                     } label: {
-                                        Label("Delete".localized(), systemImage: "trash")
+                                        Image(systemName: "ellipsis")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                            .padding(6)
+                                            .background(Color.white.opacity(0.8))
+                                            .clipShape(Circle())
                                     }
-                                } label: {
-                                    Image(systemName: "ellipsis")
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                        .padding(6)
-                                        .background(Color.white.opacity(0.8))
-                                        .clipShape(Circle())
+                                    .padding([.top, .trailing], 4)
+                                    .accessibilityLabel("document_options_\(document.id)")
                                 }
-                                .padding([.top, .trailing], 4)
-                                .accessibilityLabel("document_options_\(document.id)")
                             }
                         }
                     }
+                    .padding()
                 }
-                .padding()
-                .id(refreshID)
             }
-        }
-        .onChange(of: documents) {
-            refreshID = UUID()
-        }
-        .onAppear {
-            isInitialized = true
         }
     }
     
-    private func handleDocumentSelection(url: URL) async throws {
-        guard let propertyId = propertyViewModel.properties.first?.id else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No property selected.".localized()])
+    @ViewBuilder
+    private func documentThumbnailView(document: PropertyDocument) -> some View {
+        VStack {
+            Image(systemName: "doc.text")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 50, height: 50)
+            Text(document.title)
+                .font(.caption)
+                .lineLimit(3)
+                .truncationMode(.tail)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        
-        let allowedTypes: [UTType] = [.pdf, .init(filenameExtension: "docx")!, .init(filenameExtension: "xlsx")!]
-        guard let fileType = UTType(filenameExtension: url.pathExtension.lowercased()),
-              allowedTypes.contains(fileType) else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid file type. Only PDF, DOCX, and XLSX are supported.".localized()])
-        }
-        
-        let mimeType: String
-        switch fileType {
-        case .pdf:
-            mimeType = "application/pdf"
-        case UTType(filenameExtension: "docx"):
-            mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        case UTType(filenameExtension: "xlsx"):
-            mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        default:
-            mimeType = "application/octet-stream"
-        }
-        
-        guard url.startAccessingSecurityScopedResource() else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to access file.".localized()])
-        }
-        defer { url.stopAccessingSecurityScopedResource() }
-        
-        let data = try Data(contentsOf: url)
-        let base64String = "data:\(mimeType);base64,\(data.base64EncodedString())"
-        let fileName = url.lastPathComponent
-        
-        try await propertyViewModel.uploadDocument(
-            propertyId: propertyId,
-            fileName: fileName,
-            base64Data: base64String
-        )
-        
-        let updatedDocuments = try await propertyViewModel.fetchPropertyDocuments(propertyId: propertyId)
-        documents = updatedDocuments
+        .padding()
+        .frame(width: 100, height: 150)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
     }
 }
 
@@ -169,9 +127,12 @@ struct DocumentPicker: UIViewControllerRepresentable {
 
 struct DocumentsGridView_Previews: PreviewProvider {
     static var previews: some View {
-        DocumentsGridView(documents: .constant([
-            PropertyDocument(id: "doc1", title: "Lease Agreement", fileName: "test.pdf", data: "base64_data")
-        ]))
+        DocumentsGridView(
+            documents: .constant([
+                PropertyDocument(id: "doc1", title: "Lease Agreement", fileName: "test.pdf", data: ""),
+                PropertyDocument(id: "doc2", title: "Inventory Report", fileName: "inventory.pdf", data: "")
+            ])
+        )
         .environmentObject(PropertyViewModel(loginViewModel: LoginViewModel()))
         .environmentObject(LoginViewModel())
     }

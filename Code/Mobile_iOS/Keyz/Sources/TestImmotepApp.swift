@@ -43,8 +43,6 @@ struct TestImmotepView: View {
             if isLoggedIn || isUITestMode {
                 if CommandLine.arguments.contains("-propertyList") {
                     propertyListView()
-//                } else if CommandLine.arguments.contains("-inventoryTypeView") {
-//                    InventoryTypeView(property: $propertyExample)
                 } else if CommandLine.arguments.contains("-inventoryRoomView") {
                     inventoryRoomView()
                 } else if CommandLine.arguments.contains("-inventoryStuffView") {

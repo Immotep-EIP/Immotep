@@ -20,86 +20,90 @@ struct CreatePropertyView: View {
     @State private var monthlyRent: NSNumber?
     @State private var deposit: NSNumber?
     @State private var surface: NSNumber?
+    @State private var showError: Bool = false
     @State private var errorMessage: String?
-
-    @State private var propertyImage = UIImage(named: "DefaultImageProperty") ?? UIImage()
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
 
     var body: some View {
-        VStack {
-            TopBar(title: "New Property".localized())
+        ZStack {
+            VStack {
+                TopBar(title: "New Property".localized())
 
-            Form {
-                Section {
-                    VStack {
-                        Image(uiImage: photo ?? UIImage(named: "DefaultImageProperty")!)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.black, lineWidth: 1))
-                            .padding(.top, 10)
-                            .onTapGesture {
-                                showImagePickerOptions()
-                            }
-                            .accessibilityIdentifier("image_property")
+                Form {
+                    Section {
+                        VStack {
+                            Image(uiImage: photo ?? UIImage(named: "DefaultImageProperty")!)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.black, lineWidth: 1))
+                                .padding(.top, 10)
+                                .onTapGesture {
+                                    showImagePickerOptions()
+                                }
+                                .accessibilityIdentifier("image_property")
 
-                        Text("Click on the image to change".localized())
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .padding(.top, 8)
-                            .accessibilityIdentifier("touch_to_change_image")
-                    }
-                    .frame(maxWidth: .infinity)
-                    CustomTextInput(title: "Name", placeholder: "Enter property name", text: $name, isSecure: false)
-                    CustomTextInput(title: "Address", placeholder: "Enter address", text: $address, isSecure: false)
-                    CustomTextInput(title: "City", placeholder: "Enter city", text: $city, isSecure: false)
-                    CustomTextInput(title: "Postal Code", placeholder: "Enter postal code", text: $postalCode, isSecure: false)
-                    CustomTextInput(title: "Country", placeholder: "Enter country", text: $country, isSecure: false)
-                    CustomTextInputNB(title: "Monthly Rent", placeholder: "Enter monthly rent", value: $monthlyRent, isSecure: false)
-                    CustomTextInputNB(title: "Deposit", placeholder: "Enter deposit", value: $deposit, isSecure: false)
-                    CustomTextInputNB(title: "Surface (m²)", placeholder: "Enter surface", value: $surface, isSecure: false)
-                }
-            }
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .padding()
-            }
-            HStack {
-                Spacer()
-                Button("Cancel".localized()) {
-                    dismiss()
-                }
-                .padding(.horizontal, 25)
-                .padding(.vertical, 8)
-                .background(Color.red)
-                .foregroundStyle(Color.white)
-                .font(.headline)
-                .cornerRadius(8)
-                .accessibilityIdentifier("cancel_button")
-
-                Spacer()
-                Button("Add Property".localized()) {
-                    Task {
-                        await addProperty()
+                            Text("Click on the image to change".localized())
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .padding(.top, 8)
+                                .accessibilityIdentifier("touch_to_change_image")
+                        }
+                        .frame(maxWidth: .infinity)
+                        CustomTextInput(title: "Name", placeholder: "Enter property name", text: $name, isSecure: false)
+                        CustomTextInput(title: "Address", placeholder: "Enter address", text: $address, isSecure: false)
+                        CustomTextInput(title: "City", placeholder: "Enter city", text: $city, isSecure: false)
+                        CustomTextInput(title: "Postal Code", placeholder: "Enter postal code", text: $postalCode, isSecure: false)
+                        CustomTextInput(title: "Country", placeholder: "Enter country", text: $country, isSecure: false)
+                        CustomTextInputNB(title: "Monthly Rent", placeholder: "Enter monthly rent", value: $monthlyRent, isSecure: false)
+                        CustomTextInputNB(title: "Deposit", placeholder: "Enter deposit", value: $deposit, isSecure: false)
+                        CustomTextInputNB(title: "Surface (m²)", placeholder: "Enter surface", value: $surface, isSecure: false)
                     }
                 }
-                .padding(.horizontal, 25)
-                .padding(.vertical, 8)
-                .background(Color.blue)
-                .foregroundStyle(Color.white)
-                .font(.headline)
-                .cornerRadius(8)
-                .accessibilityIdentifier("confirm_button")
+                HStack {
+                    Spacer()
+                    Button("Cancel".localized()) {
+                        dismiss()
+                    }
+                    .padding(.horizontal, 25)
+                    .padding(.vertical, 8)
+                    .background(Color.red)
+                    .foregroundStyle(Color.white)
+                    .font(.headline)
+                    .cornerRadius(8)
+                    .accessibilityIdentifier("cancel_button")
 
-                Spacer()
+                    Spacer()
+                    Button("Add Property".localized()) {
+                        Task {
+                            await addProperty()
+                        }
+                    }
+                    .padding(.horizontal, 25)
+                    .padding(.vertical, 8)
+                    .background(Color.blue)
+                    .foregroundStyle(Color.white)
+                    .font(.headline)
+                    .cornerRadius(8)
+                    .accessibilityIdentifier("confirm_button")
+
+                    Spacer()
+                }
             }
-        }
-        .navigationBarBackButtonHidden(true)
-        .fullScreenCover(isPresented: $showSheet) {
-            ImagePicker(sourceType: $sourceType, selectedImage: $photo)
+            .navigationBarBackButtonHidden(true)
+            .fullScreenCover(isPresented: $showSheet) {
+                ImagePicker(sourceType: $sourceType, selectedImage: $photo)
+            }
+
+            if showError, let message = errorMessage {
+                ErrorNotificationView(message: message)
+                    .onDisappear {
+                        showError = false
+                        errorMessage = nil
+                    }
+            }
         }
     }
 
@@ -150,6 +154,7 @@ struct CreatePropertyView: View {
 
         guard let token = await TokenStorage.getAccessToken() else {
             errorMessage = "Failed to retrieve access token.".localized()
+            showError = true
             return
         }
 
@@ -157,14 +162,20 @@ struct CreatePropertyView: View {
             let response = try await viewModel.createProperty(request: newProperty, token: token)
             await MainActor.run {
                 errorMessage = "Property created successfully with ID: \(response)!".localized()
-                dismiss()
+                showError = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    dismiss()
+                }
             }
             await viewModel.fetchProperties()
         } catch {
-            if let nsError = error as NSError?, nsError.code == 409 {
-                errorMessage = "A property with this information already exists.".localized()
-            } else {
-                errorMessage = "Error creating property: \(error.localizedDescription)".localized()
+            await MainActor.run {
+                if let nsError = error as NSError?, nsError.code == 409 {
+                    errorMessage = "A property with this information already exists.".localized()
+                } else {
+                    errorMessage = "Error creating property: \(error.localizedDescription)".localized()
+                }
+                showError = true
             }
         }
     }

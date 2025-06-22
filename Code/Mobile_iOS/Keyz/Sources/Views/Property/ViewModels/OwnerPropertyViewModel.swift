@@ -372,37 +372,42 @@ class OwnerPropertyViewModel: ObservableObject {
         let responseBody = String(data: data, encoding: .utf8) ?? "Unable to decode response"
         
         guard (200...299).contains(httpResponse.statusCode) else {
-            if (httpResponse.statusCode == 404) {
+            if httpResponse.statusCode == 404 {
                 return []
             }
             throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(responseBody)".localized()])
         }
         
-        let decoder = JSONDecoder()
-        let documentsData = try decoder.decode([PropertyDocumentResponse].self, from: data)
-        
-        let documents = documentsData.map { doc in
-            let cleanBase64 = doc.data.components(separatedBy: ",").last ?? doc.data
-            let filename = doc.name
-            let datePattern = #"(\d{4}-\d{2}-\d{2})"#
-            if let dateRange = filename.range(of: datePattern, options: .regularExpression) {
-                let dateString = String(filename[dateRange])
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd"
-                if let date = dateFormatter.date(from: dateString) {
-                    dateFormatter.dateFormat = "dd-MM-yyyy"
-                    let formattedDate = dateFormatter.string(from: date)
-                    return PropertyDocument(id: doc.id, title: formattedDate, fileName: doc.name, data: cleanBase64)
+        let documents = try await Task.detached(priority: .background) {
+            let decoder = JSONDecoder()
+            let documentsData = try decoder.decode([PropertyDocumentResponse].self, from: data)
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "dd-MM-yyyy"
+            
+            return documentsData.map { doc in
+                let cleanBase64 = doc.data.contains(",") ? doc.data.components(separatedBy: ",").last ?? doc.data : doc.data
+                let filename = doc.name
+                
+                let components = filename.split(separator: "_")
+                var title = filename
+                
+                if let dateString = components.last?.prefix(10),
+                   dateFormatter.date(from: String(dateString)) != nil {
+                    title = outputFormatter.string(from: dateFormatter.date(from: String(dateString))!)
                 }
+                
+                return PropertyDocument(id: doc.id, title: title, fileName: filename, data: cleanBase64)
             }
-            return PropertyDocument(id: doc.id, title: doc.name, fileName: doc.name, data: cleanBase64)
-        }
+        }.value
         
         if let index = properties.firstIndex(where: { $0.id == propertyId }) {
             var updatedProperty = properties[index]
             updatedProperty.documents = documents
             properties[index] = updatedProperty
-            objectWillChange.send()
+//             objectWillChange.send()
         }
         
         return documents
