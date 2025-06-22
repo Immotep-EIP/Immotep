@@ -15,6 +15,7 @@ struct MessagesView: View {
                 Spacer()
                 Text("Messaging features will be available soon!".localized())
                     .foregroundStyle(.gray)
+                    .multilineTextAlignment(.center)
                 Spacer()
             }
             .navigationBarBackButtonHidden(true)
