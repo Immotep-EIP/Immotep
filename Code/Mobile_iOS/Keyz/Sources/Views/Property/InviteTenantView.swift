@@ -9,6 +9,7 @@ import SwiftUI
 
 struct InviteTenantView: View {
     @ObservedObject var tenantViewModel: TenantViewModel
+    @ObservedObject var propertyViewModel: PropertyViewModel
     let property: Property
     @State private var email: String = ""
     @State private var startDate: Date = Date()
@@ -58,6 +59,7 @@ struct InviteTenantView: View {
                                 startDate: startDate,
                                 endDate: endDate
                             )
+                            await propertyViewModel.fetchProperties()
                             dismiss()
                         } catch {
                             print("Error inviting tenant: \(error)".localized())
@@ -80,9 +82,11 @@ struct InviteTenantView: View {
 
 struct InviteTenantView_Previews: PreviewProvider {
     static var viewModel = TenantViewModel()
+    static var propViewModel = PropertyViewModel(loginViewModel: LoginViewModel())
     static var previews: some View {
         InviteTenantView(
             tenantViewModel: viewModel,
+            propertyViewModel: propViewModel,
             property: exampleDataProperty
         )
     }

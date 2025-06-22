@@ -238,7 +238,11 @@ struct PropertyDetailView: View {
         }
         .sheet(isPresented: $showInviteTenantSheet) {
             if let property = property {
-                InviteTenantView(tenantViewModel: tenantViewModel, property: property)
+                InviteTenantView(
+                    tenantViewModel: tenantViewModel,
+                    propertyViewModel: viewModel,
+                    property: property
+                )
             }
         }
         .sheet(isPresented: $showDocumentPicker) {
