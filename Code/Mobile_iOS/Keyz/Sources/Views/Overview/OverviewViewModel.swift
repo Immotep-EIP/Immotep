@@ -44,20 +44,25 @@ class OverviewViewModel: ObservableObject {
             }
 
             let decoder = JSONDecoder()
-            let dashboardResponse = try decoder.decode(DashboardResponse.self, from: data)
+            decoder.dateDecodingStrategy = .iso8601
 
-            let remindersWithUniqueIds = dashboardResponse.reminders.enumerated().map { index, reminder in
-                var uniqueReminder = reminder
-                uniqueReminder.id = UUID().uuidString
-                return uniqueReminder
+            do {
+                let dashboardResponse = try decoder.decode(DashboardResponse.self, from: data)
+                let remindersWithUniqueIds = dashboardResponse.reminders.enumerated().map { index, reminder in
+                    var uniqueReminder = reminder
+                    uniqueReminder.id = UUID().uuidString
+                    return uniqueReminder
+                }
+
+                let uniqueDashboardResponse = DashboardResponse(
+                    reminders: remindersWithUniqueIds,
+                    properties: dashboardResponse.properties,
+                    openDamages: dashboardResponse.openDamages
+                )
+                dashboardData = uniqueDashboardResponse
+            } catch {
+                throw error
             }
-
-            let uniqueDashboardResponse = DashboardResponse(
-                reminders: remindersWithUniqueIds,
-                properties: dashboardResponse.properties,
-                openDamages: dashboardResponse.openDamages
-            )
-            dashboardData = uniqueDashboardResponse
             
         } catch {
             errorMessage = "Error fetching dashboard data: \(error.localizedDescription)".localized()
