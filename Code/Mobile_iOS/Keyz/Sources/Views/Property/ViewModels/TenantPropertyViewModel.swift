@@ -266,15 +266,17 @@ class TenantPropertyViewModel: ObservableObject {
     }
     
     func fetchTenantDamages(leaseId: String, fixed: Bool? = nil) async throws -> [DamageResponse] {
-        let urlComponents = URLComponents(string: "\(APIConfig.baseURL)/tenant/leases/current/damages/")!
-        var urlRequest = URLRequest(url: urlComponents.url!)
+        var urlComponents = URLComponents(string: "\(APIConfig.baseURL)/tenant/leases/current/damages/")!
         
         if let fixed = fixed {
-            var components = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)!
-            components.queryItems = [URLQueryItem(name: "fixed", value: String(fixed))]
-            urlRequest.url = components.url
+            urlComponents.queryItems = [URLQueryItem(name: "fixed", value: String(fixed))]
         }
         
+        guard let url = urlComponents.url else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL".localized()])
+        }
+        
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"
         urlRequest.setValue("Bearer \(try await TokenStorage.getValidAccessToken())", forHTTPHeaderField: "Authorization")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
@@ -314,20 +316,6 @@ class TenantPropertyViewModel: ObservableObject {
                 objectWillChange.send()
                 return damagesData
             } catch {
-                if let decodingError = error as? DecodingError {
-                    switch decodingError {
-                    case .dataCorrupted(let context):
-                        print("Data corrupted: \(context.debugDescription)")
-                    case .keyNotFound(let key, let context):
-                        print("Key '\(key)' not found: \(context.debugDescription)")
-                    case .typeMismatch(let type, let context):
-                        print("Type mismatch for type \(type): \(context.debugDescription)")
-                    case .valueNotFound(let type, let context):
-                        print("Value not found for type \(type): \(context.debugDescription)")
-                    @unknown default:
-                        print("Unknown decoding error")
-                    }
-                }
                 damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
                 throw error
             }
@@ -499,6 +487,74 @@ class TenantPropertyViewModel: ObservableObject {
             }
         } catch {
             self.activeLeaseId = nil
+        }
+    }
+    
+    func fetchDamageByID(damageId: String, token: String) async throws -> DamageResponse {
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/damages/\(damageId)/")!
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 400:
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid request: \(errorBody)".localized()])
+            case 401:
+                throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Damage not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Damage not found.".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+        
+        let decoder = JSONDecoder()
+        let damage = try decoder.decode(DamageResponse.self, from: data)
+        return damage
+    }
+
+    func fixDamage(damageId: String, token: String) async throws {
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/damages/\(damageId)/fix/")!
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "PUT"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 400:
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid request: \(errorBody)".localized()])
+            case 401:
+                throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Damage not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Damage not found.".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
         }
     }
 }

@@ -128,10 +128,10 @@ class PropertyViewModel: ObservableObject {
         }
     }
     
-    func fetchPropertyDamages(propertyId: String) async throws {
+    func fetchPropertyDamages(propertyId: String, fixed: Bool? = nil) async throws {
         if storedUserRole == "tenant" {
             if let leaseId = try await fetchActiveLeaseIdForProperty(propertyId: propertyId, token: try await TokenStorage.getValidAccessToken()) {
-                let fetchedDamages = try await tenantViewModel.fetchTenantDamages(leaseId: leaseId)
+                let fetchedDamages = try await tenantViewModel.fetchTenantDamages(leaseId: leaseId, fixed: fixed)
                 if let index = properties.firstIndex(where: { $0.id == propertyId }) {
                     var updatedProperty = properties[index]
                     updatedProperty.damages = fetchedDamages
@@ -140,7 +140,7 @@ class PropertyViewModel: ObservableObject {
                 }
             }
         } else {
-            let fetchedDamages = try await ownerViewModel.fetchPropertyDamages(propertyId: propertyId)
+            let fetchedDamages = try await ownerViewModel.fetchPropertyDamages(propertyId: propertyId, fixed: fixed)
             if let index = properties.firstIndex(where: { $0.id == propertyId }) {
                 var updatedProperty = properties[index]
                 updatedProperty.damages = fetchedDamages
@@ -180,6 +180,29 @@ class PropertyViewModel: ObservableObject {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can fetch inventory reports.".localized()])
         }
         return try await ownerViewModel.fetchLastInventoryReport(propertyId: propertyId, leaseId: leaseId)
+    }
+    
+    func fetchDamageByID(propertyId: String, damageId: String, token: String) async throws -> DamageResponse {
+        if storedUserRole == "tenant" {
+            return try await tenantViewModel.fetchDamageByID(damageId: damageId, token: token)
+        } else {
+            return try await ownerViewModel.fetchDamageByID(propertyId: propertyId, damageId: damageId, token: token)
+        }
+    }
+
+    func updateDamageStatus(propertyId: String, damageId: String, fixPlannedAt: String?, read: Bool, token: String) async throws {
+        guard storedUserRole == "owner" else {
+            throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can update damage status.".localized()])
+        }
+        try await ownerViewModel.updateDamageStatus(propertyId: propertyId, damageId: damageId, fixPlannedAt: fixPlannedAt, read: read, token: token)
+    }
+
+    func fixDamage(propertyId: String, damageId: String, token: String) async throws {
+        if storedUserRole == "tenant" {
+            try await tenantViewModel.fixDamage(damageId: damageId, token: token)
+        } else {
+            try await ownerViewModel.fixDamage(propertyId: propertyId, damageId: damageId, token: token)
+        }
     }
 }
 

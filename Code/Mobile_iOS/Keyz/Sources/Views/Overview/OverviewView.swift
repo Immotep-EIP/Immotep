@@ -425,21 +425,21 @@ struct DamagesWidget: View {
                 StatItem(label: "Planned This Week".localized(), value: "\(stats.plannedThisWeek)")
             }
 
-            if stats.toFix.isEmpty {
+            if stats.toFix?.isEmpty ?? true {
                 Text("No damages to fix".localized())
                     .font(.subheadline)
                     .foregroundColor(.gray)
                     .padding(.vertical, 8)
-            } else {
-                ForEach(stats.toFix.prefix(3)) { damage in
+            } else if let toFix = stats.toFix {
+                ForEach(toFix.prefix(3)) { damage in
                     Button(action: {
                         navigateToDamage = (propertyId: damage.propertyId, damageId: damage.id)
                     }) {
                         DamageItem(damage: damage)
                     }
                 }
-                if stats.toFix.count > 3 {
-                    Text(String(format: "+%d more".localized(), stats.toFix.count - 3))
+                if toFix.count > 3 {
+                    Text(String(format: "+%d more".localized(), toFix.count - 3))
                         .font(.caption)
                         .foregroundColor(.gray)
                         .padding(.top, 4)

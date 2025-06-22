@@ -515,9 +515,18 @@ class OwnerPropertyViewModel: ObservableObject {
         return nil
     }
     
-    func fetchPropertyDamages(propertyId: String) async throws -> [DamageResponse] {
+    func fetchPropertyDamages(propertyId: String, fixed: Bool? = nil) async throws -> [DamageResponse] {
         let token = try await TokenStorage.getValidAccessToken()
-        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/damages/")!
+        var urlComponents = URLComponents(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/current/damages/")!
+        
+        if let fixed = fixed {
+            urlComponents.queryItems = [URLQueryItem(name: "fixed", value: String(fixed))]
+        }
+        
+        guard let url = urlComponents.url else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL".localized()])
+        }
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -570,6 +579,115 @@ class OwnerPropertyViewModel: ObservableObject {
             return report
         } catch {
             throw error
+        }
+    }
+
+    func fetchDamageByID(propertyId: String, damageId: String, token: String) async throws -> DamageResponse {
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/current/damages/\(damageId)/")!
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 400:
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid request: \(errorBody)".localized()])
+            case 401:
+                throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property or lease not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Damage not found.".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+        
+        let decoder = JSONDecoder()
+        let damage = try decoder.decode(DamageResponse.self, from: data)
+        return damage
+    }
+
+    func updateDamageStatus(propertyId: String, damageId: String, fixPlannedAt: String?, read: Bool, token: String) async throws {
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/current/damages/\(damageId)/")!
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "PUT"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        var body: [String: Any] = ["read": read]
+        if let fixPlannedAt = fixPlannedAt {
+            body["fix_planned_at"] = fixPlannedAt
+        }
+        
+        let jsonData = try JSONSerialization.data(withJSONObject: body)
+        urlRequest.httpBody = jsonData
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 400:
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid data: \(errorBody)".localized()])
+            case 401:
+                throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property or lease not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Damage not found.".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+    }
+
+    func fixDamage(propertyId: String, damageId: String, token: String) async throws {
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/current/damages/\(damageId)/fix/")!
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "PUT"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 400:
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid request: \(errorBody)".localized()])
+            case 401:
+                throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property or lease not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Damage not found.".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
         }
     }
 }

@@ -77,7 +77,7 @@ struct OpenDamageStats: Decodable, Equatable {
     let medium: Int
     let low: Int
     let plannedThisWeek: Int
-    let toFix: [DamageSummary]
+    let toFix: [DamageSummary]?
 
     enum CodingKeys: String, CodingKey {
         case total = "nbr_total"
