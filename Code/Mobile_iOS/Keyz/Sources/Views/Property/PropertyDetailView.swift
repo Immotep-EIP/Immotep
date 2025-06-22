@@ -31,7 +31,7 @@ struct PropertyDetailView: View {
     @State private var activeLeaseId: String?
     @State private var hasLoaded = false
     @Environment(\.dismiss) var dismiss
-    @State private var damageFilter: Bool = false
+    @State private var damageFilter: Bool? = false
     @State private var selectedDamageId: String?
     @State private var showDocumentPicker = false
     private let tabs = ["Details".localized(), "Documents".localized(), "Damages".localized()]

@@ -550,7 +550,7 @@ class TenantPropertyViewModel: ObservableObject {
     }
     
     func uploadTenantDocument(leaseId: String, propertyId: String, fileName: String, base64Data: String) async throws {
-        let url = URL(string: "\(APIConfig.baseURL)/tenant/properties/\(propertyId)/leases/\(leaseId)/docs/")!
+        let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/docs/")!
         let token = try await TokenStorage.getValidAccessToken()
         
         let body: [String: Any] = [
