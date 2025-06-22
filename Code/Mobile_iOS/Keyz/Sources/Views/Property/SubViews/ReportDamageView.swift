@@ -100,6 +100,7 @@ struct ReportDamageView: View {
                 }
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
     
     private func createImagePickerBinding() -> Binding<UIImage?> {

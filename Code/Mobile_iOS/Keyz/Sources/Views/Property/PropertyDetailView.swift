@@ -29,6 +29,8 @@ struct PropertyDetailView: View {
     @State private var activeLeaseId: String?
     @State private var hasLoaded = false
     @Environment(\.dismiss) var dismiss
+    @State private var damageFilter: Bool? = false
+    @State private var selectedDamageId: String? = nil
     private let tabs = ["Details".localized(), "Documents".localized(), "Damages".localized()]
     
     init(
@@ -84,7 +86,7 @@ struct PropertyDetailView: View {
                 }
                 if property.damages.isEmpty, activeLeaseId != nil {
                     do {
-                        try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                        try await viewModel.fetchPropertyDamages(propertyId: property.id, fixed: damageFilter)
                         if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
                             property = updatedProperty
                         }
@@ -96,7 +98,7 @@ struct PropertyDetailView: View {
             if loginViewModel.userRole == "owner", let leaseId = property.leaseId {
                 if property.damages.isEmpty {
                     do {
-                        try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                        try await viewModel.fetchPropertyDamages(propertyId: property.id, fixed: damageFilter)
                         if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
                             property = updatedProperty
                         }
@@ -123,104 +125,154 @@ struct PropertyDetailView: View {
     }
     
     var body: some View {
-            ZStack {
-                mainContentView
-                errorMessageView
-                
-                if selectedTab == "Damages".localized() && loginViewModel.userRole == "tenant" {
-                    VStack {
+        ZStack {
+            mainContentView
+            errorMessageView
+            
+            if selectedTab == "Damages".localized() && loginViewModel.userRole == "tenant" {
+                VStack {
+                    Spacer()
+                    HStack {
                         Spacer()
-                        HStack {
-                            Spacer()
-                            Button(action: { navigateToReportDamage = true }) {
-                                Image(systemName: "plus")
-                                    .font(.system(size: 24, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .padding()
-                                    .background(Color("LightBlue"))
-                                    .clipShape(Circle())
-                                    .shadow(radius: 4)
-                            }
-                            .accessibilityLabel("report_damage_btn")
+                        Button(action: { navigateToReportDamage = true }) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color("LightBlue"))
+                                .clipShape(Circle())
+                                .shadow(radius: 4)
                         }
-                    }
-                    .padding(.bottom, 20)
-                    .padding(.trailing, 20)
-                }
-            }
-            .navigationBarBackButtonHidden(true)
-            .onReceive(viewModel.$properties) { properties in
-                if let updatedProperty = properties.first(where: { $0.id == property.id }) {
-                    if !updatedProperty.documents.isEmpty || updatedProperty.isAvailable != property.isAvailable {
-                        self.property = updatedProperty
+                        .accessibilityLabel("report_damage_btn")
                     }
                 }
+                .padding(.bottom, 20)
+                .padding(.trailing, 20)
             }
-            .onAppear {
-                guard !hasLoaded else { return }
-                hasLoaded = true
+        }
+        .navigationBarBackButtonHidden(true)
+        .onReceive(viewModel.$properties) { properties in
+            if let updatedProperty = properties.first(where: { $0.id == property.id }) {
+                if !updatedProperty.documents.isEmpty || updatedProperty.isAvailable != property.isAvailable {
+                    self.property = updatedProperty
+                }
+            }
+        }
+        .onAppear {
+            guard !hasLoaded else { return }
+            hasLoaded = true
+            Task {
+                await fetchInitialData()
+            }
+            inventoryViewModel.onInventoryFinalized = {
                 Task {
-                    await fetchInitialData()
-                }
-                inventoryViewModel.onInventoryFinalized = {
-                    Task {
-                        for _ in 1...3 {
-                            await fetchDocuments()
-                            if !property.documents.isEmpty {
-                                break
-                            }
-                            try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    for _ in 1...3 {
+                        await fetchDocuments()
+                        if !property.documents.isEmpty {
+                            break
                         }
-                        if property.documents.isEmpty {
-                            errorMessage = "No documents found after inventory finalization".localized()
-                        }
+                        try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    }
+                    if property.documents.isEmpty {
+                        errorMessage = "No documents found after inventory finalization".localized()
                     }
                 }
             }
-            .sheet(isPresented: $showEditPropertyPopUp) {
-                EditPropertyView(viewModel: viewModel, property: $property)
+        }
+        .sheet(isPresented: $showEditPropertyPopUp) {
+            EditPropertyView(viewModel: viewModel, property: $property)
+        }
+        .sheet(isPresented: $showInviteTenantSheet) {
+            InviteTenantView(tenantViewModel: tenantViewModel, property: property)
+        }
+        .overlay(alertsView)
+        .navigationDestination(isPresented: $navigateToInventory) {
+            InventoryRoomView()
+                .environmentObject(inventoryViewModel)
+        }
+        .navigationDestination(isPresented: $navigateToReportDamage) {
+            if activeLeaseId != nil {
+                ReportDamageView(
+                    viewModel: viewModel,
+                    propertyId: property.id,
+                    rooms: rooms,
+                    leaseId: activeLeaseId,
+                    onDamageCreated: {
+                        Task {
+                            try await viewModel.fetchPropertyDamages(propertyId: property.id, fixed: damageFilter)
+                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                property = updatedProperty
+                            }
+                        }
+                    }
+                )
             }
-            .sheet(isPresented: $showInviteTenantSheet) {
-                InviteTenantView(tenantViewModel: tenantViewModel, property: property)
-            }
-            .overlay(alertsView)
-            .navigationDestination(isPresented: $navigateToInventory) {
-                InventoryRoomView()
-                    .environmentObject(inventoryViewModel)
-            }
+        }
     }
     
     private var damagesContentView: some View {
         ZStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    if viewModel.isFetchingDamages {
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .padding()
-                    } else if let damagesError = viewModel.damagesError {
-                        Text(damagesError)
-                            .foregroundColor(.red)
-                            .padding()
-                    } else if let currentProperty = viewModel.properties.first(where: { $0.id == property.id }), !currentProperty.damages.isEmpty {
-                        LazyVStack(spacing: 10) {
-                            ForEach(currentProperty.damages.sorted { $0.createdAt > $1.createdAt }, id: \.id) { damage in
-                                DamageItemView(damage: damage)
-                                    .id(damage.id)
+            VStack(spacing: 16) {
+                Picker("Filter Damages", selection: $damageFilter) {
+                    Text("In Progress".localized()).tag(false)
+                    Text("Fixed".localized()).tag(true)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .onChange(of: damageFilter) {
+                    Task {
+                        do {
+                            try await viewModel.fetchPropertyDamages(propertyId: property.id, fixed: damageFilter)
+                            if let updatedProperty = viewModel.properties.first(where: { $0.id == property.id }) {
+                                property = updatedProperty
                             }
+                        } catch {
+                            errorMessage = "Error fetching damages: \(error.localizedDescription)".localized()
                         }
-                        .padding(.horizontal)
-                    } else {
-                        Text("no_damages_reported".localized())
-                            .foregroundColor(.gray)
-                            .padding()
                     }
                 }
-                .padding(.vertical, 20)
+                
+                ScrollView {
+                    VStack(spacing: 16) {
+                        if viewModel.isFetchingDamages {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                                .padding()
+                        } else if let damagesError = viewModel.damagesError {
+                            Text(damagesError)
+                                .foregroundColor(.red)
+                                .padding()
+                        } else if let currentProperty = viewModel.properties.first(where: { $0.id == property.id }), !currentProperty.damages.isEmpty {
+                            LazyVStack(spacing: 10) {
+                                ForEach(currentProperty.damages.sorted { $0.createdAt > $1.createdAt }, id: \.id) { damage in
+                                    DamageItemView(damage: damage, selectedDamageId: $selectedDamageId)
+                                        .id(damage.id)
+                                }
+                            }
+                            .padding(.horizontal)
+                        } else {
+                            Text("no_damages_reported".localized())
+                                .foregroundColor(.gray)
+                                .padding()
+                        }
+                    }
+                    .padding(.vertical, 20)
+                }
+            }
+        }
+        .navigationDestination(isPresented: Binding(
+            get: { selectedDamageId != nil },
+            set: { if !$0 { selectedDamageId = nil } }
+        )) {
+            if let damageId = selectedDamageId,
+               let damage = viewModel.properties
+                   .first(where: { $0.id == property.id })?
+                   .damages
+                   .first(where: { $0.id == damageId }) {
+                DamageDetailView(damage: damage)
             }
         }
     }
-
 
     private var mainContentView: some View {
         VStack(spacing: 0) {
@@ -763,4 +815,3 @@ struct PropertyDetailView_Previews: PreviewProvider {
         .environmentObject(loginViewModel)
     }
 }
-
