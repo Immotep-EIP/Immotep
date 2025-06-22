@@ -37,6 +37,8 @@ struct PropertyDetailView: View {
     private let tabs = ["Details".localized(), "Documents".localized(), "Damages".localized()]
     let propertyId: String
     private let debouncer = Debouncer(delay: 0.5)
+    @State private var showDeleteDocumentPopUp = false
+    @State private var documentToDeleteId: String?
 
     init(
         propertyId: String,
@@ -274,15 +276,30 @@ struct PropertyDetailView: View {
                         let base64String = "data:\(mimeType);base64,\(data.base64EncodedString())"
                         let fileName = url.lastPathComponent
 
-                        try await viewModel.uploadDocument(
-                            propertyId: propertyId,
-                            fileName: fileName,
-                            base64Data: base64String
-                        )
+                        if loginViewModel.userRole == "owner" {
+                            try await viewModel.uploadOwnerDocument(
+                                propertyId: propertyId,
+                                fileName: fileName,
+                                base64Data: base64String
+                            )
+                        } else {
+                            guard let leaseId = activeLeaseId else {
+                                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No active lease found.".localized()])
+                            }
+                            try await viewModel.uploadTenantDocument(
+                                leaseId: leaseId,
+                                propertyId: propertyId,
+                                fileName: fileName,
+                                base64Data: base64String
+                            )
+                        }
 
                         await fetchDocuments()
                     } catch {
                         errorMessage = "Error uploading document: \(error.localizedDescription)".localized()
+                    }
+                    await MainActor.run {
+                        showDocumentPicker = false
                     }
                 }
             }
@@ -584,8 +601,11 @@ struct PropertyDetailView: View {
                             .foregroundColor(.gray)
                             .padding()
                     } else {
-                        DocumentsGridView(documents: .constant(property.documents))
-                            .padding(.horizontal)
+                        DocumentsGridView(documents: .constant(property.documents)) { documentId in
+                            documentToDeleteId = documentId
+                            showDeleteDocumentPopUp = true
+                        }
+                        .padding(.horizontal)
                     }
                 case "Damages".localized():
                     damagesContentView
@@ -749,6 +769,36 @@ struct PropertyDetailView: View {
                     secondaryAction: {}
                 )
                 .accessibilityIdentifier("DeletePropertyAlert")
+            }
+            if showDeleteDocumentPopUp {
+                CustomAlertTwoButtons(
+                    isActive: $showDeleteDocumentPopUp,
+                    title: "Delete Document".localized(),
+                    message: "Are you sure you want to delete this document?".localized(),
+                    buttonTitle: "Confirm".localized(),
+                    secondaryButtonTitle: "Cancel".localized(),
+                    action: {
+                        Task {
+                            do {
+                                if let docId = documentToDeleteId {
+                                    try await viewModel.deleteDocument(docId: docId)
+                                    await fetchDocuments()
+                                }
+                            } catch {
+                                errorMessage = "Error deleting document: \(error.localizedDescription)".localized()
+                            }
+                            await MainActor.run {
+                                documentToDeleteId = nil
+                                showDeleteDocumentPopUp = false
+                            }
+                        }
+                    },
+                    secondaryAction: {
+                        documentToDeleteId = nil
+                        showDeleteDocumentPopUp = false
+                    }
+                )
+                .accessibilityIdentifier("DeleteDocumentAlert")
             }
         }
     }

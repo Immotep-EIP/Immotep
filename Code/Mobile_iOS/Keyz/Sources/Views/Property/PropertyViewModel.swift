@@ -220,6 +220,30 @@ class PropertyViewModel: ObservableObject {
             try await ownerViewModel.fixDamage(propertyId: propertyId, damageId: damageId, token: token)
         }
     }
+    
+    func uploadOwnerDocument(propertyId: String, fileName: String, base64Data: String) async throws {
+        guard storedUserRole == "owner" else {
+            throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can upload owner documents.".localized()])
+        }
+        try await ownerViewModel.uploadOwnerDocument(propertyId: propertyId, fileName: fileName, base64Data: base64Data)
+    }
+
+    func uploadTenantDocument(leaseId: String, propertyId: String, fileName: String, base64Data: String) async throws {
+        guard storedUserRole == "tenant" else {
+            throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only tenants can upload tenant documents.".localized()])
+        }
+        try await tenantViewModel.uploadTenantDocument(leaseId: leaseId, propertyId: propertyId, fileName: fileName, base64Data: base64Data)
+    }
+
+    func deleteDocument(docId: String) async throws {
+        guard storedUserRole == "owner" else {
+            throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only owners can delete documents.".localized()])
+        }
+        guard let property = properties.first(where: { $0.documents.contains(where: { $0.id == docId }) }) else {
+            throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Document not found.".localized()])
+        }
+        try await ownerViewModel.deleteDocument(propertyId: property.id, documentId: docId)
+    }
 }
 
 struct PropertyID: Decodable {

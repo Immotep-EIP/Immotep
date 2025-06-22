@@ -17,6 +17,7 @@ struct DocumentsGridView: View {
     @State private var refreshID = UUID()
     @State private var isInitialized = false
     @State private var errorMessage: String?
+    var onDelete: ((String) -> Void)?
 
     var body: some View {
         VStack {
@@ -36,21 +37,42 @@ struct DocumentsGridView: View {
                     spacing: 15
                 ) {
                     ForEach(documents, id: \.id) { document in
-                        NavigationLink(destination: PDFViewer(base64String: document.data)) {
-                            VStack {
-                                Image(systemName: "doc.text")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 50, height: 50)
-                                Text(document.title)
-                                    .font(.caption)
-                                    .multilineTextAlignment(.center)
-                                    .frame(maxWidth: .infinity)
+                        ZStack(alignment: .topTrailing) {
+                            NavigationLink(destination: PDFViewer(base64String: document.data)) {
+                                VStack {
+                                    Image(systemName: "doc.text")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 50, height: 50)
+                                    Text(document.title)
+                                        .font(.caption)
+                                        .multilineTextAlignment(.center)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(8)
                             }
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
+                            
+                            if loginViewModel.userRole == "owner" {
+                                Menu {
+                                    Button(role: .destructive) {
+                                        onDelete?(document.id)
+                                    } label: {
+                                        Label("Delete".localized(), systemImage: "trash")
+                                    }
+                                } label: {
+                                    Image(systemName: "ellipsis")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                        .padding(6)
+                                        .background(Color.white.opacity(0.8))
+                                        .clipShape(Circle())
+                                }
+                                .padding([.top, .trailing], 4)
+                                .accessibilityLabel("document_options_\(document.id)")
+                            }
                         }
                     }
                 }

@@ -164,7 +164,6 @@ class OwnerPropertyViewModel: ObservableObject {
             )
         }
 
-        // Fetch images only for properties without cached images
         await withTaskGroup(of: (index: Int, image: UIImage?).self) { group in
             for index in properties.indices {
                 if properties[index].photo == nil {
@@ -726,4 +725,37 @@ class OwnerPropertyViewModel: ObservableObject {
         let decoder = JSONDecoder()
         let _ = try decoder.decode(IdResponse.self, from: data)
     }
+    
+    func deleteDocument(propertyId: String, documentId: String) async throws {
+            let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/current/docs/\(documentId)/")!
+            let token = try await TokenStorage.getValidAccessToken()
+
+            var urlRequest = URLRequest(url: url)
+            urlRequest.httpMethod = "DELETE"
+            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+
+            let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+            }
+
+            guard httpResponse.statusCode == 204 else {
+                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+                switch httpResponse.statusCode {
+                case 400:
+                    throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid request: \(errorBody)".localized()])
+                case 401:
+                    throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+                case 403:
+                    throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property or document not yours.".localized()])
+                case 404:
+                    throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Document or lease not found.".localized()])
+                default:
+                    throw NSError(domain: "", code: httpResponse.statusCode,
+                                  userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+                }
+            }
+        }
 }
