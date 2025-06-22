@@ -21,8 +21,8 @@ struct EditPropertyView: View {
     @State private var monthlyRent: NSNumber?
     @State private var deposit: NSNumber?
     @State private var surface: NSNumber?
+    @State private var showError: Bool = false
     @State private var errorMessage: String?
-
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
 
@@ -41,79 +41,83 @@ struct EditPropertyView: View {
     }
 
     var body: some View {
-        VStack {
-            Form {
-                Section {
-                    VStack {
-                        Image(uiImage: photo ?? UIImage(named: "DefaultImageProperty")!)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.black, lineWidth: 1))
-                            .padding(.top, 10)
-                            .onTapGesture {
-                                showImagePickerOptions()
-                            }
-                            .accessibilityIdentifier("image_property")
+        ZStack {
+            VStack {
+                Form {
+                    Section {
+                        VStack {
+                            Image(uiImage: photo ?? UIImage(named: "DefaultImageProperty")!)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.black, lineWidth: 1))
+                                .padding(.top, 10)
+                                .onTapGesture {
+                                    showImagePickerOptions()
+                                }
+                                .accessibilityIdentifier("image_property")
 
-                        Text("Click on the image to change".localized())
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .padding(.top, 8)
-                            .accessibilityIdentifier("touch_to_change_image")
-                    }
-                    .frame(maxWidth: .infinity)
-                    CustomTextInput(title: "Name", placeholder: "Enter property name", text: $name, isSecure: false)
-                    CustomTextInput(title: "Address", placeholder: "Enter address", text: $address, isSecure: false)
-                    CustomTextInput(title: "City", placeholder: "Enter city", text: $city, isSecure: false)
-                    CustomTextInput(title: "Postal Code", placeholder: "Enter postal code", text: $postalCode, isSecure: false)
-                    CustomTextInput(title: "Country", placeholder: "Enter country", text: $country, isSecure: false)
-                    CustomTextInputNB(title: "Monthly Rent", placeholder: "Enter monthly rent", value: $monthlyRent, isSecure: false)
-                    CustomTextInputNB(title: "Deposit", placeholder: "Enter deposit", value: $deposit, isSecure: false)
-                    CustomTextInputNB(title: "Surface (m²)", placeholder: "Enter surface", value: $surface, isSecure: false)
-                }
-            }
-
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .padding()
-            }
-
-            HStack {
-                Spacer()
-                Button("Cancel".localized()) {
-                    dismiss()
-                }
-                .padding(.horizontal, 25)
-                .padding(.vertical, 8)
-                .background(Color.red)
-                .foregroundStyle(Color.white)
-                .font(.headline)
-                .cornerRadius(8)
-                .accessibilityIdentifier("cancel_button")
-
-                Spacer()
-                Button("Save Changes".localized()) {
-                    Task {
-                        await updateProperty()
+                            Text("Click on the image to change".localized())
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .padding(.top, 8)
+                                .accessibilityIdentifier("touch_to_change_image")
+                        }
+                        .frame(maxWidth: .infinity)
+                        CustomTextInput(title: "Name", placeholder: "Enter property name", text: $name, isSecure: false)
+                        CustomTextInput(title: "Address", placeholder: "Enter address", text: $address, isSecure: false)
+                        CustomTextInput(title: "City", placeholder: "Enter city", text: $city, isSecure: false)
+                        CustomTextInput(title: "Postal Code", placeholder: "Enter postal code", text: $postalCode, isSecure: false)
+                        CustomTextInput(title: "Country", placeholder: "Enter country", text: $country, isSecure: false)
+                        CustomTextInputNB(title: "Monthly Rent", placeholder: "Enter monthly rent", value: $monthlyRent, isSecure: false)
+                        CustomTextInputNB(title: "Deposit", placeholder: "Enter deposit", value: $deposit, isSecure: false)
+                        CustomTextInputNB(title: "Surface (m²)", placeholder: "Enter surface", value: $surface, isSecure: false)
                     }
                 }
-                .padding(.horizontal, 25)
-                .padding(.vertical, 8)
-                .background(Color.blue)
-                .foregroundStyle(Color.white)
-                .font(.headline)
-                .cornerRadius(8)
-                .accessibilityIdentifier("save_button")
 
-                Spacer()
+                HStack {
+                    Spacer()
+                    Button("Cancel".localized()) {
+                        dismiss()
+                    }
+                    .padding(.horizontal, 25)
+                    .padding(.vertical, 8)
+                    .background(Color.red)
+                    .foregroundStyle(Color.white)
+                    .font(.headline)
+                    .cornerRadius(8)
+                    .accessibilityIdentifier("cancel_button")
+
+                    Spacer()
+                    Button("Save Changes".localized()) {
+                        Task {
+                            await updateProperty()
+                        }
+                    }
+                    .padding(.horizontal, 25)
+                    .padding(.vertical, 8)
+                    .background(Color.blue)
+                    .foregroundStyle(Color.white)
+                    .font(.headline)
+                    .cornerRadius(8)
+                    .accessibilityIdentifier("save_button")
+
+                    Spacer()
+                }
             }
-        }
-        .navigationBarBackButtonHidden(true)
-        .fullScreenCover(isPresented: $showSheet) {
-            ImagePicker(sourceType: $sourceType, selectedImage: $photo)
+            .navigationBarBackButtonHidden(true)
+            .fullScreenCover(isPresented: $showSheet) {
+                ImagePicker(sourceType: $sourceType, selectedImage: $photo)
+            }
+
+            if showError, let message = errorMessage {
+                ErrorNotificationView(message: message)
+                    .onDisappear {
+                        showError = false
+                        errorMessage = nil
+                    }
+            }
         }
     }
 
@@ -160,7 +164,7 @@ struct EditPropertyView: View {
 
         guard let token = await TokenStorage.getAccessToken() else {
             errorMessage = "Failed to retrieve token.".localized()
-            print("Token is nil")
+            showError = true
             return
         }
 
@@ -173,6 +177,7 @@ struct EditPropertyView: View {
                     let _ = try await viewModel.updatePropertyPicture(token: token, propertyPicture: newPhoto, propertyID: propertyId)
                 } catch {
                     errorMessage = String(format: NSLocalizedString("Error updating picture: %@", comment: ""), error.localizedDescription)
+                    showError = true
                     return
                 }
             }
@@ -181,11 +186,19 @@ struct EditPropertyView: View {
                 property = updatedProperty
             } else {
                 errorMessage = "Updated property not found in refreshed data.".localized()
+                showError = true
             }
 
-            dismiss()
+            await MainActor.run {
+                errorMessage = "Property updated successfully!".localized()
+                showError = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    dismiss()
+                }
+            }
         } catch {
             errorMessage = "Error updating property: \(error.localizedDescription)".localized()
+            showError = true
         }
     }
 }

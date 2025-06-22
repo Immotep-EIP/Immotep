@@ -20,6 +20,7 @@ struct ReportDamageView: View {
     @State private var description = ""
     @State private var selectedPriority = "medium"
     @State private var selectedRoomId: String?
+    @State private var showError: Bool = false
     @State private var errorMessage: String?
     @State private var isLoading = false
     @State private var showImagePicker = false
@@ -31,76 +32,81 @@ struct ReportDamageView: View {
     private let maxImages = 5
 
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Description")) {
-                    TextEditor(text: $description)
-                        .frame(height: 100)
-                        .padding()
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                        )
-                }
-                
-                Section(header: Text("Priority".localized())) {
-                    Picker("Priority".localized(), selection: $selectedPriority) {
-                        ForEach(priorities, id: \.self) { priority in
-                            Text(priority.capitalized.localized()).tag(priority)
-                        }
+        ZStack {
+            NavigationView {
+                Form {
+                    Section(header: Text("Description")) {
+                        TextEditor(text: $description)
+                            .frame(height: 100)
+                            .padding()
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                            )
                     }
-                    .pickerStyle(.segmented)
-                }
-                
-                Section(header: Text("Room".localized())) {
-                    if rooms.isEmpty {
-                        Text("No rooms available".localized()).foregroundColor(.red)
-                    } else {
-                        Picker("Room".localized(), selection: $selectedRoomId) {
-                            Text("Select a room".localized()).tag(nil as String?)
-                            ForEach(rooms) { room in
-                                Text(room.name).tag(room.id as String?)
+                    
+                    Section(header: Text("Priority".localized())) {
+                        Picker("Priority".localized(), selection: $selectedPriority) {
+                            ForEach(priorities, id: \.self) { priority in
+                                Text(priority.capitalized.localized()).tag(priority)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                    }
+                    
+                    Section(header: Text("Room".localized())) {
+                        if rooms.isEmpty {
+                            Text("No rooms available".localized()).foregroundColor(.red)
+                        } else {
+                            Picker("Room".localized(), selection: $selectedRoomId) {
+                                Text("Select a room".localized()).tag(nil as String?)
+                                ForEach(rooms) { room in
+                                    Text(room.name).tag(room.id as String?)
+                                }
                             }
                         }
                     }
-                }
-                Section {
-                    PicturesSegmentDamage(selectedImages: $selectedImages, showImagePickerOptions: showImagePickerOptions, maxImages: maxImages)
-                }
-                
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                }
-            }
-            .navigationTitle("Report Damage".localized())
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel".localized()) {
-                        dismiss()
+                    Section {
+                        PicturesSegmentDamage(selectedImages: $selectedImages, showImagePickerOptions: showImagePickerOptions, maxImages: maxImages)
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Submit".localized()) {
-                        isLoading = true
-                        Task {
-                            await submitDamage()
-                            isLoading = false
+                .navigationTitle("Report Damage".localized())
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("Cancel".localized()) {
+                            dismiss()
                         }
                     }
-                    .disabled(isLoading || description.isEmpty || selectedRoomId == nil || rooms.isEmpty)
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Submit".localized()) {
+                            isLoading = true
+                            Task {
+                                await submitDamage()
+                                isLoading = false
+                            }
+                        }
+                        .disabled(isLoading || description.isEmpty || selectedRoomId == nil || rooms.isEmpty)
+                    }
+                }
+                .fullScreenCover(isPresented: $showImagePicker) {
+                    ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
+                }
+                .onAppear {
+                    if !rooms.isEmpty {
+                        selectedRoomId = rooms.first!.id
+                    }
                 }
             }
-            .fullScreenCover(isPresented: $showImagePicker) {
-                ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
-            }
-            .onAppear {
-                if !rooms.isEmpty {
-                    selectedRoomId = rooms.first!.id
-                }
+            .navigationBarBackButtonHidden(true)
+
+            if showError, let message = errorMessage {
+                ErrorNotificationView(message: message)
+                    .onDisappear {
+                        showError = false
+                        errorMessage = nil
+                    }
             }
         }
-        .navigationBarBackButtonHidden(true)
     }
     
     private func createImagePickerBinding() -> Binding<UIImage?> {
@@ -131,7 +137,8 @@ struct ReportDamageView: View {
                         self.sourceType = .camera
                         self.showImagePicker = true
                     } else {
-                        self.errorMessage = "Camera access denied. Please enable it in Settings.".localized()
+                        errorMessage = "Camera access denied. Please enable it in Settings.".localized()
+                        showError = true
                     }
                 }
             }
@@ -144,7 +151,8 @@ struct ReportDamageView: View {
                         self.sourceType = .photoLibrary
                         self.showImagePicker = true
                     } else {
-                        self.errorMessage = "Photo library access denied. Please enable it in Settings.".localized()
+                        errorMessage = "Photo library access denied. Please enable it in Settings.".localized()
+                        showError = true
                     }
                 }
             }
@@ -161,11 +169,13 @@ struct ReportDamageView: View {
     private func submitDamage() async {
         guard let roomId = selectedRoomId else {
             errorMessage = "Please select a room.".localized()
+            showError = true
             return
         }
         
         guard let leaseId = leaseId else {
             errorMessage = "No active lease found.".localized()
+            showError = true
             return
         }
         
@@ -193,6 +203,7 @@ struct ReportDamageView: View {
         } catch {
             await MainActor.run {
                 errorMessage = "Error submitting damage: \(error.localizedDescription)".localized()
+                showError = true
             }
         }
     }
