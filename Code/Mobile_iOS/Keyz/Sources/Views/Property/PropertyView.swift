@@ -15,7 +15,7 @@ struct PropertyView: View {
     @State private var errorMessage: String?
     @State private var navigateToReportDamage: Bool = false
     @State private var navigateToInventory: Bool = false
-    @State private var selectedProperty: Property?
+    @State private var selectedPropertyId: String?
 
     var body: some View {
         NavigationStack {
@@ -29,11 +29,12 @@ struct PropertyView: View {
                     }
                 } else if let property = tenantProperty {
                     PropertyDetailView(
-                        property: property,
+                        propertyId: property.id,
                         viewModel: viewModel,
                         navigateToReportDamage: $navigateToReportDamage,
                         navigateToInventory: $navigateToInventory
-                    )                } else {
+                    )
+                } else {
                     VStack {
                         Spacer()
                         Text("No property associated.".localized())
@@ -71,7 +72,7 @@ struct PropertyView: View {
                                     ForEach(viewModel.properties) { property in
                                         NavigationLink(
                                             destination: PropertyDetailView(
-                                                property: property,
+                                                propertyId: property.id,
                                                 viewModel: viewModel,
                                                 navigateToReportDamage: $navigateToReportDamage,
                                                 navigateToInventory: $navigateToInventory
@@ -81,7 +82,7 @@ struct PropertyView: View {
                                             PropertyCard(property: property)
                                         }
                                         .simultaneousGesture(TapGesture().onEnded {
-                                            selectedProperty = property
+                                            selectedPropertyId = property.id
                                         })
                                     }
                                 }
@@ -116,16 +117,17 @@ struct PropertyView: View {
                     }
                 }
                 .navigationDestination(isPresented: $navigateToReportDamage) {
-                    if let property = selectedProperty {
+                    if let propertyId = selectedPropertyId,
+                       let property = viewModel.properties.first(where: { $0.id == propertyId }) {
                         ReportDamageView(
                             viewModel: viewModel,
-                            propertyId: property.id,
+                            propertyId: propertyId,
                             rooms: [],
                             leaseId: viewModel.activeLeaseId,
                             onDamageCreated: {
                                 Task {
                                     do {
-                                        try await viewModel.fetchPropertyDamages(propertyId: property.id)
+                                        try await viewModel.fetchPropertyDamages(propertyId: propertyId)
                                     } catch {
                                         errorMessage = "Error refreshing damages: \(error.localizedDescription)".localized()
                                     }

@@ -11,7 +11,7 @@ struct OverviewView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @StateObject private var viewModel: OverviewViewModel
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
-    @State private var navigateToProperty: Property? = nil
+    @State private var navigateToProperty: String? = nil
     @State private var navigateToDamage: (propertyId: String, damageId: String)? = nil
     @State private var showError = false
     @State private var errorMessage: String?
@@ -76,9 +76,9 @@ struct OverviewView: View {
                 get: { navigateToProperty != nil },
                 set: { if !$0 { navigateToProperty = nil } }
             )) {
-                if let property = navigateToProperty {
+                if let propertyId = navigateToProperty {
                     PropertyDetailView(
-                        property: property,
+                        propertyId: propertyId,
                         viewModel: PropertyViewModel(loginViewModel: loginViewModel),
                         navigateToReportDamage: $navigateToReportDamage,
                         navigateToInventory: $navigateToInventory
@@ -92,28 +92,7 @@ struct OverviewView: View {
             )) {
                 if let damage = navigateToDamage {
                     PropertyDetailView(
-                        property: Property(
-                            id: damage.propertyId,
-                            ownerID: "",
-                            name: "",
-                            address: "",
-                            city: "",
-                            postalCode: "",
-                            country: "",
-                            photo: nil,
-                            monthlyRent: 0,
-                            deposit: 0,
-                            surface: 0,
-                            isAvailable: "",
-                            tenantName: nil,
-                            leaseId: nil,
-                            leaseStartDate: nil,
-                            leaseEndDate: nil,
-                            documents: [],
-                            createdAt: "",
-                            rooms: [],
-                            damages: []
-                        ),
+                        propertyId: damage.propertyId,
                         viewModel: PropertyViewModel(loginViewModel: loginViewModel),
                         navigateToReportDamage: $navigateToReportDamage,
                         navigateToInventory: $navigateToInventory
@@ -124,7 +103,7 @@ struct OverviewView: View {
             .onAppear {
                 loginViewModel.loadUser()
                 Task {
-                    if loginViewModel.userRole == "owner" {                        
+                    if loginViewModel.userRole == "owner" {
                         await viewModel.fetchDashboardData()
                     }
                 }
@@ -166,7 +145,7 @@ struct WelcomeWidget: View {
 struct RemindersWidget: View {
     let reminders: [Reminder]
     let properties: PropertyStats
-    @Binding var navigateToProperty: Property?
+    @Binding var navigateToProperty: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -188,29 +167,8 @@ struct RemindersWidget: View {
                 ForEach(reminders.prefix(3)) { reminder in
                     Button(action: {
                         if let components = parseLink(reminder.link),
-                           let property = properties.recentlyAdded?.first(where: { $0.id == components.propertyId }) {
-                            navigateToProperty = Property(
-                                id: property.id,
-                                ownerID: property.ownerId,
-                                name: property.name,
-                                address: property.address,
-                                city: property.city,
-                                postalCode: property.postalCode,
-                                country: property.country,
-                                photo: nil,
-                                monthlyRent: property.rentalPricePerMonth,
-                                deposit: property.depositPrice,
-                                surface: property.areaSqm,
-                                isAvailable: property.archived ? "archived" : (properties.available > 0 ? "available" : "occupied"),
-                                tenantName: nil,
-                                leaseId: nil,
-                                leaseStartDate: nil,
-                                leaseEndDate: nil,
-                                documents: [],
-                                createdAt: property.createdAt,
-                                rooms: [],
-                                damages: []
-                            )
+                           properties.recentlyAdded?.first(where: { $0.id == components.propertyId }) != nil {
+                            navigateToProperty = components.propertyId
                         }
                     }) {
                         ReminderItem(reminder: reminder)
@@ -279,7 +237,7 @@ struct ReminderItem: View {
 
 struct PropertiesWidget: View {
     let stats: PropertyStats
-    @Binding var navigateToProperty: Property?
+    @Binding var navigateToProperty: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -308,28 +266,7 @@ struct PropertiesWidget: View {
 
             if let recentProperty = stats.recentlyAdded?.first {
                 Button(action: {
-                    navigateToProperty = Property(
-                        id: recentProperty.id,
-                        ownerID: recentProperty.ownerId,
-                        name: recentProperty.name,
-                        address: recentProperty.address,
-                        city: recentProperty.city,
-                        postalCode: recentProperty.postalCode,
-                        country: recentProperty.country,
-                        photo: nil,
-                        monthlyRent: recentProperty.rentalPricePerMonth,
-                        deposit: recentProperty.depositPrice,
-                        surface: recentProperty.areaSqm,
-                        isAvailable: recentProperty.archived ? "archived" : (stats.available > 0 ? "available" : "occupied"),
-                        tenantName: nil,
-                        leaseId: nil,
-                        leaseStartDate: nil,
-                        leaseEndDate: nil,
-                        documents: [],
-                        createdAt: recentProperty.createdAt,
-                        rooms: [],
-                        damages: []
-                    )
+                    navigateToProperty = recentProperty.id
                 }) {
                     PropertyItem(property: recentProperty)
                 }
