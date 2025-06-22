@@ -21,6 +21,7 @@ struct PropertyDetailView: View {
     @State private var showDeletePropertyPopUp = false
     @State private var showEditPropertyPopUp = false
     @Binding private var navigateToReportDamage: Bool
+    @State private var showError: Bool = false
     @State private var errorMessage: String?
     @State private var isLoading = false
     @State private var isImageLoading = false
@@ -39,6 +40,7 @@ struct PropertyDetailView: View {
     private let debouncer = Debouncer(delay: 0.5)
     @State private var showDeleteDocumentPopUp = false
     @State private var documentToDeleteId: String?
+    @State private var decodedDocuments: [String: PDFDocument] = [:]
 
     init(
         propertyId: String,
@@ -71,19 +73,10 @@ struct PropertyDetailView: View {
             return
         }
         do {
-            let fetchedDocuments = try await viewModel.fetchPropertyDocuments(propertyId: propertyId)
-            await MainActor.run {
-                if let index = viewModel.properties.firstIndex(where: { $0.id == propertyId }) {
-                    var updatedProperty = viewModel.properties[index]
-                    updatedProperty.documents = fetchedDocuments
-                    viewModel.properties[index] = updatedProperty
-                    viewModel.objectWillChange.send()
-                }
-            }
+            _ = try await viewModel.fetchPropertyDocuments(propertyId: propertyId)
         } catch {
-            await MainActor.run {
-                errorMessage = "Error fetching documents: \(error.localizedDescription)".localized()
-            }
+            errorMessage = "Error fetching documents: \(error.localizedDescription)".localized()
+            showError = true
         }
     }
 
@@ -97,16 +90,14 @@ struct PropertyDetailView: View {
                         isImageLoading = true
                         do {
                             let image = try await viewModel.fetchPropertiesPicture(propertyId: propertyId)
-                            await MainActor.run {
-                                if let index = viewModel.properties.firstIndex(where: { $0.id == propertyId }) {
-                                    var updatedProperty = viewModel.properties[index]
-                                    updatedProperty.photo = image
-                                    viewModel.properties[index] = updatedProperty
-                                    viewModel.objectWillChange.send()
-                                }
+                            if let index = viewModel.properties.firstIndex(where: { $0.id == propertyId }) {
+                                var updatedProperty = viewModel.properties[index]
+                                updatedProperty.photo = image
+                                viewModel.properties[index] = updatedProperty
                             }
                         } catch {
                             errorMessage = "Error fetching image: \(error.localizedDescription)".localized()
+                            showError = true
                         }
                         isImageLoading = false
                     }
@@ -117,6 +108,7 @@ struct PropertyDetailView: View {
                             rooms = try await viewModel.fetchPropertyRooms(propertyId: propertyId, token: token)
                         } catch {
                             errorMessage = "Error fetching rooms: \(error.localizedDescription)".localized()
+                            showError = true
                         }
                         do {
                             activeLeaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token)
@@ -130,8 +122,7 @@ struct PropertyDetailView: View {
                             }
                             await fetchDocuments()
                         }
-                    }
-                    else if loginViewModel.userRole == "owner" {
+                    } else if loginViewModel.userRole == "owner" {
                         if let leaseId = property.leaseId {
                             if property.damages.isEmpty {
                                 try await viewModel.fetchPropertyDamages(propertyId: propertyId, fixed: damageFilter)
@@ -145,11 +136,13 @@ struct PropertyDetailView: View {
                                 }
                             } catch {
                                 errorMessage = "Error fetching inventory report: \(error.localizedDescription)".localized()
+                                showError = true
                             }
                         }
                     }
                 } catch {
                     errorMessage = "Error fetching property data: \(error.localizedDescription)".localized()
+                    showError = true
                 }
                 isLoading = false
             }
@@ -160,7 +153,6 @@ struct PropertyDetailView: View {
         ZStack {
             if let property = property {
                 mainContentView(property: property)
-                errorMessageView
 
                 if selectedTab == "Damages".localized() && loginViewModel.userRole == "tenant" && hasActiveLease {
                     VStack {
@@ -203,6 +195,14 @@ struct PropertyDetailView: View {
                     .padding(.bottom, 20)
                     .padding(.trailing, 20)
                 }
+
+                if showError, let message = errorMessage {
+                    ErrorNotificationView(message: message)
+                        .onDisappear {
+                            showError = false
+                            errorMessage = nil
+                        }
+                }
             } else {
                 Text("Property not found".localized())
                     .foregroundColor(.red)
@@ -227,6 +227,7 @@ struct PropertyDetailView: View {
                     }
                     if let property = property, property.documents.isEmpty, hasActiveLease {
                         errorMessage = "No documents found after inventory finalization".localized()
+                        showError = true
                     }
                 }
             }
@@ -244,63 +245,7 @@ struct PropertyDetailView: View {
         .sheet(isPresented: $showDocumentPicker) {
             DocumentPicker { url in
                 Task {
-                    do {
-                        guard let propertyId = viewModel.properties.first(where: { $0.id == self.propertyId })?.id else {
-                            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No property selected.".localized()])
-                        }
-
-                        let allowedTypes: [UTType] = [.pdf, .init(filenameExtension: "docx")!, .init(filenameExtension: "xlsx")!]
-                        guard let fileType = UTType(filenameExtension: url.pathExtension.lowercased()),
-                              allowedTypes.contains(fileType) else {
-                            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid file type. Only PDF, DOCX, and XLSX are supported.".localized()])
-                        }
-
-                        let mimeType: String
-                        switch fileType {
-                        case .pdf:
-                            mimeType = "application/pdf"
-                        case UTType(filenameExtension: "docx"):
-                            mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                        case UTType(filenameExtension: "xlsx"):
-                            mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        default:
-                            mimeType = "application/octet-stream"
-                        }
-
-                        guard url.startAccessingSecurityScopedResource() else {
-                            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to access file.".localized()])
-                        }
-                        defer { url.stopAccessingSecurityScopedResource() }
-
-                        let data = try Data(contentsOf: url)
-                        let base64String = "data:\(mimeType);base64,\(data.base64EncodedString())"
-                        let fileName = url.lastPathComponent
-
-                        if loginViewModel.userRole == "owner" {
-                            try await viewModel.uploadOwnerDocument(
-                                propertyId: propertyId,
-                                fileName: fileName,
-                                base64Data: base64String
-                            )
-                        } else {
-                            guard let leaseId = activeLeaseId else {
-                                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No active lease found.".localized()])
-                            }
-                            try await viewModel.uploadTenantDocument(
-                                leaseId: leaseId,
-                                propertyId: propertyId,
-                                fileName: fileName,
-                                base64Data: base64String
-                            )
-                        }
-
-                        await fetchDocuments()
-                    } catch {
-                        errorMessage = "Error uploading document: \(error.localizedDescription)".localized()
-                    }
-                    await MainActor.run {
-                        showDocumentPicker = false
-                    }
+                    await uploadDocument(url: url)
                 }
             }
         }
@@ -324,6 +269,74 @@ struct PropertyDetailView: View {
                 )
             }
         }
+        .onChange(of: selectedTab) {
+            if selectedTab == "Documents".localized() {
+                Task {
+                    await fetchDocuments()
+                }
+            }
+        }
+    }
+
+    private func uploadDocument(url: URL) async {
+        do {
+            guard let propertyId = viewModel.properties.first(where: { $0.id == self.propertyId })?.id else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No property selected.".localized()])
+            }
+
+            let allowedTypes: [UTType] = [.pdf, .init(filenameExtension: "docx")!, .init(filenameExtension: "xlsx")!]
+            guard let fileType = UTType(filenameExtension: url.pathExtension.lowercased()),
+                  allowedTypes.contains(fileType) else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid file type. Only PDF, DOCX, and XLSX are supported.".localized()])
+            }
+
+            let mimeType: String
+            switch fileType {
+            case .pdf:
+                mimeType = "application/pdf"
+            case UTType(filenameExtension: "docx"):
+                mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            case UTType(filenameExtension: "xlsx"):
+                mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            default:
+                mimeType = "application/octet-stream"
+            }
+
+            guard url.startAccessingSecurityScopedResource() else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to access file.".localized()])
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+
+            let data = try Data(contentsOf: url)
+            let base64String = "data:\(mimeType);base64,\(data.base64EncodedString())"
+            let fileName = url.lastPathComponent
+
+            if loginViewModel.userRole == "owner" {
+                try await viewModel.uploadOwnerDocument(
+                    propertyId: propertyId,
+                    fileName: fileName,
+                    base64Data: base64String
+                )
+            } else {
+                guard let leaseId = activeLeaseId else {
+                    throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No active lease found.".localized()])
+                }
+                try await viewModel.uploadTenantDocument(
+                    leaseId: leaseId,
+                    propertyId: propertyId,
+                    fileName: fileName,
+                    base64Data: base64String
+                )
+            }
+
+            await fetchDocuments()
+        } catch {
+            errorMessage = "Error uploading document: \(error.localizedDescription)".localized()
+            showError = true
+        }
+        await MainActor.run {
+            showDocumentPicker = false
+        }
     }
 
     private var damagesContentView: some View {
@@ -342,6 +355,7 @@ struct PropertyDetailView: View {
                                 try await viewModel.fetchPropertyDamages(propertyId: propertyId, fixed: damageFilter)
                             } catch {
                                 errorMessage = "Error fetching damages: \(error.localizedDescription)".localized()
+                                showError = true
                             }
                         }
                     }
@@ -592,19 +606,18 @@ struct PropertyDetailView: View {
                     detailsContentView(property: property)
                     actionButtonView(property: property)
                 case "Documents".localized():
-                    if let errorMessage = errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .padding()
-                    } else if !hasActiveLease {
+                    if !hasActiveLease {
                         Text("No lease is currently active".localized())
                             .foregroundColor(.gray)
                             .padding()
                     } else {
-                        DocumentsGridView(documents: .constant(property.documents)) { documentId in
-                            documentToDeleteId = documentId
-                            showDeleteDocumentPopUp = true
-                        }
+                        DocumentsGridView(
+                            documents: .constant(property.documents),
+                            onDelete: { documentId in
+                                documentToDeleteId = documentId
+                                showDeleteDocumentPopUp = true
+                            }
+                        )
                         .padding(.horizontal)
                     }
                 case "Damages".localized():
@@ -686,19 +699,6 @@ struct PropertyDetailView: View {
         .ignoresSafeArea(.container, edges: .bottom)
     }
 
-    private var errorMessageView: some View {
-        VStack {
-            Spacer()
-            Group {
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
-                }
-            }
-        }
-    }
-
     private var alertsView: some View {
         Group {
             if showCancelInvitePopUp {
@@ -716,6 +716,7 @@ struct PropertyDetailView: View {
                                 await viewModel.fetchProperties()
                             } catch {
                                 errorMessage = "Error cancelling invite: \(error.localizedDescription)".localized()
+                                showError = true
                             }
                         }
                     },
@@ -739,9 +740,11 @@ struct PropertyDetailView: View {
                                     await viewModel.fetchProperties()
                                 } else {
                                     errorMessage = "No active lease found.".localized()
+                                    showError = true
                                 }
                             } catch {
                                 errorMessage = "Error ending lease: \(error.localizedDescription)".localized()
+                                showError = true
                             }
                         }
                     },
@@ -763,6 +766,7 @@ struct PropertyDetailView: View {
                                 dismiss()
                             } catch {
                                 errorMessage = "Error deleting property: \(error.localizedDescription)".localized()
+                                showError = true
                             }
                         }
                     },
@@ -782,10 +786,12 @@ struct PropertyDetailView: View {
                             do {
                                 if let docId = documentToDeleteId {
                                     try await viewModel.deleteDocument(docId: docId)
+                                    DocumentCache.shared.removeDocument(forKey: docId)
                                     await fetchDocuments()
                                 }
                             } catch {
                                 errorMessage = "Error deleting document: \(error.localizedDescription)".localized()
+                                showError = true
                             }
                             await MainActor.run {
                                 documentToDeleteId = nil

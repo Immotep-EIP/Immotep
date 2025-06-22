@@ -198,3 +198,30 @@
 "No properties available" = "No properties available";
 "Unknown" = "Unknown";
 "Error refreshing damages: %@" = "Error refreshing damages: %@";
+
+"Damage Details" = "Damage Details";
+"Comment" = "Comment";
+"Confirm Fix" = "Confirm Fix";
+"Pictures" = "Pictures";
+"Dates" = "Dates";
+"Created At" = "Created At";
+"Updated At" = "Updated At";
+"Fix Planned At" = "Fix Planned At";
+"Fixed At" = "Fixed At";
+"Select Fix Status" = "Select Fix Status";
+"Choose a new status for the damage" = "Choose a new status for the damage";
+"Select Fix Planned Date" = "Select Fix Planned Date";
+"Fix Planned Date" = "Fix Planned Date";
+"Error updating status: %@" = "Error updating status: %@";
+"Error confirming fix: %@" = "Error confirming fix: %@";
+"planned" = "Planned";
+"awaiting_tenant_confirmation" = "Awaiting Tenant Confirmation";
+
+"No rooms available" = "No rooms available";
+"Select a room" = "Select a room";
+"Submit" = "Submit";
+"Camera access denied. Please enable it in Settings." = "Camera access denied. Please enable it in Settings.";
+"Photo library access denied. Please enable it in Settings." = "Photo library access denied. Please enable it in Settings.";
+"Please select a room." = "Please select a room.";
+"No active lease found." = "No active lease found.";
+"Error submitting damage: %@" = "Error submitting damage: %@";

@@ -59,47 +59,47 @@ struct SettingsView: View {
                                 Text("Role".localized())
                                     .foregroundColor(.gray)
                                 Spacer()
-                                Text(loginViewModel.user?.role ?? "N/A")
+                                Text(loginViewModel.user?.role == "tenant" ? "Tenant" : "Owner")
                                     .foregroundColor(.gray)
                             }
                             .padding(.vertical, 5)
                             
                             CustomTextInput(title: "First Name".localized(), placeholder: "", text: $editableFirstname, isSecure: false)
                                 .disabled(!isEditing)
-                                .onTapGesture {
-                                    if isEditing {
-                                    }
-                                }
+//                                .onTapGesture {
+//                                    if isEditing {
+//                                    }
+//                                }
                             CustomTextInput(title: "Name".localized(), placeholder: "", text: $editableLastname, isSecure: false)
                                 .disabled(!isEditing)
-                                .onTapGesture {
-                                    if isEditing {
-                                    }
-                                }
+//                                .onTapGesture {
+//                                    if isEditing {
+//                                    }
+//                                }
                             CustomTextInput(title: "Email", placeholder: "", text: $editableEmail, isSecure: false)
                                 .disabled(!isEditing)
-                                .onTapGesture {
-                                    if isEditing {
-                                    }
-                                }
+//                                .onTapGesture {
+//                                    if isEditing {
+//                                    }
+//                                }
                             
-                            HStack {
-                                Button(isEditing ? "Cancel".localized() : "Edit".localized()) {
-                                    isEditing.toggle()
-                                    if !isEditing {
-                                        resetFields()
-                                    }
-                                }
-                                .padding()
-                                
-                                if isEditing {
-                                    Button("Confirm".localized()) {
-                                        saveChanges()
-                                        isEditing = false
-                                    }
-                                    .padding()
-                                }
-                            }
+//                            HStack {
+//                                Button(isEditing ? "Cancel".localized() : "Edit".localized()) {
+//                                    isEditing.toggle()
+//                                    if !isEditing {
+//                                        resetFields()
+//                                    }
+//                                }
+//                                .padding()
+//                                
+//                                if isEditing {
+//                                    Button("Confirm".localized()) {
+//                                        saveChanges()
+//                                        isEditing = false
+//                                    }
+//                                    .padding()
+//                                }
+//                            }
                         }
                         
                         VStack {

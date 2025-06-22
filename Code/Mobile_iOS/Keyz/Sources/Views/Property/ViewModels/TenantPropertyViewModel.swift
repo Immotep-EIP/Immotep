@@ -231,29 +231,49 @@ class TenantPropertyViewModel: ObservableObject {
         config.httpMaximumConnectionsPerHost = 10
         let session = URLSession(configuration: config)
         
-        do {
-            let (data, response) = try await session.data(for: urlRequest)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server".localized()])
-            }
-            
-            guard (200...299).contains(httpResponse.statusCode) else {
-                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-                throw NSError(domain: "", code: httpResponse.statusCode,
-                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)"])
-            }
-            
+        let (data, response) = try await session.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server".localized()])
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            throw NSError(domain: "", code: httpResponse.statusCode,
+                          userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+        }
+        
+        let documents = try await Task.detached(priority: .background) {
             let decoder = JSONDecoder()
             let documentsData = try decoder.decode([PropertyDocumentResponse].self, from: data)
             
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "dd-MM-yyyy"
+            
             return documentsData.map { doc in
-                let cleanBase64 = doc.data.components(separatedBy: ",").last ?? doc.data
-                return PropertyDocument(id: doc.id, title: doc.name, fileName: doc.name, data: cleanBase64)
+                let cleanBase64 = doc.data.contains(",") ? doc.data.components(separatedBy: ",").last ?? doc.data : doc.data
+                let filename = doc.name
+                
+                let components = filename.split(separator: "_")
+                var title = filename
+                
+                if let dateString = components.last?.prefix(10),
+                   dateFormatter.date(from: String(dateString)) != nil {
+                    title = outputFormatter.string(from: dateFormatter.date(from: String(dateString))!)
+                }
+                
+                return PropertyDocument(id: doc.id, title: title, fileName: filename, data: cleanBase64)
             }
-        } catch {
-            throw error
+        }.value
+        
+        if var updatedProperty = tenantProperty, updatedProperty.id == propertyId {
+            updatedProperty.documents = documents
+            tenantProperty = updatedProperty
         }
+        
+        return documents
     }
     
     func fetchTenantDamages(leaseId: String, fixed: Bool? = nil) async throws -> [DamageResponse] {

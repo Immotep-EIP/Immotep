@@ -10,7 +10,8 @@ struct InventoryRoomView: View {
     @State private var showDeleteConfirmationAlert: Bool = false
     @State private var roomToDelete: LocalRoom?
     @State private var showCompletionMessage: Bool = false
-    @State private var showErrorAlert: Bool = false
+    @State private var showError: Bool = false
+    @State private var errorMessage: String?
 
     var body: some View {
         ZStack {
@@ -39,14 +40,15 @@ struct InventoryRoomView: View {
 
                     AddRoomButton(showAddRoomAlert: $showAddRoomAlert)
 
-                    if inventoryViewModel.areAllRoomsCompleted() {
+                    if inventoryViewModel.areAllRoomsCompleted() && inventoryViewModel.localRooms.count > 0 {
                         Button(action: {
                             Task {
                                 do {
                                     try await inventoryViewModel.finalizeInventory()
                                     showCompletionMessage = true
                                 } catch {
-                                    showCompletionMessage = true
+                                    errorMessage = "Error finalizing inventory: \(error.localizedDescription)".localized()
+                                    showError = true
                                 }
                             }
                         }, label: {
@@ -82,8 +84,8 @@ struct InventoryRoomView: View {
                                 try await inventoryViewModel.addRoom(name: roomName, type: roomType)
                                 newRoomName = ""
                             } catch {
-                                inventoryViewModel.errorMessage = "Error adding room: \(error.localizedDescription)"
-                                showErrorAlert = true
+                                errorMessage = "Error adding room: \(error.localizedDescription)".localized()
+                                showError = true
                             }
                         }
                     },
@@ -130,19 +132,13 @@ struct InventoryRoomView: View {
                 )
             }
 
-            if showErrorAlert, let errorMessage = inventoryViewModel.errorMessage {
-                CustomAlertTwoButtons(
-                    isActive: $showErrorAlert,
-                    title: "Error".localized(),
-                    message: errorMessage,
-                    buttonTitle: "OK",
-                    secondaryButtonTitle: nil,
-                    action: {
+            if showError, let message = errorMessage {
+                ErrorNotificationView(message: message)
+                    .onDisappear {
+                        showError = false
+                        errorMessage = nil
                         inventoryViewModel.errorMessage = nil
-                    },
-                    secondaryAction: nil
-                )
-                .accessibilityIdentifier("ErrorAlert")
+                    }
             }
         }
         .navigationBarBackButtonHidden(true)

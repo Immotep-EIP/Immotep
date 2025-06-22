@@ -17,6 +17,7 @@ struct InventoryRoomEvaluationView: View {
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
     @State private var replaceIndex: Int?
     @State private var isLoading: Bool = false
+    @State private var showError = false
     @State private var errorMessage: String?
     @State private var isReportSent: Bool = false
 
@@ -31,122 +32,126 @@ struct InventoryRoomEvaluationView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 0) {
-            TopBar(title: "Room Analysis".localized())
-                .overlay(
-                    HStack {
-                        Button(action: {
-                            dismiss()
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .font(.title3)
-                                .foregroundColor(Color("textColor"))
-                                .frame(width: 40, height: 40)
-                                .background(Color.black.opacity(0.2))
-                                .clipShape(Circle())
-                        }
-                        .padding(.trailing, 16)
-                    },
-                    alignment: .trailing
-                )
-            ScrollView {
-                Section {
-                    PicturesSegment(selectedImages: $inventoryViewModel.selectedImages, showImagePickerOptions: showImagePickerOptions)
-                }
-
-                VStack {
-                    HStack {
-                        Text("Comment".localized())
-                            .font(.headline)
-                        Spacer()
-                    }
-                    TextEditor(text: $inventoryViewModel.comment)
-                        .frame(height: 100)
-                        .padding()
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray, lineWidth: 1)
-                        )
-                }
-                .padding()
-
-                VStack {
-                    HStack {
-                        Text("Status".localized())
-                            .font(.headline)
-                        Spacer()
-                    }
-                    HStack {
-                        Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
-                            Text("Select room status".localized()).tag("Select room status")
-                            ForEach(Array(stateMapping.values), id: \.self) { status in
-                                Text(status.localized()).tag(status)
+        ZStack {
+            VStack(spacing: 0) {
+                TopBar(title: "Room Analysis".localized())
+                    .overlay(
+                        HStack {
+                            Button(action: {
+                                dismiss()
+                            }) {
+                                Image(systemName: "chevron.left")
+                                    .font(.title3)
+                                    .foregroundColor(Color("textColor"))
+                                    .frame(width: 40, height: 40)
+                                    .background(Color.black.opacity(0.2))
+                                    .clipShape(Circle())
                             }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .pickerStyle(MenuPickerStyle())
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray, lineWidth: 1)
-                        )
-                        .accessibilityIdentifier("RoomStatusPicker")
-                        Spacer()
+                            .padding(.trailing, 16)
+                        },
+                        alignment: .trailing
+                    )
+                ScrollView {
+                    Section {
+                        PicturesSegment(selectedImages: $inventoryViewModel.selectedImages, showImagePickerOptions: showImagePickerOptions)
                     }
-                }
-                .padding()
 
-                if isReportSent {
-                    Button(action: {
-                        Task {
-                            await validateReport()
+                    VStack {
+                        HStack {
+                            Text("Comment".localized())
+                                .font(.headline)
+                            Spacer()
                         }
-                    }, label: {
-                        Text("Validate".localized())
+                        TextEditor(text: $inventoryViewModel.comment)
+                            .frame(height: 100)
+                            .padding()
+                            .cornerRadius(20)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
+                    }
+                    .padding()
+
+                    VStack {
+                        HStack {
+                            Text("Status".localized())
+                                .font(.headline)
+                            Spacer()
+                        }
+                        HStack {
+                            Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
+                                Text("Select room status".localized()).tag("Select room status")
+                                ForEach(Array(stateMapping.values), id: \.self) { status in
+                                    Text(status.localized()).tag(status)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .pickerStyle(MenuPickerStyle())
+                            .padding()
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
+                            .accessibilityIdentifier("RoomStatusPicker")
+                            Spacer()
+                        }
+                    }
+                    .padding()
+
+                    if isReportSent {
+                        Button(action: {
+                            Task {
+                                await validateReport()
+                            }
+                        }, label: {
+                            Text("Validate".localized())
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color("LightBlue"))
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        })
+                        .padding()
+                    } else {
+                        Button(action: {
+                            Task {
+                                isLoading = true
+                                await sendRoomReport()
+                                isLoading = false
+                            }
+                        }, label: {
+                            ZStack {
+                                if isLoading {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                        .tint(.white)
+                                } else {
+                                    Text("Send Room Report".localized())
+                                }
+                            }
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color("LightBlue"))
+                            .background(inventoryViewModel.selectedImages.isEmpty ? Color.gray : Color("LightBlue"))
                             .foregroundColor(.white)
                             .cornerRadius(10)
-                    })
-                    .padding()
-                } else {
-                    Button(action: {
-                        Task {
-                            isLoading = true
-                            await sendRoomReport()
-                            isLoading = false
-                        }
-                    }, label: {
-                        ZStack {
-                            if isLoading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle())
-                                    .tint(.white)
-                            } else {
-                                Text("Send Room Report".localized())
-                            }
-                        }
+                            .scaleEffect(isLoading ? 0.95 : 1.0)
+                            .animation(.easeInOut(duration: 0.2), value: isLoading)
+                        })
+                        .disabled(isLoading || inventoryViewModel.selectedImages.isEmpty)
                         .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(inventoryViewModel.selectedImages.isEmpty ? Color.gray : Color("LightBlue"))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .scaleEffect(isLoading ? 0.95 : 1.0)
-                        .animation(.easeInOut(duration: 0.2), value: isLoading)
-                    })
-                    .disabled(isLoading || inventoryViewModel.selectedImages.isEmpty)
-                    .padding()
+                    }
                 }
+            }
 
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
-                }
+            if showError, let message = errorMessage {
+                ErrorNotificationView(message: message)
+                    .onDisappear {
+                        showError = false
+                        errorMessage = nil
+                    }
             }
         }
         .fullScreenCover(isPresented: $showSheet) {
@@ -203,9 +208,11 @@ struct InventoryRoomEvaluationView: View {
             try await inventoryViewModel.sendRoomReport()
             isReportSent = true
         } catch let error as NSError {
+            errorMessage = "Property or lease not found. Please check the property details.".localized()
+            errorMessage = "You do not have permission to access this property.".localized()
             switch error.code {
             case 404:
-                errorMessage = "Property or lease not found. Please check the property details.".localized()
+                errorMessage = "Property or lease not found.".localized()
             case 403:
                 errorMessage = "You do not have permission to access this property.".localized()
             case 400:
@@ -215,10 +222,11 @@ struct InventoryRoomEvaluationView: View {
                     errorMessage = "Invalid request: \(error.localizedDescription)".localized()
                 }
             case 0 where error.localizedDescription.contains("No active lease found"):
-                errorMessage = "No active lease found for this property.".localized()
+                errorMessage = "No active lease found.".localized()
             default:
                 errorMessage = "Error: \(error.localizedDescription)".localized()
             }
+            showError = true
             print("Error sending room report: \(error.localizedDescription)")
         }
     }

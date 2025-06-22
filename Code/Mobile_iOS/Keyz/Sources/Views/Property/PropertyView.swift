@@ -12,87 +12,99 @@ struct PropertyView: View {
     @EnvironmentObject var loginViewModel: LoginViewModel
     @State private var tenantProperty: Property?
     @State private var isLoading = false
+    @State private var showError: Bool = false
     @State private var errorMessage: String?
     @State private var navigateToReportDamage: Bool = false
     @State private var navigateToInventory: Bool = false
     @State private var selectedPropertyId: String?
+    @State private var rooms: [PropertyRoomsTenant] = []
+    @State private var activeLeaseId: String?
 
     var body: some View {
-        NavigationStack {
-            if loginViewModel.userRole == "tenant" {
-                if isLoading {
-                    VStack {
-                        Spacer()
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle())
-                        Spacer()
-                    }
-                } else if let property = tenantProperty {
-                    PropertyDetailView(
-                        propertyId: property.id,
-                        viewModel: viewModel,
-                        navigateToReportDamage: $navigateToReportDamage,
-                        navigateToInventory: $navigateToInventory
-                    )
-                } else {
-                    VStack {
-                        Spacer()
-                        Text("No property associated.".localized())
-                            .foregroundColor(.gray)
-                            .padding()
-                        Spacer()
-                    }
-                }
-            } else {
-                ZStack {
-                    VStack(spacing: 0) {
-                        TopBar(title: "Keyz".localized())
-
-                        Text("Real Property".localized())
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
-                            .padding(.top, 10)
-                            .padding(.bottom, 5)
-
-                        if viewModel.properties.isEmpty {
+        ZStack {
+            NavigationStack {
+                VStack(spacing: 0) {
+                    if loginViewModel.userRole == "tenant" {
+                        if isLoading {
                             VStack {
                                 Spacer()
-                                Text("No properties available".localized())
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                Spacer()
+                            }
+                        } else if let property = tenantProperty {
+                            PropertyDetailView(
+                                propertyId: property.id,
+                                viewModel: viewModel,
+                                navigateToReportDamage: $navigateToReportDamage,
+                                navigateToInventory: $navigateToInventory
+                            )
+                        } else {
+                            VStack {
+                                Spacer()
+                                Text("No property associated.".localized())
                                     .foregroundColor(.gray)
+                                    .padding()
+                                Spacer()
+                            }
+                        }
+                    } else {
+                        if isLoading {
+                            VStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
                                 Spacer()
                             }
                         } else {
-                            ScrollView {
-                                LazyVGrid(
-                                    columns: [GridItem(.flexible())],
-                                    spacing: 15
-                                ) {
-                                    ForEach(viewModel.properties) { property in
-                                        NavigationLink(
-                                            destination: PropertyDetailView(
-                                                propertyId: property.id,
-                                                viewModel: viewModel,
-                                                navigateToReportDamage: $navigateToReportDamage,
-                                                navigateToInventory: $navigateToInventory
-                                            )
-                                            .environmentObject(loginViewModel)
-                                        ) {
-                                            PropertyCard(property: property)
-                                        }
-                                        .simultaneousGesture(TapGesture().onEnded {
-                                            selectedPropertyId = property.id
-                                        })
-                                    }
+                            TopBar(title: "Keyz".localized())
+
+                            Text("Real Property".localized())
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 20)
+                                .padding(.top, 10)
+                                .padding(.bottom, 5)
+
+                            if viewModel.properties.isEmpty {
+                                VStack {
+                                    Spacer()
+                                    Text("No properties available".localized())
+                                        .foregroundColor(.gray)
+                                    Spacer()
                                 }
-                                .padding(.horizontal)
-                                .padding(.vertical, 10)
+                            } else {
+                                ScrollView {
+                                    LazyVGrid(
+                                        columns: [GridItem(.flexible())],
+                                        spacing: 15
+                                    ) {
+                                        ForEach(viewModel.properties) { property in
+                                            NavigationLink(
+                                                destination: PropertyDetailView(
+                                                    propertyId: property.id,
+                                                    viewModel: viewModel,
+                                                    navigateToReportDamage: $navigateToReportDamage,
+                                                    navigateToInventory: $navigateToInventory
+                                                )
+                                                .environmentObject(loginViewModel)
+                                            ) {
+                                                PropertyCard(property: property)
+                                            }
+                                            .simultaneousGesture(TapGesture().onEnded {
+                                                selectedPropertyId = property.id
+                                            })
+                                        }
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 10)
+                                }
                             }
                         }
                     }
 
-                    VStack {
+                    if loginViewModel.userRole != "tenant" {
                         Spacer()
                         HStack {
                             Spacer()
@@ -118,39 +130,59 @@ struct PropertyView: View {
                 }
                 .navigationDestination(isPresented: $navigateToReportDamage) {
                     if let propertyId = selectedPropertyId,
-                       let property = viewModel.properties.first(where: { $0.id == propertyId }) {
+                       viewModel.properties.first(where: { $0.id == propertyId }) != nil {
                         ReportDamageView(
                             viewModel: viewModel,
                             propertyId: propertyId,
-                            rooms: [],
-                            leaseId: viewModel.activeLeaseId,
+                            rooms: rooms,
+                            leaseId: activeLeaseId,
                             onDamageCreated: {
                                 Task {
                                     do {
                                         try await viewModel.fetchPropertyDamages(propertyId: propertyId)
                                     } catch {
                                         errorMessage = "Error refreshing damages: \(error.localizedDescription)".localized()
+                                        showError = true
                                     }
                                 }
                             }
                         )
-                    }
-                }
-                .onAppear {
-                    Task {
-                        await viewModel.fetchProperties()
+                    } else {
+                        Text("No property selected".localized())
+                            .foregroundColor(.red)
+                            .padding()
                     }
                 }
             }
+
+            if showError, let message = errorMessage {
+                ErrorNotificationView(message: message)
+                    .onDisappear {
+                        showError = false
+                        errorMessage = nil
+                    }
+            }
         }
         .onAppear {
-            if loginViewModel.userRole == "tenant" {
-                Task {
-                    isLoading = true
-                    await viewModel.fetchProperties()
-                    tenantProperty = viewModel.properties.first
-                    isLoading = false
+            Task {
+                isLoading = true
+                do {
+                    if loginViewModel.userRole == "tenant" {
+                        await viewModel.fetchProperties()
+                        tenantProperty = viewModel.properties.first
+                        if let propertyId = tenantProperty?.id {
+                            let token = try await TokenStorage.getValidAccessToken()
+                            rooms = try await viewModel.fetchPropertyRooms(propertyId: propertyId, token: token)
+                            activeLeaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token)
+                        }
+                    } else {
+                        await viewModel.fetchProperties()
+                    }
+                } catch {
+                    errorMessage = "Error fetching properties: \(error.localizedDescription)".localized()
+                    showError = true
                 }
+                isLoading = false
             }
         }
     }
@@ -250,64 +282,3 @@ struct PropertyView_Previews: PreviewProvider {
             .environmentObject(LoginViewModel())
     }
 }
-
-let exampleDataProperty2: [Property] = [
-    Property(
-        id: "cm7gijdee000ly7i82uq0qf35",
-        ownerID: "owner123",
-        name: "Maison de Campagne",
-        address: "123 Rue des Champs",
-        city: "Paris",
-        postalCode: "75001",
-        country: "France",
-        photo: UIImage(named: "DefaultImageProperty"),
-        monthlyRent: 1200,
-        deposit: 2400,
-        surface: 85.5,
-        isAvailable: "available",
-        tenantName: nil,
-        leaseId: "id",
-        leaseStartDate: nil,
-        leaseEndDate: nil,
-        documents: [],
-        createdAt: "2023-10-26T10:00:00Z",
-        rooms: [
-            PropertyRooms(
-                id: "room1",
-                name: "Salon",
-                checked: false,
-                inventory: []
-            )
-        ],
-        damages: []
-    ),
-    Property(
-        id: "cm7gijdee000ly7i82uq0qf36",
-        ownerID: "owner124",
-        name: "Appartement Moderne",
-        address: "456 Avenue des Lumières",
-        city: "Lyon",
-        postalCode: "69002",
-        country: "France",
-        photo: UIImage(named: "DefaultImageProperty"),
-        monthlyRent: 1500,
-        deposit: 3000,
-        surface: 65.0,
-        isAvailable: "unavailable",
-        tenantName: "Jean Dupont",
-        leaseId: "id",
-        leaseStartDate: "2024-12-01T00:00:00Z",
-        leaseEndDate: nil,
-        documents: [],
-        createdAt: "2023-11-15T14:30:00Z",
-        rooms: [
-            PropertyRooms(
-                id: "room2",
-                name: "Chambre",
-                checked: true,
-                inventory: []
-            )
-        ],
-        damages: []
-    )
-]

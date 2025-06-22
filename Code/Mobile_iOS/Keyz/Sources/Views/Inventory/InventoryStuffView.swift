@@ -16,13 +16,72 @@ struct InventoryStuffView: View {
     @State private var showAddStuffAlert: Bool = false
     @State private var showDeleteConfirmationAlert: Bool = false
     @State private var stuffToDelete: LocalInventory?
-    @State private var showErrorAlert: Bool = false
+    @State private var showError: Bool = false
     @State private var errorMessage: String?
 
     var body: some View {
         ZStack {
             contentView
-            alertViews
+
+            if showAddStuffAlert {
+                CustomAlertWithTwoTextFields(
+                    isActive: $showAddStuffAlert,
+                    title: "Add an element",
+                    message: "Please enter details:",
+                    buttonTitle: "Add",
+                    secondaryButtonTitle: "Cancel",
+                    action: { name, quantity in
+                        Task {
+                            do {
+                                if let selectedRoom = selectedRoom {
+                                    try await inventoryViewModel.addStuff(name: name, quantity: quantity, to: selectedRoom)
+                                    if let updatedRoom = inventoryViewModel.localRooms.first(where: { $0.id == roomId }) {
+                                        self.selectedRoom = updatedRoom
+                                    }
+                                }
+                            } catch {
+                                errorMessage = "Error adding stuff: \(error.localizedDescription)".localized()
+                                showError = true
+                            }
+                        }
+                    },
+                    secondaryAction: {}
+                )
+                .accessibilityIdentifier("AddStuffAlert")
+            }
+
+            if showDeleteConfirmationAlert {
+                CustomAlertTwoButtons(
+                    isActive: $showDeleteConfirmationAlert,
+                    title: "Delete Stuff",
+                    message: stuffToDelete != nil ? "Are you sure you want to delete the stuff?".localized() : "",
+                    buttonTitle: "Delete",
+                    secondaryButtonTitle: "Cancel",
+                    action: {
+                        if let stuffToDelete, let selectedRoom = selectedRoom {
+                            Task {
+                                await inventoryViewModel.deleteStuff(stuffToDelete, from: selectedRoom)
+                                if let updatedRoom = inventoryViewModel.localRooms.first(where: { $0.id == roomId }) {
+                                    self.selectedRoom = updatedRoom
+                                }
+                            }
+                        }
+                    },
+                    secondaryAction: {
+                        stuffToDelete = nil
+                    }
+                )
+                .accessibilityIdentifier("DeleteStuffAlert")
+            }
+
+            if showError, let message = errorMessage {
+                ErrorNotificationView(message: message)
+                    .onDisappear {
+                        showError = false
+                        errorMessage = nil
+                        inventoryViewModel.errorMessage = nil
+                    }
+            }
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
@@ -42,12 +101,6 @@ struct InventoryStuffView: View {
         .onChange(of: inventoryViewModel.localRooms) {
             if let updatedRoom = inventoryViewModel.localRooms.first(where: { $0.id == roomId }) {
                 selectedRoom = updatedRoom
-            }
-        }
-        .onChange(of: inventoryViewModel.errorMessage) { _, newValue in
-            if let error = newValue {
-                errorMessage = error
-                showErrorAlert = true
             }
         }
     }
@@ -76,7 +129,7 @@ struct InventoryStuffView: View {
                     Spacer()
                     stuffListView(room: selectedRoom)
                     addStuffButton
-                    if selectedRoom.inventory.allSatisfy({ $0.checked }) {
+                    if selectedRoom.inventory.allSatisfy({ $0.checked }) || !selectedRoom.inventory.isEmpty {
                         if selectedRoom.checked {
                             confirmButton
                         } else {
@@ -86,7 +139,7 @@ struct InventoryStuffView: View {
                 }
                 Spacer()
             } else {
-                Text("Room not found")
+                Text("Room not found".localized())
             }
         }
     }
@@ -191,77 +244,6 @@ struct InventoryStuffView: View {
         )
         .padding()
     }
-
-    private var alertViews: some View {
-        Group {
-            if showAddStuffAlert {
-                CustomAlertWithTwoTextFields(
-                    isActive: $showAddStuffAlert,
-                    title: "Add an element",
-                    message: "Please enter details:",
-                    buttonTitle: "Add",
-                    secondaryButtonTitle: "Cancel",
-                    action: { name, quantity in
-                        Task {
-                            do {
-                                if let selectedRoom = selectedRoom {
-                                    try await inventoryViewModel.addStuff(name: name, quantity: quantity, to: selectedRoom)
-                                    if let updatedRoom = inventoryViewModel.localRooms.first(where: { $0.id == roomId }) {
-                                        self.selectedRoom = updatedRoom
-                                    }
-                                }
-                            } catch {
-                                errorMessage = "Error adding stuff: \(error.localizedDescription)".localized()
-                                showErrorAlert = true
-                            }
-                        }
-                    },
-                    secondaryAction: {}
-                )
-                .accessibilityIdentifier("AddStuffAlert")
-            }
-
-            if showDeleteConfirmationAlert {
-                CustomAlertTwoButtons(
-                    isActive: $showDeleteConfirmationAlert,
-                    title: "Delete Stuff",
-                    message: stuffToDelete != nil ? "Are you sure you want to delete the stuff?".localized() : "",
-                    buttonTitle: "Delete",
-                    secondaryButtonTitle: "Cancel",
-                    action: {
-                        if let stuffToDelete, let selectedRoom = selectedRoom {
-                            Task {
-                                await inventoryViewModel.deleteStuff(stuffToDelete, from: selectedRoom)
-                                if let updatedRoom = inventoryViewModel.localRooms.first(where: { $0.id == roomId }) {
-                                    self.selectedRoom = updatedRoom
-                                }
-                            }
-                        }
-                    },
-                    secondaryAction: {
-                        stuffToDelete = nil
-                    }
-                )
-                .accessibilityIdentifier("DeleteStuffAlert")
-            }
-
-            if showErrorAlert {
-                CustomAlertTwoButtons(
-                    isActive: $showErrorAlert,
-                    title: "Error",
-                    message: errorMessage ?? "Unknown error",
-                    buttonTitle: "OK",
-                    secondaryButtonTitle: nil,
-                    action: {
-                        errorMessage = nil
-                        inventoryViewModel.errorMessage = nil
-                    },
-                    secondaryAction: nil
-                )
-                .accessibilityIdentifier("ErrorAlert")
-            }
-        }
-    }
 }
 
 struct StuffCard: View {
@@ -287,44 +269,3 @@ struct StuffCard: View {
         }
     }
 }
-
-// struct InventoryStuffView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let fakeProperty = exampleDataProperty
-//        _ = InventoryViewModel(property: fakeProperty)
-//
-//        let exampleLocalRoom = LocalRoom(
-//            id: fakeProperty.rooms[0].id,
-//            name: fakeProperty.rooms[0].name,
-//            checked: fakeProperty.rooms[0].checked,
-//            inventory: fakeProperty.rooms[0].inventory.map { inventory in
-//                LocalInventory(
-//                    id: inventory.id,
-//                    propertyId: inventory.propertyId,
-//                    roomId: inventory.roomId,
-//                    name: inventory.name,
-//                    quantity: inventory.quantity,
-//                    checked: inventory.checked,
-//                    images: inventory.images,
-//                    status: inventory.status,
-//                    comment: inventory.comment
-//                )
-//            }
-//        )
-//
-//        struct PreviewWrapper: View {
-//            @State private var selectedRoom: LocalRoom
-//
-//            init(selectedRoom: LocalRoom) {
-//                self._selectedRoom = State(initialValue: selectedRoom)
-//            }
-//
-//            var body: some View {
-//                InventoryStuffView(selectedRoom: $selectedRoom)
-//                    .environmentObject(InventoryViewModel(property: exampleDataProperty))
-//            }
-//        }
-//
-//        return PreviewWrapper(selectedRoom: exampleLocalRoom)
-//    }
-// }
