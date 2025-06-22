@@ -21,7 +21,7 @@ struct InventoryRoomExitEvaluationView: View {
     @State private var isReportSent: Bool = false
 
     let stateMapping: [String: String] = [
-        "not_set": "Select your equipment status",
+        "not_set": "Select your room status",
         "broken": "Broken",
         "needsRepair": "Needs Repair",
         "bad": "Bad",

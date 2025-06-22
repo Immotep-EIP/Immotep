@@ -118,29 +118,25 @@ class OwnerPropertyViewModel: ObservableObject {
     
     func fetchProperties() async throws {
         let url = URL(string: "\(APIConfig.baseURL)/owner/properties/")!
-        
         let token = try await TokenStorage.getValidAccessToken()
-        
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
-        
+
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
-        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
         }
-        
-        guard (200...299).contains(httpResponse.statusCode) else {
+
+        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-            throw NSError(domain: "", code: httpResponse.statusCode,
-                          userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
         }
-        
+
         let decoder = JSONDecoder()
         let propertiesData = try decoder.decode([PropertyResponse].self, from: data)
-        
+
         self.properties = propertiesData.map { propertyResponse in
             let existingProperty = properties.first(where: { $0.id == propertyResponse.id })
             let status = propertyResponse.isAvailable == "invite sent" ? "pending" : propertyResponse.isAvailable
@@ -152,7 +148,7 @@ class OwnerPropertyViewModel: ObservableObject {
                 city: propertyResponse.city,
                 postalCode: propertyResponse.postalCode,
                 country: propertyResponse.country,
-                photo: nil,
+                photo: ImageCache.shared.getImage(forKey: propertyResponse.id),
                 monthlyRent: propertyResponse.rentalPricePerMonth,
                 deposit: propertyResponse.depositPrice,
                 surface: propertyResponse.areaSqm,
@@ -167,21 +163,24 @@ class OwnerPropertyViewModel: ObservableObject {
                 damages: []
             )
         }
-        
+
+        // Fetch images only for properties without cached images
         await withTaskGroup(of: (index: Int, image: UIImage?).self) { group in
             for index in properties.indices {
-                group.addTask {
-                    let propertyId = await self.properties[index].id
-                    do {
-                        let image = try await self.fetchPropertiesPicture(propertyId: propertyId)
-                        return (index: index, image: image)
-                    } catch {
-                        print("Error fetching picture for property ID: \(propertyId), error: \(error.localizedDescription)")
-                        return (index: index, image: nil)
+                if properties[index].photo == nil {
+                    group.addTask {
+                        let propertyId = await self.properties[index].id
+                        do {
+                            let image = try await self.fetchPropertiesPicture(propertyId: propertyId)
+                            return (index: index, image: image)
+                        } catch {
+                            print("Error fetching picture for property ID: \(propertyId), error: \(error.localizedDescription)")
+                            return (index: index, image: nil)
+                        }
                     }
                 }
             }
-            
+
             for await (index, image) in group {
                 self.properties[index].photo = image
             }
@@ -190,62 +189,54 @@ class OwnerPropertyViewModel: ObservableObject {
     }
     
     func fetchPropertiesPicture(propertyId: String) async throws -> UIImage? {
+        if let cachedImage = ImageCache.shared.getImage(forKey: propertyId) {
+            return cachedImage
+        }
+
         let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/picture/")!
         var attemptCount = 0
         let maxAttempts = 2
-        
+
         while attemptCount < maxAttempts {
             attemptCount += 1
-            
             do {
                 let token = try await TokenStorage.getValidAccessToken()
-                
                 var urlRequest = URLRequest(url: url)
                 urlRequest.httpMethod = "GET"
                 urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
                 urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
-                
+
                 let (data, response) = try await URLSession.shared.data(for: urlRequest)
-                
                 guard let httpResponse = response as? HTTPURLResponse else {
                     throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
                 }
-                
+
                 switch httpResponse.statusCode {
                 case 200, 201:
-                    do {
+                    return try await Task.detached(priority: .background) {
                         let image = try JSONDecoder().decode(PropertyImageBase64.self, from: data)
-                        
                         var base64String = image.data
                         if base64String.contains(",") {
                             base64String = image.data.components(separatedBy: ",").last ?? base64String
                         }
-                        
-                        guard let data = Data(base64Encoded: base64String, options: [.ignoreUnknownCharacters]) else {
-                            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to decode base64 data.".localized()])
+                        guard let data = Data(base64Encoded: base64String, options: [.ignoreUnknownCharacters]),
+                              let image = UIImage(data: data) else {
+                            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to decode image.".localized()])
                         }
-                        guard let image = UIImage(data: data) else {
-                            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to create image from data.".localized()])
-                        }
+                        ImageCache.shared.setImage(image, forKey: propertyId)
                         return image
-                    } catch {
-                        throw error
-                    }
-                case 204:
+                    }.value
+                case 204, 403, 404:
+                    ImageCache.shared.setImage(nil, forKey: propertyId)
                     return nil
                 case 401:
                     if attemptCount == maxAttempts {
                         throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized after \(maxAttempts) attempts.".localized()])
                     }
                     continue
-                case 403:
-                    return nil
-                case 404:
-                    return nil
                 default:
                     let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-                    throw NSError(domain: "", code: httpResponse.statusCode,
-                                  userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+                    throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
                 }
             } catch {
                 if attemptCount == maxAttempts {
@@ -689,5 +680,50 @@ class OwnerPropertyViewModel: ObservableObject {
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
             }
         }
+    }
+
+    func uploadOwnerDocument(propertyId: String, fileName: String, base64Data: String) async throws {
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/current/docs/")!
+        let token = try await TokenStorage.getValidAccessToken()
+        
+        let body: [String: Any] = [
+            "name": fileName,
+            "data": base64Data
+        ]
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let jsonData = try JSONSerialization.data(withJSONObject: body)
+        urlRequest.httpBody = jsonData
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 400:
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid document data: \(errorBody)".localized()])
+            case 401:
+                throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Unauthorized. Please check your token.".localized()])
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+            case 404:
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Property or lease not found.".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+        
+        let decoder = JSONDecoder()
+        let _ = try decoder.decode(IdResponse.self, from: data)
     }
 }

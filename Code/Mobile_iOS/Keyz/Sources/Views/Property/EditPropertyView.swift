@@ -168,6 +168,7 @@ struct EditPropertyView: View {
             let propertyId = try await viewModel.updateProperty(request: updatedProperty, token: token)
 
             if let newPhoto = photo, newPhoto != property.photo {
+                ImageCache.shared.setImage(nil, forKey: propertyId)
                 do {
                     let _ = try await viewModel.updatePropertyPicture(token: token, propertyPicture: newPhoto, propertyID: propertyId)
                 } catch {

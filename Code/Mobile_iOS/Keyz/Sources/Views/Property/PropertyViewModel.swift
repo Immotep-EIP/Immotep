@@ -92,7 +92,7 @@ class PropertyViewModel: ObservableObject {
         } else {
             documents = try await ownerViewModel.fetchPropertyDocuments(propertyId: propertyId)
         }
-        
+
         if let index = properties.firstIndex(where: { $0.id == propertyId }) {
             var updatedProperty = properties[index]
             updatedProperty.documents = documents
@@ -102,6 +102,22 @@ class PropertyViewModel: ObservableObject {
             print("Property \(propertyId) not found in properties array")
         }
         return documents
+    }
+    
+    func uploadDocument(propertyId: String, fileName: String, base64Data: String) async throws {
+        guard storedUserRole != nil else {
+            throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "User role not defined.".localized()])
+        }
+        
+        if storedUserRole == "tenant" {
+            if let leaseId = try await fetchActiveLeaseIdForProperty(propertyId: propertyId, token: try await TokenStorage.getValidAccessToken()) {
+                try await tenantViewModel.uploadTenantDocument(leaseId: leaseId, propertyId: propertyId, fileName: fileName, base64Data: base64Data)
+            } else {
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "No active lease found.".localized()])
+            }
+        } else {
+            try await ownerViewModel.uploadOwnerDocument(propertyId: propertyId, fileName: fileName, base64Data: base64Data)
+        }
     }
     
     func cancelInvite(propertyId: String, token: String) async throws {
