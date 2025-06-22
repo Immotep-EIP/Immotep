@@ -439,15 +439,18 @@ class OwnerPropertyViewModel: ObservableObject {
     }
     
     func endLease(propertyId: String, leaseId: String, token: String) async throws {
-        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/\(leaseId)/end/")!
+        let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/leases/current/end/")!
         
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "PUT"
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         
+        debugPrintAPIRequest(urlRequest)
+        
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
         
+        debugPrintAPIResponse(data, response: response, error: nil)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
         }
@@ -478,7 +481,11 @@ class OwnerPropertyViewModel: ObservableObject {
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         
+        debugPrintAPIRequest(urlRequest)
+        
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        debugPrintAPIResponse(data, response: response, error: nil)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
@@ -498,8 +505,23 @@ class OwnerPropertyViewModel: ObservableObject {
         }
         
         let decoder = JSONDecoder()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        let fallbackFormatter = DateFormatter()
+        fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateString = try container.decode(String.self)
+            if let date = dateFormatter.date(from: dateString) {
+                return date
+            } else if let date = fallbackFormatter.date(from: dateString) {
+                return date
+            }
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
+        }
+        
         let leases = try decoder.decode([LeaseResponse].self, from: data)
-        if let activeLease = leases.first(where: { $0.endDate == nil }) {
+        if let activeLease = leases.first(where: { $0.active && ($0.endDate == nil || $0.endDate ?? Date() > Date()) }) {
             return activeLease.id
         }
         return nil

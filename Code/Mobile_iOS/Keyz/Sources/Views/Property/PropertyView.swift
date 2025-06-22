@@ -118,7 +118,7 @@ struct PropertyView: View {
                 }
                 .navigationDestination(isPresented: $navigateToReportDamage) {
                     if let propertyId = selectedPropertyId,
-                       let property = viewModel.properties.first(where: { $0.id == propertyId }) {
+                       let _ = viewModel.properties.first(where: { $0.id == propertyId }) {
                         ReportDamageView(
                             viewModel: viewModel,
                             propertyId: propertyId,
