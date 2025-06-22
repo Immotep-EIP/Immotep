@@ -116,6 +116,7 @@ struct InviteTenantView: View {
                         displayedComponents: [.date]
                     )
                     .datePickerStyle(.graphical)
+                    .accentColor(Color("LightBlue"))
                     .padding()
                     
                     Button("Done".localized()) {
@@ -124,9 +125,9 @@ struct InviteTenantView: View {
                     .font(.headline)
                     .foregroundColor(.white)
                     .padding()
-                    .background(Color.blue)
+                    .background(Color("LightBlue"))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .padding(.bottom)
+                    .padding(.bottom, 70)
                 }
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
@@ -152,6 +153,7 @@ struct InviteTenantView: View {
                         displayedComponents: [.date]
                     )
                     .datePickerStyle(.graphical)
+                    .accentColor(Color("LightBlue"))
 
                     HStack {
                         Button("Reset".localized()) {
@@ -160,7 +162,7 @@ struct InviteTenantView: View {
                             showEndDatePicker = false
                         }
                         .font(.headline)
-                        .foregroundColor(.red)
+                        .foregroundColor(Color("RedAlert"))
                         .padding()
                         .disabled(endDate == nil)
                                                 
@@ -173,10 +175,10 @@ struct InviteTenantView: View {
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color("LightBlue"))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-                    .padding(.bottom)
+                    .padding(.bottom, 50)
                 }
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
