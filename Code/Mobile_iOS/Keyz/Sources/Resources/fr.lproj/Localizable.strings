@@ -202,3 +202,30 @@
 "No properties available" = "Aucune propriété disponible";
 "Unknown" = "Inconnu";
 "Error refreshing damages: %@" = "Erreur lors de l'actualisation des sinistres : %@";
+
+"Damage Details" = "Détails du sinistre";
+"Comment" = "Commentaire";
+"Confirm Fix" = "Confirmer la réparation";
+"Pictures" = "Images";
+"Dates" = "Dates";
+"Created At" = "Créé le";
+"Updated At" = "Mis à jour le";
+"Fix Planned At" = "Réparation prévue le";
+"Fixed At" = "Réparé le";
+"Select Fix Status" = "Sélectionner le statut du sinistre";
+"Choose a new status for the damage" = "Choisir un nouveau statut pour le sinistre";
+"Select Fix Planned Date" = "Sélectionner la date de réparation prévue";
+"Fix Planned Date" = "Date de réparation prévue";
+"Error updating status: %@" = "Erreur lors de la mise à jour du statut : %@";
+"Error confirming fix: %@" = "Erreur lors de la confirmation de la réparation : %@";
+"planned" = "Planifié";
+"awaiting_tenant_confirmation" = "En attente de confirmation du locataire";
+
+"No rooms available" = "Aucune pièce disponible";
+"Select a room" = "Sélectionner une pièce";
+"Submit" = "Envoyer";
+"Camera access denied. Please enable it in Settings." = "Accès à la caméra refusé. Veuillez l'activer dans les paramètres.";
+"Photo library access denied. Please enable it in Settings." = "Accès à la bibliothèque de photos refusé. Veuillez l'activer dans les paramètres.";
+"Please select a room." = "Veuillez sélectionner une pièce.";
+"No active lease found." = "Aucun bail actif trouvé.";
+"Error submitting damage: %@" = "Erreur lors de la soumission du sinistre : %@";

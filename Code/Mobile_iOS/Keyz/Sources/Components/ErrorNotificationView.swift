@@ -5,15 +5,6 @@
 //  Created by Liebenguth Alessio on 17/06/2025.
 //
 
-
-//
-//  ErrorNotificationView.swift
-//  Keyz
-//
-//  Created by Liebenguth Alessio on 17/06/2025.
-//
-
-
 import SwiftUI
 
 struct ErrorNotificationView: View {
