@@ -446,11 +446,8 @@ class OwnerPropertyViewModel: ObservableObject {
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         
-        debugPrintAPIRequest(urlRequest)
-        
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
         
-        debugPrintAPIResponse(data, response: response, error: nil)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
         }
