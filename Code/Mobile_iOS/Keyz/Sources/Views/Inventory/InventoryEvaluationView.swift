@@ -25,7 +25,9 @@ struct InventoryEntryEvaluationView: View {
     let stateMapping: [String: String] = [
         "not_set": "Select your equipment status",
         "broken": "Broken",
+        "needsRepair": "Needs Repair",
         "bad": "Bad",
+        "medium": "Medium",
         "good": "Good",
         "new": "New"
     ]

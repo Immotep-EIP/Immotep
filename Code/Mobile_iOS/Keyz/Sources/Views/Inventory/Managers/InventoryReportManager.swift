@@ -29,7 +29,7 @@ class InventoryReportManager {
             throw URLError(.userAuthenticationRequired)
         }
         
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/\(leaseId)/inventory-reports/summarize/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/current/inventory-reports/summarize/") else {
             throw URLError(.badURL)
         }
         
@@ -78,7 +78,9 @@ class InventoryReportManager {
         let stateMapping: [String: String] = [
             "not_set": "Select your equipment status",
             "broken": "Broken",
+            "needsRepair": "Needs Repair",
             "bad": "Bad",
+            "medium": "Medium",
             "good": "Good",
             "new": "New"
         ]
@@ -278,12 +280,13 @@ class InventoryReportManager {
         let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
 
         let stateMapping: [String: String] = [
+            "not_set": "Select your equipment status",
             "broken": "Broken",
-            "bad": "Bad",
-            "good": "Good",
-            "new": "New",
             "needsRepair": "Needs Repair",
-            "medium": "Medium"
+            "bad": "Bad",
+            "medium": "Medium",
+            "good": "Good",
+            "new": "New"
         ]
         let uiStatus = stateMapping[summarizeResponse.state] ?? "Select your equipment status"
 
@@ -317,7 +320,7 @@ class InventoryReportManager {
             throw URLError(.userAuthenticationRequired)
         }
         
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/\(leaseId)/inventory-reports/summarize/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/current/inventory-reports/summarize/") else {
             throw URLError(.badURL)
         }
         
@@ -364,17 +367,27 @@ class InventoryReportManager {
         let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
 
         let stateMapping: [String: String] = [
-            "not_set": "Select room status",
+            "not_set": "Select your equipment status",
             "broken": "Broken",
+            "needsRepair": "Needs Repair",
             "bad": "Bad",
+            "medium": "Medium",
             "good": "Good",
             "new": "New"
         ]
         let uiStatus = stateMapping[summarizeResponse.state] ?? "Select room status"
 
+        if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == roomId }) {
+            viewModel.localRooms[roomIndex].images = viewModel.selectedImages
+            viewModel.localRooms[roomIndex].status = uiStatus
+            viewModel.localRooms[roomIndex].comment = summarizeResponse.note
+            viewModel.selectedRoom = viewModel.localRooms[roomIndex]
+        } else {
+            print("Error: Room with ID \(roomId) not found in localRooms")
+        }
+
         viewModel.comment = summarizeResponse.note
         viewModel.selectedStatus = uiStatus
-        print("Room report sent successfully: \(summarizeResponse)")
     }
 
     func compareRoomReport(oldReportId: String) async throws {
@@ -433,12 +446,13 @@ class InventoryReportManager {
         let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
 
         let stateMapping: [String: String] = [
+            "not_set": "Select your equipment status",
             "broken": "Broken",
-            "bad": "Bad",
-            "good": "Good",
-            "new": "New",
             "needsRepair": "Needs Repair",
-            "medium": "Medium"
+            "bad": "Bad",
+            "medium": "Medium",
+            "good": "Good",
+            "new": "New"
         ]
         let uiStatus = stateMapping[summarizeResponse.state] ?? "Select room status"
 

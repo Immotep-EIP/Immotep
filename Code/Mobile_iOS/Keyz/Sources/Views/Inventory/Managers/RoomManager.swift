@@ -71,20 +71,25 @@ class RoomManager {
                         id: room.id,
                         name: room.name,
                         checked: existingRoom.checked,
-                        inventory: existingRoom.inventory
+                        inventory: existingRoom.inventory,
+                        images: existingRoom.images,
+                        status: existingRoom.status,
+                        comment: existingRoom.comment
                     ))
                 } else {
                     updatedLocalRooms.append(LocalRoom(
                         id: room.id,
                         name: room.name,
                         checked: false,
-                        inventory: []
+                        inventory: [],
+                        images: [],
+                        status: "Select room status",
+                        comment: ""
                     ))
                 }
             }
 
             viewModel.localRooms = updatedLocalRooms
-
         } catch {
             viewModel.errorMessage = "Error fetching rooms: \(error.localizedDescription)"
         }

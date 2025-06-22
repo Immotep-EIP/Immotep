@@ -21,9 +21,11 @@ struct InventoryRoomEvaluationView: View {
     @State private var isReportSent: Bool = false
 
     let stateMapping: [String: String] = [
-        "not_set": "Select room status",
+        "not_set": "Select your equipment status",
         "broken": "Broken",
+        "needsRepair": "Needs Repair",
         "bad": "Bad",
+        "medium": "Medium",
         "good": "Good",
         "new": "New"
     ]
@@ -224,9 +226,7 @@ struct InventoryRoomEvaluationView: View {
     private func validateReport() async {
         if let roomIndex = inventoryViewModel.localRooms.firstIndex(where: { $0.id == selectedRoom.id }) {
             inventoryViewModel.localRooms[roomIndex].checked = true
-            inventoryViewModel.localRooms[roomIndex].images = inventoryViewModel.selectedImages
-            inventoryViewModel.localRooms[roomIndex].status = inventoryViewModel.selectedStatus
-            inventoryViewModel.localRooms[roomIndex].comment = inventoryViewModel.comment
+            inventoryViewModel.selectedRoom = inventoryViewModel.localRooms[roomIndex]
         }
         await inventoryViewModel.markRoomAsChecked(selectedRoom)
         dismiss()
