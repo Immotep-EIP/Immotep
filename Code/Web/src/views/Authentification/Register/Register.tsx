@@ -48,7 +48,7 @@ const Register: React.FC = () => {
           }
 
           try {
-            await login(loginValues)
+            await login(loginValues, leaseId)
             message.success(t('pages.register.register_success'))
             form.resetFields()
 
