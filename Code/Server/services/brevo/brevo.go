@@ -34,7 +34,7 @@ func buildBody(fromName string, toEmail string, cc []string, replyTo string, tem
 	body := emailBody{
 		Sender: &brevo.SendSmtpEmailSender{
 			Name:  fromName,
-			Email: "lucas.binder@epitech.eu",
+			Email: "contact@keyz-app.fr",
 		},
 		To: []brevo.SendSmtpEmailTo{
 			{
