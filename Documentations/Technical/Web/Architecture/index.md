@@ -23,7 +23,7 @@ This section provides a comprehensive overview of the Keyz web application's arc
 - Data transformation
 - Error handling
 
-### 3. [Component Structure](./components/component-structure.md)
+### 3. [Component Structure](./components/overview.md)
 - Component hierarchy
 - Reusable components
 - Layout components
