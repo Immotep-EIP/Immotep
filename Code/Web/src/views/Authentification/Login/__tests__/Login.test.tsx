@@ -124,12 +124,15 @@ describe('Login Component', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith({
-        username: 'user@example.com',
-        password: 'password123',
-        grant_type: 'password',
-        rememberMe: false
-      })
+      expect(mockLogin).toHaveBeenCalledWith(
+        {
+          username: 'user@example.com',
+          password: 'password123',
+          grant_type: 'password',
+          rememberMe: false
+        },
+        undefined
+      )
     })
 
     expect(mockGoToOverview).toHaveBeenCalledTimes(1)
@@ -207,12 +210,15 @@ describe('Login Component', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith({
-        username: 'user@example.com',
-        password: 'password123',
-        grant_type: 'password',
-        rememberMe: true
-      })
+      expect(mockLogin).toHaveBeenCalledWith(
+        {
+          username: 'user@example.com',
+          password: 'password123',
+          grant_type: 'password',
+          rememberMe: true
+        },
+        undefined
+      )
     })
   })
 

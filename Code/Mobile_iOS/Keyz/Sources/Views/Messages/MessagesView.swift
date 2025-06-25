@@ -11,7 +11,11 @@ struct MessagesView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                TopBar(title: "Messages".localized())
+                TopBar(title: "Keyz".localized())
+                Spacer()
+                Text("Messaging features will be available soon!".localized())
+                    .foregroundStyle(.gray)
+                    .multilineTextAlignment(.center)
                 Spacer()
             }
             .navigationBarBackButtonHidden(true)

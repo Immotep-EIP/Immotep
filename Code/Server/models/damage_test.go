@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
 )
 
 func TestDamageRequest(t *testing.T) {
@@ -66,6 +66,7 @@ func BuildTestDamage(id string) db.DamageModel {
 					InnerImage: db.InnerImage{
 						ID:   "1",
 						Data: db.Bytes("base64image1"),
+						Type: db.ImageTypeJpeg,
 					},
 				},
 			},

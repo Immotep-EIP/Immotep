@@ -2,10 +2,9 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { Empty, Tooltip } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
-import StatusTag from '@/components/common/Tag/StatusTag'
+import { StatusTag, Empty } from '@/components/common'
 
 import { DashboardReminders } from '@/interfaces/Dashboard/Dashboard'
 
@@ -50,7 +49,6 @@ const Reminders: React.FC<RemindersProps> = ({
       <div className={style.contentContainer}>
         {reminders.length === 0 ? (
           <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={t('widgets.reminders.no_reminders')}
             className={style.empty}
           />
@@ -71,9 +69,9 @@ const Reminders: React.FC<RemindersProps> = ({
               aria-label={`${reminder.title}: ${reminder.advice}`}
             >
               <div className={style.reminderTexts}>
-                <Tooltip title={reminder.title} placement="topLeft">
-                  <span className={style.titleText}>{reminder.title}</span>
-                </Tooltip>
+                <span className={style.titleText} title={reminder.title}>
+                  {reminder.title}
+                </span>
                 <div className={style.reminderheader}>
                   <StatusTag
                     value={reminder.priority}
@@ -86,11 +84,9 @@ const Reminders: React.FC<RemindersProps> = ({
                     i18nPrefix="pages.real_property_details.tabs.damage.priority"
                     defaultColor="gray"
                   />
-                  <Tooltip title={reminder.advice} placement="topLeft">
-                    <span className={style.descriptionText}>
-                      {reminder.advice}
-                    </span>
-                  </Tooltip>
+                  <span className={style.descriptionText}>
+                    {reminder.advice}
+                  </span>
                 </div>
               </div>
             </div>

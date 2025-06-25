@@ -28,6 +28,7 @@ let exampleDataProperty = Property(
     surface: 60.5,
     isAvailable: "unavailable",
     tenantName: "John Doe",
+    leaseId: "id",
     leaseStartDate: "2024-12-01T00:00:00Z",
     leaseEndDate: nil,
     documents: [

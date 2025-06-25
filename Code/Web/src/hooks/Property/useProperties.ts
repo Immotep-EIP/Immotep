@@ -5,6 +5,9 @@ import CreatePropertyFunction from '@/services/api/Owner/Properties/CreateProper
 import UpdatePropertyPicture from '@/services/api/Owner/Properties/UpdatePropertyPicture'
 import GetPropertyDetails from '@/services/api/Owner/Properties/GetPropertyDetails'
 import UpdatePropertyFunction from '@/services/api/Owner/Properties/UpdateProperty'
+import GetLeasesByProperty from '@/services/api/Owner/Properties/Leases/GetLeasesByProperty'
+
+import { Lease } from '@/interfaces/Property/Lease/Lease'
 
 import {
   PropertyDetails,
@@ -16,14 +19,15 @@ const useProperties = (
   archive: boolean = false
 ) => {
   const [properties, setProperties] = useState<PropertyDetails[]>([])
-  const [propertyDetails, setPropertyDetails] =
-    useState<PropertyDetails | null>(null)
+  const [propertyDetails, setPropertyDetails] = useState<
+    (PropertyDetails & { leases: Lease[] }) | null
+  >(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
   const clearError = () => setError(null)
 
-  const extractBase64Content = (base64: string) => base64.split(',')[1]
+  // const extractBase64Content = (base64: string) => base64.split(',')[1]
 
   const createProperty = async (
     propertyData: CreatePropertyPayload,
@@ -36,12 +40,9 @@ const useProperties = (
       if (!createdProperty) throw new Error('Property creation failed.')
 
       if (imageBase64) {
-        await UpdatePropertyPicture(
-          createdProperty.id,
-          extractBase64Content(imageBase64)
-        )
+        await UpdatePropertyPicture(createdProperty.id, imageBase64)
       }
-      setProperties(prev => [...prev, createdProperty])
+      setProperties(prev => [...prev, { ...createdProperty, leases: [] }])
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : 'Unknown error occurred.'
@@ -65,16 +66,12 @@ const useProperties = (
         propertyId
       )
       if (!updatedProperty) throw new Error('Property update failed.')
-
       if (imageBase64) {
-        await UpdatePropertyPicture(
-          updatedProperty.id,
-          extractBase64Content(imageBase64)
-        )
+        await UpdatePropertyPicture(updatedProperty.id, imageBase64)
       }
       setProperties(prev =>
         prev.map(prop =>
-          prop.id === updatedProperty.id ? updatedProperty : prop
+          prop.id === updatedProperty.id ? { ...updatedProperty } : prop
         )
       )
     } catch (err: unknown) {
@@ -105,7 +102,8 @@ const useProperties = (
     try {
       setLoading(true)
       const res = await GetPropertyDetails(propertyId)
-      setPropertyDetails(res)
+      const leases = await GetLeasesByProperty(res.id)
+      setPropertyDetails({ ...res, leases })
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Unknown error occurred.')
       throw err

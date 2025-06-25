@@ -1,8 +1,8 @@
 package database
 
 import (
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
 )
 
 func CreateRoom(room db.RoomModel, proppertyId string) *db.RoomModel {

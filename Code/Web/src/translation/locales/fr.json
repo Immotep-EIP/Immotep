@@ -202,7 +202,8 @@
       "add_item": "Ajouter un Objet",
       "delete_item": "Supprimer l'Objet",
       "add_intervention_date": "Ajouter une date d'intervention",
-      "modify_intervention_date": "Modifier la date d'intervention"
+      "modify_intervention_date": "Modifier la date d'intervention",
+      "remove": "Supprimer"
     },
     "modal": {
       "end_contract": {
@@ -295,7 +296,9 @@
         "Sofa": "Canapé",
         "Shower": "Douche",
         "Toilet": "WC",
-        "Custom Item": "Objet personnalisé"
+        "Custom Item": "Objet personnalisé",
+        "custom_items": "Objets personnalisés",
+        "add_custom_item": "Ajouter un objet personnalisé"
       },
       "search": {
         "placeholder": "Rechercher des pièces et objets..."
@@ -441,6 +444,8 @@
       "error_fetching_data": "Erreur lors de la récupération des données",
       "date_error": "La date de début doit être inférieure à la date de fin",
       "title": "Détails de la propriété",
+      "select_default": "Sélectionner un bail",
+      "current": "en cours",
       "informations": {
         "name": "Nom",
         "address": "Adresse",
@@ -453,7 +458,11 @@
       "tabs": {
         "documents": {
           "modal_title": "Ajouter un document",
-          "no_documents": "Aucun document pour le moment"
+          "no_documents": "Aucun document",
+          "delete_confirmation": {
+            "title": "Supprimer le document",
+            "message": "Êtes-vous sûr de vouloir supprimer ce document ?"
+          }
         },
         "inventory": {
           "add_room_modal_title": "Ajouter une pièce",

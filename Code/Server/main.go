@@ -5,14 +5,14 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"immotep/backend/docs"
-	"immotep/backend/router"
-	"immotep/backend/services"
+	"keyz/backend/docs"
+	"keyz/backend/router"
+	"keyz/backend/services"
 )
 
-//	@title			Immotep API
+//	@title			Keyz API
 //	@version		1.0
-//	@description	This is the API used by the Immotep application.
+//	@description	This is the API used by the Keyz application.
 //	@termsOfService	http://swagger.io/terms/
 
 //	@contact.name	Mazettt

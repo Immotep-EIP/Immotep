@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Row, Col, Input, Select, Radio, Button, Tooltip } from 'antd'
+import { Row, Col, Input, Select, Radio, Tooltip } from 'antd'
 import {
   SearchOutlined,
   PlusOutlined,
@@ -9,6 +9,8 @@ import {
   UnorderedListOutlined,
   BorderOuterOutlined
 } from '@ant-design/icons'
+
+import { Button } from '@/components/common'
 
 import { InventoryControlsProps } from '@/interfaces/Property/Inventory/Inventory'
 
@@ -90,7 +92,6 @@ const InventoryControls: React.FC<InventoryControlsProps> = ({
       </Col>
       <Col xs={24} sm={12} md={8} lg={6}>
         <Button
-          type="primary"
           icon={<PlusOutlined />}
           onClick={() => showModal('addRoom')}
           block

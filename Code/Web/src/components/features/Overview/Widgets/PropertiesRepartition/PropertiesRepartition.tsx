@@ -57,7 +57,7 @@ const PropertiesRepartition: React.FC<PropertiesRepartitionProps> = ({
       <div className={style.contentContainer}>
         <div>
           <span className={style.propertiesNumber}>
-            {properties?.nbr_total ?? 0}
+            {properties?.nbr_available ?? 0}
           </span>
           <span
             className={style.propertiesNumberText}

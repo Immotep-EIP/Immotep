@@ -33,8 +33,17 @@ describe('RealPropertyCreate Component', () => {
       loading: false,
       createProperty: jest.fn()
     })
+
+    // Correction du mock pour éviter l'avertissement "value is not a valid prop"
     ;(useImageUpload as jest.Mock).mockReturnValue({
-      uploadProps: {},
+      uploadProps: {
+        // Fournir les props nécessaires pour Upload
+        fileList: [],
+        beforeUpload: jest.fn().mockReturnValue(false),
+        onChange: jest.fn(),
+        onRemove: jest.fn()
+        // Ne pas inclure 'value' car c'est ce qui cause l'avertissement
+      },
       imageBase64: 'mocked-image-base64',
       resetImage: jest.fn()
     })

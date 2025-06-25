@@ -45,7 +45,19 @@ describe('useNavigation', () => {
   it('should navigate to real property page', () => {
     const { result } = renderHook(() => useNavigation())
     result.current.goToRealProperty()
-    expect(mockNavigate).toHaveBeenCalledWith(NavigationEnum.REAL_PROPERTY)
+    expect(mockNavigate).toHaveBeenCalledWith({
+      pathname: NavigationEnum.REAL_PROPERTY,
+      search: ''
+    })
+  })
+
+  it('should navigate to real property page with archive parameter', () => {
+    const { result } = renderHook(() => useNavigation())
+    result.current.goToRealProperty(true)
+    expect(mockNavigate).toHaveBeenCalledWith({
+      pathname: NavigationEnum.REAL_PROPERTY,
+      search: '?archive=true'
+    })
   })
 
   it('should navigate to real property details page with id', () => {

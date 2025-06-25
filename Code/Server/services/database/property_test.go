@@ -7,11 +7,11 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func BuildTestProperty(id string) db.PropertyModel {
@@ -228,7 +228,7 @@ func TestUpdatePropertyPicture(t *testing.T) {
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Property.Expect(database.MockUpdatePropertyPicture(c)).Returns(property)
 
 	updatedProperty := database.UpdatePropertyPicture(property, image)
@@ -241,7 +241,7 @@ func TestUpdatePropertyPicture_NotFound(t *testing.T) {
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Property.Expect(database.MockUpdatePropertyPicture(c)).Errors(db.ErrNotFound)
 
 	updatedProperty := database.UpdatePropertyPicture(property, image)
@@ -253,7 +253,7 @@ func TestUpdatePropertyPicture_NoConnection(t *testing.T) {
 	defer ensure(t)
 
 	property := BuildTestProperty("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	m.Property.Expect(database.MockUpdatePropertyPicture(c)).Errors(errors.New("connection failed"))
 
 	assert.Panics(t, func() {

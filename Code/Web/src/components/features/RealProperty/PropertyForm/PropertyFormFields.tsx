@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next'
-
-import { Form, Input, InputNumber, Upload, Button, UploadProps } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
-
+import { Form, InputNumber, Upload, UploadProps } from 'antd'
+import { InboxOutlined } from '@ant-design/icons'
+import { Input } from '@/components/common'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
+
+const { Dragger } = Upload
 
 const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
   const { t } = useTranslation()
@@ -111,11 +112,12 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
         label={t('components.input.picture.label')}
         name="picture"
       >
-        <Upload {...uploadProps}>
-          <Button icon={<UploadOutlined />}>
-            {t('components.input.picture.placeholder')}
-          </Button>
-        </Upload>
+        <Dragger {...uploadProps}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <span>{t('components.input.picture.placeholder')}</span>
+        </Dragger>
       </Form.Item>
     </>
   )

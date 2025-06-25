@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react'
-import { DownOutlined } from '@ant-design/icons'
+import React from 'react'
+import { CloseCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
-import { Form, Button, Modal, message } from 'antd'
+import { Drawer, Form, message } from 'antd'
 
 import useProperties from '@/hooks/Property/useProperties'
 import useImageUpload from '@/hooks/Image/useImageUpload'
+import { Button } from '@/components/common'
 import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
 
@@ -22,36 +23,6 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
   const { loading, createProperty } = useProperties()
   const { uploadProps, imageBase64, resetImage } = useImageUpload()
   const [form] = Form.useForm()
-  const [showScrollIndicator, setShowScrollIndicator] = useState(true)
-  const [canScroll, setCanScroll] = useState(false)
-
-  useEffect(() => {
-    if (showModalCreate) {
-      setShowScrollIndicator(true)
-
-      const checkIfScrollable = () => {
-        const modalBody = document.querySelector('.ant-modal-body')
-        if (modalBody) {
-          const canScrollContent =
-            modalBody.scrollHeight > modalBody.clientHeight
-          setCanScroll(canScrollContent)
-
-          const handleScroll = () => {
-            if (modalBody.scrollTop > 30) {
-              setShowScrollIndicator(false)
-            }
-          }
-
-          modalBody.addEventListener('scroll', handleScroll)
-          return () => modalBody.removeEventListener('scroll', handleScroll)
-        }
-
-        return undefined
-      }
-
-      setTimeout(checkIfScrollable, 300)
-    }
-  }, [showModalCreate])
 
   const onFinish = async (values: PropertyFormFieldsType) => {
     try {
@@ -81,38 +52,33 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
   }
 
   return (
-    <Modal
+    <Drawer
       title={
-        <div className={style.modalTitleContainer}>
+        <div className={style.drawerTitle}>
           {t('pages.real_property.add_real_property.document_title')}
+          <div className={style.buttonsContainer}>
+            <Button
+              type="default"
+              key="back"
+              onClick={handleCancel}
+              icon={<CloseCircleOutlined />}
+            >
+              {t('components.button.cancel')}
+            </Button>
+            <Button
+              key="submit"
+              loading={loading}
+              onClick={() => form.submit()}
+              icon={<PlusCircleOutlined />}
+            >
+              {t('components.button.add')}
+            </Button>
+          </div>
         </div>
       }
       open={showModalCreate}
-      onCancel={handleCancel}
-      footer={[
-        <Button key="back" onClick={handleCancel}>
-          {t('components.button.cancel')}
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          loading={loading}
-          onClick={() => form.submit()}
-        >
-          {t('components.button.add')}
-        </Button>
-      ]}
-      style={{
-        top: '10%',
-        overflow: 'hidden'
-      }}
-      styles={{
-        body: {
-          maxHeight: 'calc(70vh - 55px)',
-          overflowY: 'auto',
-          position: 'relative'
-        }
-      }}
+      onClose={handleCancel}
+      width={550}
     >
       <div className={style.pageContainer}>
         <Form
@@ -122,17 +88,12 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
           onFinishFailed={onFinishFailed}
           autoComplete="off"
           layout="vertical"
-          style={{ width: '90%', maxWidth: '500px', margin: '20px' }}
+          style={{ width: '100%' }}
         >
           <PropertyFormFields uploadProps={uploadProps} />
         </Form>
-        {canScroll && showScrollIndicator && (
-          <div className={style.scrollIndicator}>
-            <DownOutlined className={style.scrollIcon} />
-          </div>
-        )}
       </div>
-    </Modal>
+    </Drawer>
   )
 }
 

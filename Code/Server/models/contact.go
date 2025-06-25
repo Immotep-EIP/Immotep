@@ -1,6 +1,6 @@
 package models
 
-import "immotep/backend/prisma/db"
+import "keyz/backend/prisma/db"
 
 type ContactMessageRequest struct {
 	Firstname string `binding:"required"       json:"firstname"`

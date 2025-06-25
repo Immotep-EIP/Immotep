@@ -1,6 +1,6 @@
 package models
 
-import "immotep/backend/prisma/db"
+import "keyz/backend/prisma/db"
 
 type FurnitureRequest struct {
 	Name     string `binding:"required" json:"name"`

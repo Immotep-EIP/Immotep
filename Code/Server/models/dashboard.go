@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 // Example of a Reminder:

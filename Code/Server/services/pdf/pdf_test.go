@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/services/pdf"
+	"keyz/backend/services/pdf"
 )
 
 func TestPDF(t *testing.T) {

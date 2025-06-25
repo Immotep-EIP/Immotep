@@ -1,15 +1,16 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 
-import { Button, Dropdown, MenuProps } from 'antd'
+import { Dropdown, MenuProps, Select, Tag } from 'antd'
 import { MoreOutlined } from '@ant-design/icons'
 
 import PageTitle from '@/components/ui/PageText/Title'
+import { usePropertyContext } from '@/context/propertyContext'
+import useNavigation from '@/hooks/Navigation/useNavigation'
+import toLocaleDate from '@/utils/date/toLocaleDate'
 
 import { PropertyHeaderProps } from '@/interfaces/Property/Property'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
-import NavigationEnum from '@/enums/NavigationEnum'
 
 import returnIcon from '@/assets/icons/retour.svg'
 import style from './DetailsPart.module.css'
@@ -25,7 +26,12 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   propertyArchived
 }) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { goToRealProperty } = useNavigation()
+  const { property, selectedLeaseId, setSelectedLeaseId } = usePropertyContext()
+
+  const onLeaseChange = (value: string) => {
+    setSelectedLeaseId(value)
+  }
 
   const items: MenuProps['items'] = [
     {
@@ -69,17 +75,25 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
     }
   ]
 
+  const handleBack = () => {
+    if (propertyArchived) {
+      goToRealProperty(true)
+    } else {
+      goToRealProperty()
+    }
+  }
+
   return (
     <div className={style.moreInfosContainer}>
       <div className={style.titleContainer}>
         <div
           className={style.returnButtonContainer}
-          onClick={() => navigate(NavigationEnum.REAL_PROPERTY)}
+          onClick={handleBack}
           tabIndex={0}
           role="button"
           onKeyDown={e => {
             if (e.key === 'Enter') {
-              navigate(NavigationEnum.REAL_PROPERTY)
+              handleBack()
             }
           }}
         >
@@ -91,13 +105,58 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
           margin={false}
         />
       </div>
-      <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
-        <Button
-          type="text"
-          icon={<MoreOutlined />}
-          className={style.actionButton}
-        />
-      </Dropdown>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {property?.leases && property?.leases.length > 0 && (
+          <Select
+            value={selectedLeaseId}
+            onChange={onLeaseChange}
+            style={{ width: 280, textAlign: 'left' }}
+            allowClear={property?.leases.length > 1 || !property?.lease?.active}
+            options={[
+              ...(property?.leases?.map(lease => ({
+                value: lease.id,
+                label: (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <span>
+                      {toLocaleDate(lease.start_date, 'short')}
+                      {' - '}
+                      {(lease.end_date &&
+                        toLocaleDate(lease.end_date, 'short')) ||
+                        '...'}
+                    </span>
+                    {lease.active && (
+                      <Tag color="blue" style={{ margin: 0 }}>
+                        {t('pages.real_property_details.current')}
+                      </Tag>
+                    )}
+                  </div>
+                )
+              })) || [])
+            ]}
+            placeholder={t('pages.real_property_details.select_default')}
+          />
+        )}
+        <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
+          <span
+            style={{
+              border: '0.4px solid rgba(0, 0, 0, 0.8)',
+              borderRadius: 4,
+              padding: 6,
+              display: 'inline-flex',
+              alignItems: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            <MoreOutlined />
+          </span>
+        </Dropdown>
+      </div>
     </div>
   )
 }

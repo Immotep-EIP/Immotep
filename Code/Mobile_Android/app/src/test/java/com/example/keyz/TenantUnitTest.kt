@@ -1,12 +1,12 @@
-package com.example.keyz
+package fr.keyz
 
 import androidx.navigation.NavController
-import com.example.keyz.apiCallerServices.ApiCallerServiceException
-import com.example.keyz.apiCallerServices.RealPropertyCallerService
-import com.example.keyz.apiClient.ApiService
-import com.example.keyz.apiClient.mockApi.parisFakeProperty
-import com.example.keyz.login.dataStore
-import com.example.keyz.realProperty.tenant.RealPropertyTenantViewModel
+import fr.keyz.apiCallerServices.ApiCallerServiceException
+import fr.keyz.apiCallerServices.RealPropertyCallerService
+import fr.keyz.apiClient.ApiService
+import fr.keyz.apiClient.mockApi.parisFakeProperty
+import fr.keyz.login.dataStore
+import fr.keyz.realProperty.tenant.RealPropertyTenantViewModel
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

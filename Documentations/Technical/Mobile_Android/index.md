@@ -2,14 +2,12 @@
 
 ## Summary
 
-1. Global overview of the application
+1. [Global overview of the application](./global-overview.md)
 
-2. Plugins used
+2. [Plugins used](./plugins-used.md)
 
-3. Folders hierarchy
+3. [Pages per pages](./pages/mainActivity.md)
 
-4. Pages per pages
+4. [The link to the API](./API/index.md)
 
-5. The AI
-
-6. The specific CI/CD
+5. [The utilities](./utilities/index.md)

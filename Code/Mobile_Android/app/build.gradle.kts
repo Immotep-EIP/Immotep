@@ -8,13 +8,14 @@ plugins {
 
 val cameraXVersion = "1.0.1"
 
+
 android {
-    namespace = "com.example.keyz"
+    namespace = "fr.keyz"
     compileSdk = 35
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.keyz"
+        applicationId = "fr.keyz"
         minSdk = 27
         targetSdk = 35
         targetSdk = 35
@@ -26,6 +27,7 @@ android {
             useSupportLibrary = true
         }
     }
+
 
     buildTypes {
         release {
@@ -50,6 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -84,7 +87,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.navigation:navigation-compose:2.8.4")
-    implementation("com.squareup.okhttp3:logging-interceptor:3.12.1")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
     implementation("androidx.compose.material:material:1.8.0-alpha01")

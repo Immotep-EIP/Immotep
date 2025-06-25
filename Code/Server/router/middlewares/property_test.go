@@ -9,11 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/prisma/db"
-	"immotep/backend/router/middlewares"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	"keyz/backend/router/middlewares"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func BuildTestProperty(id string) db.PropertyModel {

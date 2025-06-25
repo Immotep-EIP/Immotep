@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"immotep/backend/prisma/db"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	"keyz/backend/utils"
 )
 
 func MockClaims() gin.HandlerFunc {

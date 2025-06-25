@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 // UploadDocument godoc
@@ -37,7 +37,7 @@ func UploadDocument(c *gin.Context) {
 
 	doc := req.ToDbDocument()
 	if doc == nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64OrUnsupportedType, nil)
 		return
 	}
 

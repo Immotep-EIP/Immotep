@@ -27,11 +27,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
+        if !TokenStorage.keepMeSignedIn() {
+            UserDefaults.standard.set(false, forKey: "isLoggedIn")
+        }
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
         if !TokenStorage.keepMeSignedIn() {
-            self.isLoggedIn = false
+            UserDefaults.standard.set(false, forKey: "isLoggedIn")
         }
     }
 }

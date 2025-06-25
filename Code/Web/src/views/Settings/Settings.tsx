@@ -2,15 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
 
-import {
-  Button,
-  Segmented,
-  Upload,
-  UploadFile,
-  UploadProps,
-  Input,
-  message
-} from 'antd'
+import { Segmented, Upload, UploadFile, UploadProps, message } from 'antd'
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -20,6 +12,7 @@ import {
 
 import { useAuth } from '@/context/authContext'
 import useImageCache from '@/hooks/Image/useImageCache'
+import { Button, Input } from '@/components/common'
 import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import PageTitle from '@/components/ui/PageText/Title'
@@ -50,7 +43,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
 
     setIsUploading(true)
     try {
-      const req = await PutUserPicture(pictureData.split(',')[1])
+      const req = await PutUserPicture(pictureData)
       if (req) {
         message.success(t('components.messages.picture_updated'))
         await updateCache(pictureData)
@@ -136,12 +129,12 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
       setNewData({
         firstname: user.firstname,
         lastname: user.lastname,
-        email: user.email
+        email: user?.email
       })
       setOldData({
         firstname: user.firstname,
         lastname: user.lastname,
-        email: user.email
+        email: user?.email
       })
     }
   }, [user])
@@ -207,10 +200,9 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
             user?.firstname
           ) : (
             <Input
+              className="input"
               defaultValue={user?.firstname}
-              onChange={e =>
-                setNewData({ ...newData, firstname: e.target.value })
-              }
+              onChange={e => setNewData({ ...newData, firstname: e })}
               aria-label={t('component.input.first_name.label')}
             />
           )}
@@ -223,10 +215,9 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
             user?.lastname
           ) : (
             <Input
+              className="input"
               defaultValue={user?.lastname}
-              onChange={e =>
-                setNewData({ ...newData, lastname: e.target.value })
-              }
+              onChange={e => setNewData({ ...newData, lastname: e })}
               aria-label={t('component.input.last_name.label')}
             />
           )}

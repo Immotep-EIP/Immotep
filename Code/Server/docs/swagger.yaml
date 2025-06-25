@@ -196,6 +196,7 @@ definitions:
       pictures:
         items:
           type: string
+        maxItems: 5
         type: array
       priority:
         $ref: '#/definitions/db.Priority'
@@ -249,6 +250,7 @@ definitions:
       add_pictures:
         items:
           type: string
+        maxItems: 5
         type: array
       comment:
         type: string
@@ -360,6 +362,7 @@ definitions:
       pictures:
         items:
           type: string
+        maxItems: 5
         minItems: 1
         type: array
       state:
@@ -708,6 +711,7 @@ definitions:
       pictures:
         items:
           type: string
+        maxItems: 10
         minItems: 1
         type: array
       state:
@@ -748,6 +752,7 @@ definitions:
       pictures:
         items:
           type: string
+        maxItems: 10
         minItems: 1
         type: array
       type:
@@ -906,11 +911,12 @@ definitions:
     - cannot-update-fixed-damage
     - damage-already-fixed
     - failed-to-link-image
-    - bad-base64-string
+    - bad-base64-string-or-unsupported-type
     - property-picture-not-found
     - user-profile-picture-not-found
-    - room-already-exists
     - room-not-found
+    - room-already-exists
+    - room-not-in-this-property
     - furniture-not-found
     - furniture-already-exists
     - furniture-not-in-this-room
@@ -957,11 +963,12 @@ definitions:
     - CannotUpdateFixedDamage
     - DamageAlreadyFixed
     - FailedLinkImage
-    - BadBase64String
+    - BadBase64OrUnsupportedType
     - PropertyPictureNotFound
     - UserProfilePictureNotFound
-    - RoomAlreadyExists
     - RoomNotFound
+    - RoomAlreadyExists
+    - RoomNotInThisProperty
     - FurnitureNotFound
     - FurnitureAlreadyExists
     - FurnitureNotInThisRoom
@@ -976,9 +983,9 @@ info:
   contact:
     email: martin.d-herouville@epitech.eu
     name: Mazettt
-  description: This is the API used by the Immotep application.
+  description: This is the API used by the Keyz application.
   termsOfService: http://swagger.io/terms/
-  title: Immotep API
+  title: Keyz API
   version: "1.0"
 paths:
   /auth/invite/{id}/:
@@ -1301,7 +1308,7 @@ paths:
       summary: Update property by ID
       tags:
       - property
-  /owner/properties/{property_id}/archive:
+  /owner/properties/{property_id}/archive/:
     put:
       consumes:
       - application/json
@@ -1344,7 +1351,7 @@ paths:
       summary: Toggle archive property by ID
       tags:
       - property
-  /owner/properties/{property_id}/cancel-invite:
+  /owner/properties/{property_id}/cancel-invite/:
     delete:
       consumes:
       - application/json
@@ -2725,7 +2732,7 @@ paths:
       summary: Toggle archive furniture by ID
       tags:
       - inventory
-  /owner/properties/{property_id}/send-invite:
+  /owner/properties/{property_id}/send-invite/:
     post:
       consumes:
       - application/json

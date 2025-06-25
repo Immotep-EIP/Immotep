@@ -5,9 +5,12 @@ import UploadDocument from '@/services/api/Owner/Properties/UploadDocument'
 import fileToBase64 from '@/utils/base64/fileToBase'
 
 import { Document, UseDocumentReturn } from '@/interfaces/Property/Document'
-import PropertyStatusEnum from '@/enums/PropertyEnum'
+import DeleteDocument from '@/services/api/Owner/Properties/DeleteDocument'
 
-const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
+const useDocument = (
+  propertyId: string,
+  leaseId: string | undefined
+): UseDocumentReturn => {
   const [documents, setDocuments] = useState<Document[] | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
@@ -16,7 +19,7 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
     try {
       setLoading(true)
       setError(null)
-      const response = await GetPropertyDocuments(propertyId)
+      const response = await GetPropertyDocuments(propertyId, leaseId)
       setDocuments(response)
     } catch (err) {
       setError(
@@ -33,8 +36,7 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
   const uploadDocument = async (
     file: File,
     documentName: string,
-    propertyId: string,
-    leaseId: string = 'current'
+    propertyId: string
   ) => {
     try {
       setLoading(true)
@@ -43,11 +45,14 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
       const base64Data = await fileToBase64(file)
       const payload = {
         name: documentName,
-        data: base64Data.split(',')[1]
+        data: base64Data
       }
 
-      await UploadDocument(JSON.stringify(payload), propertyId, leaseId)
-      await fetchDocuments(propertyId)
+      const response = await UploadDocument(JSON.stringify(payload), propertyId)
+      setDocuments(prevDocuments => {
+        if (!prevDocuments) return [response]
+        return [...prevDocuments, response]
+      })
     } catch (err) {
       setError(
         err instanceof Error
@@ -59,18 +64,40 @@ const useDocument = (propertyId: string, status: string): UseDocumentReturn => {
     }
   }
 
+  const deleteDocument = async (documentId: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+      setDocuments(
+        prevDocuments =>
+          prevDocuments?.filter(doc => doc.id !== documentId) ?? []
+      )
+      await DeleteDocument(propertyId, documentId)
+    } catch (err) {
+      await fetchDocuments(propertyId)
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'An error occurred while deleting the document'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    if (propertyId && status === PropertyStatusEnum.UNAVAILABLE) {
+    if (propertyId && leaseId) {
       fetchDocuments(propertyId)
     }
-  }, [propertyId, status])
+  }, [propertyId, leaseId])
 
   return {
     documents,
     loading,
     error,
     refreshDocuments: fetchDocuments,
-    uploadDocument
+    uploadDocument,
+    deleteDocument
   }
 }
 

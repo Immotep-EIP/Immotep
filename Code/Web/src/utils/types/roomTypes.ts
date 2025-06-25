@@ -20,21 +20,21 @@ export const ROOM_COLORS = {
 } as const
 
 export const ROOM_TYPES = [
+  'bedroom',
+  'livingroom',
+  'kitchen',
+  'bathroom',
+  'diningroom',
+  'office',
+  'toilet',
+  'hallway',
   'dressing',
   'laundryroom',
-  'bedroom',
   'playroom',
-  'bathroom',
-  'toilet',
-  'livingroom',
-  'diningroom',
-  'kitchen',
-  'hallway',
   'balcony',
-  'cellar',
-  'garage',
   'storage',
-  'office',
+  'garage',
+  'cellar',
   'other'
 ] as const
 

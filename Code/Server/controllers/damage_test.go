@@ -10,12 +10,12 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/router"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/router"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func BuildTestDamage(id string) db.DamageModel {
@@ -59,6 +59,7 @@ func BuildTestDamage(id string) db.DamageModel {
 					InnerImage: db.InnerImage{
 						ID:   "1",
 						Data: db.Bytes("base64image1"),
+						Type: db.ImageTypeJpeg,
 					},
 				},
 			},
@@ -73,7 +74,7 @@ func TestCreateDamage(t *testing.T) {
 	lease := BuildTestLease("1")
 	room := BuildTestRoom("1", "1")
 	damage := BuildTestDamage("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	mock.Lease.Expect(database.MockGetLeaseByID(c)).Returns(lease)
 	mock.Room.Expect(database.MockGetRoomByID(c)).Returns(room)
 	mock.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
@@ -83,7 +84,7 @@ func TestCreateDamage(t *testing.T) {
 		RoomID:   damage.RoomID,
 		Comment:  damage.Comment,
 		Priority: damage.Priority,
-		Pictures: []string{"b3Vp"},
+		Pictures: []string{"data:image/jpeg;base64,b3Vp"},
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
@@ -113,7 +114,7 @@ func TestCreateDamage_MissingFields(t *testing.T) {
 	reqBody := models.DamageRequest{
 		RoomID:   "1",
 		Comment:  "Test Comment",
-		Pictures: []string{"b3Vp"},
+		Pictures: []string{"data:image/jpeg;base64,b3Vp"},
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
@@ -145,7 +146,7 @@ func TestCreateDamage_RoomNotFound(t *testing.T) {
 		RoomID:   "1",
 		Comment:  "Test Comment",
 		Priority: db.PriorityHigh,
-		Pictures: []string{"b3Vp"},
+		Pictures: []string{"data:image/jpeg;base64,b3Vp"},
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
@@ -624,7 +625,7 @@ func TestUpdateDamageTenant(t *testing.T) {
 
 	lease := BuildTestLease("1")
 	damage := BuildTestDamage("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	mock.Lease.Expect(database.MockGetLeaseByID(c)).Returns(lease)
 	mock.Damage.Expect(database.MockGetDamageByID(c)).Returns(damage)
 	mock.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
@@ -637,7 +638,7 @@ func TestUpdateDamageTenant(t *testing.T) {
 	reqBody := models.DamageTenantUpdateRequest{
 		Comment:     utils.Ptr("Updated Comment"),
 		Priority:    utils.Ptr(db.PriorityLow),
-		AddPictures: []string{"b3Vp"},
+		AddPictures: []string{"data:image/jpeg;base64,b3Vp"},
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
@@ -758,7 +759,7 @@ func TestUpdateDamageTenant_AlreadyExists(t *testing.T) {
 	lease := BuildTestLease("1")
 	damage := BuildTestDamage("1")
 	damage.FixedTenant = true
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	mock.Lease.Expect(database.MockGetLeaseByID(c)).Returns(lease)
 	mock.Damage.Expect(database.MockGetDamageByID(c)).Returns(damage)
 	mock.Image.Expect(database.MockCreateImage(c, image)).Returns(image)
@@ -778,7 +779,7 @@ func TestUpdateDamageTenant_AlreadyExists(t *testing.T) {
 	reqBody := models.DamageTenantUpdateRequest{
 		Comment:     utils.Ptr("Updated Comment"),
 		Priority:    utils.Ptr(db.PriorityLow),
-		AddPictures: []string{"b3Vp"},
+		AddPictures: []string{"data:image/jpeg;base64,b3Vp"},
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)

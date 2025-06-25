@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next'
 
 import { Modal, message, Tabs } from 'antd'
 
-import { PropertyIdProvider } from '@/context/propertyIdContext'
 import useImageCache from '@/hooks/Image/useImageCache'
-import useProperties from '@/hooks/Property/useProperties'
 import useNavigation from '@/hooks/Navigation/useNavigation'
+import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
 import GetPropertyPicture from '@/services/api/Owner/Properties/GetPropertyPicture'
 import CancelTenantInvitation from '@/services/api/Owner/Properties/CancelTenantInvitation'
 import EndLease from '@/services/api/Owner/Properties/Leases/EndLease'
@@ -27,11 +26,13 @@ import style from './DetailsPart.module.css'
 interface ChildrenComponentProps {
   t: (key: string) => string
   propertyStatus: string
+  canModify: boolean
 }
 
 const ChildrenComponent: React.FC<ChildrenComponentProps> = ({
   t,
-  propertyStatus
+  propertyStatus,
+  canModify
 }) => {
   const items = [
     {
@@ -39,11 +40,15 @@ const ChildrenComponent: React.FC<ChildrenComponentProps> = ({
       label: t('components.button.documents'),
       children: <DocumentsTab status={propertyStatus} />
     },
-    {
-      key: '2',
-      label: t('components.button.inventory'),
-      children: <InventoryTab />
-    },
+    ...(canModify
+      ? [
+          {
+            key: '2',
+            label: t('components.button.inventory'),
+            children: <InventoryTab />
+          }
+        ]
+      : []),
     {
       key: '3',
       label: t('components.button.damage'),
@@ -61,8 +66,8 @@ const ChildrenComponent: React.FC<ChildrenComponentProps> = ({
 const DetailsPart: React.FC<DetailsPartProps> = ({
   propertyData,
   showModal,
-  propertyId,
-  showModalUpdate
+  showModalUpdate,
+  refreshPropertyDetails
 }) => {
   const { t } = useTranslation()
   const { goToRealProperty } = useNavigation()
@@ -70,7 +75,7 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
     propertyData?.id || '',
     GetPropertyPicture
   )
-  const { refreshPropertyDetails } = useProperties()
+  const { canModify } = useLeasePermissions()
 
   const [currentStatus, setCurrentStatus] = useState(propertyData?.status || '')
 
@@ -198,9 +203,12 @@ const DetailsPart: React.FC<DetailsPartProps> = ({
         />
         <PropertyInfo propertyData={propertyData} />
       </div>
-      <PropertyIdProvider id={propertyId}>
-        <ChildrenComponent t={t} propertyStatus={currentStatus} />
-      </PropertyIdProvider>
+
+      <ChildrenComponent
+        t={t}
+        propertyStatus={currentStatus}
+        canModify={canModify}
+      />
     </div>
   )
 }

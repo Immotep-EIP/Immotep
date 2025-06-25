@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/utils"
 )
 
 func TestPropertyRequest(t *testing.T) {

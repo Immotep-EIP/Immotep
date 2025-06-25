@@ -8,7 +8,7 @@ import (
 	"os"
 
 	brevo "github.com/getbrevo/brevo-go/lib"
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 type emailBody struct {
@@ -34,7 +34,7 @@ func buildBody(fromName string, toEmail string, cc []string, replyTo string, tem
 	body := emailBody{
 		Sender: &brevo.SendSmtpEmailSender{
 			Name:  fromName,
-			Email: "lucas.binder@epitech.eu",
+			Email: "contact@keyz-app.fr",
 		},
 		To: []brevo.SendSmtpEmailTo{
 			{

@@ -9,7 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/utils"
+	"keyz/backend/utils"
 )
 
 func TestSendError_NoError(t *testing.T) {

@@ -2,11 +2,27 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { HelmetProvider } from 'react-helmet-async'
-import { BrowserRouter } from 'react-router-dom'
+import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import Register from '@/views/Authentification/Register/Register'
 import { register } from '@/services/api/Authentification/AuthApi'
 import useNavigation from '@/hooks/Navigation/useNavigation'
 import { AuthProvider } from '@/context/authContext'
+
+// Supprimer les avertissements pour ce fichier de test
+const originalConsoleWarn = console.warn
+beforeAll(() => {
+  console.warn = (...args) => {
+    // Filtrer les avertissements de React Router
+    if (typeof args[0] === 'string' && args[0].includes('React Router')) {
+      return
+    }
+    originalConsoleWarn(...args)
+  }
+})
+
+afterAll(() => {
+  console.warn = originalConsoleWarn
+})
 
 jest.mock('@/context/authContext', () => ({
   useAuth: jest.fn(() => ({
@@ -52,14 +68,28 @@ describe('Register Component', () => {
     mockGoToLogin.mockReset()
   })
 
-  const renderWithProviders = (component: React.ReactNode) =>
-    render(
-      <BrowserRouter>
-        <AuthProvider>
-          <HelmetProvider>{component}</HelmetProvider>
-        </AuthProvider>
-      </BrowserRouter>
+  const renderWithProviders = (component: React.ReactNode) => {
+    const router = createMemoryRouter(
+      [
+        {
+          path: '/',
+          element: (
+            <AuthProvider>
+              <HelmetProvider>{component}</HelmetProvider>
+            </AuthProvider>
+          )
+        }
+      ],
+      {
+        initialEntries: ['/'],
+        future: {
+          v7_relativeSplatPath: true
+        }
+      }
     )
+
+    return render(<RouterProvider router={router} />)
+  }
 
   it('renders the form elements correctly', () => {
     renderWithProviders(<Register />)

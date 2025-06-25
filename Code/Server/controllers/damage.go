@@ -7,11 +7,11 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services/brevo"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services/brevo"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func getPictures(pics []string) ([]string, error) {
@@ -60,7 +60,7 @@ func CreateDamage(c *gin.Context) {
 
 	picturesIds, imgErr := getPictures(req.Pictures)
 	if imgErr != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, imgErr)
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64OrUnsupportedType, imgErr)
 		return
 	}
 
@@ -214,7 +214,7 @@ func UpdateDamageTenant(c *gin.Context) {
 
 	picturesIds, imgErr := getPictures(req.AddPictures)
 	if imgErr != nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, imgErr)
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64OrUnsupportedType, imgErr)
 		return
 	}
 

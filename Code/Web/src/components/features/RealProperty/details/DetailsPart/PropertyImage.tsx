@@ -2,8 +2,8 @@ import React, { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import PropTypes from 'prop-types'
-import { Badge } from 'antd'
 
+import { Badge } from '@/components/common'
 import { PropertyImageProps } from '@/interfaces/Property/Property'
 
 import { TenantStatusEnum } from '@/enums/PropertyEnum'

@@ -1,11 +1,12 @@
-package com.example.keyz
+package fr.keyz
 
 
 import androidx.navigation.NavController
-import com.example.keyz.apiClient.ApiService
-import com.example.keyz.authService.AuthService
-import com.example.keyz.login.LoginViewModel
-import com.example.keyz.login.dataStore
+import fr.keyz.apiClient.ApiService
+import fr.keyz.authService.AuthService
+import fr.keyz.isTesting
+import fr.keyz.login.LoginViewModel
+import fr.keyz.login.dataStore
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -32,7 +33,7 @@ class LoginViewModelTest {
 
     private lateinit var viewModel: LoginViewModel
     private val navController : NavController = mockk(relaxed = true)
-    private val apiService : ApiService= mockk(relaxed = true)
+    private val apiService : ApiService = mockk(relaxed = true)
     private val authService : AuthService = mockk(relaxed = true)
     private val testDispatcher = StandardTestDispatcher()
 

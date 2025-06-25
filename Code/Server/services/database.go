@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 type PrismaDB struct {

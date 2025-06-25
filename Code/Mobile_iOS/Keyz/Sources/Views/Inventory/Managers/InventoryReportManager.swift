@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 class InventoryReportManager {
@@ -16,15 +17,23 @@ class InventoryReportManager {
     }
 
     func sendStuffReport() async throws {
-        guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/summarize/") else {
-            throw URLError(.badURL)
+        guard let viewModel = viewModel else {
+            throw URLError(.cannotFindHost)
         }
+        
+        guard let leaseId = viewModel.property.leaseId, !leaseId.isEmpty else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No active lease found for property \(viewModel.property.id)"])
+        }
+        
         guard let token = await viewModel.getToken() else {
             throw URLError(.userAuthenticationRequired)
         }
+        
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/current/inventory-reports/summarize/") else {
+            throw URLError(.badURL)
+        }
+        
         let base64Images = convertUIImagesToBase64(viewModel.selectedImages)
-
         guard let stuffID = viewModel.selectedStuff?.id else {
             throw URLError(.badServerResponse)
         }
@@ -45,9 +54,22 @@ class InventoryReportManager {
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
-        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-            _ = String(data: data, encoding: .utf8) ?? "No response body"
+        guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No response body"
+            print("API Error: Status code \(httpResponse.statusCode) - \(errorBody)")
+            if httpResponse.statusCode == 404 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Property or lease not found"])
+            } else if httpResponse.statusCode == 403 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Property not yours"])
+            } else if httpResponse.statusCode == 400 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Invalid request: \(errorBody)"])
+            } else {
+                throw URLError(.badServerResponse)
+            }
         }
 
         let decoder = JSONDecoder()
@@ -56,7 +78,9 @@ class InventoryReportManager {
         let stateMapping: [String: String] = [
             "not_set": "Select your equipment status",
             "broken": "Broken",
+            "needsRepair": "Needs Repair",
             "bad": "Bad",
+            "medium": "Medium",
             "good": "Good",
             "new": "New"
         ]
@@ -77,7 +101,6 @@ class InventoryReportManager {
 
         viewModel.comment = summarizeResponse.note
         viewModel.selectedStatus = uiStatus
-//        print("Report sent successfully: \(summarizeResponse)")
     }
 
     func finalizeInventory() async throws {
@@ -85,23 +108,30 @@ class InventoryReportManager {
         guard viewModel.areAllRoomsCompleted() else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Not all rooms and stuff are checked"])
         }
+        guard let leaseId = viewModel.property.leaseId, !leaseId.isEmpty else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No active lease found for property \(viewModel.property.id)"])
+        }
+
+        let placeholderImage = UIImage(named: "DefaultImageProperty") ?? createBlankImage()
+        let placeholderBase64 = convertUIImageToBase64(placeholderImage)
 
         let roomsData = viewModel.localRooms.map { room in
-            let roomPictures = room.inventory.flatMap { $0.images.map { convertUIImageToBase64($0) } }
-            let finalRoomPictures = roomPictures.isEmpty ? [""] : roomPictures
+            let roomPictures = room.images.isEmpty ? [placeholderBase64] : room.images.map { convertUIImageToBase64($0) }
+            let roomState = room.status.lowercased() == "select room status" ? "good" : room.status.lowercased()
+            let roomNote = room.comment.isEmpty ? "No comment provided" : room.comment
 
             return RoomStateRequest(
                 id: room.id,
                 cleanliness: "clean",
-                state: "good",
-                note: "Inventory completed",
-                pictures: finalRoomPictures,
+                state: roomState,
+                note: roomNote,
+                pictures: roomPictures,
                 furnitures: room.inventory.map { stuff in
                     let validStates = ["broken", "bad", "good", "new"]
                     let stuffState = validStates.contains(stuff.status.lowercased()) ? stuff.status.lowercased() : "good"
                     let stuffNote = stuff.comment.isEmpty ? "No comment provided" : stuff.comment
                     let stuffPictures = stuff.images.map { convertUIImageToBase64($0) }
-                    let finalStuffPictures = stuffPictures.isEmpty ? [""] : stuffPictures
+                    let finalStuffPictures = stuffPictures.isEmpty ? [placeholderBase64] : stuffPictures
 
                     return FurnitureStateRequest(
                         id: stuff.id,
@@ -116,7 +146,7 @@ class InventoryReportManager {
 
         let requestBody = InventoryReportRequest(type: viewModel.isEntryInventory ? "start" : "end", rooms: roomsData)
 
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/current/inventory-reports/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
@@ -131,6 +161,10 @@ class InventoryReportManager {
 
         let encoder = JSONEncoder()
         urlRequest.httpBody = try encoder.encode(requestBody)
+        
+        if let jsonData = urlRequest.httpBody, let jsonString = String(data: jsonData, encoding: .utf8) {
+            print("Request Body: \(jsonString)")
+        }
 
         do {
             let (_, response) = try await URLSession.shared.data(for: urlRequest)
@@ -145,13 +179,23 @@ class InventoryReportManager {
             }
             viewModel.completionMessage = viewModel.isEntryInventory
             ? "Entry inventory finalized successfully!" : "Exit inventory finalized successfully!"
-//            print("Report inventory successfully created")
         } catch {
             viewModel.completionMessage = viewModel.isEntryInventory
             ? "Failed to finalize entry inventory: \(error.localizedDescription)"
             : "Failed to finalize exit inventory: \(error.localizedDescription)"
             throw error
         }
+    }
+
+    func createBlankImage() -> UIImage {
+        let size = CGSize(width: 1, height: 1)
+        UIGraphicsBeginImageContext(size)
+        let context = UIGraphicsGetCurrentContext()
+        context?.setFillColor(UIColor.white.cgColor)
+        context?.fill(CGRect(origin: .zero, size: size))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image ?? UIImage()
     }
 
     func fetchLastInventoryReport() async {
@@ -200,7 +244,7 @@ class InventoryReportManager {
 
     func compareStuffReport(oldReportId: String) async throws {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/inventory-reports/compare/\(oldReportId)/") else {
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/current/inventory-reports/compare/\(oldReportId)/") else {
             throw URLError(.badURL)
         }
         guard let token = await viewModel.getToken() else {
@@ -236,12 +280,13 @@ class InventoryReportManager {
         let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
 
         let stateMapping: [String: String] = [
+            "not_set": "Select your equipment status",
             "broken": "Broken",
-            "bad": "Bad",
-            "good": "Good",
-            "new": "New",
             "needsRepair": "Needs Repair",
-            "medium": "Medium"
+            "bad": "Bad",
+            "medium": "Medium",
+            "good": "Good",
+            "new": "New"
         ]
         let uiStatus = stateMapping[summarizeResponse.state] ?? "Select your equipment status"
 
@@ -260,6 +305,191 @@ class InventoryReportManager {
 
         viewModel.comment = summarizeResponse.note
         viewModel.selectedStatus = uiStatus
-//        print("Comparison report sent successfully: \(summarizeResponse)")
+    }
+    
+    func sendRoomReport() async throws {
+        guard let viewModel = viewModel else {
+            throw URLError(.cannotFindHost)
+        }
+        
+        guard let leaseId = viewModel.property.leaseId, !leaseId.isEmpty else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No active lease found for property \(viewModel.property.id)"])
+        }
+        
+        guard let token = await viewModel.getToken() else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/current/inventory-reports/summarize/") else {
+            throw URLError(.badURL)
+        }
+        
+        let base64Images = convertUIImagesToBase64(viewModel.selectedImages)
+        guard let roomId = viewModel.selectedRoom?.id else {
+            throw URLError(.badServerResponse)
+        }
+
+        let body = SummarizeRequest(
+            id: roomId,
+            pictures: base64Images,
+            type: "room"
+        )
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let encoder = JSONEncoder()
+        request.httpBody = try encoder.encode(body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No response body"
+            print("API Error: Status code \(httpResponse.statusCode) - \(errorBody)")
+            if httpResponse.statusCode == 404 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Property or lease not found"])
+            } else if httpResponse.statusCode == 403 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Property not yours"])
+            } else if httpResponse.statusCode == 400 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Invalid request: \(errorBody)"])
+            } else {
+                throw URLError(.badServerResponse)
+            }
+        }
+
+        let decoder = JSONDecoder()
+        let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
+
+        let stateMapping: [String: String] = [
+            "not_set": "Select your equipment status",
+            "broken": "Broken",
+            "needsRepair": "Needs Repair",
+            "bad": "Bad",
+            "medium": "Medium",
+            "good": "Good",
+            "new": "New"
+        ]
+        let uiStatus = stateMapping[summarizeResponse.state] ?? "Select room status"
+
+        if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == roomId }) {
+            viewModel.localRooms[roomIndex].images = viewModel.selectedImages
+            viewModel.localRooms[roomIndex].status = uiStatus
+            viewModel.localRooms[roomIndex].comment = summarizeResponse.note
+            viewModel.selectedRoom = viewModel.localRooms[roomIndex]
+        } else {
+            print("Error: Room with ID \(roomId) not found in localRooms")
+        }
+
+        viewModel.comment = summarizeResponse.note
+        viewModel.selectedStatus = uiStatus
+    }
+
+    func compareRoomReport(oldReportId: String) async throws {
+        guard let viewModel = viewModel else {
+            throw URLError(.cannotFindHost)
+        }
+        
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/leases/current/inventory-reports/compare/\(oldReportId)/") else {
+            throw URLError(.badURL)
+        }
+        
+        guard let token = await viewModel.getToken() else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        
+        let base64Images = convertUIImagesToBase64(viewModel.selectedImages)
+        guard let roomId = viewModel.selectedRoom?.id else {
+            throw URLError(.badServerResponse)
+        }
+
+        let body = SummarizeRequest(
+            id: roomId,
+            pictures: base64Images,
+            type: "room"
+        )
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let encoder = JSONEncoder()
+        request.httpBody = try encoder.encode(body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No response body"
+            print("API Error: Status code \(httpResponse.statusCode) - \(errorBody)")
+            if httpResponse.statusCode == 404 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Property or lease not found"])
+            } else if httpResponse.statusCode == 403 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Property not yours"])
+            } else if httpResponse.statusCode == 400 {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Invalid request: \(errorBody)"])
+            } else {
+                throw URLError(.badServerResponse)
+            }
+        }
+
+        let decoder = JSONDecoder()
+        let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
+
+        let stateMapping: [String: String] = [
+            "not_set": "Select your equipment status",
+            "broken": "Broken",
+            "needsRepair": "Needs Repair",
+            "bad": "Bad",
+            "medium": "Medium",
+            "good": "Good",
+            "new": "New"
+        ]
+        let uiStatus = stateMapping[summarizeResponse.state] ?? "Select room status"
+
+        if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == roomId }) {
+            viewModel.localRooms[roomIndex].images = viewModel.selectedImages
+            viewModel.localRooms[roomIndex].status = uiStatus
+            viewModel.localRooms[roomIndex].comment = summarizeResponse.note
+        }
+
+        viewModel.comment = summarizeResponse.note
+        viewModel.selectedStatus = uiStatus
+        print("Room comparison report sent successfully: \(summarizeResponse)")
+    }
+
+    private func convertUIImagesToBase64(_ images: [UIImage]) -> [String] {
+        return images.compactMap { image in
+            guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                print("Failed to convert UIImage to JPEG data")
+                return nil
+            }
+            let base64String = imageData.base64EncodedString()
+            let fullString = "data:image/jpeg;base64,\(base64String)"
+            if let decodedData = Data(base64Encoded: base64String), let _ = UIImage(data: decodedData) {
+                return fullString
+            } else {
+                print("Invalid Base64 string for image")
+                return nil
+            }
+        }
+    }
+
+    private func convertUIImageToBase64(_ image: UIImage) -> String {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            print("Failed to convert UIImage to JPEG data")
+            return ""
+        }
+        let base64String = imageData.base64EncodedString()
+        return "data:image/jpeg;base64,\(base64String)"
     }
 }

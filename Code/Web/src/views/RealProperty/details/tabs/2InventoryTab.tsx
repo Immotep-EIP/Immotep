@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Empty, Form, Modal, Typography, Space } from 'antd'
+import { Form, Modal, Space } from 'antd'
 
-import { usePropertyId } from '@/context/propertyIdContext'
+import { Empty } from '@/components/common'
+import { usePropertyContext } from '@/context/propertyContext'
 import useInventory from '@/hooks/Property/useInventory'
 import CardInventoryLoader from '@/components/ui/Loader/CardInventoryLoader'
 import GridView from '@/components/features/RealProperty/details/tabs/Inventory/GridView'
@@ -20,7 +21,7 @@ const InventoryTab: React.FC = () => {
   const { t } = useTranslation()
   const [formAddRoom] = Form.useForm()
   const [formAddFurniture] = Form.useForm()
-  const id = usePropertyId()
+  const { property } = usePropertyContext()
   const [isModalAddRoomOpen, setIsModalAddRoomOpen] = useState(false)
   const [isModalAddStuffOpen, setIsModalAddStuffOpen] = useState(false)
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null)
@@ -38,7 +39,7 @@ const InventoryTab: React.FC = () => {
     deleteRoom,
     deleteFurniture,
     refreshInventory
-  } = useInventory(id || '')
+  } = useInventory(property?.id || '')
 
   const roomTypes = getRoomTypeOptions(t)
 
@@ -138,7 +139,10 @@ const InventoryTab: React.FC = () => {
   const filterInventory = () => ({
     rooms: inventory.rooms.filter(room => {
       const matchesSearch = room.name
-        ? room.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ? room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          room.furniture?.some(furniture =>
+            furniture.name.toLowerCase().includes(searchQuery.toLowerCase())
+          )
         : false
       const matchesType =
         selectedRoomType === 'all' ||
@@ -161,13 +165,7 @@ const InventoryTab: React.FC = () => {
 
     if (filteredInventory.rooms.length === 0) {
       return (
-        <Empty
-          description={
-            <Typography.Text>
-              {t('components.messages.no_rooms_in_inventory')}
-            </Typography.Text>
-          }
-        />
+        <Empty description={t('components.messages.no_rooms_in_inventory')} />
       )
     }
 

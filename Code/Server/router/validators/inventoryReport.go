@@ -2,7 +2,7 @@ package validators
 
 import (
 	"github.com/go-playground/validator/v10"
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 var ReportType validator.Func = func(fl validator.FieldLevel) bool {

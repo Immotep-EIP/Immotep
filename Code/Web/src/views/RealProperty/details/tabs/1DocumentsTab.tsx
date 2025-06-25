@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Modal, Form, message, Spin, Empty, Typography } from 'antd'
+import { Form, message, Spin, Modal } from 'antd'
 
-import { usePropertyId } from '@/context/propertyIdContext'
+import { usePropertyContext } from '@/context/propertyContext'
 import useDocument from '@/hooks/Property/useDocument'
+import useLeasePermissions from '@/hooks/Property/useLeasePermissions'
+import { Button, Empty } from '@/components/common'
 import DocumentList from '@/components/features/RealProperty/details/tabs/Documents/DocumentList'
 import UploadForm from '@/components/features/RealProperty/details/tabs/Documents/UploadForm'
 
 import style from './1DocumentsTab.module.css'
+import PropertyStatusEnum from '@/enums/PropertyEnum'
 
 interface DocumentsTabProps {
   status?: string
@@ -16,9 +19,27 @@ interface DocumentsTabProps {
 
 const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
   const { t } = useTranslation()
-  const propertyId = usePropertyId()
-  const { documents, loading, error, refreshDocuments, uploadDocument } =
-    useDocument(propertyId || '', status || '')
+  const { property, selectedLeaseId, selectedLease } = usePropertyContext()
+  const { canModify } = useLeasePermissions()
+
+  let leaseIdToUse: string | undefined
+  if (selectedLeaseId) {
+    leaseIdToUse = selectedLeaseId
+  } else if (property?.status === PropertyStatusEnum.UNAVAILABLE) {
+    leaseIdToUse = 'current'
+  } else {
+    leaseIdToUse = undefined
+  }
+
+  const {
+    documents,
+    loading,
+    error,
+    refreshDocuments,
+    uploadDocument,
+    deleteDocument
+  } = useDocument(property?.id || '', leaseIdToUse)
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form] = Form.useForm()
 
@@ -31,13 +52,13 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       .validateFields()
       .then(values => {
         const file = values.documentFile[0].originFileObj
-        uploadDocument(file, values.documentName, propertyId || '', 'current')
+        uploadDocument(file, values.documentName, property?.id || '')
           .then(() => {
             message.success(t('components.documents.success_add'))
             form.resetFields()
             setIsModalOpen(false)
-            if (propertyId) {
-              refreshDocuments(propertyId)
+            if (property?.id) {
+              refreshDocuments(property.id)
             }
           })
           .catch(error => {
@@ -75,20 +96,13 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
     )
   }
 
-  if (status === 'available') {
+  if (
+    (status === 'available' && !selectedLease) ||
+    (status === 'invite sent' && !selectedLease)
+  ) {
     return (
       <div className={style.tabContentEmpty}>
-        <Empty
-          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          imageStyle={{
-            height: 60
-          }}
-          description={
-            <Typography.Text>
-              {t('pages.real_property.error.no_tenant_linked')}
-            </Typography.Text>
-          }
-        />
+        <Empty description={t('pages.real_property.error.no_tenant_linked')} />
       </div>
     )
   }
@@ -103,20 +117,22 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
 
   return (
     <div className={style.tabContent}>
-      <div className={style.buttonAddContainer}>
-        <Button type="primary" onClick={showModal}>
-          {t('components.button.add_document')}
-        </Button>
-      </div>
+      {canModify && (
+        <div className={style.buttonAddContainer}>
+          <Button onClick={showModal}>
+            {t('components.button.add_document')}
+          </Button>
+        </div>
+      )}
       <Modal
         title={t('pages.real_property_details.tabs.documents.modal_title')}
         open={isModalOpen}
         onCancel={handleCancel}
         footer={[
-          <Button key="back" onClick={handleCancel}>
+          <Button key="back" type="default" onClick={handleCancel}>
             {t('components.button.cancel')}
           </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
+          <Button key="submit" onClick={handleOk}>
             {t('components.button.add')}
           </Button>
         ]}
@@ -126,6 +142,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
       <DocumentList
         documents={documents || []}
         onDocumentClick={handleDocumentClick}
+        onDeleteDocument={deleteDocument}
       />
     </div>
   )

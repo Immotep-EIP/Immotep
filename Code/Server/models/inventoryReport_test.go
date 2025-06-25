@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
 )
 
 func TestInventoryReport(t *testing.T) {
@@ -38,6 +38,7 @@ func TestInventoryReport(t *testing.T) {
 							{
 								InnerImage: db.InnerImage{
 									Data: []byte("base64image1"),
+									Type: db.ImageTypeJpeg,
 								},
 							},
 						},
@@ -61,6 +62,7 @@ func TestInventoryReport(t *testing.T) {
 							{
 								InnerImage: db.InnerImage{
 									Data: []byte("base64image1"),
+									Type: db.ImageTypeJpeg,
 								},
 							},
 						},
@@ -86,6 +88,7 @@ func TestInventoryReport(t *testing.T) {
 							{
 								InnerImage: db.InnerImage{
 									Data: []byte("base64image2"),
+									Type: db.ImageTypeJpeg,
 								},
 							},
 						},
@@ -123,7 +126,7 @@ func TestInventoryReport(t *testing.T) {
 		assert.Equal(t, db.CleanlinessClean, room.Cleanliness)
 		assert.Equal(t, "Room is in good condition", room.Note)
 		assert.Len(t, room.Pictures, 1)
-		assert.Equal(t, "YmFzZTY0aW1hZ2Ux", room.Pictures[0])
+		assert.Equal(t, "data:image/jpeg;base64,YmFzZTY0aW1hZ2Ux", room.Pictures[0])
 		assert.Len(t, room.Furnitures, 1)
 
 		furniture := room.Furnitures[0]
@@ -134,7 +137,7 @@ func TestInventoryReport(t *testing.T) {
 		assert.Equal(t, db.CleanlinessClean, furniture.Cleanliness)
 		assert.Equal(t, "Furniture is in good condition", furniture.Note)
 		assert.Len(t, furniture.Pictures, 1)
-		assert.Equal(t, "YmFzZTY0aW1hZ2Uy", furniture.Pictures[0])
+		assert.Equal(t, "data:image/jpeg;base64,YmFzZTY0aW1hZ2Uy", furniture.Pictures[0])
 	})
 
 	t.Run("DbInventoryReportToResponse", func(t *testing.T) {
@@ -156,7 +159,7 @@ func TestInventoryReport(t *testing.T) {
 		assert.Equal(t, db.CleanlinessClean, room.Cleanliness)
 		assert.Equal(t, "Room is in good condition", room.Note)
 		assert.Len(t, room.Pictures, 1)
-		assert.Equal(t, "YmFzZTY0aW1hZ2Ux", room.Pictures[0])
+		assert.Equal(t, "data:image/jpeg;base64,YmFzZTY0aW1hZ2Ux", room.Pictures[0])
 		assert.Len(t, room.Furnitures, 1)
 
 		furniture := room.Furnitures[0]
@@ -167,7 +170,7 @@ func TestInventoryReport(t *testing.T) {
 		assert.Equal(t, db.CleanlinessClean, furniture.Cleanliness)
 		assert.Equal(t, "Furniture is in good condition", furniture.Note)
 		assert.Len(t, furniture.Pictures, 1)
-		assert.Equal(t, "YmFzZTY0aW1hZ2Uy", furniture.Pictures[0])
+		assert.Equal(t, "data:image/jpeg;base64,YmFzZTY0aW1hZ2Uy", furniture.Pictures[0])
 	})
 }
 

@@ -6,11 +6,11 @@ import (
 	"slices"
 
 	"github.com/gin-gonic/gin"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services/brevo"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services/brevo"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 // GetPropertiesByOwner godoc
@@ -226,7 +226,7 @@ func UpdatePropertyPicture(c *gin.Context) {
 
 	image := req.ToDbImage()
 	if image == nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64OrUnsupportedType, nil)
 		return
 	}
 	newImage := database.CreateImage(*image)
@@ -256,7 +256,7 @@ func UpdatePropertyPicture(c *gin.Context) {
 //	@Failure		409			{object}	utils.Error				"Invite already exists for this email"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/send-invite [post]
+//	@Router			/owner/properties/{property_id}/send-invite/ [post]
 func InviteTenant(c *gin.Context) {
 	var inviteReq models.InviteRequest
 	err := c.ShouldBindBodyWithJSON(&inviteReq)
@@ -264,6 +264,7 @@ func InviteTenant(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
 		return
 	}
+	inviteReq.TenantEmail = utils.SanitizeEmail(inviteReq.TenantEmail)
 
 	if database.GetCurrentActiveLeaseByProperty(c.Param("property_id")) != nil {
 		utils.SendError(c, http.StatusConflict, utils.PropertyNotAvailable, nil)
@@ -318,7 +319,7 @@ func checkInvitedTenant(c *gin.Context, user *db.UserModel) bool {
 //	@Failure		404			{object}	utils.Error	"No pending lease"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/cancel-invite [delete]
+//	@Router			/owner/properties/{property_id}/cancel-invite/ [delete]
 func CancelInvite(c *gin.Context) {
 	database.DeleteCurrentLeaseInvite(c.Param("property_id"))
 	c.Status(http.StatusNoContent)
@@ -339,7 +340,7 @@ func CancelInvite(c *gin.Context) {
 //	@Failure		404			{object}	utils.Error				"Property not found"
 //	@Failure		500
 //	@Security		Bearer
-//	@Router			/owner/properties/{property_id}/archive [put]
+//	@Router			/owner/properties/{property_id}/archive/ [put]
 func ArchiveProperty(c *gin.Context) {
 	var req models.ArchiveRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

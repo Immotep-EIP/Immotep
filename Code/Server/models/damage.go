@@ -1,14 +1,14 @@
 package models
 
 import (
-	"immotep/backend/prisma/db"
+	"keyz/backend/prisma/db"
 )
 
 type DamageRequest struct {
-	Comment  string      `binding:"required"             json:"comment"`
-	Priority db.Priority `binding:"required,priority"    json:"priority"`
-	RoomID   string      `binding:"required"             json:"room_id"`
-	Pictures []string    `binding:"dive,required,base64" json:"pictures"`
+	Comment  string      `binding:"required"                    json:"comment"`
+	Priority db.Priority `binding:"required,priority"           json:"priority"`
+	RoomID   string      `binding:"required"                    json:"room_id"`
+	Pictures []string    `binding:"max=5,dive,required,datauri" json:"pictures"`
 }
 
 func (r *DamageRequest) ToDbDamage() db.DamageModel {
@@ -29,7 +29,7 @@ type DamageOwnerUpdateRequest struct {
 type DamageTenantUpdateRequest struct {
 	Comment     *string      `json:"comment,omitempty"`
 	Priority    *db.Priority `json:"priority,omitempty"`
-	AddPictures []string     `binding:"dive,required,base64" json:"add_pictures,omitempty"`
+	AddPictures []string     `binding:"max=5,dive,required,datauri" json:"add_pictures,omitempty"`
 }
 
 type DamageResponse struct {

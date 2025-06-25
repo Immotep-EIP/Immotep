@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/maxzerbini/oauth"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 // TokenAuth godoc
@@ -88,6 +88,7 @@ func RegisterTenant(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
 		return
 	}
+	userReq.Email = utils.SanitizeEmail(userReq.Email)
 
 	leaseInvite := database.GetLeaseInviteById(c.Param("id"))
 	if leaseInvite == nil {

@@ -3,17 +3,36 @@ import SwiftUI
 struct InventoryRoomView: View {
     @EnvironmentObject var inventoryViewModel: InventoryViewModel
     @AppStorage("theme") private var selectedTheme: String = ThemeOption.system.rawValue
+    @Environment(\.dismiss) var dismiss
 
     @State private var newRoomName: String = ""
     @State private var showAddRoomAlert: Bool = false
     @State private var showDeleteConfirmationAlert: Bool = false
     @State private var roomToDelete: LocalRoom?
     @State private var showCompletionMessage: Bool = false
+    @State private var showError: Bool = false
+    @State private var errorMessage: String?
 
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
                 TopBar(title: "Keyz")
+                    .overlay(
+                        HStack {
+                            Button(action: {
+                                dismiss()
+                            }) {
+                                Image(systemName: "chevron.left")
+                                    .font(.title3)
+                                    .foregroundColor(Color("textColor"))
+                                    .frame(width: 40, height: 40)
+                                    .background(Color.black.opacity(0.2))
+                                    .clipShape(Circle())
+                            }
+                            .padding(.trailing, 16)
+                        },
+                        alignment: .trailing
+                    )
                 VStack {
                     Spacer()
                     RoomListView(showDeleteConfirmationAlert: $showDeleteConfirmationAlert, roomToDelete: $roomToDelete)
@@ -21,21 +40,22 @@ struct InventoryRoomView: View {
 
                     AddRoomButton(showAddRoomAlert: $showAddRoomAlert)
 
-                    if inventoryViewModel.areAllRoomsCompleted() {
+                    if inventoryViewModel.areAllRoomsCompleted() && inventoryViewModel.localRooms.count > 0 {
                         Button(action: {
                             Task {
                                 do {
                                     try await inventoryViewModel.finalizeInventory()
                                     showCompletionMessage = true
                                 } catch {
-                                    showCompletionMessage = true
+                                    errorMessage = "Error finalizing inventory: \(error.localizedDescription)".localized()
+                                    showError = true
                                 }
                             }
                         }, label: {
                             Text("Finalize Inventory".localized())
                                 .padding()
                                 .frame(maxWidth: .infinity)
-                                .background(Color.blue)
+                                .background(Color("LightBlue"))
                                 .foregroundColor(.white)
                                 .cornerRadius(10)
                         })
@@ -64,7 +84,8 @@ struct InventoryRoomView: View {
                                 try await inventoryViewModel.addRoom(name: roomName, type: roomType)
                                 newRoomName = ""
                             } catch {
-                                print("Error adding room: \(error.localizedDescription)")
+                                errorMessage = "Error adding room: \(error.localizedDescription)".localized()
+                                showError = true
                             }
                         }
                     },
@@ -95,6 +116,7 @@ struct InventoryRoomView: View {
                 )
                 .accessibilityIdentifier("DeleteRoomAlert")
             }
+
             if showCompletionMessage, let message = inventoryViewModel.completionMessage {
                 CustomAlertTwoButtons(
                     isActive: $showCompletionMessage,
@@ -103,9 +125,20 @@ struct InventoryRoomView: View {
                     buttonTitle: "OK",
                     secondaryButtonTitle: nil,
                     action: {
+                        showCompletionMessage = false
+                        dismiss()
                     },
                     secondaryAction: nil
                 )
+            }
+
+            if showError, let message = errorMessage {
+                ErrorNotificationView(message: message)
+                    .onDisappear {
+                        showError = false
+                        errorMessage = nil
+                        inventoryViewModel.errorMessage = nil
+                    }
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -185,6 +218,14 @@ struct RoomCard: View {
             }
             Text(room.name)
                 .foregroundStyle(Color("textColor"))
+            if !room.images.isEmpty {
+                Image(systemName: "photo")
+                    .foregroundStyle(Color.blue)
+            }
+            if !room.comment.isEmpty {
+                Image(systemName: "text.bubble")
+                    .foregroundStyle(Color.orange)
+            }
         }
     }
 }

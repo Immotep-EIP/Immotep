@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"immotep/backend/models"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 // GetAllUsers godoc
@@ -134,6 +134,9 @@ func UpdateCurrentUserProfile(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, utils.MissingFields, err)
 		return
 	}
+	if req.Email != nil {
+		req.Email = utils.Ptr(utils.SanitizeEmail(*req.Email))
+	}
 
 	newUser := database.UpdateUser(*user, req)
 	if newUser == nil {
@@ -212,7 +215,7 @@ func UpdateCurrentUserProfilePicture(c *gin.Context) {
 
 	image := req.ToDbImage()
 	if image == nil {
-		utils.SendError(c, http.StatusBadRequest, utils.BadBase64String, nil)
+		utils.SendError(c, http.StatusBadRequest, utils.BadBase64OrUnsupportedType, nil)
 		return
 	}
 	newImage := database.CreateImage(*image)

@@ -1,6 +1,7 @@
 .list-container {
   background-color: transparent;
   box-shadow: none;
+  border: none;
 }
 
 .room-item {

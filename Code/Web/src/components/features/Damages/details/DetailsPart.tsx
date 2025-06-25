@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 
-import { Image, Spin, Button, Modal, DatePicker, Space } from 'antd'
+import { Image, Spin, Modal, DatePicker, Space } from 'antd'
 import { EyeOutlined, CalendarOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 
 import UpdateDamage from '@/services/api/Owner/Properties/UpdateDamage'
+import { Button } from '@/components/common'
 import SubtitledElement from '@/components/ui/SubtitledElement/SubtitledElement'
 import base64ToFileAsString from '@/utils/base64/baseToFileAsString'
 import useDamages from '@/hooks/Property/useDamages'
@@ -186,7 +187,6 @@ const DetailsPart: React.FC = () => {
                         : '-'}
                     </span>
                     <Button
-                      type="primary"
                       icon={<CalendarOutlined />}
                       size="small"
                       onClick={handleOpenModal}

@@ -1,4 +1,4 @@
-const toLocaleDate = (isoDate: string): string => {
+const toLocaleDate = (isoDate: string, format: string = ''): string => {
   try {
     const date = new Date(isoDate)
 
@@ -8,12 +8,34 @@ const toLocaleDate = (isoDate: string): string => {
 
     const localeToUse = localStorage.getItem('lang') || 'fr'
 
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    }
+    const options: Intl.DateTimeFormatOptions = (() => {
+      switch (format) {
+        case 'long':
+          return {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          }
+        case 'short':
+          return {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+          }
+        case 'mid':
+          return {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+          }
+        default:
+          return {
+            month: 'long',
+            year: 'numeric'
+          }
+      }
+    })()
 
     let formattedDate = date.toLocaleDateString(localeToUse, options)
 

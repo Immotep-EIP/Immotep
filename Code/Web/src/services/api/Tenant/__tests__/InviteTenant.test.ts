@@ -65,4 +65,22 @@ describe('InviteTenants', () => {
 
     consoleErrorSpy.mockRestore()
   })
+
+  it('should throw error when propertyId is missing', async () => {
+    const tenantInfo = {
+      tenant_email: 'tenant@example.com',
+      start_date: '2023-10-01T00:00:00Z'
+    } as InviteTenant
+
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+
+    await expect(InviteTenants(tenantInfo)).rejects.toThrow(
+      'Property ID is required'
+    )
+    expect(mockedCallApi).not.toHaveBeenCalled()
+
+    consoleErrorSpy.mockRestore()
+  })
 })

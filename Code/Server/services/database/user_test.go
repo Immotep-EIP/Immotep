@@ -6,11 +6,11 @@ import (
 
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func BuildTestUser(id string) db.UserModel {
@@ -234,7 +234,7 @@ func TestUpdateUserPicture(t *testing.T) {
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 
 	m.User.Expect(database.MockUpdateUserPicture(c)).Returns(user)
 
@@ -248,7 +248,7 @@ func TestUpdateUserPicture_NotFound(t *testing.T) {
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 
 	m.User.Expect(database.MockUpdateUserPicture(c)).Errors(db.ErrNotFound)
 
@@ -261,7 +261,7 @@ func TestUpdateUserPicture_NoConnection(t *testing.T) {
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 
 	m.User.Expect(database.MockUpdateUserPicture(c)).Errors(errors.New("connection failed"))
 

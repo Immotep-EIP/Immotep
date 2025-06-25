@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Empty, Typography, Switch } from 'antd'
+import { Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 
 import useProperties from '@/hooks/Property/useProperties'
+import { Button, Empty } from '@/components/common'
 import PageTitle from '@/components/ui/PageText/Title'
 import CardPropertyLoader from '@/components/ui/Loader/CardPropertyLoader'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
@@ -14,7 +16,10 @@ import style from './RealProperty.module.css'
 
 const RealPropertyPage: React.FC = () => {
   const { t } = useTranslation()
-  const [showArchived, setShowArchived] = useState(false)
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const archiveParam = searchParams.get('archive')
+  const [showArchived, setShowArchived] = useState(archiveParam === 'true')
   const [filters, setFilters] = useState({
     searchQuery: '',
     surfaceRange: 'all',
@@ -33,6 +38,15 @@ const RealPropertyPage: React.FC = () => {
       setIsPropertyCreated(false)
     }
   }, [isPropertyCreated, refreshProperties])
+
+  const handleArchiveToggle = (checked: boolean) => {
+    setShowArchived(checked)
+    if (checked) {
+      setSearchParams({ archive: 'true' })
+    } else {
+      setSearchParams({})
+    }
+  }
 
   const surfaceRangeOptions = [
     { value: 'all', label: t('components.select.surface.all') },
@@ -96,12 +110,12 @@ const RealPropertyPage: React.FC = () => {
             <div className={style.archiveFilter}>
               <Switch
                 checked={showArchived}
-                onChange={setShowArchived}
+                onChange={handleArchiveToggle}
                 checkedChildren={t('components.switch.show_archived')}
                 unCheckedChildren={t('components.switch.show_active')}
               />
             </div>
-            <Button type="primary" onClick={() => setShowModalCreate(true)}>
+            <Button onClick={() => setShowModalCreate(true)}>
               {t('components.button.add_real_property')}
             </Button>
           </div>
@@ -118,14 +132,7 @@ const RealPropertyPage: React.FC = () => {
           {loading && <CardPropertyLoader cards={12} />}
           {!loading && filteredProperties.length === 0 && (
             <div className={style.emptyContainer}>
-              <Empty
-                image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                description={
-                  <Typography.Text>
-                    {t('components.messages.no_properties')}
-                  </Typography.Text>
-                }
-              />
+              <Empty description={t('components.messages.no_properties')} />
             </div>
           )}
           {filteredProperties.map(realProperty => (

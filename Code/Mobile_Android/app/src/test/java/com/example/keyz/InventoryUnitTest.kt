@@ -1,19 +1,19 @@
-package com.example.keyz
+package fr.keyz
 
 
 import androidx.navigation.NavController
-import com.example.keyz.apiCallerServices.FurnitureCallerService
-import com.example.keyz.apiCallerServices.InventoryCallerService
-import com.example.keyz.apiCallerServices.RoomCallerService
-import com.example.keyz.apiCallerServices.RoomType
-import com.example.keyz.apiClient.ApiService
-import com.example.keyz.apiClient.CreateOrUpdateResponse
-import com.example.keyz.apiClient.mockApi.fakeFurniture
-import com.example.keyz.apiClient.mockApi.fakeFurnitureOutputValue
-import com.example.keyz.apiClient.mockApi.fakeRoom
-import com.example.keyz.apiClient.mockApi.fakeRoomOutputValue
-import com.example.keyz.inventory.InventoryViewModel
-import com.example.keyz.inventory.Room
+import fr.keyz.apiCallerServices.FurnitureCallerService
+import fr.keyz.apiCallerServices.InventoryCallerService
+import fr.keyz.apiCallerServices.RoomCallerService
+import fr.keyz.apiCallerServices.RoomType
+import fr.keyz.apiClient.ApiService
+import fr.keyz.apiClient.CreateOrUpdateResponse
+import fr.keyz.apiClient.mockApi.fakeFurniture
+import fr.keyz.apiClient.mockApi.fakeFurnitureOutputValue
+import fr.keyz.apiClient.mockApi.fakeRoom
+import fr.keyz.apiClient.mockApi.fakeRoomOutputValue
+import fr.keyz.inventory.InventoryViewModel
+import fr.keyz.inventory.Room
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -138,6 +138,7 @@ class InventoryViewModelTest {
     @Test
     fun getBaseRooms() = runTest {
         viewModel.loadInventoryFromRooms(arrayOf(fakeRoom.toRoom(arrayOf(fakeFurniture.toRoomDetail()))))
+        testDispatcher.scheduler.advanceUntilIdle()
         assert(viewModel.getRooms().isNotEmpty())
         assert(viewModel.getRooms().size == 1)
     }

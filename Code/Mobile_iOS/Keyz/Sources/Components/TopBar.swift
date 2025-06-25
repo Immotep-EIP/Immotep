@@ -17,7 +17,7 @@ struct TopBar: View {
                     .frame(width: 50, height: 50)
 
                 Text(title)
-                    .font(.title)
+                    .font(.title2)
                     .bold()
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)

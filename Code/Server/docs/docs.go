@@ -510,7 +510,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/archive": {
+        "/owner/properties/{property_id}/archive/": {
             "put": {
                 "security": [
                     {
@@ -577,7 +577,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/cancel-invite": {
+        "/owner/properties/{property_id}/cancel-invite/": {
             "delete": {
                 "security": [
                     {
@@ -2703,7 +2703,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/owner/properties/{property_id}/send-invite": {
+        "/owner/properties/{property_id}/send-invite/": {
             "post": {
                 "security": [
                     {
@@ -4466,6 +4466,7 @@ const docTemplate = `{
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -4542,6 +4543,7 @@ const docTemplate = `{
             "properties": {
                 "add_pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -4716,6 +4718,7 @@ const docTemplate = `{
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5238,6 +5241,7 @@ const docTemplate = `{
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 10,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5293,6 +5297,7 @@ const docTemplate = `{
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 10,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5511,11 +5516,12 @@ const docTemplate = `{
                 "cannot-update-fixed-damage",
                 "damage-already-fixed",
                 "failed-to-link-image",
-                "bad-base64-string",
+                "bad-base64-string-or-unsupported-type",
                 "property-picture-not-found",
                 "user-profile-picture-not-found",
-                "room-already-exists",
                 "room-not-found",
+                "room-already-exists",
+                "room-not-in-this-property",
                 "furniture-not-found",
                 "furniture-already-exists",
                 "furniture-not-in-this-room",
@@ -5562,11 +5568,12 @@ const docTemplate = `{
                 "CannotUpdateFixedDamage",
                 "DamageAlreadyFixed",
                 "FailedLinkImage",
-                "BadBase64String",
+                "BadBase64OrUnsupportedType",
                 "PropertyPictureNotFound",
                 "UserProfilePictureNotFound",
-                "RoomAlreadyExists",
                 "RoomNotFound",
+                "RoomAlreadyExists",
+                "RoomNotInThisProperty",
                 "FurnitureNotFound",
                 "FurnitureAlreadyExists",
                 "FurnitureNotInThisRoom",
@@ -5595,8 +5602,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:3001",
 	BasePath:         "/v1",
 	Schemes:          []string{},
-	Title:            "Immotep API",
-	Description:      "This is the API used by the Immotep application.",
+	Title:            "Keyz API",
+	Description:      "This is the API used by the Keyz application.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

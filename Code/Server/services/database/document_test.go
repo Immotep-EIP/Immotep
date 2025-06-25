@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
 )
 
 func BuildTestDocument(id string) db.DocumentModel {
@@ -17,6 +17,7 @@ func BuildTestDocument(id string) db.DocumentModel {
 			ID:        id,
 			Name:      "Document",
 			Data:      []byte("data"),
+			Type:      db.DocTypePdf,
 			LeaseID:   "1",
 			CreatedAt: time.Now(),
 		},

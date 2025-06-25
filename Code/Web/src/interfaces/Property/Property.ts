@@ -35,6 +35,7 @@ export interface PropertyDetails {
   id: string
   invite?: InviteTenant
   lease: Lease
+  leases: Lease[]
   name: string
   nb_damage: number
   owner_id: string
@@ -70,6 +71,7 @@ export interface DetailsPartProps {
   showModal: () => void
   propertyId: string
   showModalUpdate: () => void
+  refreshPropertyDetails: (propertyId: string) => void
 }
 
 export interface PropertyImageProps {

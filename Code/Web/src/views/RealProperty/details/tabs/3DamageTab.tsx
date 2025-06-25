@@ -1,10 +1,11 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Empty, Spin, Table, Typography } from 'antd'
+import { Spin, Table, Typography } from 'antd'
 import type { TableProps } from 'antd'
 
-import { usePropertyId } from '@/context/propertyIdContext'
+import { Empty } from '@/components/common'
+import { usePropertyContext } from '@/context/propertyContext'
 import useDamages from '@/hooks/Property/useDamages'
 import useNavigation from '@/hooks/Navigation/useNavigation'
 import StatusTag from '@/components/common/Tag/StatusTag'
@@ -27,9 +28,12 @@ interface DamageTabProps {
 
 const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
   const { t } = useTranslation()
-  const propertyId = usePropertyId()
+  const { property, selectedLease } = usePropertyContext()
   const { goToDamageDetails } = useNavigation()
-  const { damages, loading, error } = useDamages(propertyId || '', status || '')
+  const { damages, loading, error } = useDamages(
+    property?.id || '',
+    status || ''
+  )
 
   const transformedData: DataType[] =
     damages?.map(item => ({
@@ -115,18 +119,13 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
     )
   }
 
-  if (status === 'available') {
+  if (
+    (status === 'available' && !selectedLease) ||
+    (status === 'invite sent' && !selectedLease)
+  ) {
     return (
       <div className={style.tabContentEmpty}>
-        <Empty
-          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          imageStyle={{ height: 60 }}
-          description={
-            <Typography.Text>
-              {t('pages.real_property.error.no_tenant_linked')}
-            </Typography.Text>
-          }
-        />
+        <Empty description={t('pages.real_property.error.no_tenant_linked')} />
       </div>
     )
   }
@@ -143,11 +142,11 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
         onRow={record => ({
           onClick: event => {
             if (record.key) {
-              if (!propertyId) {
+              if (!property?.id) {
                 event.stopPropagation()
                 return
               }
-              goToDamageDetails(propertyId, record.key)
+              goToDamageDetails(property.id, record.key)
             }
           }
         })}

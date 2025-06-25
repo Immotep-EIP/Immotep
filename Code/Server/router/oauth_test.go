@@ -5,10 +5,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/prisma/db"
-	"immotep/backend/router"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
+	"keyz/backend/prisma/db"
+	"keyz/backend/router"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
 )
 
 func BuildTestUser(id string) db.UserModel {

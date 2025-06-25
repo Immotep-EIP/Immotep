@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is the API used by the Immotep application.",
-        "title": "Immotep API",
+        "description": "This is the API used by the Keyz application.",
+        "title": "Keyz API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "Mazettt",
@@ -504,7 +504,7 @@
                 }
             }
         },
-        "/owner/properties/{property_id}/archive": {
+        "/owner/properties/{property_id}/archive/": {
             "put": {
                 "security": [
                     {
@@ -571,7 +571,7 @@
                 }
             }
         },
-        "/owner/properties/{property_id}/cancel-invite": {
+        "/owner/properties/{property_id}/cancel-invite/": {
             "delete": {
                 "security": [
                     {
@@ -2697,7 +2697,7 @@
                 }
             }
         },
-        "/owner/properties/{property_id}/send-invite": {
+        "/owner/properties/{property_id}/send-invite/": {
             "post": {
                 "security": [
                     {
@@ -4460,6 +4460,7 @@
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -4536,6 +4537,7 @@
             "properties": {
                 "add_pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -4710,6 +4712,7 @@
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 5,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5232,6 +5235,7 @@
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 10,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5287,6 +5291,7 @@
                 },
                 "pictures": {
                     "type": "array",
+                    "maxItems": 10,
                     "minItems": 1,
                     "items": {
                         "type": "string"
@@ -5505,11 +5510,12 @@
                 "cannot-update-fixed-damage",
                 "damage-already-fixed",
                 "failed-to-link-image",
-                "bad-base64-string",
+                "bad-base64-string-or-unsupported-type",
                 "property-picture-not-found",
                 "user-profile-picture-not-found",
-                "room-already-exists",
                 "room-not-found",
+                "room-already-exists",
+                "room-not-in-this-property",
                 "furniture-not-found",
                 "furniture-already-exists",
                 "furniture-not-in-this-room",
@@ -5556,11 +5562,12 @@
                 "CannotUpdateFixedDamage",
                 "DamageAlreadyFixed",
                 "FailedLinkImage",
-                "BadBase64String",
+                "BadBase64OrUnsupportedType",
                 "PropertyPictureNotFound",
                 "UserProfilePictureNotFound",
-                "RoomAlreadyExists",
                 "RoomNotFound",
+                "RoomAlreadyExists",
+                "RoomNotInThisProperty",
                 "FurnitureNotFound",
                 "FurnitureAlreadyExists",
                 "FurnitureNotInThisRoom",

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"
-	"immotep/backend/utils"
+	"keyz/backend/utils"
 )
 
 func TestGetClaims(t *testing.T) {
@@ -107,4 +107,67 @@ func TestPtr(t *testing.T) {
 	ptrBool := utils.Ptr(boolean)
 	require.NotNil(t, ptrBool)
 	assert.Equal(t, boolean, *ptrBool)
+}
+
+func TestFilter_Ints(t *testing.T) {
+	input := []int{1, 2, 3, 4, 5, 6}
+	condition := func(n int) bool { return n%2 == 0 }
+	expected := []int{2, 4, 6}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestFilter_Strings(t *testing.T) {
+	input := []string{"apple", "banana", "cherry", "date"}
+	condition := func(s string) bool { return len(s) > 5 }
+	expected := []string{"banana", "cherry"}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestFilter_EmptySlice(t *testing.T) {
+	input := []int{}
+	condition := func(n int) bool { return n > 0 }
+	expected := []int{}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestFilter_NoMatch(t *testing.T) {
+	input := []int{1, 3, 5, 7}
+	condition := func(n int) bool { return n%2 == 0 }
+	expected := []int{}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestFilter_AllMatch(t *testing.T) {
+	input := []int{2, 4, 6, 8}
+	condition := func(n int) bool { return n%2 == 0 }
+	expected := []int{2, 4, 6, 8}
+
+	result := utils.Filter(input, condition)
+	assert.Equal(t, expected, result)
+}
+
+func TestSanitizeEmail(t *testing.T) {
+	cases := []struct {
+		input    string
+		expected string
+	}{
+		{"  USER@Example.com  ", "user@example.com"},
+		{"Test@DOMAIN.ORG", "test@domain.org"},
+		{"  spaced@email.com", "spaced@email.com"},
+		{"nospaces@domain.com", "nospaces@domain.com"},
+		{"  MiXeD@Case.Com  ", "mixed@case.com"},
+		{"\tTab@domain.com\n", "tab@domain.com"},
+	}
+	for _, c := range cases {
+		result := utils.SanitizeEmail(c.input)
+		assert.Equal(t, c.expected, result, "input: %q", c.input)
+	}
 }

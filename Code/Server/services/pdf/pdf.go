@@ -5,8 +5,8 @@ import (
 	"io"
 
 	"github.com/go-pdf/fpdf"
-	"immotep/backend/prisma/db"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	"keyz/backend/utils"
 )
 
 var Test = false
@@ -123,9 +123,12 @@ func (irp *PDF) AddImages(images []db.ImageModel) {
 	for _, picture := range images {
 		imageOptions := fpdf.ImageOptions{
 			ReadDpi:   true,
-			ImageType: "JPG",
+			ImageType: string(picture.Type),
 		}
 		info := irp.pdf.RegisterImageOptionsReader(picture.ID, imageOptions, bytes.NewReader(picture.Data))
+		if info == nil {
+			continue
+		}
 		imageWidth := info.Width() * imageHeight / info.Height()
 		if currentX+imageWidth > maxWidth {
 			currentX = marginL

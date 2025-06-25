@@ -10,12 +10,12 @@ import (
 	"github.com/steebchen/prisma-client-go/engine/protocol"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"immotep/backend/models"
-	"immotep/backend/prisma/db"
-	"immotep/backend/router"
-	"immotep/backend/services"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/models"
+	"keyz/backend/prisma/db"
+	"keyz/backend/router"
+	"keyz/backend/services"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func BuildTestUser(id string) db.UserModel {
@@ -134,7 +134,7 @@ func TestGetUserProfilePicture(t *testing.T) {
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	user.InnerUser.ProfilePictureID = &image.ID
 	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 	m.Image.Expect(database.MockGetImageByID(c)).Returns(image)
@@ -333,7 +333,7 @@ func TestUpdateCurrentUserProfilePicture(t *testing.T) {
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	updatedUser := user
 	updatedUser.InnerUser.ProfilePictureID = &image.ID
 	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
@@ -341,7 +341,7 @@ func TestUpdateCurrentUserProfilePicture(t *testing.T) {
 	m.User.Expect(database.MockUpdateUserPicture(c)).Returns(updatedUser)
 
 	reqBody := models.ImageRequest{
-		Data: "b3Vp",
+		Data: "data:image/jpeg;base64,b3Vp",
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
@@ -369,7 +369,7 @@ func TestUpdateCurrentUserProfilePicture_UserNotFound(t *testing.T) {
 	m.User.Expect(database.MockGetUserByID(c)).Errors(db.ErrNotFound)
 
 	reqBody := models.ImageRequest{
-		Data: "b3Vp",
+		Data: "data:image/jpeg;base64,b3Vp",
 	}
 	b, err := json.Marshal(reqBody)
 	require.NoError(t, err)
@@ -448,7 +448,7 @@ func TestGetCurrentUserProfilePicture(t *testing.T) {
 	defer ensure(t)
 
 	user := BuildTestUser("1")
-	image := BuildTestImage("1", "b3Vp")
+	image := BuildTestImage("1", "data:image/jpeg;base64,b3Vp")
 	user.InnerUser.ProfilePictureID = &image.ID
 	m.User.Expect(database.MockGetUserByID(c)).Returns(user)
 	m.Image.Expect(database.MockGetImageByID(c)).Returns(image)

@@ -3,11 +3,10 @@ package middlewares
 import (
 	"net/http"
 
-	"immotep/backend/prisma/db"
-	"immotep/backend/services/database"
-	"immotep/backend/utils"
-
 	"github.com/gin-gonic/gin"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 func CheckPropertyOwnerOwnership(propertyIdUrlParam string) gin.HandlerFunc {

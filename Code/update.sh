@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# -e Exit immediately when a command returns a non-zero status.
+## -e Exit immediately when a command returns a non-zero status.
 set -e
 
-git switch backend
-git pull
-git switch -
-git merge backend
+## These were used when working with one branch for each app. Not needed anymore because we create separate branches for features from the dev branch.
+# git switch backend
+# git pull
+# git switch -
+# git merge backend
 
 cd Server/
-go run github.com/steebchen/prisma-client-go migrate deploy
-go run github.com/steebchen/prisma-client-go generate
+make db_update
 cd ..

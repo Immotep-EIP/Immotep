@@ -1,14 +1,11 @@
 .card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
   width: calc(25% - 15px);
   min-height: 230px;
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+  border: none;
 }
 
 .cardContentContainer {
@@ -69,4 +66,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Media Queries pour la responsivité */
+@media screen and (min-width: 1200px) {
+  .card {
+    width: calc(25% - 15px);
+  }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .card {
+    width: calc(33.33% - 15px);
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .card {
+    width: calc(50% - 15px);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .card {
+    width: 100%;
+  }
+
+  .cardPictureContainer {
+    height: 200px;
+  }
 }

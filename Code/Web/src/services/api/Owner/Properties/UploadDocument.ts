@@ -6,7 +6,7 @@ import endpoints from '@/enums/EndPointEnum'
 const UploadDocument = async (
   payload: string,
   propertyId: string,
-  leaseId: string = endpoints.owner.properties.leases.current
+  leaseId: string = 'current'
 ) => {
   try {
     return callApi<Document>({

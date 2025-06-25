@@ -17,7 +17,7 @@ const useImageUpload = () => {
     name: 'propertyPicture',
     maxCount: 1,
     fileList,
-    accept: '.png, .jpg, .jpeg',
+    accept: '.png,.jpg,.jpeg',
     beforeUpload: async file => {
       const base64 = await fileToBase64(file)
       setImageBase64(base64)

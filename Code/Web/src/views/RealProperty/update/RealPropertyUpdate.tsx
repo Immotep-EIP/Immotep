@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
-import { Form, Button, Modal, message } from 'antd'
+import { Drawer, Form, message } from 'antd'
 import { useTranslation } from 'react-i18next'
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 
 import useProperties from '@/hooks/Property/useProperties'
 import useImageUpload from '@/hooks/Image/useImageUpload'
 import useImageCache from '@/hooks/Image/useImageCache'
+import { Button } from '@/components/common'
 import PropertyFormFields from '@/components/features/RealProperty/PropertyForm/PropertyFormFields'
 import { PropertyFormFieldsType } from '@/utils/types/propertyType'
 
@@ -66,33 +68,33 @@ const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({
   }
 
   return (
-    <Modal
-      title={t('pages.real_property.update_real_property.title')}
+    <Drawer
+      title={
+        <div className={style.drawerTitle}>
+          {t('pages.real_property.update_real_property.title')}
+          <div className={style.buttonsContainer}>
+            <Button
+              type="default"
+              key="back"
+              onClick={() => setIsModalUpdateOpen(false)}
+              icon={<CloseCircleOutlined />}
+            >
+              {t('components.button.cancel')}
+            </Button>
+            <Button
+              key="submit"
+              loading={loading}
+              onClick={() => form.submit()}
+              icon={<CheckCircleOutlined />}
+            >
+              {t('components.button.update')}
+            </Button>
+          </div>
+        </div>
+      }
       open={isModalUpdateOpen}
-      onCancel={() => setIsModalUpdateOpen(false)}
-      footer={[
-        <Button key="back" onClick={() => setIsModalUpdateOpen(false)}>
-          {t('components.button.cancel')}
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          loading={loading}
-          onClick={() => form.submit()}
-        >
-          {t('components.button.update')}
-        </Button>
-      ]}
-      style={{
-        top: '10%',
-        overflow: 'hidden'
-      }}
-      styles={{
-        body: {
-          maxHeight: 'calc(70vh - 55px)',
-          overflowY: 'auto'
-        }
-      }}
+      onClose={() => setIsModalUpdateOpen(false)}
+      width={550}
     >
       <div className={style.pageContainer}>
         <Form
@@ -102,12 +104,12 @@ const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({
           onFinishFailed={onFinishFailed}
           autoComplete="off"
           layout="vertical"
-          style={{ width: '90%', maxWidth: '500px', margin: '20px' }}
+          style={{ width: '100%' }}
         >
           <PropertyFormFields uploadProps={uploadProps} />
         </Form>
       </div>
-    </Modal>
+    </Drawer>
   )
 }
 

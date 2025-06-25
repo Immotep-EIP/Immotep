@@ -7,6 +7,7 @@ import React, {
 } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { message } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
 import { loginApi } from '@/services/api/Authentification/AuthApi'
@@ -64,19 +65,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth()
   }, [])
 
-  const login = async (userInfo: UserTokenPayload) => {
+  const login = async (
+    userInfo: UserTokenPayload,
+    leaseId: string | undefined
+  ) => {
     try {
       const response = await loginApi(userInfo)
-      setIsAuthenticated(true)
-      saveData(
-        response.access_token,
-        response.refresh_token,
-        response.expires_in,
-        userInfo.rememberMe
-      )
-      const profile = await getUserProfile()
-      setUser(profile)
-      return response
+      if (!leaseId && response?.properties?.role === 'tenant') {
+        message.error('Tenant login is not allowed')
+        throw new Error('Tenant login is not allowed')
+      } else {
+        setIsAuthenticated(true)
+        saveData(
+          response.access_token,
+          response.refresh_token,
+          response.expires_in,
+          userInfo.rememberMe
+        )
+        const profile = await getUserProfile()
+        setUser(profile)
+        return response
+      }
     } catch (error) {
       console.error('login error:', error)
       deleteData()

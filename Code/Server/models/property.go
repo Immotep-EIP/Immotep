@@ -3,9 +3,9 @@ package models
 import (
 	"slices"
 
-	"immotep/backend/prisma/db"
-	// "immotep/backend/services/database"
-	"immotep/backend/utils"
+	"keyz/backend/prisma/db"
+	// "keyz/backend/services/database"
+	"keyz/backend/utils"
 )
 
 type PropertyStatus string

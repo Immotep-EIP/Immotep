@@ -1,11 +1,11 @@
-package com.example.keyz
+package fr.keyz
 
 import android.net.Uri
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.navigation.NavController
-import com.example.keyz.addOrEditPropertyModal.AddOrEditPropertyViewModel
-import com.example.keyz.apiCallerServices.AddPropertyInput
-import com.example.keyz.apiClient.ApiService
+import fr.keyz.components.addOrEditPropertyModal.AddOrEditPropertyViewModel
+import fr.keyz.apiCallerServices.AddPropertyInput
+import fr.keyz.apiClient.ApiService
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers

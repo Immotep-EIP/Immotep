@@ -2,7 +2,7 @@
 
 ## Database Design
 
-The database for this application is implemented using PostgreSQL. It stores all the persistent data required by the system, including user information, application data, and other related entities. The database design follows a relational model with well-defined tables and relationships.
+The database for this application is implemented using PostgreSQL. It stores all the persistent data required by the system, including user information, application data, and other related entities. The database design follows a relational model with well-defined tables and relationships, managed via Prisma ORM.
 
 ### Entity-Relationship Diagram (ERD)
 
@@ -14,19 +14,21 @@ The following diagram illustrates the structure of the database, including the t
 
 The database schema consists of several tables, each representing a distinct entity in the system. Below is a brief description of each table:
 
-- **Users**: Stores user account information, including authentication details, roles, and profile data.
-- **Contracts**: Represents rental agreements between tenants and properties, including start and end dates.
-- **Damages**: Records information about damages reported in properties, including priority and status.
-- **Properties**: Contains details about properties, such as address, rental price, and owner information.
-- **Pending Contracts**: Holds information about contracts that are pending approval after an invitation from an owner to a tenant, including tenant email and property details.
-- **Images**: Stores image data used for user profiles, property pictures, and inventory report state documentation.
-- **Rooms**: Represents individual rooms within properties, including their names and associated property.
+- **Users**: Stores user account information, including authentication details, roles (owner/tenant), and profile data.
+- **Properties**: Contains details about properties, such as address, rental price, area, and owner information.
+- **Leases**: Represents rental agreements between tenants and properties, including start/end dates, active status, and links to reports and damages.
+- **Lease Invites**: Holds information about pending contracts after an invitation from an owner to a tenant.
+- **Rooms**: Represents individual rooms within properties, including their names, types, and associated property.
 - **Furnitures**: Contains information about furniture items in rooms, including quantity and associated room.
-- **Inventory Reports**: Records periodic reports on the state of rooms and furniture within properties.
-- **Room States**: Documents the state and cleanliness of rooms as part of inventory reports.
-- **Furniture States**: Documents the state and cleanliness of furniture items as part of inventory reports.
+- **Inventory Reports**: Records periodic reports on the state of rooms and furniture within properties, with types (start, middle, end).
+- **Room States**: Documents the state and cleanliness of rooms as part of inventory reports, with associated images.
+- **Furniture States**: Documents the state and cleanliness of furniture items as part of inventory reports, with associated images.
+- **Damages**: Records information about damages reported in properties, including priority, status, and fix planning.
+- **Images**: Stores image data used for user profiles, property pictures, and inventory report documentation.
+- **Documents**: Stores uploaded documents (PDF, DOCX, XLSX) related to leases.
+- **Contact Messages**: Stores messages sent via the contact form on the showcase website.
 
-Each table is designed with foreign key constraints where applicable to maintain referential integrity across the database.
+Each table is designed with foreign key constraints where applicable to maintain referential integrity across the database. See `prisma/schema.prisma` for the full schema.
 
 ## Data Models
 
@@ -44,18 +46,18 @@ To apply new migrations to the database, use the following command:
 
 ```bash
 cd Code/Server/
-./migrate_db.sh
+make db_migrate
 ```
 
 You then need to name your migration. This command creates a new migration file and applies it to the database.
 
 ### Seed
 
-TODO
+Seeding scripts are available in `prisma/seed.go` to populate the database with initial data for development and testing.
 
 ## Query Optimization and Indexes
 
-TODO
+Indexes are defined in the Prisma schema for commonly queried fields (e.g., foreign keys, unique constraints, and timestamps) to optimize query performance.
 
 ## Backup and Recovery
 
@@ -63,4 +65,4 @@ TODO
 
 ## Migration Strategy
 
-TODO
+All schema changes including data migrations to fit the new schema are performed via Prisma migrations to ensure consistency across environments. No manual changes are made directly in the database.

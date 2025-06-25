@@ -19,22 +19,16 @@ struct RegisterView: View {
                         .font(.system(size: 25))
                         .bold()
                         .padding(.bottom, 5)
-                    Text("Join Immotep for your peace of mind!".localized())
+                    Text("Join Keyz for your peace of mind!".localized())
                         .font(.system(size: 14))
                         .padding(.bottom, 50)
 
                     VStack(alignment: .leading, spacing: 5) {
-
-                        CustomTextInput(title: "Name*", placeholder: "Enter your name", text: $viewModel.model.name, isSecure: false)
-
                         CustomTextInput(title: "First name*", placeholder: "Enter your first name", text: $viewModel.model.firstName, isSecure: false)
-
+                        CustomTextInput(title: "Name*", placeholder: "Enter your name", text: $viewModel.model.name, isSecure: false)
                         CustomTextInput(title: "Email*", placeholder: "Enter your email", text: $viewModel.model.email, isSecure: false)
-
                         CustomTextInput(title: "Password*", placeholder: "Enter your password", text: $viewModel.model.password, isSecure: true)
-
-                        CustomTextInput(title: "Password confirmation*", placeholder: "Enter your password confirmation",
-                                        text: $viewModel.model.passwordConfirmation, isSecure: true)
+                        CustomTextInput(title: "Password confirmation*", placeholder: "Enter your password confirmation", text: $viewModel.model.passwordConfirmation, isSecure: true)
 
                         HStack {
                             Button(action: {
@@ -96,7 +90,7 @@ struct RegisterView: View {
                         .resizable()
                         .frame(width: 50, height: 50)
                         .padding(.bottom, 40)
-                    Text("Immotep".localized())
+                    Text("Keyz")
                         .font(.title)
                         .bold()
                         .padding(.bottom, 40)

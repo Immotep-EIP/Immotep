@@ -10,6 +10,7 @@ Before setting up the project, ensure that you have the following installed on y
 2. **PostgreSQL**: The project uses PostgreSQL as the database. You can download it from [postgresql.org](https://www.postgresql.org/).
 3. **golangci-lint**: The project uses a linter to check code readability. You can install it from [golangci-lint.run](https://golangci-lint.run/).
 4. **Swag**: The API documentation is build using Swagger with a Go package named Swaggo. You can install it from [github.com/swaggo/swag](https://github.com/swaggo/swag).
+5. **Make**: The project uses Makefile for build automation. Ensure you have `make` installed on your system. You can install it using your package manager (e.g., `apt`, `brew`, etc.).
 
 ## Local Setup
 
@@ -34,14 +35,19 @@ cp .env.example .env
 
 ```txt
 PORT='3001'
+PUBLIC_URL='http://localhost:3001'
+WEB_PUBLIC_URL='http://localhost:4242'
+SHOWCASE_PUBLIC_URL='http://localhost:4343'
 DATABASE_URL='postgresql://user:password@localhost:5432/immotep'
 SECRET_KEY='MySecretKey'
 OPENAI_API_KEY='MyOpenAIKey'
+BREVO_API_KEY='MyBrevoKey'
 ```
 
 - Replace `user` and `password` with your actual PostgreSQL credentials.
 - Configure SecretKey settings with the appropriate values for your authentication setup.
 - Configure OpenAI API Key with the appropriate value for your OpenAI account.
+- Configure Brevo API Key with the appropriate value for your Brevo account.
 
 ### 3. Install Dependencies
 
@@ -64,17 +70,25 @@ go mod download
 
 ### 5. Seed the Database (Optional)
 
-TODO
+```bash
+make db_reset
+```
 
 ### 6. Run the Application
 
-Start the backend server:
+Build and start the backend server:
 
 ```bash
-./run.sh
+make run
 ```
 
 The application should now be accessible at `http://localhost:3001`.
+
+If you face any issues with the linter, you can run the following command to run the server without linting:
+
+```bash
+make build && ./backend
+```
 
 ## Deployment Instructions
 
@@ -85,7 +99,7 @@ TODO
 Run the project's tests using:
 
 ```bash
-./run_tests.sh
+make test
 ```
 
 Include unit tests, integration tests, and any mock tests you have written for the API.

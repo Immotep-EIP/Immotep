@@ -50,12 +50,17 @@ struct LocalRoom: Identifiable, Equatable {
     var name: String
     var checked: Bool
     var inventory: [LocalInventory]
+    var images: [UIImage] = []
+    var status: String = "Select room status"
+    var comment: String = ""
 
     static func == (lhs: LocalRoom, rhs: LocalRoom) -> Bool {
         return lhs.id == rhs.id &&
                lhs.name == rhs.name &&
                lhs.checked == rhs.checked &&
-               lhs.inventory == rhs.inventory
+               lhs.inventory == rhs.inventory &&
+               lhs.status == rhs.status &&
+               lhs.comment == rhs.comment
     }
 }
 
@@ -97,11 +102,41 @@ struct RoomStateRequest: Codable {
 }
 
 struct InventoryReportResponse: Codable {
-    let date: String
     let id: String
     let propertyId: String
-    let rooms: [RoomStateResponse]
+    let leaseId: String
+    let date: String
     let type: String
+    let rooms: [InventoryRoom]
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case propertyId = "property_id"
+        case leaseId = "lease_id"
+        case date
+        case type
+        case rooms
+    }
+}
+
+struct InventoryRoom: Codable {
+    let id: String
+    let name: String
+    let state: String
+    let cleanliness: String
+    let note: String
+    let pictures: [String]
+    let furnitures: [InventoryFurniture]
+}
+
+struct InventoryFurniture: Codable {
+    let id: String
+    let name: String
+    let quantity: Int
+    let state: String
+    let cleanliness: String
+    let note: String
+    let pictures: [String]
 }
 
 struct RoomStateResponse: Codable {
@@ -154,4 +189,9 @@ struct FurnitureStateResponse: Codable {
     let cleanliness: String
     let note: String
     let pictures: [String]
+}
+
+struct ErrorResponse: Codable {
+    let code: String
+    let error: String
 }

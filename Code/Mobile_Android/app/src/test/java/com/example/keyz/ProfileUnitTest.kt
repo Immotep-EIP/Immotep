@@ -1,12 +1,12 @@
-package com.example.keyz
+package fr.keyz
 
 
 import androidx.navigation.NavController
-import com.example.keyz.apiCallerServices.ProfileCallerService
-import com.example.keyz.apiClient.ApiService
-import com.example.keyz.apiClient.mockApi.fakeProfileResponse
-import com.example.keyz.login.dataStore
-import com.example.keyz.profile.ProfileViewModel
+import fr.keyz.apiCallerServices.ProfileCallerService
+import fr.keyz.apiClient.ApiService
+import fr.keyz.apiClient.mockApi.fakeProfileResponse
+import fr.keyz.login.dataStore
+import fr.keyz.profile.ProfileViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

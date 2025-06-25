@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Input, Form, message, Checkbox } from 'antd'
+import { Form, Input as AntInput, message, Checkbox } from 'antd'
 import type { FormProps } from 'antd'
 
 import { useAuth } from '@/context/authContext'
 import useNavigation from '@/hooks/Navigation/useNavigation'
+import { Button, Input } from '@/components/common'
 import DividedPage from '@/components/layout/DividedPage/DividedPage'
 import PageMeta from '@/components/ui/PageMeta/PageMeta'
 import PageTitle from '@/components/ui/PageText/Title'
@@ -59,7 +60,7 @@ const Login: React.FC = () => {
         grant_type: 'password'
       }
       loginValues.grant_type = 'password'
-      await login(loginValues)
+      await login(loginValues, leaseId)
       message.success(t('pages.login.connection_success'))
       setLoading(false)
       if (leaseId) {
@@ -69,7 +70,7 @@ const Login: React.FC = () => {
         goToOverview()
       }
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         message.error(t('pages.login.connection_error'))
         setLoading(false)
       }
@@ -134,7 +135,7 @@ const Login: React.FC = () => {
                   }
                 ]}
               >
-                <Input.Password
+                <AntInput.Password
                   className="input"
                   size="middle"
                   placeholder={t('components.input.password.placeholder')}

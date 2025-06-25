@@ -32,6 +32,8 @@ class InventoryViewModel: ObservableObject {
     private var roomManager: RoomManager?
     private var furnitureManager: FurnitureManager?
     private var reportManager: InventoryReportManager?
+    
+    var onInventoryFinalized: (() -> Void)?
 
     init(property: Property, isEntryInventory: Bool = true, localRooms: [LocalRoom]? = nil) {
         self.property = property
@@ -70,6 +72,9 @@ class InventoryViewModel: ObservableObject {
 
     func selectRoom(_ room: LocalRoom) {
         roomManager?.selectRoom(room)
+        if let roomIndex = localRooms.firstIndex(where: { $0.id == room.id }) {
+            selectedRoom = localRooms[roomIndex]
+        }
     }
 
     func isRoomCompleted(_ room: LocalRoom) -> Bool {
@@ -81,11 +86,21 @@ class InventoryViewModel: ObservableObject {
     }
 
     func markRoomAsChecked(_ room: LocalRoom) async {
-        await roomManager?.markRoomAsChecked(room)
-    }
-
-    func updateRoomCheckedStatus() {
-        roomManager?.updateRoomCheckedStatus()
+        if let roomIndex = localRooms.firstIndex(where: { $0.id == room.id }) {
+            let existingImages = localRooms[roomIndex].images
+            let existingStatus = localRooms[roomIndex].status
+            let existingComment = localRooms[roomIndex].comment
+            
+            await roomManager?.markRoomAsChecked(room)
+            
+            localRooms[roomIndex].images = existingImages
+            localRooms[roomIndex].status = existingStatus
+            localRooms[roomIndex].comment = existingComment
+            localRooms[roomIndex].checked = true
+            selectedRoom = localRooms[roomIndex]
+        } else {
+            await roomManager?.markRoomAsChecked(room)
+        }
     }
 
     func markStuffAsChecked(_ stuff: LocalInventory) async throws {
@@ -114,6 +129,7 @@ class InventoryViewModel: ObservableObject {
 
     func finalizeInventory() async throws {
         try await reportManager?.finalizeInventory()
+        onInventoryFinalized?()
     }
 
     func fetchLastInventoryReport() async {
@@ -122,5 +138,16 @@ class InventoryViewModel: ObservableObject {
 
     func compareStuffReport(oldReportId: String) async throws {
         try await reportManager?.compareStuffReport(oldReportId: oldReportId)
+    }
+    
+    func sendRoomReport() async throws {
+        guard selectedRoom != nil else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No room selected"])
+        }
+        try await reportManager?.sendRoomReport()
+    }
+
+    func compareRoomReport(oldReportId: String) async throws {
+        try await reportManager?.compareRoomReport(oldReportId: oldReportId)
     }
 }

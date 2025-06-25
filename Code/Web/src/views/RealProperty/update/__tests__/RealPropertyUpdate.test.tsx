@@ -60,7 +60,8 @@ describe('RealPropertyUpdate Component', () => {
       tenant_email: 'tenant123',
       tenant_id: 'tenant123',
       tenant_name: 'Jane Tenant'
-    }
+    },
+    leases: []
   }
 
   const mockSetIsModalUpdateOpen = jest.fn()
@@ -73,9 +74,21 @@ describe('RealPropertyUpdate Component', () => {
       loading: false,
       updateProperty: jest.fn()
     })
+
+    // Correction du mock pour éviter l'avertissement "value is not a valid prop"
     ;(useImageUpload as jest.Mock).mockReturnValue({
-      uploadProps: {},
-      imageBase64: 'mocked-image-base64'
+      uploadProps: {
+        // Utiliser fileList au lieu de value
+        fileList: [],
+        beforeUpload: jest.fn(() => false),
+        onChange: jest.fn(),
+        onRemove: jest.fn(),
+        accept: '.jpg,.jpeg,.png',
+        maxCount: 1,
+        listType: 'picture-card'
+      },
+      imageBase64: 'mocked-image-base64',
+      resetImage: jest.fn()
     })
     ;(useImageCache as jest.Mock).mockImplementation(() => ({
       updateCache: mockUpdateCache,
@@ -87,9 +100,9 @@ describe('RealPropertyUpdate Component', () => {
   const renderComponent = () =>
     render(
       <RealPropertyUpdate
-        propertyData={mockPropertyData}
         isModalUpdateOpen
         setIsModalUpdateOpen={mockSetIsModalUpdateOpen}
+        propertyData={mockPropertyData}
         setIsPropertyUpdated={mockSetIsPropertyUpdated}
       />
     )
@@ -122,7 +135,10 @@ describe('RealPropertyUpdate Component', () => {
   it('closes the modal when clicking the close button', () => {
     renderComponent()
 
-    const closeButton = screen.getByRole('button', { name: /close/i })
+    // Utiliser un sélecteur plus spécifique pour le bouton de fermeture du Drawer
+    // Utiliser getByLabelText qui est plus précis dans ce cas
+    const closeButton = screen.getByLabelText('Close')
+
     fireEvent.click(closeButton)
 
     expect(mockSetIsModalUpdateOpen).toHaveBeenCalledWith(false)
@@ -164,8 +180,18 @@ describe('RealPropertyUpdate Component', () => {
   it('handles image data promise correctly', async () => {
     const mockImageData = 'test-image-data'
     ;(useImageUpload as jest.Mock).mockReturnValue({
-      uploadProps: {},
-      imageBase64: mockImageData
+      uploadProps: {
+        // Fournir des props valides pour le composant Upload
+        fileList: [],
+        beforeUpload: jest.fn(() => false),
+        onChange: jest.fn(),
+        onRemove: jest.fn(),
+        accept: '.jpg,.jpeg,.png',
+        maxCount: 1,
+        listType: 'picture-card'
+      },
+      imageBase64: mockImageData,
+      resetImage: jest.fn()
     })
 
     renderComponent()

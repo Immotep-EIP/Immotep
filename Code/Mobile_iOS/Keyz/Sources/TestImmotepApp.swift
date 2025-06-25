@@ -11,6 +11,7 @@ struct TestImmotepView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @StateObject private var loginViewModel = LoginViewModel()
     @State private var propertyExample: Property = exampleDataProperty
+    @State var navigateToInventory: Bool = false
     @State private var mockProperty = Property(
         id: "cm7gijdee000ly7i82uq0qf35",
         ownerID: "owner123",
@@ -25,6 +26,7 @@ struct TestImmotepView: View {
         surface: 85.5,
         isAvailable: "available",
         tenantName: nil,
+        leaseId: "leaseID",
         leaseStartDate: nil,
         leaseEndDate: nil,
         documents: [],
@@ -41,8 +43,6 @@ struct TestImmotepView: View {
             if isLoggedIn || isUITestMode {
                 if CommandLine.arguments.contains("-propertyList") {
                     propertyListView()
-                } else if CommandLine.arguments.contains("-inventoryTypeView") {
-                    InventoryTypeView(property: $propertyExample)
                 } else if CommandLine.arguments.contains("-inventoryRoomView") {
                     inventoryRoomView()
                 } else if CommandLine.arguments.contains("-inventoryStuffView") {
@@ -72,7 +72,7 @@ struct TestImmotepView: View {
     }
 
     private func propertyListView() -> some View {
-        let viewModel = PropertyViewModel()
+        let viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
         viewModel.properties = [
             Property(
                 id: "cm7gijdee000ly7i82uq0qf35",
@@ -88,6 +88,7 @@ struct TestImmotepView: View {
                 surface: 85.5,
                 isAvailable: "available",
                 tenantName: nil,
+                leaseId: "leaseId",
                 leaseStartDate: nil,
                 leaseEndDate: nil,
                 documents: [],
@@ -111,6 +112,7 @@ struct TestImmotepView: View {
                 surface: 65.0,
                 isAvailable: "unavailable",
                 tenantName: "Jean Dupont",
+                leaseId: "leaseId",
                 leaseStartDate: "2023-10-26T10:00:00Z",
                 leaseEndDate: nil,
                 documents: [],
@@ -194,7 +196,7 @@ struct TestImmotepView: View {
     }
 
     private func propertyCreateView() -> some View {
-        let viewModel = PropertyViewModel()
+        let viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
         return NavigationStack {
             PropertyView()
                 .environmentObject(viewModel)
@@ -205,7 +207,7 @@ struct TestImmotepView: View {
     }
 
     private func propertyEditView() -> some View {
-        let viewModel = PropertyViewModel()
+        let viewModel = PropertyViewModel(loginViewModel: LoginViewModel())
         return NavigationStack {
             PropertyView()
                 .environmentObject(viewModel)

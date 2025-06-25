@@ -17,7 +17,14 @@ class RoomManager {
 
     func fetchRooms() async {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/") else {
+        let propertyId = viewModel.property.id
+
+        guard !propertyId.isEmpty else {
+            viewModel.errorMessage = "Property ID is empty"
+            return
+        }
+
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/rooms/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }
@@ -40,7 +47,8 @@ class RoomManager {
             }
 
             guard (200...299).contains(httpResponse.statusCode) else {
-                viewModel.errorMessage = "Error: Status code \(httpResponse.statusCode)"
+                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+                viewModel.errorMessage = "Error: Status code \(httpResponse.statusCode) - \(errorBody)"
                 return
             }
 
@@ -56,42 +64,57 @@ class RoomManager {
                 )
             }
 
-            if viewModel.localRooms.isEmpty {
-                viewModel.localRooms = viewModel.property.rooms.map { room in
-                    LocalRoom(
+            var updatedLocalRooms: [LocalRoom] = []
+            for room in viewModel.property.rooms {
+                if let existingRoom = viewModel.localRooms.first(where: { $0.id == room.id }) {
+                    updatedLocalRooms.append(LocalRoom(
                         id: room.id,
                         name: room.name,
-                        checked: room.checked,
-                        inventory: room.inventory.map { inventory in
-                            LocalInventory(
-                                id: inventory.id,
-                                propertyId: inventory.propertyId,
-                                roomId: inventory.roomId,
-                                name: inventory.name,
-                                quantity: inventory.quantity,
-                                checked: inventory.checked,
-                                images: inventory.images,
-                                status: inventory.status,
-                                comment: inventory.comment
-                            )
-                        }
-                    )
+                        checked: existingRoom.checked,
+                        inventory: existingRoom.inventory,
+                        images: existingRoom.images,
+                        status: existingRoom.status,
+                        comment: existingRoom.comment
+                    ))
+                } else {
+                    updatedLocalRooms.append(LocalRoom(
+                        id: room.id,
+                        name: room.name,
+                        checked: false,
+                        inventory: [],
+                        images: [],
+                        status: "Select room status",
+                        comment: ""
+                    ))
                 }
             }
-//            dump(viewModel.localRooms)
+
+            viewModel.localRooms = updatedLocalRooms
         } catch {
             viewModel.errorMessage = "Error fetching rooms: \(error.localizedDescription)"
         }
     }
 
     func addRoom(name: String, type: String) async throws {
-        guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/") else {
+        guard let viewModel = viewModel else { throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No view model"]) }
+        let propertyId = viewModel.property.id
+        guard !propertyId.isEmpty else { throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Property ID is empty"]) }
+
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/rooms/") else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
         guard let token = await viewModel.getToken() else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve token"])
+        }
+
+        let validRoomTypes = [
+            "dressing", "laundryroom", "bedroom", "playroom", "bathroom", "toilet",
+            "livingroom", "diningroom", "kitchen", "hallway", "balcony", "cellar",
+            "garage", "storage", "office", "other"
+        ]
+        guard validRoomTypes.contains(type) else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid room type: \(type)"])
         }
 
         let body: [String: Any] = [
@@ -114,14 +137,17 @@ class RoomManager {
             }
 
             guard (200...299).contains(httpResponse.statusCode) else {
+                if let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                    throw NSError(domain: "", code: httpResponse.statusCode,
+                                  userInfo: [NSLocalizedDescriptionKey: "API error: \(errorResponse.error)"])
+                }
                 throw NSError(domain: "", code: httpResponse.statusCode,
                               userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode)"])
             }
 
             let decoder = JSONDecoder()
-            let idResponse = try decoder.decode(IdResponse.self, from: data)
+            let _ = try decoder.decode(IdResponse.self, from: data)
 
-            // Since the API only returns the ID, fetch the updated room list to get the full room details
             await fetchRooms()
         } catch {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Error creating room: \(error.localizedDescription)"])
@@ -130,7 +156,13 @@ class RoomManager {
 
     func deleteRoom(_ room: LocalRoom) async {
         guard let viewModel = viewModel else { return }
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(viewModel.property.id)/rooms/\(room.id)/archive/") else {
+        let propertyId = viewModel.property.id
+        guard !propertyId.isEmpty else {
+            viewModel.errorMessage = "Property ID is empty"
+            return
+        }
+
+        guard let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/rooms/\(room.id)/archive/") else {
             viewModel.errorMessage = "Invalid URL"
             return
         }
@@ -140,10 +172,7 @@ class RoomManager {
             return
         }
 
-        let body: [String: Any] = [
-                "archive": true
-            ]
-
+        let body: [String: Any] = ["archive": true]
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "PUT"
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -152,12 +181,7 @@ class RoomManager {
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: body)
             urlRequest.httpBody = jsonData
-        } catch {
-            print("error: \(error.localizedDescription)")
-//            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to serialize request body: \(error.localizedDescription)".localized()])
-        }
 
-        do {
             let (_, response) = try await URLSession.shared.data(for: urlRequest)
 
             guard let httpResponse = response as? HTTPURLResponse else {
@@ -198,14 +222,5 @@ class RoomManager {
         guard let viewModel = viewModel else { return }
         guard let index = viewModel.localRooms.firstIndex(where: { $0.id == room.id }) else { return }
         viewModel.localRooms[index].checked = true
-    }
-
-    func updateRoomCheckedStatus() {
-        guard let viewModel = viewModel else { return }
-        guard let selectedRoom = viewModel.selectedRoom else { return }
-        let allStuffChecked = viewModel.selectedInventory.allSatisfy { $0.checked }
-        if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == selectedRoom.id }) {
-            viewModel.localRooms[roomIndex].checked = allStuffChecked
-        }
     }
 }

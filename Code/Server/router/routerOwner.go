@@ -2,9 +2,9 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"immotep/backend/controllers"
-	_ "immotep/backend/docs" // mandatory import for swagger doc
-	"immotep/backend/router/middlewares"
+	"keyz/backend/controllers"
+	_ "keyz/backend/docs" // mandatory import for swagger doc
+	"keyz/backend/router/middlewares"
 )
 
 func registerOwnerRoutes(owner *gin.RouterGroup) {

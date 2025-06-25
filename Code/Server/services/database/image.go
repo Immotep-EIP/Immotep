@@ -1,8 +1,8 @@
 package database
 
 import (
-	"immotep/backend/prisma/db"
-	"immotep/backend/services"
+	"keyz/backend/prisma/db"
+	"keyz/backend/services"
 )
 
 func GetImageByID(id string) *db.ImageModel {
@@ -27,6 +27,7 @@ func CreateImage(image db.ImageModel) db.ImageModel {
 	pdb := services.DBclient
 	newImage, err := pdb.Client.Image.CreateOne(
 		db.Image.Data.Set(image.Data),
+		db.Image.Type.Set(image.Type),
 	).Exec(pdb.Context)
 	if err != nil || newImage == nil {
 		panic(err)
@@ -37,5 +38,6 @@ func CreateImage(image db.ImageModel) db.ImageModel {
 func MockCreateImage(c *services.PrismaDB, image db.ImageModel) db.ImageMockExpectParam {
 	return c.Client.Image.CreateOne(
 		db.Image.Data.Set(image.Data),
+		db.Image.Type.Set(image.Type),
 	)
 }
