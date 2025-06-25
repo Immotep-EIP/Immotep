@@ -170,7 +170,20 @@ class PropertyViewModel: ObservableObject {
         if let leaseId = activeLeaseId {
             return leaseId
         }
-        let leaseId = try await tenantViewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token)
+        
+        guard let userRole = storedUserRole else {
+            throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "User role not defined.".localized()])
+        }
+
+        let leaseId: String?
+        if userRole == "tenant" {
+            leaseId = try await tenantViewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token)
+        } else if userRole == "owner" {
+            leaseId = try await ownerViewModel.fetchActiveLease(propertyId: propertyId, token: token)
+        } else {
+            throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Invalid user role: \(userRole)".localized()])
+        }
+        
         self.activeLeaseId = leaseId
         return leaseId
     }
@@ -243,6 +256,102 @@ class PropertyViewModel: ObservableObject {
             throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Document not found.".localized()])
         }
         try await ownerViewModel.deleteDocument(propertyId: property.id, documentId: docId)
+    }
+    
+    func fetchPropertyById(_ propertyId: String) async throws -> Property? {
+        if let existingProperty = properties.first(where: { $0.id == propertyId }) {
+            return existingProperty
+        }
+        
+        guard let userRole = storedUserRole else {
+            throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "User role not defined.".localized()])
+        }
+                
+        let token = try await TokenStorage.getValidAccessToken()
+        let url: URL
+        if userRole == "tenant" {
+            url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/property/")!
+        } else if userRole == "owner" {
+            url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyId)/")!
+        } else {
+            throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Invalid user role: \(userRole)".localized()])
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            throw NSError(domain: "", code: (response as? HTTPURLResponse)?.statusCode ?? 0, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0) - \(errorBody)".localized()])
+        }
+        
+        let decoder = JSONDecoder()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        let fallbackFormatter = DateFormatter()
+        fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateString = try container.decode(String.self)
+            if let date = dateFormatter.date(from: dateString) {
+                return date
+            } else if let date = fallbackFormatter.date(from: dateString) {
+                return date
+            }
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
+        }
+        
+        let propertyResponse = try decoder.decode(PropertyResponse.self, from: data)
+        let photo = try await fetchPropertiesPicture(propertyId: propertyId)
+        
+        var documents: [PropertyDocument] = []
+        var damages: [DamageResponse] = []
+        var rooms: [PropertyRooms] = []
+        
+        if let leaseId = try await fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token) {
+            do {
+                documents = try await fetchPropertyDocuments(propertyId: propertyId)
+                if userRole == "tenant" {
+                    damages = try await tenantViewModel.fetchTenantDamages(leaseId: leaseId, fixed: nil)
+                    let fetchedRooms = try await fetchPropertyRooms(propertyId: propertyId, token: token)
+                    rooms = fetchedRooms.map { PropertyRooms(id: $0.id, name: $0.name, checked: false, inventory: []) }
+                } else {
+                    damages = try await ownerViewModel.fetchPropertyDamages(propertyId: propertyId, fixed: nil)
+                }
+            } catch {
+                print("Error fetching additional data for property \(propertyId): \(error.localizedDescription)")
+            }
+        }
+        
+        let property = Property(
+            id: propertyResponse.id,
+            ownerID: propertyResponse.ownerId,
+            name: propertyResponse.name,
+            address: propertyResponse.address,
+            city: propertyResponse.city,
+            postalCode: propertyResponse.postalCode,
+            country: propertyResponse.country,
+            photo: photo,
+            monthlyRent: propertyResponse.rentalPricePerMonth,
+            deposit: propertyResponse.depositPrice,
+            surface: propertyResponse.areaSqm,
+            isAvailable: propertyResponse.isAvailable,
+            tenantName: propertyResponse.lease?.tenantName,
+            leaseId: propertyResponse.lease?.id,
+            leaseStartDate: propertyResponse.lease?.startDate,
+            leaseEndDate: propertyResponse.lease?.endDate,
+            documents: documents,
+            createdAt: propertyResponse.createdAt,
+            rooms: rooms,
+            damages: damages
+        )
+        
+        properties.append(property)
+        objectWillChange.send()
+        return property
     }
 }
 

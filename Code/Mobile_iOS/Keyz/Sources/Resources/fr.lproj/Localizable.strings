@@ -229,3 +229,5 @@
 "Please select a room." = "Veuillez sélectionner une pièce.";
 "No active lease found." = "Aucun bail actif trouvé.";
 "Error submitting damage: %@" = "Erreur lors de la soumission du sinistre : %@";
+
+"Property not found" = "Propriété introuvable";
