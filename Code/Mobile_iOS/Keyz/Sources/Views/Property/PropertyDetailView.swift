@@ -151,7 +151,11 @@ struct PropertyDetailView: View {
 
     var body: some View {
         ZStack {
-            if let property = property {
+            if isLoading {
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .scaleEffect(1.5)
+            } else if let property = property {
                 mainContentView(property: property)
 
                 if selectedTab == "Damages".localized() && loginViewModel.userRole == "tenant" && hasActiveLease {
@@ -214,22 +218,17 @@ struct PropertyDetailView: View {
             guard !hasLoaded else { return }
             hasLoaded = true
             Task {
-                await fetchInitialData()
-            }
-            inventoryViewModel.onInventoryFinalized = {
-                Task {
-                    for _ in 1...3 {
-                        await fetchDocuments()
-                        if let property = property, !property.documents.isEmpty {
-                            break
-                        }
-                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-                    }
-                    if let property = property, property.documents.isEmpty, hasActiveLease {
-                        errorMessage = "No documents found after inventory finalization".localized()
+                if property == nil {
+                    isLoading = true
+                    do {
+                        _ = try await viewModel.fetchPropertyById(propertyId)
+                    } catch {
+                        errorMessage = "Error fetching property: \(error.localizedDescription)".localized()
                         showError = true
                     }
+                    isLoading = false
                 }
+                await fetchInitialData()
             }
         }
         .sheet(isPresented: $showEditPropertyPopUp) {
@@ -259,12 +258,12 @@ struct PropertyDetailView: View {
                 .environmentObject(inventoryViewModel)
         }
         .navigationDestination(isPresented: $navigateToReportDamage) {
-            if let _ = property, activeLeaseId != nil {
+            if let _ = property, let leaseId = activeLeaseId {
                 ReportDamageView(
                     viewModel: viewModel,
                     propertyId: propertyId,
                     rooms: rooms,
-                    leaseId: activeLeaseId,
+                    leaseId: leaseId,
                     onDamageCreated: {
                         Task {
                             try await viewModel.fetchPropertyDamages(propertyId: propertyId, fixed: damageFilter)
