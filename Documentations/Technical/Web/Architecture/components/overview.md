@@ -16,7 +16,7 @@ src/components/
 
 ### Component Categories
 
-1. **Common Components**
+1. **Common Components** ([Documentation](./common/index.md))
    - Highly reusable components used across multiple features
    - Examples: Button, Input, Modal, Card
    - Should be generic and configurable

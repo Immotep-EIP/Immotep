@@ -16,91 +16,43 @@ export { default as Empty } from './Empty/Empty'
 export { default as Badge } from './Badge/Badge'
 ```
 
-## Component Categories
+## Available Components
 
-### 1. Button Component
-```typescript
-interface ButtonProps {
-  variant: 'primary' | 'secondary' | 'outline';
-  size: 'small' | 'medium' | 'large';
-  isLoading?: boolean;
-  disabled?: boolean;
-  onClick?: () => void;
-  children: React.ReactNode;
-}
+### 1. Button
+Enhanced button component with consistent defaults and accessibility features.
+- **Location**: `./Button/Button.tsx`
+- **Documentation**: [Button Component](./Button/button-component.md)
+- **Key Features**: Custom defaults (primary type, middle size), loading states, accessibility
 
-// Usage
-<Button 
-  variant="primary"
-  size="medium"
-  onClick={handleClick}
->
-  Click me
-</Button>
-```
+### 2. Input
+Enhanced input component with built-in label, error handling, and form integration.
+- **Location**: `./Input/Input.tsx`
+- **Documentation**: [Input Component](./Input/input-component.md)
+- **Key Features**: Label support, error display, required indicators, simplified onChange
 
-### 2. Input Component
-```typescript
-interface InputProps {
-  type: 'text' | 'email' | 'password' | 'number';
-  label: string;
-  error?: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  required?: boolean;
-}
+### 3. Card
+Enhanced card component with custom variants and padding options.
+- **Location**: `./Card/Card.tsx`
+- **Documentation**: [Card Component](./Card/card-component.md)
+- **Key Features**: Custom variants (elevated, outlined), flexible padding, Card.Grid support
 
-// Usage
-<Input
-  type="email"
-  label="Email"
-  value={email}
-  onChange={setEmail}
-  error={emailError}
-  required
-/>
-```
+### 4. StatusTag
+Specialized tag component for displaying internationalized status with color mapping.
+- **Location**: `./Tag/StatusTag.tsx`
+- **Documentation**: [StatusTag Component](./StatusTag/status-tag-component.md)
+- **Key Features**: i18n support, color mapping, case-insensitive matching
 
-### 3. Modal Component
-```typescript
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  children: React.ReactNode;
-  size?: 'small' | 'medium' | 'large';
-}
+### 5. Empty
+Enhanced empty state component with custom image and consistent styling.
+- **Location**: `./Empty/Empty.tsx`
+- **Documentation**: [Empty Component](./Empty/empty-component.md)
+- **Key Features**: Custom empty image, Typography wrapper, flexible descriptions
 
-// Usage
-<Modal
-  isOpen={isModalOpen}
-  onClose={handleClose}
-  title="Confirmation"
-  size="medium"
->
-  <p>Are you sure you want to proceed?</p>
-</Modal>
-```
-
-### 4. Card Component
-```typescript
-interface CardProps {
-  title?: string;
-  children: React.ReactNode;
-  variant?: 'default' | 'elevated' | 'outlined';
-  padding?: 'none' | 'small' | 'medium' | 'large';
-}
-
-// Usage
-<Card
-  title="User Profile"
-  variant="elevated"
-  padding="medium"
->
-  <UserProfileContent />
-</Card>
-```
+### 6. Badge
+Enhanced badge component with status variants and ribbon support.
+- **Location**: `./Badge/Badge.tsx`
+- **Documentation**: [Badge Component](./Badge/badge-component.md)
+- **Key Features**: Status badges, Ribbon support, custom colors, all Ant Design features
 
 ## Design Principles
 
@@ -142,44 +94,6 @@ export const Component: React.FC<ComponentProps> = ({
   );
 };
 ```
-
-## Available Components
-
-### 1. Button
-Enhanced button component with consistent defaults and accessibility features.
-- **Location**: `./Button/Button.tsx`
-- **Documentation**: [Button Component](./common/Button/button-component.md)
-- **Key Features**: Custom defaults (primary type, middle size), loading states, accessibility
-
-### 2. Input
-Enhanced input component with built-in label, error handling, and form integration.
-- **Location**: `./Input/Input.tsx`
-- **Documentation**: [Input Component](./common/Input/input-component.md)
-- **Key Features**: Label support, error display, required indicators, simplified onChange
-
-### 3. Card
-Enhanced card component with custom variants and padding options.
-- **Location**: `./Card/Card.tsx`
-- **Documentation**: [Card Component](./common/Card/card-component.md)
-- **Key Features**: Custom variants (elevated, outlined), flexible padding, Card.Grid support
-
-### 4. StatusTag
-Specialized tag component for displaying internationalized status with color mapping.
-- **Location**: `./Tag/StatusTag.tsx`
-- **Documentation**: [StatusTag Component](./common/StatusTag/status-tag-component.md)
-- **Key Features**: i18n support, color mapping, case-insensitive matching
-
-### 5. Empty
-Enhanced empty state component with custom image and consistent styling.
-- **Location**: `./Empty/Empty.tsx`
-- **Documentation**: [Empty Component](./common/Empty/empty-component.md)
-- **Key Features**: Custom empty image, Typography wrapper, flexible descriptions
-
-### 6. Badge
-Enhanced badge component with status variants and ribbon support.
-- **Location**: `./Badge/Badge.tsx`
-- **Documentation**: [Badge Component](./common/Badge/badge-component.md)
-- **Key Features**: Status badges, Ribbon support, custom colors, all Ant Design features
 
 ## Usage Examples
 
