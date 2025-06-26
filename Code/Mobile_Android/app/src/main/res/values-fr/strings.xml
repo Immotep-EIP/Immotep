@@ -218,5 +218,6 @@
     <string name="available_properties">Propriété(s) disponible(s)</string>
     <string name="reminders">Rappels</string>
     <string name="damages_list">Liste des dommages</string>
+    <string name="no_browser_found">Aucun navigateur trouvé</string>
 
 </resources>

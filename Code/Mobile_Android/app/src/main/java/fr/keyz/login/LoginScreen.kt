@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,6 +35,7 @@ import fr.keyz.components.CheckBoxWithLabel
 import fr.keyz.components.ErrorAlert
 import fr.keyz.components.Header
 import fr.keyz.components.LoadingDialog
+import fr.keyz.components.OpenBrowserAnnotatedString
 import fr.keyz.components.TopText
 import fr.keyz.ui.components.OutlinedTextField
 import fr.keyz.ui.components.PasswordInput
@@ -111,15 +111,7 @@ fun LoginScreen(
                         viewModel.updateEmailAndPassword(null, null, value)
                     },
                 )
-                Text(
-                    AnnotatedString(
-                        stringResource(R.string.forgot_password),
-                    ),
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier =
-                    Modifier.clickable { navController.navigate("forgotPassword") },
-                )
+                OpenBrowserAnnotatedString("https://dev.space.keyz-app.fr/forgot-password", stringResource(R.string.forgot_password))
             }
             Button(
                 onClick = { viewModel.login({ isOwner.value = it }) },

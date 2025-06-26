@@ -44,7 +44,6 @@ class RealPropertyDetailsViewModel(
     private var _property = MutableStateFlow(DetailedProperty())
     private val _apiError = MutableStateFlow(ApiErrors.NONE)
     private val _isLoading = MutableStateFlow(false)
-    private val _isLoadingMutex = Mutex()
 
     val property: StateFlow<DetailedProperty> = _property.asStateFlow()
     val documents = mutableStateListOf<Document>()
@@ -53,11 +52,7 @@ class RealPropertyDetailsViewModel(
     val isLoading = _isLoading.asStateFlow()
 
     fun setIsLoading(value : Boolean) {
-        viewModelScope.launch {
-            _isLoadingMutex.lock()
-            _isLoading.value = value
-            _isLoadingMutex.unlock()
-        }
+        _isLoading.value = value
     }
 
     fun loadProperty(newProperty: DetailedProperty) {
