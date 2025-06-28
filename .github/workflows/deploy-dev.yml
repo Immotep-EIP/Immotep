@@ -44,7 +44,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script_stop: true
           script: |
-            cd /home/${{ vars.DEPLOY_USER }}/Immotep/Code/
+            cd /home/${{ vars.DEPLOY_USER }}/Keyz/Code/
             git switch dev
             git pull
             docker compose build
