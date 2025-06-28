@@ -1,12 +1,12 @@
-name: immotep
+name: keyz
 services:
   showcase:
-    container_name: immotep-showcase
+    container_name: keyz-showcase
     build:
       context: ./ShowcaseKeyz/
       args:
         - VITE_API_URL=${VITE_API_URL}
-    # image: mazettt/immotep-showcase:latest
+    # image: mazettt/keyz-showcase:latest
     restart: always
     ports:
       - 3003:3003
@@ -14,12 +14,12 @@ services:
       server:
         condition: service_healthy
   frontend:
-    container_name: immotep-frontend
+    container_name: keyz-frontend
     build:
       context: ./Web/
       args:
         - VITE_API_URL=${VITE_API_URL}
-    # image: mazettt/immotep-frontend:latest
+    # image: mazettt/keyz-frontend:latest
     restart: always
     ports:
       - 3002:3002
@@ -27,9 +27,9 @@ services:
       server:
         condition: service_healthy
   server:
-    container_name: immotep-server
+    container_name: keyz-server
     build: ./Server/
-    # image: mazettt/immotep-server:latest
+    # image: mazettt/keyz-server:latest
     restart: always
     ports:
       - 3001:3001
@@ -40,18 +40,18 @@ services:
       migrate:
         condition: service_completed_successfully
   migrate:
-    container_name: immotep-migrate
+    container_name: keyz-migrate
     build:
       context: ./Server/
       dockerfile: Dockerfile.migrate
-    # image: mazettt/immotep-migrate:latest
+    # image: mazettt/keyz-migrate:latest
     restart: "no"
     env_file: ./Server/.env.docker
     depends_on:
       db:
         condition: service_healthy
   db:
-    container_name: immotep-db
+    container_name: keyz-db
     image: postgres
     restart: always
     user: postgres
@@ -60,7 +60,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=immotep
+      - POSTGRES_DB=keyz
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     expose:
       - 5432
