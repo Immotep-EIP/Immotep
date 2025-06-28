@@ -7,11 +7,22 @@
 
 import SwiftUI
 
+enum NotificationType {
+    case error
+    case success
+}
+
 struct ErrorNotificationView: View {
     let message: String
+    let type: NotificationType
     @State private var isVisible = false
     @State private var opacity: Double = 0.0
-    private let duration: TimeInterval = 5.0
+    private let duration: Double = 5.0
+
+    init(message: String, type: NotificationType = .error) {
+        self.message = message
+        self.type = type
+    }
 
     var body: some View {
         ZStack {
@@ -19,7 +30,7 @@ struct ErrorNotificationView: View {
                 VStack {
                     Spacer()
                     HStack {
-                        Image(systemName: "exclamationmark.triangle.fill")
+                        Image(systemName: type == .success ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                             .foregroundColor(.white)
                             .padding(.leading, 10)
                         Text(message)
@@ -28,13 +39,13 @@ struct ErrorNotificationView: View {
                             .padding(.vertical)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .background(Color("RedAlert"))
-                    .cornerRadius(12)
+                    .background(type == .success ? Color("GreenAlert") : Color("RedAlert"))
+                    .cornerRadius(8)
                     .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
-                    .transition(.opacity)
-                    .opacity(opacity)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 20)
+                    .transition(.opacity)
+                    .opacity(opacity)
                     .animation(.easeInOut(duration: 0.3), value: opacity)
                 }
             }
@@ -56,6 +67,9 @@ struct ErrorNotificationView: View {
 
 struct ErrorNotificationView_Previews: PreviewProvider {
     static var previews: some View {
-        ErrorNotificationView(message: "Error fetching data")
+        VStack {
+            ErrorNotificationView(message: "Error fetching data")
+            ErrorNotificationView(message: "Data saved successfully!", type: .success)
+        }
     }
 }
