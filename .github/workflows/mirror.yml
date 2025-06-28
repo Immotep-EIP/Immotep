@@ -5,7 +5,7 @@ on: [push, delete]
 jobs:
   mirror:
     runs-on: ubuntu-latest
-    if: github.repositoryUrl == 'git://github.com/Immotep-EIP/Immotep.git'
+    if: github.repositoryUrl == 'git://github.com/Keyz-EIP/Keyz.git'
     steps:
       - uses: actions/checkout@v4
         with:
