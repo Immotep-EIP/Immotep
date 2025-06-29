@@ -225,3 +225,4 @@
 "Please select a room." = "Please select a room.";
 "No active lease found." = "No active lease found.";
 "Error submitting damage: %@" = "Error submitting damage: %@";
+"No rooms available for reporting damages" = "No rooms available for reporting damages";

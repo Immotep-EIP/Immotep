@@ -13,76 +13,61 @@ struct DamageItemView: View {
     @Binding var selectedDamageId: String?
 
     var body: some View {
-        Button(action: {
-            selectedDamageId = damage.id
-        }) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text(damage.roomName)
-                        .font(.headline)
-                        .foregroundColor(Color("textColor"))
-                    Spacer()
-                    Text(damage.priority.capitalized.localized())
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(priorityColor(damage.priority))
-                        )
-                }
-                Text(damage.comment)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                HStack {
-                    Text(String(format: "Status: %@".localized(), damage.fixStatus.replacingOccurrences(of: "_", with: " ").capitalized.localized()))
-                        .font(.caption)
-                        .foregroundColor(statusColor(damage.fixStatus))
-                    Spacer()
-                    Text(formatDateString(damage.createdAt))
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(damage.roomName)
+                    .font(.headline)
+                    .foregroundColor(Color("textColor"))
+                Spacer()
+                Text(damage.priority.capitalized.localized())
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(priorityColor(for: damage.priority))
+                    )
             }
-            .padding()
-            .background(Color("basicWhiteBlack"))
-            .cornerRadius(10)
-            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+            Text(damage.comment)
+                .font(.subheadline)
+                .foregroundColor(.gray)
+            HStack {
+                Text(String(format: "Status: %@".localized(), damage.fixStatus.replacingOccurrences(of: "_", with: " ").capitalized.localized()))
+                    .font(.caption)
+                    .foregroundColor(statusColor(for: damage.fixStatus))
+                Spacer()
+                Text(formatDateString(damage.createdAt))
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding()
+        .background(selectedDamageId == damage.id ? Color.gray.opacity(0.2) : Color("basicWhiteBlack"))
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
         .accessibilityLabel("damage_item_\(damage.id)")
     }
     
-    private func priorityColor(_ priority: String) -> Color {
+    private func priorityColor(for priority: String) -> Color {
         switch priority.lowercased() {
-        case "low":
-            return Color.green
-        case "medium":
-            return Color.yellow
-        case "high":
-            return Color.orange
-        case "urgent":
-            return Color.red
-        default:
-            return Color.gray
+        case "urgent": return .red
+        case "high": return .orange
+        case "medium": return .yellow
+        case "low": return .green
+        default: return .gray
         }
     }
-    
-    private func statusColor(_ status: String) -> Color {
+
+    private func statusColor(for status: String) -> Color {
         switch status.lowercased() {
-        case "fixed":
-            return Color.green
-        case "planned", "awaiting_tenant_confirmation":
-            return Color.orange
-        case "pending":
-            return Color.red
-        default:
-            return Color.gray
+        case "pending": return .orange
+        case "fixed": return .green
+        default: return .gray
         }
     }
-    
+
     private func formatDateString(_ dateString: String) -> String {
         let isoFormatter = ISO8601DateFormatter()
         isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -93,9 +78,8 @@ struct DamageItemView: View {
 
         if let date = isoFormatter.date(from: dateString) {
             return displayFormatter.string(from: date)
-        } else {
-            return "Invalid Date".localized()
         }
+        return dateString
     }
 }
 

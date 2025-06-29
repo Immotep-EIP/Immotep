@@ -18,16 +18,17 @@ struct InventoryExitEvaluationView: View {
     @State private var isLoading: Bool = false
     @State private var showError = false
     @State private var errorMessage: String?
+
     @State private var isReportSent: Bool = false
 
     let stateMapping: [String: String] = [
-        "not_set": "Select your equipment status",
-        "broken": "Broken",
-        "needsRepair": "Needs Repair",
-        "bad": "Bad",
-        "medium": "Medium",
-        "good": "Good",
-        "new": "New"
+        "not_set": "Select your equipment status".localized(),
+        "broken": "Broken".localized(),
+        "needsRepair": "Needs Repair".localized(),
+        "bad": "Bad".localized(),
+        "medium": "Medium".localized(),
+        "good": "Good".localized(),
+        "new": "New".localized()
     ]
 
     var body: some View {
@@ -81,9 +82,8 @@ struct InventoryExitEvaluationView: View {
                         }
                         HStack {
                             Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
-                                Text("Select your equipment status".localized()).tag("Select your equipment status")
-                                ForEach(Array(stateMapping.values), id: \.self) { status in
-                                    Text(status).tag(status)
+                                ForEach(Array(stateMapping.keys.sorted()), id: \.self) { key in
+                                    Text(stateMapping[key] ?? key).tag(key)
                                 }
                             }
                             .frame(maxWidth: .infinity)
@@ -158,6 +158,10 @@ struct InventoryExitEvaluationView: View {
         }
         .onAppear {
             inventoryViewModel.selectStuff(selectedStuff)
+            let validStates = Array(stateMapping.keys)
+            if !validStates.contains(inventoryViewModel.selectedStatus) {
+                inventoryViewModel.selectedStatus = "not_set"
+            }
         }
     }
 
@@ -215,7 +219,7 @@ struct InventoryExitEvaluationView: View {
                 if error.localizedDescription.contains("datauri") {
                     errorMessage = "Invalid image format. Please ensure all images are valid JPEGs.".localized()
                 } else {
-                    errorMessage = "Invalid request: \(error.localizedDescription)"
+                    errorMessage = "Invalid request: \(error.localizedDescription)".localized()
                 }
             case 0 where error.localizedDescription.contains("No active lease found"):
                 errorMessage = "No active lease found for this property.".localized()

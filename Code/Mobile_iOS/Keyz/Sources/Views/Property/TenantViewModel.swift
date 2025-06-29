@@ -26,7 +26,7 @@ class TenantViewModel: ObservableObject {
         let id: String
     }
     
-    func inviteTenant(propertyId: String, email: String, startDate: Date, endDate: Date? = nil) async throws -> String {
+    func inviteTenant(propertyId: String, email: String, startDate: Date, endDate: Date? = nil) async throws {
         let endpoint = "owner/properties/\(propertyId)/send-invite/"
         let url = URL(string: "\(APIConfig.baseURL)/\(endpoint)")!
         var request = URLRequest(url: url)
@@ -58,7 +58,6 @@ class TenantViewModel: ObservableObject {
         switch httpResponse.statusCode {
         case 201:
             let inviteResponse = try JSONDecoder().decode(InviteIDResponse.self, from: data)
-            return inviteResponse.id
         case 400:
             throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Missing fields"])
         case 403:

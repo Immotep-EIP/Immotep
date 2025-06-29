@@ -32,7 +32,7 @@
 "Add Property" = "Ajouter une propriété";
 "Select Image Source" = "Sélectionner la source de l'image";
 "Take Photo" = "Prendre une photo";
-"Choose from Library" = "Choisir depuis la gallerie";
+"Choose from Library" = "Choisir depuis la galerie";
 "Property Details" = "Détails";
 "About the property" = "À propos";
 "Start Inventory" = "Commencer l'état des lieux";
@@ -43,7 +43,7 @@
 "Tenant(s)" = "Locataires(s)";
 "start_date" = "Date de début : %@";
 "No start date assigned" = "Pas de date renseignée";
-"rent_month" = "Loyer : %d$";
+"rent_month" = "Loyer : %d€";
 "end_date" = "Fin : %@";
 "No end date assigned" = "Pas de date renseignée";
 "deposit_value" = "Caution : %d$";
@@ -156,7 +156,7 @@
 "dashboard_overview" = "Voici un aperçu de vos propriétés et tâches";
 "+%d more" = "+%d de plus";
 "No recent properties" = "Aucune propriété récente";
-"%d$/month" = "%d$/mois";
+"%d€/month" = "%d€/mois";
 "Open Damages" = "Sinistres ouverts";
 "Planned This Week" = "Planifié cette semaine";
 "No damages to fix" = "Aucun sinistre à réparer";
@@ -183,14 +183,16 @@
 
 "Room Analysis" = "Analyse de la pièce";
 "Select room status" = "Sélectionner l'état de la pièce";
-"Send Room Report" = "Envoyer le rapport de la pièce";
+"Select your equipment status" = "Selectionner l'état de l'objet";
+"Send Room Report" = "Effectuer l'analyse de la pièce";
+"Send Report" = "Effectuer l'analyse";
 "Broken" = "Cassé";
 "Bad" = "Mauvais";
 "Good" = "Bon";
 "New" = "Neuf";
 
 "Choose a name and type for your new room:" = "Choisissez un nom et un type pour votre nouvelle pièce :";
-"Are you sure you want to delete the room %@" = "Êtes-vous sûr de vouloir supprimer la pièce %@ ?";
+"Are you sure you want to delete the room %@?" = "Êtes-vous sûr de vouloir supprimer la pièce %@ ?";
 "Add an element" = "Ajouter un élément";
 "Please enter details:" = "Veuillez entrer les détails :";
 "Are you sure you want to delete the stuff?" = "Êtes-vous sûr de vouloir supprimer l'élément ?";
@@ -212,14 +214,16 @@
 "Updated At" = "Mis à jour le";
 "Fix Planned At" = "Réparation prévue le";
 "Fixed At" = "Réparé le";
-"Select Fix Status" = "Sélectionner le statut du sinistre";
-"Choose a new status for the damage" = "Choisir un nouveau statut pour le sinistre";
+"Select Fix Status" = "Sélectionner l'état du sinistre";
+"Choose a new status for the damage" = "Choisir un nouvel état pour le sinistre";
 "Select Fix Planned Date" = "Sélectionner la date de réparation prévue";
 "Fix Planned Date" = "Date de réparation prévue";
-"Error updating status: %@" = "Erreur lors de la mise à jour du statut : %@";
+"Error updating status: %@" = "Erreur lors de la mise à jour de l'état : %@";
 "Error confirming fix: %@" = "Erreur lors de la confirmation de la réparation : %@";
 "planned" = "Planifié";
+"Planned" = "Planifié";
 "awaiting_tenant_confirmation" = "En attente de confirmation du locataire";
+"Status" = "État";
 
 "No rooms available" = "Aucune pièce disponible";
 "Select a room" = "Sélectionner une pièce";
@@ -231,3 +235,24 @@
 "Error submitting damage: %@" = "Erreur lors de la soumission du sinistre : %@";
 
 "Property not found" = "Propriété introuvable";
+"Messaging coming soon!" = "La messagerie arrive bientôt !";
+"My Property" = "Ma propriété";
+"No rooms available for reporting damages" = "Aucune pièce disponible pour signaler un sinistre";
+"Add a Room" = "Ajouter une pièce";
+"Add" = "Ajouter";
+"Enter room name" = "Entrez le nom de la pièce";
+"Add a furniture" = "Ajouter un meuble/objet";
+"Enter a new furniture name" = "Entrez le nom de l'objet";
+"Enter the furniture quantity" = "Entrez la quantité d'objet(s)";
+"Delete Stuff" = "Supprimer un objet";
+
+"Are you sure you want to delete the stuff?" = "Êtes-vous sûr de vouloir supprimer cet objet ?";
+
+"No lease is currently active" = "Aucun contrat en cours";
+"Validate" = "Valider";
+"Finalize Inventory" = "Finaliser l'état des lieux";
+"Delete Room" = "Supprimer la pièce";
+
+"Entry inventory finalized successfully!" = "Rapport d'état des lieux d'entrée généré avec succès !";
+"Exit inventory finalized successfully!" = "Rapport d'état des lieux de sortie généré avec succès !";
+"no_damages_reported" = "Pas de sinistres à afficher";
