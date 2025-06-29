@@ -28,6 +28,7 @@ WORKDIR /app
 RUN apk add --no-cache curl
 
 COPY --from=builder /app/backend /app/backend
+COPY --from=builder /app/assets /app/assets
 
 ENV PORT='3001'
 ENV GIN_MODE=release
