@@ -175,7 +175,7 @@ struct CreatePropertyView: View {
                     dismiss()
                 }
             }
-            await viewModel.fetchProperties()
+            try await viewModel.fetchProperties()
         } catch {
             await MainActor.run {
                 if let nsError = error as NSError?, nsError.code == 409 {
