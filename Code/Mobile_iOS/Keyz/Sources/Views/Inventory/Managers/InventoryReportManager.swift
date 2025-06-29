@@ -75,32 +75,24 @@ class InventoryReportManager {
         let decoder = JSONDecoder()
         let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
 
-        let stateMapping: [String: String] = [
-            "not_set": "Select your equipment status",
-            "broken": "Broken",
-            "needsRepair": "Needs Repair",
-            "bad": "Bad",
-            "medium": "Medium",
-            "good": "Good",
-            "new": "New"
-        ]
-        let uiStatus = stateMapping[summarizeResponse.state] ?? "Select your equipment status"
+        let validStates = ["not_set", "broken", "needsRepair", "bad", "medium", "good", "new"]
+        let apiStatus = validStates.contains(summarizeResponse.state) ? summarizeResponse.state : "not_set"
 
         if let index = viewModel.selectedInventory.firstIndex(where: { $0.id == stuffID }) {
             viewModel.selectedInventory[index].images = viewModel.selectedImages
-            viewModel.selectedInventory[index].status = uiStatus
+            viewModel.selectedInventory[index].status = apiStatus
             viewModel.selectedInventory[index].comment = summarizeResponse.note
         }
 
         if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == viewModel.selectedRoom?.id }),
            let stuffIndex = viewModel.localRooms[roomIndex].inventory.firstIndex(where: { $0.id == stuffID }) {
             viewModel.localRooms[roomIndex].inventory[stuffIndex].images = viewModel.selectedImages
-            viewModel.localRooms[roomIndex].inventory[stuffIndex].status = uiStatus
+            viewModel.localRooms[roomIndex].inventory[stuffIndex].status = apiStatus
             viewModel.localRooms[roomIndex].inventory[stuffIndex].comment = summarizeResponse.note
         }
 
         viewModel.comment = summarizeResponse.note
-        viewModel.selectedStatus = uiStatus
+        viewModel.selectedStatus = apiStatus
     }
 
     func finalizeInventory() async throws {
@@ -161,10 +153,6 @@ class InventoryReportManager {
 
         let encoder = JSONEncoder()
         urlRequest.httpBody = try encoder.encode(requestBody)
-        
-        if let jsonData = urlRequest.httpBody, let jsonString = String(data: jsonData, encoding: .utf8) {
-            print("Request Body: \(jsonString)")
-        }
 
         do {
             let (_, response) = try await URLSession.shared.data(for: urlRequest)
@@ -179,6 +167,7 @@ class InventoryReportManager {
             }
             viewModel.completionMessage = viewModel.isEntryInventory
             ? "Entry inventory finalized successfully!" : "Exit inventory finalized successfully!"
+            viewModel.onDocumentsRefreshNeeded?()
         } catch {
             viewModel.completionMessage = viewModel.isEntryInventory
             ? "Failed to finalize entry inventory: \(error.localizedDescription)"
@@ -279,32 +268,24 @@ class InventoryReportManager {
         let decoder = JSONDecoder()
         let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
 
-        let stateMapping: [String: String] = [
-            "not_set": "Select your equipment status",
-            "broken": "Broken",
-            "needsRepair": "Needs Repair",
-            "bad": "Bad",
-            "medium": "Medium",
-            "good": "Good",
-            "new": "New"
-        ]
-        let uiStatus = stateMapping[summarizeResponse.state] ?? "Select your equipment status"
+        let validStates = ["not_set", "broken", "needsRepair", "bad", "medium", "good", "new"]
+        let apiStatus = validStates.contains(summarizeResponse.state) ? summarizeResponse.state : "not_set"
 
         if let index = viewModel.selectedInventory.firstIndex(where: { $0.id == stuffID }) {
             viewModel.selectedInventory[index].images = viewModel.selectedImages
-            viewModel.selectedInventory[index].status = uiStatus
+            viewModel.selectedInventory[index].status = apiStatus
             viewModel.selectedInventory[index].comment = summarizeResponse.note
         }
 
         if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == viewModel.selectedRoom?.id }),
            let stuffIndex = viewModel.localRooms[roomIndex].inventory.firstIndex(where: { $0.id == stuffID }) {
             viewModel.localRooms[roomIndex].inventory[stuffIndex].images = viewModel.selectedImages
-            viewModel.localRooms[roomIndex].inventory[stuffIndex].status = uiStatus
+            viewModel.localRooms[roomIndex].inventory[stuffIndex].status = apiStatus
             viewModel.localRooms[roomIndex].inventory[stuffIndex].comment = summarizeResponse.note
         }
 
         viewModel.comment = summarizeResponse.note
-        viewModel.selectedStatus = uiStatus
+        viewModel.selectedStatus = apiStatus
     }
     
     func sendRoomReport() async throws {
@@ -366,20 +347,12 @@ class InventoryReportManager {
         let decoder = JSONDecoder()
         let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
 
-        let stateMapping: [String: String] = [
-            "not_set": "Select your equipment status",
-            "broken": "Broken",
-            "needsRepair": "Needs Repair",
-            "bad": "Bad",
-            "medium": "Medium",
-            "good": "Good",
-            "new": "New"
-        ]
-        let uiStatus = stateMapping[summarizeResponse.state] ?? "Select room status"
+        let validStates = ["not_set", "broken", "needsRepair", "bad", "medium", "good", "new"]
+        let apiStatus = validStates.contains(summarizeResponse.state) ? summarizeResponse.state : "not_set"
 
         if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == roomId }) {
             viewModel.localRooms[roomIndex].images = viewModel.selectedImages
-            viewModel.localRooms[roomIndex].status = uiStatus
+            viewModel.localRooms[roomIndex].status = apiStatus
             viewModel.localRooms[roomIndex].comment = summarizeResponse.note
             viewModel.selectedRoom = viewModel.localRooms[roomIndex]
         } else {
@@ -387,7 +360,7 @@ class InventoryReportManager {
         }
 
         viewModel.comment = summarizeResponse.note
-        viewModel.selectedStatus = uiStatus
+        viewModel.selectedStatus = apiStatus
     }
 
     func compareRoomReport(oldReportId: String) async throws {
@@ -445,26 +418,17 @@ class InventoryReportManager {
         let decoder = JSONDecoder()
         let summarizeResponse = try decoder.decode(SummarizeResponse.self, from: data)
 
-        let stateMapping: [String: String] = [
-            "not_set": "Select your equipment status",
-            "broken": "Broken",
-            "needsRepair": "Needs Repair",
-            "bad": "Bad",
-            "medium": "Medium",
-            "good": "Good",
-            "new": "New"
-        ]
-        let uiStatus = stateMapping[summarizeResponse.state] ?? "Select room status"
+        let validStates = ["not_set", "broken", "needsRepair", "bad", "medium", "good", "new"]
+        let apiStatus = validStates.contains(summarizeResponse.state) ? summarizeResponse.state : "not_set"
 
         if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == roomId }) {
             viewModel.localRooms[roomIndex].images = viewModel.selectedImages
-            viewModel.localRooms[roomIndex].status = uiStatus
+            viewModel.localRooms[roomIndex].status = apiStatus
             viewModel.localRooms[roomIndex].comment = summarizeResponse.note
         }
 
         viewModel.comment = summarizeResponse.note
-        viewModel.selectedStatus = uiStatus
-        print("Room comparison report sent successfully: \(summarizeResponse)")
+        viewModel.selectedStatus = apiStatus
     }
 
     private func convertUIImagesToBase64(_ images: [UIImage]) -> [String] {
