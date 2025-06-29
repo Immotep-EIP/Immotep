@@ -177,6 +177,10 @@ struct PropertyDetailView: View {
                     }
                     .padding(.bottom, 20)
                     .padding(.trailing, 20)
+                } else if selectedTab == "Damages".localized() && loginViewModel.userRole == "tenant" {
+                    Text(activeLeaseId == nil ? "No active lease found".localized() : rooms.isEmpty ? "No rooms available for reporting damages".localized() : "No active lease or rooms available".localized())
+                        .foregroundColor(.red)
+                        .padding()
                 }
 
                 if selectedTab == "Documents".localized() && (loginViewModel.userRole == "tenant" || loginViewModel.userRole == "owner") && hasActiveLease {
