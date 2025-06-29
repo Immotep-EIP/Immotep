@@ -21,8 +21,8 @@ Follow these steps to set up the project locally:
 Clone the project repository from your version control system (e.g., GitHub or GitLab):
 
 ```bash
-git clone https://github.com/Immotep-EIP/Immotep.git
-cd Immotep/Code/Server
+git clone https://github.com/Keyz-EIP/Keyz.git
+cd Keyz/Code/Server
 ```
 
 ### 2. Configure Environment Variables
@@ -38,7 +38,7 @@ PORT='3001'
 PUBLIC_URL='http://localhost:3001'
 WEB_PUBLIC_URL='http://localhost:4242'
 SHOWCASE_PUBLIC_URL='http://localhost:4343'
-DATABASE_URL='postgresql://user:password@localhost:5432/immotep'
+DATABASE_URL='postgresql://user:password@localhost:5432/keyz'
 SECRET_KEY='MySecretKey'
 OPENAI_API_KEY='MyOpenAIKey'
 BREVO_API_KEY='MyBrevoKey'

@@ -8,17 +8,17 @@
 import SwiftUI
 import Foundation
 
-@MainActor
 class TenantPropertyViewModel: ObservableObject {
     @Published var damages: [DamageResponse] = []
     @Published var isFetchingDamages = false
     @Published var damagesError: String?
     @Published var rooms: [PropertyRoomsTenant] = []
     private var tenantProperty: Property?
-    private var activeLeaseId: String?
+    public var activeLeaseId: String?
     private var isFetchingProperty = false
     private var isFetchingRooms = false
     private var isFetchingLease = false
+    weak var propertyViewModel: PropertyViewModel?
     
     func fetchTenantProperty() async throws -> Property {
         if let property = tenantProperty {
@@ -44,8 +44,10 @@ class TenantPropertyViewModel: ObservableObject {
             throw NSError(domain: "", code: (response as? HTTPURLResponse)?.statusCode ?? 0, userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0) - \(errorBody)".localized()])
         }
         
-        let decoder = JSONDecoder()
-        let propertyResponse = try decoder.decode(PropertyResponse.self, from: data)
+        let propertyResponse = try await Task.detached(priority: .background) {
+            let decoder = JSONDecoder()
+            return try decoder.decode(PropertyResponse.self, from: data)
+        }.value
         
         async let leaseIdTask = fetchActiveLeaseIdForProperty(propertyId: propertyResponse.id, token: token)
         async let photoTask = fetchPropertiesPicture(propertyId: propertyResponse.id)
@@ -66,8 +68,10 @@ class TenantPropertyViewModel: ObservableObject {
                 documents = fetchedDocuments
                 damages = fetchedDamages
                 rooms = fetchedRooms
-                self.damages = fetchedDamages
-                self.rooms = fetchedRooms
+                await MainActor.run {
+                    self.damages = fetchedDamages
+                    self.rooms = fetchedRooms
+                }
             } catch {
                 print("Error fetching additional tenant data: \(error.localizedDescription)")
             }
@@ -96,8 +100,11 @@ class TenantPropertyViewModel: ObservableObject {
             damages: damages
         )
         
-        self.tenantProperty = property
-        self.activeLeaseId = leaseId
+        await MainActor.run {
+            self.tenantProperty = property
+            self.activeLeaseId = leaseId
+            self.objectWillChange.send()
+        }
         return property
     }
     
@@ -118,44 +125,43 @@ class TenantPropertyViewModel: ObservableObject {
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         
-        do {
-            let (data, response) = try await URLSession.shared.data(for: urlRequest)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
-            }
-            
-            guard (200...299).contains(httpResponse.statusCode) else {
-                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-                switch httpResponse.statusCode {
-                case 403:
-                    throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
-                case 404:
-                    print("fetchPropertyRooms: No property inventory found.")
-                    self.rooms = []
-                    return []
-                default:
-                    throw NSError(domain: "", code: httpResponse.statusCode,
-                                  userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
-                }
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let inventoryResponse = try decoder.decode(PropertyInventoryResponse.self, from: data)
-                let fetchedRooms = inventoryResponse.rooms.map { room in
-                    PropertyRoomsTenant(id: room.id, name: room.name)
-                }
-                self.rooms = fetchedRooms
-                return fetchedRooms
-            } catch {
-                print("fetchPropertyRooms Decoding Error: \(error)")
-                throw error
-            }
-        } catch {
-            print("fetchPropertyRooms Error: \(error.localizedDescription)")
-            throw error
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
         }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
+            case 404:
+                print("fetchPropertyRooms: No property inventory found.")
+                await MainActor.run {
+                    self.rooms = []
+                    self.objectWillChange.send()
+                }
+                return []
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+        
+        let inventoryResponse = try await Task.detached(priority: .background) {
+            let decoder = JSONDecoder()
+            return try decoder.decode(PropertyInventoryResponse.self, from: data)
+        }.value
+        
+        let fetchedRooms = inventoryResponse.rooms.map { room in
+            PropertyRoomsTenant(id: room.id, name: room.name)
+        }
+        await MainActor.run {
+            self.rooms = fetchedRooms
+            self.objectWillChange.send()
+        }
+        return fetchedRooms
     }
     
     func fetchPropertiesPicture(propertyId: String) async throws -> UIImage? {
@@ -183,17 +189,19 @@ class TenantPropertyViewModel: ObservableObject {
 
                 switch httpResponse.statusCode {
                 case 200, 201:
-                    let propertyImage = try JSONDecoder().decode(PropertyImageBase64.self, from: data)
-                    var base64String = propertyImage.data
-                    if base64String.contains(",") {
-                        base64String = base64String.components(separatedBy: ",").last ?? base64String
-                    }
-                    guard let imageData = Data(base64Encoded: base64String, options: [.ignoreUnknownCharacters]),
-                          let image = UIImage(data: imageData) else {
-                        throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to decode image.".localized()])
-                    }
-                    ImageCache.shared.setImage(image, forKey: propertyId)
-                    return image
+                    return try await Task.detached(priority: .background) {
+                        let propertyImage = try JSONDecoder().decode(PropertyImageBase64.self, from: data)
+                        var base64String = propertyImage.data
+                        if base64String.contains(",") {
+                            base64String = propertyImage.data.components(separatedBy: ",").last ?? base64String
+                        }
+                        guard let imageData = Data(base64Encoded: base64String, options: [.ignoreUnknownCharacters]),
+                              let image = UIImage(data: imageData) else {
+                            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to decode image.".localized()])
+                        }
+                        ImageCache.shared.setImage(image, forKey: propertyId)
+                        return image
+                    }.value
                 case 204, 403, 404:
                     ImageCache.shared.setImage(nil, forKey: propertyId)
                     return nil
@@ -216,6 +224,15 @@ class TenantPropertyViewModel: ObservableObject {
     }
     
     func fetchTenantPropertyDocuments(leaseId: String, propertyId: String) async throws -> [PropertyDocument] {
+        await MainActor.run {
+            self.propertyViewModel?.isFetchingDocuments = true
+        }
+        defer {
+            Task { @MainActor in
+                self.propertyViewModel?.isFetchingDocuments = false
+            }
+        }
+
         let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/docs/")!
         let token = try await TokenStorage.getValidAccessToken()
         
@@ -268,14 +285,18 @@ class TenantPropertyViewModel: ObservableObject {
             }
         }.value
         
-        if var updatedProperty = tenantProperty, updatedProperty.id == propertyId {
-            updatedProperty.documents = documents
-            tenantProperty = updatedProperty
+        await MainActor.run {
+            if var updatedProperty = self.tenantProperty, updatedProperty.id == propertyId {
+                updatedProperty.documents = documents
+                self.tenantProperty = updatedProperty
+                self.objectWillChange.send()
+            }
         }
         
         return documents
     }
     
+    @MainActor
     func fetchTenantDamages(leaseId: String, fixed: Bool? = nil) async throws -> [DamageResponse] {
         var urlComponents = URLComponents(string: "\(APIConfig.baseURL)/tenant/leases/current/damages/")!
         
@@ -284,56 +305,59 @@ class TenantPropertyViewModel: ObservableObject {
         }
         
         guard let url = urlComponents.url else {
+            damagesError = "Invalid URL".localized()
+            isFetchingDamages = false
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL".localized()])
         }
         
+        let token = try await TokenStorage.getValidAccessToken()
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"
-        urlRequest.setValue("Bearer \(try await TokenStorage.getValidAccessToken())", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         
         isFetchingDamages = true
         damagesError = nil
-        defer { isFetchingDamages = false }
         
-        do {
-            let (data, response) = try await URLSession.shared.data(for: urlRequest)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
-            }
-            
-            guard (200...299).contains(httpResponse.statusCode) else {
-                let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
-                switch httpResponse.statusCode {
-                case 403:
-                    throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Lease not yours.".localized()])
-                case 404:
-                    self.damages = []
-                    objectWillChange.send()
-                    return []
-                case 500:
-                    throw NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "Internal server error: \(errorBody)".localized()])
-                default:
-                    throw NSError(domain: "", code: httpResponse.statusCode,
-                                  userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
-                }
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let damagesData = try decoder.decode([DamageResponse].self, from: data)
-                self.damages = damagesData
-                objectWillChange.send()
-                return damagesData
-            } catch {
-                damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
-                throw error
-            }
-        } catch {
-            damagesError = "Error fetching damages: \(error.localizedDescription)".localized()
-            throw error
+//        let startTime = Date()
+
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server.".localized()])
         }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorBody = String(data: data, encoding: .utf8) ?? "No error details"
+            switch httpResponse.statusCode {
+            case 403:
+                throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Lease not yours.".localized()])
+            case 404:
+                self.damages = []
+                objectWillChange.send()
+                isFetchingDamages = false
+                return []
+            case 500:
+                throw NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "Internal server error: \(errorBody)".localized()])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode,
+                              userInfo: [NSLocalizedDescriptionKey: "Failed with status code: \(httpResponse.statusCode) - \(errorBody)".localized()])
+            }
+        }
+        
+//        let decodeTime = Date()
+//        print("Network request took: \(decodeTime.timeIntervalSince(startTime)) seconds")
+
+        let damagesData = try await Task.detached(priority: .background) {
+            let decoder = JSONDecoder()
+            return try decoder.decode([DamageResponse].self, from: data)
+        }.value
+        
+        self.damages = damagesData
+        objectWillChange.send()
+        isFetchingDamages = false
+//        print("Decoding and UI update took: \(Date().timeIntervalSince(decodeTime)) seconds")
+        return damagesData
     }
     
     func fetchActiveLeaseIdForProperty(propertyId: String, token: String) async throws -> String? {
@@ -369,7 +393,9 @@ class TenantPropertyViewModel: ObservableObject {
             case 403:
                 throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
             case 404:
-                self.activeLeaseId = nil
+                await MainActor.run {
+                    self.activeLeaseId = nil
+                }
                 return nil
             default:
                 throw NSError(domain: "", code: httpResponse.statusCode,
@@ -377,31 +403,33 @@ class TenantPropertyViewModel: ObservableObject {
             }
         }
         
-        let decoder = JSONDecoder()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        let fallbackFormatter = DateFormatter()
-        fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-        decoder.dateDecodingStrategy = .custom { decoder in
-            let container = try decoder.singleValueContainer()
-            let dateString = try container.decode(String.self)
-            if let date = dateFormatter.date(from: dateString) {
-                return date
-            } else if let date = fallbackFormatter.date(from: dateString) {
-                return date
+        let leaseResponse = try await Task.detached(priority: .background) {
+            let decoder = JSONDecoder()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+            let fallbackFormatter = DateFormatter()
+            fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+            decoder.dateDecodingStrategy = .custom { decoder in
+                let container = try decoder.singleValueContainer()
+                let dateString = try container.decode(String.self)
+                if let date = dateFormatter.date(from: dateString) {
+                    return date
+                } else if let date = fallbackFormatter.date(from: dateString) {
+                    return date
+                }
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
             }
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
-        }
+            return try decoder.decode(LeaseResponse.self, from: data)
+        }.value
         
-        let leaseResponse = try decoder.decode(LeaseResponse.self, from: data)
-        
-        if leaseResponse.active && leaseResponse.propertyId == propertyId {
-            self.activeLeaseId = leaseResponse.id
-            return leaseResponse.id
-        } else {
-            self.activeLeaseId = nil
-            return nil
+        await MainActor.run {
+            if leaseResponse.active && leaseResponse.propertyId == propertyId {
+                self.activeLeaseId = leaseResponse.id
+            } else {
+                self.activeLeaseId = nil
+            }
         }
+        return leaseResponse.active && leaseResponse.propertyId == propertyId ? leaseResponse.id : nil
     }
     
     func createDamage(propertyId: String, leaseId: String, damage: DamageRequest, token: String) async throws -> String {
@@ -413,7 +441,9 @@ class TenantPropertyViewModel: ObservableObject {
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         
-        let jsonData = try JSONEncoder().encode(damage)
+        let jsonData = try await Task.detached(priority: .background) {
+            try JSONEncoder().encode(damage)
+        }.value
         urlRequest.httpBody = jsonData
         
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
@@ -435,8 +465,9 @@ class TenantPropertyViewModel: ObservableObject {
             }
         }
         
-        let decoder = JSONDecoder()
-        let idResponse = try decoder.decode(IdResponse.self, from: data)
+        let idResponse = try await Task.detached(priority: .background) {
+            try JSONDecoder().decode(IdResponse.self, from: data)
+        }.value
         return idResponse.id
     }
     
@@ -465,7 +496,9 @@ class TenantPropertyViewModel: ObservableObject {
                 case 403:
                     throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "Property not yours.".localized()])
                 case 404:
-                    self.activeLeaseId = nil
+                    await MainActor.run {
+                        self.activeLeaseId = nil
+                    }
                     return
                 default:
                     throw NSError(domain: "", code: httpResponse.statusCode,
@@ -473,35 +506,42 @@ class TenantPropertyViewModel: ObservableObject {
                 }
             }
             
-            let decoder = JSONDecoder()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-            let fallbackFormatter = DateFormatter()
-            fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-            decoder.dateDecodingStrategy = .custom { decoder in
-                let container = try decoder.singleValueContainer()
-                let dateString = try container.decode(String.self)
-                if let date = dateFormatter.date(from: dateString) {
-                    return date
-                } else if let date = fallbackFormatter.date(from: dateString) {
-                    return date
+            let leaseResponse = try await Task.detached(priority: .background) {
+                let decoder = JSONDecoder()
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                let fallbackFormatter = DateFormatter()
+                fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+                decoder.dateDecodingStrategy = .custom { decoder in
+                    let container = try decoder.singleValueContainer()
+                    let dateString = try container.decode(String.self)
+                    if let date = dateFormatter.date(from: dateString) {
+                        return date
+                    } else if let date = fallbackFormatter.date(from: dateString) {
+                        return date
+                    }
+                    throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
                 }
-                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
-            }
+                return try decoder.decode(LeaseResponse.self, from: data)
+            }.value
             
-            let leaseResponse = try decoder.decode(LeaseResponse.self, from: data)
-            
-            if leaseResponse.active && leaseResponse.propertyId == propertyId {
-                self.activeLeaseId = leaseResponse.id
-            } else {
-                self.activeLeaseId = nil
+            await MainActor.run {
+                if leaseResponse.active && leaseResponse.propertyId == propertyId {
+                    self.activeLeaseId = leaseResponse.id
+                } else {
+                    self.activeLeaseId = nil
+                }
             }
         } catch {
-            self.activeLeaseId = nil
+            await MainActor.run {
+                self.activeLeaseId = nil
+            }
         }
     }
     
     func fetchDamageByID(damageId: String, token: String) async throws -> DamageResponse {
+//        let startTime = Date()
+
         let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/damages/\(damageId)/")!
         
         var urlRequest = URLRequest(url: url)
@@ -532,8 +572,15 @@ class TenantPropertyViewModel: ObservableObject {
             }
         }
         
-        let decoder = JSONDecoder()
-        let damage = try decoder.decode(DamageResponse.self, from: data)
+//        let decodeTime = Date()
+//        print("Network request took: \(decodeTime.timeIntervalSince(startTime)) seconds")
+
+        let damage = try await Task.detached(priority: .background) {
+            let decoder = JSONDecoder()
+            return try decoder.decode(DamageResponse.self, from: data)
+        }.value
+
+//        print("Decoding took: \(Date().timeIntervalSince(decodeTime)) seconds")
         return damage
     }
 
@@ -569,7 +616,7 @@ class TenantPropertyViewModel: ObservableObject {
         }
     }
     
-    func uploadTenantDocument(leaseId: String, propertyId: String, fileName: String, base64Data: String) async throws {
+    func uploadTenantDocument(leaseId: String, propertyId: String, fileName: String, base64Data: String) async throws -> String {
         let url = URL(string: "\(APIConfig.baseURL)/tenant/leases/current/docs/")!
         let token = try await TokenStorage.getValidAccessToken()
         
@@ -610,8 +657,10 @@ class TenantPropertyViewModel: ObservableObject {
             }
         }
         
-        let decoder = JSONDecoder()
-        let _ = try decoder.decode(IdResponse.self, from: data)
+        let idResponse = try await Task.detached(priority: .background) {
+            try JSONDecoder().decode(IdResponse.self, from: data)
+        }.value
+        return idResponse.id
     }
 }
 

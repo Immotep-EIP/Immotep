@@ -25,6 +25,6 @@ enum AppEnvironment {
 }
 
 struct APIConfig {
-    static let currentEnvironment: AppEnvironment = .dev // dev or prod for online
+    static let currentEnvironment: AppEnvironment = .prod // dev or prod for online
     static let baseURL = currentEnvironment.baseURL
 }

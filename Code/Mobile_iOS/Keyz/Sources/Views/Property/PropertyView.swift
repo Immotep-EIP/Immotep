@@ -26,6 +26,7 @@ struct PropertyView: View {
                 VStack(spacing: 0) {
                     if loginViewModel.userRole == "tenant" {
                         if isLoading {
+                            TopBar(title: "Keyz".localized())
                             VStack {
                                 Spacer()
                                 ProgressView()
@@ -50,6 +51,7 @@ struct PropertyView: View {
                         }
                     } else {
                         if isLoading {
+                            TopBar(title: "Keyz".localized())
                             VStack {
                                 Spacer()
                                 ProgressView()
@@ -128,31 +130,6 @@ struct PropertyView: View {
                         }
                     }
                 }
-                .navigationDestination(isPresented: $navigateToReportDamage) {
-                    if let propertyId = selectedPropertyId,
-                       viewModel.properties.first(where: { $0.id == propertyId }) != nil {
-                        ReportDamageView(
-                            viewModel: viewModel,
-                            propertyId: propertyId,
-                            rooms: rooms,
-                            leaseId: activeLeaseId,
-                            onDamageCreated: {
-                                Task {
-                                    do {
-                                        try await viewModel.fetchPropertyDamages(propertyId: propertyId)
-                                    } catch {
-                                        errorMessage = "Error refreshing damages: \(error.localizedDescription)".localized()
-                                        showError = true
-                                    }
-                                }
-                            }
-                        )
-                    } else {
-                        Text("No property selected".localized())
-                            .foregroundColor(.red)
-                            .padding()
-                    }
-                }
             }
 
             if showError, let message = errorMessage {
@@ -168,7 +145,7 @@ struct PropertyView: View {
                 isLoading = true
                 do {
                     if loginViewModel.userRole == "tenant" {
-                        await viewModel.fetchProperties()
+                        try await viewModel.fetchProperties()
                         tenantProperty = viewModel.properties.first
                         if let propertyId = tenantProperty?.id {
                             let token = try await TokenStorage.getValidAccessToken()
@@ -176,7 +153,7 @@ struct PropertyView: View {
                             activeLeaseId = try await viewModel.fetchActiveLeaseIdForProperty(propertyId: propertyId, token: token)
                         }
                     } else {
-                        await viewModel.fetchProperties()
+                        try await viewModel.fetchProperties()
                     }
                 } catch {
                     errorMessage = "Error fetching properties: \(error.localizedDescription)".localized()

@@ -493,12 +493,13 @@ struct CustomAlertWithTextAndDropdown: View {
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal)
-                .padding(.vertical, 5)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.gray.opacity(0.5), lineWidth: 1)
                 )
+                .padding(.horizontal)
 
                 HStack {
                     if let secondaryButtonTitle = secondaryButtonTitle {

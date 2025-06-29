@@ -22,13 +22,13 @@ struct InventoryRoomEvaluationView: View {
     @State private var isReportSent: Bool = false
 
     let stateMapping: [String: String] = [
-        "not_set": "Select your room status",
-        "broken": "Broken",
-        "needsRepair": "Needs Repair",
-        "bad": "Bad",
-        "medium": "Medium",
-        "good": "Good",
-        "new": "New"
+        "not_set": "Select your room status".localized(),
+        "broken": "Broken".localized(),
+        "needsRepair": "Needs Repair".localized(),
+        "bad": "Bad".localized(),
+        "medium": "Medium".localized(),
+        "good": "Good".localized(),
+        "new": "New".localized()
     ]
 
     var body: some View {
@@ -81,9 +81,8 @@ struct InventoryRoomEvaluationView: View {
                         }
                         HStack {
                             Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
-                                Text("Select room status".localized()).tag("Select room status")
-                                ForEach(Array(stateMapping.values), id: \.self) { status in
-                                    Text(status.localized()).tag(status)
+                                ForEach(Array(stateMapping.keys.sorted()), id: \.self) { key in
+                                    Text(stateMapping[key] ?? key).tag(key)
                                 }
                             }
                             .frame(maxWidth: .infinity)
@@ -161,7 +160,10 @@ struct InventoryRoomEvaluationView: View {
             inventoryViewModel.selectRoom(selectedRoom)
             inventoryViewModel.selectedImages = []
             inventoryViewModel.comment = ""
-            inventoryViewModel.selectedStatus = "Select room status"
+            let validStates = Array(stateMapping.keys)
+            if !validStates.contains(inventoryViewModel.selectedStatus) {
+                inventoryViewModel.selectedStatus = "not_set"
+            }
         }
     }
 
@@ -182,21 +184,16 @@ struct InventoryRoomEvaluationView: View {
 
     private func showImagePickerOptions(replaceIndex: Int?) {
         self.replaceIndex = replaceIndex
-
         let actionSheet = UIAlertController(title: "Select Image Source".localized(), message: nil, preferredStyle: .actionSheet)
-
         actionSheet.addAction(UIAlertAction(title: "Take Photo".localized(), style: .default, handler: { _ in
             self.sourceType = .camera
             self.showSheet.toggle()
         }))
-
         actionSheet.addAction(UIAlertAction(title: "Choose from Library".localized(), style: .default, handler: { _ in
             self.sourceType = .photoLibrary
             self.showSheet.toggle()
         }))
-
         actionSheet.addAction(UIAlertAction(title: "Cancel".localized(), style: .cancel, handler: nil))
-
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
             rootViewController.present(actionSheet, animated: true, completion: nil)
@@ -208,8 +205,6 @@ struct InventoryRoomEvaluationView: View {
             try await inventoryViewModel.sendRoomReport()
             isReportSent = true
         } catch let error as NSError {
-            errorMessage = "Property or lease not found. Please check the property details.".localized()
-            errorMessage = "You do not have permission to access this property.".localized()
             switch error.code {
             case 404:
                 errorMessage = "Property or lease not found.".localized()

@@ -26,10 +26,10 @@ struct InventoryStuffView: View {
             if showAddStuffAlert {
                 CustomAlertWithTwoTextFields(
                     isActive: $showAddStuffAlert,
-                    title: "Add an element",
-                    message: "Please enter details:",
-                    buttonTitle: "Add",
-                    secondaryButtonTitle: "Cancel",
+                    title: "Add an element".localized(),
+                    message: "Please enter details:".localized(),
+                    buttonTitle: "Add".localized(),
+                    secondaryButtonTitle: "Cancel".localized(),
                     action: { name, quantity in
                         Task {
                             do {
@@ -53,10 +53,10 @@ struct InventoryStuffView: View {
             if showDeleteConfirmationAlert {
                 CustomAlertTwoButtons(
                     isActive: $showDeleteConfirmationAlert,
-                    title: "Delete Stuff",
+                    title: "Delete Stuff".localized(),
                     message: stuffToDelete != nil ? "Are you sure you want to delete the stuff?".localized() : "",
-                    buttonTitle: "Delete",
-                    secondaryButtonTitle: "Cancel",
+                    buttonTitle: "Delete".localized(),
+                    secondaryButtonTitle: "Cancel".localized(),
                     action: {
                         if let stuffToDelete, let selectedRoom = selectedRoom {
                             Task {

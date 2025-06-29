@@ -21,6 +21,7 @@ struct CreatePropertyView: View {
     @State private var deposit: NSNumber?
     @State private var surface: NSNumber?
     @State private var showError: Bool = false
+    @State private var showSuccess: Bool = false
     @State private var errorMessage: String?
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
@@ -104,6 +105,13 @@ struct CreatePropertyView: View {
                         errorMessage = nil
                     }
             }
+            if showSuccess, let message = errorMessage {
+                ErrorNotificationView(message: message, type: .success)
+                    .onDisappear {
+                        showSuccess = false
+                        errorMessage = nil
+                    }
+            }
         }
     }
 
@@ -162,12 +170,12 @@ struct CreatePropertyView: View {
             let response = try await viewModel.createProperty(request: newProperty, token: token)
             await MainActor.run {
                 errorMessage = "Property created successfully with ID: \(response)!".localized()
-                showError = true
+                showSuccess = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                     dismiss()
                 }
             }
-            await viewModel.fetchProperties()
+            try await viewModel.fetchProperties()
         } catch {
             await MainActor.run {
                 if let nsError = error as NSError?, nsError.code == 409 {
