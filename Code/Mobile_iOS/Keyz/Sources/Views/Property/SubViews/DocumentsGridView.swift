@@ -19,13 +19,16 @@ struct DocumentsGridView: View {
     
     var body: some View {
         VStack {
-            if let errorMessage = errorMessage {
+            if propertyViewModel.isFetchingDocuments {
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .scaleEffect(1.5)
+                    .padding()
+            } else if let errorMessage = errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
                     .padding()
-            }
-            
-            if documents.isEmpty {
+            } else if documents.isEmpty {
                 Text("No documents available".localized())
                     .foregroundColor(.gray)
                     .padding()

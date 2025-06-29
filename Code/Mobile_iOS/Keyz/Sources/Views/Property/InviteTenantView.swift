@@ -190,7 +190,7 @@ struct InviteTenantView: View {
                 startDate: startDate,
                 endDate: endDate
             )
-            await propertyViewModel.fetchProperties()
+            try await propertyViewModel.fetchProperties()
             await MainActor.run {
                 errorMessage = "Invitation sent successfully!".localized()
                 showError = true

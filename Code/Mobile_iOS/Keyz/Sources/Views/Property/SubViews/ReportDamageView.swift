@@ -33,78 +33,75 @@ struct ReportDamageView: View {
 
     var body: some View {
         ZStack {
-            NavigationView {
-                Form {
-                    Section(header: Text("Description")) {
-                        TextEditor(text: $description)
-                            .frame(height: 100)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                            )
+            Form {
+                Section(header: Text("Description")) {
+                    TextEditor(text: $description)
+                        .frame(height: 100)
+                        .padding()
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                        )
+                }
+                
+                Section(header: Text("Priority".localized())) {
+                    Picker("Priority".localized(), selection: $selectedPriority) {
+                        ForEach(priorities, id: \.self) { priority in
+                            Text(priority.capitalized.localized()).tag(priority)
+                        }
                     }
-                    
-                    Section(header: Text("Priority".localized())) {
-                        Picker("Priority".localized(), selection: $selectedPriority) {
-                            ForEach(priorities, id: \.self) { priority in
-                                Text(priority.capitalized.localized()).tag(priority)
+                    .pickerStyle(.segmented)
+                }
+                
+                Section(header: Text("Room".localized())) {
+                    if rooms.isEmpty {
+                        Text("No rooms available".localized()).foregroundColor(.red)
+                    } else {
+                        Picker("Room".localized(), selection: $selectedRoomId) {
+                            Text("Select a room".localized()).tag(nil as String?)
+                            ForEach(rooms) { room in
+                                Text(room.name).tag(room.id as String?)
                             }
                         }
-                        .pickerStyle(.segmented)
-                    }
-                    
-                    Section(header: Text("Room".localized())) {
-                        if rooms.isEmpty {
-                            Text("No rooms available".localized()).foregroundColor(.red)
-                        } else {
-                            Picker("Room".localized(), selection: $selectedRoomId) {
-                                Text("Select a room".localized()).tag(nil as String?)
-                                ForEach(rooms) { room in
-                                    Text(room.name).tag(room.id as String?)
-                                }
-                            }
-                        }
-                    }
-                    Section {
-                        PicturesSegmentDamage(selectedImages: $selectedImages, showImagePickerOptions: showImagePickerOptions, maxImages: maxImages)
                     }
                 }
-                .navigationTitle("Report Damage".localized())
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button("Cancel".localized()) {
-                            dismiss()
-                        }
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Submit".localized()) {
-                            isLoading = true
-                            Task {
-                                await submitDamage()
-                                isLoading = false
-                            }
-                        }
-                        .disabled(isLoading || description.isEmpty || selectedRoomId == nil || rooms.isEmpty)
-                    }
-                }
-                .fullScreenCover(isPresented: $showImagePicker) {
-                    ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
-                }
-                .onAppear {
-                    if !rooms.isEmpty {
-                        selectedRoomId = rooms.first!.id
-                    }
+                Section {
+                    PicturesSegmentDamage(selectedImages: $selectedImages, showImagePickerOptions: showImagePickerOptions, maxImages: maxImages)
                 }
             }
-            .navigationBarBackButtonHidden(true)
+            .navigationTitle("Report Damage".localized())
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel".localized()) {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Submit".localized()) {
+                        isLoading = true
+                        Task {
+                            await submitDamage()
+                            isLoading = false
+                        }
+                    }
+                    .disabled(isLoading || description.isEmpty || selectedRoomId == nil || rooms.isEmpty)
+                }
+            }
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(sourceType: $sourceType, selectedImage: createImagePickerBinding())
+            }
+            .onAppear {
+                if !rooms.isEmpty {
+                    selectedRoomId = rooms.first!.id
+                }
+            }
 
             if showError, let message = errorMessage {
                 ErrorNotificationView(message: message)
                     .onDisappear {
                         showError = false
                         errorMessage = nil
-                    }
+                }
             }
         }
     }
