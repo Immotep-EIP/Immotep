@@ -42,7 +42,7 @@ func NewPDF() PDF {
 		pdf: fpdf.New("P", "mm", "A4", ""),
 	}
 
-	basePath := utils.Ternary(Test, "", "services/pdf/")
+	basePath := utils.Ternary(Test, "", "assets/")
 	res.pdf.AddUTF8Font("roboto", "", basePath+"Roboto-Regular.ttf")
 	res.pdf.AddUTF8Font("roboto", "B", basePath+"Roboto-Bold.ttf")
 	res.pdf.AddUTF8Font("roboto", "I", basePath+"Roboto-Italic.ttf")
