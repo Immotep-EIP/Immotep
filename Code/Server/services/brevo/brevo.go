@@ -92,6 +92,7 @@ func callBrevo(fromName string, toEmail string, cc []string, replyTo string, tem
 
 func SendEmailInvite(invite db.LeaseInviteModel, userExists bool) (string, error) {
 	ownerName := invite.Property().Owner().Name()
+	ownerEmail := invite.Property().Owner().Email
 	var inviteLink string
 	if userExists {
 		inviteLink = os.Getenv("WEB_PUBLIC_URL") + "/login/invite/" + invite.ID
@@ -104,20 +105,21 @@ func SendEmailInvite(invite db.LeaseInviteModel, userExists bool) (string, error
 	}
 	subject := "You've been invited to join a property on Keyz"
 
-	return callBrevo(ownerName+" via Keyz", invite.TenantEmail, []string{}, "", 1, subject, params)
+	return callBrevo(ownerName+" via Keyz", invite.TenantEmail, []string{}, ownerEmail, 1, subject, params)
 }
 
 func SendNewDamage(lease db.LeaseModel) (string, error) {
 	tenantName := lease.Tenant().Name()
+	tenantEmail := lease.Tenant().Email
 	propertyName := lease.Property().Name
 	params := map[string]any{
 		"tenantName":   tenantName,
 		"propertyName": propertyName,
-		"damageLink":   os.Getenv("WEB_PUBLIC_URL") + "/real-property/details",
+		"damageLink":   os.Getenv("WEB_PUBLIC_URL") + "/real-property/details/" + lease.PropertyID,
 	}
 	subject := "A new damage has been created in " + propertyName
 
-	return callBrevo(tenantName+" via Keyz", lease.Property().Owner().Email, []string{}, "", 5, subject, params)
+	return callBrevo(tenantName+" via Keyz", lease.Property().Owner().Email, []string{}, tenantEmail, 5, subject, params)
 }
 
 func SendNewContactMessage(cm db.ContactMessageModel) (string, error) {
