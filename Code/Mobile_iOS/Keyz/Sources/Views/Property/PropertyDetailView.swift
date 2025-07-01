@@ -463,28 +463,29 @@ struct PropertyDetailView: View {
     private func imageView(property: Property) -> some View {
         Group {
             if isImageLoading {
-                VStack {
-                    Spacer()
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: 200)
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .frame(maxWidth: .infinity, maxHeight: 200)
             } else if let uiImage = property.photo {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(height: 200)
+                    .frame(maxHeight: 200)
                     .clipped()
+                    .accessibilityLabel("image_property")
             } else {
                 Image("DefaultImageProperty")
                     .resizable()
                     .scaledToFill()
-                    .frame(height: 200)
+                    .frame(maxHeight: 200)
                     .clipped()
                     .accessibilityLabel("image_property")
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: 200)
+        .ignoresSafeArea(.all, edges: .horizontal)
+        .clipped()
+        .frame(maxWidth: UIScreen.main.bounds.width)
     }
 
     private var backButtonView: some View {
