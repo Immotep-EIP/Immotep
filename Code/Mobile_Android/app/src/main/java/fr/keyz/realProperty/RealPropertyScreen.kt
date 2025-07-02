@@ -277,7 +277,7 @@ fun RealPropertyOwnerScreen(
             submitButtonText = stringResource(R.string.add_prop),
             submitButtonIcon = { Icon(Icons.Outlined.Add, contentDescription = "add") },
             navController = navController,
-            onSubmitPicture = { picture -> viewModel.setPropertyImage(propertySelectedDetails.value!!.id, picture) }
+            onSubmitPicture = { propertyId, picture -> viewModel.setPropertyImage(propertyId, picture) }
         )
     }
 }

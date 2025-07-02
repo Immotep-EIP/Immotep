@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import fr.keyz.apiCallerServices.AddPropertyInput
+import fr.keyz.apiCallerServices.ApiCallerServiceException
 import fr.keyz.apiCallerServices.RealPropertyCallerService
 import fr.keyz.apiClient.ApiService
 import fr.keyz.utils.Base64Utils
@@ -30,9 +31,11 @@ class AddOrEditPropertyViewModel(apiService: ApiService, navController: NavContr
     private val _propertyForm = MutableStateFlow(AddPropertyInput())
     private val _propertyFormError = MutableStateFlow(PropertyFormError())
     private val _picture = MutableStateFlow<Uri?>(null)
+    private val _isLoading = MutableStateFlow(false)
     val picture = _picture.asStateFlow()
     val propertyForm: StateFlow<AddPropertyInput> = _propertyForm.asStateFlow()
     val propertyFormError: StateFlow<PropertyFormError> = _propertyFormError.asStateFlow()
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     fun setBaseValue(property: AddPropertyInput) {
         _propertyForm.value = property
@@ -88,9 +91,11 @@ class AddOrEditPropertyViewModel(apiService: ApiService, navController: NavContr
     fun onSubmit(
         onClose : () -> Unit,
         sendFormFn : suspend (property : AddPropertyInput) -> String,
-        updateUserPicture : (picture : String) -> Unit,
+        updateUserPicture : (propertyId : String, picture : String) -> Unit,
         context : Context
     ) {
+        _isLoading.value = true
+        println("on submit ??")
         val newPropertyErrors = PropertyFormError()
         if (_propertyForm.value.address.length < 3) {
             newPropertyErrors.address = true
@@ -112,6 +117,7 @@ class AddOrEditPropertyViewModel(apiService: ApiService, navController: NavContr
             }
         if (newPropertyErrors.address || newPropertyErrors.zipCode || newPropertyErrors.country || newPropertyErrors.area || newPropertyErrors.rental || newPropertyErrors.deposit) {
             _propertyFormError.value = newPropertyErrors
+            _isLoading.value = false
             println("ERROR $newPropertyErrors")
             return
         }
@@ -124,13 +130,19 @@ class AddOrEditPropertyViewModel(apiService: ApiService, navController: NavContr
                         context = context
                     )
                     _callerService.updatePropertyPicture(propertyId, pictureBase64)
-                    updateUserPicture(pictureBase64)
+                    updateUserPicture(propertyId, pictureBase64)
                 }
                 onClose()
                 reset()
-            } catch (e: Exception) {
+            } catch (e: ApiCallerServiceException) {
+                println("Error on the api during property creation: ${e.message}")
+                e.printStackTrace()
+            } catch (e : Exception) {
                 println("Error during property creation: ${e.message}")
                 e.printStackTrace()
+            }
+            finally {
+                _isLoading.value = false
             }
         }
     }

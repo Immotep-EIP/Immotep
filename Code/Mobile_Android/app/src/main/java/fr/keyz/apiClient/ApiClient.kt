@@ -12,10 +12,10 @@ object RetrofitClient {
     //private const val BASE_URL = "http://10.0.2.2:8080/"
 
     //url for the dev deployement
-    private const val BASE_URL = "https://dev.space.keyz-app.fr/"
+    //private const val BASE_URL = "https://dev.space.keyz-app.fr/api/"
 
     //url for the release deployements
-    //private const val BASE_URL = "https://dev.space.keyz-app.fr/"
+    private const val BASE_URL = "https://space.keyz-app.fr/"
 
 
 

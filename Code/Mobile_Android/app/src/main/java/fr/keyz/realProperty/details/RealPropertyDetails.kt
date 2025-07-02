@@ -252,7 +252,7 @@ fun RealPropertyDetailsScreen(
         submitButtonText = stringResource(R.string.save),
         submitButtonIcon = { Icon(Icons.Outlined.EditNote, contentDescription = "Edit property") },
         navController = navController,
-        onSubmitPicture = { viewModel.onSubmitPicture(it) }
+        onSubmitPicture = { propertyId, picture -> viewModel.onSubmitPicture(picture) }
     )
     InviteTenantModal(
         open = inviteTenantOpen,
