@@ -22,6 +22,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.keyz.R
 
+
+@Composable
+fun DeletePopUpConfirmation(close: () -> Unit, delete: () -> Unit, globalName: String, detailedName: String) {
+    AlertDialog(
+        shape = RoundedCornerShape(10.dp),
+        backgroundColor = MaterialTheme.colorScheme.background,
+        onDismissRequest = { close() },
+        confirmButton = {
+            TextButton(onClick = { delete(); close() }) {
+                Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
+            }
+        },
+        title = {
+            Text(
+                "${stringResource(R.string.delete)} $globalName ?",
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        },
+        text = {
+            Text(
+                "${stringResource(R.string.sure_to_delete)} $detailedName ?",
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        },
+
+        )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeletePopUp(
@@ -34,29 +62,7 @@ fun DeletePopUp(
     var confirmOpen by rememberSaveable { mutableStateOf(false) }
     if (open) {
         if (confirmOpen) {
-            AlertDialog(
-                shape = RoundedCornerShape(10.dp),
-                backgroundColor = MaterialTheme.colorScheme.background,
-                onDismissRequest = { confirmOpen = false;close() },
-                confirmButton = {
-                    TextButton(onClick = { delete(); confirmOpen = false; close() }) {
-                        Text(stringResource(R.string.delete))
-                    }
-                },
-                title = {
-                    Text(
-                        "${stringResource(R.string.delete)} $globalName ?",
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                },
-                text = {
-                    Text(
-                        "${stringResource(R.string.sure_to_delete)} $detailedName ?",
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                },
-
-                )
+            DeletePopUpConfirmation({confirmOpen = false; close()}, delete, globalName, detailedName)
         }
         ModalBottomSheet(
             onDismissRequest = close,

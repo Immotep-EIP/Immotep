@@ -266,7 +266,8 @@ fun RealPropertyOwnerScreen(
                 navController,
                 propertySelectedDetails.value!!,
                 getBack = { viewModel.getBackFromDetails(it) },
-                loaderInventoryViewModel
+                loaderInventoryViewModel,
+                deleteProperty = { viewModel.deleteProperty(it) }
             )
         }
         AddOrEditPropertyModal(
