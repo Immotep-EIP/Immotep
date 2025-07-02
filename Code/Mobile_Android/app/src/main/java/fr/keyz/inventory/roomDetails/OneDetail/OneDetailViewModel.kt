@@ -57,6 +57,7 @@ class OneDetailViewModel(
             _detail.value = RoomDetail(name = "", id = "")
         }
         _errors.value = RoomDetailsError()
+        _aiCallError.value = false
     }
 
     fun setName(name : String) {
