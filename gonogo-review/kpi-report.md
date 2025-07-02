@@ -16,9 +16,10 @@ Here is our **color palette**:
 
 Here is our **typography**:
 
-???
+- App: [Jost](https://fonts.google.com/specimen/Jost)
+- Social media: [Raleway](https://fonts.google.com/specimen/Raleway)
 
-We also created multiple **social media accounts** to engage with our community, and we are actively posting content on these platforms. You can find us on:
+We also created **3 social media accounts** to engage with our community, and we are actively posting content on these platforms. You can find us on:
 
 - [LinkedIn](https://www.linkedin.com/company/keyz-app/)
 - [Instagram](https://www.instagram.com/app.keyz/)
@@ -44,7 +45,7 @@ We have planned our **editorial calendar for the next few weeks** to ensure a co
 
 We are actively **seeking beta testers** to help us refine our app and gather valuable feedback. We have created a contact form on our showcase website where interested users can sign up to become beta testers. As said just above, we are also promoting our beta program on our social media accounts to reach a wider audience and encourage more users to join.
 
-We also **contacted multiple people** in our network **who are engaged in the rental market**, such as real estate agents, property managers, and landlords, to invite them to participate in our beta program. They are really interested in our app and are eager to provide feedback on its features and usability.
+We also contacted **2 people** in our network **who are engaged in the rental market**, such as real estate agents, property managers, and landlords, to invite them to participate in our beta program. They are really interested in our app and are eager to provide feedback on its features and usability.
 
 We also created a **form** to collect **feedback from our beta testers**. This form allows them to share their thoughts on the app's functionality, usability, and overall experience. We are using this feedback to make improvements and ensure that Keyz meets the needs of our users. The form is available on our showcase website and at this link: [Feedback form](https://forms.office.com/e/awST3YANi4).
 
@@ -88,7 +89,7 @@ Accessibility:
 
 Navigation is really fast and straightforward, with a clear and intuitive layout. Loading times are minimized with a mechanism that **loads only necessary**, small and relevant data first. Then, a lazy loading mechanism loads big data such as images, ensuring that users can quickly access the information they need without unnecessary delays.
 
-A clear **user documentation** is available explaining how to use each feature of the app. It includes step-by-step instructions, screenshots, and tips to help users navigate the app effectively. The documentation is available here: [User documentation](https://github.com/Keyz-EIP/Keyz/tree/main/Documentations/User).
+A clear **user documentation** covering 100% of available features is available explaining how to use each feature of the app. It includes step-by-step instructions, screenshots, and tips to help users navigate the app effectively. The documentation is available here: [User documentation](https://github.com/Keyz-EIP/Keyz/tree/main/Documentations/User).
 
 ## 3. Increasing Visibility and Impact on Social Media
 
@@ -148,4 +149,4 @@ After launch, we will also create a **Trustpilot** page to gather and respond to
 
 ### Satisfaction Metrics
 
-???
+<!-- TODO after receiving user feedback -->
