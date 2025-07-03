@@ -151,6 +151,68 @@ Here is our Figma file containing the logo design and the social media posts we 
 
 ![Figma brand image](./.screenshots/figma/brand-image.png)
 
+### Metrics
+
+Here are the current metrics gathered from our social media accounts:
+
+| Platform   | Followers | Engagement Rate | Impressions | Reach  |
+|------------|-----------|-----------------|-------------|--------|
+| LinkedIn   | 12        |                 |             |        |
+| Instagram  | 19        |                 |             |        |
+| Facebook   | 6         |                 |             |        |
+
+#### LinkedIn
+
+Overview:
+
+<p align="center">
+    <img src="./.screenshots/social-media-metrics/linkedin-metrics-summary.png" alt="Linkedin metrics summary" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-metrics1.png" alt="Linkedin metrics 1" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-metrics2.png" alt="Linkedin metrics 2" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-metrics3.png" alt="Linkedin metrics 3" width="300"/>
+</p>
+
+By posts:
+
+<p align="center">
+    <img src="./.screenshots/social-media-metrics/linkedin-post-1.png" alt="Post 1" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-post-2.png" alt="Post 2" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-post-3.png" alt="Post 3" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-post-4.png" alt="Post 4" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-post-5.png" alt="Post 5" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-post-6.png" alt="Post 6" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-post-7.png" alt="Post 7" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-post-8.png" alt="Post 8" width="300"/>
+</p>
+
+#### Instagram
+
+Overview:
+
+<table>
+    <tr>
+        <td>
+            <img src="./.screenshots/social-media-metrics/instagram-metrics-summary.png" alt="Instagram metrics summary" width="300"/><br/>
+            <img src="./.screenshots/social-media-metrics/instagram-metrics1.png" alt="Instagram metrics 1" width="300"/>
+        </td>
+        <td>
+            <img src="./.screenshots/social-media-metrics/instagram-metrics2.png" alt="Instagram metrics 2" width="300"/>
+        </td>
+    </tr>
+</table>
+
+By posts:
+
+<p>
+    <img src="./.screenshots/social-media-metrics/instagram-posts.png" alt="Instagram posts" width="400"/>
+</p>
+
+#### Facebook
+
+Overview:
+
+![Facebook metrics summary](./.screenshots/social-media-metrics/facebook-metrics-summary.png)
+
 ## 4. Optimizing Relationships with the Target Audience
 
 ### Community Engagement
