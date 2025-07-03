@@ -29,7 +29,7 @@ We also created **3 social media accounts** to engage with our community, and we
 
 Our content strategy works by **posting content on every social media platform every week**, with a focus on engaging our audience and promoting our brand. We have built a content calendar that outlines the topics and themes for each post, ensuring that we cover a variety of subjects related to our app and the rental market.
 
-We have planned our **editorial calendar for the next few weeks** to ensure a consistent flow of content that engages our audience and promotes our brand. Here is a summary of our planned content:
+We have planned our **editorial calendar for the next few weeks** to ensure a consistent flow of content. Here is a summary of our planned content:
 
 - May 7th, 2025: Introduction to Keyz
 - May 14th, 2025: Presentation Keyz's main features for owners
@@ -39,15 +39,13 @@ We have planned our **editorial calendar for the next few weeks** to ensure a co
 - June 11th, 2025: 3 tips to do a successful inventory report without stress
 - June 18th, 2025: Teasing Keyz's beta launch
 - June 25th, 2025: Keyz's beta launch announcement and invitation to join the beta program
-<!-- TODO: add other ideas -->
+TODO: add other ideas
 
 ### Beta Tester Acquisition
 
-We are actively **seeking beta testers** to help us refine our app and gather valuable feedback. We have created a contact form on our showcase website where interested users can sign up to become beta testers. As said just above, we are also promoting our beta program on our social media accounts to reach a wider audience and encourage more users to join.
+We are actively **seeking beta testers** to help us refine our app and gather valuable feedback. We have created a **contact form on our showcase website** where interested users can sign up to become beta testers. As said just above, we are also promoting our beta program on our social media accounts to reach a wider audience and encourage more users to join.
 
-We also contacted **2 people** in our network **who are engaged in the rental market**, such as real estate agents, property managers, and landlords, to invite them to participate in our beta program. They are really interested in our app and are eager to provide feedback on its features and usability.
-
-We also created a **form** to collect **feedback from our beta testers**. This form allows them to share their thoughts on the app's functionality, usability, and overall experience. We are using this feedback to make improvements and ensure that Keyz meets the needs of our users. The form is available on our showcase website and at this link: [Feedback form](https://forms.office.com/e/awST3YANi4).
+We also contacted **3 people** in our network **who are engaged in the rental market**, such as real estate agents, property managers, and landlords, to invite them to participate in our beta program. They are really interested in our app and are eager to provide feedback on its features and usability.
 
 Each user who helps us by testing our app and providing feedback will receive a **free 1-year subscription** to Keyz when it is launched. This is our way of thanking them for their valuable contributions and encouraging them to continue using our app in the future.
 
@@ -55,7 +53,15 @@ Each user who helps us by testing our app and providing feedback will receive a 
 
 ### User-Centered Design
 
-???
+First, we created **mock-ups** of our app using **Figma**. These mock-ups allowed us to visualize the user interface and user experience before starting the development process. We designed the app with a focus on simplicity, ease of use, and accessibility, ensuring that users can navigate through the app without any difficulties.
+
+Both the web and mobile mock-ups were designed with a **unified visual identity**, ensuring that our app delivers a **consistent** look and feel across all platforms.
+
+When our mock-ups were ready, we asked some potential users if the UX seemed comprehensive and effective. First of all, feedbacks were not really positive, as they found the mock-ups **not modern enough** and not really appealing. We then decided to **redesign the mock-ups** to make them more visually appealing and user-friendly. We applied modern UI/UX design principles, such as responsive design, simplicity, and accessibility, to create a more intuitive and engaging user experience.
+
+Here you can see the two versions of our mock-ups, the first one being the initial version and the second one (V2) being the redesigned version:
+
+![Mock-ups](./.screenshots/figma/mock-ups.png)
 
 ### High-Quality Prototyping
 
@@ -83,7 +89,23 @@ Responsiveness (screenshots of the web app taken on an iPhone 13):
 
 Accessibility:
 
-???
+Each front-end application (web and mobile) is designed to be accessible to all users, including those with disabilities. We follow the **Web Content Accessibility Guidelines (WCAG)** to ensure that our app is usable by everyone. This includes:
+- Visual accessibility features
+    - Use of sufficient contrast between text and backgrounds to ensure readability.
+    - Support of screen readers with correct semantic structuring of elements (titles, buttons, forms) with appropriate tags (ARIA on the web, native accessible components on mobile) as well as alternative text for images.
+    ![Alt text for images](./.screenshots/code/alt-text.png)
+    - Support for user zoom or custom text sizes on operating systems.
+- Motor accessibility
+    - Mouse-free navigation: All webapp actions can be performed using the keyboard only.
+    ![Tab element selector](./.screenshots/web/tab-element-selector.png)
+    - Sufficient size and spacing of clickable elements on mobile devices for people with motor impairments.
+    - Support for assistive technologies such as voice commands (VoiceOver, TalkBack).
+    ![VoiceOver example](./.screenshots/mobile/voiceover.jpg)
+- Cognitive accessibility
+    - Clean, intuitive interface with simple navigation, clear icons and self-explanatory labels.
+    - Presentation of information in several formats (text + pictograms).
+
+We also implemented **dark mode** in our mobile app, which is a popular feature that reduces eye strain and improves readability in low-light conditions. Users can easily switch between light and dark modes in the app settings.
 
 ### Seamless Experience
 
@@ -119,9 +141,15 @@ Here are some examples of our posts:
 
 First of all, we built a **showcase website** to present our app and its features. This website serves as a central hub for information about Keyz, including its benefits, features, pricing, how to get started, and a contact form. The website is available here: [Keyz showcase website](https://keyz-app.fr).
 
-We set up **Google Analytics** to track user behavior on our showcase website and within the app. This tool provides us with valuable insights into how users interact with our site, which pages they visit, and how long they stay. This data helps us understand our audience better and will determine our future content strategy and app improvements. We also use **Meta Business Suite** to manage Instagram and Facebook and track engagement metrics such as likes, shares, and comments.
+We set up **Google Analytics** to track user behavior on our showcase website and within the app. This tool provides us with valuable insights into how users interact with our site, which pages they visit, and how long they stay. This data helps us understand our audience better and will determine our future content strategy and app improvements. We also use **Meta Business Suite** to manage Instagram and Facebook and track engagement metrics such as likes, shares, comments and times when our audience is most active.
+
+TODO: put screenshots of Google Analytics and Meta Business Suite
 
 Also, all our social media contents (including presentation designs and video edits for posts) are created using **Canva** and **Figma**, which are powerful design tools that allow us to create visually appealing and engaging content. We use Canva for creating graphics, infographics, and social media posts, while Figma is used for designing the app's user interface and prototypes.
+
+Here is our Figma file containing the logo design and the social media posts we created:
+
+![Figma brand image](./.screenshots/figma/brand-image.png)
 
 ## 4. Optimizing Relationships with the Target Audience
 
@@ -137,7 +165,7 @@ We also publish each release on our **GitHub repository** with detailed release 
 
 ### Feedback System
 
-As said earlier in [Beta Tester Acquisition section](#beta-tester-acquisition), we created a **form** to gather feedback and suggestions from our beta testers.
+We created a **form** to collect **feedback from our beta testers**. This form allows them to share their thoughts on the app's functionality, usability, and overall experience. We are using this feedback to make improvements and ensure that Keyz meets the needs of our users. The form is available on our showcase website and at this link: [Feedback form](https://forms.office.com/e/awST3YANi4).
 
 We also created a second **form** to collect real statistics about app usage and user behavior, especially for the mobile application. This form contains a lot of questions about the user's experience, such as how often they use the app, which features they find most useful, and any issues they encounter. This data will help us understand how users interact with Keyz and identify areas for improvement. The form is available here: [Usage statistics form](https://forms.office.com/e/tw5JqqLNg1).
 
@@ -149,4 +177,4 @@ After launch, we will also create a **Trustpilot** page to gather and respond to
 
 ### Satisfaction Metrics
 
-<!-- TODO after receiving user feedback -->
+TODO: put calculation metrics after receiving user feedback
