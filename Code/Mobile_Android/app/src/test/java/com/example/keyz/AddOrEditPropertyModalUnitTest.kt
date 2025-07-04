@@ -131,7 +131,7 @@ class AddOrEditPropertyViewModelTest {
     fun `onSubmit with valid data calls sendFormFn and onClose`() = runTest {
         val mockOnClose = mockk<() -> Unit>(relaxed = true)
         val mockSendFormFn: suspend (AddPropertyInput) -> String = mockk(relaxed = true)
-        val mockUpdatePicture: (String) -> Unit = mockk(relaxed = true)
+        val mockUpdatePicture: (String, String) -> Unit = mockk(relaxed = true)
         val property = AddPropertyInput(
             address = "Valid Address",
             postal_code = "12345",

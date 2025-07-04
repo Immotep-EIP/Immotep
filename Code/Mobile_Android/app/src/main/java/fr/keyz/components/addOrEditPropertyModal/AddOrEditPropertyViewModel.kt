@@ -95,7 +95,6 @@ class AddOrEditPropertyViewModel(apiService: ApiService, navController: NavContr
         context : Context
     ) {
         _isLoading.value = true
-        println("on submit ??")
         val newPropertyErrors = PropertyFormError()
         if (_propertyForm.value.address.length < 3) {
             newPropertyErrors.address = true
