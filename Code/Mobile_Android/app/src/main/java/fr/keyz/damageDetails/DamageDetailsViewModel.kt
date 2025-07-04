@@ -45,7 +45,6 @@ class DamageDetailsViewModel(apiService: ApiService, navController: NavControlle
 
     fun onSubmitUpdateDamageResolution(date: Long?, propertyId: String?) {
         if (currentDamage.value == null || propertyId.isNullOrEmpty()) return
-        println("new date is $date")
         viewModelScope.launch {
             try {
                 _isLoading.value = true
