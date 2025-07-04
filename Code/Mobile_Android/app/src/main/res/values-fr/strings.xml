@@ -220,7 +220,7 @@
     <string name="damages_list">Liste des dommages</string>
     <string name="no_browser_found">Aucun navigateur trouvé</string>
     <string name="damage_detail">Détails du sinistre</string>
-    <string name="fixed">Reparé</string>
+    <string name="fixed">Réparé</string>
     <string name="planned">Planifié au </string>
     <string name="awaiting_owner_confirmation">En l\'attente de la confirmation du propriétaire</string>
     <string name="awaiting_tenant_confirmation">En l\'attente de la confirmation du locataire</string>
@@ -228,5 +228,5 @@
     <string name="state">État</string>
     <string name="in_progress">En cours</string>
     <string name="last_update">Dernière mise à jour</string>
-    <string name="created_at">Crée le </string>
+    <string name="created_at">Créé le </string>
 </resources>
