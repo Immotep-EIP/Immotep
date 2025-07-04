@@ -135,7 +135,7 @@ fun DamageStatusPanel(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DamageResolveBottomModal(open: Boolean, close: () -> Unit, onSubmit : (Boolean, Long?) -> Unit) {
+fun DamageResolveBottomModal(open: Boolean, close: () -> Unit, onSubmit : (Long?) -> Unit) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     if (showDatePicker) {
@@ -143,7 +143,7 @@ fun DamageResolveBottomModal(open: Boolean, close: () -> Unit, onSubmit : (Boole
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 TextButton(onClick = {
-                    onSubmit(false, datePickerState.selectedDateMillis)
+                    onSubmit(datePickerState.selectedDateMillis)
                     showDatePicker = false
                 }) {
                     Text(stringResource(R.string.confirm))
@@ -176,7 +176,7 @@ fun DamageResolveBottomModal(open: Boolean, close: () -> Unit, onSubmit : (Boole
             StyledButton(
                 onClick = {
                     close()
-                    onSubmit(true, null)
+                    onSubmit(null)
                 },
                 text = stringResource(R.string.fixed)
             )
@@ -195,6 +195,9 @@ fun DamageDetailsScreen(navController: NavController, propertyId: String?, lease
     val apiError = viewModel.apiError.collectAsState()
     val damage = viewModel.currentDamage.collectAsState()
 
+    var damageResolveBottomModalIsOpen by remember { mutableStateOf(false) }
+
+
     LaunchedEffect(damageId) {
         viewModel.getDamage(propertyId, leaseId, damageId)
     }
@@ -208,6 +211,11 @@ fun DamageDetailsScreen(navController: NavController, propertyId: String?, lease
         onExit = { navController.popBackStack() },
         customTitle = stringResource(R.string.damage_detail)
     ) {
+        DamageResolveBottomModal(
+            open = damageResolveBottomModalIsOpen,
+            close = { damageResolveBottomModalIsOpen = false },
+            onSubmit = { date -> viewModel.onSubmitUpdateDamageResolution(date, propertyId) }
+        )
         if (isLoading.value || damage.value == null) {
             InternalLoading()
         } else {

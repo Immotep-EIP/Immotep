@@ -20,6 +20,7 @@ import fr.keyz.apiCallerServices.ProfileResponse
 import fr.keyz.apiCallerServices.ProfileUpdateInput
 import fr.keyz.apiCallerServices.PropertyPictureResponse
 import fr.keyz.apiCallerServices.RoomOutput
+import fr.keyz.apiCallerServices.UpdateDamageInput
 import fr.keyz.apiCallerServices.UpdatePropertyPictureInput
 import fr.keyz.apiClient.ApiService
 import fr.keyz.apiClient.ArchiveInput
@@ -338,5 +339,28 @@ class MockedApiService : ApiService {
         damageId: String
     ): DamageOutput {
         return fakeDamageOutput
+    }
+
+    override suspend fun updateDamageOwner(
+        authHeader: String,
+        propertyId: String,
+        leaseId: String,
+        damageId: String,
+        damage: UpdateDamageInput
+    ): CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = "newDamage"
+        )
+    }
+
+    override suspend fun fixDamageOwner(
+        authHeader: String,
+        propertyId: String,
+        leaseId: String,
+        damageId: String
+    ): CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = "newDamage"
+        )
     }
 }

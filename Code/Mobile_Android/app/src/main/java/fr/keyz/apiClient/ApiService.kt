@@ -20,6 +20,7 @@ import fr.keyz.apiCallerServices.ProfileResponse
 import fr.keyz.apiCallerServices.ProfileUpdateInput
 import fr.keyz.apiCallerServices.PropertyPictureResponse
 import fr.keyz.apiCallerServices.RoomOutput
+import fr.keyz.apiCallerServices.UpdateDamageInput
 import fr.keyz.apiCallerServices.UpdatePropertyPictureInput
 import fr.keyz.authService.LoginResponse
 import fr.keyz.authService.RegistrationInput
@@ -195,6 +196,26 @@ interface ApiService {
         @Path("damageId") damageId: String,
     ): DamageOutput
 
+    //update damage
+    @PUT("$API_PREFIX/owner/properties/{propertyId}/leases/{leaseId}/damages/{damageId}/fix")
+    suspend fun fixDamageOwner(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String,
+        @Path("damageId") damageId: String,
+    ): CreateOrUpdateResponse
+
+    //update damage
+    @PUT("$API_PREFIX/owner/properties/{propertyId}/leases/{leaseId}/damages/{damageId}/fix")
+    suspend fun updateDamageOwner(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String,
+        @Path("damageId") damageId: String,
+        @Body damage: UpdateDamageInput
+    ): CreateOrUpdateResponse
+
+    //add damage
     @POST("$API_PREFIX/tenant/leases/{lease_id}/damages/")
     suspend fun addDamage(
         @Header("Authorization") authHeader : String,

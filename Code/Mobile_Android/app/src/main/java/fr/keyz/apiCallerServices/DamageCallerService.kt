@@ -31,6 +31,11 @@ data class DamageInput(
     }
 }
 
+data class UpdateDamageInput(
+    val fix_planned_at: String,
+    val read : Boolean
+)
+
 data class DamageOutput(
     val comment: String,
     val created_at: String,
@@ -113,5 +118,27 @@ class DamageCallerService (
 
     suspend fun addDamage(damageInput: DamageInput) : CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
         apiService.addDamage(getBearerToken(), "current", damage = damageInput)
+    }
+
+    suspend fun fixDamage(propertyId: String,
+                          leaseId: String,
+                          damageId : String) : CreateOrUpdateResponse =
+        changeRetrofitExceptionByApiCallerException {
+            apiService.fixDamageOwner(getBearerToken(), propertyId, leaseId, damageId)
+    }
+
+    suspend fun updateDamageOwner(
+        propertyId: String,
+        leaseId: String,
+        damageId : String,
+        updateDamageInput: UpdateDamageInput
+    ) : CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
+        apiService.updateDamageOwner(
+            getBearerToken(),
+            propertyId,
+            leaseId,
+            damageId,
+            updateDamageInput
+        )
     }
 }
