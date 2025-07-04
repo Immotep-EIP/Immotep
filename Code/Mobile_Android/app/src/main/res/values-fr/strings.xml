@@ -227,5 +227,6 @@
     <string name="click_here_to_confirm">Clickez ici pour confirmer</string>
     <string name="state">État</string>
     <string name="in_progress">En cours</string>
-
+    <string name="last_update">Dernière mise à jour</string>
+    <string name="created_at">Crée le </string>
 </resources>

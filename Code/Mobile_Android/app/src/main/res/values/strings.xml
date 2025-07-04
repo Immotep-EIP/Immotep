@@ -226,4 +226,6 @@
     <string name="click_here_to_confirm">Click here to confirm</string>
     <string name="state">State</string>
     <string name="in_progress">In progress</string>
+    <string name="last_update">Last update</string>
+    <string name="created_at">Created at</string>
 </resources>

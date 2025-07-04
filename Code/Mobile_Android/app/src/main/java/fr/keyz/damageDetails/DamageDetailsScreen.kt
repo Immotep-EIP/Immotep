@@ -186,6 +186,22 @@ fun DamageResolveBottomModal(open: Boolean, close: () -> Unit, onSubmit : (Long?
 }
 
 @Composable
+fun DatePanel(
+    lastUpdate : String?,
+    createdAt : String?
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(stringResource(R.string.dates), fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+        Spacer(modifier = Modifier.height(5.dp))
+        Text("${stringResource(R.string.created_at)} : $createdAt")
+        Text("${stringResource(R.string.last_update)} : $lastUpdate")
+    }
+}
+
+@Composable
 fun DamageDetailsScreen(navController: NavController, propertyId: String?, leaseId: String, damageId: String) {
     val isOwner = LocalIsOwner.current
     val apiService = LocalApiService.current
@@ -247,6 +263,11 @@ fun DamageDetailsScreen(navController: NavController, propertyId: String?, lease
             )
             Spacer(modifier = Modifier.height(20.dp))
             DamageImagesPanel(damage.value!!.pictures)
+            Spacer(modifier = Modifier.height(20.dp))
+            DatePanel(
+                lastUpdate = DateFormatter.formatOffsetDateTime(damage.value!!.updatedAt),
+                createdAt = DateFormatter.formatOffsetDateTime(damage.value!!.createdAt)
+            )
         }
     }
 
