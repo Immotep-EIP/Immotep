@@ -120,11 +120,17 @@ class DamageCallerService (
         apiService.addDamage(getBearerToken(), "current", damage = damageInput)
     }
 
-    suspend fun fixDamage(propertyId: String,
+    suspend fun fixDamage(propertyId: String?,
                           leaseId: String,
                           damageId : String) : CreateOrUpdateResponse =
         changeRetrofitExceptionByApiCallerException {
-            apiService.fixDamageOwner(getBearerToken(), propertyId, leaseId, damageId)
+            if (!isOwner()) {
+                apiService.fixDamageTenant(getBearerToken(), "current", damageId)
+            } else if (!propertyId.isNullOrEmpty()) {
+                apiService.fixDamageOwner(getBearerToken(), propertyId, leaseId, damageId)
+            } else {
+                throw IllegalArgumentException("Missing propertyId")
+            }
     }
 
     suspend fun updateDamageOwner(

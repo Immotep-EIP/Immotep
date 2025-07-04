@@ -363,4 +363,14 @@ class MockedApiService : ApiService {
             id = "newDamage"
         )
     }
+
+    override suspend fun fixDamageTenant(
+        authHeader: String,
+        leaseId: String,
+        damageId: String
+    ): CreateOrUpdateResponse {
+        return CreateOrUpdateResponse(
+            id = "newDamage"
+        )
+    }
 }

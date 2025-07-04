@@ -196,7 +196,7 @@ interface ApiService {
         @Path("damageId") damageId: String,
     ): DamageOutput
 
-    //update damage
+    //fix damage
     @PUT("$API_PREFIX/owner/properties/{propertyId}/leases/{leaseId}/damages/{damageId}/fix")
     suspend fun fixDamageOwner(
         @Header("Authorization") authHeader : String,
@@ -205,8 +205,15 @@ interface ApiService {
         @Path("damageId") damageId: String,
     ): CreateOrUpdateResponse
 
+    @PUT("$API_PREFIX/tenant/leases/{leaseId}/damages/{damageId}/fix/")
+    suspend fun fixDamageTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("leaseId") leaseId: String,
+        @Path("damageId") damageId: String,
+    ): CreateOrUpdateResponse
+
     //update damage
-    @PUT("$API_PREFIX/owner/properties/{propertyId}/leases/{leaseId}/damages/{damageId}/fix")
+    @PUT("$API_PREFIX/owner/properties/{propertyId}/leases/{leaseId}/damages/{damageId}")
     suspend fun updateDamageOwner(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,

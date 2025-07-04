@@ -45,6 +45,7 @@ class DamageDetailsViewModel(apiService: ApiService, navController: NavControlle
 
     fun onSubmitUpdateDamageResolution(date: Long?, propertyId: String?) {
         if (currentDamage.value == null || propertyId.isNullOrEmpty()) return
+        println("new date is $date")
         viewModelScope.launch {
             try {
                 _isLoading.value = true
@@ -68,14 +69,36 @@ class DamageDetailsViewModel(apiService: ApiService, navController: NavControlle
                         updateDamageInput = updateInput
                     )
                     _currentDamage.value = _currentDamage.value?.copy(
-                        fixStatus = DamageStatus.AWAITING_TENANT_CONFIRMATION,
-                        fixedAt = OffsetDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneOffset.UTC),
+                        fixStatus = DamageStatus.PLANNED,
+                        fixPlannedAt = OffsetDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneOffset.UTC),
                     )
                 }
             } catch (e: ApiCallerServiceException) {
                 _apiError.value = e.getCode()
             } catch (e : Exception) {
                 _apiError.value = 500
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun onConfirm(propertyId: String?) {
+        if (
+            currentDamage.value == null ||
+            (currentDamage.value!!.fixStatus != DamageStatus.AWAITING_TENANT_CONFIRMATION &&
+            currentDamage.value!!.fixStatus != DamageStatus.AWAITING_OWNER_CONFIRMATION)) return
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                apiCallerService.fixDamage(
+                    propertyId,
+                    currentDamage.value!!.leaseId,
+                    currentDamage.value!!.id
+                )
+                getDamage(propertyId, currentDamage.value!!.leaseId, currentDamage.value!!.id)
+            } catch (e: ApiCallerServiceException) {
+                _apiError.value = e.getCode()
             } finally {
                 _isLoading.value = false
             }

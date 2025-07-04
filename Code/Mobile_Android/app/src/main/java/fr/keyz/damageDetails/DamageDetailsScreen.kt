@@ -50,6 +50,7 @@ import fr.keyz.layouts.InventoryLayout
 import fr.keyz.R
 import fr.keyz.apiCallerServices.DamageStatus
 import fr.keyz.components.Base64ImageView
+import fr.keyz.components.ErrorAlert
 import fr.keyz.components.InternalLoading
 import fr.keyz.components.PriorityBox
 import fr.keyz.layouts.BigModalLayout
@@ -101,13 +102,14 @@ fun DamageStatusPanel(
         DamageStatus.AWAITING_OWNER_CONFIRMATION -> stringResource(if (isOwner) R.string.click_here_to_confirm else R.string.awaiting_owner_confirmation)
         DamageStatus.AWAITING_TENANT_CONFIRMATION -> stringResource(if (!isOwner) R.string.click_here_to_confirm else R.string.awaiting_tenant_confirmation)
     }
-    val onClick = {
+    val onClick =
         if (confirmOwner || confirmTenant) {
-            confirm()
-        } else if (damageStatus == DamageStatus.PENDING || damageStatus == DamageStatus.PLANNED) {
-            pendingClick()
+            confirm
+        } else if ((damageStatus == DamageStatus.PENDING || damageStatus == DamageStatus.PLANNED) && isOwner) {
+            pendingClick
+        } else {
+            null
         }
-    }
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
@@ -124,7 +126,7 @@ fun DamageStatusPanel(
                 )
                 .clip(RoundedCornerShape(10.dp))
                 .background(color = statusColor, shape = RoundedCornerShape(10.dp))
-                .clickable(onClick = onClick)
+                .clickable(onClick = { onClick?.invoke() }, enabled = onClick != null)
                 .padding(10.dp),
 
             contentAlignment = Alignment.Center
@@ -236,6 +238,7 @@ fun DamageDetailsScreen(navController: NavController, propertyId: String?, lease
         if (isLoading.value || damage.value == null) {
             InternalLoading()
         } else {
+            ErrorAlert(apiError.value)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -256,7 +259,7 @@ fun DamageDetailsScreen(navController: NavController, propertyId: String?, lease
             Spacer(modifier = Modifier.height(20.dp))
             DamageStatusPanel(
                 damageStatus = damage.value!!.fixStatus,
-                confirm = {},
+                confirm = { viewModel.onConfirm(propertyId) },
                 pendingClick = { damageResolveBottomModalIsOpen = true },
                 isOwner = isOwner.value,
                 plannedDate = DateFormatter.formatOffsetDateTime(damage.value!!.fixPlannedAt)
