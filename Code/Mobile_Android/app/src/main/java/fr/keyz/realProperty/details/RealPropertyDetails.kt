@@ -51,6 +51,8 @@ import fr.keyz.R
 import fr.keyz.components.addOrEditPropertyModal.AddOrEditPropertyModal
 import fr.keyz.apiCallerServices.DetailedProperty
 import fr.keyz.apiCallerServices.PropertyStatus
+import fr.keyz.components.DeletePopUp
+import fr.keyz.components.DeletePopUpConfirmation
 import fr.keyz.components.ErrorAlert
 import fr.keyz.components.InitialFadeIn
 import fr.keyz.components.InternalLoading
@@ -205,7 +207,8 @@ fun RealPropertyDetailsScreen(
     navController: NavController,
     newProperty : DetailedProperty,
     getBack: ((DetailedProperty) -> Unit)? = null,
-    loaderInventoryViewModel: LoaderInventoryViewModel
+    loaderInventoryViewModel: LoaderInventoryViewModel,
+    deleteProperty : (String) -> Unit
 ) {
     val isOwner = LocalIsOwner.current.value
     val apiService = LocalApiService.current
@@ -222,6 +225,7 @@ fun RealPropertyDetailsScreen(
     val property = viewModel.property.collectAsState()
     var editOpen by rememberSaveable { mutableStateOf(false) }
     var tabIndex by rememberSaveable { mutableIntStateOf(0) }
+    var deleteOpen by rememberSaveable { mutableStateOf(false) }
     var inviteTenantOpen by rememberSaveable { mutableStateOf(false) }
 
     val apiErrors = viewModel.apiError.collectAsState()
@@ -252,7 +256,7 @@ fun RealPropertyDetailsScreen(
         submitButtonText = stringResource(R.string.save),
         submitButtonIcon = { Icon(Icons.Outlined.EditNote, contentDescription = "Edit property") },
         navController = navController,
-        onSubmitPicture = { viewModel.onSubmitPicture(it) }
+        onSubmitPicture = { propertyId, picture -> viewModel.onSubmitPicture(picture) }
     )
     InviteTenantModal(
         open = inviteTenantOpen,
@@ -262,12 +266,21 @@ fun RealPropertyDetailsScreen(
         onSubmit = {email, startDate, endDate -> viewModel.onSubmitInviteTenant(email, startDate, endDate) },
         setIsLoading = { viewModel.setIsLoading(it) }
     )
+
     if (isLoading.value) {
         InternalLoading()
         return
     }
     InitialFadeIn(300) {
         Column(modifier = Modifier.testTag("realPropertyDetailsScreen")) {
+            if (deleteOpen) {
+                DeletePopUpConfirmation(
+                    delete = { deleteProperty(property.value.id) },
+                    close = { deleteOpen = false },
+                    globalName = stringResource(R.string.property),
+                    detailedName = property.value.name
+                )
+            }
             RealPropertyImageWithTopButtonsAndDropdown(
                 getBack,
                 property,
@@ -277,7 +290,7 @@ fun RealPropertyDetailsScreen(
                     { viewModel.onCancelInviteTenant() }
                 } else null,
                 openEdit = { editOpen = true },
-                openDelete = { },
+                openDelete = { deleteOpen = true },
                 isOwner = isOwner
             )
             ErrorAlert(null, null, errorAlertVal)
