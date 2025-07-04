@@ -162,7 +162,7 @@ fun DamageResolveBottomModal(open: Boolean, close: () -> Unit, onSubmit : (Long?
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.95f)
+                .fillMaxHeight(0.3f)
                 .verticalScroll(rememberScrollState())
                 .testTag("damageResolveBottomModalInternalContainer")
         ) {
@@ -237,7 +237,7 @@ fun DamageDetailsScreen(navController: NavController, propertyId: String?, lease
                 Text(damage.value!!.comment)
             }
             Spacer(modifier = Modifier.height(20.dp))
-            DamageStatusPanel(damage.value!!.fixStatus, {}, {}, isOwner.value)
+            DamageStatusPanel(damage.value!!.fixStatus, {}, { damageResolveBottomModalIsOpen = true }, isOwner.value)
             Spacer(modifier = Modifier.height(20.dp))
             DamageImagesPanel(damage.value!!.pictures)
         }

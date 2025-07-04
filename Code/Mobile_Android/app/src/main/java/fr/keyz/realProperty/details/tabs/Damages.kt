@@ -44,6 +44,11 @@ import fr.keyz.utils.DateFormatter
 @Composable
 fun OneDamage(damage: Damage, goToDamageDetails : (Damage) -> Unit) {
     val dateCreationAsString = DateFormatter.formatOffsetDateTime(damage.createdAt)
+    val damageFirstImage = try {
+        damage.pictures.first()
+    } catch (e: NoSuchElementException) {
+        ""
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -81,7 +86,7 @@ fun OneDamage(damage: Damage, goToDamageDetails : (Damage) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally) {
             Text(dateCreationAsString?: "", fontSize = 12.sp, color = MaterialTheme.colorScheme.onTertiary)
             Base64ImageView(
-                image = damage.pictures.first(),
+                image = damageFirstImage,
                 description = "First Image of the damage ${damage.comment}",
                 modifier =  Modifier.fillMaxWidth().aspectRatio(1f).padding(top = 2.dp),
             )
