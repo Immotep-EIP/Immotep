@@ -75,6 +75,7 @@ class DamageDetailsViewModel(apiService: ApiService, navController: NavControlle
             } catch (e: ApiCallerServiceException) {
                 _apiError.value = e.getCode()
             } catch (e : Exception) {
+                println("Unexpected error in onSubmitUpdateDamageResolution: ${e.message}")
                 _apiError.value = 500
             } finally {
                 _isLoading.value = false

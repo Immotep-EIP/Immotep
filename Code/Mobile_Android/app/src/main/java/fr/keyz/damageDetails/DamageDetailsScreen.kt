@@ -97,7 +97,7 @@ fun DamageStatusPanel(
     }
     val statusText = when (damageStatus) {
         DamageStatus.FIXED-> stringResource(R.string.fixed)
-        DamageStatus.PLANNED -> "${stringResource(R.string.planned)} $plannedDate"
+        DamageStatus.PLANNED -> "${stringResource(R.string.planned)} ${plannedDate ?: ""}"
         DamageStatus.PENDING -> stringResource(R.string.pending)
         DamageStatus.AWAITING_OWNER_CONFIRMATION -> stringResource(if (isOwner) R.string.click_here_to_confirm else R.string.awaiting_owner_confirmation)
         DamageStatus.AWAITING_TENANT_CONFIRMATION -> stringResource(if (!isOwner) R.string.click_here_to_confirm else R.string.awaiting_tenant_confirmation)
