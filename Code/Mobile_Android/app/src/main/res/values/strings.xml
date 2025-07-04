@@ -219,4 +219,11 @@
     <string name="damages_list">Damage List</string>
     <string name="no_browser_found">No browser found to open the link</string>
     <string name="damage_detail">Damage Detail</string>
+    <string name="fixed">Fixed</string>
+    <string name="planned">Planned for the</string>
+    <string name="awaiting_owner_confirmation">Awaiting owner confirmation</string>
+    <string name="awaiting_tenant_confirmation">Awaiting tenant confirmation</string>
+    <string name="click_here_to_confirm">Click here to confirm</string>
+    <string name="state">State</string>
+    <string name="in_progress">In progress</string>
 </resources>

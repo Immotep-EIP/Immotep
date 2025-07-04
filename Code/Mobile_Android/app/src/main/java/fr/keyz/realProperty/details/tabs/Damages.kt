@@ -35,6 +35,7 @@ import fr.keyz.LocalIsOwner
 import fr.keyz.R
 import fr.keyz.components.addDamageModal.AddDamageModal
 import fr.keyz.apiCallerServices.Damage
+import fr.keyz.components.Base64ImageView
 import fr.keyz.ui.components.StyledButton
 import fr.keyz.utils.Base64Utils
 import fr.keyz.utils.DateFormatter
@@ -43,11 +44,6 @@ import fr.keyz.utils.DateFormatter
 @Composable
 fun OneDamage(damage: Damage, goToDamageDetails : (Damage) -> Unit) {
     val dateCreationAsString = DateFormatter.formatOffsetDateTime(damage.createdAt)
-    val bitmap = try {
-        Base64Utils.decodeBase64ToImage(damage.pictures.first())
-    } catch (e : Exception) {
-        null
-    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -84,21 +80,11 @@ fun OneDamage(damage: Damage, goToDamageDetails : (Damage) -> Unit) {
         Column(modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Text(dateCreationAsString?: "", fontSize = 12.sp, color = MaterialTheme.colorScheme.onTertiary)
-            if (bitmap != null) {
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .padding(top = 2.dp),
-                    bitmap = bitmap,
-                    contentDescription = "First Image of the damage ${damage.comment}"
-                )
-            } else {
-                Text(
-                    stringResource(R.string.picture_not_supported),
-                    modifier = Modifier.padding(top = 10.dp)
-                )
-            }
+            Base64ImageView(
+                image = damage.pictures.first(),
+                description = "First Image of the damage ${damage.comment}",
+                modifier =  Modifier.fillMaxWidth().aspectRatio(1f).padding(top = 2.dp),
+            )
         }
     }
 }
