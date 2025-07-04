@@ -322,4 +322,21 @@ class MockedApiService : ApiService {
     override suspend fun getDashboard(authHeader: String, lang: String): GetDashBoardOutput {
         return fakeGetDashBoardOutput
     }
+
+    override suspend fun getPropertyDamage(
+        authHeader: String,
+        propertyId: String,
+        leaseId: String,
+        damageId: String
+    ): DamageOutput {
+        return fakeDamageOutput
+    }
+
+    override suspend fun getPropertyDamageTenant(
+        authHeader: String,
+        leaseId: String,
+        damageId: String
+    ): DamageOutput {
+        return fakeDamageOutput
+    }
 }

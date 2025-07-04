@@ -173,12 +173,27 @@ interface ApiService {
         @Path("leaseId") leaseId: String,
     ): Array<DamageOutput>
 
+    @GET("$API_PREFIX/tenant/leases/{leaseId}/damages/{damageId}/")
+    suspend fun getPropertyDamageTenant(
+        @Header("Authorization") authHeader : String,
+        @Path("leaseId") leaseId: String,
+        @Path("damageId") damageId: String,
+    ): DamageOutput
+
     @GET("$API_PREFIX/owner/properties/{propertyId}/leases/{leaseId}/damages/")
     suspend fun getPropertyDamages(
         @Header("Authorization") authHeader : String,
         @Path("propertyId") propertyId: String,
         @Path("leaseId") leaseId: String,
     ): Array<DamageOutput>
+
+    @GET("$API_PREFIX/owner/properties/{propertyId}/leases/{leaseId}/damages/{damageId}/")
+    suspend fun getPropertyDamage(
+        @Header("Authorization") authHeader : String,
+        @Path("propertyId") propertyId: String,
+        @Path("leaseId") leaseId: String,
+        @Path("damageId") damageId: String,
+    ): DamageOutput
 
     @POST("$API_PREFIX/tenant/leases/{lease_id}/damages/")
     suspend fun addDamage(

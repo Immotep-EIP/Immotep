@@ -99,6 +99,18 @@ class DamageCallerService (
         }
     }
 
+    suspend fun getDamage(
+        propertyId: String,
+        leaseId: String,
+        damageId : String
+    ) : Damage = changeRetrofitExceptionByApiCallerException {
+        if (this.isOwner()) {
+            apiService.getPropertyDamage(getBearerToken(), propertyId, leaseId, damageId).toDamage()
+        } else {
+            apiService.getPropertyDamageTenant(getBearerToken(), "current", damageId).toDamage()
+        }
+    }
+
     suspend fun addDamage(damageInput: DamageInput) : CreateOrUpdateResponse = changeRetrofitExceptionByApiCallerException {
         apiService.addDamage(getBearerToken(), "current", damage = damageInput)
     }
