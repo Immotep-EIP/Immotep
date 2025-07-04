@@ -54,7 +54,7 @@ class DamageDetailsViewModel(apiService: ApiService, navController: NavControlle
                         leaseId =  currentDamage.value!!.leaseId,
                         damageId =  currentDamage.value!!.id,
                     )
-                    _currentDamage.value = _currentDamage.value?.copy(fixStatus = DamageStatus.FIXED)
+                    _currentDamage.value = _currentDamage.value?.copy(fixStatus = DamageStatus.AWAITING_TENANT_CONFIRMATION)
                 } else {
                     val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
                     val updateInput = UpdateDamageInput(
@@ -68,7 +68,7 @@ class DamageDetailsViewModel(apiService: ApiService, navController: NavControlle
                         updateDamageInput = updateInput
                     )
                     _currentDamage.value = _currentDamage.value?.copy(
-                        fixStatus = DamageStatus.PLANNED,
+                        fixStatus = DamageStatus.AWAITING_TENANT_CONFIRMATION,
                         fixedAt = OffsetDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneOffset.UTC),
                     )
                 }

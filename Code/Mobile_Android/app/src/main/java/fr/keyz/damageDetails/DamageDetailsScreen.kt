@@ -23,7 +23,6 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -55,6 +54,7 @@ import fr.keyz.components.InternalLoading
 import fr.keyz.components.PriorityBox
 import fr.keyz.layouts.BigModalLayout
 import fr.keyz.ui.components.StyledButton
+import fr.keyz.utils.DateFormatter
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -65,7 +65,7 @@ fun DamageImagesPanel(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
-        Text(stringResource(R.string.state), fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+        Text(stringResource(R.string.pictures), fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(5.dp))
         FlowRow(modifier = Modifier.defaultMinSize(minHeight = 125.dp)) {
             images.forEachIndexed { index, image ->
@@ -84,7 +84,8 @@ fun DamageStatusPanel(
     damageStatus: DamageStatus,
     confirm: () -> Unit,
     pendingClick: () -> Unit,
-    isOwner : Boolean
+    isOwner : Boolean,
+    plannedDate : String?
 ) {
     val confirmOwner = damageStatus == DamageStatus.AWAITING_OWNER_CONFIRMATION && isOwner
     val confirmTenant = damageStatus == DamageStatus.AWAITING_TENANT_CONFIRMATION && !isOwner
@@ -95,7 +96,7 @@ fun DamageStatusPanel(
     }
     val statusText = when (damageStatus) {
         DamageStatus.FIXED-> stringResource(R.string.fixed)
-        DamageStatus.PLANNED -> stringResource(R.string.planned)
+        DamageStatus.PLANNED -> "${stringResource(R.string.planned)} $plannedDate"
         DamageStatus.PENDING -> stringResource(R.string.pending)
         DamageStatus.AWAITING_OWNER_CONFIRMATION -> stringResource(if (isOwner) R.string.click_here_to_confirm else R.string.awaiting_owner_confirmation)
         DamageStatus.AWAITING_TENANT_CONFIRMATION -> stringResource(if (!isOwner) R.string.click_here_to_confirm else R.string.awaiting_tenant_confirmation)
@@ -128,7 +129,7 @@ fun DamageStatusPanel(
 
             contentAlignment = Alignment.Center
         ) {
-            Text(statusText)
+            Text(statusText, color = MaterialTheme.colorScheme.onSecondary)
         }
     }
 }
@@ -158,11 +159,11 @@ fun DamageResolveBottomModal(open: Boolean, close: () -> Unit, onSubmit : (Long?
             DatePicker(state = datePickerState)
         }
     }
-    BigModalLayout(height = 0.3f, open = open, close = close, testTag = "damageResolveBottomModal") {
+    BigModalLayout(height = 0.2f, open = open, close = close, testTag = "damageResolveBottomModal") {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.3f)
+                .fillMaxHeight(0.2f)
                 .verticalScroll(rememberScrollState())
                 .testTag("damageResolveBottomModalInternalContainer")
         ) {
@@ -237,7 +238,13 @@ fun DamageDetailsScreen(navController: NavController, propertyId: String?, lease
                 Text(damage.value!!.comment)
             }
             Spacer(modifier = Modifier.height(20.dp))
-            DamageStatusPanel(damage.value!!.fixStatus, {}, { damageResolveBottomModalIsOpen = true }, isOwner.value)
+            DamageStatusPanel(
+                damageStatus = damage.value!!.fixStatus,
+                confirm = {},
+                pendingClick = { damageResolveBottomModalIsOpen = true },
+                isOwner = isOwner.value,
+                plannedDate = DateFormatter.formatOffsetDateTime(damage.value!!.fixPlannedAt)
+            )
             Spacer(modifier = Modifier.height(20.dp))
             DamageImagesPanel(damage.value!!.pictures)
         }
