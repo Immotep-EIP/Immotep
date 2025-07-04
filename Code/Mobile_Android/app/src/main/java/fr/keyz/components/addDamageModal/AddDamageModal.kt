@@ -37,6 +37,7 @@ fun AddDamageModal(
     }
     val form = viewModel.form.collectAsState()
     val errors = viewModel.formError.collectAsState()
+    val isLoading = viewModel.isLoading.collectAsState()
     LaunchedEffect(open) {
         viewModel.reset()
     }
@@ -90,7 +91,8 @@ fun AddDamageModal(
                     tenantName = ""
                 )
             },
-            testTag = "addDamageSubmitButton"
+            testTag = "addDamageSubmitButton",
+            isLoading = isLoading.value
         )
     }
 }

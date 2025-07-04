@@ -12,6 +12,7 @@ import fr.keyz.LocalApiService
 import fr.keyz.LocalIsOwner
 import fr.keyz.apiClient.ApiService
 import fr.keyz.authService.AuthService
+import fr.keyz.damageDetails.DamageDetailsScreen
 import fr.keyz.dashboard.DashBoardScreen
 import fr.keyz.inventory.InventoryScreen
 import fr.keyz.inventory.loaderButton.LoaderInventoryViewModel
@@ -67,6 +68,20 @@ fun Navigation() {
                     leaseId = currentLeaseId
                 )
             }
+        }
+        composable("damage/{propertyId}/{leaseId}/{damageId}") { navBackStackEntry ->
+            val propertyId = navBackStackEntry.arguments?.getString("propertyId")
+            val currentLeaseId = navBackStackEntry.arguments?.getString("leaseId")
+            val damageId = navBackStackEntry.arguments?.getString("damageId")
+            if (currentLeaseId != null && damageId != null) {
+                DamageDetailsScreen(
+                    navController = navController,
+                    propertyId = propertyId,
+                    leaseId = currentLeaseId,
+                    damageId = damageId
+                )
+            }
+
         }
     }
 }

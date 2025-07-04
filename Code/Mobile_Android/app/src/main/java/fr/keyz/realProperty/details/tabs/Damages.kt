@@ -35,18 +35,19 @@ import fr.keyz.LocalIsOwner
 import fr.keyz.R
 import fr.keyz.components.addDamageModal.AddDamageModal
 import fr.keyz.apiCallerServices.Damage
+import fr.keyz.components.Base64ImageView
 import fr.keyz.ui.components.StyledButton
 import fr.keyz.utils.Base64Utils
 import fr.keyz.utils.DateFormatter
 
 
 @Composable
-fun OneDamage(damage: Damage) {
+fun OneDamage(damage: Damage, goToDamageDetails : (Damage) -> Unit) {
     val dateCreationAsString = DateFormatter.formatOffsetDateTime(damage.createdAt)
-    val bitmap = try {
-        Base64Utils.decodeBase64ToImage(damage.pictures.first())
-    } catch (e : Exception) {
-        null
+    val damageFirstImage = try {
+        damage.pictures.first()
+    } catch (e: NoSuchElementException) {
+        ""
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -54,8 +55,8 @@ fun OneDamage(damage: Damage) {
         modifier = Modifier
             .fillMaxWidth()
             .testTag("oneDamage ${damage.id}")
-            .clickable {
-        }.padding(5.dp).drawBehind {
+            .clickable { goToDamageDetails(damage) }
+            .padding(5.dp).drawBehind {
             val y = size.height - 2.dp.toPx() / 2
             drawLine(
                 Color.LightGray,
@@ -84,21 +85,11 @@ fun OneDamage(damage: Damage) {
         Column(modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Text(dateCreationAsString?: "", fontSize = 12.sp, color = MaterialTheme.colorScheme.onTertiary)
-            if (bitmap != null) {
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .padding(top = 2.dp),
-                    bitmap = bitmap,
-                    contentDescription = "First Image of the damage ${damage.comment}"
-                )
-            } else {
-                Text(
-                    stringResource(R.string.picture_not_supported),
-                    modifier = Modifier.padding(top = 10.dp)
-                )
-            }
+            Base64ImageView(
+                image = damageFirstImage,
+                description = "First Image of the damage ${damage.comment}",
+                modifier =  Modifier.fillMaxWidth().aspectRatio(1f).padding(top = 2.dp),
+            )
         }
     }
 }
@@ -108,7 +99,8 @@ fun OneDamage(damage: Damage) {
 fun Damages(
     damageList : List<Damage>,
     addDamage : (Damage) -> Unit,
-    navController: NavController
+    navController: NavController,
+    propertyId : String
 ) {
     val isOwner = LocalIsOwner.current.value
     var addDamageOpen by rememberSaveable { mutableStateOf(false) }
@@ -134,7 +126,12 @@ fun Damages(
             )
         }
         damageList.forEach { item ->
-            OneDamage(item)
+            OneDamage(
+                damage = item,
+                goToDamageDetails = {
+                    damage -> navController.navigate("damage/${propertyId}/${damage.leaseId}/${damage.id}" )
+                }
+            )
         }
     }
 }

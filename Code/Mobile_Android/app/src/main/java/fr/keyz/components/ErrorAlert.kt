@@ -23,7 +23,7 @@ import fr.keyz.ui.icons.ReleaseAlert
 @Composable
 fun ErrorAlert(
     code: Int?,
-    login: Boolean?,
+    login: Boolean? = null,
     customMessage: String? = null
 ) {
     if (code == null && customMessage == null) {
