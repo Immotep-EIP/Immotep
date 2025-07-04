@@ -27,6 +27,8 @@ class DamageDetailsViewModel(apiService: ApiService, navController: NavControlle
                 _currentDamage.value = apiCallerService.getDamage(propertyId ?: "", leaseId, damageId)
             } catch (e: Exception) {
                 _apiError.value = true
+            } finally {
+                _isLoading.value = false
             }
         }
     }

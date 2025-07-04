@@ -79,7 +79,7 @@
     <string name="add_picture">Ajouter une photo</string>
     <string name="city">Ville</string>
     <string name="name">Nom</string>
-    <string name="inventory_title">Keyz - État des lieux</string>
+    <string name="inventory_title">État des lieux</string>
     <string name="entry_inventory">État des lieux d\'entrée</string>
     <string name="exit_inventory">État des lieux de sortie</string>
     <string name="edit">Modifier</string>
@@ -219,5 +219,5 @@
     <string name="reminders">Rappels</string>
     <string name="damages_list">Liste des dommages</string>
     <string name="no_browser_found">Aucun navigateur trouvé</string>
-
+    <string name="damage_detail">Détails du sinistre</string>
 </resources>

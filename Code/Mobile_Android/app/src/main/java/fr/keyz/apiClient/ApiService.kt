@@ -46,7 +46,7 @@ data class ArchiveInput(
     val archive: Boolean = true
 )
 
-const val API_PREFIX = "/api/v1"
+const val API_PREFIX = "/v1"
 
 interface ApiService {
 

@@ -41,7 +41,7 @@ import fr.keyz.utils.DateFormatter
 
 
 @Composable
-fun OneDamage(damage: Damage) {
+fun OneDamage(damage: Damage, goToDamageDetails : (Damage) -> Unit) {
     val dateCreationAsString = DateFormatter.formatOffsetDateTime(damage.createdAt)
     val bitmap = try {
         Base64Utils.decodeBase64ToImage(damage.pictures.first())
@@ -54,8 +54,8 @@ fun OneDamage(damage: Damage) {
         modifier = Modifier
             .fillMaxWidth()
             .testTag("oneDamage ${damage.id}")
-            .clickable {
-        }.padding(5.dp).drawBehind {
+            .clickable { goToDamageDetails(damage) }
+            .padding(5.dp).drawBehind {
             val y = size.height - 2.dp.toPx() / 2
             drawLine(
                 Color.LightGray,
@@ -108,7 +108,8 @@ fun OneDamage(damage: Damage) {
 fun Damages(
     damageList : List<Damage>,
     addDamage : (Damage) -> Unit,
-    navController: NavController
+    navController: NavController,
+    propertyId : String
 ) {
     val isOwner = LocalIsOwner.current.value
     var addDamageOpen by rememberSaveable { mutableStateOf(false) }
@@ -134,7 +135,12 @@ fun Damages(
             )
         }
         damageList.forEach { item ->
-            OneDamage(item)
+            OneDamage(
+                damage = item,
+                goToDamageDetails = {
+                    damage -> navController.navigate("damage/${propertyId}/${damage.leaseId}/${damage.id}" )
+                }
+            )
         }
     }
 }
