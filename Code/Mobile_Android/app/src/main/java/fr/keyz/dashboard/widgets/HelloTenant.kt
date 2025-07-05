@@ -14,7 +14,7 @@ import fr.keyz.R
 
 @Composable
 fun HelloTenant(userName : String) {
-    WidgetBase(dropDownItems = arrayOf(), testTag = "helloWidget") {
+    WidgetBase(dropDownItems = arrayOf(), testTag = "helloTenantWidget") {
         Column {
             Text(
                 "${stringResource(R.string.welcome)} $userName",
