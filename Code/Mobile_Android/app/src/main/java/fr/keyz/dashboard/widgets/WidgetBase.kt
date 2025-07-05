@@ -45,11 +45,12 @@ data class WidgetMenuItem(
 fun WidgetNumberBase(
     title : String,
     value : Int,
+    afterValue : String = "",
     titleColor : Color = MaterialTheme.colorScheme.primary,
     valueColor : Color = MaterialTheme.colorScheme.primary
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value.toString(), color = valueColor, fontSize = 24.sp)
+        Text(value.toString() + afterValue, color = valueColor, fontSize = 24.sp)
         Spacer(modifier = Modifier.height(5.dp))
         Text(title, color = titleColor, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
     }

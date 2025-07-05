@@ -228,4 +228,6 @@
     <string name="in_progress">In progress</string>
     <string name="last_update">Last update</string>
     <string name="created_at">Created at</string>
+    <string name="dashboard_tenant_resume">Here is a summary of your rental</string>
+    <string name="my_rental">My Rental</string>
 </resources>
