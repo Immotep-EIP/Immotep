@@ -38,12 +38,12 @@ class TenantDashBoardViewModel(navController: NavController, apiService: ApiServ
             try {
                 _apiError.value = null
                 _isLoading.value = true
+                damages.clear()
                 val profile = profileApiCaller.getProfile()
                 _userName.value = profile.firstname
                 val property = realPropertyApiCaller.getPropertyWithDetails()
                 _property.value = property
-                val damagesFetched = damageApiCaller.getPropertyDamages(property.id, property.lease!!.id)
-                damages.addAll(damages)
+                damages.addAll(damageApiCaller.getPropertyDamages(property.id, property.lease!!.id))
             } catch(e : ApiCallerServiceException) {
                 _apiError.value = e.getCode()
             } catch(e : Exception) {

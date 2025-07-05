@@ -229,4 +229,5 @@
     <string name="in_progress">En cours</string>
     <string name="last_update">Dernière mise à jour</string>
     <string name="created_at">Créé le </string>
+    <string name="dashboard_tenant_resume">Voici un résumé de votre propriétée</string>
 </resources>
