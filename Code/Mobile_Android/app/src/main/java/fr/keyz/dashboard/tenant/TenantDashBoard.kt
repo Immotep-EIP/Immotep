@@ -16,6 +16,7 @@ import fr.keyz.components.InternalLoading
 import fr.keyz.dashboard.DashBoardLayout
 import fr.keyz.dashboard.widgets.DamagesListWidget
 import fr.keyz.dashboard.widgets.HelloTenant
+import fr.keyz.dashboard.widgets.PropertyOverview
 
 @Composable
 fun TenantDashBoard(navController: NavController) {
@@ -41,6 +42,9 @@ fun TenantDashBoard(navController: NavController) {
         InitialFadeIn(durationMs = 200) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 HelloTenant(userName = userName.value)
+                if (property.value != null) {
+                    PropertyOverview(property.value!!)
+                }
                 DamagesListWidget(viewModel.damages.toTypedArray())
             }
         }
