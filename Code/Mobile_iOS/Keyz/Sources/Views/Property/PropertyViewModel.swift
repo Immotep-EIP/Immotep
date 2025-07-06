@@ -129,7 +129,7 @@ class PropertyViewModel: ObservableObject {
         }
     }
     
-    func uploadDocument(propertyId: String, fileName: String, base64Data: String) async throws -> String {
+    func uploadDocument(propertyId: String, fileName: String, base64Data: String) async throws {
         guard let userRole = storedUserRole else {
             throw NSError(domain: "", code: 403, userInfo: [NSLocalizedDescriptionKey: "User role not defined.".localized()])
         }
@@ -171,7 +171,6 @@ class PropertyViewModel: ObservableObject {
                 self.objectWillChange.send()
             }
         }
-        return documentId
     }
     
     func cancelInvite(propertyId: String, token: String) async throws {
