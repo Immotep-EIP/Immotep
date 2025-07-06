@@ -29,15 +29,11 @@ class RegisterViewModel: ObservableObject {
         }
         let apiServiceCopy = apiService
 
-        Task {
-            do {
-                let response = try await apiServiceCopy.registerUser(with: model)
-                if response == "Registration successful!" {
-                    registerStatus = "Registration successful!"
-                }
-            } catch {
-                registerStatus = "Error: \(error.localizedDescription)"
-            }
+        do {
+            let response = try await apiServiceCopy.registerUser(with: model)
+            registerStatus = response
+        } catch {
+            registerStatus = "Error: \(error.localizedDescription)"
         }
     }
 

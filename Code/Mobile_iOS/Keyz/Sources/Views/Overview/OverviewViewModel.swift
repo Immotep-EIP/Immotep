@@ -5,12 +5,14 @@
 //  Created by Liebenguth Alessio on 21/10/2024.
 //
 
+import SwiftUI
 import Foundation
 
 class OverviewViewModel: ObservableObject {
     @Published var dashboardData: DashboardResponse?
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    @AppStorage("lang") private var lang: String = "en"
 
     init() {}
 
@@ -19,8 +21,14 @@ class OverviewViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
-        guard let url = URL(string: "\(APIConfig.baseURL)/owner/dashboard/") else {
+        guard var urlComponents = URLComponents(string: "\(APIConfig.baseURL)/owner/dashboard/") else {
             errorMessage = "Invalid URL".localized()
+            isLoading = false
+            return
+        }
+        urlComponents.queryItems = [URLQueryItem(name: "lang", value: lang)]
+        guard let url = urlComponents.url else {
+            errorMessage = "Invalid URL with lang parameter".localized()
             isLoading = false
             return
         }

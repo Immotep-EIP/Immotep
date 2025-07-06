@@ -167,20 +167,16 @@
 "Archived" = "Archivée(s)";
 "Available_property" = "Disponible(s)";
 "Pending Invites" = "Invitation(s) en attente";
-
 "Urgent_damage" = "Urgent(s)";
 "High_damage" = "Haut(s)";
 "Medium_damage" = "Moyen(s)";
 "Low_damage" = "Faible(s)";
-
 "No documents available" = "Aucun document disponible";
-
 "Room Type" = "Type de pièce";
 "Inventory Report" = "État des lieux";
 "Image(s)" = "Image(s)";
 "Property or old report not found. Please check the property details." = "Propriété ou ancien rapport non trouvé. Veuillez vérifier les détails de la propriété.";
 "No previous inventory report found for comparison." = "Aucun rapport d'inventaire précédent trouvé pour la comparaison.";
-
 "Room Analysis" = "Analyse de la pièce";
 "Select room status" = "Sélectionner l'état de la pièce";
 "Select your equipment status" = "Selectionner l'état de l'objet";
@@ -190,7 +186,6 @@
 "Bad" = "Mauvais";
 "Good" = "Bon";
 "New" = "Neuf";
-
 "Choose a name and type for your new room:" = "Choisissez un nom et un type pour votre nouvelle pièce :";
 "Are you sure you want to delete the room %@?" = "Êtes-vous sûr de vouloir supprimer la pièce %@ ?";
 "Add an element" = "Ajouter un élément";
@@ -198,13 +193,11 @@
 "Are you sure you want to delete the stuff?" = "Êtes-vous sûr de vouloir supprimer l'élément ?";
 "Error adding stuff: %@" = "Erreur lors de l'ajout de l'élément : %@";
 "Analyze Room" = "Analyser la pièce";
-
 "Messaging features will be available soon!" = "Les fonctionnalités de messagerie seront bientôt disponibles !";
 "No property associated." = "Aucune propriété associée.";
 "No properties available" = "Aucune propriété disponible";
 "Unknown" = "Inconnu";
 "Error refreshing damages: %@" = "Erreur lors de l'actualisation des sinistres : %@";
-
 "Damage Details" = "Détails du sinistre";
 "Comment" = "Commentaire";
 "Confirm Fix" = "Confirmer la réparation";
@@ -224,7 +217,6 @@
 "Planned" = "Planifié";
 "awaiting_tenant_confirmation" = "En attente de confirmation du locataire";
 "Status" = "État";
-
 "No rooms available" = "Aucune pièce disponible";
 "Select a room" = "Sélectionner une pièce";
 "Submit" = "Envoyer";
@@ -233,7 +225,6 @@
 "Please select a room." = "Veuillez sélectionner une pièce.";
 "No active lease found." = "Aucun bail actif trouvé.";
 "Error submitting damage: %@" = "Erreur lors de la soumission du sinistre : %@";
-
 "Property not found" = "Propriété introuvable";
 "Messaging coming soon!" = "La messagerie arrive bientôt !";
 "My Property" = "Ma propriété";
@@ -245,14 +236,99 @@
 "Enter a new furniture name" = "Entrez le nom de l'objet";
 "Enter the furniture quantity" = "Entrez la quantité d'objet(s)";
 "Delete Stuff" = "Supprimer un objet";
-
 "Are you sure you want to delete the stuff?" = "Êtes-vous sûr de vouloir supprimer cet objet ?";
-
 "No lease is currently active" = "Aucun contrat en cours";
 "Validate" = "Valider";
 "Finalize Inventory" = "Finaliser l'état des lieux";
 "Delete Room" = "Supprimer la pièce";
-
 "Entry inventory finalized successfully!" = "Rapport d'état des lieux d'entrée généré avec succès !";
 "Exit inventory finalized successfully!" = "Rapport d'état des lieux de sortie généré avec succès !";
 "no_damages_reported" = "Pas de sinistres à afficher";
+"Property created successfully!" = "Propriété créée avec succès !";
+"A property with this information already exists." = "Une propriété similaire existe déjà.";
+"Error creating property." = "Erreur pendant la création de la propriété.";
+"Invitation sent successfully!" = "Invitation envoyée avec succès !";
+"Error inviting tenant." = "Erreur durant l'invitation.";
+"Property or lease not found." = "Propriété ou location non trouvée.";
+"You do not have permission to access this property." = "Vous n'avez pas accès à cette propriété";
+"Invalid image format. Please ensure all images are valid JPEGs." = "Format d'image invalide.";
+"Error sending report." = "Erreur dans l'envoi du rapport";
+"You have no properties yet." = "Vous n'avez pas de propriétés enregistrées.";
+"Select your room status" = "Sélectionner l'état de la pièce";
+"Property not yours" = "Vous n'avez pas la propriété de cette propriété.";
+"Invalid URL" = "URL invalide.";
+"Failed to retrieve token" = "Échec de la récupération du jeton.";
+"Invalid response" = "Réponse invalide.";
+"Invalid furniture data" = "Données de meuble invalides.";
+"Room not found" = "Pièce non trouvée.";
+"Stuff not found in inventory" = "Objet non trouvé dans l'inventaire.";
+"Room not found in localRooms" = "Pièce non trouvée dans les pièces locales.";
+"No view model" = "Aucun modèle de vue.";
+"Invalid request: %@" = "Requête invalide : %@";
+"Error: %@" = "Erreur : %@";
+"No active lease found for property %@" = "Aucun bail actif trouvé pour la propriété %@";
+"Error with status code: %@" = "Erreur avec le code de statut : %@";
+"Failed to fetch last report: %@" = "Échec de la récupération du dernier rapport : %@";
+"Failed with status code: %@" = "Échec avec le code de statut : %@";
+"Invalid room type: %@" = "Type de pièce invalide : %@";
+"API error: %@" = "Erreur API : %@";
+"Error fetching rooms: %@" = "Erreur lors de la récupération des pièces : %@";
+"Error creating room: %@" = "Erreur lors de la création de la pièce : %@";
+"Error deleting room: %@" = "Erreur lors de la suppression de la pièce : %@";
+"Error deleting furniture: %@" = "Erreur lors de la suppression du meuble : %@";
+"Failed to finalize entry inventory: %@" = "Échec de la finalisation de l'état des lieux d'entrée : %@";
+"Failed to finalize exit inventory: %@" = "Échec de la finalisation de l'état des lieux de sortie : %@";
+"No room selected" = "Aucune pièce sélectionnée.";
+"Error adding room: %@" = "Erreur lors de l'ajout de la pièce : %@";
+"Error finalizing inventory: %@" = "Erreur lors de la finalisation de l'état des lieux : %@";
+"Invalid URL with lang parameter" = "URL invalide avec le paramètre de langue.";
+"Error fetching dashboard data: %@" = "Erreur lors de la récupération des données du tableau de bord : %@";
+"Error fetching tenant data: %@" = "Erreur lors de la récupération des données du locataire : %@";
+"Error fetching damage details: %@" = "Erreur lors de la récupération des détails du sinistre : %@";
+"No dashboard data available" = "Aucune donnée de tableau de bord disponible.";
+"No reminders" = "Aucun rappel.";
+"Total" = "Total";
+"Keyz" = "Keyz";
+"Are you sure you want to confirm this damage is fixed?" = "Êtes-vous sûr de vouloir confirmer que ce sinistre est réparé ?";
+"Done" = "Terminé";
+"Reset" = "Réinitialiser";
+"Select End Date" = "Sélectionner la date de fin";
+"Not Set" = "Non défini";
+"Error fetching documents: %@" = "Erreur lors de la récupération des documents : %@";
+"Error fetching image: %@" = "Erreur lors de la récupération de l'image : %@";
+"Error fetching lease ID: %@" = "Erreur lors de la récupération de l'ID de bail : %@";
+"Error fetching inventory report: %@" = "Erreur lors de la récupération du rapport d'inventaire : %@";
+"Error fetching property data: %@" = "Erreur lors de la récupération des données de la propriété : %@";
+"Error fetching property: %@" = "Erreur lors de la récupération de la propriété : %@";
+"Error cancelling invite: %@" = "Erreur lors de l'annulation de l'invitation : %@";
+"Error ending lease: %@" = "Erreur lors de la fin du bail : %@";
+"Error deleting property: %@" = "Erreur lors de la suppression de la propriété : %@";
+"Error deleting document: %@" = "Erreur lors de la suppression du document : %@";
+"No property selected." = "Aucune propriété sélectionnée.";
+"Invalid file type. Only PDF, DOCX, and XLSX are supported." = "Type de fichier invalide. Seuls PDF, DOCX et XLSX sont pris en charge.";
+"Unable to access file." = "Impossible d'accéder au fichier.";
+"Error uploading document: %@" = "Erreur lors du téléchargement du document : %@";
+"Only owners can create properties." = "Seuls les propriétaires peuvent créer des propriétés.";
+"Only owners can update property pictures." = "Seuls les propriétaires peuvent mettre à jour les images des propriétés.";
+"User role not found." = "Rôle de l'utilisateur non trouvé.";
+"Invalid user role." = "Rôle de l'utilisateur invalide.";
+"Only owners can update properties." = "Seuls les propriétaires peuvent mettre à jour les propriétés.";
+"Only owners can delete properties." = "Seuls les propriétaires peuvent supprimer des propriétés.";
+"User role not defined." = "Rôle de l'utilisateur non défini.";
+"Only owners can cancel invites." = "Seuls les propriétaires peuvent annuler les invitations.";
+"Only owners can end leases." = "Seuls les propriétaires peuvent mettre fin aux baux.";
+"Only tenants can report damages." = "Seuls les locataires peuvent signaler des sinistres.";
+"Only owners can fetch inventory reports." = "Seuls les propriétaires peuvent récupérer les rapports d'inventaire.";
+"Only owners can update damage status." = "Seuls les propriétaires peuvent mettre à jour l'état des sinistres.";
+"Only tenants can upload tenant documents." = "Seuls les locataires peuvent télécharger des documents de locataire.";
+"Only owners can upload owner documents." = "Seuls les propriétaires peuvent télécharger des documents de propriétaire.";
+"Only owners can delete documents." = "Seuls les propriétaires peuvent supprimer des documents.";
+"Updated property not found in refreshed data." = "Propriété mise à jour non trouvée dans les données actualisées.";
+"Missing fields" = "Champs manquants";
+"Invite already exists for this email" = "Une invitation existe déjà pour cet email";
+"Unexpected error: %@" = "Erreur inattendue : %@";
+"Save Changes" = "Enregistrer les modifications";
+"Property updated successfully!" = "Propriété mise à jour avec succès !";
+"Error updating picture: %@" = "Erreur lors de la mise à jour de l'image : %@";
+"Delete Document" = "Supprimer le document";
+"Are you sure you want to delete this document?" = "Êtes-vous sûr de vouloir supprimer ce document ?";

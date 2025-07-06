@@ -18,7 +18,6 @@ struct InventoryExitEvaluationView: View {
     @State private var isLoading: Bool = false
     @State private var showError = false
     @State private var errorMessage: String?
-
     @State private var isReportSent: Bool = false
 
     let stateMapping: [String: String] = [
@@ -81,7 +80,7 @@ struct InventoryExitEvaluationView: View {
                             Spacer()
                         }
                         HStack {
-                            Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
+                            Picker("Select a status".localized(), selection: $inventoryViewModel.stuffStatus) {
                                 ForEach(Array(stateMapping.keys.sorted()), id: \.self) { key in
                                     Text(stateMapping[key] ?? key).tag(key)
                                 }
@@ -95,6 +94,7 @@ struct InventoryExitEvaluationView: View {
                                 RoundedRectangle(cornerRadius: 10)
                                     .stroke(Color.gray, lineWidth: 1)
                             )
+                            .accessibilityIdentifier("StatusPicker")
                             Spacer()
                         }
                     }
@@ -158,10 +158,10 @@ struct InventoryExitEvaluationView: View {
         }
         .onAppear {
             inventoryViewModel.selectStuff(selectedStuff)
-            let validStates = Array(stateMapping.keys)
-            if !validStates.contains(inventoryViewModel.selectedStatus) {
-                inventoryViewModel.selectedStatus = "not_set"
-            }
+            inventoryViewModel.selectedImages = selectedStuff.images.isEmpty ? [] : selectedStuff.images
+            inventoryViewModel.comment = selectedStuff.comment.isEmpty ? "" : selectedStuff.comment
+            let validStates = stateMapping.keys
+            inventoryViewModel.stuffStatus = validStates.contains(selectedStuff.status.lowercased()) ? selectedStuff.status.lowercased() : "not_set"
         }
     }
 
@@ -227,7 +227,6 @@ struct InventoryExitEvaluationView: View {
                 errorMessage = "Error: \(error.localizedDescription)".localized()
             }
             showError = true
-            print("Error sending comparison report: \(error.localizedDescription)")
         }
     }
 
@@ -235,7 +234,7 @@ struct InventoryExitEvaluationView: View {
         if let index = inventoryViewModel.selectedInventory.firstIndex(where: { $0.id == selectedStuff.id }) {
             inventoryViewModel.selectedInventory[index].checked = true
             inventoryViewModel.selectedInventory[index].images = inventoryViewModel.selectedImages
-            inventoryViewModel.selectedInventory[index].status = inventoryViewModel.selectedStatus
+            inventoryViewModel.selectedInventory[index].status = inventoryViewModel.stuffStatus
             inventoryViewModel.selectedInventory[index].comment = inventoryViewModel.comment
         }
 
@@ -243,7 +242,7 @@ struct InventoryExitEvaluationView: View {
            let stuffIndex = inventoryViewModel.localRooms[roomIndex].inventory.firstIndex(where: { $0.id == selectedStuff.id }) {
             inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].checked = true
             inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].images = inventoryViewModel.selectedImages
-            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].status = inventoryViewModel.selectedStatus
+            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].status = inventoryViewModel.stuffStatus
             inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].comment = inventoryViewModel.comment
         }
 
