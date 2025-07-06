@@ -23,6 +23,7 @@ struct EditPropertyView: View {
     @State private var surface: NSNumber?
     @State private var showError: Bool = false
     @State private var errorMessage: String?
+    @State private var successAlert = false
     @State private var showSheet = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
 
@@ -112,7 +113,7 @@ struct EditPropertyView: View {
             }
 
             if showError, let message = errorMessage {
-                ErrorNotificationView(message: message)
+                ErrorNotificationView(message: message, type: successAlert ? .success : .error)
                     .onDisappear {
                         showError = false
                         errorMessage = nil
@@ -191,8 +192,9 @@ struct EditPropertyView: View {
 
             await MainActor.run {
                 errorMessage = "Property updated successfully!".localized()
+                successAlert = true
                 showError = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     dismiss()
                 }
             }

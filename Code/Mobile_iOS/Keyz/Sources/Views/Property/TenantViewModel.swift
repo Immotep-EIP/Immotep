@@ -57,7 +57,7 @@ class TenantViewModel: ObservableObject {
         
         switch httpResponse.statusCode {
         case 201:
-            let inviteResponse = try JSONDecoder().decode(InviteIDResponse.self, from: data)
+            let _ = try JSONDecoder().decode(InviteIDResponse.self, from: data)
         case 400:
             throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Missing fields"])
         case 403:
