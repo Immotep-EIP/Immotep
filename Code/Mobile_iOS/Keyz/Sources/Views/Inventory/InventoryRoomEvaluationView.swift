@@ -80,7 +80,7 @@ struct InventoryRoomEvaluationView: View {
                             Spacer()
                         }
                         HStack {
-                            Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
+                            Picker("Select a status".localized(), selection: $inventoryViewModel.roomStatus) {
                                 ForEach(Array(stateMapping.keys.sorted()), id: \.self) { key in
                                     Text(stateMapping[key] ?? key).tag(key)
                                 }
@@ -158,12 +158,10 @@ struct InventoryRoomEvaluationView: View {
         }
         .onAppear {
             inventoryViewModel.selectRoom(selectedRoom)
-            inventoryViewModel.selectedImages = []
-            inventoryViewModel.comment = ""
-            let validStates = Array(stateMapping.keys)
-            if !validStates.contains(inventoryViewModel.selectedStatus) {
-                inventoryViewModel.selectedStatus = "not_set"
-            }
+            inventoryViewModel.selectedImages = selectedRoom.images.isEmpty ? [] : selectedRoom.images
+            inventoryViewModel.comment = selectedRoom.comment.isEmpty ? "" : selectedRoom.comment
+            let validStates = stateMapping.keys
+            inventoryViewModel.roomStatus = validStates.contains(selectedRoom.status.lowercased()) ? selectedRoom.status.lowercased() : "not_set"
         }
     }
 
@@ -219,16 +217,18 @@ struct InventoryRoomEvaluationView: View {
             case 0 where error.localizedDescription.contains("No active lease found"):
                 errorMessage = "No active lease found.".localized()
             default:
-                errorMessage = "Error: \(error.localizedDescription)".localized()
+                errorMessage = "Error sending report.".localized()
             }
             showError = true
-            print("Error sending room report: \(error.localizedDescription)")
         }
     }
 
     private func validateReport() async {
         if let roomIndex = inventoryViewModel.localRooms.firstIndex(where: { $0.id == selectedRoom.id }) {
             inventoryViewModel.localRooms[roomIndex].checked = true
+            inventoryViewModel.localRooms[roomIndex].images = inventoryViewModel.selectedImages
+            inventoryViewModel.localRooms[roomIndex].status = inventoryViewModel.roomStatus
+            inventoryViewModel.localRooms[roomIndex].comment = inventoryViewModel.comment
             inventoryViewModel.selectedRoom = inventoryViewModel.localRooms[roomIndex]
         }
         await inventoryViewModel.markRoomAsChecked(selectedRoom)

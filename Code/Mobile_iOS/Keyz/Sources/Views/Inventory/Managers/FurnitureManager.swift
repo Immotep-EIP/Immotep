@@ -192,12 +192,12 @@ class FurnitureManager {
             viewModel.selectedStuff = viewModel.localRooms[roomIndex].inventory[stuffIndex]
             viewModel.selectedImages = viewModel.selectedStuff!.images
             viewModel.comment = viewModel.selectedStuff!.comment
-            viewModel.selectedStatus = viewModel.selectedStuff!.status
+            viewModel.stuffStatus = viewModel.selectedStuff!.status.isEmpty ? "not_set" : viewModel.selectedStuff!.status
         } else {
             viewModel.selectedStuff = stuff
             viewModel.selectedImages = stuff.images
             viewModel.comment = stuff.comment
-            viewModel.selectedStatus = stuff.status
+            viewModel.stuffStatus = stuff.status.isEmpty ? "not_set" : stuff.status
         }
     }
 }

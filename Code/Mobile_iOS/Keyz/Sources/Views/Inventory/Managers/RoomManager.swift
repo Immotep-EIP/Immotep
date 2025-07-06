@@ -83,7 +83,7 @@ class RoomManager {
                         checked: false,
                         inventory: [],
                         images: [],
-                        status: "Select room status",
+                        status: "not_set",
                         comment: ""
                     ))
                 }
@@ -206,6 +206,7 @@ class RoomManager {
         viewModel.selectedRoom = room
         if let roomIndex = viewModel.localRooms.firstIndex(where: { $0.id == room.id }) {
             viewModel.selectedInventory = viewModel.localRooms[roomIndex].inventory
+            viewModel.roomStatus = viewModel.localRooms[roomIndex].status.isEmpty ? "not_set" : viewModel.localRooms[roomIndex].status
         }
     }
 
