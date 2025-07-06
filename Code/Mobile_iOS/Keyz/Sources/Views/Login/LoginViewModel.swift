@@ -42,24 +42,23 @@ class LoginViewModel: ObservableObject {
         let userServiceCopy = userService
         let authServiceCopy = authService
 
-        Task {
-            do {
-                let (accessToken, refreshToken, _, _) =
-                    try await authServiceCopy.loginUser(email: model.email, password: model.password, keepMeSignedIn: model.keepMeSignedIn)
-                TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: nil, keepMeSignedIn: model.keepMeSignedIn)
-                user = try await userServiceCopy.fetchUserProfile(with: accessToken)
-                userId = user?.id
-                userRole = user?.role
-                loginStatus = "Login successful!"
-                storedUserRole = user?.role
+        do {
+            try await Task.sleep(nanoseconds: 500_000_000)
+            let (accessToken, refreshToken, _, _) =
+                try await authServiceCopy.loginUser(email: model.email, password: model.password, keepMeSignedIn: model.keepMeSignedIn)
+            TokenStorage.storeTokens(accessToken: accessToken, refreshToken: refreshToken, expiresIn: nil, keepMeSignedIn: model.keepMeSignedIn)
+            user = try await userServiceCopy.fetchUserProfile(with: accessToken)
+            userId = user?.id
+            userRole = user?.role
+            loginStatus = "Login successful!"
+            storedUserRole = user?.role
 
-                if let user = user {
-                    saveUser(user)
-                }
-                self.isLoggedIn = true
-            } catch {
-                loginStatus = "Error: \(error.localizedDescription)"
+            if let user = user {
+                saveUser(user)
             }
+            self.isLoggedIn = true
+        } catch {
+            loginStatus = "Error: \(error.localizedDescription)"
         }
     }
 
