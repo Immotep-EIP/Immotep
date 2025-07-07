@@ -63,6 +63,7 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
       title={t('components.button.add_tenant')}
       open={isOpen}
       onCancel={() => onClose(false)}
+      aria-labelledby="invite-tenant-modal-title"
       footer={[
         <Button key="back" type="default" onClick={() => onClose(false)}>
           {t('components.button.cancel')}
@@ -89,8 +90,12 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
           ]}
         >
           <Input
+            id="tenant-email"
+            type="email"
             placeholder={t('components.input.email.placeholder')}
             aria-label={t('components.input.email.placeholder')}
+            aria-required="true"
+            autoComplete="email"
           />
         </Form.Item>
 
@@ -100,8 +105,11 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
           rules={[{ required: true, message: t('form.error.start_date') }]}
         >
           <DatePicker
+            id="start-date"
             style={{ width: '100%' }}
             aria-label={t('components.input.start_date.label')}
+            aria-required="true"
+            placeholder={t('components.input.start_date.placeholder')}
           />
         </Form.Item>
 
@@ -111,8 +119,10 @@ const InviteTenantModal: React.FC<InviteTenantModalProps> = ({
           rules={[{ required: false, message: t('form.error.end_date') }]}
         >
           <DatePicker
+            id="end-date"
             style={{ width: '100%' }}
             aria-label={t('components.input.end_date.label')}
+            placeholder={t('components.input.end_date.placeholder')}
           />
         </Form.Item>
       </Form>

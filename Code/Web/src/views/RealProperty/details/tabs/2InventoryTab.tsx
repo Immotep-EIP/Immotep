@@ -155,17 +155,48 @@ const InventoryTab: React.FC = () => {
   const filteredInventory = filterInventory()
 
   if (error) {
-    return <p>{t('pages.real_property.error.error_fetching_data')}</p>
+    return (
+      <section
+        role="alert"
+        aria-live="assertive"
+        aria-labelledby="inventory-error-title"
+      >
+        <h2 id="inventory-error-title" className="sr-only">
+          {t('pages.real_property_details.tabs.inventory.error_title')}
+        </h2>
+        <p>{t('pages.real_property.error.error_fetching_data')}</p>
+      </section>
+    )
   }
 
   const renderContent = () => {
     if (isLoading) {
-      return <CardInventoryLoader cards={9} />
+      return (
+        <section
+          role="status"
+          aria-live="polite"
+          aria-labelledby="inventory-loading-title"
+        >
+          <h3 id="inventory-loading-title" className="sr-only">
+            {t('pages.real_property_details.tabs.inventory.loading_title')}
+          </h3>
+          <CardInventoryLoader cards={9} />
+        </section>
+      )
     }
 
     if (filteredInventory.rooms.length === 0) {
       return (
-        <Empty description={t('components.messages.no_rooms_in_inventory')} />
+        <section
+          role="status"
+          aria-live="polite"
+          aria-labelledby="inventory-empty-title"
+        >
+          <h3 id="inventory-empty-title" className="sr-only">
+            {t('pages.real_property_details.tabs.inventory.empty_title')}
+          </h3>
+          <Empty description={t('components.messages.no_rooms_in_inventory')} />
+        </section>
       )
     }
 
@@ -204,19 +235,32 @@ const InventoryTab: React.FC = () => {
   }
 
   return (
-    <div className={style.tabContent}>
+    <main className={style.tabContent} aria-labelledby="inventory-tab-title">
+      <h2 id="inventory-tab-title" className="sr-only">
+        {t('pages.real_property_details.tabs.inventory.tab_title')}
+      </h2>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <InventoryControls
-          setSearchQuery={setSearchQuery}
-          selectedRoomType={selectedRoomType}
-          setSelectedRoomType={setSelectedRoomType}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-          showModal={showModal}
-          roomTypes={roomTypes}
-        />
+        <section aria-labelledby="inventory-controls-title">
+          <h3 id="inventory-controls-title" className="sr-only">
+            {t('pages.real_property_details.tabs.inventory.controls_title')}
+          </h3>
+          <InventoryControls
+            setSearchQuery={setSearchQuery}
+            selectedRoomType={selectedRoomType}
+            setSelectedRoomType={setSelectedRoomType}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            showModal={showModal}
+            roomTypes={roomTypes}
+          />
+        </section>
 
-        {renderContent()}
+        <section aria-labelledby="inventory-content-title">
+          <h3 id="inventory-content-title" className="sr-only">
+            {t('pages.real_property_details.tabs.inventory.content_title')}
+          </h3>
+          {renderContent()}
+        </section>
       </Space>
 
       <AddRoomModal
@@ -233,7 +277,7 @@ const InventoryTab: React.FC = () => {
         onCancel={() => handleCancel('addStuff')}
         form={formAddFurniture}
       />
-    </div>
+    </main>
   )
 }
 

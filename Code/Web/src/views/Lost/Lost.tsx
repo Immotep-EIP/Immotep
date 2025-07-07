@@ -21,20 +21,37 @@ const Lost: React.FC = () => {
         description={t('pages.lost.document_description')}
         keywords="404, not found, Keyz"
       />
-      <div className={styles.pageContainer}>
-        <Title level={1} style={{ fontSize: '4rem', marginBottom: '1rem' }}>
+      <main
+        className={styles.pageContainer}
+        role="main"
+        aria-labelledby="lost-page-title"
+      >
+        <h1 id="lost-page-title" className="sr-only">
+          {t('pages.lost.page_title')}
+        </h1>
+        <Title
+          level={1}
+          style={{ fontSize: '4rem', marginBottom: '1rem' }}
+          aria-hidden="true"
+        >
           404
         </Title>
         <Text
           type="secondary"
           style={{ fontSize: '1.5rem', marginBottom: '2rem' }}
+          role="alert"
+          aria-live="polite"
         >
           {t('pages.lost.page_not_found')}
         </Text>
-        <Button type="primary" onClick={goToOverview}>
+        <Button
+          type="primary"
+          onClick={goToOverview}
+          aria-label={t('pages.lost.back_home_aria')}
+        >
           {t('pages.lost.back_home')}
         </Button>
-      </div>
+      </main>
     </>
   )
 }

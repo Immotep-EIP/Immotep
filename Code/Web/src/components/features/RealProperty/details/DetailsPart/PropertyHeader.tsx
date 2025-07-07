@@ -5,6 +5,7 @@ import { Dropdown, MenuProps, Select, Tag } from 'antd'
 import { MoreOutlined } from '@ant-design/icons'
 
 import PageTitle from '@/components/ui/PageText/Title'
+import { Button } from '@/components/common'
 import { usePropertyContext } from '@/context/propertyContext'
 import useNavigation from '@/hooks/Navigation/useNavigation'
 import toLocaleDate from '@/utils/date/toLocaleDate'
@@ -84,34 +85,41 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   }
 
   return (
-    <div className={style.moreInfosContainer}>
+    <header className={style.moreInfosContainer} role="banner">
       <div className={style.titleContainer}>
-        <div
+        <Button
           className={style.returnButtonContainer}
+          type="text"
+          style={{ border: 'none', backgroundColor: 'transparent' }}
           onClick={handleBack}
-          tabIndex={0}
-          role="button"
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              handleBack()
-            }
-          }}
+          aria-label={`${t('components.button.return')} - ${t('pages.real_property_details.title')}`}
         >
-          <img src={returnIcon} alt="Return" className={style.returnIcon} />
-        </div>
+          <img
+            src={returnIcon}
+            alt="Return icon"
+            className={style.returnIcon}
+            aria-hidden="true"
+          />
+        </Button>
         <PageTitle
+          id="property-header-title"
           title={t('pages.real_property_details.title')}
           size="title"
           margin={false}
         />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div
+        style={{ display: 'flex', alignItems: 'center', gap: 16 }}
+        role="toolbar"
+        aria-label={t('pages.real_property_details.title')}
+      >
         {property?.leases && property?.leases.length > 0 && (
           <Select
             value={selectedLeaseId}
             onChange={onLeaseChange}
             style={{ width: 280, textAlign: 'left' }}
             allowClear={property?.leases.length > 1 || !property?.lease?.active}
+            aria-label={t('pages.real_property_details.select_default')}
             options={[
               ...(property?.leases?.map(lease => ({
                 value: lease.id,
@@ -142,22 +150,32 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
             placeholder={t('pages.real_property_details.select_default')}
           />
         )}
-        <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
-          <span
+        <Dropdown
+          menu={{ items }}
+          trigger={['click']}
+          placement="bottomRight"
+          aria-label={t('components.button.more_actions')}
+        >
+          <Button
+            type="text"
+            aria-label={t('components.button.more_actions')}
+            aria-expanded="false"
+            aria-haspopup="true"
             style={{
               border: '0.4px solid rgba(0, 0, 0, 0.8)',
               borderRadius: 4,
               padding: 6,
               display: 'inline-flex',
               alignItems: 'center',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              background: 'transparent'
             }}
           >
             <MoreOutlined />
-          </span>
+          </Button>
         </Dropdown>
       </div>
-    </div>
+    </header>
   )
 }
 

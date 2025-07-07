@@ -54,45 +54,71 @@ const RealPropertyCreate: React.FC<RealPropertyCreateProps> = ({
   return (
     <Drawer
       title={
-        <div className={style.drawerTitle}>
-          {t('pages.real_property.add_real_property.document_title')}
-          <div className={style.buttonsContainer}>
+        <header className={style.drawerTitle}>
+          <h2 id="create-property-title">
+            {t('pages.real_property.add_real_property.document_title')}
+          </h2>
+          <div
+            className={style.buttonsContainer}
+            role="toolbar"
+            aria-label={t('pages.real_property.add_real_property.toolbar_aria')}
+          >
             <Button
               type="default"
               key="back"
               onClick={handleCancel}
-              icon={<CloseCircleOutlined />}
+              icon={<CloseCircleOutlined aria-hidden="true" />}
+              aria-label={t('components.button.cancel_create_property')}
             >
               {t('components.button.cancel')}
             </Button>
             <Button
               key="submit"
               loading={loading}
+              disabled={loading}
               onClick={() => form.submit()}
-              icon={<PlusCircleOutlined />}
+              icon={<PlusCircleOutlined aria-hidden="true" />}
+              aria-label={t('components.button.add_property')}
+              aria-describedby="create-property-submit-help"
             >
-              {t('components.button.add')}
+              {loading
+                ? t('components.button.adding')
+                : t('components.button.add')}
             </Button>
           </div>
-        </div>
+        </header>
       }
       open={showModalCreate}
       onClose={handleCancel}
       width={550}
+      aria-labelledby="create-property-title"
+      aria-describedby="create-property-description"
     >
-      <div className={style.pageContainer}>
+      <main className={style.pageContainer}>
+        <h3 id="create-property-form-title" className="sr-only">
+          {t('pages.real_property.add_real_property.form_title')}
+        </h3>
+        <div id="create-property-description" className="sr-only">
+          {t('pages.real_property.add_real_property.form_description')}
+        </div>
+        <div id="create-property-submit-help" className="sr-only">
+          {t('pages.real_property.add_real_property.submit_help')}
+        </div>
         <Form
           form={form}
           name="propertyForm"
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
-          autoComplete="off"
+          autoComplete="on"
           layout="vertical"
           style={{ width: '100%' }}
+          aria-labelledby="create-property-form-title"
+          aria-describedby="create-property-description"
+          noValidate
         >
           <PropertyFormFields uploadProps={uploadProps} />
         </Form>
-      </div>
+      </main>
     </Drawer>
   )
 }

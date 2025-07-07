@@ -110,129 +110,187 @@ const Register: React.FC = () => {
               title={t('pages.register.description')}
               size="subtitle"
             />
-            <Form
-              form={form}
-              name="basic"
-              initialValues={{ termAgree: false }}
-              onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
-              autoComplete="off"
-              layout="vertical"
+            <section
               style={{ width: '90%', maxWidth: '400px' }}
+              aria-labelledby="register-form-title"
             >
-              <Form.Item
-                label={t('components.input.first_name.label')}
-                name="firstname"
-                rules={[
-                  {
-                    required: true,
-                    message: t('components.input.first_name.error'),
-                    pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
-                  }
-                ]}
+              <h2 id="register-form-title" className="sr-only">
+                {t('pages.register.form_title')}
+              </h2>
+              <Form
+                form={form}
+                name="register"
+                initialValues={{ termAgree: false }}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                autoComplete="on"
+                layout="vertical"
+                aria-labelledby="register-form-title"
+                noValidate
               >
-                <Input
-                  className="input"
-                  size="middle"
-                  placeholder={t('components.input.first_name.placeholder')}
-                  aria-label={t('components.input.first_name.placeholder')}
-                />
-              </Form.Item>
+                <legend className="sr-only">
+                  {t('pages.register.form_legend')}
+                </legend>
 
-              <Form.Item
-                label={t('components.input.last_name.label')}
-                name="lastname"
-                rules={[
-                  {
-                    required: true,
-                    message: t('components.input.last_name.error'),
-                    pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
-                  }
-                ]}
-              >
-                <Input
-                  className="input"
-                  size="middle"
-                  placeholder={t('components.input.last_name.placeholder')}
-                  aria-label={t('components.input.last_name.placeholder')}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label={t('components.input.email.label')}
-                name="email"
-                rules={[
-                  {
-                    required: true,
-                    message: t('components.input.email.error'),
-                    type: 'email'
-                  }
-                ]}
-              >
-                <Input
-                  className="input"
-                  size="middle"
-                  placeholder={t('components.input.email.placeholder')}
-                  aria-label={t('components.input.email.placeholder')}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label={t('components.input.password.label')}
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: t('components.input.password.error')
-                  }
-                ]}
-              >
-                <AntInput.Password
-                  className="input"
-                  size="middle"
-                  placeholder={t('components.input.password.placeholder')}
-                  aria-label={t('components.input.password.placeholder')}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label={t('components.input.confirm_password.label')}
-                name="confirmPassword"
-                rules={[
-                  {
-                    required: true,
-                    message: t('components.input.confirm_password.error')
-                  }
-                ]}
-              >
-                <AntInput.Password
-                  className="input"
-                  size="middle"
-                  placeholder={t(
-                    'components.input.confirm_password.placeholder'
-                  )}
-                  aria-label={t(
-                    'components.input.confirm_password.placeholder'
-                  )}
-                />
-              </Form.Item>
-              <Form.Item name="termAgree" valuePropName="checked">
-                <div className={style.optionsContainer}>
-                  <Checkbox>{t('pages.register.agree_terms')}</Checkbox>
-                </div>
-              </Form.Item>
-              <Form.Item>
-                <Button
-                  className="submitButton"
-                  htmlType="submit"
-                  size="large"
-                  color="default"
-                  variant="solid"
-                  loading={loading}
+                <Form.Item
+                  label={t('components.input.first_name.label')}
+                  name="firstname"
+                  rules={[
+                    {
+                      required: true,
+                      message: t('components.input.first_name.error'),
+                      pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
+                    }
+                  ]}
                 >
-                  {t('components.button.sign_up')}
-                </Button>
-              </Form.Item>
+                  <Input
+                    id="register-firstname"
+                    className="input"
+                    size="middle"
+                    placeholder={t('components.input.first_name.placeholder')}
+                    aria-label={t('components.input.first_name.label')}
+                    aria-required="true"
+                    aria-describedby="register-firstname-help"
+                    autoComplete="given-name"
+                  />
+                </Form.Item>
+                <div id="register-firstname-help" className="sr-only">
+                  {t('pages.register.firstname_help')}
+                </div>
+
+                <Form.Item
+                  label={t('components.input.last_name.label')}
+                  name="lastname"
+                  rules={[
+                    {
+                      required: true,
+                      message: t('components.input.last_name.error'),
+                      pattern: /^[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*$/
+                    }
+                  ]}
+                >
+                  <Input
+                    id="register-lastname"
+                    className="input"
+                    size="middle"
+                    placeholder={t('components.input.last_name.placeholder')}
+                    aria-label={t('components.input.last_name.label')}
+                    aria-required="true"
+                    aria-describedby="register-lastname-help"
+                    autoComplete="family-name"
+                  />
+                </Form.Item>
+                <div id="register-lastname-help" className="sr-only">
+                  {t('pages.register.lastname_help')}
+                </div>
+
+                <Form.Item
+                  label={t('components.input.email.label')}
+                  name="email"
+                  rules={[
+                    {
+                      required: true,
+                      message: t('components.input.email.error'),
+                      type: 'email'
+                    }
+                  ]}
+                >
+                  <Input
+                    id="register-email"
+                    type="email"
+                    className="input"
+                    size="middle"
+                    placeholder={t('components.input.email.placeholder')}
+                    aria-label={t('components.input.email.label')}
+                    aria-required="true"
+                    aria-describedby="register-email-help"
+                    autoComplete="email"
+                  />
+                </Form.Item>
+                <div id="register-email-help" className="sr-only">
+                  {t('pages.register.email_help')}
+                </div>
+
+                <Form.Item
+                  label={t('components.input.password.label')}
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: t('components.input.password.error')
+                    }
+                  ]}
+                >
+                  <AntInput.Password
+                    id="register-password"
+                    className="input"
+                    size="middle"
+                    placeholder={t('components.input.password.placeholder')}
+                    aria-label={t('components.input.password.label')}
+                    aria-required="true"
+                    aria-describedby="register-password-help"
+                    autoComplete="new-password"
+                  />
+                </Form.Item>
+                <div id="register-password-help" className="sr-only">
+                  {t('pages.register.password_help')}
+                </div>
+
+                <Form.Item
+                  label={t('components.input.confirm_password.label')}
+                  name="confirmPassword"
+                  rules={[
+                    {
+                      required: true,
+                      message: t('components.input.confirm_password.error')
+                    }
+                  ]}
+                >
+                  <AntInput.Password
+                    id="register-confirm-password"
+                    className="input"
+                    size="middle"
+                    placeholder={t(
+                      'components.input.confirm_password.placeholder'
+                    )}
+                    aria-label={t('components.input.confirm_password.label')}
+                    aria-required="true"
+                    aria-describedby="register-confirm-password-help"
+                    autoComplete="new-password"
+                  />
+                </Form.Item>
+                <div id="register-confirm-password-help" className="sr-only">
+                  {t('pages.register.confirm_password_help')}
+                </div>
+
+                <Form.Item name="termAgree" valuePropName="checked">
+                  <div className={style.optionsContainer}>
+                    <Checkbox id="register-terms">
+                      {t('pages.register.agree_terms')}
+                    </Checkbox>
+                  </div>
+                </Form.Item>
+
+                <Form.Item>
+                  <Button
+                    className="submitButton"
+                    htmlType="submit"
+                    size="large"
+                    color="default"
+                    variant="solid"
+                    loading={loading}
+                    disabled={loading}
+                    aria-describedby="register-submit-help"
+                  >
+                    {loading
+                      ? t('components.button.signing_up')
+                      : t('components.button.sign_up')}
+                  </Button>
+                </Form.Item>
+                <div id="register-submit-help" className="sr-only">
+                  {t('pages.register.submit_help')}
+                </div>
+              </Form>
 
               <div
                 className={style.dontHaveAccountContainer}
@@ -241,19 +299,17 @@ const Register: React.FC = () => {
                 <span className={style.footerText}>
                   {t('pages.register.already_have_account')}
                 </span>
-                <span
+                <Button
+                  type="link"
+                  style={{ border: 'none', padding: 0 }}
                   className={style.footerLink}
                   onClick={goToLogin}
-                  role="link"
-                  tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') goToLogin()
-                  }}
+                  aria-label={t('components.button.sign_in')}
                 >
                   {t('components.button.sign_in')}
-                </span>
+                </Button>
               </div>
-            </Form>
+            </section>
           </>
         }
       />

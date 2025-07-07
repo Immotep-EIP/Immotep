@@ -1,5 +1,40 @@
 {
   "components": {
+    "layout": {
+      "divided_page": {
+        "left_content": "Contenu Secondaire",
+        "main_content": "Contenu Principal",
+        "logo_alt": "Keyz - Logo de la Plateforme de Gestion Immobilière"
+      },
+      "main_layout": {
+        "logo_alt": "Keyz - Logo de la Plateforme de Gestion Immobilière",
+        "open_menu": "Ouvrir le menu de navigation",
+        "close_menu": "Fermer le menu de navigation",
+        "mobile_navigation": "Menu de navigation mobile",
+        "main_navigation": "Navigation principale"
+      }
+    },
+    "form": {
+      "property_details": {
+        "legend": "Formulaire de détails de propriété"
+      }
+    },
+    "property": {
+      "card": {
+        "view_details": "Voir les détails de la propriété:",
+        "image_alt": "Image de la propriété pour",
+        "unnamed_property": "Propriété sans nom",
+        "no_address": "Aucune adresse fournie"
+      },
+      "filters": {
+        "title": "Filtres de Propriété",
+        "search": "Rechercher des propriétés",
+        "filter_options": "Options de Filtre",
+        "filter_controls": "Contrôles de filtre de propriété",
+        "surface_filter": "Filtrer par superficie",
+        "status_filter": "Filtrer par statut de propriété"
+      }
+    },
     "input": {
       "email": {
         "label": "Email",
@@ -65,22 +100,28 @@
       "area": {
         "label": "Surface",
         "placeholder": "Entrez la surface",
-        "error": "Veuillez remplir la surface."
+        "error": "Veuillez remplir la surface.",
+        "aria_label": "Superficie de la propriété en mètres carrés"
       },
       "rental": {
         "label": "Loyer",
         "placeholder": "Entrez le loyer",
-        "error": "Veuillez remplir le loyer."
+        "error": "Veuillez remplir le loyer.",
+        "aria_label": "Prix du loyer mensuel"
       },
       "deposit": {
         "label": "Dépôt de garantie",
         "placeholder": "Entrez le dépôt de garantie",
-        "error": "Veuillez remplir le dépôt de garantie."
+        "error": "Veuillez remplir le dépôt de garantie.",
+        "aria_label": "Montant du dépôt de garantie"
       },
       "picture": {
         "label": "Image",
         "placeholder": "Choisissez une image",
-        "error": "Veuillez sélectionner une image."
+        "error": "Veuillez sélectionner une image.",
+        "help": "Télécharger une image de la propriété",
+        "aria_label": "Télécharger une image de la propriété",
+        "hint": "Glissez-déposez une image ici ou cliquez pour sélectionner"
       },
       "room_name": {
         "label": "Nom de la pièce",
@@ -119,10 +160,12 @@
         "error": "Veuillez remplir la hauteur du widget."
       },
       "start_date": {
-        "label": "Date de début"
+        "label": "Date de début",
+        "placeholder": "Sélectionnez la date de début"
       },
       "end_date": {
-        "label": "Date de fin"
+        "label": "Date de fin",
+        "placeholder": "Sélectionnez la date de fin"
       },
       "document_name": {
         "label": "Nom du document",
@@ -132,7 +175,8 @@
       "document": {
         "label": "Document",
         "placeholder": "Choisissez un document",
-        "error": "Veuillez sélectionner un document."
+        "error": "Veuillez sélectionner un document.",
+        "accepted_formats": "Formats acceptés : PDF, DOCX, XLSX"
       },
       "search": {
         "placeholder": "Rechercher des pièces et objets..."
@@ -164,7 +208,9 @@
     },
     "button": {
       "sign_in": "Se connecter",
+      "signing_in": "Connexion en cours...",
       "sign_up": "S'inscrire",
+      "signing_up": "Inscription en cours...",
       "remember_me": "Se souvenir de moi",
       "ask_forgot_password": "Mot de passe oublié ?",
       "send_email": "Envoyer l'email",
@@ -190,7 +236,10 @@
       "cancel": "Annuler",
       "confirm": "Confirmer",
       "add": "Ajouter",
-      "close": "Close",
+      "adding": "Ajout en cours...",
+      "cancel_create_property": "Annuler la création de propriété",
+      "add_property": "Ajouter une nouvelle propriété",
+      "close": "Fermer",
       "delete": "Supprimer",
       "edit_property": "Modifier la propriété",
       "delete_property": "Supprimer la propriété",
@@ -203,7 +252,10 @@
       "delete_item": "Supprimer l'Objet",
       "add_intervention_date": "Ajouter une date d'intervention",
       "modify_intervention_date": "Modifier la date d'intervention",
-      "remove": "Supprimer"
+      "remove": "Supprimer",
+      "more_actions": "Plus d'actions",
+      "cancel_add_document": "Annuler l'ajout de document",
+      "add_document_submit": "Télécharger le document"
     },
     "modal": {
       "end_contract": {
@@ -259,6 +311,7 @@
       },
       "furniture": {
         "name": "Nom de l'Objet",
+        "items": "objets",
         "quantity": "Quantité",
         "quantity_validation": "La quantité doit être comprise entre 1 et 1000",
         "suggested_items": "Objets suggérés pour cette pièce",
@@ -319,6 +372,26 @@
         "filter": "Filtrer par type de pièce",
         "view_mode": "Mode d'affichage",
         "add_room": "Ajouter une Pièce"
+      },
+      "list": {
+        "title": "Liste d'Inventaire",
+        "items_count": "{{count}} objets",
+        "room_actions": "Actions pour {{room}}",
+        "edit_room": "Modifier {{room}}",
+        "delete_room": "Supprimer {{room}}",
+        "add_item_to_room": "Ajouter un objet à {{room}}",
+        "furniture_in_room": "Mobilier dans {{room}}",
+        "quantity": "Quantité: {{quantity}}",
+        "delete_item": "Supprimer {{item}}"
+      },
+      "plan": {
+        "title": "Vue Plan d'Inventaire",
+        "room_details": "Voir les détails pour {{room}} ({{count}} objets)",
+        "items_count": "{{count}} objets",
+        "furniture_in_room": "Mobilier dans {{room}}",
+        "delete_item": "Supprimer {{item}} ({{quantity}})",
+        "add_item_to_room": "Ajouter un objet à {{room}}",
+        "add_room": "Ajouter une nouvelle pièce"
       }
     },
     "documents": {
@@ -384,25 +457,40 @@
   "pages": {
     "login": {
       "document_title": "Se connecter",
-      "document_description": "Connectez-vous à votre compte Keyz. Gérer vos propriétés et vos locataires facilement.",
+      "document_description": "Connectez-vous à votre compte Keyz. Gérez vos propriétés et locataires facilement.",
       "title": "Bienvenue !",
-      "description": "Veuillez entrer vos informations pour vous connecter.",
-      "dont_have_account": "Vous n'avez pas de compte ?",
+      "description": "Veuillez saisir vos informations pour vous connecter.",
+      "form_title": "Formulaire de connexion",
+      "form_legend": "Identifiants utilisateur",
+      "email_help": "Saisissez votre adresse email pour identifier votre compte",
+      "password_help": "Saisissez votre mot de passe pour vous authentifier",
+      "submit_help": "Cliquez pour vous connecter à votre compte",
+      "dont_have_account": "Pas de compte ?",
       "connection_success": "Vous êtes maintenant connecté.",
-      "connection_error": "Une erreur est survenue lors de la connexion, veuillez réessayer.",
+      "connection_error": "Une erreur s'est produite lors de la connexion, veuillez réessayer.",
       "fill_fields": "Veuillez remplir tous les champs."
     },
     "register": {
       "document_title": "S'inscrire",
-      "document_description": "Créez un compte Keyz pour gérer vos propriétés et locataires facilement.",
+      "document_description": "Créez un compte Keyz pour gérer facilement vos propriétés et locataires.",
       "title": "Créer un compte",
-      "description": "Rejoignez Keyz pour plus de sérénité !",
-      "agree_terms": "J'accepte les Termes et la Politique de confidentialité.",
+      "description": "Rejoignez Keyz pour plus de tranquillité d'esprit !",
+      "form_title": "Formulaire d'inscription",
+      "form_legend": "Détails de création du compte",
+      "firstname_help": "Saisissez votre prénom tel qu'il apparaît sur les documents officiels",
+      "lastname_help": "Saisissez votre nom de famille tel qu'il apparaît sur les documents officiels",
+      "email_help": "Saisissez votre adresse email - elle sera utilisée pour vous connecter",
+      "password_help": "Créez un mot de passe robuste pour sécuriser votre compte",
+      "confirm_password_help": "Confirmez votre mot de passe en le saisissant à nouveau",
+      "submit_help": "Cliquez pour créer votre compte",
       "already_have_account": "Vous avez déjà un compte ?",
+      "agree_terms": "J'accepte les conditions générales et la politique de confidentialité.",
       "register_success": "Vous êtes maintenant inscrit.",
-      "register_error": "Une erreur est survenue lors de l'inscription, veuillez réessayer.",
-      "email_already_used": "Cet email est déjà utilisé.",
+      "register_success_but_login_failed": "Compte créé avec succès ! Veuillez vous connecter.",
+      "register_error": "Une erreur s'est produite lors de l'inscription, veuillez réessayer.",
+      "email_already_used": "Cette adresse email est déjà utilisée.",
       "confirm_password_error": "Les mots de passe ne correspondent pas.",
+      "unexpected_error": "Une erreur inattendue s'est produite. Veuillez réessayer.",
       "fill_fields": "Veuillez remplir tous les champs."
     },
     "register_tenant": {
@@ -418,34 +506,51 @@
       "document_description": "Réinitialisez facilement votre mot de passe Keyz si vous l'avez oublié. Processus simple et rapide pour récupérer l'accès à votre compte.",
       "title": "Mot de passe oublié",
       "description": "Veuillez entrer votre email pour réinitialiser votre mot de passe.",
+      "form_title": "Formulaire de Réinitialisation de Mot de Passe",
       "send_email_success": "Un email a été envoyé pour réinitialiser votre mot de passe.",
       "send_email_error": "Une erreur est survenue lors de l'envoi de l'email, veuillez réessayer.",
       "emails_dont_match": "Les emails ne correspondent pas.",
-      "fill_fields": "Veuillez remplir tous les champs."
+      "fill_fields": "Veuillez remplir tous les champs.",
+      "sending": "Envoi en cours...",
+      "submit_help": "Cliquez pour envoyer les instructions de réinitialisation à votre email"
     },
     "settings": {
       "document_title": "Paramètres",
-      "document_description": "Gérez les paramètres de votre compte. Changez votre langue, mettez à jour votre profil, et plus encore.",
+      "document_description": "Configurez vos paramètres de compte, préférences de langue et gérez votre profil dans Keyz",
       "title": "Paramètres",
-      "description": "Gérez les paramètres de votre compte.",
-      "language": "Langue",
-      "en": "Anglais",
-      "fr": "Français",
+      "user_settings_title": "Paramètres du profil utilisateur",
+      "app_settings_title": "Paramètres de l'application",
       "user_infos": "Informations utilisateur",
+      "language": "Langue",
       "logout": "Déconnexion",
-      "logout_success": "Vous êtes maintenant déconnecté."
+      "fr": "Français",
+      "en": "English",
+      "profile_picture_alt": "Photo de profil utilisateur",
+      "upload_picture_aria": "Télécharger une nouvelle photo de profil",
+      "uploading_picture": "Téléchargement de la photo de profil...",
+      "edit_toolbar_aria": "Actions d'édition du profil",
+      "cancel_edit_aria": "Annuler l'édition des informations du profil",
+      "save_changes_aria": "Sauvegarder les modifications du profil",
+      "edit_profile_aria": "Éditer les informations du profil",
+      "language_selector_aria": "Sélectionner la langue de l'application",
+      "language_help": "Choisissez votre langue préférée pour l'interface de l'application",
+      "logout_aria": "Se déconnecter de votre compte",
+      "logout_help": "Cliquez pour vous déconnecter et retourner à la page de connexion"
     },
     "real_property_details": {
-      "document_title": "Détails de la propriété",
-      "document_description": "Détails de votre propriété. Gérer votre propriété facilement.",
+      "document_title": "Détails de la propriété | Keyz",
+      "document_description": "Consultez les informations détaillées de votre propriété incluant les locataires, l'inventaire et les dommages dans Keyz",
+      "page_title": "Détails de la propriété",
+      "loading_title": "Chargement des détails de la propriété",
+      "error_title": "Erreur lors du chargement des détails de la propriété",
       "invite_tenant": "Invitation envoyée avec succès",
       "409_error": "Invitation déjà envoyée",
       "fill_fields": "Veuillez remplir les champs requis",
       "error_fetching_data": "Erreur lors de la récupération des données",
-      "date_error": "La date de début doit être inférieure à la date de fin",
+      "date_error": "La date de début doit être antérieure à la date de fin",
       "title": "Détails de la propriété",
       "select_default": "Sélectionner un bail",
-      "current": "en cours",
+      "current": "actuel",
       "informations": {
         "name": "Nom",
         "address": "Adresse",
@@ -456,8 +561,17 @@
         "deposit": "Dépôt de garantie"
       },
       "tabs": {
+        "title": "Onglets de gestion de propriété",
         "documents": {
           "modal_title": "Ajouter un document",
+          "modal_description": "Téléchargez un document à associer à cette propriété",
+          "tab_title": "Documents",
+          "loading_title": "Chargement des documents",
+          "empty_title": "Aucun document disponible",
+          "error_title": "Erreur lors du chargement des documents",
+          "actions_title": "Actions sur les documents",
+          "list_title": "Liste des documents",
+          "add_document_aria": "Ajouter un nouveau document à cette propriété",
           "no_documents": "Aucun document",
           "delete_confirmation": {
             "title": "Supprimer le document",
@@ -467,6 +581,12 @@
         "inventory": {
           "add_room_modal_title": "Ajouter une pièce",
           "add_stuff_modal_title": "Ajouter un objet",
+          "tab_title": "Inventaire",
+          "loading_title": "Chargement de l'inventaire",
+          "empty_title": "Aucune pièce dans l'inventaire",
+          "error_title": "Erreur lors du chargement de l'inventaire",
+          "controls_title": "Contrôles de l'inventaire",
+          "content_title": "Contenu de l'inventaire",
           "list_object_name": "Objets dans la pièce",
           "remove_room_confirmation": "Êtes-vous sûr de vouloir supprimer cette pièce ?",
           "remove_room_success": "Pièce supprimé avec succès",
@@ -478,6 +598,13 @@
           "pictures": "Image(s)",
           "no_pictures": "Aucune image",
           "no_intervention_date": "Aucune date d'intervention définie",
+          "loading_title": "Chargement des informations de dommages",
+          "empty_title": "Aucune information de dommage disponible",
+          "error_title": "Erreur lors du chargement des informations de dommages",
+          "tab_title": "Informations des dommages",
+          "table_title": "Tableau de l'historique des dommages",
+          "table_aria": "Tableau listant tous les rapports de dommages pour cette propriété",
+          "row_aria": "Rapport de dommage du {{date}} dans {{room}} avec priorité {{priority}}. Cliquez pour voir les détails",
           "table": {
             "date": "Date",
             "comment": "Commentaire",
@@ -507,7 +634,8 @@
       }
     },
     "damage_details": {
-      "title": "Détails du dommage",
+      "page_title": "Détails des dommages",
+      "title": "Détails des dommages",
       "title_damage": "Dommage",
       "title_damages": "Dommages",
       "pictures": "Images",
@@ -530,9 +658,18 @@
       }
     },
     "overview": {
-      "document_title": "Aperçu",
-      "document_description": "Aperçu de vos propriétés et locataires. Gérer vos propriétés et locataires facilement.",
-      "title": "Aperçu",
+      "document_title": "Vue d'ensemble",
+      "document_description": "Vue d'ensemble de vos propriétés et locataires. Gérez facilement vos propriétés et locataires.",
+      "title": "Vue d'ensemble",
+      "loading_title": "Chargement du tableau de bord",
+      "widgets_title": "Widgets du tableau de bord",
+      "widgets": {
+        "propertiesnumber": "Nombre de propriétés",
+        "propertiesrepartition": "Répartition des propriétés",
+        "reminders": "Rappels",
+        "opendamages": "Dommages ouverts",
+        "damagesrepartition": "Répartition des dommages"
+      },
       "widget_creation": {
         "title": "Ajouter un widget",
         "error": "Erreur lors de la création du widget",
@@ -543,18 +680,31 @@
     },
     "lost": {
       "document_title": "Page introuvable",
-      "document_description": "La page que vous recherchez n'existe pas. Veuillez revenir à la page d'accueil.",
-      "page_not_found": "Page non trouvée",
-      "back_home": "Retour à l'accueil"
+      "document_description": "La page que vous recherchez n'existe pas. Veuillez retourner à l'accueil.",
+      "page_title": "Page Introuvable",
+      "page_not_found": "Page introuvable",
+      "back_home": "Retour à l'accueil",
+      "back_home_aria": "Retourner à la page d'accueil"
     },
     "real_property": {
       "document_title": "Propriété",
       "document_description": "Gérez vos propriétés facilement. Ajoutez, modifiez ou supprimez vos propriétés.",
       "title": "Propriété(s)",
+      "error_title": "Erreur lors du chargement des propriétés",
+      "loading_title": "Chargement des propriétés",
+      "empty_title": "Aucune propriété trouvée",
+      "properties_list_title": "Liste des propriétés",
+      "toolbar_aria": "Actions de la page des propriétés",
+      "archive_toggle_aria": "Basculer entre les propriétés actives et archivées",
+      "archive_toggle_help": "Basculer pour afficher les propriétés archivées au lieu des actives",
       "add_real_property": {
         "document_title": "Ajouter une propriété",
         "document_description": "Ajoutez une propriété pour la gérer facilement. Remplissez les champs requis pour ajouter une propriété.",
         "title": "Ajouter une propriété",
+        "form_title": "Formulaire de création de propriété",
+        "form_description": "Remplissez les détails pour créer une nouvelle propriété",
+        "submit_help": "Cliquez pour créer la propriété avec les informations fournies",
+        "toolbar_aria": "Actions de création de propriété",
         "property_created": "Propriété créée avec succès",
         "error_property_created": "Erreur lors de la création de la propriété",
         "fill_all_fields": "Veuillez remplir tous les champs"
@@ -563,6 +713,10 @@
         "document_title": "Modifier la propriété",
         "document_description": "Modifiez votre propriété facilement. Remplissez les champs requis pour modifier votre propriété.",
         "title": "Modifier la propriété",
+        "form_description": "Mettez à jour les informations de la propriété en utilisant le formulaire ci-dessous",
+        "toolbar_aria": "Actions de mise à jour de la propriété",
+        "submit_help": "Cliquez pour mettre à jour la propriété avec les informations modifiées",
+        "updating_property": "Mise à jour de la propriété...",
         "property_updated": "Propriété mise à jour avec succès",
         "error_property_updated": "Erreur lors de la mise à jour de la propriété",
         "fill_all_fields": "Veuillez remplir tous les champs"
