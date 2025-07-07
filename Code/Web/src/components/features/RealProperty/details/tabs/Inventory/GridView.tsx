@@ -127,7 +127,11 @@ const GridView: React.FC<GridViewProps> = ({
                   )}
                 </h3>
 
-                <div role="list" style={{ width: '100%' }}>
+                <div
+                  role="list"
+                  style={{ width: '100%' }}
+                  className="furniture-list"
+                >
                   {room.furniture.map(stuff => (
                     <div
                       key={stuff.id}
