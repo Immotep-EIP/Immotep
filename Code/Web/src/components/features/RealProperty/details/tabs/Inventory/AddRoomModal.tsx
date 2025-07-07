@@ -107,8 +107,19 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
       okText={t('components.button.add')}
       cancelText={t('components.button.cancel')}
       width={600}
+      aria-labelledby="add-room-modal-title"
+      aria-describedby="add-room-modal-description"
     >
-      <Form form={form} layout="vertical" initialValues={{ roomType: 'other' }}>
+      <div id="add-room-modal-description" className="sr-only">
+        {t('pages.real_property_details.tabs.inventory.add_room_modal_title')}
+      </div>
+
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ roomType: 'other' }}
+        aria-labelledby="add-room-modal-title"
+      >
         <Form.Item
           name="roomType"
           label={t('components.select.room_type.placeholder')}
@@ -119,6 +130,8 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
           <Select
             options={roomTypes.filter(type => type.value !== 'all')}
             onChange={handleRoomTypeChange}
+            aria-label={t('components.select.room_type.placeholder')}
+            aria-required="true"
           />
         </Form.Item>
         <Form.Item
@@ -128,73 +141,109 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
             { required: true, message: t('components.input.room_name.error') }
           ]}
         >
-          <Input maxLength={20} showCount />
+          <Input
+            maxLength={20}
+            showCount
+            id="room-name-input"
+            aria-label={t('components.input.room_name.label')}
+            aria-required="true"
+          />
         </Form.Item>
       </Form>
 
       {templateItems.length > 0 && (
-        <div style={{ marginTop: 16 }}>
+        <section
+          style={{ marginTop: 16 }}
+          aria-labelledby="suggested-items-title"
+        >
+          <h3 id="suggested-items-title" className="sr-only">
+            {t('components.inventory.furniture.suggested_items')}
+          </h3>
           <p>{t('components.inventory.furniture.suggested_items')}</p>
-          {templateItems.map((item, index) => (
-            <div
-              key={item.name}
-              style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}
-            >
-              <Checkbox
-                checked={item.checked}
-                onChange={e => {
-                  const newItems = [...templateItems]
-                  newItems[index].checked = e.target.checked
-                  setTemplateItems(newItems)
+          <div role="group" aria-labelledby="suggested-items-title">
+            {templateItems.map((item, index) => (
+              <div
+                key={item.name}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: 8
                 }}
               >
-                {t(`components.inventory.furniture.${item.name}`)}
-              </Checkbox>
+                <Checkbox
+                  checked={item.checked}
+                  onChange={e => {
+                    const newItems = [...templateItems]
+                    newItems[index].checked = e.target.checked
+                    setTemplateItems(newItems)
+                  }}
+                  aria-describedby={`quantity-${item.name}`}
+                >
+                  {t(`components.inventory.furniture.${item.name}`)}
+                </Checkbox>
+                <InputNumber
+                  id={`quantity-${item.name}`}
+                  min={1}
+                  value={item.quantity}
+                  onChange={val => {
+                    const newItems = [...templateItems]
+                    newItems[index].quantity = val || 1
+                    setTemplateItems(newItems)
+                  }}
+                  disabled={!item.checked}
+                  style={{ marginLeft: 8 }}
+                  aria-label={`${t('components.inventory.furniture.quantity')} ${t(`components.inventory.furniture.${item.name}`)}`}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section style={{ marginTop: 24 }} aria-labelledby="custom-items-title">
+        <h3 id="custom-items-title" className="sr-only">
+          {t('components.inventory.furniture.custom_items')}
+        </h3>
+        <p>{t('components.inventory.furniture.custom_items')}</p>
+        <div role="group" aria-labelledby="custom-items-title">
+          {customItems.map(item => (
+            <Space key={item.id} style={{ marginBottom: 8 }}>
+              <Input
+                placeholder={t('components.inventory.furniture.name')}
+                value={item.name}
+                onChange={e => updateCustomItem(item.id, 'name', e)}
+                style={{ width: 200 }}
+                aria-label={`${t('components.inventory.furniture.name')} ${customItems.indexOf(item) + 1}`}
+              />
               <InputNumber
                 min={1}
                 value={item.quantity}
-                onChange={val => {
-                  const newItems = [...templateItems]
-                  newItems[index].quantity = val || 1
-                  setTemplateItems(newItems)
-                }}
-                disabled={!item.checked}
-                style={{ marginLeft: 8 }}
+                onChange={val =>
+                  updateCustomItem(item.id, 'quantity', val || 1)
+                }
+                aria-label={`${t('components.inventory.furniture.quantity')} ${customItems.indexOf(item) + 1}`}
               />
-            </div>
+              <Button
+                ghost
+                danger
+                onClick={() => removeCustomItem(item.id)}
+                aria-label={`${t('components.button.remove')} ${item.name || t('components.inventory.furniture.Custom Item')}`}
+              >
+                {t('components.button.remove')}
+              </Button>
+            </Space>
           ))}
         </div>
-      )}
-
-      <div style={{ marginTop: 24 }}>
-        <p>{t('components.inventory.furniture.custom_items')}</p>
-        {customItems.map(item => (
-          <Space key={item.id} style={{ marginBottom: 8 }}>
-            <Input
-              placeholder={t('components.inventory.furniture.name')}
-              value={item.name}
-              onChange={e => updateCustomItem(item.id, 'name', e)}
-              style={{ width: 200 }}
-            />
-            <InputNumber
-              min={1}
-              value={item.quantity}
-              onChange={val => updateCustomItem(item.id, 'quantity', val || 1)}
-            />
-            <Button ghost danger onClick={() => removeCustomItem(item.id)}>
-              {t('components.button.remove')}
-            </Button>
-          </Space>
-        ))}
         <Button
           type="dashed"
           onClick={addCustomItem}
-          icon={<PlusOutlined />}
+          icon={<PlusOutlined aria-hidden="true" />}
           style={{ marginTop: 8 }}
+          aria-label={t('components.inventory.furniture.add_custom_item')}
         >
           {t('components.inventory.furniture.add_custom_item')}
         </Button>
-      </div>
+      </section>
     </Modal>
   )
 }

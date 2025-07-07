@@ -97,16 +97,32 @@ const DetailsPart: React.FC = () => {
     <div className={style.mainContainer}>
       {loading ||
         (!damage && (
-          <div className={style.loadingContainer}>
+          <div
+            className={style.loadingContainer}
+            role="status"
+            aria-live="polite"
+          >
             <Spin size="large" />
+            <span className="sr-only">{t('components.loading.loading')}</span>
           </div>
         ))}
-      {error && <div>{t('components.error', { message: error })}</div>}
+      {error && (
+        <div role="alert" aria-live="assertive">
+          {t('components.error', { message: error })}
+        </div>
+      )}
       {damage && (
         <>
           <DamageHeader />
-          <div className={style.headerInformationContainer}>
-            <div className={style.damageInfosContainer}>
+          <main className={style.headerInformationContainer} role="main">
+            <section
+              className={style.damageInfosContainer}
+              aria-labelledby="damage-info-section"
+            >
+              <h2 id="damage-info-section" className="sr-only">
+                {t('pages.damage_details.title')}
+              </h2>
+
               <div className={style.rowContainer}>
                 <SubtitledElement
                   subtitleKey={t('pages.damage_details.priority')}
@@ -191,6 +207,11 @@ const DetailsPart: React.FC = () => {
                       size="small"
                       onClick={handleOpenModal}
                       style={{ marginLeft: '0.5rem' }}
+                      aria-label={
+                        damage.fix_planned_at
+                          ? t('components.button.modify_intervention_date')
+                          : t('components.button.add_intervention_date')
+                      }
                     />
                   </div>
                 </SubtitledElement>
@@ -203,31 +224,42 @@ const DetailsPart: React.FC = () => {
                   {damage?.comment}
                 </SubtitledElement>
               </div>
-            </div>
-            <SubtitledElement
-              subtitleKey={t('pages.damage_details.pictures')}
-              subTitleStyle={{ marginBottom: '0.5rem' }}
-            >
-              <div className={style.pictureContainer}>
-                {(!damage?.pictures || damage.pictures.length === 0) &&
-                  t('pages.real_property_details.tabs.damage.no_pictures')}
-                {damage?.pictures?.map(picture => (
-                  <div key={picture} className={style.pictureWrapper}>
-                    <Image
-                      height="100%"
-                      width={150}
-                      src={base64ToFileAsString(picture)}
-                      className={style.picture}
-                      preview={{
-                        mask: <EyeOutlined />,
-                        style: { borderRadius: '15px' }
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </SubtitledElement>
-          </div>
+            </section>
+
+            <section aria-labelledby="damage-pictures-section">
+              <SubtitledElement
+                subtitleKey={t('pages.damage_details.pictures')}
+                subTitleStyle={{ marginBottom: '0.5rem' }}
+              >
+                <h3 id="damage-pictures-section" className="sr-only">
+                  {t('pages.damage_details.pictures')}
+                </h3>
+                <div
+                  className={style.pictureContainer}
+                  role="img"
+                  aria-label={t('pages.damage_details.pictures')}
+                >
+                  {(!damage?.pictures || damage.pictures.length === 0) &&
+                    t('pages.real_property_details.tabs.damage.no_pictures')}
+                  {damage?.pictures?.map((picture, index) => (
+                    <div key={picture} className={style.pictureWrapper}>
+                      <Image
+                        height="100%"
+                        width={150}
+                        src={base64ToFileAsString(picture)}
+                        className={style.picture}
+                        alt={`${t('pages.damage_details.pictures')} ${index + 1} - ${damage.comment || t('pages.damage_details.title')}`}
+                        preview={{
+                          mask: <EyeOutlined />,
+                          style: { borderRadius: '15px' }
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </SubtitledElement>
+            </section>
+          </main>
 
           <Modal
             title={
@@ -240,7 +272,12 @@ const DetailsPart: React.FC = () => {
             onCancel={handleCancel}
             okText={t('components.button.confirm')}
             cancelText={t('components.button.cancel')}
+            aria-labelledby="intervention-date-modal"
+            aria-describedby="intervention-date-description"
           >
+            <div id="intervention-date-description" className="sr-only">
+              {t('pages.damage_details.fix_planned_at')}
+            </div>
             <Space
               direction="vertical"
               style={{ width: '100%', marginTop: 16 }}
@@ -250,6 +287,8 @@ const DetailsPart: React.FC = () => {
                 style={{ width: '100%' }}
                 showTime
                 value={selectedDate ? dayjs(selectedDate) : null}
+                aria-label={t('pages.damage_details.fix_planned_at')}
+                placeholder={t('pages.damage_details.fix_planned_at')}
               />
             </Space>
           </Modal>
