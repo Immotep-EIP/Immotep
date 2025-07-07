@@ -142,10 +142,7 @@ const RealPropertyPage: React.FC = () => {
                 {t('pages.real_property.archive_toggle_help')}
               </div>
             </div>
-            <Button
-              onClick={() => setShowModalCreate(true)}
-              aria-label={t('pages.real_property.add_property_aria')}
-            >
+            <Button onClick={() => setShowModalCreate(true)}>
               {t('components.button.add_real_property')}
             </Button>
           </div>

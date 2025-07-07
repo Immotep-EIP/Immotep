@@ -183,15 +183,17 @@ const Login: React.FC = () => {
                       {t('components.button.remember_me')}
                     </Checkbox>
                   </Form.Item>
-                  <Button
-                    type="link"
-                    style={{ border: 'none' }}
+                  <span
                     className={style.footerLink}
                     onClick={goToForgotPassword}
-                    aria-label={t('components.button.ask_forgot_password')}
+                    role="link"
+                    tabIndex={0}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') goToForgotPassword()
+                    }}
                   >
                     {t('components.button.ask_forgot_password')}
-                  </Button>
+                  </span>
                 </div>
 
                 <Form.Item>

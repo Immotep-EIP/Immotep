@@ -16,7 +16,7 @@
     },
     "form": {
       "property_details": {
-        "legend": "Détails de la Propriété"
+        "legend": "Formulaire de détails de propriété"
       }
     },
     "property": {
@@ -697,7 +697,6 @@
       "toolbar_aria": "Actions de la page des propriétés",
       "archive_toggle_aria": "Basculer entre les propriétés actives et archivées",
       "archive_toggle_help": "Basculer pour afficher les propriétés archivées au lieu des actives",
-      "add_property_aria": "Ajouter une nouvelle propriété à votre portefeuille",
       "add_real_property": {
         "document_title": "Ajouter une propriété",
         "document_description": "Ajoutez une propriété pour la gérer facilement. Remplissez les champs requis pour ajouter une propriété.",

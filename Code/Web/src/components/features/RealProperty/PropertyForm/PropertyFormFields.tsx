@@ -18,6 +18,7 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
       <Form.Item<PropertyFormFieldsType>
         label={t('components.input.property_name.label')}
         name="name"
+        htmlFor="property-name"
         rules={[
           {
             required: true,
@@ -36,6 +37,7 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
       <Form.Item<PropertyFormFieldsType>
         label={t('components.input.apartment_number.label')}
         name="apartment_number"
+        htmlFor="apartment-number"
       >
         <Input
           placeholder={t('components.input.apartment_number.placeholder')}
@@ -47,6 +49,7 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
       <Form.Item<PropertyFormFieldsType>
         label={t('components.input.address.label')}
         name="address"
+        htmlFor="property-address"
         rules={[
           { required: true, message: t('components.input.address.error') }
         ]}
@@ -62,6 +65,7 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
       <Form.Item<PropertyFormFieldsType>
         label={t('components.input.zip_code.label')}
         name="postal_code"
+        htmlFor="postal-code"
         rules={[
           { required: true, message: t('components.input.zip_code.error') }
         ]}
@@ -77,6 +81,7 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
       <Form.Item<PropertyFormFieldsType>
         label={t('components.input.city.label')}
         name="city"
+        htmlFor="city"
         rules={[{ required: true, message: t('components.input.city.error') }]}
       >
         <Input
@@ -90,6 +95,7 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
       <Form.Item<PropertyFormFieldsType>
         label={t('components.input.country.label')}
         name="country"
+        htmlFor="country"
         rules={[
           { required: true, message: t('components.input.country.error') }
         ]}
@@ -105,6 +111,7 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
       <Form.Item<PropertyFormFieldsType>
         label={t('components.input.area.label')}
         name="area_sqm"
+        htmlFor="area-sqm"
         rules={[{ required: true, message: t('components.input.area.error') }]}
       >
         <InputNumber
@@ -121,6 +128,7 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
       <Form.Item<PropertyFormFieldsType>
         label={t('components.input.rental.label')}
         name="rental_price_per_month"
+        htmlFor="rental-price"
         rules={[
           { required: true, message: t('components.input.rental.error') }
         ]}
@@ -139,6 +147,7 @@ const PropertyFormFields = ({ uploadProps }: { uploadProps: UploadProps }) => {
       <Form.Item<PropertyFormFieldsType>
         label={t('components.input.deposit.label')}
         name="deposit_price"
+        htmlFor="deposit-price"
         rules={[
           { required: true, message: t('components.input.deposit.error') }
         ]}

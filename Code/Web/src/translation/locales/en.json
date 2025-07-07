@@ -16,7 +16,7 @@
     },
     "form": {
       "property_details": {
-        "legend": "Property Details"
+        "legend": "Property Details Form"
       }
     },
     "property": {
@@ -713,7 +713,6 @@
       "toolbar_aria": "Properties page actions",
       "archive_toggle_aria": "Toggle between active and archived properties",
       "archive_toggle_help": "Switch to show archived properties instead of active ones",
-      "add_property_aria": "Add a new property to your portfolio",
       "add_real_property": {
         "document_title": "Add property",
         "document_description": "Add a property to manage it easily. Fill in required fields to add a property.",

@@ -36,7 +36,7 @@ describe('AuthentificationPage', () => {
       </AuthentificationPage>
     )
 
-    const logo = screen.getByAltText('logo Keyz')
+    const logo = screen.getByAltText('Keyz - Property Management Platform Logo')
     expect(logo).toBeInTheDocument()
     expect(logo).toHaveAttribute('src', 'mockedLogoPath')
   })
