@@ -190,7 +190,7 @@
       "no_modifications": "Aucune modification à sauvegarder",
       "picture_updated": "Image mise à jour",
       "picture_not_updated": "Erreur lors de la mise à jour de l'image",
-      "no_properties": "Vous n'avez aucune propriété pour le moment",
+      "no_properties": "Vous n'avez encore aucune propriété",
       "no_properties_so_no_messages": "Vous n'avez aucune propriété pour le moment, vous n'avez donc aucun message.",
       "delete_property_title": "Supprimer la propriété",
       "delete_property_description": "Êtes-vous sûr de vouloir archiver cette propriété ?",
@@ -198,13 +198,14 @@
       "delete_property_error": "Erreur lors de l'archivage de la propriété",
       "no_rooms_in_inventory": "Vous n'avez aucune pièce dans votre inventaire pour le moment",
       "room_added": "Pièce ajoutée avec succès",
-      "room_added_error": "Erreur lors de l'ajout de la pièce",
+      "room_added_error": "Échec de l'ajout de la pièce",
       "furniture_added": "Objet ajouté avec succès",
-      "furniture_added_error": "Erreur lors de l'ajout de l'objet",
+      "furniture_added_error": "Échec de l'ajout de l'objet",
       "room_deleted": "Pièce supprimée avec succès",
       "room_deleted_error": "Erreur lors de la suppression de la pièce",
       "furniture_deleted": "Objet supprimé avec succès",
-      "furniture_deleted_error": "Erreur lors de la suppression de l'objet"
+      "furniture_deleted_error": "Erreur lors de la suppression de l'objet",
+      "items_added_successfully": "objets ajoutés avec succès"
     },
     "button": {
       "sign_in": "Se connecter",

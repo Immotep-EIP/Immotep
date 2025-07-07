@@ -7,6 +7,30 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
+.furniture-list {
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.furniture-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.furniture-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.furniture-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.furniture-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
 .furniture-item:hover {
   background-color: #f0f0f0 !important;
 }
