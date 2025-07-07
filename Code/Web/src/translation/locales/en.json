@@ -204,7 +204,13 @@
       "room_deleted": "Room deleted successfully",
       "room_deleted_error": "Error while deleting the room",
       "furniture_deleted": "Item deleted successfully",
-      "furniture_deleted_error": "Error while deleting the item"
+      "furniture_deleted_error": "Error while deleting the item",
+      "items_added_successfully": "items added successfully",
+      "properties_updated": "Properties updated",
+      "properties_created": "Property created",
+      "properties_archived": "Property archived",
+      "property_image_updated": "Property image updated",
+      "error_uploading_picture": "Error uploading picture"
     },
     "button": {
       "sign_in": "Sign in",

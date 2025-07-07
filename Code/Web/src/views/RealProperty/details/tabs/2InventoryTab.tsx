@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Form, Modal, Space } from 'antd'
+import { Form, Modal, Space, message } from 'antd'
 
 import { Empty } from '@/components/common'
 import { usePropertyContext } from '@/context/propertyContext'
@@ -61,7 +61,7 @@ const InventoryTab: React.FC = () => {
 
       if (result.success) {
         if (templateItems && templateItems.length > 0) {
-          await Promise.all(
+          const results = await Promise.all(
             templateItems.map(item =>
               createFurniture(result.roomId!, {
                 name: item.name,
@@ -69,6 +69,13 @@ const InventoryTab: React.FC = () => {
               })
             )
           )
+
+          const successCount = results.filter(r => r).length
+          if (successCount > 0) {
+            message.success(
+              `${successCount} ${t('components.messages.items_added_successfully')}`
+            )
+          }
         }
         refreshInventory()
         formAddRoom.resetFields()
