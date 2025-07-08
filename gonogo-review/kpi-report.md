@@ -166,8 +166,6 @@ We set up **Google Analytics** to track user behavior on our showcase website an
 
 ![Meta Business Suite](./.screenshots/social-media/meta-business-suite.png)
 
-<!-- TODO: put screenshots of Google Analytics and Meta Business Suite -->
-
 Also, all our social media contents (including presentation designs and video edits for posts) are created using **Canva** and **Figma**, which are powerful design tools that allow us to create visually appealing and engaging content. We use Canva for creating graphics, infographics, and social media posts, while Figma is used for designing the app's user interface and prototypes.
 
 Here is our Figma file containing the logo design and the social media posts we created:
