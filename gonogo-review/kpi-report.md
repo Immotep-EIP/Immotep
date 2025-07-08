@@ -80,32 +80,32 @@ When our mock-ups were ready, we asked some potential users if the UX seemed com
 
 On both screenshots below, you can see the two versions of our mock-ups, the first one (V1, Immotep) being the initial version and the second one (V2, Keyz) being the redesigned version:
 
-![Mock-ups close-up](./.screenshots/figma/mock-ups-close-up.png)
+![Mock-ups close-up](./screenshots/figma/mock-ups-close-up.png)
 
-![Mock-ups](./.screenshots/figma/mock-ups.png)
+![Mock-ups](./screenshots/figma/mock-ups.png)
 
 ### High-Quality Prototyping
 
 We produced an intuitive and visually appealing product to ease the user journey. Modern UI/UX design principles like **responsive design**, **simplicity** and **accessibility** were applied (see below).
 
 Clean, simple and modern design:
-![Dashboard screenshot](./.screenshots/web/dashboard.png)
-![Property detail view screenshot](./.screenshots/web/property-detail.png)
+![Dashboard screenshot](./screenshots/web/dashboard.png)
+![Property detail view screenshot](./screenshots/web/property-detail.png)
 
 <p align="center">
-    <img src="./.screenshots/mobile/dashboard1.png" alt="Mobile app dashboard screenshot" width="300"/>
-    <img src="./.screenshots/mobile/dashboard2.png" alt="Mobile app dashboard screenshot" width="300"/>
+    <img src="./screenshots/mobile/dashboard1.png" alt="Mobile app dashboard screenshot" width="200"/>
+    <img src="./screenshots/mobile/dashboard2.png" alt="Mobile app dashboard screenshot" width="200"/>
 </p>
 
 <p align="center">
-    <img src="./.screenshots/mobile/property-detail.png" alt="Mobile app property detail screenshot" width="300"/>
-    <img src="./.screenshots/mobile/property-detail-damage.png" alt="Mobile app property detail damage screenshot" width="300"/>
+    <img src="./screenshots/mobile/property-detail.png" alt="Mobile app property detail screenshot" width="200"/>
+    <img src="./screenshots/mobile/property-detail-damage.png" alt="Mobile app property detail damage screenshot" width="200"/>
 </p>
 
 Responsiveness (screenshots of the web app taken on an iPhone 13):
 <p align="center">
-    <img src="./.screenshots/web/dashboard-mobile.jpeg" alt="Responsive dashboard screenshot" width="300"/>
-    <img src="./.screenshots/web/property-detail-mobile.jpeg" alt="Responsive property detail view screenshot" width="300"/>
+    <img src="./screenshots/web/dashboard-mobile.jpeg" alt="Responsive dashboard screenshot" width="200"/>
+    <img src="./screenshots/web/property-detail-mobile.jpeg" alt="Responsive property detail view screenshot" width="200"/>
 </p>
 
 Accessibility:
@@ -114,14 +114,14 @@ Each front-end application (web and mobile) is designed to be accessible to all 
 - Visual accessibility features
     - Use of sufficient contrast between text and backgrounds to ensure readability.
     - Support of screen readers with correct semantic structuring of elements (titles, buttons, forms) with appropriate tags (ARIA on the web, native accessible components on mobile) as well as alternative text for images.
-    ![Alt text for images](./.screenshots/code/alt-text.png)
+    ![Alt text for images](./screenshots/code/alt-text.png)
     - Support for user zoom or custom text sizes on operating systems.
 - Motor accessibility
     - Mouse-free navigation: All webapp actions can be performed using the keyboard only.
-    ![Tab element selector](./.screenshots/web/tab-element-selector.png)
+    ![Tab element selector](./screenshots/web/tab-element-selector.png)
     - Sufficient size and spacing of clickable elements on mobile devices for people with motor impairments.
     - Support for assistive technologies such as voice commands (VoiceOver, TalkBack).
-    ![VoiceOver example](./.screenshots/mobile/voiceover.jpg)
+    ![VoiceOver example](./screenshots/mobile/voiceover.jpg)
 - Cognitive accessibility
     - Clean, intuitive interface with simple navigation, clear icons and self-explanatory labels.
     - Presentation of information in several formats (text + pictograms).
@@ -149,13 +149,13 @@ Each post includes **hashtags** relevant to the rental market and our app. We po
 Here are some examples of our posts:
 
 <p align="center">
-    <img src="./.screenshots/social-media/beta-showcase.png" alt="Beta showcase linkedin post" width="300"/>
-    <img src="./.screenshots/social-media/beta-teaser.png" alt="Beta teaser linkedin post" width="300"/>
+    <img src="./screenshots/social-media/beta-showcase.png" alt="Beta showcase linkedin post" width="300"/>
+    <img src="./screenshots/social-media/beta-teaser.png" alt="Beta teaser linkedin post" width="300"/>
 </p>
 
 <p align="center">
-    <img src="./.screenshots/social-media/tips-inv-report.png" alt="Tips inventory report" width="300"/>
-    <img src="./.screenshots/social-media/tips-owner.png" alt="Tips owners" width="300"/>
+    <img src="./screenshots/social-media/tips-inv-report.png" alt="Tips inventory report" width="300"/>
+    <img src="./screenshots/social-media/tips-owner.png" alt="Tips owners" width="300"/>
 </p>
 
 ### Ongoing Training
@@ -164,13 +164,13 @@ First of all, we built a **showcase website** to present our app and its feature
 
 We set up **Google Analytics** to track user behavior on our showcase website and within the app. This tool provides us with valuable insights into how users interact with our site, which pages they visit, and how long they stay. This data helps us understand our audience better and will determine our future content strategy and app improvements. We also use **Meta Business Suite** to manage Instagram and Facebook and track engagement metrics such as likes, shares, comments and times when our audience is most active.
 
-![Meta Business Suite](./.screenshots/social-media/meta-business-suite.png)
+![Meta Business Suite](./screenshots/social-media/meta-business-suite.png)
 
 Also, all our social media contents (including presentation designs and video edits for posts) are created using **Canva** and **Figma**, which are powerful design tools that allow us to create visually appealing and engaging content. We use Canva for creating graphics, infographics, and social media posts, while Figma is used for designing the app's user interface and prototypes.
 
 Here is our Figma file containing the logo design and the social media posts we created:
 
-![Figma brand image](./.screenshots/figma/brand-image.png)
+![Figma brand image](./screenshots/figma/brand-image.png)
 
 ### Metrics
 
@@ -187,24 +187,24 @@ Here are the current metrics gathered from our social media accounts:
 Overview:
 
 <p align="center">
-    <img src="./.screenshots/social-media-metrics/linkedin-metrics-summary.png" alt="Linkedin metrics summary" width="300"/>
-    <!-- <img src="./.screenshots/social-media-metrics/linkedin-metrics1.png" alt="Linkedin metrics 1" width="300"/> -->
-    <img src="./.screenshots/social-media-metrics/linkedin-metrics2.png" alt="Linkedin metrics 2" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-metrics3.png" alt="Linkedin metrics 3" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-metrics4.png" alt="Linkedin metrics 4" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-metrics-summary.png" alt="Linkedin metrics summary" width="300"/>
+    <!-- <img src="./screenshots/social-media-metrics/linkedin-metrics1.png" alt="Linkedin metrics 1" width="300"/> -->
+    <img src="./screenshots/social-media-metrics/linkedin-metrics2.png" alt="Linkedin metrics 2" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-metrics3.png" alt="Linkedin metrics 3" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-metrics4.png" alt="Linkedin metrics 4" width="300"/>
 </p>
 
 By posts:
 
 <p align="center">
-    <img src="./.screenshots/social-media-metrics/linkedin-post-1.png" alt="Post 1" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-post-2.png" alt="Post 2" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-post-3.png" alt="Post 3" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-post-4.png" alt="Post 4" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-post-5.png" alt="Post 5" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-post-6.png" alt="Post 6" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-post-7.png" alt="Post 7" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-post-8.png" alt="Post 8" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-post-1.png" alt="Post 1" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-post-2.png" alt="Post 2" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-post-3.png" alt="Post 3" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-post-4.png" alt="Post 4" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-post-5.png" alt="Post 5" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-post-6.png" alt="Post 6" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-post-7.png" alt="Post 7" width="300"/>
+    <img src="./screenshots/social-media-metrics/linkedin-post-8.png" alt="Post 8" width="300"/>
 </p>
 
 #### Instagram
@@ -214,11 +214,11 @@ Overview:
 <table>
     <tr>
         <td>
-            <img src="./.screenshots/social-media-metrics/instagram-metrics-summary.png" alt="Instagram metrics summary" width="300"/><br/>
-            <img src="./.screenshots/social-media-metrics/instagram-metrics1.png" alt="Instagram metrics 1" width="300"/>
+            <img src="./screenshots/social-media-metrics/instagram-metrics-summary.png" alt="Instagram metrics summary" width="300"/><br/>
+            <img src="./screenshots/social-media-metrics/instagram-metrics1.png" alt="Instagram metrics 1" width="300"/>
         </td>
         <td>
-            <img src="./.screenshots/social-media-metrics/instagram-metrics2.png" alt="Instagram metrics 2" width="300"/>
+            <img src="./screenshots/social-media-metrics/instagram-metrics2.png" alt="Instagram metrics 2" width="300"/>
         </td>
     </tr>
 </table>
@@ -226,14 +226,14 @@ Overview:
 By posts:
 
 <p>
-    <img src="./.screenshots/social-media-metrics/instagram-posts.png" alt="Instagram posts" width="400"/>
+    <img src="./screenshots/social-media-metrics/instagram-posts.png" alt="Instagram posts" width="400"/>
 </p>
 
 #### Facebook
 
 Overview:
 
-![Facebook metrics summary](./.screenshots/social-media-metrics/facebook-metrics-summary.png)
+![Facebook metrics summary](./screenshots/social-media-metrics/facebook-metrics-summary.png)
 
 #### Summary
 
@@ -245,11 +245,11 @@ Overall, our social media presence is growing thanks to our consistent posting s
 
 We aim to build trust and transparency with our target customers through social media, using **polls** and **surveys** to gather insights easily, but also by engaging with them through **comments** and **direct messages**. We respond to all comments and messages promptly, ensuring that our audience feels heard and valued. We made a post asking our audience to ask us anything about the app.
 
-![Ask me anything](./.screenshots/social-media/ask-me-anything.png)
+![Ask me anything](./screenshots/social-media/ask-me-anything.png)
 
 We publish each release on our **GitHub repository** with detailed release notes and version number, which include information about new features, bug fixes, and improvements. This transparency helps build trust with our users and keeps them engaged with our app. Releases are available here: [Keyz GitHub releases](https://github.com/Keyz-EIP/Keyz/releases).
 
-![Example of a GitHub release](./.screenshots/github/release.png)
+![Example of a GitHub release](./screenshots/github/release.png)
 
 In the future, we aim to post regular updates on our social media accounts as well to keep our audience informed about new features, improvements, and upcoming releases. We will also share success stories and testimonials from our beta testers to showcase the value of Keyz.
 
