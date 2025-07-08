@@ -8,6 +8,15 @@
   border: none;
 }
 
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card:active {
+  transform: translateY(-4px);
+  transition: all 0.1s ease;
+}
+
 .cardContentContainer {
   width: 100%;
   height: 100%;
