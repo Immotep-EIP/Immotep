@@ -24,13 +24,13 @@ struct InventoryEntryEvaluationView: View {
     @State private var isReportSent: Bool = false
 
     let stateMapping: [String: String] = [
-        "not_set": "Select your equipment status",
-        "broken": "Broken",
-        "needsRepair": "Needs Repair",
-        "bad": "Bad",
-        "medium": "Medium",
-        "good": "Good",
-        "new": "New"
+        "not_set": "Select your equipment status".localized(),
+        "broken": "Broken".localized(),
+        "needsRepair": "Needs Repair".localized(),
+        "bad": "Bad".localized(),
+        "medium": "Medium".localized(),
+        "good": "Good".localized(),
+        "new": "New".localized()
     ]
 
     var body: some View {
@@ -83,10 +83,9 @@ struct InventoryEntryEvaluationView: View {
                             Spacer()
                         }
                         HStack {
-                            Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
-                                Text("Select your equipment status".localized()).tag("Select your equipment status")
-                                ForEach(Array(stateMapping.values), id: \.self) { status in
-                                    Text(status).tag(status)
+                            Picker("Select a status".localized(), selection: $inventoryViewModel.stuffStatus) {
+                                ForEach(Array(stateMapping.keys.sorted()), id: \.self) { key in
+                                    Text(stateMapping[key] ?? key).tag(key)
                                 }
                             }
                             .frame(maxWidth: .infinity)
@@ -162,6 +161,10 @@ struct InventoryEntryEvaluationView: View {
         }
         .onAppear {
             inventoryViewModel.selectStuff(selectedStuff)
+            inventoryViewModel.selectedImages = selectedStuff.images.isEmpty ? [] : selectedStuff.images
+            inventoryViewModel.comment = selectedStuff.comment.isEmpty ? "" : selectedStuff.comment
+            let validStates = stateMapping.keys
+            inventoryViewModel.stuffStatus = validStates.contains(selectedStuff.status.lowercased()) ? selectedStuff.status.lowercased() : "not_set"
         }
     }
 
@@ -182,21 +185,16 @@ struct InventoryEntryEvaluationView: View {
 
     private func showImagePickerOptions(replaceIndex: Int?) {
         self.replaceIndex = replaceIndex
-
         let actionSheet = UIAlertController(title: "Select Image Source".localized(), message: nil, preferredStyle: .actionSheet)
-
         actionSheet.addAction(UIAlertAction(title: "Take Photo".localized(), style: .default, handler: { _ in
             self.sourceType = .camera
             self.showSheet.toggle()
         }))
-
         actionSheet.addAction(UIAlertAction(title: "Choose from Library".localized(), style: .default, handler: { _ in
             self.sourceType = .photoLibrary
             self.showSheet.toggle()
         }))
-
         actionSheet.addAction(UIAlertAction(title: "Cancel".localized(), style: .cancel, handler: nil))
-
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
             rootViewController.present(actionSheet, animated: true, completion: nil)
@@ -226,7 +224,6 @@ struct InventoryEntryEvaluationView: View {
                 errorMessage = "Error: \(error.localizedDescription)".localized()
             }
             showError = true
-            print("Error sending report: \(error.localizedDescription)")
         }
     }
 
@@ -234,7 +231,7 @@ struct InventoryEntryEvaluationView: View {
         if let index = inventoryViewModel.selectedInventory.firstIndex(where: { $0.id == selectedStuff.id }) {
             inventoryViewModel.selectedInventory[index].checked = true
             inventoryViewModel.selectedInventory[index].images = inventoryViewModel.selectedImages
-            inventoryViewModel.selectedInventory[index].status = inventoryViewModel.selectedStatus
+            inventoryViewModel.selectedInventory[index].status = inventoryViewModel.stuffStatus
             inventoryViewModel.selectedInventory[index].comment = inventoryViewModel.comment
         }
 
@@ -242,7 +239,7 @@ struct InventoryEntryEvaluationView: View {
            let stuffIndex = inventoryViewModel.localRooms[roomIndex].inventory.firstIndex(where: { $0.id == selectedStuff.id }) {
             inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].checked = true
             inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].images = inventoryViewModel.selectedImages
-            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].status = inventoryViewModel.selectedStatus
+            inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].status = inventoryViewModel.stuffStatus
             inventoryViewModel.localRooms[roomIndex].inventory[stuffIndex].comment = inventoryViewModel.comment
         }
 
@@ -260,7 +257,7 @@ struct PicturesSegment: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Image(s)")
+                Text("Image(s)".localized())
                     .font(.headline)
                 Spacer()
             }

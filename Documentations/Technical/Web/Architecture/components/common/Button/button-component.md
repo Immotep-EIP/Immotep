@@ -1,7 +1,11 @@
 # Button Component Documentation
 
+---
+
 ## Overview
 The Button component is a wrapper around Ant Design's Button component that provides consistent button styling and behavior throughout the Keyz application with customizable defaults.
+
+---
 
 ## Component Interface
 
@@ -16,6 +20,8 @@ interface ButtonProps extends AntButtonProps {
 
 const Button: React.FC<ButtonProps>
 ```
+
+---
 
 ## Basic Usage
 
@@ -70,6 +76,8 @@ import { Button } from '@/components/common'
 </Button>
 ```
 
+---
+
 ## Props
 
 The Button component accepts all Ant Design Button props with custom defaults:
@@ -89,6 +97,8 @@ The Button component accepts all Ant Design Button props with custom defaults:
 | `onClick` | `(event: MouseEvent) => void` | - | Click handler |
 | `href` | `string` | - | Redirect URL (makes button a link) |
 | `target` | `string` | - | Link target attribute |
+
+---
 
 ## Real-world Examples
 
@@ -135,6 +145,8 @@ const BackButton = ({ to }: { to: string }) => {
   )
 }
 ```
+
+---
 
 ## Accessibility
 

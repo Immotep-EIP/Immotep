@@ -44,7 +44,7 @@ actor ApiService: ApiServiceProtocol {
         }
 
         let _ = try JSONDecoder().decode(IdResponse.self, from: data)
-        return "Registration Successful!"
+        return "Registration successful!"
     }
 }
 

@@ -16,9 +16,15 @@ const DamageDetails: React.FC = () => {
         description={t('pages.damage_details.document_description')}
         keywords="damage details, damage info, Keyz"
       />
-      <div className={style.pageContainer}>
+      <main
+        className={style.pageContainer}
+        aria-labelledby="damage-details-title"
+      >
+        <h1 id="damage-details-title" className="sr-only">
+          {t('pages.damage_details.page_title')}
+        </h1>
         <DetailsPart />
-      </div>
+      </main>
     </>
   )
 }

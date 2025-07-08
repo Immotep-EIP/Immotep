@@ -22,13 +22,13 @@ struct InventoryRoomExitEvaluationView: View {
     @State private var isReportSent: Bool = false
 
     let stateMapping: [String: String] = [
-        "not_set": "Select your room status",
-        "broken": "Broken",
-        "needsRepair": "Needs Repair",
-        "bad": "Bad",
-        "medium": "Medium",
-        "good": "Good",
-        "new": "New"
+        "not_set": "Select your room status".localized(),
+        "broken": "Broken".localized(),
+        "needsRepair": "Needs Repair".localized(),
+        "bad": "Bad".localized(),
+        "medium": "Medium".localized(),
+        "good": "Good".localized(),
+        "new": "New".localized()
     ]
 
     var body: some View {
@@ -80,10 +80,9 @@ struct InventoryRoomExitEvaluationView: View {
                             Spacer()
                         }
                         HStack {
-                            Picker("Select a status".localized(), selection: $inventoryViewModel.selectedStatus) {
-                                Text("Select room status".localized()).tag("Select room status")
-                                ForEach(Array(stateMapping.values), id: \.self) { status in
-                                    Text(status.localized()).tag(status)
+                            Picker("Select a status".localized(), selection: $inventoryViewModel.roomStatus) {
+                                ForEach(Array(stateMapping.keys.sorted()), id: \.self) { key in
+                                    Text(stateMapping[key] ?? key).tag(key)
                                 }
                             }
                             .frame(maxWidth: .infinity)
@@ -159,9 +158,10 @@ struct InventoryRoomExitEvaluationView: View {
         }
         .onAppear {
             inventoryViewModel.selectRoom(selectedRoom)
-            inventoryViewModel.selectedImages = []
-            inventoryViewModel.comment = ""
-            inventoryViewModel.selectedStatus = "Select room status"
+            inventoryViewModel.selectedImages = selectedRoom.images.isEmpty ? [] : selectedRoom.images
+            inventoryViewModel.comment = selectedRoom.comment.isEmpty ? "" : selectedRoom.comment
+            let validStates = stateMapping.keys
+            inventoryViewModel.roomStatus = validStates.contains(selectedRoom.status.lowercased()) ? selectedRoom.status.lowercased() : "not_set"
         }
     }
 
@@ -182,21 +182,16 @@ struct InventoryRoomExitEvaluationView: View {
 
     private func showImageSelection(replaceIndex: Int?) {
         self.replaceIndex = replaceIndex
-
         let actionSheet = UIAlertController(title: "Select Image Source".localized(), message: nil, preferredStyle: .actionSheet)
-
         actionSheet.addAction(UIAlertAction(title: "Take Photo".localized(), style: .default, handler: { _ in
             self.sourceType = .camera
             self.showSheet.toggle()
         }))
-
         actionSheet.addAction(UIAlertAction(title: "Choose from Library".localized(), style: .default, handler: { _ in
             self.sourceType = .photoLibrary
             self.showSheet.toggle()
         }))
-
         actionSheet.addAction(UIAlertAction(title: "Cancel".localized(), style: .cancel))
-
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
             rootViewController.present(actionSheet, animated: true, completion: nil)
@@ -228,16 +223,18 @@ struct InventoryRoomExitEvaluationView: View {
             case 0 where error.localizedDescription.contains("No active lease found"):
                 errorMessage = "No active lease found for this property.".localized()
             default:
-                errorMessage = "Error: \(error.localizedDescription)".localized()
+                errorMessage = "Error sending report.".localized()
             }
             showError = true
-            print("Error sending room comparison report: \(error.localizedDescription)")
         }
     }
 
     private func validateReport() async {
         if let roomIndex = inventoryViewModel.localRooms.firstIndex(where: { $0.id == selectedRoom.id }) {
             inventoryViewModel.localRooms[roomIndex].checked = true
+            inventoryViewModel.localRooms[roomIndex].images = inventoryViewModel.selectedImages
+            inventoryViewModel.localRooms[roomIndex].status = inventoryViewModel.roomStatus
+            inventoryViewModel.localRooms[roomIndex].comment = inventoryViewModel.comment
             inventoryViewModel.selectedRoom = inventoryViewModel.localRooms[roomIndex]
         }
         await inventoryViewModel.markRoomAsChecked(selectedRoom)

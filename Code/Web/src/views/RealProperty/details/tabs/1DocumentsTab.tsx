@@ -10,8 +10,9 @@ import { Button, Empty } from '@/components/common'
 import DocumentList from '@/components/features/RealProperty/details/tabs/Documents/DocumentList'
 import UploadForm from '@/components/features/RealProperty/details/tabs/Documents/UploadForm'
 
-import style from './1DocumentsTab.module.css'
 import PropertyStatusEnum from '@/enums/PropertyEnum'
+
+import style from './1DocumentsTab.module.css'
 
 interface DocumentsTabProps {
   status?: string
@@ -90,9 +91,17 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
 
   if (loading) {
     return (
-      <div className={style.loadingContainer}>
+      <section
+        className={style.loadingContainer}
+        role="status"
+        aria-live="polite"
+        aria-labelledby="documents-loading-title"
+      >
+        <h2 id="documents-loading-title" className="sr-only">
+          {t('pages.real_property_details.tabs.documents.loading_title')}
+        </h2>
         <Spin size="large" />
-      </div>
+      </section>
     )
   }
 
@@ -101,25 +110,55 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
     (status === 'invite sent' && !selectedLease)
   ) {
     return (
-      <div className={style.tabContentEmpty}>
+      <section
+        className={style.tabContentEmpty}
+        role="status"
+        aria-live="polite"
+        aria-labelledby="documents-empty-title"
+      >
+        <h2 id="documents-empty-title" className="sr-only">
+          {t('pages.real_property_details.tabs.documents.empty_title')}
+        </h2>
         <Empty description={t('pages.real_property.error.no_tenant_linked')} />
-      </div>
+      </section>
     )
   }
 
   if (error) {
     return (
-      <div className={style.errorContainer}>
+      <section
+        className={style.errorContainer}
+        role="alert"
+        aria-live="assertive"
+        aria-labelledby="documents-error-title"
+      >
+        <h2 id="documents-error-title" className="sr-only">
+          {t('pages.real_property_details.tabs.documents.error_title')}
+        </h2>
         <p>{error}</p>
-      </div>
+      </section>
     )
   }
 
   return (
-    <div className={style.tabContent}>
+    <div className={style.tabContent} aria-labelledby="documents-tab-title">
+      <h2 id="documents-tab-title" className="sr-only">
+        {t('pages.real_property_details.tabs.documents.tab_title')}
+      </h2>
       {canModify && (
-        <div className={style.buttonAddContainer}>
-          <Button onClick={showModal}>
+        <div
+          className={style.buttonAddContainer}
+          aria-labelledby="documents-actions-title"
+        >
+          <h3 id="documents-actions-title" className="sr-only">
+            {t('pages.real_property_details.tabs.documents.actions_title')}
+          </h3>
+          <Button
+            onClick={showModal}
+            aria-label={t(
+              'pages.real_property_details.tabs.documents.add_document_aria'
+            )}
+          >
             {t('components.button.add_document')}
           </Button>
         </div>
@@ -128,17 +167,37 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ status }) => {
         title={t('pages.real_property_details.tabs.documents.modal_title')}
         open={isModalOpen}
         onCancel={handleCancel}
+        aria-labelledby="add-document-modal-title"
+        aria-describedby="add-document-modal-description"
         footer={[
-          <Button key="back" type="default" onClick={handleCancel}>
+          <Button
+            key="back"
+            type="default"
+            onClick={handleCancel}
+            aria-label={t('components.button.cancel_add_document')}
+          >
             {t('components.button.cancel')}
           </Button>,
-          <Button key="submit" onClick={handleOk}>
+          <Button
+            key="submit"
+            onClick={handleOk}
+            aria-label={t('components.button.add_document_submit')}
+          >
             {t('components.button.add')}
           </Button>
         ]}
       >
+        <div id="add-document-modal-title" className="sr-only">
+          {t('pages.real_property_details.tabs.documents.modal_title')}
+        </div>
+        <div id="add-document-modal-description" className="sr-only">
+          {t('pages.real_property_details.tabs.documents.modal_description')}
+        </div>
         <UploadForm form={form} />
       </Modal>
+      <h3 id="documents-list-title" className="sr-only">
+        {t('pages.real_property_details.tabs.documents.list_title')}
+      </h3>
       <DocumentList
         documents={documents || []}
         onDocumentClick={handleDocumentClick}

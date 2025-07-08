@@ -20,6 +20,9 @@ const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
 
   return (
     <div className={style.informationsContainer}>
+      <h3 id="property-info-title" className="sr-only">
+        {t('pages.real_property_details.informations.name')}
+      </h3>
       <div className={style.details}>
         <SubtitledElement
           subtitleKey={t('pages.real_property_details.informations.name')}
@@ -54,13 +57,17 @@ const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
           subtitleKey={t('pages.real_property_details.informations.dates')}
         >
           <span className={style.detailsText}>
-            {selectedLease?.start_date
-              ? formatDate(selectedLease.start_date)
-              : '...'}
+            <time dateTime={selectedLease?.start_date}>
+              {selectedLease?.start_date
+                ? formatDate(selectedLease.start_date)
+                : '...'}
+            </time>
             {' - '}
-            {selectedLease?.end_date
-              ? formatDate(selectedLease.end_date)
-              : '...'}
+            <time dateTime={selectedLease?.end_date}>
+              {selectedLease?.end_date
+                ? formatDate(selectedLease.end_date)
+                : '...'}
+            </time>
           </span>
         </SubtitledElement>
       </div>
@@ -68,14 +75,22 @@ const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
         <SubtitledElement
           subtitleKey={t('pages.real_property_details.informations.area')}
         >
-          <span className={style.detailsText}>{propertyData.area_sqm} m²</span>
+          <span
+            className={style.detailsText}
+            aria-label={`${propertyData.area_sqm} ${t('pages.real_property_details.informations.area')}`}
+          >
+            {propertyData.area_sqm} m²
+          </span>
         </SubtitledElement>
       </div>
       <div className={style.details}>
         <SubtitledElement
           subtitleKey={t('pages.real_property_details.informations.rental')}
         >
-          <span className={style.detailsText}>
+          <span
+            className={style.detailsText}
+            aria-label={`${propertyData.rental_price_per_month} ${t('pages.real_property_details.informations.rental')}`}
+          >
             {propertyData.rental_price_per_month} €
           </span>
         </SubtitledElement>
@@ -84,7 +99,10 @@ const PropertyInfo = ({ propertyData }: { propertyData: PropertyDetails }) => {
         <SubtitledElement
           subtitleKey={t('pages.real_property_details.informations.deposit')}
         >
-          <span className={style.detailsText}>
+          <span
+            className={style.detailsText}
+            aria-label={`${propertyData.deposit_price} ${t('pages.real_property_details.informations.deposit')}`}
+          >
             {propertyData.deposit_price} €
           </span>
         </SubtitledElement>

@@ -13,6 +13,7 @@ struct LoginView: View {
     @AppStorage("keepMeSignedIn") var keepMeSignedIn: Bool = false
     @State private var showError = false
     @State private var errorMessage: String?
+    @State private var isLoading: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -54,25 +55,42 @@ struct LoginView: View {
                             Button(action: {
                                 showError = false
                                 errorMessage = nil
+                                isLoading = true
+                                print("Sign In button clicked, isLoading: \(isLoading)")
                                 Task {
                                     if let validationError = viewModel.validateFields() {
                                         errorMessage = validationError
                                         showError = true
+                                        isLoading = false
+                                        print("Validation failed, isLoading: \(isLoading)")
                                     } else {
                                         await viewModel.signIn()
+                                        isLoading = false
+                                        print("Sign In completed, isLoading: \(isLoading)")
                                     }
                                 }
                             }, label: {
-                                Text("Sign In".localized())
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color("btnColor"))
-                                    .foregroundColor(.white)
-                                    .font(.headline)
-                                    .cornerRadius(20)
-                                    .padding(.top, 50)
-                                    .padding(.bottom, 20)
+                                ZStack {
+                                    if isLoading {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle())
+                                            .tint(.white)
+                                    } else {
+                                        Text("Sign In".localized())
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(viewModel.model.email.isEmpty || viewModel.model.password.isEmpty ? Color.gray : Color("btnColor"))
+                                .foregroundColor(.white)
+                                .font(.headline)
+                                .cornerRadius(20)
+                                .padding(.top, 50)
+                                .padding(.bottom, 20)
+                                .scaleEffect(isLoading ? 0.95 : 1.0)
+                                .animation(.easeInOut(duration: 0.2), value: isLoading)
                             })
+                            .disabled(isLoading || viewModel.model.email.isEmpty || viewModel.model.password.isEmpty)
 
                             HStack {
                                 Text("Don't have an account ?".localized())
@@ -96,7 +114,7 @@ struct LoginView: View {
                             .resizable()
                             .frame(width: 50, height: 50)
                             .padding(.bottom, 40)
-                        Text("Immotep")
+                        Text("Keyz")
                             .font(.title)
                             .bold()
                             .padding(.bottom, 40)

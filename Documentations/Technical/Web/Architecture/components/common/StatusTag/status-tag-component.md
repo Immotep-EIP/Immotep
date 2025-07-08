@@ -1,7 +1,11 @@
 # StatusTag Component Documentation
 
+---
+
 ## Overview
 The StatusTag component is a specialized wrapper around Ant Design's Tag component that provides internationalized status display with customizable color mapping throughout the Keyz application.
+
+---
 
 ## Component Interface
 
@@ -19,6 +23,8 @@ interface StatusTagProps {
 
 const StatusTag: React.FC<StatusTagProps>
 ```
+
+---
 
 ## Basic Usage
 
@@ -60,6 +66,8 @@ const colorMap = {
 // Will attempt to translate using "status.property.active" key
 ```
 
+---
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -73,6 +81,8 @@ const colorMap = {
 - Keys in `colorMap` should be lowercase
 - Values can be Ant Design color names or custom hex colors
 - Component automatically converts `value` to lowercase for lookup
+
+---
 
 ## Real-world Examples
 
@@ -142,6 +152,8 @@ const DocumentStatus = ({ document }: { document: Document }) => {
   )
 }
 ```
+
+---
 
 ## Common Patterns
 

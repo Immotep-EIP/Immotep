@@ -1,7 +1,11 @@
 # Common Components Documentation
 
+---
+
 ## Overview
 Common components are reusable UI elements that form the foundation of the Keyz application. These components are designed to be highly reusable, configurable, and maintainable across different features.
+
+---
 
 ## Centralized Exports
 All common components are exported through a centralized `index.ts` file for easy importing:
@@ -15,6 +19,8 @@ export { default as StatusTag } from './Tag/StatusTag'
 export { default as Empty } from './Empty/Empty'
 export { default as Badge } from './Badge/Badge'
 ```
+
+---
 
 ## Available Components
 
@@ -54,6 +60,8 @@ Enhanced badge component with status variants and ribbon support.
 - **Documentation**: [Badge Component](./Badge/badge-component.md)
 - **Key Features**: Status badges, Ribbon support, custom colors, all Ant Design features
 
+---
+
 ## Design Principles
 
 ### 1. Props Design
@@ -70,6 +78,8 @@ Enhanced badge component with status variants and ribbon support.
 - Implement proper ARIA attributes
 - Ensure keyboard navigation
 - Support screen readers
+
+---
 
 ## Implementation Guidelines
 
@@ -95,12 +105,16 @@ export const Component: React.FC<ComponentProps> = ({
 };
 ```
 
+---
+
 ## Usage Examples
 
 ### Basic Import Pattern
 ```typescript
 import { Button, Input, Card, StatusTag, Empty, Badge } from '@/components/common'
 ```
+
+---
 
 ## Design Principles
 
@@ -124,6 +138,8 @@ import { Button, Input, Card, StatusTag, Empty, Badge } from '@/components/commo
 - Custom styling support
 - Extensible through composition
 
+---
+
 ## Best Practices
 
 ### Error Handling
@@ -137,6 +153,8 @@ import { Button, Input, Card, StatusTag, Empty, Badge } from '@/components/commo
   required
 />
 ```
+
+---
 
 ## Contributing
 
@@ -156,6 +174,8 @@ src/components/common/NewComponent/
 │   └── NewComponent.test.tsx # Test file
 └── index.ts                 # Component export (optional)
 ```
+
+---
 
 ## Conclusion
 Common components are the building blocks of the Keyz application. Following these guidelines ensures consistency, maintainability, and reusability across the application. Always refer to this documentation when creating or modifying common components. 

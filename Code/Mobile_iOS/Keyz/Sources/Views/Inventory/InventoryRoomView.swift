@@ -121,10 +121,12 @@ struct InventoryRoomView: View {
                 CustomAlertTwoButtons(
                     isActive: $showCompletionMessage,
                     title: inventoryViewModel.isEntryInventory ? "Entry Inventory".localized() : "Exit Inventory".localized(),
-                    message: message,
+                    message: message.localized(),
                     buttonTitle: "OK",
                     secondaryButtonTitle: nil,
                     action: {
+                        inventoryViewModel.resetInventory()
+                        inventoryViewModel.onDocumentsRefreshNeeded?()
                         showCompletionMessage = false
                         dismiss()
                     },

@@ -143,7 +143,6 @@ const useInventory = (propertyId: string) => {
         })
       }))
 
-      message.success(t('components.messages.furniture_added'))
       return true
     } catch (error) {
       console.error(t('components.messages.furniture_added_error'))

@@ -20,7 +20,8 @@ class InventoryViewModel: ObservableObject {
     @Published var selectedStuff: LocalInventory?
     @Published var selectedImages: [UIImage] = []
     @Published var comment: String = ""
-    @Published var selectedStatus: String = "Select your equipment status"
+    @Published var roomStatus: String = "not_set"
+    @Published var stuffStatus: String = "not_set"
 
     @Published var roomToDelete: LocalRoom?
     @Published var showDeleteConfirmation: Bool = false
@@ -34,6 +35,7 @@ class InventoryViewModel: ObservableObject {
     private var reportManager: InventoryReportManager?
     
     var onInventoryFinalized: (() -> Void)?
+    var onDocumentsRefreshNeeded: (() -> Void)?
 
     init(property: Property, isEntryInventory: Bool = true, localRooms: [LocalRoom]? = nil) {
         self.property = property
@@ -43,6 +45,21 @@ class InventoryViewModel: ObservableObject {
         self.roomManager = RoomManager(viewModel: self)
         self.furnitureManager = FurnitureManager(viewModel: self)
         self.reportManager = InventoryReportManager(viewModel: self)
+    }
+    
+    func resetInventory() {
+        localRooms = []
+        selectedRoom = nil
+        selectedInventory = []
+        selectedStuff = nil
+        selectedImages = []
+        comment = ""
+        roomStatus = "not_set"
+        stuffStatus = "not_set"
+        checkedStuffStatus = [:]
+        lastReportId = nil
+        completionMessage = nil
+        errorMessage = nil
     }
 
     func getToken() async -> String? {
@@ -74,6 +91,7 @@ class InventoryViewModel: ObservableObject {
         roomManager?.selectRoom(room)
         if let roomIndex = localRooms.firstIndex(where: { $0.id == room.id }) {
             selectedRoom = localRooms[roomIndex]
+            roomStatus = localRooms[roomIndex].status
         }
     }
 
@@ -121,6 +139,9 @@ class InventoryViewModel: ObservableObject {
 
     func selectStuff(_ stuff: LocalInventory) {
         furnitureManager?.selectStuff(stuff)
+        if let stuffIndex = selectedInventory.firstIndex(where: { $0.id == stuff.id }) {
+            stuffStatus = selectedInventory[stuffIndex].status
+        }
     }
 
     func sendStuffReport() async throws {
@@ -130,6 +151,7 @@ class InventoryViewModel: ObservableObject {
     func finalizeInventory() async throws {
         try await reportManager?.finalizeInventory()
         onInventoryFinalized?()
+        onDocumentsRefreshNeeded?()
     }
 
     func fetchLastInventoryReport() async {

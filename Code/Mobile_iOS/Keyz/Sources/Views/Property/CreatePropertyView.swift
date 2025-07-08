@@ -70,7 +70,7 @@ struct CreatePropertyView: View {
                     }
                     .padding(.horizontal, 25)
                     .padding(.vertical, 8)
-                    .background(Color.red)
+                    .background(Color("RedAlert"))
                     .foregroundStyle(Color.white)
                     .font(.headline)
                     .cornerRadius(8)
@@ -84,7 +84,7 @@ struct CreatePropertyView: View {
                     }
                     .padding(.horizontal, 25)
                     .padding(.vertical, 8)
-                    .background(Color.blue)
+                    .background(Color("LightBlue"))
                     .foregroundStyle(Color.white)
                     .font(.headline)
                     .cornerRadius(8)
@@ -167,21 +167,21 @@ struct CreatePropertyView: View {
         }
 
         do {
-            let response = try await viewModel.createProperty(request: newProperty, token: token)
+            let _ = try await viewModel.createProperty(request: newProperty, token: token)
             await MainActor.run {
-                errorMessage = "Property created successfully with ID: \(response)!".localized()
+                errorMessage = "Property created successfully!".localized()
                 showSuccess = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     dismiss()
                 }
             }
-            await viewModel.fetchProperties()
+            try await viewModel.fetchProperties()
         } catch {
             await MainActor.run {
                 if let nsError = error as NSError?, nsError.code == 409 {
                     errorMessage = "A property with this information already exists.".localized()
                 } else {
-                    errorMessage = "Error creating property: \(error.localizedDescription)".localized()
+                    errorMessage = "Error creating property.".localized()
                 }
                 showError = true
             }

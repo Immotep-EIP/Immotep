@@ -107,6 +107,7 @@ class RealPropertyViewModel(
         viewModelScope.launch {
             _propertiesMutex.withLock {
                 try {
+                    _propertySelectedDetails.value = null
                     apiCaller.archiveProperty(propertyId)
                     properties.removeAt(index)
                     closeError()
