@@ -30,7 +30,7 @@ Before you begin, ensure you have the following installed:
    VITE_API_URL=your_api_url
    ```
 
-   Create a other `.env` file in the root of the server directory with the following variables:
+   Create another `.env` file in the root of the server directory with the following variables:
    ```env
    PORT='3001'
    PUBLIC_URL='http://localhost:3001'
@@ -51,7 +51,7 @@ Before you begin, ensure you have the following installed:
    yarn dev
    ```
 
-> Once the development server is running, run the web application with with `npm run dev`, it will be accessible at [http://localhost:4242](http://localhost:4242).
+> Once the development server is running, run the web application with `npm run dev`, it will be accessible at [http://localhost:4242](http://localhost:4242).
 
 
 2. **Build for production**

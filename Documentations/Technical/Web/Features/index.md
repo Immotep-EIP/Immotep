@@ -21,7 +21,8 @@ This section provides detailed documentation of the Keyz web application's core 
 - Navigation components
 - URL structure
 
-<!-- ### 3. [Real Property Management](./real-property/real-property.md)
+<!--
+### 3. [Real Property Management](./real-property/real-property.md)
 - Property listing
 - Property details
 - Search and filtering
@@ -32,7 +33,8 @@ This section provides detailed documentation of the Keyz web application's core 
 - Chat functionality
 - Notifications
 - Real-time updates
-- Message history -->
+- Message history
+-->
 
 ### 3. [Internationalization](./internationalization/translation.md)
 - Translation management
