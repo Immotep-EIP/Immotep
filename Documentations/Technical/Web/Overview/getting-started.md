@@ -25,9 +25,21 @@ Before you begin, ensure you have the following installed:
    ```
 
 3. **Environment Setup**
-   Create a `.env` file in the root directory with the following variables:
+   Create a `.env` file in the root of the web directory with the following variables:
    ```env
    VITE_API_URL=your_api_url
+   ```
+
+   Create another `.env` file in the root of the server directory with the following variables:
+   ```env
+   PORT='3001'
+   PUBLIC_URL='http://localhost:3001'
+   WEB_PUBLIC_URL='http://localhost:4242'
+   DATABASE_URL='postgresql://user:password@localhost:5432/mydatabase'
+   SECRET_KEY='your_secret_key_here'
+   OPENAI_API_KEY='your_openai_api_key_here'
+   BREVO_API_KEY='your_brevo_api_key_here'
+   SHOWCASE_PUBLIC_URL="http://localhost:5000"
    ```
 
 ## Development
@@ -38,7 +50,9 @@ Before you begin, ensure you have the following installed:
    # or
    yarn dev
    ```
-   The application will be available at `http://localhost:5173`
+
+> Once the development server is running, run the web application with `npm run dev`, it will be accessible at [http://localhost:4242](http://localhost:4242).
+
 
 2. **Build for production**
    ```bash
@@ -67,7 +81,7 @@ src/
 
 - **Authentication**: User login and registration
 - **Real Property Management**: Property listing and details
-- **Messaging System**: Communication between users
+<!-- - **Messaging System**: Communication between users -->
 - **Responsive Design**: Mobile-first approach
 
 ## Development Guidelines

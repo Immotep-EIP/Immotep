@@ -1,7 +1,11 @@
 # Input Component Documentation
 
+---
+
 ## Overview
 The Input component is a wrapper around Ant Design's Input component that provides enhanced functionality with built-in label support, error handling, and consistent form field behavior throughout the Keyz application.
+
+---
 
 ## Component Interface
 
@@ -20,6 +24,8 @@ interface InputProps extends Omit<AntInputProps, 'onChange'> {
 
 const Input: React.FC<InputProps>
 ```
+
+---
 
 ## Basic Usage
 
@@ -99,6 +105,8 @@ import { Input } from '@/components/common'
 />
 ```
 
+---
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -117,6 +125,8 @@ import { Input } from '@/components/common'
 | `suffix` | `ReactNode` | - | Suffix icon or element |
 | `id` | `string` | - | HTML id attribute |
 | `name` | `string` | - | HTML name attribute |
+
+---
 
 ## Real-world Examples
 
@@ -235,6 +245,8 @@ const PropertyForm = ({ property, onSave }: PropertyFormProps) => {
   )
 }
 ```
+
+---
 
 ## Accessibility
 

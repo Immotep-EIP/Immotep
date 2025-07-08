@@ -1,7 +1,11 @@
 # Empty Component Documentation
 
+---
+
 ## Overview
 The Empty component is a wrapper around Ant Design's Empty component that provides a consistent empty state UI with custom image and description throughout the Keyz application.
+
+---
 
 ## Component Interface
 
@@ -16,6 +20,8 @@ interface EmptyStateProps {
 
 const Empty: React.FC<EmptyStateProps>
 ```
+
+---
 
 ## Basic Usage
 
@@ -59,6 +65,8 @@ import { Empty } from '@/components/common'
 />
 ```
 
+---
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -71,6 +79,8 @@ The component includes:
 - Custom empty state image from `@/assets/images/EmptyImage.svg`
 - Typography wrapper for consistent text styling
 - All Ant Design Empty features through extension
+
+---
 
 ## Real-world Examples
 
@@ -115,6 +125,8 @@ const MessagesEmpty = () => {
 }
 ```
 
+---
+
 ## Accessibility
 
 ### Best Practices
@@ -122,6 +134,8 @@ const MessagesEmpty = () => {
 - Use proper semantic HTML in description content
 - Ensure sufficient color contrast for text
 - Include actionable guidance when appropriate
+
+---
 
 ## Usage Patterns
 

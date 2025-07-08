@@ -10,9 +10,9 @@ To ensure high code quality, ESLint is configured with the Airbnb style guide to
 
 ### Stack and Tools
 
-- React version: 18.3.1
-- TypeScript version: 5.5.4
-- Vite version: 5.4.7
+- React version: 18
+- TypeScript version: ^5.5.4
+- Vite version: ^5.4.7
 
 ### Code Quality
 
@@ -94,17 +94,4 @@ src/
       Button.tsx
       __tests__/
         Button.test.tsx
-```
-
-## Running Specific Tests
-
-```bash
-# Run tests matching a filename pattern
-npm test -- Button
-
-# Run tests in a specific file
-npm test -- path/to/test/file.test.ts
-
-# Run only failed tests
-npm test -- --onlyFailures
 ```
