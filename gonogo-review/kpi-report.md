@@ -4,7 +4,21 @@
 
 ### Brand Image and Online Presence
 
+#### Redesign
+
+First of all, we completely redesigned our **brand image** name and logo. At the beginning, our name was **Immotep**, which was more like a student's project name and not really suitable for a professional app. We wanted a name that would resonate with our target audience and reflect the purpose of our app, which is to simplify property management for both landlords and tenants.
+
+We chose the name **Keyz** to represent our app, as it symbolizes access and control over properties. The name is short, memorable, and easy to pronounce, making it suitable for our target audience.
+
+We also created a new **logo** that reflects our brand identity. The logo features a key and a house, symbolizing the connection between landlords and tenants in property management. The design is modern and simple, making it visually appealing and easy to recognize.
+
+![Keyz redesign](keyz-redesign.png)
+
+#### Visual Identity
+
 We have a visual identity that is consistent across all platforms, including our website, social media, and marketing materials.
+
+The **tone** we are using is formal and polite, as the target audience is often over **35 years old**.
 
 Here is our **logo**:
 
@@ -16,8 +30,7 @@ Here is our **color palette**:
 
 Here is our **typography**:
 
-- App: [Jost](https://fonts.google.com/specimen/Jost)
-- Social media: [Raleway](https://fonts.google.com/specimen/Raleway)
+[Jost](https://fonts.google.com/specimen/Jost)
 
 We also created **3 social media accounts** to engage with our community, and we are actively posting content on these platforms. You can find us on:
 
@@ -29,17 +42,23 @@ We also created **3 social media accounts** to engage with our community, and we
 
 Our content strategy works by **posting content on every social media platform every week**, with a focus on engaging our audience and promoting our brand. We have built a content calendar that outlines the topics and themes for each post, ensuring that we cover a variety of subjects related to our app and the rental market.
 
-We have planned our **editorial calendar for the next few weeks** to ensure a consistent flow of content. Here is a summary of our planned content:
+When we started posting content on social medias, we planned our **editorial calendar for the following months** to ensure a consistent flow of content. Here is a summary of our planned content:
 
-- May 7th, 2025: Introduction to Keyz
-- May 14th, 2025: Presentation Keyz's main features for owners
-- May 21st, 2025: Presentation Keyz's main features for tenants
-- May 28th, 2025: Showcasing Keyz's landing page
-- June 4th, 2025: Highlighting tenants' rights regarding the inventory report
-- June 11th, 2025: 3 tips to do a successful inventory report without stress
-- June 18th, 2025: Teasing Keyz's beta launch
-- June 25th, 2025: Keyz's beta launch announcement and invitation to join the beta program
-TODO: add other ideas
+- May 6th, 2025: Project teaser: make property management easier
+- May 14th, 2025: Presentation main features for landlords
+- May 21st, 2025: Presentation main features for tenants
+- May 28th, 2025: Landing page announcement
+- June 5th, 2025: 5 tenants rights during a property inspection
+- June 11th, 2025: 3 practical tips for a stress-free property inspection
+- June 18th, 2025: Beta release teaser
+- June 26th, 2025: Beta launch announcement with invitation to join the beta program + free access for early users
+- July 08, 2025: Ask me anything
+- July 15th, 2025: Beta user testimonial (owner)
+- July 22nd, 2025: Educational post: “Why property inspections often lead to disputes”
+- July 29th, 2025: Feature spotlight (e.g. inventory)
+- August 05th, 2025: 30-second demo video of the app in action
+- August 12th, 2025: Beta FAQ: answering common questions
+- August 19th, 2025: Reminder: Beta access still available & free
 
 ### Beta Tester Acquisition
 
@@ -59,7 +78,9 @@ Both the web and mobile mock-ups were designed with a **unified visual identity*
 
 When our mock-ups were ready, we asked some potential users if the UX seemed comprehensive and effective. First of all, feedbacks were not really positive, as they found the mock-ups **not modern enough** and not really appealing. We then decided to **redesign the mock-ups** to make them more visually appealing and user-friendly. We applied modern UI/UX design principles, such as responsive design, simplicity, and accessibility, to create a more intuitive and engaging user experience.
 
-Here you can see the two versions of our mock-ups, the first one being the initial version and the second one (V2) being the redesigned version:
+On both screenshots below, you can see the two versions of our mock-ups, the first one (V1, Immotep) being the initial version and the second one (V2, Keyz) being the redesigned version:
+
+![Mock-ups close-up](./.screenshots/figma/mock-ups-close-up.png)
 
 ![Mock-ups](./.screenshots/figma/mock-ups.png)
 
@@ -143,7 +164,9 @@ First of all, we built a **showcase website** to present our app and its feature
 
 We set up **Google Analytics** to track user behavior on our showcase website and within the app. This tool provides us with valuable insights into how users interact with our site, which pages they visit, and how long they stay. This data helps us understand our audience better and will determine our future content strategy and app improvements. We also use **Meta Business Suite** to manage Instagram and Facebook and track engagement metrics such as likes, shares, comments and times when our audience is most active.
 
-TODO: put screenshots of Google Analytics and Meta Business Suite
+![Meta Business Suite](./.screenshots/social-media/meta-business-suite.png)
+
+<!-- TODO: put screenshots of Google Analytics and Meta Business Suite -->
 
 Also, all our social media contents (including presentation designs and video edits for posts) are created using **Canva** and **Figma**, which are powerful design tools that allow us to create visually appealing and engaging content. We use Canva for creating graphics, infographics, and social media posts, while Figma is used for designing the app's user interface and prototypes.
 
@@ -155,11 +178,11 @@ Here is our Figma file containing the logo design and the social media posts we 
 
 Here are the current metrics gathered from our social media accounts:
 
-| Platform   | Followers | Engagement Rate | Impressions | Reach  |
-|------------|-----------|-----------------|-------------|--------|
-| LinkedIn   | 12        |                 |             |        |
-| Instagram  | 19        |                 |             |        |
-| Facebook   | 6         |                 |             |        |
+| Platform   | Followers |
+|------------|-----------|
+| LinkedIn   | 13        |
+| Instagram  | 31        |
+| Facebook   | 7         |
 
 #### LinkedIn
 
@@ -167,9 +190,10 @@ Overview:
 
 <p align="center">
     <img src="./.screenshots/social-media-metrics/linkedin-metrics-summary.png" alt="Linkedin metrics summary" width="300"/>
-    <img src="./.screenshots/social-media-metrics/linkedin-metrics1.png" alt="Linkedin metrics 1" width="300"/>
+    <!-- <img src="./.screenshots/social-media-metrics/linkedin-metrics1.png" alt="Linkedin metrics 1" width="300"/> -->
     <img src="./.screenshots/social-media-metrics/linkedin-metrics2.png" alt="Linkedin metrics 2" width="300"/>
     <img src="./.screenshots/social-media-metrics/linkedin-metrics3.png" alt="Linkedin metrics 3" width="300"/>
+    <img src="./.screenshots/social-media-metrics/linkedin-metrics4.png" alt="Linkedin metrics 4" width="300"/>
 </p>
 
 By posts:
@@ -213,17 +237,23 @@ Overview:
 
 ![Facebook metrics summary](./.screenshots/social-media-metrics/facebook-metrics-summary.png)
 
+#### Summary
+
+Overall, our social media presence is growing thanks to our consistent posting schedule and engaging content. We can see that statistics are improving week after week, with more followers and engagement on our posts due to our posting strategy.
+
 ## 4. Optimizing Relationships with the Target Audience
 
 ### Community Engagement
 
-We aim to build trust and transparency with our target customers through social media, using **polls** and **surveys** to gather insights easily, but also by engaging with them through **comments** and **direct messages**. We respond to all comments and messages promptly, ensuring that our audience feels heard and valued.
+We aim to build trust and transparency with our target customers through social media, using **polls** and **surveys** to gather insights easily, but also by engaging with them through **comments** and **direct messages**. We respond to all comments and messages promptly, ensuring that our audience feels heard and valued. We made a post asking our audience to ask us anything about the app.
 
-Our new **features releases** are always announced on our social media accounts, ensuring that our audience is informed about the latest updates and improvements to the app.
+![Ask me anything](./.screenshots/social-media/ask-me-anything.png)
 
-We also publish each release on our **GitHub repository** with detailed release notes and version number, which include information about new features, bug fixes, and improvements. This transparency helps build trust with our users and keeps them engaged with our app. Releases are available here: [Keyz GitHub releases](https://github.com/Keyz-EIP/Keyz/releases).
+We publish each release on our **GitHub repository** with detailed release notes and version number, which include information about new features, bug fixes, and improvements. This transparency helps build trust with our users and keeps them engaged with our app. Releases are available here: [Keyz GitHub releases](https://github.com/Keyz-EIP/Keyz/releases).
 
 ![Example of a GitHub release](./.screenshots/github/release.png)
+
+In the future, we aim to post regular updates on our social media accounts as well to keep our audience informed about new features, improvements, and upcoming releases. We will also share success stories and testimonials from our beta testers to showcase the value of Keyz.
 
 ### Feedback System
 
@@ -239,4 +269,4 @@ After launch, we will also create a **Trustpilot** page to gather and respond to
 
 ### Satisfaction Metrics
 
-TODO: put calculation metrics after receiving user feedback
+<!-- TODO: put calculation metrics after receiving user feedback -->
