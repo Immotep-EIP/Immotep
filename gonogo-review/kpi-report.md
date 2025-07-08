@@ -247,7 +247,9 @@ We aim to build trust and transparency with our target customers through social 
 
 ![Ask me anything](./screenshots/social-media/ask-me-anything.png)
 
-We publish each release on our **GitHub repository** with detailed release notes and version number, which include information about new features, bug fixes, and improvements. This transparency helps build trust with our users and keeps them engaged with our app. Releases are available here: [Keyz GitHub releases](https://github.com/Keyz-EIP/Keyz/releases).
+After each new feature, we send an **audit survey** to our beta testers to gather their feedback and suggestions for improvement. This helps us understand their needs and preferences, allowing us to make informed decisions about future updates and features.
+
+We also publish each release on our **GitHub repository** with detailed release notes and version number, which include information about new features, bug fixes, and improvements. This transparency helps build trust with our users and keeps them engaged with our app. Releases are available here: [Keyz GitHub releases](https://github.com/Keyz-EIP/Keyz/releases).
 
 ![Example of a GitHub release](./screenshots/github/release.png)
 
