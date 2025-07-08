@@ -21,7 +21,7 @@ This section provides detailed documentation of the Keyz web application's core 
 - Navigation components
 - URL structure
 
-### 3. [Real Property Management](./real-property/real-property.md)
+<!-- ### 3. [Real Property Management](./real-property/real-property.md)
 - Property listing
 - Property details
 - Search and filtering
@@ -32,38 +32,9 @@ This section provides detailed documentation of the Keyz web application's core 
 - Chat functionality
 - Notifications
 - Real-time updates
-- Message history
+- Message history -->
 
-### 5. [Internationalization](./internationalization/translation.md)
+### 3. [Internationalization](./internationalization/translation.md)
 - Translation management
 - Language switching
 - Text resources
-
----
-
-## Feature Integration
-
-### Component Communication
-- Inter-feature communication
-- State management
-- Event handling
-- Data flow
-- Error handling
-
-### User Experience
-- Responsive design
-- Loading states
-- Error states
-- Success feedback
-- User guidance
-
----
-
-## Testing Features
-
-### Unit Tests
-- Component testing
-- Feature-specific tests
-- Integration tests
-- Edge cases
-- Error scenarios

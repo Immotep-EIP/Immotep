@@ -1,7 +1,11 @@
 # Loader Components
 
+---
+
 ## Overview
 Loader components provide skeleton loading states for different content types in the Keyz application. They use Ant Design's Skeleton components to create placeholder content that matches the structure of actual data, preventing layout shifts and improving perceived performance.
+
+---
 
 ## Available Components
 
@@ -15,6 +19,8 @@ Skeleton loader for inventory/room cards display.
 - **Location**: `./CardInventoryLoader.tsx`
 - **Use Case**: Room listings, furniture inventory, property details
 
+---
+
 ## Component Interfaces
 
 ```typescript
@@ -22,6 +28,8 @@ interface CardLoaderProps {
   cards: number
 }
 ```
+
+---
 
 ## Basic Usage
 
@@ -65,6 +73,8 @@ const InventoryTab = ({ propertyId }) => {
 }
 ```
 
+---
+
 ## Props Documentation
 
 ### CardLoader Props
@@ -72,6 +82,8 @@ const InventoryTab = ({ propertyId }) => {
 | Prop | Type | Default | Required | Description |
 |------|------|---------|----------|-------------|
 | `cards` | `number` | - | ✅ | Number of skeleton property cards to render |
+
+---
 
 ## Best Practices
 

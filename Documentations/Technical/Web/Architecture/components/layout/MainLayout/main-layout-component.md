@@ -1,7 +1,11 @@
 # MainLayout Component Documentation
 
+---
+
 ## Overview
 The MainLayout component is the primary application layout that provides navigation structure, responsive behavior, and consistent UI patterns across all authenticated pages in the Keyz application.
+
+---
 
 ## Component Interface
 
@@ -15,6 +19,8 @@ const MainLayout: React.FC = () => {
   // Component logic
 }
 ```
+
+---
 
 ## Key Features
 
@@ -36,6 +42,8 @@ const MainLayout: React.FC = () => {
 - Keyboard navigation support
 - ARIA attributes for screen readers
 - Focus management
+
+---
 
 ## Navigation Structure
 
@@ -75,6 +83,8 @@ enum NavigationEnum {
 }
 ```
 
+---
+
 ## Layout Structure
 
 ### Desktop Layout (>= 900px)
@@ -112,6 +122,8 @@ enum NavigationEnum {
 └─────────────────────────────────────┘
 ```
 
+---
+
 ## State Management
 
 ### Mobile Menu State
@@ -135,6 +147,8 @@ const onClick: MenuProps['onClick'] = e => {
   navigate(e.key)
 }
 ```
+
+---
 
 ## Real-world Usage
 

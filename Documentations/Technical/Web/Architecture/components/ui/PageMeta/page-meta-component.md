@@ -1,7 +1,11 @@
 # PageMeta Component
 
+---
+
 ## Overview
 The PageMeta component manages SEO and meta information for pages using React Helmet. It provides dynamic page titles, meta descriptions, and keywords to improve search engine optimization and social media sharing.
+
+---
 
 ## Component Interface
 
@@ -14,6 +18,8 @@ interface PageMetaProps {
 
 const PageMeta: React.FC<PageMetaProps>
 ```
+
+---
 
 ## Basic Usage
 
@@ -50,6 +56,8 @@ const PropertyDetailsPage = ({ property }) => {
   )
 }
 ```
+
+---
 
 ## Props Documentation
 

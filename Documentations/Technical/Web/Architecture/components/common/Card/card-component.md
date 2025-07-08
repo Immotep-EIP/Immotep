@@ -1,7 +1,11 @@
 # Card Component Documentation
 
+---
+
 ## Overview
 The Card component is a wrapper around Ant Design's Card component that provides enhanced functionality with custom variants, padding options, and consistent styling throughout the Keyz application.
+
+---
 
 ## Component Interface
 
@@ -19,6 +23,8 @@ interface CardProps extends Omit<AntCardProps, 'title' | 'variant'> {
 
 const Card: React.FC<CardProps> & { Grid: typeof AntCard.Grid }
 ```
+
+---
 
 ## Basic Usage
 
@@ -94,6 +100,8 @@ import { Card } from '@/components/common'
 </Card>
 ```
 
+---
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -115,6 +123,8 @@ import { Card } from '@/components/common'
 - `small`: 12px  
 - `medium`: 16px (default)
 - `large`: 24px
+
+---
 
 ## Real-world Examples
 
@@ -168,6 +178,8 @@ const ServiceGrid = ({ services }: { services: Service[] }) => {
   )
 }
 ```
+
+---
 
 ## Accessibility
 

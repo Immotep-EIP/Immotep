@@ -1,7 +1,11 @@
 # PageTitle Component
 
+---
+
 ## Overview
 The PageTitle component provides consistent typography for page titles and headings throughout the Keyz application. It supports flexible sizing, optional margins, and uses the standardized Jost font family for brand consistency.
+
+---
 
 ## Component Interface
 
@@ -14,6 +18,8 @@ interface PageTitleProps {
 
 const PageTitle: React.FC<PageTitleProps>
 ```
+
+---
 
 ## Basic Usage
 
@@ -59,6 +65,8 @@ const CompactHeader = () => {
 }
 ```
 
+---
+
 ## Props Documentation
 
 | Prop | Type | Default | Required | Description |
@@ -73,6 +81,8 @@ const CompactHeader = () => {
 |------|-----------|-------------|----------|
 | `title` | `1.4rem` | `500` | Main page headings, primary titles |
 | `subtitle` | `1rem` | `400` | Section headers, secondary titles |
+
+---
 
 ## Real-world Examples
 
@@ -124,6 +134,8 @@ const PropertyDetails = ({ property }) => {
   )
 }
 ```
+
+---
 
 ## Typography Hierarchy
 

@@ -1,7 +1,11 @@
 # Layout Components Documentation
 
+---
+
 ## Overview
 Layout components are structural components that define the overall page structure and navigation patterns in the Keyz application. These components handle responsive behavior, layout-specific state, and provide consistent user interface patterns across different views.
+
+---
 
 ## Available Components
 
@@ -16,6 +20,8 @@ Split-screen layout component for authentication and onboarding flows.
 - **Location**: `./DividedPage/DividedPage.tsx`
 - **Documentation**: [DividedPage Component](./DividedPage/divided-page-component.md)
 - **Key Features**: 50/50 split layout, responsive design, branded header, authentication flows
+
+---
 
 ## Design Principles
 
@@ -40,6 +46,8 @@ Split-screen layout component for authentication and onboarding flows.
 - ARIA attributes for navigation elements
 - Keyboard navigation support
 - Screen reader compatibility
+
+---
 
 ## Layout Structure
 
@@ -67,6 +75,8 @@ DividedPage
     ├── Header (Logo & Brand)
     └── Content Area
 ```
+
+---
 
 ## Navigation Configuration
 
@@ -96,6 +106,8 @@ const items = [
 ]
 ```
 
+---
+
 ## Internationalization
 
 ### Translation Keys
@@ -114,6 +126,8 @@ Layout components use i18n for menu labels:
 }
 ```
 
+---
+
 ## Accessibility Features
 
 ### Keyboard Navigation
@@ -124,6 +138,8 @@ Layout components use i18n for menu labels:
 ### Screen Reader Support
 - Descriptive alt text for icons
 - Proper heading hierarchy
+
+---
 
 ## Contributing
 
@@ -143,6 +159,8 @@ src/components/layout/NewLayout/
 ├── __tests__/
 │   └── NewLayout.test.tsx     # Test file
 ```
+
+---
 
 ## Conclusion
 Layout components are the structural foundation of the Keyz application, providing consistent navigation patterns and responsive design across all views. Following these guidelines ensures proper layout management, accessibility compliance, and maintainable code structure. Always refer to this documentation when creating or modifying layout components to maintain consistency with the overall application architecture.

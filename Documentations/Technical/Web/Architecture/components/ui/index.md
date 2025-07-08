@@ -1,7 +1,11 @@
 # UI Components Documentation
 
+---
+
 ## Overview
 UI components are basic building blocks that provide fundamental user interface elements for the Keyz application. These components handle typography, loading states, meta information, and specialized UI patterns that enhance user experience and maintain visual consistency.
+
+---
 
 ## Available Components
 
@@ -50,6 +54,8 @@ Skeleton loading components for different content types.
 <CardInventoryLoader cards={4} />
 ```
 
+---
+
 ## Design Principles
 
 ### 1. Typography Consistency
@@ -76,6 +82,8 @@ Skeleton loading components for different content types.
 - Dynamic content adaptation
 - Consistent translation patterns
 
+---
+
 ## Accessibility Features
 
 ### Typography Accessibility
@@ -95,6 +103,8 @@ Skeleton loading components for different content types.
 - Success announcements for screen readers
 - Semantic HTML structure
 - Clear visual hierarchy
+
+---
 
 ## Internationalization
 
@@ -139,6 +149,8 @@ const { t } = useTranslation()
 />
 ```
 
+---
+
 ## Best Practices
 
 ### Typography Usage
@@ -181,6 +193,8 @@ const { t } = useTranslation()
 // Always include PageMeta even for dynamic content
 ```
 
+---
+
 ## Contributing
 
 When adding new UI components:
@@ -201,6 +215,8 @@ src/components/ui/NewComponent/
 ├── __tests__/
 │   └── NewComponent.test.tsx  # Test file
 ```
+
+---
 
 ## Conclusion
 UI components form the foundational layer of the Keyz application's user interface, providing consistent typography, loading states, and specialized UI patterns. Following these guidelines ensures proper component usage, accessibility compliance, and maintainable code structure. Always refer to this documentation when creating or modifying UI components to maintain consistency with the overall design system.

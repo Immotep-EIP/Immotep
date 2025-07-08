@@ -1,7 +1,11 @@
 # Components Architecture Overview
 
+---
+
 ## Purpose
 This document outlines the architectural principles, patterns, and guidelines for component development in the Keyz application. It serves as a reference for developers to maintain consistency and quality across the component ecosystem.
+
+---
 
 ## Component Organization
 
@@ -13,6 +17,8 @@ src/components/
 ├── layout/     # Layout and structural components
 └── ui/         # Basic UI components
 ```
+
+---
 
 ### Component Categories
 
@@ -40,6 +46,8 @@ src/components/
    - Extend Ant Design components when needed
    - Maintain consistent styling
 
+---
+
 ## Design Principles
 
 ### 1. Component Composition
@@ -59,6 +67,8 @@ src/components/
 - Leverage Context API for shared state
 - Implement proper state initialization
 - Handle loading and error states
+
+---
 
 ## Conclusion
 

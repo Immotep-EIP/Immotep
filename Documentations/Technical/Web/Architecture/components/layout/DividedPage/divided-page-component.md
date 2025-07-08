@@ -1,7 +1,11 @@
 # DividedPage Component Documentation
 
+---
+
 ## Overview
 The DividedPage component provides a split-screen layout primarily used for authentication flows, onboarding processes, and marketing pages. It features a 50/50 split layout with responsive behavior and branded header.
+
+---
 
 ## Component Interface
 
@@ -23,12 +27,16 @@ const DividedPage: React.FC<DividedPageProps> = ({
 }
 ```
 
+---
+
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `childrenLeft` | `ReactNode` | - | Content for the left panel (required) |
 | `childrenRight` | `ReactNode` | - | Content for the right panel (required) |
+
+---
 
 ## Key Features
 
@@ -49,6 +57,8 @@ const DividedPage: React.FC<DividedPageProps> = ({
 ### 4. Flexible Content Areas
 - Left panel: Typically used for marketing content, images, or branding
 - Right panel: Used for forms, authentication, or interactive content
+
+---
 
 ## Layout Structure
 
@@ -88,6 +98,8 @@ const DividedPage: React.FC<DividedPageProps> = ({
 │ └─────────────────────────────────┘ │
 └─────────────────────────────────────┘
 ```
+
+---
 
 ## Real-world Usage Examples
 
@@ -140,6 +152,8 @@ const RegisterPage = () => {
   )
 }
 ```
+
+---
 
 ## Accessibility Features
 
