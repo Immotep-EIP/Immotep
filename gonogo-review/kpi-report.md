@@ -269,4 +269,14 @@ After launch, we will also create a **Trustpilot** page to gather and respond to
 
 ### Satisfaction Metrics
 
-<!-- TODO: put calculation metrics after receiving user feedback -->
+#### NPS
+
+![NPS](./screenshots/nps.png)
+
+We got a **Net Promoter Score (NPS)** of **33%** from our beta testers, which indicates that they are generally satisfied with the app and would recommend it to others. This is a positive sign that we are on the right track in terms of user experience and functionality.
+
+#### CSAT
+
+![CSAT](./screenshots/csat.png)
+
+We got a **Customer Satisfaction Score (CSAT)** of **100%** from our beta testers, which means that they are very satisfied with the app and its features. This is a great achievement and shows that we have successfully addressed their needs and expectations.
