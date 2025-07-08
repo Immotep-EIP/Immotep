@@ -86,7 +86,7 @@ For each core functionality, provide detailed test scenarios.
 - **Preconditions:**
   - User is logged in with appropriate permissions
   - A property exists in the system
-  
+
 - **Test Steps:**
   1. Navigate to the property page
   2. Choose a property to archived
@@ -121,7 +121,7 @@ For each core functionality, provide detailed test scenarios.
 
 - **Expected Outcome:**
 
-  - Document appears with the given name 
+  - Document appears with the given name
   - Document upload date is displayed
   - PDF can be opened in the browser
   - Success message "Document added successfully" is displayed
@@ -154,12 +154,12 @@ For each core functionality, provide detailed test scenarios.
 - **Preconditions:**
   - User is logged in with appropriate permissions
   - Property exists in the system
-  
+
 - **Test Steps:**
   1. Navigate to property page
   2. Choose a property to which a inventory report will be created
   3. Navigate to the inventory tab
-  4. Click on "Add Room" button and fill in the room name 
+  4. Click on "Add Room" button and fill in the room name
   5. Select a room template from the dropdown menu (e.g. bedroom, bathroom, kitchen, etc.) which will pre-fill common items for that room type
   6. After adding the room, click on "Add Item" button in the room container to add items
   7. Fill in the name and number of items
@@ -239,7 +239,7 @@ For each core functionality, provide detailed test scenarios.
 
   - Room is no longer visible in the inventory
   - Success message appears confirming the deletion
-  
+
 #### **Scenario 10: Delete Item**
 
 - **Role Involved:** Property Owner
@@ -275,10 +275,10 @@ For each core functionality, provide detailed test scenarios.
  - **Test Steps:**
    1. Navigate to property page
    2. Choose a property with damages
-   3. Click on the damages tab 
-   
+   3. Click on the damages tab
+
  - **Expected Outcome:**
- 
+
    - The damage are loaded and well displayed
    - There is no bugs
 
@@ -294,12 +294,12 @@ For each core functionality, provide detailed test scenarios.
  - **Test Steps:**
    1. Navigate to property page
    2. Choose a property with damages
-   3. Click on the damages tab 
+   3. Click on the damages tab
    4. Select a damage and click on the intervention date field
    5. Choose a future date from the date picker
-   
+
  - **Expected Outcome:**
- 
+
    - The damage is updated with the intervention date
    - Success message "Intervention date updated successfully" is displayed
    - There are no bugs
@@ -319,9 +319,9 @@ For each core functionality, provide detailed test scenarios.
    3. Click on the damages tab
    4. Select a damage and click on the "Mark as Fixed" button
    5. Click "Confirm" in the confirmation dialog
-   
+
  - **Expected Outcome:**
- 
+
    - Damage status changes to "pending tenant confirmation"
    - Success message "Damage marked as fixed, waiting for tenant confirmation" is displayed
 
@@ -365,7 +365,7 @@ For each core functionality, provide detailed test scenarios.
   4. Click on confirm on the pop up
 
 - **Expected Outcome:**
- 
+
   - Invitation is successfully canceled
   - The property badge changes to **available**, and all mentions of the tenant disappear from it
   - The invitation email link is deactivated
@@ -533,7 +533,7 @@ For each core functionality, provide detailed test scenarios.
 - **Expected Outcome:**
   - The inventory report is displayed correctly in the pdf viewer
   - The interface is responsive and loads without errors
-  
+
 
 #### **Scenario 4: Create an entry or exit Inventory Report**
 
@@ -556,7 +556,7 @@ For each core functionality, provide detailed test scenarios.
   - Each page show no error and can be completed
   - The interface is responsive and loads without errors
 
-#### **Scenario 5: The user can use the AI to evaluate or compare the state of his room or furniture **
+#### **Scenario 5: The user can use the AI to evaluate or compare the state of his room or furniture**
 
 - **Role Involved:** Property Owner & Property Tenant
 - **Objective:** Test the evaluation by AI of the state of the room or the furniture
@@ -647,7 +647,7 @@ For each core functionality, provide detailed test scenarios.
 
   1. Navigate to settings page
   2. Check the profile informations
-  
+
 - **Expected Outcome:**
 
   - The informations are well displayed and good
@@ -662,7 +662,7 @@ For each core functionality, provide detailed test scenarios.
 
   1. Navigate to settings page
   2. Click on the other language on the language slider
-  
+
 - **Expected Outcome:**
 
   - The app change his language
@@ -679,7 +679,7 @@ For each core functionality, provide detailed test scenarios.
 
   1. Navigate to property page and, for the owner click to a property with a tenant
   2. Click on the damages tab
-  
+
 - **Expected Outcome:**
 
   - The damage are loaded and well displayed
@@ -698,7 +698,7 @@ For each core functionality, provide detailed test scenarios.
   2. Click on the damages tab
   3. Click on the reporting a claim button
   4. Fill the form and click confirm
-  
+
 - **Expected Outcome:**
 
   - The damage does appered on the damages list for both the tenant and the owner
@@ -708,7 +708,7 @@ For each core functionality, provide detailed test scenarios.
 #### **Scenario 13: The owner can end the lease**
 
 - **Role Involved:** Property Owner
-- **Objective:** End the lease for the 
+- **Objective:** End the lease for the
 - **Preconditions:**
   - User is logged in with appropriate permissions
   - Property exists in the system
@@ -728,7 +728,7 @@ For each core functionality, provide detailed test scenarios.
 
 
 
-#### **Scenario 14: The user can add a room **
+#### **Scenario 14: The user can add a room**
 
 - **Role Involved:** Property Owner
 - **Objective:** Test the creation of a room
@@ -748,7 +748,7 @@ For each core functionality, provide detailed test scenarios.
   - There is not bug or lags when adding a room
   - Two rooms with the same name cannot be created
 
-#### **Scenario 15: The user can add a furniture **
+#### **Scenario 15: The user can add a furniture**
 
 - **Role Involved:** Property Owner
 - **Objective:** Test the creation of a room
@@ -768,7 +768,7 @@ For each core functionality, provide detailed test scenarios.
   - The furniture got the same name as filled in the form
   - There is not bug or lags when adding a furniture
   - Two furnitures with the same name cannot be created
-  
+
 ---
 
 ## **3. Success Criteria**
