@@ -140,7 +140,13 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
   }, [user])
 
   return (
-    <div className={style.settingsContainer}>
+    <section
+      className={style.settingsContainer}
+      aria-labelledby="user-settings-title"
+    >
+      <h2 id="user-settings-title" className="sr-only">
+        {t('pages.settings.user_settings_title')}
+      </h2>
       <div className={style.userItem}>
         <Upload
           fileList={fileList}
@@ -150,27 +156,38 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
           listType="picture-circle"
           maxCount={1}
           customRequest={customRequest}
+          aria-label={t('pages.settings.upload_picture_aria')}
         >
           <img
             src={isLoading ? DefaultUser : picture || DefaultUser}
-            alt="user"
+            alt={t('pages.settings.profile_picture_alt')}
             className={style.image}
           />
         </Upload>
+        {isUploading && (
+          <div role="status" aria-live="polite" className="sr-only">
+            {t('pages.settings.uploading_picture')}
+          </div>
+        )}
       </div>
       <div className={style.userInformations}>
         <div className={style.titleContainer}>
-          <b>{t('pages.settings.user_infos')}</b>
-          <div className={style.editButtons}>
+          <h3 id="user-info-title">{t('pages.settings.user_infos')}</h3>
+          <div
+            className={style.editButtons}
+            role="toolbar"
+            aria-label={t('pages.settings.edit_toolbar_aria')}
+          >
             {editData && (
               <Button
                 type="link"
                 style={{ width: 35, height: 35, padding: 10 }}
                 onClick={cancelEdit}
-                aria-label={t('component.button.close')}
+                aria-label={t('pages.settings.cancel_edit_aria')}
               >
                 <CloseCircleOutlined
                   style={{ fontSize: '20px', color: 'red' }}
+                  aria-hidden="true"
                 />
               </Button>
             )}
@@ -180,56 +197,65 @@ const UserSettings: React.FC<UserSettingsProps> = ({ t }) => {
               onClick={() =>
                 editData ? saveNewData() : setEditData(!editData)
               }
-              aria-label={t('component.button.edit')}
+              aria-label={
+                editData
+                  ? t('pages.settings.save_changes_aria')
+                  : t('pages.settings.edit_profile_aria')
+              }
             >
               {!editData ? (
-                <EditOutlined style={{ fontSize: '20px' }} />
+                <EditOutlined style={{ fontSize: '20px' }} aria-hidden="true" />
               ) : (
                 <CheckCircleOutlined
                   style={{ fontSize: '20px', color: 'green' }}
+                  aria-hidden="true"
                 />
               )}
             </Button>
           </div>
         </div>
-        <SubtitledElement
-          subtitleKey={t('components.input.first_name.label')}
-          subTitleStyle={{ opacity: 0.6 }}
-        >
-          {!editData ? (
-            user?.firstname
-          ) : (
-            <Input
-              className="input"
-              defaultValue={user?.firstname}
-              onChange={e => setNewData({ ...newData, firstname: e })}
-              aria-label={t('component.input.first_name.label')}
-            />
-          )}
-        </SubtitledElement>
-        <SubtitledElement
-          subtitleKey={t('components.input.last_name.label')}
-          subTitleStyle={{ opacity: 0.6 }}
-        >
-          {!editData ? (
-            user?.lastname
-          ) : (
-            <Input
-              className="input"
-              defaultValue={user?.lastname}
-              onChange={e => setNewData({ ...newData, lastname: e })}
-              aria-label={t('component.input.last_name.label')}
-            />
-          )}
-        </SubtitledElement>
-        <SubtitledElement
-          subtitleKey={t('components.input.email.label')}
-          subTitleStyle={{ opacity: 0.6 }}
-        >
-          {user?.email}
-        </SubtitledElement>
+        <div role="group" aria-labelledby="user-info-title">
+          <SubtitledElement
+            subtitleKey={t('components.input.first_name.label')}
+            subTitleStyle={{ opacity: 0.6 }}
+          >
+            {!editData ? (
+              user?.firstname
+            ) : (
+              <Input
+                className="input"
+                defaultValue={user?.firstname}
+                onChange={e => setNewData({ ...newData, firstname: e })}
+                aria-label={t('components.input.first_name.label')}
+                id="firstname-input"
+              />
+            )}
+          </SubtitledElement>
+          <SubtitledElement
+            subtitleKey={t('components.input.last_name.label')}
+            subTitleStyle={{ opacity: 0.6 }}
+          >
+            {!editData ? (
+              user?.lastname
+            ) : (
+              <Input
+                className="input"
+                defaultValue={user?.lastname}
+                onChange={e => setNewData({ ...newData, lastname: e })}
+                aria-label={t('components.input.last_name.label')}
+                id="lastname-input"
+              />
+            )}
+          </SubtitledElement>
+          <SubtitledElement
+            subtitleKey={t('components.input.email.label')}
+            subTitleStyle={{ opacity: 0.6 }}
+          >
+            {user?.email}
+          </SubtitledElement>
+        </div>
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -263,40 +289,67 @@ const Settings: React.FC = () => {
         description={t('pages.settings.document_description')}
         keywords="settings, user, Keyz"
       />
-      <div className={style.pageContainer}>
-        <div className={style.pageHeader}>
-          <PageTitle title={t('pages.settings.title')} size="title" />
-        </div>
+      <main
+        className={style.pageContainer}
+        aria-labelledby="settings-page-title"
+      >
+        <header className={style.pageHeader}>
+          <PageTitle
+            title={t('pages.settings.title')}
+            size="title"
+            id="settings-page-title"
+          />
+        </header>
         <div className={style.layoutContainer}>
           <UserSettings t={t} />
 
-          <div id="main-content" className={style.settingsContainer}>
+          <section
+            className={style.settingsContainer}
+            aria-labelledby="app-settings-title"
+          >
+            <h2 id="app-settings-title" className="sr-only">
+              {t('pages.settings.app_settings_title')}
+            </h2>
             <div className={style.settingsItem}>
-              {t('pages.settings.language')}
+              <label htmlFor="language-selector" className={style.settingLabel}>
+                {t('pages.settings.language')}
+              </label>
               <Segmented
+                id="language-selector"
                 options={[
                   { label: t('pages.settings.fr'), value: 'fr' },
                   { label: t('pages.settings.en'), value: 'en' }
                 ]}
                 value={i18n.language}
                 onChange={value => switchLanguage(value as string)}
-                tabIndex={0}
+                aria-label={t('pages.settings.language_selector_aria')}
+                aria-describedby="language-help"
               />
+              <div id="language-help" className="sr-only">
+                {t('pages.settings.language_help')}
+              </div>
             </div>
 
             <div className={style.settingsItem}>
-              {t('pages.settings.logout')}
+              <span className={style.settingLabel}>
+                {t('pages.settings.logout')}
+              </span>
               <Button
                 type="primary"
                 danger
                 shape="circle"
-                icon={<LogoutOutlined />}
+                icon={<LogoutOutlined aria-hidden="true" />}
                 onClick={() => logout()}
+                aria-label={t('pages.settings.logout_aria')}
+                aria-describedby="logout-help"
               />
+              <div id="logout-help" className="sr-only">
+                {t('pages.settings.logout_help')}
+              </div>
             </div>
-          </div>
+          </section>
         </div>
-      </div>
+      </main>
     </>
   )
 }

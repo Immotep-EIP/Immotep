@@ -93,7 +93,18 @@ const RealPropertyPage: React.FC = () => {
   })
 
   if (error) {
-    return <p>{t('pages.real_property.error.error_fetching_data')}</p>
+    return (
+      <section
+        role="alert"
+        aria-live="assertive"
+        aria-labelledby="properties-error-title"
+      >
+        <h1 id="properties-error-title" className="sr-only">
+          {t('pages.real_property.error_title')}
+        </h1>
+        <p>{t('pages.real_property.error.error_fetching_data')}</p>
+      </section>
+    )
   }
 
   return (
@@ -103,23 +114,39 @@ const RealPropertyPage: React.FC = () => {
         description={t('pages.real_property.document_description')}
         keywords="real property, Property info, Keyz"
       />
-      <div className={style.pageContainer}>
-        <div className={style.pageHeader}>
-          <PageTitle title={t('pages.real_property.title')} size="title" />
-          <div className={style.headerActions}>
+      <main
+        className={style.pageContainer}
+        aria-labelledby="properties-page-title"
+      >
+        <header className={style.pageHeader}>
+          <PageTitle
+            title={t('pages.real_property.title')}
+            size="title"
+            id="properties-page-title"
+          />
+          <div
+            className={style.headerActions}
+            role="toolbar"
+            aria-label={t('pages.real_property.toolbar_aria')}
+          >
             <div className={style.archiveFilter}>
               <Switch
                 checked={showArchived}
                 onChange={handleArchiveToggle}
                 checkedChildren={t('components.switch.show_archived')}
                 unCheckedChildren={t('components.switch.show_active')}
+                aria-label={t('pages.real_property.archive_toggle_aria')}
+                aria-describedby="archive-help"
               />
+              <div id="archive-help" className="sr-only">
+                {t('pages.real_property.archive_toggle_help')}
+              </div>
             </div>
             <Button onClick={() => setShowModalCreate(true)}>
               {t('components.button.add_real_property')}
             </Button>
           </div>
-        </div>
+        </header>
 
         <PropertyFilterCard
           filters={filters}
@@ -128,10 +155,24 @@ const RealPropertyPage: React.FC = () => {
           statusOptions={statusOptions}
         />
 
-        <div className={style.cardsContainer}>
+        <section
+          className={style.cardsContainer}
+          aria-labelledby="properties-list-title"
+        >
+          <h2 id="properties-list-title" className="sr-only">
+            {t('pages.real_property.properties_list_title')}
+          </h2>
           {loading && <CardPropertyLoader cards={12} />}
           {!loading && filteredProperties.length === 0 && (
-            <div className={style.emptyContainer}>
+            <div
+              className={style.emptyContainer}
+              role="status"
+              aria-live="polite"
+              aria-labelledby="properties-empty-title"
+            >
+              <h3 id="properties-empty-title" className="sr-only">
+                {t('pages.real_property.empty_title')}
+              </h3>
               <Empty description={t('components.messages.no_properties')} />
             </div>
           )}
@@ -142,13 +183,13 @@ const RealPropertyPage: React.FC = () => {
               t={t}
             />
           ))}
-        </div>
+        </section>
         <RealPropertyCreate
           showModalCreate={showModalCreate}
           setShowModalCreate={setShowModalCreate}
           setIsPropertyCreated={setIsPropertyCreated}
         />
-      </div>
+      </main>
     </>
   )
 }

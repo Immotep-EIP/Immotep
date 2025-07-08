@@ -246,23 +246,45 @@ const Overview: React.FC = () => {
         description={t('pages.overview.document_description')}
         keywords="overview, dashboard, Keyz"
       />
-      <div className={style.pageContainer}>
-        <div className={style.pageHeader}>
-          <PageTitle title={t('pages.overview.title')} size="title" />
-        </div>
+      <main
+        className={style.pageContainer}
+        aria-labelledby="overview-page-title"
+      >
+        <header className={style.pageHeader}>
+          <PageTitle
+            title={t('pages.overview.title')}
+            size="title"
+            id="overview-page-title"
+          />
+        </header>
 
         {loading ? (
-          <Spin
-            size="large"
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)'
-            }}
-          />
+          <section
+            role="status"
+            aria-live="polite"
+            aria-labelledby="loading-title"
+          >
+            <h2 id="loading-title" className="sr-only">
+              {t('pages.overview.loading_title')}
+            </h2>
+            <Spin
+              size="large"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)'
+              }}
+            />
+          </section>
         ) : (
-          <div className={style.contentContainer}>
+          <section
+            className={style.contentContainer}
+            aria-labelledby="dashboard-widgets-title"
+          >
+            <h2 id="dashboard-widgets-title" className="sr-only">
+              {t('pages.overview.widgets_title')}
+            </h2>
             <ResponsiveGridLayout
               className={style.gridLayout}
               layouts={{ lg: widgets }}
@@ -276,14 +298,21 @@ const Overview: React.FC = () => {
               compactType={null}
             >
               {widgets.map((widget: Widget) => (
-                <div key={widget.i} data-grid={widget}>
+                <article
+                  key={widget.i}
+                  data-grid={widget}
+                  aria-labelledby={`widget-${widget.i}-title`}
+                >
+                  <h3 id={`widget-${widget.i}-title`} className="sr-only">
+                    {t(`pages.overview.widgets.${widget.name.toLowerCase()}`)}
+                  </h3>
                   <WidgetTemplate>{widget.children}</WidgetTemplate>
-                </div>
+                </article>
               ))}
             </ResponsiveGridLayout>
-          </div>
+          </section>
         )}
-      </div>
+      </main>
     </>
   )
 }

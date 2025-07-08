@@ -32,9 +32,11 @@ class AddDamageModalViewModel(apiService: ApiService, private val navController:
     private val _roomApiCaller = RoomCallerService(apiService, navController)
     private val _form = MutableStateFlow(DamageInput())
     private val _formError = MutableStateFlow(DamageInputError())
+    private val _isLoading = MutableStateFlow(false)
 
     val form = _form.asStateFlow()
     val formError = _formError.asStateFlow()
+    val isLoading = _isLoading.asStateFlow()
 
     val pictures = mutableStateListOf<Uri>()
     val rooms = mutableStateListOf<SimplifiedRoom>()
@@ -43,10 +45,13 @@ class AddDamageModalViewModel(apiService: ApiService, private val navController:
         rooms.clear()
         viewModelScope.launch {
             try {
+                _isLoading.value = true
                 val newRooms = _roomApiCaller.getAllRooms("current")
                 rooms.addAll(newRooms.map { SimplifiedRoom(it.id, it.name) })
             } catch (e : Exception) {
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
         }
     }
@@ -103,6 +108,7 @@ class AddDamageModalViewModel(apiService: ApiService, private val navController:
         }
         viewModelScope.launch {
             try {
+                _isLoading.value = true
                 val roomName = rooms.find { it.id == _form.value.room_id }?.name
                 if (roomName == null) {
                     throw Exception("room_not_found")
@@ -116,6 +122,8 @@ class AddDamageModalViewModel(apiService: ApiService, private val navController:
                 reset()
             } catch (e : Exception) {
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
         }
     }

@@ -113,9 +113,17 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
 
   if (loading) {
     return (
-      <div className={style.loadingContainer}>
+      <section
+        className={style.loadingContainer}
+        role="status"
+        aria-live="polite"
+        aria-labelledby="damage-loading-title"
+      >
+        <h2 id="damage-loading-title" className="sr-only">
+          {t('pages.real_property_details.tabs.damage.loading_title')}
+        </h2>
         <Spin size="large" />
-      </div>
+      </section>
     )
   }
 
@@ -124,21 +132,49 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
     (status === 'invite sent' && !selectedLease)
   ) {
     return (
-      <div className={style.tabContentEmpty}>
+      <section
+        className={style.tabContentEmpty}
+        role="status"
+        aria-live="polite"
+        aria-labelledby="damage-empty-title"
+      >
+        <h2 id="damage-empty-title" className="sr-only">
+          {t('pages.real_property_details.tabs.damage.empty_title')}
+        </h2>
         <Empty description={t('pages.real_property.error.no_tenant_linked')} />
-      </div>
+      </section>
     )
   }
-  if (error) return <div>{error}</div>
+
+  if (error) {
+    return (
+      <section
+        role="alert"
+        aria-live="assertive"
+        aria-labelledby="damage-error-title"
+      >
+        <h2 id="damage-error-title" className="sr-only">
+          {t('pages.real_property_details.tabs.damage.error_title')}
+        </h2>
+        <div>{error}</div>
+      </section>
+    )
+  }
 
   return (
-    <div className={style.tabContent}>
+    <main className={style.tabContent} aria-labelledby="damage-tab-title">
+      <h2 id="damage-tab-title" className="sr-only">
+        {t('pages.real_property_details.tabs.damage.tab_title')}
+      </h2>
+      <h3 id="damage-table-title" className="sr-only">
+        {t('pages.real_property_details.tabs.damage.table_title')}
+      </h3>
       <Table<DataType>
         columns={columns}
         dataSource={transformedData}
         pagination={false}
         bordered
-        style={{ width: '100%', cursor: 'pointer' }}
+        style={{ width: '100%' }}
         onRow={record => ({
           onClick: event => {
             if (record.key) {
@@ -148,10 +184,27 @@ const DamageTab: React.FC<DamageTabProps> = ({ status }) => {
               }
               goToDamageDetails(property.id, record.key)
             }
-          }
+          },
+          onKeyDown: event => {
+            if ((event.key === 'Enter' || event.key === ' ') && record.key) {
+              event.preventDefault()
+              if (!property?.id) {
+                return
+              }
+              goToDamageDetails(property.id, record.key)
+            }
+          },
+          tabIndex: 0,
+          role: 'button',
+          'aria-label': t('pages.real_property_details.tabs.damage.row_aria', {
+            date: record.date,
+            room: record.room,
+            priority: record.priority
+          })
         })}
+        aria-label={t('pages.real_property_details.tabs.damage.table_aria')}
       />
-    </div>
+    </main>
   )
 }
 

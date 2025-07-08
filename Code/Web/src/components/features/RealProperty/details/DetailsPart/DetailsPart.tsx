@@ -57,9 +57,20 @@ const ChildrenComponent: React.FC<ChildrenComponentProps> = ({
   ]
 
   return (
-    <div className={style.childrenContainer}>
-      <Tabs style={{ width: '100%' }} defaultActiveKey="1" items={items} />
-    </div>
+    <section
+      className={style.childrenContainer}
+      aria-labelledby="property-tabs-section"
+    >
+      <h2 id="property-tabs-section" className="sr-only">
+        {t('pages.real_property_details.title')}
+      </h2>
+      <Tabs
+        style={{ width: '100%' }}
+        defaultActiveKey="1"
+        items={items}
+        aria-label={t('pages.real_property_details.tabs.title')}
+      />
+    </section>
   )
 }
 

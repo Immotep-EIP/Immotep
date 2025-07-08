@@ -30,7 +30,8 @@ fun RealPropertyTenant(navController: NavController, loaderInventoryViewModel: L
                 navController = navController,
                 getBack = {},
                 loaderInventoryViewModel = loaderInventoryViewModel,
-                newProperty = property.value!!
+                newProperty = property.value!!,
+                deleteProperty = { }
             )
         }
         else if (!isLoading.value && errorLoading.value != null) {

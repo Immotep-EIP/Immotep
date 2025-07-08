@@ -70,14 +70,23 @@ const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({
   return (
     <Drawer
       title={
-        <div className={style.drawerTitle}>
-          {t('pages.real_property.update_real_property.title')}
-          <div className={style.buttonsContainer}>
+        <header className={style.drawerTitle}>
+          <h2 id="update-property-title">
+            {t('pages.real_property.update_real_property.title')}
+          </h2>
+          <div
+            className={style.buttonsContainer}
+            role="toolbar"
+            aria-label={t(
+              'pages.real_property.update_real_property.toolbar_aria'
+            )}
+          >
             <Button
               type="default"
               key="back"
               onClick={() => setIsModalUpdateOpen(false)}
-              icon={<CloseCircleOutlined />}
+              icon={<CloseCircleOutlined aria-hidden="true" />}
+              aria-label={t('components.button.cancel')}
             >
               {t('components.button.cancel')}
             </Button>
@@ -85,30 +94,52 @@ const RealPropertyUpdate: React.FC<RealPropertyUpdateProps> = ({
               key="submit"
               loading={loading}
               onClick={() => form.submit()}
-              icon={<CheckCircleOutlined />}
+              icon={<CheckCircleOutlined aria-hidden="true" />}
+              aria-label={
+                loading
+                  ? t(
+                      'pages.real_property.update_real_property.updating_property'
+                    )
+                  : t('components.button.update')
+              }
+              aria-describedby="update-help"
             >
-              {t('components.button.update')}
+              {loading
+                ? t(
+                    'pages.real_property.update_real_property.updating_property'
+                  )
+                : t('components.button.update')}
             </Button>
+            <div id="update-help" className="sr-only">
+              {t('pages.real_property.update_real_property.submit_help')}
+            </div>
           </div>
-        </div>
+        </header>
       }
       open={isModalUpdateOpen}
       onClose={() => setIsModalUpdateOpen(false)}
       width={550}
+      aria-labelledby="update-property-title"
+      aria-describedby="update-property-description"
     >
-      <div className={style.pageContainer}>
+      <main className={style.pageContainer}>
+        <div id="update-property-description" className="sr-only">
+          {t('pages.real_property.update_real_property.form_description')}
+        </div>
         <Form
           form={form}
-          name="propertyForm"
+          name="propertyUpdateForm"
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
           layout="vertical"
           style={{ width: '100%' }}
+          aria-labelledby="update-property-title"
+          aria-describedby="update-property-description"
         >
           <PropertyFormFields uploadProps={uploadProps} />
         </Form>
-      </div>
+      </main>
     </Drawer>
   )
 }

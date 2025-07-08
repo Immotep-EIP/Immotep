@@ -13,17 +13,29 @@ const AuthentificationPage: React.FC<AuthentificationPageProps> = ({
   children
 }) => (
   <div className={style.pageContainer}>
-    <div className={style.headerContainer}>
-      <img src={logo} alt="logo Keyz" className={style.headerLogo} />
-      <span className={style.headerTitle}>Keyz</span>
-    </div>
+    <header className={style.headerContainer} role="banner">
+      <img
+        src={logo}
+        alt="Keyz - Property Management Platform Logo"
+        className={style.headerLogo}
+      />
+      <span className={style.headerTitle} aria-label="Keyz Application">
+        Keyz
+      </span>
+    </header>
 
-    <div className={style.contentContainer}>
-      <PageTitle title={title} size="title" />
+    <main className={style.contentContainer} role="main">
+      <PageTitle title={title} size="title" id="page-title" />
       <PageTitle title={subtitle} size="subtitle" />
-    </div>
 
-    <div className={style.childrenContainer}>{children}</div>
+      <div
+        className={style.childrenContainer}
+        role="form"
+        aria-labelledby="page-title"
+      >
+        {children}
+      </div>
+    </main>
   </div>
 )
 

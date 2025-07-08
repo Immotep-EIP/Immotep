@@ -21,22 +21,50 @@ const items = [
   {
     label: t('components.button.overview'),
     key: NavigationEnum.OVERVIEW,
-    icon: <img src={Overview} alt="Overview" className={style.menuIcon} />
+    icon: (
+      <img
+        src={Overview}
+        alt=""
+        className={style.menuIcon}
+        aria-hidden="true"
+      />
+    )
   },
   {
     label: t('components.button.real_property'),
     key: NavigationEnum.REAL_PROPERTY,
-    icon: <img src={Property} alt="Real Property" className={style.menuIcon} />
+    icon: (
+      <img
+        src={Property}
+        alt=""
+        className={style.menuIcon}
+        aria-hidden="true"
+      />
+    )
   },
   {
     label: t('components.button.messages'),
     key: NavigationEnum.MESSAGES,
-    icon: <img src={Messages} alt="Messages" className={style.menuIcon} />
+    icon: (
+      <img
+        src={Messages}
+        alt=""
+        className={style.menuIcon}
+        aria-hidden="true"
+      />
+    )
   },
   {
     label: t('components.button.settings'),
     key: NavigationEnum.SETTINGS,
-    icon: <img src={Settings} alt="Settings" className={style.menuIcon} />
+    icon: (
+      <img
+        src={Settings}
+        alt=""
+        className={style.menuIcon}
+        aria-hidden="true"
+      />
+    )
   }
 ]
 
@@ -64,10 +92,14 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className={style.pageContainer}>
-      <div className={style.headerContainer}>
+      <header className={style.headerContainer} role="banner">
         <div className={style.leftPartHeader}>
-          <img src={Keyz} alt="logo Keyz" className={style.headerLogo} />
-          <span className={style.headerTitle}>Keyz</span>
+          <img
+            src={Keyz}
+            alt={t('components.layout.main_layout.logo_alt')}
+            className={style.headerLogo}
+          />
+          <h1 className={style.headerTitle}>Keyz</h1>
         </div>
         <div className={style.rightPartHeader}>
           <div
@@ -118,7 +150,7 @@ const MainLayout: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </header>
 
       <Layout
         style={{
@@ -140,10 +172,14 @@ const MainLayout: React.FC = () => {
           mode="inline"
           items={items}
           className={style.menu}
+          role="navigation"
         />
-        <Content style={{ height: '100%', width: '100%', paddingTop: '70px' }}>
-          <Outlet />
-        </Content>
+
+        <main style={{ height: '100%', width: '100%', paddingTop: '70px' }}>
+          <Content style={{ height: '100%', width: '100%' }}>
+            <Outlet />
+          </Content>
+        </main>
       </Layout>
     </div>
   )

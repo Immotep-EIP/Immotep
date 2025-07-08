@@ -36,7 +36,7 @@ import fr.keyz.utils.ThemeUtils
 
 
 @Composable
-fun InventoryTopBar(onExit: () -> Unit) {
+fun InventoryTopBar(onExit: () -> Unit, customTitle: String?) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -64,7 +64,7 @@ fun InventoryTopBar(onExit: () -> Unit) {
                 },
         )
         Text(
-            stringResource(R.string.inventory_title),
+            text = customTitle ?: stringResource(R.string.inventory_title),
             fontSize = 20.sp,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight(500),
@@ -89,10 +89,11 @@ fun InventoryTopBar(onExit: () -> Unit) {
 fun InventoryLayout(
     testTag: String,
     onExit: () -> Unit,
-    content: @Composable () -> Unit
+    customTitle : String? = null,
+    content: @Composable () -> Unit,
 ) {
     Column(modifier = Modifier.testTag(testTag)) {
-        InventoryTopBar(onExit)
+        InventoryTopBar(onExit, customTitle)
         Column(modifier = Modifier.weight(1f).padding(10.dp).testTag("inventoryLayout")) {
             content()
         }

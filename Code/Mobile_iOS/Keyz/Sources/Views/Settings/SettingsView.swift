@@ -46,23 +46,23 @@ struct SettingsView: View {
                                 .font(.headline)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            HStack {
-                                Text("ID".localized())
-                                    .foregroundColor(.gray)
-                                Spacer()
-                                Text(loginViewModel.user?.id ?? "N/A")
-                                    .foregroundColor(.gray)
-                            }
-                            .padding(.vertical, 5)
-                            
-                            HStack {
-                                Text("Role".localized())
-                                    .foregroundColor(.gray)
-                                Spacer()
-                                Text(loginViewModel.user?.role == "tenant" ? "Tenant" : "Owner")
-                                    .foregroundColor(.gray)
-                            }
-                            .padding(.vertical, 5)
+//                            HStack {
+//                                Text("ID".localized())
+//                                    .foregroundColor(.gray)
+//                                Spacer()
+//                                Text(loginViewModel.user?.id ?? "N/A")
+//                                    .foregroundColor(.gray)
+//                            }
+//                            .padding(.vertical, 5)
+//                            
+//                            HStack {
+//                                Text("Role".localized())
+//                                    .foregroundColor(.gray)
+//                                Spacer()
+//                                Text(loginViewModel.user?.role == "tenant" ? "Tenant" : "Owner")
+//                                    .foregroundColor(.gray)
+//                            }
+//                            .padding(.vertical, 5)
                             
                             CustomTextInput(title: "First Name".localized(), placeholder: "", text: $editableFirstname, isSecure: false)
                                 .disabled(!isEditing)

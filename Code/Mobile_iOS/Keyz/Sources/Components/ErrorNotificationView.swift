@@ -17,7 +17,9 @@ struct ErrorNotificationView: View {
     let type: NotificationType
     @State private var isVisible = false
     @State private var opacity: Double = 0.0
-    private let duration: Double = 5.0
+    private var duration: Double {
+        type == .success ? 2.0 : 5.0
+    }
 
     init(message: String, type: NotificationType = .error) {
         self.message = message

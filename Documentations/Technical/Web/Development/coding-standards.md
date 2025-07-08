@@ -1,5 +1,7 @@
 # React Component Organization Guide
 
+---
+
 ## Directory Structure
 
 ```
@@ -37,6 +39,8 @@ src/
       ...
 ```
 
+---
+
 ## Component Categories
 
 ### Common Components
@@ -59,6 +63,8 @@ UI elements that are specific to your application's design system but are not ti
 
 Examples: `PageMeta`, `PageText`, `SubtitledElement`, `Loader`, etc.
 
+---
+
 ## Naming Conventions
 
 ### PascalCase for Component Folders
@@ -73,6 +79,8 @@ Use camelCase for folders that don't contain React components:
 - ✅ `utils/`, `hooks/`, `services/`
 - ❌ `Utils/`, `Hooks/`, `Services/`
 
+---
+
 ## Import Conventions
 
 Use absolute imports with aliases for better readability:
@@ -85,6 +93,8 @@ import Button from '../../../components/common/Button';
 import Button from '@components/common/Button';
 ```
 
+---
+
 ## Best Practices
 
 1. **One component per file**: Each component should have its own file
@@ -92,6 +102,8 @@ import Button from '@components/common/Button';
 3. **Separation of concerns**: Split UI and logic into separate components
 4. **Reusability**: Design components to be reusable when possible
 5. **Consistency**: Follow consistent patterns across your codebase
+
+---
 
 ## Benefits
 

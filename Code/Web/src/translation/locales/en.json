@@ -1,5 +1,40 @@
 {
   "components": {
+    "layout": {
+      "divided_page": {
+        "left_content": "Secondary Content",
+        "main_content": "Main Content",
+        "logo_alt": "Keyz - Property Management Platform Logo"
+      },
+      "main_layout": {
+        "logo_alt": "Keyz - Property Management Platform Logo",
+        "open_menu": "Open navigation menu",
+        "close_menu": "Close navigation menu",
+        "mobile_navigation": "Mobile navigation menu",
+        "main_navigation": "Main navigation"
+      }
+    },
+    "form": {
+      "property_details": {
+        "legend": "Property Details Form"
+      }
+    },
+    "property": {
+      "card": {
+        "view_details": "View property details:",
+        "image_alt": "Property image for",
+        "unnamed_property": "Unnamed property",
+        "no_address": "No address provided"
+      },
+      "filters": {
+        "title": "Property Filters",
+        "search": "Search properties",
+        "filter_options": "Filter Options",
+        "filter_controls": "Property filter controls",
+        "surface_filter": "Filter by surface area",
+        "status_filter": "Filter by property status"
+      }
+    },
     "input": {
       "email": {
         "label": "Email",
@@ -65,22 +100,28 @@
       "area": {
         "label": "Area",
         "placeholder": "Enter the area",
-        "error": "Please fill in the area."
+        "error": "Please fill in the area.",
+        "aria_label": "Property area in square meters"
       },
       "rental": {
         "label": "Rent",
         "placeholder": "Enter the rent amount",
-        "error": "Please fill in the rent amount."
+        "error": "Please fill in the rent amount.",
+        "aria_label": "Monthly rental price"
       },
       "deposit": {
         "label": "Security deposit",
         "placeholder": "Enter the security deposit",
-        "error": "Please fill in the security deposit."
+        "error": "Please fill in the security deposit.",
+        "aria_label": "Security deposit amount"
       },
       "picture": {
         "label": "Image",
         "placeholder": "Choose an image",
-        "error": "Please select an image."
+        "error": "Please select an image.",
+        "help": "Upload an image of the property",
+        "aria_label": "Upload property image",
+        "hint": "Drag and drop an image here or click to select"
       },
       "room_name": {
         "label": "Room name",
@@ -119,10 +160,12 @@
         "error": "Please fill in the widget height."
       },
       "start_date": {
-        "label": "Start date"
+        "label": "Start date",
+        "placeholder": "Select start date"
       },
       "end_date": {
-        "label": "End date"
+        "label": "End date",
+        "placeholder": "Select end date"
       },
       "document_name": {
         "label": "Document name",
@@ -132,7 +175,8 @@
       "document": {
         "label": "Document",
         "placeholder": "Choose a document",
-        "error": "Please select a document."
+        "error": "Please select a document.",
+        "accepted_formats": "Accepted formats: PDF, DOCX, XLSX"
       },
       "search": {
         "placeholder": "Search rooms and items..."
@@ -160,11 +204,19 @@
       "room_deleted": "Room deleted successfully",
       "room_deleted_error": "Error while deleting the room",
       "furniture_deleted": "Item deleted successfully",
-      "furniture_deleted_error": "Error while deleting the item"
+      "furniture_deleted_error": "Error while deleting the item",
+      "items_added_successfully": "items added successfully",
+      "properties_updated": "Properties updated",
+      "properties_created": "Property created",
+      "properties_archived": "Property archived",
+      "property_image_updated": "Property image updated",
+      "error_uploading_picture": "Error uploading picture"
     },
     "button": {
       "sign_in": "Sign in",
+      "signing_in": "Signing in...",
       "sign_up": "Sign up",
+      "signing_up": "Signing up...",
       "remember_me": "Remember me",
       "ask_forgot_password": "Forgot password?",
       "send_email": "Send email",
@@ -190,6 +242,9 @@
       "cancel": "Cancel",
       "confirm": "Confirm",
       "add": "Add",
+      "adding": "Adding...",
+      "cancel_create_property": "Cancel property creation",
+      "add_property": "Add new property",
       "close": "Close",
       "delete": "Delete",
       "edit_property": "Edit property",
@@ -203,7 +258,10 @@
       "delete_item": "Delete Item",
       "add_intervention_date": "Add intervention date",
       "modify_intervention_date": "Modify intervention date",
-      "remove": "Remove"
+      "remove": "Remove",
+      "more_actions": "More actions",
+      "cancel_add_document": "Cancel document upload",
+      "add_document_submit": "Upload document"
     },
     "modal": {
       "end_contract": {
@@ -259,6 +317,7 @@
       },
       "furniture": {
         "name": "Item Name",
+        "items": "items",
         "quantity": "Quantity",
         "quantity_validation": "Quantity must be between 1 and 1000",
         "suggested_items": "Suggested items for this room",
@@ -319,7 +378,41 @@
         "filter": "Filter by room type",
         "view_mode": "View mode",
         "add_room": "Add Room"
-      }
+      },
+      "list": {
+        "title": "Inventory List",
+        "items_count": "{{count}} items",
+        "room_actions": "Actions for {{room}}",
+        "edit_room": "Edit {{room}}",
+        "delete_room": "Delete {{room}}",
+        "add_item_to_room": "Add item to {{room}}",
+        "furniture_in_room": "Furniture in {{room}}",
+        "quantity": "Quantity: {{quantity}}",
+        "delete_item": "Delete {{item}}"
+      },
+      "plan": {
+        "title": "Inventory Plan View",
+        "room_details": "View details for {{room}} ({{count}} items)",
+        "items_count": "{{count}} items",
+        "furniture_in_room": "Furniture in {{room}}",
+        "delete_item": "Delete {{item}} ({{quantity}})",
+        "add_item_to_room": "Add item to {{room}}",
+        "add_room": "Add new room"
+      },
+      "add_room_modal_title": "Add room",
+      "add_stuff_modal_title": "Add item",
+      "tab_title": "Inventory",
+      "loading_title": "Loading inventory",
+      "empty_title": "No rooms in inventory",
+      "error_title": "Error loading inventory",
+      "controls_title": "Inventory controls",
+      "content_title": "Inventory content",
+      "list_object_name": "Items in the room",
+      "remove_room_confirmation": "Are you sure you want to delete this room?",
+      "remove_room_success": "Room deleted successfully",
+      "remove_stuff_confirmation": "Are you sure you want to delete this item?",
+      "remove_stuff_success": "Item deleted successfully",
+      "error_fetching_data": "Error while fetching data"
     },
     "documents": {
       "success_add": "Document added successfully",
@@ -387,6 +480,11 @@
       "document_description": "Sign in to your Keyz account. Manage your properties and tenants easily.",
       "title": "Welcome!",
       "description": "Please enter your information to sign in.",
+      "form_title": "Login Form",
+      "form_legend": "User credentials",
+      "email_help": "Enter your email address to identify your account",
+      "password_help": "Enter your password to authenticate",
+      "submit_help": "Click to sign in to your account",
       "dont_have_account": "Don't have an account?",
       "connection_success": "You are now signed in.",
       "connection_error": "An error occurred while signing in, please try again.",
@@ -397,12 +495,22 @@
       "document_description": "Create a Keyz account to manage your properties and tenants easily.",
       "title": "Create an account",
       "description": "Join Keyz for more peace of mind!",
-      "agree_terms": "I agree to the Terms and Privacy Policy.",
+      "form_title": "Registration Form",
+      "form_legend": "Account creation details",
+      "firstname_help": "Enter your first name as it appears on official documents",
+      "lastname_help": "Enter your last name as it appears on official documents",
+      "email_help": "Enter your email address - this will be used to sign in",
+      "password_help": "Create a strong password to secure your account",
+      "confirm_password_help": "Confirm your password by entering it again",
+      "submit_help": "Click to create your account",
       "already_have_account": "Already have an account?",
+      "agree_terms": "I agree to the Terms and Privacy Policy.",
       "register_success": "You are now registered.",
+      "register_success_but_login_failed": "Account created successfully! Please sign in.",
       "register_error": "An error occurred while registering, please try again.",
       "email_already_used": "This email is already in use.",
       "confirm_password_error": "Passwords don't match.",
+      "unexpected_error": "An unexpected error occurred. Please try again.",
       "fill_fields": "Please fill in all fields."
     },
     "register_tenant": {
@@ -418,26 +526,43 @@
       "document_description": "Reset your Keyz password easily if you forgot it. Simple and quick process to regain access to your account.",
       "title": "Forgot password",
       "description": "Please enter your email to reset your password.",
+      "form_title": "Reset Password Form",
       "send_email_success": "An email has been sent to reset your password.",
       "send_email_error": "An error occurred while sending the email, please try again.",
       "emails_dont_match": "Emails don't match.",
-      "fill_fields": "Please fill in all fields."
+      "fill_fields": "Please fill in all fields.",
+      "sending": "Sending...",
+      "submit_help": "Click to send password reset instructions to your email"
     },
     "settings": {
       "document_title": "Settings",
-      "document_description": "Manage your account settings. Change your language, update your profile, and more.",
+      "document_description": "Configure your account settings, language preferences, and manage your profile in Keyz",
       "title": "Settings",
-      "description": "Manage your account settings.",
-      "language": "Language",
-      "en": "English",
-      "fr": "French",
+      "user_settings_title": "User Profile Settings",
+      "app_settings_title": "Application Settings",
       "user_infos": "User information",
+      "language": "Language",
       "logout": "Logout",
-      "logout_success": "You are now logged out."
+      "fr": "Français",
+      "en": "English",
+      "profile_picture_alt": "User profile picture",
+      "upload_picture_aria": "Upload new profile picture",
+      "uploading_picture": "Uploading profile picture...",
+      "edit_toolbar_aria": "Profile editing actions",
+      "cancel_edit_aria": "Cancel editing profile information",
+      "save_changes_aria": "Save profile changes",
+      "edit_profile_aria": "Edit profile information",
+      "language_selector_aria": "Select application language",
+      "language_help": "Choose your preferred language for the application interface",
+      "logout_aria": "Sign out of your account",
+      "logout_help": "Click to logout and return to the login page"
     },
     "real_property_details": {
-      "document_title": "Property details",
-      "document_description": "Details of your property. Manage your property easily.",
+      "document_title": "Property Details | Keyz",
+      "document_description": "View detailed information about your property including tenants, inventory, and damages in Keyz",
+      "page_title": "Property Details",
+      "loading_title": "Loading property details",
+      "error_title": "Error loading property details",
       "invite_tenant": "Invitation sent successfully",
       "409_error": "Invitation already sent",
       "fill_fields": "Please fill in required fields",
@@ -456,8 +581,17 @@
         "deposit": "Security deposit"
       },
       "tabs": {
+        "title": "Property management tabs",
         "documents": {
           "modal_title": "Add document",
+          "modal_description": "Upload a document to associate with this property",
+          "tab_title": "Documents",
+          "loading_title": "Loading documents",
+          "empty_title": "No documents available",
+          "error_title": "Error loading documents",
+          "actions_title": "Document actions",
+          "list_title": "Documents list",
+          "add_document_aria": "Add a new document to this property",
           "no_documents": "No documents",
           "delete_confirmation": {
             "title": "Delete document",
@@ -467,6 +601,12 @@
         "inventory": {
           "add_room_modal_title": "Add room",
           "add_stuff_modal_title": "Add item",
+          "tab_title": "Inventory",
+          "loading_title": "Loading inventory",
+          "empty_title": "No rooms in inventory",
+          "error_title": "Error loading inventory",
+          "controls_title": "Inventory controls",
+          "content_title": "Inventory content",
           "list_object_name": "Items in the room",
           "remove_room_confirmation": "Are you sure you want to delete this room?",
           "remove_room_success": "Room deleted successfully",
@@ -478,6 +618,13 @@
           "pictures": "Image(s)",
           "no_pictures": "No images",
           "no_intervention_date": "No intervention date set",
+          "loading_title": "Loading damage information",
+          "empty_title": "No damage information available",
+          "error_title": "Error loading damage information",
+          "tab_title": "Damage Information",
+          "table_title": "Damage History Table",
+          "table_aria": "Table listing all damage reports for this property",
+          "row_aria": "Damage report from {{date}} in {{room}} with {{priority}} priority. Click to view details",
           "table": {
             "date": "Date",
             "comment": "Comment",
@@ -507,6 +654,9 @@
       }
     },
     "damage_details": {
+      "document_title": "Damage Details | Keyz",
+      "document_description": "View detailed information about property damage reports in Keyz",
+      "page_title": "Damage Details",
       "title": "Damage details",
       "title_damage": "Damage",
       "title_damages": "Damages",
@@ -533,6 +683,15 @@
       "document_title": "Overview",
       "document_description": "Overview of your properties and tenants. Manage your properties and tenants easily.",
       "title": "Overview",
+      "loading_title": "Loading Dashboard",
+      "widgets_title": "Dashboard Widgets",
+      "widgets": {
+        "propertiesnumber": "Properties Count",
+        "propertiesrepartition": "Properties Distribution",
+        "reminders": "Reminders",
+        "opendamages": "Open Damages",
+        "damagesrepartition": "Damages Distribution"
+      },
       "widget_creation": {
         "title": "Add widget",
         "error": "Error while creating widget",
@@ -544,17 +703,30 @@
     "lost": {
       "document_title": "Page not found",
       "document_description": "The page you're looking for doesn't exist. Please return to the home page.",
+      "page_title": "Page Not Found",
       "page_not_found": "Page not found",
-      "back_home": "Back to home"
+      "back_home": "Back to home",
+      "back_home_aria": "Return to the home page"
     },
     "real_property": {
       "document_title": "Property",
       "document_description": "Manage your properties easily. Add, edit or delete your properties.",
       "title": "Property(ies)",
+      "error_title": "Error loading properties",
+      "loading_title": "Loading properties",
+      "empty_title": "No properties found",
+      "properties_list_title": "Properties List",
+      "toolbar_aria": "Properties page actions",
+      "archive_toggle_aria": "Toggle between active and archived properties",
+      "archive_toggle_help": "Switch to show archived properties instead of active ones",
       "add_real_property": {
         "document_title": "Add property",
         "document_description": "Add a property to manage it easily. Fill in required fields to add a property.",
         "title": "Add property",
+        "form_title": "Property Creation Form",
+        "form_description": "Fill in the details to create a new property",
+        "submit_help": "Click to create the property with the provided information",
+        "toolbar_aria": "Property creation actions",
         "property_created": "Property created successfully",
         "error_property_created": "Error while creating property",
         "fill_all_fields": "Please fill in all fields"
@@ -563,6 +735,10 @@
         "document_title": "Edit property",
         "document_description": "Edit your property easily. Fill in required fields to edit your property.",
         "title": "Edit property",
+        "form_description": "Update the property information using the form below",
+        "toolbar_aria": "Property update actions",
+        "submit_help": "Click to update the property with the modified information",
+        "updating_property": "Updating property...",
         "property_updated": "Property updated successfully",
         "error_property_updated": "Error while updating property",
         "fill_all_fields": "Please fill in all fields"

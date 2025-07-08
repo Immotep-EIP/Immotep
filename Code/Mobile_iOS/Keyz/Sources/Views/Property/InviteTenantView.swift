@@ -13,6 +13,7 @@ struct InviteTenantView: View {
     @State private var didCancelEndDate: Bool = false
     @State private var showError: Bool = false
     @State private var errorMessage: String?
+    @State private var successAlert = false
     @Environment(\.dismiss) var dismiss
 
     private var dateFormatter: DateFormatter {
@@ -82,7 +83,7 @@ struct InviteTenantView: View {
             }
 
             if showError, let message = errorMessage {
-                ErrorNotificationView(message: message)
+                ErrorNotificationView(message: message, type: successAlert ? .success : .error)
                     .onDisappear {
                         showError = false
                         errorMessage = nil
@@ -176,6 +177,7 @@ struct InviteTenantView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 .padding(.bottom, 50)
+                .padding(.trailing, 20)
             }
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
@@ -193,14 +195,15 @@ struct InviteTenantView: View {
             try await propertyViewModel.fetchProperties()
             await MainActor.run {
                 errorMessage = "Invitation sent successfully!".localized()
+                successAlert = true
                 showError = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     dismiss()
                 }
             }
         } catch {
             await MainActor.run {
-                errorMessage = "Error inviting tenant: \(error.localizedDescription)".localized()
+                errorMessage = "Error inviting tenant.".localized()
                 showError = true
             }
         }

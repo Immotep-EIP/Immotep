@@ -1,7 +1,11 @@
 # Badge Component Documentation
 
+---
+
 ## Overview
 The Badge component is a wrapper around Ant Design's Badge component that provides a consistent interface for displaying badges, counts, status indicators, and ribbons throughout the Keyz application.
+
+---
 
 ## Component Interface
 
@@ -14,6 +18,8 @@ export interface BadgeProps extends AntBadgeProps {}
 
 const Badge: React.FC<BadgeProps> & { Ribbon: typeof AntBadge.Ribbon }
 ```
+
+---
 
 ## Basic Usage
 
@@ -73,6 +79,8 @@ import { Badge } from '@/components/common'
 </Badge>
 ```
 
+---
+
 ## Ribbon Usage
 
 The Badge component exposes `Badge.Ribbon` for creating ribbon badges:
@@ -101,6 +109,8 @@ The Badge component exposes `Badge.Ribbon` for creating ribbon badges:
 </Badge.Ribbon>
 ```
 
+---
+
 ## Props
 
 The Badge component accepts all Ant Design Badge props:
@@ -119,6 +129,8 @@ The Badge component accepts all Ant Design Badge props:
 | `title` | `string` | - | Title attribute for accessibility |
 | `children` | `ReactNode` | - | Content to wrap with badge |
 
+---
+
 ## Badge.Ribbon Props
 
 | Prop | Type | Default | Description |
@@ -127,6 +139,8 @@ The Badge component accepts all Ant Design Badge props:
 | `color` | `string` | - | Color of the ribbon |
 | `placement` | `'start' \| 'end'` | `'end'` | Position of the ribbon |
 | `children` | `ReactNode` | - | Content to wrap with ribbon |
+
+---
 
 ## Real-world Examples
 
@@ -167,6 +181,8 @@ const ServiceStatus = ({ status }: { status: ServiceStatusType }) => {
   return <Badge {...statusConfig[status]} />
 }
 ```
+
+---
 
 ## Accessibility
 

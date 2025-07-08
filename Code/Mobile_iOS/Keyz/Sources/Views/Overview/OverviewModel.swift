@@ -24,7 +24,7 @@ struct Reminder: Decodable, Identifiable, Equatable {
     let priority: String
     let title: String
     let advice: String
-    let link: String
+    let link: String?
 }
 
 struct PropertyStats: Decodable, Equatable {

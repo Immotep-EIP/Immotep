@@ -48,62 +48,98 @@ const ForgotPassword: React.FC = () => {
         title={t('pages.forgot_password.title')}
         subtitle={t('pages.forgot_password.description')}
       >
-        <Form
-          name="basic"
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
-          layout="vertical"
+        <section
           style={{ width: '90%', maxWidth: '400px' }}
+          aria-labelledby="forgot-password-form-title"
         >
-          <Form.Item
-            label={t('components.input.email.label')}
-            name="email"
-            rules={[
-              { required: true, message: t('components.input.email.error') }
-            ]}
-          >
-            <Input
-              className="input"
-              size="large"
-              placeholder={t('components.input.email.placeholder')}
-              aria-label={t('components.input.email.placeholder')}
-            />
-          </Form.Item>
+          <h2 id="forgot-password-form-title" className="sr-only">
+            {t('pages.forgot_password.form_title')}
+          </h2>
 
-          <Form.Item
-            label={t('components.input.email_confirmation.label')}
-            name="emailConfirmation"
-            rules={[
-              {
-                required: true,
-                message: t('components.input.email_confirmation.error')
-              }
-            ]}
+          <Form
+            name="forgot-password-form"
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+            layout="vertical"
+            aria-labelledby="forgot-password-form-title"
+            noValidate
           >
-            <Input
-              className="input"
-              size="large"
-              placeholder={t('components.input.email_confirmation.placeholder')}
-              aria-label={t('components.input.email_confirmation.placeholder')}
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              className="submitButton"
-              htmlType="submit"
-              // onClick={goToLogin}
-              size="large"
-              color="default"
-              variant="solid"
-              loading={loading}
+            <Form.Item
+              label={t('components.input.email.label')}
+              name="email"
+              rules={[
+                { required: true, message: t('components.input.email.error') },
+                {
+                  type: 'email',
+                  message: t('components.input.email.valid_email')
+                }
+              ]}
             >
-              {t('components.button.send_email')}
-            </Button>
-          </Form.Item>
-        </Form>
+              <Input
+                className="input"
+                size="large"
+                type="email"
+                placeholder={t('components.input.email.placeholder')}
+                aria-label={t('components.input.email.label')}
+                aria-required="true"
+                aria-describedby="email-help"
+                id="forgot-password-email"
+                autoComplete="email"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label={t('components.input.email_confirmation.label')}
+              name="emailConfirmation"
+              rules={[
+                {
+                  required: true,
+                  message: t('components.input.email_confirmation.error')
+                },
+                {
+                  type: 'email',
+                  message: t('components.input.email.valid_email')
+                }
+              ]}
+            >
+              <Input
+                className="input"
+                size="large"
+                type="email"
+                placeholder={t(
+                  'components.input.email_confirmation.placeholder'
+                )}
+                aria-label={t('components.input.email_confirmation.label')}
+                aria-required="true"
+                aria-describedby="email-confirmation-help"
+                id="forgot-password-email-confirmation"
+                autoComplete="email"
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                className="submitButton"
+                htmlType="submit"
+                size="large"
+                color="default"
+                variant="solid"
+                loading={loading}
+                aria-describedby="submit-button-help"
+                disabled={loading}
+              >
+                {loading
+                  ? t('pages.forgot_password.sending')
+                  : t('components.button.send_email')}
+              </Button>
+              <div id="submit-button-help" className="sr-only">
+                {t('pages.forgot_password.submit_help')}
+              </div>
+            </Form.Item>
+          </Form>
+        </section>
       </AuthentificationPage>
     </>
   )

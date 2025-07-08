@@ -20,6 +20,34 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
     GetPropertyPicture
   )
 
+  const statusText = t(
+    TenantStatusEnum[realProperty!.status as keyof typeof TenantStatusEnum]
+      .text || ''
+  )
+
+  const propertyAddress = (() => {
+    if (realProperty.address && realProperty.postal_code && realProperty.city) {
+      let fullAddress = ''
+      if (realProperty.apartment_number) {
+        fullAddress = `N° ${realProperty.apartment_number} - ${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
+      } else {
+        fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
+      }
+      return fullAddress
+    }
+    return t('components.property.card.no_address')
+  })()
+
+  const displayAddress =
+    propertyAddress.length > 40
+      ? `${propertyAddress.substring(0, 40)}...`
+      : propertyAddress
+
+  const displayName =
+    realProperty.name && realProperty.name.length > 35
+      ? `${realProperty.name.substring(0, 35)}...`
+      : realProperty.name
+
   return (
     <Card
       className={style.card}
@@ -33,13 +61,10 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         }
       }}
       padding="none"
+      aria-label={`${t('components.property.card.view_details')} ${realProperty.name} - ${statusText} - ${propertyAddress}`}
     >
       <Badge.Ribbon
-        text={t(
-          TenantStatusEnum[
-            realProperty!.status as keyof typeof TenantStatusEnum
-          ].text || ''
-        )}
+        text={statusText}
         color={
           TenantStatusEnum[
             realProperty!.status as keyof typeof TenantStatusEnum
@@ -49,36 +74,27 @@ const CardComponent: React.FC<CardComponentProps> = ({ realProperty, t }) => {
         <div className={style.cardPictureContainer}>
           <img
             src={isLoading ? defaultHouse : picture || defaultHouse}
-            alt="property"
+            alt={`${t('components.property.card.image_alt')} ${realProperty.name || t('components.property.card.unnamed_property')}`}
             className={style.cardPicture}
           />
         </div>
       </Badge.Ribbon>
       <div className={style.cardInfoContainer}>
-        <b className={style.cardText}>
-          {realProperty.name && realProperty.name.length > 35
-            ? `${realProperty.name.substring(0, 35)}...`
-            : realProperty.name}
-        </b>
+        <header>
+          <h3 className={style.cardText} title={realProperty.name}>
+            {displayName}
+          </h3>
+        </header>
         <div className={style.cardAddressContainer}>
-          <img src={locationIcon} alt="location" className={style.icon} />
-          <span className={style.cardText}>
-            {realProperty.address &&
-            realProperty.postal_code &&
-            realProperty.city
-              ? (() => {
-                  let fullAddress = ''
-                  if (realProperty.apartment_number) {
-                    fullAddress = `N° ${realProperty.apartment_number} - ${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
-                  } else {
-                    fullAddress = `${realProperty.address}, ${realProperty.postal_code} ${realProperty.city}`
-                  }
-                  return fullAddress.length > 40
-                    ? `${fullAddress.substring(0, 40)}...`
-                    : fullAddress
-                })()
-              : '-----------'}
-          </span>
+          <img
+            src={locationIcon}
+            alt=""
+            className={style.icon}
+            aria-hidden="true"
+          />
+          <address className={style.cardText} title={propertyAddress}>
+            {displayAddress}
+          </address>
         </div>
       </div>
     </Card>

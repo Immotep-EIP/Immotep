@@ -79,7 +79,6 @@ class OwnerPropertyViewModel: ObservableObject {
         }
         
         let body: [String: Any] = ["data": imageString]
-        
         let url = URL(string: "\(APIConfig.baseURL)/owner/properties/\(propertyID)/picture/")!
         
         var urlRequest = URLRequest(url: url)
@@ -90,7 +89,7 @@ class OwnerPropertyViewModel: ObservableObject {
         
         let jsonData = try JSONSerialization.data(withJSONObject: body)
         urlRequest.httpBody = jsonData
-        
+                
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
         
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -868,7 +867,8 @@ class OwnerPropertyViewModel: ObservableObject {
             guard let imageData = image.jpegData(compressionQuality: 0.8) else {
                 return nil
             }
-            return imageData.base64EncodedString()
+            let base64String = "data:image/jpeg;base64,\(imageData.base64EncodedString())"
+            return base64String
         }.value
     }
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Spin } from 'antd'
 
 import useProperties from '@/hooks/Property/useProperties'
 import RealPropertyUpdate from '@/views/RealProperty/update/RealPropertyUpdate'
@@ -63,11 +64,36 @@ const RealPropertyDetails: React.FC = () => {
   }, [propertyData])
 
   if (loading) {
-    return <div>{t('components.loading')}</div>
+    return (
+      <section
+        role="status"
+        aria-live="polite"
+        aria-labelledby="property-loading-title"
+      >
+        <h1 id="property-loading-title" className="sr-only">
+          {t('pages.real_property_details.loading_title')}
+        </h1>
+        <Spin size="large" />
+        <div>{t('pages.real_property_details.loading_title')}</div>
+      </section>
+    )
   }
 
   if (error) {
-    return <div>{t('components.error', { message: error })}</div>
+    return (
+      <section
+        role="alert"
+        aria-live="assertive"
+        aria-labelledby="property-error-title"
+      >
+        <h1 id="property-error-title" className="sr-only">
+          {t('pages.real_property_details.error_title')}
+        </h1>
+        <div>
+          {t('pages.real_property_details.error_title', { message: error })}
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -78,7 +104,13 @@ const RealPropertyDetails: React.FC = () => {
         keywords="real property details, Property info, Keyz"
       />
 
-      <div className={style.pageContainer}>
+      <main
+        className={style.pageContainer}
+        aria-labelledby="property-details-title"
+      >
+        <h1 id="property-details-title" className="sr-only">
+          {t('pages.real_property_details.page_title')}
+        </h1>
         {propertyData && (
           <PropertyProvider property={propertyData}>
             <DetailsPart
@@ -102,7 +134,7 @@ const RealPropertyDetails: React.FC = () => {
             />
           </PropertyProvider>
         )}
-      </div>
+      </main>
     </>
   )
 }

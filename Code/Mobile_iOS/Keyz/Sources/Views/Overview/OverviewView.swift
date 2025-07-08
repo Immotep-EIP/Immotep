@@ -69,10 +69,6 @@ struct OverviewView: View {
                     Text("Property not found (ID: \(navigateToProperty ?? "nil"))".localized())
                         .foregroundColor(.red)
                         .padding()
-                        .onAppear {
-                            print("Property not found for ID: \(navigateToProperty ?? "nil")")
-                            print("Available properties: \(propertyViewModel.properties.map { $0.id })")
-                        }
                 }
             }
             .navigationDestination(isPresented: Binding(
@@ -93,7 +89,7 @@ struct OverviewView: View {
                 loginViewModel.loadUser()
                 Task {
                     if loginViewModel.userRole == "owner" {
-                        if viewModel.dashboardData == nil {
+//                        if viewModel.dashboardData == nil {
                             await viewModel.fetchDashboardData()
                             if let dashboardData = viewModel.dashboardData {
                                 isTenantLoading = true
@@ -103,7 +99,7 @@ struct OverviewView: View {
                                 errorMessage = "No dashboard data available".localized()
                                 showError = true
                             }
-                        }
+//                        }
                     } else if loginViewModel.userRole == "tenant" {
                         if propertyViewModel.properties.isEmpty {
                             isTenantLoading = true
@@ -137,6 +133,10 @@ struct OverviewView: View {
     private func fetchOwnerProperties(dashboardData: DashboardResponse) async {
         let allProperties = dashboardData.properties.recentlyAdded ?? []
         
+        if allProperties.isEmpty {
+            return
+        }
+
         for propertySummary in allProperties {
             let propertyId = propertySummary.id
             do {
@@ -176,35 +176,50 @@ struct OverviewView: View {
     @ViewBuilder
     private var contentView: some View {
         if loginViewModel.userRole == "owner", let dashboardData = viewModel.dashboardData {
-            OwnerOverview(
-                dashboardData: dashboardData,
-                firstName: loginViewModel.user?.firstname ?? "User",
-                navigateToProperty: $navigateToProperty,
-                navigateToDamage: $navigateToDamage,
-                onDamageSelected: { propertyId, damageId in
-                    Task {
-                        do {
-                            let token = try await TokenStorage.getValidAccessToken()
-                            let damage = try await propertyViewModel.fetchDamageByID(propertyId: propertyId, damageId: damageId, token: token)
-                            if let index = propertyViewModel.properties.firstIndex(where: { $0.id == propertyId }) {
-                                var updatedProperty = propertyViewModel.properties[index]
-                                if let damageIndex = updatedProperty.damages.firstIndex(where: { $0.id == damageId }) {
-                                    updatedProperty.damages[damageIndex] = damage
-                                } else {
-                                    updatedProperty.damages.append(damage)
+            if dashboardData.properties.total == 0 {
+                VStack(spacing: 16) {
+                    WelcomeWidget(firstName: loginViewModel.user?.firstname ?? "User")
+                    Text("You have no properties yet.".localized())
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color("basicWhiteBlack"))
+                        .cornerRadius(12)
+                        .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                }
+                .padding()
+            } else {
+                OwnerOverview(
+                    dashboardData: dashboardData,
+                    firstName: loginViewModel.user?.firstname ?? "User",
+                    navigateToProperty: $navigateToProperty,
+                    navigateToDamage: $navigateToDamage,
+                    onDamageSelected: { propertyId, damageId in
+                        Task {
+                            do {
+                                let token = try await TokenStorage.getValidAccessToken()
+                                let damage = try await propertyViewModel.fetchDamageByID(propertyId: propertyId, damageId: damageId, token: token)
+                                if let index = propertyViewModel.properties.firstIndex(where: { $0.id == propertyId }) {
+                                    var updatedProperty = propertyViewModel.properties[index]
+                                    if let damageIndex = updatedProperty.damages.firstIndex(where: { $0.id == damageId }) {
+                                        updatedProperty.damages[damageIndex] = damage
+                                    } else {
+                                        updatedProperty.damages.append(damage)
+                                    }
+                                    propertyViewModel.properties[index] = updatedProperty
+                                    propertyViewModel.objectWillChange.send()
                                 }
-                                propertyViewModel.properties[index] = updatedProperty
-                                propertyViewModel.objectWillChange.send()
+                                self.selectedDamage = damage
+                                self.navigateToDamage = (propertyId, damageId)
+                            } catch {
+                                errorMessage = "Error fetching damage details: \(error.localizedDescription)".localized()
+                                showError = true
                             }
-                            self.selectedDamage = damage
-                            self.navigateToDamage = (propertyId, damageId)
-                        } catch {
-                            errorMessage = "Error fetching damage details: \(error.localizedDescription)".localized()
-                            showError = true
                         }
                     }
-                }
-            )
+                )
+            }
         } else if loginViewModel.userRole == "tenant", let property = propertyViewModel.properties.first {
             TenantOverview(
                 property: property,
@@ -236,9 +251,18 @@ struct OverviewView: View {
                 }
             )
         } else {
-            Text("No data available".localized())
-                .foregroundColor(.gray)
-                .padding()
+            VStack(spacing: 16) {
+                WelcomeWidget(firstName: loginViewModel.user?.firstname ?? "User")
+                Text("No data available".localized())
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color("basicWhiteBlack"))
+                    .cornerRadius(12)
+                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+            }
+            .padding()
         }
     }
 }
@@ -378,26 +402,28 @@ struct RemindersWidget: View {
             } else {
                 ForEach(reminders.prefix(3)) { reminder in
                     Button(action: {
-                        if let components = parseLink(reminder.link),
+                        if let link = reminder.link,
+                           let components = parseLink(link),
                            properties.recentlyAdded?.first(where: { $0.id == components.propertyId }) != nil {
                             navigateToProperty = components.propertyId
                         }
                     }) {
                         ReminderItem(reminder: reminder)
                     }
+                    .disabled(reminder.link == nil)
                 }
                 if reminders.count > 3 {
                     Text(String(format: "+%d more".localized(), reminders.count - 3))
                         .font(.caption)
                         .foregroundColor(.gray)
                         .padding(.top, 4)
-                    }
                 }
             }
-            .padding()
-            .background(Color("basicWhiteBlack"))
-            .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+        }
+        .padding()
+        .background(Color("basicWhiteBlack"))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
     }
 
     private func parseLink(_ link: String) -> (propertyId: String, damageId: String)? {
@@ -479,7 +505,6 @@ struct PropertiesWidget: View {
             if let recentProperty = stats.recentlyAdded?.first {
                 Button(action: {
                     navigateToProperty = recentProperty.id
-                    print("Navigating to property ID: \(recentProperty.id)")
                 }) {
                     PropertyItem(property: recentProperty)
                 }

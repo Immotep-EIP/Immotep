@@ -78,7 +78,7 @@
     <string name="add_picture">Add a picture</string>
     <string name="city">City</string>
     <string name="name">Name</string>
-    <string name="inventory_title">Keyz - Inventory</string>
+    <string name="inventory_title">Inventory</string>
     <string name="entry_inventory">Entry inventory</string>
     <string name="exit_inventory">Exit inventory</string>
     <string name="edit">Edit</string>
@@ -217,4 +217,17 @@
     <string name="available_properties">Available properties</string>
     <string name="reminders">Reminders</string>
     <string name="damages_list">Damage List</string>
+    <string name="no_browser_found">No browser found to open the link</string>
+    <string name="damage_detail">Damage Detail</string>
+    <string name="fixed">Fixed</string>
+    <string name="planned">Planned for the</string>
+    <string name="awaiting_owner_confirmation">Awaiting owner confirmation</string>
+    <string name="awaiting_tenant_confirmation">Awaiting tenant confirmation</string>
+    <string name="click_here_to_confirm">Click here to confirm</string>
+    <string name="state">State</string>
+    <string name="in_progress">In progress</string>
+    <string name="last_update">Last update</string>
+    <string name="created_at">Created at</string>
+    <string name="dashboard_tenant_resume">Here is a summary of your rental</string>
+    <string name="my_rental">My Rental</string>
 </resources>
